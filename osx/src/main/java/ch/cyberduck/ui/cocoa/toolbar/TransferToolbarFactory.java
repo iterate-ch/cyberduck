@@ -177,15 +177,14 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
         },
         connections {
             @Override
-            public Selector action() {
-                return Foundation.selector("connectionsPopupChanged:");
+            public String label() {
+                return LocaleFactory.localizedString("Connections", "Transfer");
             }
 
             @Override
-            public String tooltip() {
-                return LocaleFactory.localizedString("Connections");
+            public Selector action() {
+                return Foundation.selector("connectionsPopupChanged:");
             }
-
             @Override
             public NSImage image() {
                 return IconCacheFactory.<NSImage>get().iconNamed("connection.tiff", 16);

@@ -1,6 +1,19 @@
 Cyberduck
 https://cyberduck.io/
 
+7.5.0
+- [Feature] Interoperability with macOS 11
+- [Bugfix] Use STANDARD for default storage class (Google Storage)
+- [Bugfix] Switch to UTF-8 for encoding HTTP authentication header (WebDAV)
+
+7.4.3
+- [Feature] Column for storage class in browser (S3)
+- [Bugfix] Handle formatting errors in ~/.aws/credentials (S3)
+- [Bugfix] Crash accessing files with colon in name (Windows) (#11075)
+
+7.4.2
+- [Bugfix] Support Team Drives for sharing files (Google Drive)
+
 7.4.1
 - [Localize] Croatian Localization
 - [Bugfix] Unable to use S3 HTTP connection profile (S3) (#11061)

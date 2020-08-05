@@ -51,7 +51,7 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
         final String route = this.findNative(provider.get(target));
         if(null == route) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("No poxy configuration found for target %s", target));
+                log.info(String.format("No proxy configuration found for target %s", target));
             }
             // Direct
             return Proxy.DIRECT;

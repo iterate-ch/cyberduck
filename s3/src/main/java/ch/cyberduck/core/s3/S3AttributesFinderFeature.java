@@ -24,7 +24,9 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
@@ -106,20 +108,23 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                     throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
                 }
             }
-            if(references) {
-                if(StringUtils.isNotBlank(attr.getVersionId())) {
-                    // Add references to previous versions
-                    final AttributedList<Path> list = new S3VersionedObjectListService(session, true).list(file, new DisabledListProgressListener());
-                    final Path versioned = list.find(new DefaultPathPredicate(file));
-                    if(null != versioned) {
-                        attr.setDuplicate(versioned.attributes().isDuplicate());
-                        attr.setVersions(versioned.attributes().getVersions());
-                        return attr;
+            if(StringUtils.isNotBlank(attr.getVersionId())) {
+                if(references) {
+                    try {
+                        // Add references to previous versions
+                        final AttributedList<Path> list = new S3VersionedObjectListService(session, true).list(file, new DisabledListProgressListener());
+                        final Path versioned = list.find(new DefaultPathPredicate(file));
+                        if(null != versioned) {
+                            attr.setDuplicate(versioned.attributes().isDuplicate());
+                            attr.setVersions(versioned.attributes().getVersions());
+                            return attr;
+                        }
+                    }
+                    catch(InteroperabilityException | AccessDeniedException e) {
+                        log.warn(String.format("Ignore failure %s reading object versions for %s", e, file));
                     }
                 }
-            }
-            else {
-                if(StringUtils.isNotBlank(attr.getVersionId())) {
+                else {
                     // Determine if latest version
                     try {
                         // Duplicate if not latest version

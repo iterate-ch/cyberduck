@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15705" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17132.0.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15705"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17132.0.2"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -120,12 +119,12 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="272" y="168" width="507" height="518"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
             <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <tabView allowsTruncatedLabels="NO" type="noTabsNoBorder" id="5">
+                    <tabView fixedFrame="YES" allowsTruncatedLabels="NO" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="5">
                         <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <font key="font" metaFont="system"/>
@@ -212,19 +211,20 @@
                     </tabView>
                 </subviews>
             </view>
+            <point key="canvasLocation" x="7" y="147"/>
         </window>
         <customView id="30">
             <rect key="frame" x="0.0" y="0.0" width="507" height="417"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Utforsker" id="31">
+                <box fixedFrame="YES" title="Utforsker" translatesAutoresizingMaskIntoConstraints="NO" id="31">
                     <rect key="frame" x="17" y="222" width="473" height="175"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nXa-rF-OQT">
                         <rect key="frame" x="3" y="3" width="467" height="157"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <popUpButton verticalHuggingPriority="750" id="32">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="32">
                                 <rect key="frame" x="263" y="42" width="195" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="35" id="33">
@@ -237,7 +237,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <button id="36">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="36">
                                 <rect key="frame" x="10" y="72" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <buttonCell key="cell" type="check" title="Åpne et nytt utforskervindu etter oppstart" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="37">
@@ -245,7 +245,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <textField verticalHuggingPriority="750" id="38">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="38">
                                 <rect key="frame" x="9" y="47" width="252" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Koble til bokmerke:" id="39">
@@ -254,7 +254,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button id="40">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="40">
                                 <rect key="frame" x="10" y="130" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <buttonCell key="cell" type="check" title="Lagre vindusoppsett ved avslutning" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="41">
@@ -262,7 +262,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <textField verticalHuggingPriority="750" id="42">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="42">
                                 <rect key="frame" x="9" y="96" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Lagrer alle utforskervinduene når programmet avsluttes og gjennoppretter de neste gang programmet omstartes." id="43">
@@ -271,7 +271,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" id="44">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="44">
                                 <rect key="frame" x="9" y="12" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="45">
@@ -284,14 +284,14 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Tilkobling" id="46">
+                <box fixedFrame="YES" title="Tilkobling" translatesAutoresizingMaskIntoConstraints="NO" id="46">
                     <rect key="frame" x="17" y="16" width="473" height="202"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="jTZ-Rs-0Ac">
                         <rect key="frame" x="3" y="3" width="467" height="184"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField verticalHuggingPriority="750" id="47">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="47">
                                 <rect key="frame" x="17" y="38" width="244" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Grunninnstilt protokoll:" id="48">
@@ -300,7 +300,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <popUpButton verticalHuggingPriority="750" id="49">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="49">
                                 <rect key="frame" x="263" y="33" width="195" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="52" id="50">
@@ -313,7 +313,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <button id="53">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="53">
                                 <rect key="frame" x="10" y="157" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <buttonCell key="cell" type="check" title="Bruk nøkkelring" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="54">
@@ -321,7 +321,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <button id="55">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="55">
                                 <rect key="frame" x="10" y="99" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <buttonCell key="cell" type="check" title="Bekreft frakobling" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="56">
@@ -329,7 +329,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <textField verticalHuggingPriority="750" id="57">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="57">
                                 <rect key="frame" x="9" y="123" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Søk etter passord i Nøkkelringtilgang (keychain). Lagre passord automatisk (ved vellykket innlogging) til Nøkkelringtilgang." id="58">
@@ -338,7 +338,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" id="59">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="59">
                                 <rect key="frame" x="9" y="65" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Spør før lukking av utforsker-vindu." id="60">
@@ -356,14 +356,14 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="422"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Bokmerker" id="62">
+                <box fixedFrame="YES" title="Bokmerker" translatesAutoresizingMaskIntoConstraints="NO" id="62">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="h51-aZ-jAv">
                         <rect key="frame" x="3" y="3" width="467" height="79"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <popUpButton verticalHuggingPriority="750" id="63">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="63">
                                 <rect key="frame" x="9" y="8" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" title="Bruk små ikoner" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="66" id="64">
@@ -378,7 +378,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="69">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="69">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Kun kallenavn av bokmerker skal vises når små ikoner er i bruk." id="70">
@@ -390,14 +390,14 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Grensesnitt" id="71">
+                <box fixedFrame="YES" title="Grensesnitt" translatesAutoresizingMaskIntoConstraints="NO" id="71">
                     <rect key="frame" x="17" y="117" width="473" height="95"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="PyB-9Z-fc6">
                         <rect key="frame" x="3" y="3" width="467" height="77"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button id="72">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="72">
                                 <rect key="frame" x="10" y="50" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <buttonCell key="cell" type="check" title="Bruk vekslende radbakgrunn" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
@@ -405,7 +405,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <button id="74">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="74">
                                 <rect key="frame" x="10" y="30" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <buttonCell key="cell" type="check" title="Horisontale linjer" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="75">
@@ -413,7 +413,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <button id="76">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="76">
                                 <rect key="frame" x="10" y="10" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <buttonCell key="cell" type="check" title="Vertikale linjer" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="77">
@@ -424,14 +424,14 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Generelt" id="78">
+                <box fixedFrame="YES" title="Generelt" translatesAutoresizingMaskIntoConstraints="NO" id="78">
                     <rect key="frame" x="17" y="216" width="473" height="186"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="zSl-Q7-PPX">
                         <rect key="frame" x="3" y="3" width="467" height="168"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button id="79">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="79">
                                 <rect key="frame" x="10" y="140" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Vis skjulte filer" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="80">
@@ -439,7 +439,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <button id="81">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="81">
                                 <rect key="frame" x="10" y="120" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Dobbelklikking viser filene i et eksternt redigeringsverktøy" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="82">
@@ -447,7 +447,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <button id="83">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="83">
                                 <rect key="frame" x="10" y="81" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <buttonCell key="cell" type="check" title="Informasjonsvinduet viser alltid nåværende valg" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="84">
@@ -455,7 +455,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <button id="85">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="85">
                                 <rect key="frame" x="10" y="61" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <buttonCell key="cell" type="check" title="Bruk fjær-ladede kataloger når man drar filer" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="86">
@@ -463,14 +463,14 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <slider verticalHuggingPriority="750" id="87">
+                            <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="87">
                                 <rect key="frame" x="164" y="31" width="216" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <sliderCell key="cell" controlSize="small" alignment="left" maxValue="2" doubleValue="1" tickMarkPosition="below" numberOfTickMarks="9" allowsTickMarkValuesOnly="YES" sliderType="linear" id="88">
                                     <font key="font" size="12" name="Helvetica"/>
                                 </sliderCell>
                             </slider>
-                            <textField verticalHuggingPriority="750" id="89">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="89">
                                 <rect key="frame" x="120" y="12" width="101" height="11"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Kort" id="90">
@@ -479,7 +479,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" id="91">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="91">
                                 <rect key="frame" x="222" y="12" width="100" height="11"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Medium" id="92">
@@ -488,7 +488,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" id="93">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="93">
                                 <rect key="frame" x="324" y="12" width="100" height="11"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Lang" id="94">
@@ -497,7 +497,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button id="95">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="95">
                                 <rect key="frame" x="47" y="35" width="111" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <buttonCell key="cell" type="check" title="med forsinkelse:" bezelStyle="regularSquare" imagePosition="left" alignment="right" controlSize="small" inset="2" id="96">
@@ -505,7 +505,7 @@
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
                             </button>
-                            <button id="97">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="97">
                                 <rect key="frame" x="10" y="100" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Enter/Return velger fil eller katalog som omdøpes" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
@@ -522,7 +522,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="412"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <tabView id="100">
+                <tabView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="100">
                     <rect key="frame" x="13" y="10" width="481" height="388"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <font key="font" metaFont="system"/>
@@ -532,7 +532,7 @@
                                 <rect key="frame" x="10" y="33" width="461" height="342"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <button id="105">
+                                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="105">
                                         <rect key="frame" x="10" y="248" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Fjern enhetene når overføringen er fullført" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="106">
@@ -540,7 +540,7 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="115">
+                                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="115">
                                         <rect key="frame" x="10" y="288" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Hent overføringsvinduet til front ved filoverføring" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="116">
@@ -548,7 +548,7 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="117">
+                                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="117">
                                         <rect key="frame" x="10" y="268" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Lukk overføringsvinduet når alle overføringer er ferdig" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="118">
@@ -556,11 +556,11 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <box verticalHuggingPriority="750" boxType="separator" id="122">
+                                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="122">
                                         <rect key="frame" x="12" y="225" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="123">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="123">
                                         <rect key="frame" x="9" y="228" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Nedlasting" id="124">
@@ -569,7 +569,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <textField verticalHuggingPriority="750" id="139">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="139">
                                         <rect key="frame" x="9" y="312" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Overfør filer:" id="140">
@@ -578,7 +578,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <popUpButton verticalHuggingPriority="750" id="141">
+                                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="141">
                                         <rect key="frame" x="164" y="306" width="192" height="26"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <popUpButtonCell key="cell" type="push" title="Åpne ny tilkobling" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="144" id="142">
@@ -592,7 +592,7 @@
                                             </menu>
                                         </popUpButtonCell>
                                     </popUpButton>
-                                    <button id="103">
+                                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="103">
                                         <rect key="frame" x="11" y="181" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Åpne nedlastede filer med foretrukket program" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="104">
@@ -600,7 +600,7 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <textField verticalHuggingPriority="750" id="107">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="107">
                                         <rect key="frame" x="10" y="132" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Dupliser filene:" id="108">
@@ -609,7 +609,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <textField verticalHuggingPriority="750" id="109">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="109">
                                         <rect key="frame" x="10" y="158" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Sti for nedlasting:" id="110">
@@ -618,7 +618,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <popUpButton verticalHuggingPriority="750" id="111">
+                                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="111">
                                         <rect key="frame" x="165" y="126" width="192" height="26"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="114" id="112">
@@ -631,11 +631,11 @@
                                             </menu>
                                         </popUpButtonCell>
                                     </popUpButton>
-                                    <box verticalHuggingPriority="750" boxType="separator" id="119">
+                                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="119">
                                         <rect key="frame" x="13" y="85" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="120">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="120">
                                         <rect key="frame" x="10" y="88" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Opplasting" id="121">
@@ -644,7 +644,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <textField verticalHuggingPriority="750" id="125">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="125">
                                         <rect key="frame" x="10" y="40" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Dupliser filene:" id="126">
@@ -653,7 +653,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <popUpButton verticalHuggingPriority="750" id="127">
+                                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="127">
                                         <rect key="frame" x="165" y="34" width="192" height="26"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="130" id="128">
@@ -666,7 +666,7 @@
                                             </menu>
                                         </popUpButtonCell>
                                     </popUpButton>
-                                    <button id="131">
+                                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="131">
                                         <rect key="frame" x="166" y="108" width="286" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Alltid overskriv filer ved oppfrisking" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="132">
@@ -674,7 +674,7 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="133">
+                                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="133">
                                         <rect key="frame" x="166" y="16" width="286" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Alltid overskriv filer ved oppfrisking" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="134">
@@ -682,7 +682,7 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <popUpButton verticalHuggingPriority="750" id="135">
+                                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="135">
                                         <rect key="frame" x="165" y="151" width="192" height="26"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="138" id="136">
@@ -695,7 +695,7 @@
                                             </menu>
                                         </popUpButtonCell>
                                     </popUpButton>
-                                    <button id="146">
+                                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="146">
                                         <rect key="frame" x="11" y="64" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Last opp med midlertidig filnavn" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="147">
@@ -703,7 +703,7 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="U8B-Wt-dfT">
+                                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="U8B-Wt-dfT">
                                         <rect key="frame" x="10" y="203" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Segmented downloads with multiple connections per file" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
@@ -719,7 +719,7 @@
                                 <rect key="frame" x="10" y="33" width="461" height="342"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <button id="150">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="150">
                                         <rect key="frame" x="10" y="158" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Endre rettigheter" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="151">
@@ -727,7 +727,7 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="152">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="152">
                                         <rect key="frame" x="10" y="300" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Endre rettigheter" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="153">
@@ -735,7 +735,7 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="154">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="154">
                                         <rect key="frame" x="220" y="96" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Skriv" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="155">
@@ -743,7 +743,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="156">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="156">
                                         <rect key="frame" x="303" y="96" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Kjør" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="157">
@@ -751,7 +751,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <textField verticalHuggingPriority="750" id="158">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="158">
                                         <rect key="frame" x="9" y="62" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Andre" id="159">
@@ -760,7 +760,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <button id="160">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="160">
                                         <rect key="frame" x="220" y="78" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Skriv" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="161">
@@ -768,7 +768,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <textField verticalHuggingPriority="750" id="162">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="162">
                                         <rect key="frame" x="9" y="80" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Gruppe" id="163">
@@ -777,7 +777,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <button id="164">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="164">
                                         <rect key="frame" x="303" y="60" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Kjør" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="165">
@@ -785,7 +785,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="166">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="166">
                                         <rect key="frame" x="303" y="78" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Kjør" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="167">
@@ -793,7 +793,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="168">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="168">
                                         <rect key="frame" x="137" y="60" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Les" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="169">
@@ -801,7 +801,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="170">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="170">
                                         <rect key="frame" x="137" y="96" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Les" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="171">
@@ -809,7 +809,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="172">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="172">
                                         <rect key="frame" x="137" y="78" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Les" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="173">
@@ -817,7 +817,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <textField verticalHuggingPriority="750" id="174">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="174">
                                         <rect key="frame" x="9" y="97" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Eier" id="175">
@@ -826,7 +826,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <button id="176">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="176">
                                         <rect key="frame" x="220" y="60" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Skriv" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="177">
@@ -834,7 +834,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="178">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="178">
                                         <rect key="frame" x="137" y="238" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Les" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="179">
@@ -842,7 +842,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="180">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="180">
                                         <rect key="frame" x="303" y="202" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Kjør" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="181">
@@ -850,7 +850,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <textField verticalHuggingPriority="750" id="182">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="182">
                                         <rect key="frame" x="9" y="222" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Gruppe" id="183">
@@ -859,7 +859,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <button id="184">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="184">
                                         <rect key="frame" x="303" y="220" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Kjør" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="185">
@@ -867,7 +867,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="186">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="186">
                                         <rect key="frame" x="137" y="202" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Les" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="187">
@@ -875,7 +875,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="188">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="188">
                                         <rect key="frame" x="137" y="220" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Les" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="189">
@@ -883,7 +883,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="190">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="190">
                                         <rect key="frame" x="303" y="238" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Kjør" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="191">
@@ -891,7 +891,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="192">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="192">
                                         <rect key="frame" x="220" y="220" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Skriv" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="193">
@@ -899,7 +899,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="194">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="194">
                                         <rect key="frame" x="220" y="202" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Skriv" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="195">
@@ -907,7 +907,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="196">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="196">
                                         <rect key="frame" x="220" y="238" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Skriv" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="197">
@@ -915,7 +915,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <textField verticalHuggingPriority="750" id="198">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="198">
                                         <rect key="frame" x="9" y="204" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Andre" id="199">
@@ -924,7 +924,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <textField verticalHuggingPriority="750" id="200">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="200">
                                         <rect key="frame" x="9" y="239" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Eier" id="201">
@@ -933,7 +933,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <button id="202">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="202">
                                         <rect key="frame" x="48" y="134" width="402" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="radio" title="til rettighetene av den lokale filen" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="203">
@@ -941,7 +941,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="204">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="204">
                                         <rect key="frame" x="48" y="117" width="137" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="radio" title="til disse rettighetene:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="205">
@@ -949,7 +949,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="206">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="206">
                                         <rect key="frame" x="48" y="276" width="402" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="radio" title="til rettighetene av den eksterne filen" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="207">
@@ -957,7 +957,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="208">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="208">
                                         <rect key="frame" x="48" y="259" width="137" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="radio" title="til disse rettighetene:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="209">
@@ -965,11 +965,11 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <box verticalHuggingPriority="750" boxType="separator" id="210">
+                                    <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="210">
                                         <rect key="frame" x="12" y="322" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="211">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="211">
                                         <rect key="frame" x="9" y="325" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Nedlasting" id="212">
@@ -978,11 +978,11 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <box verticalHuggingPriority="750" boxType="separator" id="213">
+                                    <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="213">
                                         <rect key="frame" x="12" y="180" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="214">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="214">
                                         <rect key="frame" x="9" y="183" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Opplasting" id="215">
@@ -991,7 +991,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <popUpButton verticalHuggingPriority="750" id="216">
+                                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="216">
                                         <rect key="frame" x="191" y="119" width="107" height="15"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <popUpButtonCell key="cell" type="push" title="for filer" bezelStyle="rounded" alignment="left" controlSize="mini" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="219" id="217">
@@ -1005,7 +1005,7 @@
                                             </menu>
                                         </popUpButtonCell>
                                     </popUpButton>
-                                    <popUpButton verticalHuggingPriority="750" id="221">
+                                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="221">
                                         <rect key="frame" x="191" y="261" width="107" height="15"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <popUpButtonCell key="cell" type="push" title="for filer" bezelStyle="rounded" alignment="left" controlSize="mini" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="224" id="222">
@@ -1027,7 +1027,7 @@
                                 <rect key="frame" x="10" y="33" width="461" height="342"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <button id="228">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="228">
                                         <rect key="frame" x="10" y="243" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Bevar modifikasjonstidspunkt" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="229">
@@ -1035,7 +1035,7 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="230">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="230">
                                         <rect key="frame" x="10" y="300" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Bevar modifikasjonstidspunkt" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="231">
@@ -1043,11 +1043,11 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <box verticalHuggingPriority="750" boxType="separator" id="232">
+                                    <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="232">
                                         <rect key="frame" x="12" y="322" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="233">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="233">
                                         <rect key="frame" x="9" y="325" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Nedlasting" id="234">
@@ -1056,11 +1056,11 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <box verticalHuggingPriority="750" boxType="separator" id="235">
+                                    <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="235">
                                         <rect key="frame" x="12" y="265" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="236">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="236">
                                         <rect key="frame" x="9" y="268" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Opplasting" id="237">
@@ -1077,7 +1077,7 @@
                                 <rect key="frame" x="10" y="33" width="461" height="342"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <button id="Buu-j0-hMk">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="Buu-j0-hMk">
                                         <rect key="frame" x="10" y="243" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="JQr-Vn-9Xj">
@@ -1085,7 +1085,7 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="jvf-VY-vT3">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="jvf-VY-vT3">
                                         <rect key="frame" x="10" y="300" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ksK-EV-u9o">
@@ -1093,11 +1093,11 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <box verticalHuggingPriority="750" boxType="separator" id="ztf-zi-J0f">
+                                    <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="ztf-zi-J0f">
                                         <rect key="frame" x="12" y="322" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="Pdu-UD-1af">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Pdu-UD-1af">
                                         <rect key="frame" x="9" y="325" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Nedlasting" id="jMp-5G-M0R">
@@ -1106,11 +1106,11 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <box verticalHuggingPriority="750" boxType="separator" id="UKO-fJ-LRI">
+                                    <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="UKO-fJ-LRI">
                                         <rect key="frame" x="12" y="265" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="oCu-3p-Hmv">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="oCu-3p-Hmv">
                                         <rect key="frame" x="9" y="268" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Opplasting" id="OF7-e3-pIZ">
@@ -1127,11 +1127,11 @@
                                 <rect key="frame" x="10" y="33" width="461" height="342"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <box verticalHuggingPriority="750" boxType="separator" id="240">
+                                    <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="240">
                                         <rect key="frame" x="12" y="322" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="241">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="241">
                                         <rect key="frame" x="9" y="325" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Nedlasting" id="242">
@@ -1140,11 +1140,11 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <box verticalHuggingPriority="750" boxType="separator" id="243">
+                                    <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="243">
                                         <rect key="frame" x="12" y="192" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="244">
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="244">
                                         <rect key="frame" x="9" y="195" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Opplasting" id="245">
@@ -1153,7 +1153,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <scrollView autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="246">
+                                    <scrollView autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="246">
                                         <rect key="frame" x="11" y="217" width="437" height="76"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <clipView key="contentView" drawsBackground="NO" id="vAD-UH-Zk7">
@@ -1171,16 +1171,16 @@
                                                 </textView>
                                             </subviews>
                                         </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="249">
+                                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="249">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
-                                        <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="250">
+                                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="250">
                                             <rect key="frame" x="-30" y="1" width="15" height="56"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                     </scrollView>
-                                    <button id="256">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="256">
                                         <rect key="frame" x="9" y="301" width="262" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Hopp over filer som treffer regulært-uttrykk:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="257">
@@ -1188,7 +1188,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button id="258">
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="258">
                                         <rect key="frame" x="9" y="171" width="262" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Hopp over filer som treffer regulært-uttrykk:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="259">
@@ -1196,7 +1196,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button verticalHuggingPriority="750" id="260">
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="260">
                                         <rect key="frame" x="378" y="300" width="95" height="16"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="push" title="Grunninnstilling" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="261">
@@ -1204,7 +1204,7 @@
                                             <font key="font" metaFont="miniSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <button verticalHuggingPriority="750" id="262">
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="262">
                                         <rect key="frame" x="377" y="171" width="95" height="16"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="push" title="Grunninnstilling" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="263">
@@ -1212,7 +1212,7 @@
                                             <font key="font" metaFont="miniSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <scrollView autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="251">
+                                    <scrollView autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="251">
                                         <rect key="frame" x="11" y="88" width="437" height="76"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                         <clipView key="contentView" drawsBackground="NO" id="jKQ-pd-auB">
@@ -1230,11 +1230,11 @@
                                                 </textView>
                                             </subviews>
                                         </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="254">
+                                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="254">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
-                                        <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="255">
+                                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="255">
                                             <rect key="frame" x="-30" y="1" width="15" height="56"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
@@ -1251,14 +1251,14 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Standard protokoll-håndterer" id="265">
+                <box fixedFrame="YES" title="Standard protokoll-håndterer" translatesAutoresizingMaskIntoConstraints="NO" id="265">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="XGo-5u-0m0">
                         <rect key="frame" x="3" y="3" width="467" height="79"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <popUpButton verticalHuggingPriority="750" id="266">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="266">
                                 <rect key="frame" x="9" y="8" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="269" id="267">
@@ -1271,7 +1271,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="270">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="270">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Velg hvilken applikasjon som skal brukes ved åpning av filer eller lenker til FTP-lokasjoner." id="271">
@@ -1289,14 +1289,14 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Standard protokoll-håndterer" id="273">
+                <box fixedFrame="YES" title="Standard protokoll-håndterer" translatesAutoresizingMaskIntoConstraints="NO" id="273">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="QDL-re-aeA">
                         <rect key="frame" x="3" y="3" width="467" height="79"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <popUpButton verticalHuggingPriority="750" id="274">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="274">
                                 <rect key="frame" x="9" y="8" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="277" id="275">
@@ -1309,7 +1309,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="278">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="278">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Velg hvilken applikasjon som skal brukes ved åpning av filer eller lenker til SFTP-lokasjoner." id="279">
@@ -1327,14 +1327,14 @@
             <rect key="frame" x="0.0" y="0.0" width="508" height="383"/>
             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
             <subviews>
-                <box title="Tegnenkoding" id="281">
+                <box fixedFrame="YES" title="Tegnenkoding" translatesAutoresizingMaskIntoConstraints="NO" id="281">
                     <rect key="frame" x="17" y="252" width="472" height="111"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="N8s-vX-pXb">
                         <rect key="frame" x="3" y="3" width="466" height="93"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <popUpButton verticalHuggingPriority="750" id="282">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="282">
                                 <rect key="frame" x="9" y="8" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="285" id="283">
@@ -1347,7 +1347,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="286">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="286">
                                 <rect key="frame" x="9" y="40" width="451" height="41"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="287">
@@ -1360,14 +1360,14 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Proxy" id="288">
+                <box fixedFrame="YES" title="Proxy" translatesAutoresizingMaskIntoConstraints="NO" id="288">
                     <rect key="frame" x="17" y="16" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nIK-94-OGK">
                         <rect key="frame" x="3" y="3" width="467" height="76"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button verticalHuggingPriority="750" id="289">
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="289">
                                 <rect key="frame" x="150" y="2" width="156" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="Change Settings…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="290">
@@ -1375,7 +1375,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <button id="291">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="291">
                                 <rect key="frame" x="10" y="48" width="445" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Bruk systemets proxy-innstillinger" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="292">
@@ -1386,14 +1386,14 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Tidsavbrudd" id="293">
+                <box fixedFrame="YES" title="Tidsavbrudd" translatesAutoresizingMaskIntoConstraints="NO" id="293">
                     <rect key="frame" x="17" y="114" width="473" height="134"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Tuf-VX-07Q">
                         <rect key="frame" x="3" y="3" width="467" height="116"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField verticalHuggingPriority="750" id="294">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="294">
                                 <rect key="frame" x="9" y="88" width="284" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Tidsavbrudd ved tilkobling (sekunder):" id="295">
@@ -1402,12 +1402,12 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" id="296">
+                            <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="296">
                                 <rect key="frame" x="349" y="35" width="15" height="22"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="30" doubleValue="1" id="297"/>
                             </stepper>
-                            <textField verticalHuggingPriority="750" id="298">
+                            <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="298">
                                 <rect key="frame" x="298" y="37" width="45" height="19"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="299">
@@ -1416,7 +1416,7 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" id="300">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="300">
                                 <rect key="frame" x="9" y="13" width="284" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Antall forsøk:" id="301">
@@ -1425,7 +1425,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" id="302">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="302">
                                 <rect key="frame" x="9" y="39" width="284" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="med forsinkelse (sekunder):" id="303">
@@ -1434,7 +1434,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button id="304">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="304">
                                 <rect key="frame" x="10" y="62" width="445" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <buttonCell key="cell" type="check" title="Repeter nettverksoppgave ved feil" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="305">
@@ -1442,12 +1442,12 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" id="306">
+                            <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="306">
                                 <rect key="frame" x="349" y="9" width="15" height="22"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="9" doubleValue="1" id="307"/>
                             </stepper>
-                            <textField verticalHuggingPriority="750" id="308">
+                            <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="308">
                                 <rect key="frame" x="298" y="11" width="45" height="19"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="309">
@@ -1456,12 +1456,12 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" id="310">
+                            <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="310">
                                 <rect key="frame" x="349" y="84" width="15" height="22"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" minValue="10" maxValue="120" doubleValue="60" id="311"/>
                             </stepper>
-                            <textField verticalHuggingPriority="750" id="312">
+                            <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="312">
                                 <rect key="frame" x="298" y="86" width="45" height="19"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="313">
@@ -1480,14 +1480,14 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="165"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Oppdater" id="316">
+                <box fixedFrame="YES" title="Oppdater" translatesAutoresizingMaskIntoConstraints="NO" id="316">
                     <rect key="frame" x="17" y="16" width="473" height="129"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="V20-wh-cwb">
                         <rect key="frame" x="3" y="3" width="467" height="111"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button id="317">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="317">
                                 <rect key="frame" x="10" y="84" width="259" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <buttonCell key="cell" type="check" title="Automatisk sjekk etter oppdateringer" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
@@ -1495,7 +1495,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <button verticalHuggingPriority="750" id="319">
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="319">
                                 <rect key="frame" x="133" y="38" width="201" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
                                 <buttonCell key="cell" type="push" title="Se etter oppdateringer nå" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
@@ -1503,7 +1503,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <textField verticalHuggingPriority="750" id="321">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="321">
                                 <rect key="frame" x="8" y="12" width="447" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="center" id="322">
@@ -1516,7 +1516,7 @@
                                     <binding destination="314" name="value" keyPath="values.SULastCheckTime" id="530"/>
                                 </connections>
                             </textField>
-                            <popUpButton verticalHuggingPriority="750" id="324">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="324">
                                 <rect key="frame" x="272" y="78" width="182" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="325">
@@ -1534,18 +1534,18 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="183"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Strup overføringene" id="328">
+                <box fixedFrame="YES" title="Strup overføringene" translatesAutoresizingMaskIntoConstraints="NO" id="328">
                     <rect key="frame" x="17" y="16" width="473" height="147"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="9Em-Vf-Pix">
                         <rect key="frame" x="3" y="3" width="467" height="129"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <box verticalHuggingPriority="750" boxType="separator" id="329">
+                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="329">
                                 <rect key="frame" x="12" y="101" width="443" height="5"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                             </box>
-                            <textField verticalHuggingPriority="750" id="330">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="330">
                                 <rect key="frame" x="9" y="104" width="449" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Nedlasting" id="331">
@@ -1554,11 +1554,11 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <box verticalHuggingPriority="750" boxType="separator" id="332">
+                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="332">
                                 <rect key="frame" x="12" y="38" width="443" height="5"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                             </box>
-                            <textField verticalHuggingPriority="750" id="333">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="333">
                                 <rect key="frame" x="9" y="41" width="451" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Opplasting" id="334">
@@ -1567,7 +1567,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <popUpButton verticalHuggingPriority="750" id="335">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="335">
                                 <rect key="frame" x="254" y="71" width="206" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="339" id="336">
@@ -1583,7 +1583,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="340">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="340">
                                 <rect key="frame" x="9" y="77" width="243" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Maks hastighet:" id="341">
@@ -1592,7 +1592,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <popUpButton verticalHuggingPriority="750" id="342">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="342">
                                 <rect key="frame" x="254" y="8" width="206" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="346" id="343">
@@ -1608,7 +1608,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="347">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="347">
                                 <rect key="frame" x="9" y="14" width="243" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Maks hastighet:" id="348">
@@ -1626,14 +1626,14 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="335"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Encryption" id="350">
+                <box fixedFrame="YES" title="Encryption" translatesAutoresizingMaskIntoConstraints="NO" id="350">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="aiV-b9-PJY">
                         <rect key="frame" x="3" y="3" width="467" height="79"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <popUpButton verticalHuggingPriority="750" id="351">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="351">
                                 <rect key="frame" x="8" y="8" width="255" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="352">
@@ -1642,7 +1642,7 @@
                                     <menu key="menu" title="Andre visninger" id="353"/>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="354">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="354">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the algirithm to encrypt files with on upload." id="355">
@@ -1654,14 +1654,14 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Standard bøtte-lokasjon" id="356">
+                <box fixedFrame="YES" title="Standard bøtte-lokasjon" translatesAutoresizingMaskIntoConstraints="NO" id="356">
                     <rect key="frame" x="17" y="218" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="aDe-7a-zvt">
                         <rect key="frame" x="3" y="3" width="467" height="79"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <popUpButton verticalHuggingPriority="750" id="357">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="357">
                                 <rect key="frame" x="9" y="8" width="255" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="358">
@@ -1670,7 +1670,7 @@
                                     <menu key="menu" title="Andre visninger" id="359"/>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="360">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="360">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Standardlokasjon for nye bøtter." id="361">
@@ -1682,14 +1682,14 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Standard lagringsklasse" id="362">
+                <box fixedFrame="YES" title="Standard lagringsklasse" translatesAutoresizingMaskIntoConstraints="NO" id="362">
                     <rect key="frame" x="17" y="117" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="wk5-XB-g4g">
                         <rect key="frame" x="3" y="3" width="467" height="79"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <popUpButton verticalHuggingPriority="750" id="363">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="363">
                                 <rect key="frame" x="8" y="8" width="255" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="364">
@@ -1698,7 +1698,7 @@
                                     <menu key="menu" title="Andre visninger" id="365"/>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="366">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="366">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="367">
@@ -1717,14 +1717,14 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="168"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Eksternt redigeringsverktøy" id="369">
+                <box fixedFrame="YES" title="Eksternt redigeringsverktøy" translatesAutoresizingMaskIntoConstraints="NO" id="369">
                     <rect key="frame" x="17" y="16" width="473" height="132"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="HTA-ik-z0B">
                         <rect key="frame" x="3" y="3" width="467" height="114"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <popUpButton verticalHuggingPriority="750" id="370">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="370">
                                 <rect key="frame" x="9" y="43" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="373" id="371">
@@ -1737,7 +1737,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="374">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="374">
                                 <rect key="frame" x="9" y="75" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="375">
@@ -1747,7 +1747,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button id="376">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="376">
                                 <rect key="frame" x="10" y="11" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <buttonCell key="cell" type="check" title="Alltid bruk dette programmet" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="377">
@@ -1764,14 +1764,14 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="134"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Språk" id="409">
+                <box fixedFrame="YES" title="Språk" translatesAutoresizingMaskIntoConstraints="NO" id="409">
                     <rect key="frame" x="17" y="16" width="473" height="98"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="mcs-pM-Cfr">
                         <rect key="frame" x="3" y="3" width="467" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField verticalHuggingPriority="750" id="410">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="410">
                                 <rect key="frame" x="9" y="41" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Endringer aktiveres neste gang du åpner programmet." id="411">
@@ -1780,7 +1780,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <popUpButton verticalHuggingPriority="750" id="412">
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="412">
                                 <rect key="frame" x="9" y="8" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="413">
@@ -1798,14 +1798,14 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="103"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Cryptomator" id="Xoe-j6-yKO">
+                <box fixedFrame="YES" title="Cryptomator" translatesAutoresizingMaskIntoConstraints="NO" id="Xoe-j6-yKO">
                     <rect key="frame" x="17" y="16" width="473" height="67"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="RhT-uu-LrO">
                         <rect key="frame" x="3" y="3" width="467" height="49"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button id="Tzo-pv-NCb">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Tzo-pv-NCb">
                                 <rect key="frame" x="10" y="21" width="253" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Auto detect and open vault in browser" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="lsw-7x-O1N">

@@ -26,6 +26,7 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.EnumSet;
@@ -222,6 +223,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
+    @Ignore
     public void testIconForPathPdfType() throws Exception {
         final Path f = new Path("/f.pdf", EnumSet.of(Path.Type.file));
         final NSImageIconCache cache = new NSImageIconCache();

@@ -610,7 +610,7 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("http.manager.timeout", String.valueOf(0)); // Infinite
         this.setDefault("http.socket.buffer", String.valueOf(8192));
-        this.setDefault("http.credentials.charset", "ISO-8859-1");
+        this.setDefault("http.credentials.charset", "UTF-8");
         this.setDefault("http.request.uri.normalize", String.valueOf(false));
 
         /*
@@ -725,7 +725,7 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("googlestorage.listing.chunksize", String.valueOf(1000));
         this.setDefault("googlestorage.metadata.default", StringUtils.EMPTY);
-        this.setDefault("googlestorage.storage.class", "multi_regional");
+        this.setDefault("googlestorage.storage.class", "STANDARD");
 
 
         this.setDefault("onedrive.listing.chunksize", String.valueOf(1000));
@@ -816,7 +816,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("sds.delete.dataroom.enable", String.valueOf(true));
         this.setDefault("sds.upload.sharelinks.keep", String.valueOf(true));
         this.setDefault("sds.versioning.references.enable", String.valueOf(false));
-        this.setDefault("sds.upload.s3.status.period", String.valueOf(5000)); // 5 seconds
+        this.setDefault("sds.upload.s3.status.period", String.valueOf(1000)); // 1 second
+        this.setDefault("sds.oauth.migrate.enable", String.valueOf(false));
 
         this.setDefault("spectra.retry.delay", String.valueOf(60)); // 1 minute
 

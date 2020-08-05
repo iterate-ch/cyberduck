@@ -115,6 +115,11 @@ public interface Protocol extends Comparable<Protocol> {
     boolean isEnabled();
 
     /**
+     * @return True if protocol selection is no longer allowed
+     */
+    boolean isDeprecated();
+
+    /**
      * @return True if the protocol is inherently secure.
      */
     boolean isSecure();

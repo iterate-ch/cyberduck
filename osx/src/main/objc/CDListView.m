@@ -130,7 +130,7 @@ static NSTableColumn *localSelectionColumn;
 {
 	NSRect frame = NSMakeRect(0, 0, 0, 0);
 	NSRange visibleRows = [self rowsInRect:[self bounds]];
-	int row, endRow;
+    NSUInteger row, endRow;
 	for(row = visibleRows.location, endRow = row + visibleRows.length; row <= endRow; ++row) {
 		id path = [[self dataSource] tableView:self
                      objectValueForTableColumn:[CDListView _localSelectionColumn]
@@ -141,7 +141,7 @@ static NSTableColumn *localSelectionColumn;
 		if([[path string] isEqualToString:[url lastPathComponent]]) {
 			frame           = [self rectOfRow:row];
 			frame.origin    = [self convertPoint:frame.origin toView:nil];
-			frame.origin    = [[self window] convertBaseToScreen:frame.origin];
+			frame.origin    = [[self window] convertPointToScreen:frame.origin];
 			frame.origin.y -= frame.size.height;
 			break;
 		}
