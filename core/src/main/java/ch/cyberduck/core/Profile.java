@@ -81,6 +81,11 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public boolean isDeprecated() {
+        return this.bool("Deprecated");
+    }
+
+    @Override
     public boolean isSecure() {
         return this.getScheme().isSecure();
     }
