@@ -25,8 +25,8 @@ import ch.cyberduck.core.webloc.UrlFileWriter;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.log4j.Logger;
-import org.nuxeo.onedrive.client.OneDriveFolder;
-import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.Files;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.util.Iterator;
 
@@ -44,9 +44,9 @@ public class GraphItemListService extends AbstractItemListService {
     }
 
     @Override
-    protected Iterator<OneDriveItem.Metadata> getIterator(final Path directory) throws BackgroundException {
-        final OneDriveFolder folder = session.toFolder(directory);
-        return folder.iterator(PreferencesFactory.get().getInteger("onedrive.listing.chunksize"));
+    protected Iterator<DriveItem.Metadata> getIterator(final Path directory) throws BackgroundException {
+        final DriveItem folder = session.toFolder(directory);
+        return Files.getFiles(folder, PreferencesFactory.get().getInteger("onedrive.listing.chunksize"));
     }
 
     @Override

@@ -24,8 +24,8 @@ import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.nuxeo.onedrive.client.resources.GroupItem;
-import org.nuxeo.onedrive.client.resources.Site;
+import org.nuxeo.onedrive.client.types.GroupItem;
+import org.nuxeo.onedrive.client.types.Site;
 
 public class SharepointSiteSession extends AbstractSharepointSession {
     public SharepointSiteSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {

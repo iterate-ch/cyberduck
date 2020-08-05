@@ -29,7 +29,7 @@ import ch.cyberduck.core.onedrive.AbstractSharepointSession;
 import ch.cyberduck.core.onedrive.SharepointSession;
 
 import org.nuxeo.onedrive.client.Sites;
-import org.nuxeo.onedrive.client.resources.Site;
+import org.nuxeo.onedrive.client.types.Site;
 
 import java.net.URI;
 import java.util.EnumSet;

@@ -39,11 +39,10 @@ import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
+import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveFile;
-import org.nuxeo.onedrive.client.OneDriveFolder;
-import org.nuxeo.onedrive.client.OneDriveItem;
-import org.nuxeo.onedrive.client.OneDriveUploadSession;
+import org.nuxeo.onedrive.client.UploadSession;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -73,10 +72,10 @@ public class GraphWriteFeature implements Write<Void> {
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final OneDriveFolder folder = session.toFolder(file.getParent());
-            final OneDriveFile oneDriveFile = new OneDriveFile(session.getClient(), folder,
-                URIEncoder.encode(file.getName()), OneDriveItem.ItemIdentifierType.Path);
-            final OneDriveUploadSession upload = oneDriveFile.createUploadSession();
+            final DriveItem folder = session.toFolder(file.getParent());
+            final DriveItem oneDriveFile = new DriveItem(folder,
+                URIEncoder.encode(file.getName()));
+            final UploadSession upload = Files.createUploadSession(oneDriveFile);
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, status);
             final int partsize = preferences.getInteger("onedrive.upload.multipart.partsize.minimum")
                 * preferences.getInteger("onedrive.upload.multipart.partsize.factor");
@@ -115,7 +114,7 @@ public class GraphWriteFeature implements Write<Void> {
     }
 
     private final class ChunkedOutputStream extends OutputStream {
-        private final OneDriveUploadSession upload;
+        private final UploadSession upload;
         private final Path file;
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
@@ -123,7 +122,7 @@ public class GraphWriteFeature implements Write<Void> {
         private Long offset = 0L;
         private final Long length;
 
-        public ChunkedOutputStream(final OneDriveUploadSession upload, final Path file, final TransferStatus status) {
+        public ChunkedOutputStream(final UploadSession upload, final Path file, final TransferStatus status) {
             this.upload = upload;
             this.file = file;
             this.overall = status;
@@ -151,7 +150,7 @@ public class GraphWriteFeature implements Write<Void> {
                     @Override
                     public Void call() throws BackgroundException {
                         try {
-                            if(upload.uploadFragment(header, content) instanceof OneDriveFile.Metadata) {
+                            if(upload.uploadFragment(header, content) instanceof DriveItem.Metadata) {
                                 log.info(String.format("Completed upload for %s", file));
                             }
                             else {

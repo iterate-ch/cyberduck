@@ -22,8 +22,8 @@ import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 
 import org.nuxeo.onedrive.client.Files;
-import org.nuxeo.onedrive.client.OneDriveItem;
-import org.nuxeo.onedrive.client.resources.User;
+import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.User;
 
 import java.util.Iterator;
 
@@ -36,12 +36,12 @@ public class SharedWithMeListService extends AbstractItemListService {
     }
 
     @Override
-    protected Iterator<OneDriveItem.Metadata> getIterator(final Path directory) throws BackgroundException {
+    protected Iterator<DriveItem.Metadata> getIterator(final Path directory) throws BackgroundException {
         return Files.getSharedWithMe(User.getCurrent(session.getClient()));
     }
 
     @Override
-    protected Path toPath(final OneDriveItem.Metadata metadata, final Path directory) {
+    protected Path toPath(final DriveItem.Metadata metadata, final Path directory) {
         final Path path = super.toPath(metadata, directory);
         path.getType().add(Path.Type.shared);
         return super.toPath(metadata, directory);

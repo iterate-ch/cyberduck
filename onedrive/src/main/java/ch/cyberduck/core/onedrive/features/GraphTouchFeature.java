@@ -27,10 +27,9 @@ import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveFile;
-import org.nuxeo.onedrive.client.OneDriveFolder;
-import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
 
@@ -45,10 +44,9 @@ public class GraphTouchFeature implements Touch<Void> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final OneDriveFolder folder = session.toFolder(file.getParent());
-            final OneDriveFile oneDriveFile = new OneDriveFile(session.getClient(), folder,
-                URIEncoder.encode(file.getName()), OneDriveItem.ItemIdentifierType.Path);
-            final OneDriveFile.Metadata metadata = oneDriveFile.create(StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
+            final DriveItem folder = session.toFolder(file.getParent());
+            final DriveItem.Metadata metadata = Files.createFile(folder, URIEncoder.encode(file.getName()),
+                StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
             return new Path(file.getParent(), file.getName(), file.getType(),
                 new GraphAttributesFinderFeature(session).toAttributes(metadata));
         }

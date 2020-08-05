@@ -22,10 +22,8 @@ import ch.cyberduck.core.onedrive.SharepointSession;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.Groups;
-import org.nuxeo.onedrive.client.resources.DirectoryObject;
-import org.nuxeo.onedrive.client.resources.GroupItem;
-import org.nuxeo.onedrive.client.resources.User;
-import org.nuxeo.onedrive.client.resources.DirectoryObject.Metadata;
+import org.nuxeo.onedrive.client.types.GroupItem;
+import org.nuxeo.onedrive.client.types.User;
 
 import java.util.EnumSet;
 import java.util.Iterator;

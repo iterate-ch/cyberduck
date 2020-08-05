@@ -26,9 +26,9 @@ import ch.cyberduck.core.onedrive.GraphSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.nuxeo.onedrive.client.OneDriveFolder;
-import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -48,12 +48,12 @@ public class GraphSearchFeature implements Search {
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
 
-        final OneDriveFolder folder = session.toFolder(workdir);
+        final DriveItem folder = session.toFolder(workdir);
 
         // The query text used to search for items. Values may be matched across several fields including filename, metadata, and file content.
-        final Iterator<OneDriveItem.Metadata> iterator = folder.search(regex.toPattern().pattern()).iterator();
+        final Iterator<DriveItem.Metadata> iterator = Files.search(folder, regex.toPattern().pattern());
         while(iterator.hasNext()) {
-            final OneDriveItem.Metadata metadata;
+            final DriveItem.Metadata metadata;
             try {
                 metadata = iterator.next();
             }

@@ -24,8 +24,8 @@ import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveDrive;
-import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.types.Drive;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
 
@@ -44,10 +44,10 @@ public class GraphQuotaFeature implements Quota {
             // not accessible (important for Sharepoint)1
             return new Space(0L, Long.MAX_VALUE);
         }
-        final OneDriveDrive.Metadata metadata;
+        final Drive.Metadata metadata;
         try {
             // retrieve OneDriveItem from home
-            final OneDriveItem item = session.toItem(home, true);
+            final DriveItem item = session.toItem(home, true);
             // returns drive, which can then query metadata.
             metadata = item.getDrive().getMetadata();
         }
@@ -57,15 +57,18 @@ public class GraphQuotaFeature implements Quota {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, home);
         }
-        Long used = metadata.getUsed();
-        if(used != null) {
-            Long remaining = metadata.getRemaining();
-            if(remaining != null) {
-                return new Space(used, remaining);
-            }
-            Long total = metadata.getTotal();
-            if(total != null) {
-                return new Space(used, total - used);
+        final org.nuxeo.onedrive.client.types.Quota quota = metadata.getQuota();
+        if(quota != null) {
+            Long used = quota.getUsed();
+            if(used != null) {
+                Long remaining = quota.getRemaining();
+                if(remaining != null) {
+                    return new Space(used, remaining);
+                }
+                Long total = quota.getTotal();
+                if(total != null) {
+                    return new Space(used, total - used);
+                }
             }
         }
         return new Space(0L, Long.MAX_VALUE);

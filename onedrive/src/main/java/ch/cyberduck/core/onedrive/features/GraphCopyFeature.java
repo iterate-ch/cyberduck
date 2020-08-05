@@ -27,10 +27,10 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
+import org.nuxeo.onedrive.client.CopyOperation;
+import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveCopyOperation;
-import org.nuxeo.onedrive.client.OneDriveFolder;
-import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -46,7 +46,7 @@ public class GraphCopyFeature implements Copy {
 
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final OneDriveCopyOperation copyOperation = new OneDriveCopyOperation();
+        final CopyOperation copyOperation = new CopyOperation();
         if(!StringUtils.equals(source.getName(), target.getName())) {
             copyOperation.rename(target.getName());
         }
@@ -54,11 +54,11 @@ public class GraphCopyFeature implements Copy {
             new GraphDeleteFeature(session).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
         }
 
-        final OneDriveFolder targetItem = session.toFolder(target.getParent());
+        final DriveItem targetItem = session.toFolder(target.getParent());
         copyOperation.copy(targetItem);
-        final OneDriveItem item = session.toItem(source);
+        final DriveItem item = session.toItem(source);
         try {
-            item.copy(copyOperation).await(statusObject -> logger.info(String.format("Copy Progress Operation %s progress %f status %s",
+            Files.copy(item, copyOperation).await(statusObject -> logger.info(String.format("Copy Progress Operation %s progress %f status %s",
                 statusObject.getOperation(),
                 statusObject.getPercentage(),
                 statusObject.getStatus())));

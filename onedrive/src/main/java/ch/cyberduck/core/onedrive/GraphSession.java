@@ -70,11 +70,9 @@ import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveEmailAccount;
-import org.nuxeo.onedrive.client.OneDriveFile;
-import org.nuxeo.onedrive.client.OneDriveFolder;
-import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.RequestExecutor;
 import org.nuxeo.onedrive.client.RequestHeader;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
 import java.util.Set;
@@ -92,11 +90,11 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         super(host, trust, key);
     }
 
-    public OneDriveItem toItem(final Path currentPath) throws BackgroundException {
+    public DriveItem toItem(final Path currentPath) throws BackgroundException {
         return this.toItem(currentPath, true);
     }
 
-    public abstract OneDriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException;
+    public abstract DriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException;
 
     public boolean isAccessible(final Path path) {
         return this.isAccessible(path, true);
@@ -106,28 +104,28 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     public abstract Path getContainer(Path file);
 
-    public OneDriveFile toFile(final Path file) throws BackgroundException {
+    public DriveItem toFile(final Path file) throws BackgroundException {
         return this.toFile(file, true);
     }
 
-    public OneDriveFile toFile(final Path file, final boolean resolveLastItem) throws BackgroundException {
-        final OneDriveItem item = this.toItem(file, resolveLastItem);
-        if(!(item instanceof OneDriveFile)) {
+    public DriveItem toFile(final Path file, final boolean resolveLastItem) throws BackgroundException {
+        final DriveItem item = this.toItem(file, resolveLastItem);
+        if(!(item instanceof DriveItem)) {
             throw new NotfoundException(String.format("%s is not a file.", file.getAbsolute()));
         }
-        return (OneDriveFile) item;
+        return (DriveItem) item;
     }
 
-    public OneDriveFolder toFolder(final Path file) throws BackgroundException {
+    public DriveItem toFolder(final Path file) throws BackgroundException {
         return this.toFolder(file, true);
     }
 
-    public OneDriveFolder toFolder(final Path file, final boolean resolveLastItem) throws BackgroundException {
-        final OneDriveItem item = this.toItem(file, resolveLastItem);
-        if(!(item instanceof OneDriveFolder)) {
+    public DriveItem toFolder(final Path file, final boolean resolveLastItem) throws BackgroundException {
+        final DriveItem item = this.toItem(file, resolveLastItem);
+        if(!(item instanceof DriveItem)) {
             throw new NotfoundException(String.format("%s is not a folder.", file.getAbsolute()));
         }
-        return (OneDriveFolder) item;
+        return (DriveItem) item;
     }
 
     @Override

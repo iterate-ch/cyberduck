@@ -20,18 +20,18 @@ import ch.cyberduck.core.PathAttributes;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.nuxeo.onedrive.client.OneDriveDrive;
+import org.nuxeo.onedrive.client.types.Drive;
 
 import java.util.EnumSet;
 
-public abstract class AbstractDriveListService extends AbstractListService<OneDriveDrive.Metadata> {
+public abstract class AbstractDriveListService extends AbstractListService<Drive.Metadata> {
     private static final Logger log = Logger.getLogger(AbstractDriveListService.class);
 
     @Override
-    protected Path toPath(final OneDriveDrive.Metadata metadata, final Path directory) {
+    protected Path toPath(final Drive.Metadata metadata, final Path directory) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setVersionId(metadata.getId());
-        attributes.setSize(metadata.getTotal());
+        attributes.setSize(metadata.getQuota().getTotal());
         String name = metadata.getName();
         if(StringUtils.isBlank(metadata.getName())) {
             name = metadata.getId();

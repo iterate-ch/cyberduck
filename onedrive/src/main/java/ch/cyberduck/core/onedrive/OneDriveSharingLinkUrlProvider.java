@@ -26,9 +26,10 @@ import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
 import org.apache.log4j.Logger;
+import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDriveSharingLink;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
 import java.net.URI;
@@ -55,14 +56,14 @@ public class OneDriveSharingLinkUrlProvider implements PromptUrlProvider {
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Object o, final PasswordCallback callback) throws BackgroundException {
         try {
-            final OneDriveItem item = session.toItem(file);
+            final DriveItem item = session.toItem(file);
             if(null == item) {
                 throw new NotfoundException(file.getAbsolute());
             }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create shared link for %s", file));
             }
-            return new DescriptiveUrl(URI.create(item.createSharedLink(OneDriveSharingLink.Type.VIEW).getLink().getWebUrl()),
+            return new DescriptiveUrl(URI.create(Files.createSharedLink(item, OneDriveSharingLink.Type.VIEW).getLink().getWebUrl()),
                 DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")));
 
         }

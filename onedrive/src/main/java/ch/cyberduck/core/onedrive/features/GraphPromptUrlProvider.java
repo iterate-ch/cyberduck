@@ -15,13 +15,6 @@ package ch.cyberduck.core.onedrive.features;
  * GNU General Public License for more details.
  */
 
-import java.io.IOException;
-import java.net.URI;
-
-import org.nuxeo.onedrive.client.OneDriveItem;
-import org.nuxeo.onedrive.client.OneDrivePermission;
-import org.nuxeo.onedrive.client.OneDriveSharingLink;
-
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.PasswordCallback;
@@ -30,6 +23,14 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
+
+import org.nuxeo.onedrive.client.Files;
+import org.nuxeo.onedrive.client.OneDriveSharingLink;
+import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.Permission;
+
+import java.io.IOException;
+import java.net.URI;
 
 public class GraphPromptUrlProvider implements PromptUrlProvider {
     private final GraphSession session;
@@ -40,7 +41,7 @@ public class GraphPromptUrlProvider implements PromptUrlProvider {
 
     @Override
     public boolean isSupported(Path file, Type type) {
-        if (Type.download != type) {
+        if(Type.download != type) {
             return false;
         }
         return session.isAccessible(file, true);
@@ -48,16 +49,18 @@ public class GraphPromptUrlProvider implements PromptUrlProvider {
 
     @Override
     public DescriptiveUrl toDownloadUrl(Path file, Object options, PasswordCallback callback)
-            throws BackgroundException {
-        final OneDriveItem item = session.toItem(file);
-        final OneDrivePermission.Metadata downloadLink;
+        throws BackgroundException {
+        final DriveItem item = session.toItem(file);
+        final Permission downloadLink;
         final URI webUrl;
         try {
-            downloadLink = item.createSharedLink(OneDriveSharingLink.Type.VIEW);
+            downloadLink = Files.createSharedLink(item, OneDriveSharingLink.Type.VIEW);
             webUrl = URI.create(downloadLink.getLink().getWebUrl());
-        } catch (IOException e) {
+        }
+        catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failed creating download url", e, file);
-        } catch (IllegalArgumentException e) {
+        }
+        catch(IllegalArgumentException e) {
             throw new DefaultExceptionMappingService().map("Failed creating download url", e);
         }
         return new DescriptiveUrl(webUrl);

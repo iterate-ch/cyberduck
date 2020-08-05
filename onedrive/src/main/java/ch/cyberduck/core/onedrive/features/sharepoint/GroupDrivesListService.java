@@ -26,8 +26,7 @@ import ch.cyberduck.core.onedrive.AbstractSharepointSession;
 import ch.cyberduck.core.onedrive.GraphSession;
 
 import org.nuxeo.onedrive.client.Drives;
-import org.nuxeo.onedrive.client.OneDriveDrive;
-import org.nuxeo.onedrive.client.resources.GroupItem;
+import org.nuxeo.onedrive.client.types.Drive;
 
 import java.util.Iterator;
 
@@ -40,7 +39,7 @@ public class GroupDrivesListService extends AbstractDriveListService {
     }
 
     @Override
-    protected Iterator<OneDriveDrive.Metadata> getIterator(final Path directory) throws BackgroundException {
+    protected Iterator<Drive.Metadata> getIterator(final Path directory) throws BackgroundException {
         return Drives.getDrives(session.getGroup(directory));
     }
 }

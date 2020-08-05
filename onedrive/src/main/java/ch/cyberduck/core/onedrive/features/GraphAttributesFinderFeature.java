@@ -26,8 +26,8 @@ import ch.cyberduck.core.onedrive.GraphSession;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveItem;
-import org.nuxeo.onedrive.client.OneDriveRemoteItem;
+import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.FileSystemInfo;
 
 import java.io.IOException;
 import java.net.URI;
@@ -47,9 +47,9 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
-        final OneDriveItem item = session.toItem(file);
+        final DriveItem item = session.toItem(file);
         try {
-            final OneDriveItem.Metadata metadata = item.getMetadata();
+            final DriveItem.Metadata metadata = item.getMetadata();
             return this.toAttributes(metadata);
         }
         catch(OneDriveAPIException e) {
@@ -60,16 +60,15 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    public PathAttributes toAttributes(final OneDriveItem.Metadata metadata) {
+    public PathAttributes toAttributes(final DriveItem.Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setETag(metadata.getETag());
         attributes.setSize(metadata.getSize());
-        if(metadata instanceof OneDriveRemoteItem.Metadata) {
-            final OneDriveRemoteItem.Metadata remoteMetadata = (OneDriveRemoteItem.Metadata) metadata;
-            final OneDriveItem.Metadata originMetadata = remoteMetadata.getRemoteItem();
+        if(metadata.getRemoteItem() != null) {
+            final DriveItem.Metadata remoteMetadata = metadata.getRemoteItem();
             attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER),
                 metadata.getParentReference().getDriveId(), metadata.getId(),
-                originMetadata.getParentReference().getDriveId(), originMetadata.getId()));
+                remoteMetadata.getParentReference().getDriveId(), remoteMetadata.getId()));
         }
         else {
             attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER), metadata.getParentReference().getDriveId(), metadata.getId()));
@@ -80,18 +79,19 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         catch(URISyntaxException e) {
             log.warn(String.format("Cannot set link. Web URL returned %s", metadata.getWebUrl()), e);
         }
-        if(null != metadata.getFileSystemInfo()) {
-            if(-1L == metadata.getFileSystemInfo().getLastModifiedDateTime().toInstant().toEpochMilli()) {
+        final FileSystemInfo info = metadata.getFacet(FileSystemInfo.class);
+        if(null != info) {
+            if(-1L == info.getLastModifiedDateTime().toInstant().toEpochMilli()) {
                 attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
             }
             else {
-                attributes.setModificationDate(metadata.getFileSystemInfo().getLastModifiedDateTime().toInstant().toEpochMilli());
+                attributes.setModificationDate(info.getLastModifiedDateTime().toInstant().toEpochMilli());
             }
-            if(-1 == metadata.getFileSystemInfo().getCreatedDateTime().toInstant().toEpochMilli()) {
+            if(-1 == info.getCreatedDateTime().toInstant().toEpochMilli()) {
                 attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
             }
             else {
-                attributes.setCreationDate(metadata.getFileSystemInfo().getCreatedDateTime().toInstant().toEpochMilli());
+                attributes.setCreationDate(info.getCreatedDateTime().toInstant().toEpochMilli());
             }
         }
         else {

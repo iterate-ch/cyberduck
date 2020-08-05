@@ -27,13 +27,10 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.nuxeo.onedrive.client.OneDriveDrive;
-import org.nuxeo.onedrive.client.OneDriveFile;
-import org.nuxeo.onedrive.client.OneDriveFolder;
-import org.nuxeo.onedrive.client.OneDriveItem;
-import org.nuxeo.onedrive.client.OneDrivePackageItem;
-import org.nuxeo.onedrive.client.resources.GroupItem;
-import org.nuxeo.onedrive.client.resources.Site;
+import org.nuxeo.onedrive.client.types.Drive;
+import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.GroupItem;
+import org.nuxeo.onedrive.client.types.Site;
 
 public abstract class AbstractSharepointSession extends GraphSession {
     private static final Logger log = Logger.getLogger(SharepointSession.class);
@@ -49,14 +46,14 @@ public abstract class AbstractSharepointSession extends GraphSession {
     public abstract GroupItem getGroup(final Path file) throws BackgroundException;
 
     @Override
-    public OneDriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
+    public DriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
         final String versionId = fileIdProvider.getFileid(file, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }
         final String[] idParts = versionId.split(String.valueOf(Path.DELIMITER));
         if(idParts.length == 1) {
-            return new OneDriveDrive(getClient(), idParts[0]).getRoot();
+            return new Drive(getClient(), idParts[0]).getRoot();
         }
         else {
             final String driveId;
@@ -72,15 +69,15 @@ public abstract class AbstractSharepointSession extends GraphSession {
             else {
                 throw new NotfoundException(file.getAbsolute());
             }
-            final OneDriveDrive drive = new OneDriveDrive(getClient(), driveId);
+            final Drive drive = new Drive(getClient(), driveId);
             if(file.getType().contains(Path.Type.file)) {
-                return new OneDriveFile(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
+                return new DriveItem(drive, itemId);
             }
             else if(file.getType().contains(Path.Type.directory)) {
-                return new OneDriveFolder(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
+                return new DriveItem(drive, itemId);
             }
             else if(file.getType().contains(Path.Type.placeholder)) {
-                return new OneDrivePackageItem(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
+                return new DriveItem(drive, itemId);
             }
         }
         throw new NotfoundException(file.getAbsolute());

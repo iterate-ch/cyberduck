@@ -24,8 +24,9 @@ import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
 
@@ -39,9 +40,9 @@ public class GraphDirectoryFeature implements Directory<Void> {
 
     @Override
     public Path mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
-        final OneDriveFolder folder = session.toFolder(directory.getParent());
+        final DriveItem folder = session.toFolder(directory.getParent());
         try {
-            final OneDriveFolder.Metadata metadata = folder.create(directory.getName());
+            final DriveItem.Metadata metadata = Files.createFolder(folder, directory.getName());
             return new Path(directory.getParent(), directory.getName(), directory.getType(),
                 new GraphAttributesFinderFeature(session).toAttributes(metadata));
         }
