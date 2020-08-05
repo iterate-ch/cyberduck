@@ -618,7 +618,6 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
     public NSArray getDefault() {
         return NSArray.arrayWithObjects(
             connect.name(),
-            NSToolbarItem.NSToolbarSidebarTrackingSeparatorItemIdentifier,
             quickconnect.name(),
             tools.name(),
             NSToolbarItem.NSToolbarSeparatorItemIdentifier,
@@ -653,7 +652,6 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
             quicklook.name(),
             cryptomator.name(),
             disconnect.name(),
-            NSToolbarItem.NSToolbarSidebarTrackingSeparatorItemIdentifier,
             NSToolbarItem.NSToolbarCustomizeToolbarItemIdentifier,
             NSToolbarItem.NSToolbarSpaceItemIdentifier,
             NSToolbarItem.NSToolbarSeparatorItemIdentifier,
