@@ -3380,6 +3380,20 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setKeyEquivalent(" ");
             item.setKeyEquivalentModifierMask(0);
         }
+        else if(action.equals(Foundation.selector("lockUnlockEncryptedVaultButtonClicked:"))) {
+            if(this.isMounted()) {
+                final Path selected = new UploadTargetFinder(this.workdir()).find(this.getSelectedPath());
+                final VaultRegistry registry = pool.getVault();
+                if(registry.contains(selected)) {
+                    item.setTitle(LocaleFactory.localizedString("Lock Vault", "Cryptomator"));
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
+                }
+                else {
+                    item.setTitle(LocaleFactory.localizedString("Unlock Vault", "Cryptomator"));
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate"));
+                }
+            }
+        }
         return this.validate(action);
     }
 
