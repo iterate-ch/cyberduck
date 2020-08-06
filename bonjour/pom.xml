@@ -40,7 +40,7 @@
         <dependency>
             <groupId>com.apple</groupId>
             <artifactId>dnssd</artifactId>
-            <version>1.0</version>
+            <version>1096.40.7</version>
         </dependency>
     </dependencies>
 
