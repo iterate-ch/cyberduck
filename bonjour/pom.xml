@@ -103,7 +103,7 @@
                     <artifactId>libjdns_sd</artifactId>
                     <type>dylib</type>
                     <scope>runtime</scope>
-                    <version>1.0</version>
+                    <version>1096.40.7</version>
                 </dependency>
             </dependencies>
         </profile>
