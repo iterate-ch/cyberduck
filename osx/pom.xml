@@ -130,10 +130,11 @@
                                 <configuration>
                                     <artifactItems>
                                         <artifactItem>
-                                            <groupId>net.adoptopenjdk</groupId>
+                                            <groupId>ch.iterate.openjdk</groupId>
                                             <artifactId>jre</artifactId>
+                                            <classifier>universal</classifier>
                                             <type>zip</type>
-                                            <version>15.0.1</version>
+                                            <version>14.0.2-SNAPSHOT</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
