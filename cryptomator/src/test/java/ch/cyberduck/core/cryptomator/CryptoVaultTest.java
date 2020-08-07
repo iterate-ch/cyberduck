@@ -255,7 +255,7 @@ public class CryptoVaultTest {
                         return new VaultCredentials("null");
                     }
                     else {
-                        assertEquals("Failure to decrypt master key file. Provide your passphrase to unlock the Cryptomator Vault “/“.", reason);
+                        assertEquals("Failure to decrypt master key file. Provide your passphrase to unlock the Cryptomator Vault /.", reason);
                         throw new LoginCanceledException();
                     }
                 }
