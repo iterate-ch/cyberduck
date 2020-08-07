@@ -117,11 +117,17 @@ public class S3UrlProvider implements UrlProvider {
         url.append("://");
         if(file.isRoot()) {
             url.append(session.getHost().getHostname());
+            if(session.getHost().getPort() != scheme.getPort()) {
+                url.append(":").append(session.getHost().getPort());
+            }
         }
         else {
             final String hostname = this.getHostnameForContainer(containerService.getContainer(file));
             if(hostname.startsWith(containerService.getContainer(file).getName())) {
                 url.append(hostname);
+                if(session.getHost().getPort() != scheme.getPort()) {
+                    url.append(":").append(session.getHost().getPort());
+                }
                 if(!containerService.isContainer(file)) {
                     url.append(Path.DELIMITER);
                     url.append(URIEncoder.encode(containerService.getKey(file)));
@@ -129,6 +135,9 @@ public class S3UrlProvider implements UrlProvider {
             }
             else {
                 url.append(session.getHost().getHostname());
+                if(session.getHost().getPort() != scheme.getPort()) {
+                    url.append(":").append(session.getHost().getPort());
+                }
                 url.append(URIEncoder.encode(file.getAbsolute()));
             }
         }
