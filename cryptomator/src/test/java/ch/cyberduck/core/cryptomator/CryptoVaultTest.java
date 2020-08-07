@@ -250,7 +250,7 @@ public class CryptoVaultTest {
                 @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     if(!prompt.get()) {
-                        assertEquals("Provide your passphrase to unlock the Cryptomator Vault “/“", reason);
+                        assertEquals("Provide your passphrase to unlock the Cryptomator Vault /", reason);
                         prompt.set(true);
                         return new VaultCredentials("null");
                     }
