@@ -408,8 +408,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
         }
         if(type == Upload.class) {
-            if(configuration.stream().anyMatch(entry -> "use_s3_storage".equals(entry.getKey()) && String.valueOf(true).equals(entry.getValue()))) {
-                return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3WriteFeature(this)));
+            if(PreferencesFactory.get().getBoolean("sds.upload.s3.enable")) {
+                if(configuration.stream().anyMatch(entry -> "use_s3_storage".equals(entry.getKey()) && String.valueOf(true).equals(entry.getValue()))) {
+                    return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3WriteFeature(this)));
+                }
             }
             return (T) new DefaultUploadFeature(new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid)));
         }
