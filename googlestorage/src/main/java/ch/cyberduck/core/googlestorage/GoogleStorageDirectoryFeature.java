@@ -27,7 +27,6 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -58,7 +57,7 @@ public class GoogleStorageDirectoryFeature implements Directory<VersionId> {
                 final Bucket bucket = session.getClient().buckets().insert(session.getHost().getCredentials().getUsername(),
                     new Bucket()
                         .setLocation(location)
-                        .setStorageClass(PreferencesFactory.get().getProperty("googlestorage.storage.class"))
+                        .setStorageClass(status.getStorageClass())
                         .setName(new GoogleStoragePathContainerService().getContainer(folder).getName())).execute();
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.volume);
