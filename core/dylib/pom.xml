@@ -53,7 +53,7 @@
                                 <configuration>
                                     <artifactItems>
                                         <artifactItem>
-                                            <groupId>com.apple</groupId>
+                                            <groupId>ch.iterate</groupId>
                                             <artifactId>JavaNativeFoundation</artifactId>
                                             <type>zip</type>
                                             <version>80</version>
