@@ -66,6 +66,7 @@ namespace Ch.Cyberduck.Ui.Controller
         IList<Path> VisiblePaths { get; }
         bool ToolbarVisible { set; get; }
         int TopItemIndex { set; get; }
+
         TreeListView.CanExpandGetterDelegate ModelCanExpandDelegate { set; }
         TreeListView.ChildrenGetterDelegate ModelChildrenGetterDelegate { set; }
         TypedColumn<Path>.TypedAspectGetterDelegate ModelFilenameGetter { set; }
@@ -97,6 +98,7 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulatePaths(List<string> paths);
         void PopulateEncodings(List<string> encodings);
         void StartSearch();
+        void SetCryptomatorVaultTitle(string title);
         String DownloadAsDialog(Local initialDirectory, string fileName);
         String DownloadToDialog(string description, Local initialDirectory, string selectedPath);
         String[] UploadDialog(Local initialDirectory);
@@ -143,6 +145,8 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidateDelete;
         event VoidHandler RevertFile;
         event ValidateCommand ValidateRevertFile;
+        event VoidHandler LockUnlockVault;
+        event ValidateCommand ValidateLockUnlockVault;
         event ArchivesHandler GetArchives;
         event CopyUrlHandler GetCopyUrls;
         event OpenUrlHandler GetOpenUrls;

@@ -63,6 +63,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.deleteMainMenuItem = new System.Windows.Forms.MenuItem();
             this.revertMainMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem24 = new System.Windows.Forms.MenuItem();
+            this.cryptomatorMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem57 = new System.Windows.Forms.MenuItem();
             this.createArchiveMainMenuItem = new System.Windows.Forms.MenuItem();
             this.expandArchiveMainMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem27 = new System.Windows.Forms.MenuItem();
@@ -127,6 +129,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.helpMainMenuItem = new System.Windows.Forms.MenuItem();
             this.licenseMainMenuItem = new System.Windows.Forms.MenuItem();
             this.acknowledgmentsMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.privacyPolicyMainMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem84 = new System.Windows.Forms.MenuItem();
             this.bugMainMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem86 = new System.Windows.Forms.MenuItem();
@@ -167,6 +170,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.revertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
+            this.cryptomatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator40 = new System.Windows.Forms.ToolStripSeparator();
             this.createArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.archiveMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.expandArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -204,6 +209,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.uploadToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.transfersToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.logToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.cryptomatorToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
             this.columnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.columnContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -257,6 +263,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutCyberduckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator41 = new System.Windows.Forms.ToolStripSeparator();
             this.editorMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editor1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editor2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -291,6 +298,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.deleteContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.revertContxtStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.cryptomatorContxtStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.newBrowserContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -307,6 +315,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.downloadToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.uploadToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.transfersToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.cryptomatorToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.logToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.disconnectStripButton = new System.Windows.Forms.ToolStripButton();
             this.donateToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -380,6 +389,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.uploadToolbarMenuItem = new System.Windows.Forms.MenuItem();
             this.transfersToolbarMenuItem = new System.Windows.Forms.MenuItem();
             this.logToolbarMenuItem = new System.Windows.Forms.MenuItem();
+            this.cryptomatorToolbarMenuItem = new System.Windows.Forms.MenuItem();
             this.browserContextMenu = new System.Windows.Forms.ContextMenu();
             this.refreshBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem44 = new System.Windows.Forms.MenuItem();
@@ -405,6 +415,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.deleteBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
             this.revertBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem110 = new System.Windows.Forms.MenuItem();
+            this.cryptomatorBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem125 = new System.Windows.Forms.MenuItem();
             this.createArchiveBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
             this.expandArchiveBrowserContextMnuItem = new System.Windows.Forms.MenuItem();
             this.menuItem113 = new System.Windows.Forms.MenuItem();
@@ -422,7 +434,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.sortByNicknameBookmarkContextMenuItem = new System.Windows.Forms.MenuItem();
             this.sortByHostnameBookmarkContextMenuItem = new System.Windows.Forms.MenuItem();
             this.sortByProtocolBookmarkContextMenuItem = new System.Windows.Forms.MenuItem();
-            this.privacyPolicyMainMenuItem = new System.Windows.Forms.MenuItem();
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.toolbarContextMenu.SuspendLayout();
@@ -491,6 +502,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.deleteMainMenuItem,
             this.revertMainMenuItem,
             this.menuItem24,
+            this.cryptomatorMainMenuItem,
+            this.menuItem57,
             this.createArchiveMainMenuItem,
             this.expandArchiveMainMenuItem,
             this.menuItem27,
@@ -629,35 +642,45 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuItem24.Index = 25;
             this.menuItem24.Text = "-";
             // 
+            // cryptomatorMainMenuItem
+            // 
+            this.cryptomatorMainMenuItem.Index = 26;
+            this.cryptomatorMainMenuItem.Text = "Lock Vault";
+            // 
+            // menuItem57
+            // 
+            this.menuItem57.Index = 27;
+            this.menuItem57.Text = "-";
+            // 
             // createArchiveMainMenuItem
             // 
-            this.createArchiveMainMenuItem.Index = 26;
+            this.createArchiveMainMenuItem.Index = 28;
             this.createArchiveMainMenuItem.Text = "Create Archive";
             // 
             // expandArchiveMainMenuItem
             // 
-            this.expandArchiveMainMenuItem.Index = 27;
+            this.expandArchiveMainMenuItem.Index = 29;
             this.expandArchiveMainMenuItem.Text = "Expand Archive";
             // 
             // menuItem27
             // 
-            this.menuItem27.Index = 28;
+            this.menuItem27.Index = 30;
             this.menuItem27.Text = "-";
             // 
             // printMainMenuItem
             // 
             this.printMainMenuItem.Enabled = false;
-            this.printMainMenuItem.Index = 29;
+            this.printMainMenuItem.Index = 31;
             this.printMainMenuItem.Text = "Print…";
             // 
             // menuItem29
             // 
-            this.menuItem29.Index = 30;
+            this.menuItem29.Index = 32;
             this.menuItem29.Text = "-";
             // 
             // exitMainMenuItem
             // 
-            this.exitMainMenuItem.Index = 31;
+            this.exitMainMenuItem.Index = 33;
             this.exitMainMenuItem.Text = "Exit";
             // 
             // mainMenuItem2
@@ -1022,49 +1045,54 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.acknowledgmentsMainMenuItem.Index = 2;
             this.acknowledgmentsMainMenuItem.Text = "Acknowledgments";
             // 
+            // privacyPolicyMainMenuItem
+            // 
+            this.privacyPolicyMainMenuItem.Index = 3;
+            this.privacyPolicyMainMenuItem.Text = "Privacy Policy";
+            // 
             // menuItem84
             // 
-            this.menuItem84.Index = 3;
+            this.menuItem84.Index = 4;
             this.menuItem84.Text = "-";
             // 
             // bugMainMenuItem
             // 
-            this.bugMainMenuItem.Index = 4;
+            this.bugMainMenuItem.Index = 5;
             this.bugMainMenuItem.Text = "Report a Bug";
             // 
             // menuItem86
             // 
-            this.menuItem86.Index = 5;
+            this.menuItem86.Index = 6;
             this.menuItem86.Text = "-";
             // 
             // updateMainMenuItem
             // 
-            this.updateMainMenuItem.Index = 6;
+            this.updateMainMenuItem.Index = 7;
             this.updateMainMenuItem.Text = "Check for Update…";
             // 
             // menuItem88
             // 
-            this.menuItem88.Index = 7;
+            this.menuItem88.Index = 8;
             this.menuItem88.Text = "-";
             // 
             // donateMainMenuItem
             // 
-            this.donateMainMenuItem.Index = 8;
+            this.donateMainMenuItem.Index = 9;
             this.donateMainMenuItem.Text = "Donate…";
             // 
             // keyMainMenuItem
             // 
-            this.keyMainMenuItem.Index = 9;
+            this.keyMainMenuItem.Index = 10;
             this.keyMainMenuItem.Text = "Registered to…";
             // 
             // menuItem7
             // 
-            this.menuItem7.Index = 10;
+            this.menuItem7.Index = 11;
             this.menuItem7.Text = "-";
             // 
             // aboutMainMenuItem
             // 
-            this.aboutMainMenuItem.Index = 11;
+            this.aboutMainMenuItem.Index = 12;
             this.aboutMainMenuItem.Text = "About Cyberduck";
             // 
             // statusStrip
@@ -1117,7 +1145,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuStrip1.Location = new System.Drawing.Point(0, 56);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1028, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(343, 24);
             this.menuStrip1.TabIndex = 12;
             this.menuStrip1.Text = "menuStrip1";
             this.menuStrip1.Visible = false;
@@ -1150,6 +1178,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.deleteToolStripMenuItem,
             this.revertToolStripMenuItem,
             this.toolStripSeparator11,
+            this.cryptomatorToolStripMenuItem,
+            this.toolStripSeparator40,
             this.createArchiveToolStripMenuItem,
             this.expandArchiveToolStripMenuItem,
             this.toolStripSeparator12,
@@ -1305,6 +1335,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator11.Name = "toolStripSeparator11";
             this.toolStripSeparator11.Size = new System.Drawing.Size(196, 6);
             // 
+            // cryptomatorToolStripMenuItem
+            // 
+            this.cryptomatorToolStripMenuItem.Name = "cryptomatorToolStripMenuItem";
+            this.cryptomatorToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.cryptomatorToolStripMenuItem.Text = "Lock Vault";
+            // 
+            // toolStripSeparator40
+            // 
+            this.toolStripSeparator40.Name = "toolStripSeparator40";
+            this.toolStripSeparator40.Size = new System.Drawing.Size(196, 6);
+            // 
             // createArchiveToolStripMenuItem
             // 
             this.createArchiveToolStripMenuItem.DropDown = this.archiveMenuStrip;
@@ -1425,14 +1466,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             // toggleToolbarToolStripMenuItem
             // 
             this.toggleToolbarToolStripMenuItem.Name = "toggleToolbarToolStripMenuItem";
-            this.toggleToolbarToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.toggleToolbarToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.toggleToolbarToolStripMenuItem.Text = "Hide Toolbar";
             // 
             // toolbarToolStripMenuItem
             // 
             this.toolbarToolStripMenuItem.DropDown = this.toolbarContextMenu;
             this.toolbarToolStripMenuItem.Name = "toolbarToolStripMenuItem";
-            this.toolbarToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.toolbarToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.toolbarToolStripMenuItem.Text = "Customize Toolbar…";
             // 
             // toolbarContextMenu
@@ -1455,10 +1496,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.downloadToolStripMenuItem1,
             this.uploadToolStripMenuItem1,
             this.transfersToolStripMenuItem1,
-            this.logToolStripMenuItem1});
+            this.logToolStripMenuItem1,
+            this.cryptomatorToolStripMenuItem1});
             this.toolbarContextMenu.Name = "toolbarContextMenu";
             this.toolbarContextMenu.OwnerItem = this.toolbarToolStripMenuItem;
-            this.toolbarContextMenu.Size = new System.Drawing.Size(189, 336);
+            this.toolbarContextMenu.Size = new System.Drawing.Size(189, 358);
             this.toolbarContextMenu.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.toolbarContextMenu_Closing);
             this.toolbarContextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.toolbarContextMenu_ItemClicked);
             // 
@@ -1568,16 +1610,22 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.logToolStripMenuItem1.Size = new System.Drawing.Size(188, 22);
             this.logToolStripMenuItem1.Text = "Log";
             // 
+            // cryptomatorToolStripMenuItem1
+            // 
+            this.cryptomatorToolStripMenuItem1.Name = "cryptomatorToolStripMenuItem1";
+            this.cryptomatorToolStripMenuItem1.Size = new System.Drawing.Size(188, 22);
+            this.cryptomatorToolStripMenuItem1.Text = "Cryptomator";
+            // 
             // toolStripSeparator13
             // 
             this.toolStripSeparator13.Name = "toolStripSeparator13";
-            this.toolStripSeparator13.Size = new System.Drawing.Size(179, 6);
+            this.toolStripSeparator13.Size = new System.Drawing.Size(178, 6);
             // 
             // columnToolStripMenuItem
             // 
             this.columnToolStripMenuItem.DropDown = this.columnContextMenu;
             this.columnToolStripMenuItem.Name = "columnToolStripMenuItem";
-            this.columnToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.columnToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.columnToolStripMenuItem.Text = "Column";
             // 
             // columnContextMenu
@@ -1590,19 +1638,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             // toolStripSeparator34
             // 
             this.toolStripSeparator34.Name = "toolStripSeparator34";
-            this.toolStripSeparator34.Size = new System.Drawing.Size(179, 6);
+            this.toolStripSeparator34.Size = new System.Drawing.Size(178, 6);
             // 
             // showHiddenFilesToolStripMenuItem
             // 
             this.showHiddenFilesToolStripMenuItem.Name = "showHiddenFilesToolStripMenuItem";
-            this.showHiddenFilesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.showHiddenFilesToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.showHiddenFilesToolStripMenuItem.Text = "Show Hidden Files";
             // 
             // textEncodingToolStripMenuItem
             // 
             this.textEncodingToolStripMenuItem.DropDown = this.textEncodingMenuStrip;
             this.textEncodingToolStripMenuItem.Name = "textEncodingToolStripMenuItem";
-            this.textEncodingToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.textEncodingToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.textEncodingToolStripMenuItem.Text = "Text Encoding";
             // 
             // textEncodingMenuStrip
@@ -1615,12 +1663,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             // toolStripSeparator15
             // 
             this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(179, 6);
+            this.toolStripSeparator15.Size = new System.Drawing.Size(178, 6);
             // 
             // toggleLogDrawerToolStripMenuItem
             // 
             this.toggleLogDrawerToolStripMenuItem.Name = "toggleLogDrawerToolStripMenuItem";
-            this.toggleLogDrawerToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.toggleLogDrawerToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.toggleLogDrawerToolStripMenuItem.Text = "Toggle Log Drawer";
             // 
             // goToolStripMenuItem
@@ -1886,7 +1934,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // privacyPolicyToolStripMenuItem
             // 
             this.privacyPolicyToolStripMenuItem.Name = "privacyPolicyToolStripMenuItem";
-            this.privacyPolicyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.privacyPolicyToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.privacyPolicyToolStripMenuItem.Text = "Privacy Policy";
             // 
             // toolStripSeparator21
@@ -1928,6 +1976,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
             this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
+            // 
+            // toolStripSeparator41
+            // 
+            this.toolStripSeparator41.Name = "toolStripSeparator41";
+            this.toolStripSeparator41.Size = new System.Drawing.Size(189, 6);
             // 
             // editorMenuStrip
             // 
@@ -1993,6 +2046,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.downloadToolStripButton,
             this.uploadToolStripButton,
             this.transfersToolStripButton,
+            this.cryptomatorToolStripButton,
             this.logToolStripButton,
             this.disconnectStripButton,
             this.donateToolStripButton});
@@ -2075,6 +2129,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.deleteContextToolStripMenuItem,
             this.revertContxtStripMenuItem,
             this.toolStripSeparator4,
+            this.cryptomatorContxtStripMenuItem,
+            this.toolStripSeparator41,
             this.createArchiveContextToolStripMenuItem,
             this.expandArchiveContextToolStripMenuItem,
             this.toolStripSeparator5,
@@ -2082,7 +2138,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.newBookmarkContextToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
             this.contextMenuStrip.OwnerItem = this.actionToolStripDropDownButton;
-            this.contextMenuStrip.Size = new System.Drawing.Size(193, 546);
+            this.contextMenuStrip.Size = new System.Drawing.Size(193, 574);
             // 
             // refreshContextToolStripMenuItem
             // 
@@ -2217,6 +2273,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(189, 6);
             // 
+            // cryptomatorContxtStripMenuItem
+            // 
+            this.cryptomatorContxtStripMenuItem.Name = "cryptomatorContxtStripMenuItem";
+            this.cryptomatorContxtStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.cryptomatorContxtStripMenuItem.Text = "Lock Vault";
+            // 
             // expandArchiveContextToolStripMenuItem
             // 
             this.expandArchiveContextToolStripMenuItem.Name = "expandArchiveContextToolStripMenuItem";
@@ -2348,9 +2410,21 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transfersToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.transfersToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.transfersToolStripButton.Name = "transfersToolStripButton";
-            this.transfersToolStripButton.Size = new System.Drawing.Size(58, 53);
+            this.transfersToolStripButton.Size = new System.Drawing.Size(57, 53);
             this.transfersToolStripButton.Text = "Transfers";
             this.transfersToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            // 
+            // cryptomatorToolStripButton
+            // 
+            this.cryptomatorToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("cryptomatorToolStripButton.Image")));
+            this.cryptomatorToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.cryptomatorToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.cryptomatorToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cryptomatorToolStripButton.Name = "cryptomatorToolStripButton";
+            this.cryptomatorToolStripButton.Size = new System.Drawing.Size(65, 53);
+            this.cryptomatorToolStripButton.Text = "Lock Vault";
+            this.cryptomatorToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.cryptomatorToolStripButton.ToolTipText = "Lock Vault";
             // 
             // logToolStripButton
             // 
@@ -2371,7 +2445,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.disconnectStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.disconnectStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.disconnectStripButton.Name = "disconnectStripButton";
-            this.disconnectStripButton.Size = new System.Drawing.Size(70, 53);
+            this.disconnectStripButton.Size = new System.Drawing.Size(70, 51);
             this.disconnectStripButton.Text = "Disconnect";
             this.disconnectStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
@@ -2404,7 +2478,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.panelManager1);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.viewPanel);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1028, 504);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1028, 528);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.LeftToolStripPanelVisible = false;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
@@ -2428,7 +2502,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager1.Name = "panelManager1";
             this.panelManager1.SelectedIndex = 0;
             this.panelManager1.SelectedPanel = this.managedBrowserPanel1;
-            this.panelManager1.Size = new System.Drawing.Size(1028, 473);
+            this.panelManager1.Size = new System.Drawing.Size(1028, 497);
             this.panelManager1.TabIndex = 3;
             // 
             // managedBrowserPanel1
@@ -2436,7 +2510,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBrowserPanel1.Controls.Add(this.splitContainer);
             this.managedBrowserPanel1.Location = new System.Drawing.Point(0, 0);
             this.managedBrowserPanel1.Name = "managedBrowserPanel1";
-            this.managedBrowserPanel1.Size = new System.Drawing.Size(1028, 473);
+            this.managedBrowserPanel1.Size = new System.Drawing.Size(1028, 497);
             this.managedBrowserPanel1.Text = "managedBrowserPanel1";
             // 
             // splitContainer
@@ -2456,8 +2530,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Panel2MinSize = 50;
-            this.splitContainer.Size = new System.Drawing.Size(1028, 473);
-            this.splitContainer.SplitterDistance = 420;
+            this.splitContainer.Size = new System.Drawing.Size(1028, 497);
+            this.splitContainer.SplitterDistance = 444;
             this.splitContainer.SplitterWidth = 3;
             this.splitContainer.TabIndex = 2;
             // 
@@ -2485,13 +2559,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnModified});
             this.browser.Dock = System.Windows.Forms.DockStyle.Fill;
             this.browser.FullRowSelect = true;
+            this.browser.HideSelection = false;
             this.browser.InactiveForegroudColor = System.Drawing.Color.Gray;
             this.browser.IsSimpleDragSource = true;
             this.browser.Location = new System.Drawing.Point(0, 0);
             this.browser.Name = "browser";
             this.browser.OwnerDraw = true;
             this.browser.ShowGroups = false;
-            this.browser.Size = new System.Drawing.Size(1028, 420);
+            this.browser.Size = new System.Drawing.Size(1028, 444);
             this.browser.TabIndex = 15;
             this.browser.UseCompatibleStateImageBehavior = false;
             this.browser.View = System.Windows.Forms.View.Details;
@@ -2570,18 +2645,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             // treeColumnRegion
             // 
             this.treeColumnRegion.CellPadding = null;
-            this.treeColumnRegion.DisplayIndex = 8;
-            this.treeColumnRegion.IsEditable = false;
-            this.treeColumnRegion.IsVisible = false;
-            this.treeColumnRegion.Text = "Region";
-            // 
-            // treeColumnStorageClass
-            // 
-            this.treeColumnRegion.CellPadding = null;
             this.treeColumnRegion.DisplayIndex = 10;
             this.treeColumnRegion.IsEditable = false;
             this.treeColumnRegion.IsVisible = false;
             this.treeColumnRegion.Text = "Storage Class";
+            // 
+            // treeColumnStorageClass
+            // 
+            this.treeColumnStorageClass.CellPadding = null;
             // 
             // treeColumnVersion
             // 
@@ -2624,6 +2695,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.activeColumn});
             this.bookmarkListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.bookmarkListView.FullRowSelect = true;
+            this.bookmarkListView.HideSelection = false;
             this.bookmarkListView.Location = new System.Drawing.Point(0, 0);
             this.bookmarkListView.Name = "bookmarkListView";
             this.bookmarkListView.OwnerDraw = true;
@@ -2963,7 +3035,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.downloadToolbarMenuItem,
             this.uploadToolbarMenuItem,
             this.transfersToolbarMenuItem,
-            this.logToolbarMenuItem});
+            this.logToolbarMenuItem,
+            this.cryptomatorToolbarMenuItem});
             // 
             // openConnectionToolbarMenuItem
             // 
@@ -3055,6 +3128,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.logToolbarMenuItem.Index = 17;
             this.logToolbarMenuItem.Text = "Log";
             // 
+            // cryptomatorToolbarMenuItem
+            // 
+            this.cryptomatorToolbarMenuItem.Index = 18;
+            this.cryptomatorToolbarMenuItem.Text = "Cryptomator";
+            // 
             // browserContextMenu
             // 
             this.browserContextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
@@ -3082,6 +3160,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.deleteBrowserContextMenuItem,
             this.revertBrowserContextMenuItem,
             this.menuItem110,
+            this.cryptomatorBrowserContextMenuItem,
+            this.menuItem125,
             this.createArchiveBrowserContextMenuItem,
             this.expandArchiveBrowserContextMnuItem,
             this.menuItem113,
@@ -3208,29 +3288,39 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuItem110.Index = 23;
             this.menuItem110.Text = "-";
             // 
+            // cryptomatorBrowserContextMenuItem
+            // 
+            this.cryptomatorBrowserContextMenuItem.Index = 24;
+            this.cryptomatorBrowserContextMenuItem.Text = "Lock Vault";
+            // 
+            // menuItem125
+            // 
+            this.menuItem125.Index = 25;
+            this.menuItem125.Text = "";
+            // 
             // createArchiveBrowserContextMenuItem
             // 
-            this.createArchiveBrowserContextMenuItem.Index = 24;
+            this.createArchiveBrowserContextMenuItem.Index = 26;
             this.createArchiveBrowserContextMenuItem.Text = "Create Archive";
             // 
             // expandArchiveBrowserContextMnuItem
             // 
-            this.expandArchiveBrowserContextMnuItem.Index = 25;
+            this.expandArchiveBrowserContextMnuItem.Index = 27;
             this.expandArchiveBrowserContextMnuItem.Text = "Expand Archive";
             // 
             // menuItem113
             // 
-            this.menuItem113.Index = 26;
+            this.menuItem113.Index = 28;
             this.menuItem113.Text = "-";
             // 
             // newBrowserBrowserContextMenuItem
             // 
-            this.newBrowserBrowserContextMenuItem.Index = 27;
+            this.newBrowserBrowserContextMenuItem.Index = 29;
             this.newBrowserBrowserContextMenuItem.Text = "New Browser";
             // 
             // newBookmarkBrowserContextMenuItem
             // 
-            this.newBookmarkBrowserContextMenuItem.Index = 28;
+            this.newBookmarkBrowserContextMenuItem.Index = 30;
             this.newBookmarkBrowserContextMenuItem.Text = "New Bookmark";
             // 
             // bookmarkContextMenu
@@ -3303,11 +3393,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.sortByProtocolBookmarkContextMenuItem.Index = 2;
             this.sortByProtocolBookmarkContextMenuItem.Text = "Protocol";
-            // 
-            // privacyPolicyMainMenuItem
-            // 
-            this.privacyPolicyMainMenuItem.Index = 3;
-            this.privacyPolicyMainMenuItem.Text = "Privacy Policy";
             // 
             // BrowserForm
             // 
@@ -3395,6 +3480,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripMenuItem newVaultContextToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newFileContextToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator41;
         private System.Windows.Forms.ToolStripMenuItem createArchiveContextToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem expandArchiveContextToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
@@ -3483,6 +3569,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator21;
         private System.Windows.Forms.ToolStripMenuItem reportABugToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator22;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator40;
         private System.Windows.Forms.ContextMenuStrip editorMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem editor1ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editor2ToolStripMenuItem;
@@ -3498,8 +3585,10 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator25;
         private System.Windows.Forms.ToolStripMenuItem revertToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cryptomatorToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator26;
         private System.Windows.Forms.ToolStripMenuItem revertContxtStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cryptomatorContxtStripMenuItem;
         private System.Windows.Forms.ToolStrip actionToolStrip;
         private System.Windows.Forms.ToolStripButton newBookmarkToolStripButton;
         private System.Windows.Forms.ToolStripButton editBookmarkToolStripButton;
@@ -3540,6 +3629,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripMenuItem uploadToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem transfersToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem logToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem cryptomatorToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator34;
         private System.Windows.Forms.ToolStripMenuItem printToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator35;
@@ -3589,7 +3679,9 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.MenuItem menuItem21;
         private System.Windows.Forms.MenuItem deleteMainMenuItem;
         private System.Windows.Forms.MenuItem revertMainMenuItem;
+        private System.Windows.Forms.MenuItem cryptomatorMainMenuItem;
         private System.Windows.Forms.MenuItem menuItem24;
+        private System.Windows.Forms.MenuItem menuItem57;
         private System.Windows.Forms.MenuItem createArchiveMainMenuItem;
         private System.Windows.Forms.MenuItem expandArchiveMainMenuItem;
         private System.Windows.Forms.MenuItem menuItem27;
@@ -3688,6 +3780,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.MenuItem deleteBrowserContextMenuItem;
         private System.Windows.Forms.MenuItem revertBrowserContextMenuItem;
         private System.Windows.Forms.MenuItem menuItem105;
+        private System.Windows.Forms.MenuItem cryptomatorBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem menuItem125;
         private System.Windows.Forms.MenuItem uploadBrowserContextMenuItem;
         private System.Windows.Forms.MenuItem synchronizeBrowserContextMenuItem;
         private System.Windows.Forms.MenuItem newFolderBrowserContextMenuItem;
@@ -3740,6 +3834,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.MenuItem newSymlinkBrowserContextMenuItem;
         private System.Windows.Forms.ToolStripButton transfersToolStripButton;
         private System.Windows.Forms.MenuItem logToolbarMenuItem;
+        private System.Windows.Forms.MenuItem cryptomatorToolbarMenuItem;
         private MenuItem newVaultBrowserContextMenuItem;
         private ToolStripButton donateToolStripButton;
         private MenuItem shareBrowserContextMenuItem;
@@ -3748,6 +3843,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private ToolStripMenuItem shareToolStripMenuItem;
         private ToolStripMenuItem privacyPolicyToolStripMenuItem;
         private MenuItem privacyPolicyMainMenuItem;
+        private ToolStripButton cryptomatorToolStripButton;
     }
 }
 

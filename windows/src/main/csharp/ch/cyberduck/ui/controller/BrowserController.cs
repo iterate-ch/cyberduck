@@ -175,6 +175,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ValidateDelete += View_ValidateDelete;
             View.RevertFile += View_RevertFile;
             View.ValidateRevertFile += View_ValidateRevertFile;
+            View.LockUnlockVault += View_LockUnlockVault;
+            View.ValidateLockUnlockVault += View_ValidateLockUnlockVault;
             View.GetArchives += View_GetArchives;
             View.GetCopyUrls += View_GetCopyUrls;
             View.GetOpenUrls += View_GetOpenUrls;
@@ -310,6 +312,24 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Exit += View_Exit;
             View.SetBookmarkModel(_bookmarkCollection, null);
             SetNavigation(false);
+        }
+
+        private void View_LockUnlockVault()
+        {
+            Path directory = new UploadTargetFinder(Workdir).find(SelectedPath);
+            VaultRegistry registry = Session.getVault();
+            if (registry.contains(directory))
+            {
+                // Lock and remove all open vaults
+                LockVaultAction lockVault = new LockVaultAction(this, registry, directory);
+                Background(lockVault);
+            }
+            else
+            {
+                // Unlock vault
+                LoadVaultAction loadVault = new LoadVaultAction(this, registry, directory);
+                Background(loadVault);
+            }
         }
 
         private void View_CreateShareLink()
@@ -1109,6 +1129,23 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return Session.getFeature(typeof(Versioning)) != null &&
                     ((Versioning) Session.getFeature(typeof(Versioning))).isRevertable(SelectedPath);
+            }
+            return false;
+        }
+        private bool View_ValidateLockUnlockVault()
+        {
+            if (IsMounted())
+            {
+                Path selected = new UploadTargetFinder(Workdir).find(SelectedPath);
+                VaultRegistry registry = Session.getVault();
+                if (registry.contains(selected))
+                {
+                    View.SetCryptomatorVaultTitle(LocaleFactory.localizedString("Lock Vault", "Cryptomator"));
+                }
+                else
+                {
+                    View.SetCryptomatorVaultTitle(LocaleFactory.localizedString("Unlock Vault", "Cryptomator"));
+                }
             }
             return false;
         }
@@ -3550,6 +3587,58 @@ namespace Ch.Cyberduck.Ui.Controller
                                 }
                             });
                     }
+                }
+            }
+        }
+
+        private class LockVaultAction : WorkerBackgroundAction
+        {
+            public LockVaultAction(BrowserController controller, VaultRegistry registry, Path directory)
+                : base(controller, controller.Session, new InnerLockVaultWorker(controller, registry, directory))
+            {
+            }
+
+            private class InnerLockVaultWorker : LockVaultWorker
+            {
+                private readonly BrowserController _controller;
+                private readonly Path _directory;
+
+                public InnerLockVaultWorker(BrowserController controller, VaultRegistry registry, Path directory)
+                    : base(registry, directory)
+                {
+                    _controller = controller;
+                    _directory = directory;
+                }
+
+                public override void cleanup(object result)
+                { 
+                    _controller.Reload(_controller.Workdir, new HashSet<Path>(){_directory}, new List<Path>(), true);
+                }
+            }
+        }
+        private class LoadVaultAction : WorkerBackgroundAction
+        {
+            public LoadVaultAction(BrowserController controller, VaultRegistry registry, Path directory)
+                : base(controller, controller.Session, new InnerLoadVaultWorker(controller, registry, directory))
+            {
+            }
+
+            private class InnerLoadVaultWorker : LoadVaultWorker
+            {
+                private readonly BrowserController _controller;
+                private readonly Path _directory;
+
+                public InnerLoadVaultWorker(BrowserController controller, VaultRegistry registry, Path directory)
+                    : base(new LoadingVaultLookupListener(registry,
+                        PasswordStoreFactory.get(), PasswordCallbackFactory.get(controller)), directory)
+                {
+                    _controller = controller;
+                    _directory = directory;
+                }
+
+                public override void cleanup(object result)
+                { 
+                    _controller.Reload(_controller.Workdir, new HashSet<Path>(){_directory}, new List<Path>(), true);
                 }
             }
         }
