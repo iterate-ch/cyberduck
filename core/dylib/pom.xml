@@ -55,6 +55,7 @@
                                         <artifactItem>
                                             <groupId>ch.iterate</groupId>
                                             <artifactId>JavaNativeFoundation</artifactId>
+                                            <classifier>universal</classifier>
                                             <type>zip</type>
                                             <version>81</version>
                                         </artifactItem>
