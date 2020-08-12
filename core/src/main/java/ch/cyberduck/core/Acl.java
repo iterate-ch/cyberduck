@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Serializable {
@@ -134,22 +135,26 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
             return role;
         }
 
-        @Override
-        public boolean equals(Object obj) {
-            if(obj instanceof UserAndRole) {
-                return user.equals(((UserAndRole) obj).user)
-                    && role.equals(((UserAndRole) obj).role);
-            }
-            return false;
-        }
-
         public boolean isValid() {
             return user.isValid() && role.isValid();
         }
 
         @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(!(o instanceof UserAndRole)) {
+                return false;
+            }
+            final UserAndRole that = (UserAndRole) o;
+            return Objects.equals(user, that.user) &&
+                Objects.equals(role, that.role);
+        }
+
+        @Override
         public int hashCode() {
-            return this.toString().hashCode();
+            return Objects.hash(user, role);
         }
 
         @Override
@@ -213,21 +218,25 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
         }
 
         @Override
-        public boolean equals(Object obj) {
-            if(obj instanceof User) {
-                return identifier.equals(((User) obj).getIdentifier());
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
             }
-            return false;
+            if(!(o instanceof User)) {
+                return false;
+            }
+            final User user = (User) o;
+            return Objects.equals(identifier, user.identifier);
         }
 
         @Override
         public int hashCode() {
-            return this.getIdentifier().hashCode();
+            return Objects.hash(identifier);
         }
 
         @Override
         public int compareTo(User o) {
-            return this.getIdentifier().compareTo(o.getIdentifier());
+            return identifier.compareTo(o.identifier);
         }
 
         public boolean isModified() {
@@ -409,21 +418,25 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
         }
 
         @Override
-        public boolean equals(Object obj) {
-            if(obj instanceof Role) {
-                return name.equals(((Role) obj).getName());
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
             }
-            return false;
+            if(!(o instanceof Role)) {
+                return false;
+            }
+            final Role role = (Role) o;
+            return Objects.equals(name, role.name);
         }
 
         @Override
         public int hashCode() {
-            return this.getName().hashCode();
+            return Objects.hash(name);
         }
 
         @Override
         public int compareTo(Role o) {
-            return this.getName().compareTo(o.getName());
+            return name.compareTo(o.name);
         }
 
         public boolean isModified() {
