@@ -154,7 +154,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                             final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
                             credentials.setOauth(new OAuthTokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds));
                             credentials.setSaved(true);
-                            log.warn(String.format("Switch bookmark to protocol %s", oauth));
+                            log.warn(String.format("Switch bookmark %s to protocol %s", host, oauth));
                             host.setProtocol(oauth);
                             break;
                         }
