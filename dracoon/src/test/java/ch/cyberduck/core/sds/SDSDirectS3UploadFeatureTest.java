@@ -114,4 +114,73 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
+
+    @Test
+    public void testTripleCryptUploadBelowMultipartSize() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid, new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session)));
+        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
+        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] random = RandomUtils.nextBytes(578);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(random, out);
+        out.close();
+        final TransferStatus status = new TransferStatus();
+        status.setLength(random.length);
+        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+            new DisabledStreamListener(), status, new DisabledLoginCallback());
+        assertTrue(new SDSFindFeature(nodeid).find(test));
+        final PathAttributes attributes = new SDSListService(session, nodeid).list(room,
+            new DisabledListProgressListener()).get(test).attributes();
+        assertEquals(random.length, attributes.getSize());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        local.delete();
+    }
+
+    @Test
+    public void testTripleCryptUploadExactMultipartSize() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid, new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session)));
+        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
+        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] random = RandomUtils.nextBytes(10 * 1024 * 1024);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(random, out);
+        out.close();
+        final TransferStatus status = new TransferStatus();
+        status.setLength(random.length);
+        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+            new DisabledStreamListener(), status, new DisabledLoginCallback());
+        assertTrue(new SDSFindFeature(nodeid).find(test));
+        final PathAttributes attributes = new SDSListService(session, nodeid).list(room,
+            new DisabledListProgressListener()).get(test).attributes();
+        assertEquals(random.length, attributes.getSize());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        local.delete();
+    }
+
+    @Test
+    public void testTripleCryptUploadMultipleParts() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid, new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session)));
+        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
+        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] random = RandomUtils.nextBytes(21 * 1024 * 1024);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(random, out);
+        out.close();
+        final TransferStatus status = new TransferStatus();
+        status.setLength(random.length);
+        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+            new DisabledStreamListener(), status, new DisabledLoginCallback());
+        assertTrue(new SDSFindFeature(nodeid).find(test));
+        final PathAttributes attributes = new SDSListService(session, nodeid).list(room,
+            new DisabledListProgressListener()).get(test).attributes();
+        assertEquals(random.length, attributes.getSize());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        local.delete();
+    }
 }
