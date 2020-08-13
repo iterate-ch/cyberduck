@@ -127,7 +127,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
                 }
                 final Local f = this.getFile(bookmark);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Save bookmark %s", f));
+                    log.info(String.format("Save bookmark %s to %s", bookmark, f));
                 }
                 writer.write(bookmark, f);
             }
