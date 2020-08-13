@@ -115,7 +115,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
             if(log.isDebugEnabled()) {
                 log.debug(String.format("upload started for %s with response %s", file, createFileUploadResponse));
             }
-            final Map<Integer, String> etags = new HashMap<>();
+            final Map<Integer, TransferStatus> etags = new HashMap<>();
             // Full size of file
             final long size = status.getLength() + status.getOffset();
             final GeneratePresignedUrlsRequest presignedUrlsRequest = new GeneratePresignedUrlsRequest().firstPartNumber(1);
@@ -155,7 +155,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
             for(Future<TransferStatus> future : parts) {
                 try {
                     final TransferStatus part = future.get();
-                    etags.put(part.getPart(), part.getChecksum().hash);
+                    etags.put(part.getPart(), part);
                 }
                 catch(InterruptedException e) {
                     log.error("Part upload failed with interrupt failure");
@@ -183,7 +183,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
                 completeS3FileUploadRequest.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
             }
             etags.forEach((key, value) -> completeS3FileUploadRequest.addPartsItem(
-                new S3FileUploadPart().partEtag(value).partNumber(key)));
+                new S3FileUploadPart().partEtag(value.getChecksum().hash).partNumber(key)));
             new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
             // Polling
             final ScheduledThreadPool polling = new ScheduledThreadPool();
