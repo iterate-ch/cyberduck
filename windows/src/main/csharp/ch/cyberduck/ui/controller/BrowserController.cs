@@ -317,17 +317,16 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_LockUnlockVault()
         {
             Path directory = new UploadTargetFinder(Workdir).find(SelectedPath);
-            VaultRegistry registry = Session.getVault();
-            if (registry.contains(directory))
+            if( directory.attributes().getVault() != null)
             {
                 // Lock and remove all open vaults
-                LockVaultAction lockVault = new LockVaultAction(this, registry, directory);
+                LockVaultAction lockVault = new LockVaultAction(this, Session.getVault(), directory.attributes().getVault());
                 Background(lockVault);
             }
             else
             {
                 // Unlock vault
-                LoadVaultAction loadVault = new LoadVaultAction(this, registry, directory);
+                LoadVaultAction loadVault = new LoadVaultAction(this, Session.getVault(), directory);
                 Background(loadVault);
             }
         }
@@ -3610,9 +3609,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     _directory = directory;
                 }
 
-                public override void cleanup(object result)
+                public override void cleanup(Path vault)
                 { 
-                    _controller.Reload(_controller.Workdir, new HashSet<Path>(){_directory}, new List<Path>(), true);
+                    _controller.Reload(vault, new HashSet<Path>(){vault}, new List<Path>(), true);
                 }
             }
         }
@@ -3636,9 +3635,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     _directory = directory;
                 }
 
-                public override void cleanup(object result)
+                public override void cleanup(Vault vault)
                 { 
-                    _controller.Reload(_controller.Workdir, new HashSet<Path>(){_directory}, new List<Path>(), true);
+                    _controller.Reload(vault.getHome(), new HashSet<Path>(){vault.getHome()}, new List<Path>(), true);
                 }
             }
         }
