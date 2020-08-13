@@ -48,7 +48,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(nodeid.isEncrypted(file)) {
-                nodeid.setFileKey(status);
+                status.setFilekey(nodeid.getFileKey());
             }
             final StatusOutputStream<VersionId> out = writer.write(file, status.complete(), new DisabledConnectionCallback());
             out.close();

@@ -58,10 +58,10 @@ public class TripleCryptWriteFeature implements Write<VersionId> {
                 log.debug(String.format("Read file key for file %s", file));
             }
             if(null == status.getFilekey()) {
-                nodeid.setFileKey(status);
+                status.setFilekey(nodeid.getFileKey());
             }
             final FileKey fileKey = reader.readValue(status.getFilekey().array());
-            return new TripleCryptOutputStream<VersionId>(session, proxy.write(file, status, callback),
+            return new TripleCryptOutputStream<>(session, proxy.write(file, status, callback),
                 Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status
             );
         }
