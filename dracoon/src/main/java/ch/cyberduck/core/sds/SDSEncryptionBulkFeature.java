@@ -53,7 +53,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                     final Path container = new PathContainerService().getContainer(entry.getKey().remote);
                     if(rooms.get(container)) {
                         final TransferStatus status = entry.getValue();
-                        nodeid.setFileKey(status);
+                        status.setFilekey(nodeid.getFileKey());
                     }
                 }
             }

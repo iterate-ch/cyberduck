@@ -26,7 +26,6 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -35,7 +34,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.unicode.NFCNormalizer;
 import ch.cyberduck.core.unicode.UnicodeNormalizer;
 
@@ -143,7 +141,7 @@ public class SDSNodeIdProvider implements IdProvider {
         return container.getType().contains(Path.Type.triplecrypt);
     }
 
-    public void setFileKey(final TransferStatus status) throws BackgroundException {
+    public ByteBuffer getFileKey() throws BackgroundException {
         final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
         final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -153,8 +151,7 @@ public class SDSNodeIdProvider implements IdProvider {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
-        status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
-        status.setEncryption(new Encryption.Algorithm("AES256", null));
+        return ByteBuffer.wrap(out.toByteArray());
     }
 
     @Override
