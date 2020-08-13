@@ -2562,7 +2562,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="workdir">Use working directory as the current root of the browser</param>
         /// <param name="selected">Selected files in browser</param>
@@ -3573,7 +3573,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         string title = LocaleFactory.localizedString("Create Download Share", "Share");
                         string commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Continue", "Credentials"),
                             LocaleFactory.localizedString("Copy", "Main"));
-                        _controller.CommandBox(title, title, MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS") + "\n\n{1}", _file.getName(), url.getUrl()), 
+                        _controller.CommandBox(title, title, MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS") + "\n\n{1}", _file.getName(), url.getUrl()),
                             commandButtons,
                             false, null, TaskDialogIcon.Information,
                             delegate (int option, System.Boolean verificationChecked)
@@ -3609,9 +3609,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     _directory = directory;
                 }
 
-                public override void cleanup(Path vault)
-                { 
-                    _controller.Reload(vault, new HashSet<Path>(){vault}, new List<Path>(), true);
+                public override void cleanup(object vault)
+                {
+                    _controller.Reload((Path)vault, new HashSet<Path>(){(Path)vault}, new List<Path>(), true);
                 }
             }
         }
@@ -3635,9 +3635,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     _directory = directory;
                 }
 
-                public override void cleanup(Vault vault)
-                { 
-                    _controller.Reload(vault.getHome(), new HashSet<Path>(){vault.getHome()}, new List<Path>(), true);
+                public override void cleanup(object vault)
+                {
+                    _controller.Reload(((Vault)vault).getHome(), new HashSet<Path>(){ ((Vault)vault).getHome()}, new List<Path>(), true);
                 }
             }
         }
