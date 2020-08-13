@@ -87,6 +87,12 @@
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna</artifactId>
                 <version>${jna-version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>net.java.dev.jna</groupId>
+                <artifactId>jna-min</artifactId>
+                <version>${jna-version}</version>
             </dependency>
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
