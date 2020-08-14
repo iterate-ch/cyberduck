@@ -61,10 +61,12 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection {
                 final Host bookmark = HostReaderFactory.get().read(file);
                 final int index = this.indexOf(bookmark);
                 if(index != -1) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Replace bookmark %s at index %d", bookmark, index));
+                    if(0 != bookmark.compareTo(this.get(index))) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Replace bookmark %s at index %d", bookmark, index));
+                        }
+                        this.replace(index, bookmark);
                     }
-                    this.replace(index, bookmark);
                 }
             }
             catch(AccessDeniedException e) {
