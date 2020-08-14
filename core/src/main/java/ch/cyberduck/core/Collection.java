@@ -130,7 +130,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
 
     public void replace(int row, E item) {
         super.remove(row);
-        super.add(row, item);
+        this.add(row, item);
     }
 
     @Override
