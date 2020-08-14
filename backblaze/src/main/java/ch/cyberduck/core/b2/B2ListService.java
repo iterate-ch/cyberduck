@@ -22,6 +22,8 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.Collections;
+
 public class B2ListService implements ListService {
 
     private final B2BucketListService buckets;
@@ -38,8 +40,8 @@ public class B2ListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
             if(bucket != null) {
-                final AttributedList<Path> buckets = new AttributedList<Path>();
-                buckets.add(bucket);
+                final AttributedList<Path> buckets = new AttributedList<>(Collections.singleton(bucket));
+                listener.chunk(directory, buckets);
                 return buckets;
             }
             return buckets.list(directory, listener);
