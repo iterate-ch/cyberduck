@@ -41,6 +41,7 @@ import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.logging.LoggerPrintStream;
 import ch.cyberduck.core.manta.MantaProtocol;
 import ch.cyberduck.core.nextcloud.NextcloudProtocol;
 import ch.cyberduck.core.nio.LocalProtocol;
@@ -99,6 +100,11 @@ import com.google.common.util.concurrent.Uninterruptibles;
 
 public class Terminal {
     private static final Logger log = Logger.getLogger(Terminal.class);
+
+    static {
+        System.err.close();
+        System.setErr(new LoggerPrintStream());
+    }
 
     private final Preferences preferences;
     private final TerminalController controller;

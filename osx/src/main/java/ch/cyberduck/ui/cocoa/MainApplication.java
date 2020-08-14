@@ -33,6 +33,7 @@ import ch.cyberduck.core.googledrive.DriveProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.hubic.HubicProtocol;
 import ch.cyberduck.core.irods.IRODSProtocol;
+import ch.cyberduck.core.logging.LoggerPrintStream;
 import ch.cyberduck.core.manta.MantaProtocol;
 import ch.cyberduck.core.nextcloud.NextcloudProtocol;
 import ch.cyberduck.core.nio.LocalProtocol;
@@ -48,7 +49,6 @@ import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.storegate.StoregateProtocol;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
-import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.ui.cocoa.controller.MainController;
 
 import org.apache.log4j.Logger;
@@ -57,7 +57,8 @@ public final class MainApplication {
     private static final Logger log = Logger.getLogger(MainApplication.class);
 
     static {
-        Thread.setDefaultUncaughtExceptionHandler(new LoggingUncaughtExceptionHandler());
+        System.err.close();
+        System.setErr(new LoggerPrintStream());
     }
 
     private MainApplication() {
