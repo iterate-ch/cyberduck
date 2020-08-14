@@ -46,7 +46,7 @@ public class BrickPairingFeature implements Pairing {
         try {
             final HttpRequestBase resource = new HttpDelete(
                 String.format("%s/api/rest/v1/api_key", new HostUrlProvider().withUsername(false).withPath(false).get(session.getHost())));
-            resource.setHeader("X-FilesAPI-Auth", token);
+            resource.setHeader("X-FilesAPI-Key", token);
             resource.setHeader(HttpHeaders.ACCEPT, "application/json");
             resource.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
             if(log.isInfoEnabled()) {
