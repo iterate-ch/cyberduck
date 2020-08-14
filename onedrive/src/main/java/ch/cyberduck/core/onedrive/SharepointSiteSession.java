@@ -62,4 +62,10 @@ public class SharepointSiteSession extends AbstractSharepointSession {
         }
         return super._getFeature(type);
     }
+
+    @Override
+    public boolean isAccessible(final Path file, final boolean container) {
+
+        return super.isAccessible(file, container);
+    }
 }

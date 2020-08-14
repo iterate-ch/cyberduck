@@ -85,35 +85,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
 
     @Override
     public boolean isAccessible(final Path file, final boolean container) {
-        if(file.isRoot()) {
-            return false;
-        }
-        if(file.isChild(SharepointListService.DEFAULT_NAME)) {
-            // handles /Default_Name
-            if(SharepointListService.DEFAULT_NAME.equals(file)) {
-                return false;
-            }
-            // handles /Default_Name/Drive-ID
-            if(!container && SharepointListService.DEFAULT_NAME.equals(file.getParent())) {
-                return false;
-            }
-        }
-        else if(file.isChild(SharepointListService.GROUPS_NAME)) {
-            // Handles /Groups_Name and /Groups_Name/Group
-            if(SharepointListService.GROUPS_NAME.equals(file) || SharepointListService.GROUPS_NAME.equals(file.getParent())) {
-                return false;
-            }
-            // handles /Groups_Name/Group/Drive-ID
-            if(!container && SharepointListService.GROUPS_NAME.equals(file.getParent().getParent())) {
-                return false;
-            }
-        }
-        else {
-            log.warn(String.format("File %s is neither in %s nor in %s", file, SharepointListService.DEFAULT_NAME, SharepointListService.GROUPS_NAME));
-            // This should never happen.
-            return false;
-        }
-        return true;
+        return !file.isRoot();
     }
 
     @Override
