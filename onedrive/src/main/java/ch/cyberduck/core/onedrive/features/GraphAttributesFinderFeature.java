@@ -63,7 +63,9 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
     public PathAttributes toAttributes(final DriveItem.Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setETag(metadata.getETag());
-        attributes.setSize(metadata.getSize());
+        if (null != metadata.getSize()) {
+            attributes.setSize(metadata.getSize());
+        }
         if(metadata.getRemoteItem() != null) {
             final DriveItem.Metadata remoteMetadata = metadata.getRemoteItem();
             attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER),
