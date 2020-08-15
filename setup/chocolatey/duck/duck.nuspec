@@ -4,17 +4,20 @@
     <id>duck</id>
     <title>Cyberduck CLI</title>
     <version>${VERSION}.${REVISION}</version>
-    <authors>David Kocher, Yves Langisch</authors>
-    <owners>cyberduck.io</owners>
+    <authors>iterate GmbH</authors>
+    <owners>duck.sh</owners>
     <summary>Cyberduck for the command line interface (CLI)</summary>
     <description>The universal file transfer tool duck which runs in your shell on Linux and OS X or your Windows command line prompt. Edit files on remote servers, download, upload and copy between servers with FTP, SFTP or WebDAV plus support for cloud storage Amazon S3 OpenStack Swift deployments.</description>
     <projectUrl>https://duck.sh</projectUrl>
     <tags>cloud ftp sftp webdav amazon s3 openstack swift rackspace backblaze b2 microsoft azure onedrive google drive dropbox spectralogic cli</tags>
     <copyright>${COPYRIGHT}</copyright>
-    <licenseUrl>http://creativecommons.org/licenses/GPL/2.0/</licenseUrl>
+    <licenseUrl>https://cyberduck.io/license</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <iconUrl>https://cdn.cyberduck.io/img/cyberduck-icon-384.png</iconUrl>
-    <releaseNotes></releaseNotes>
+    <releaseNotes>https://cyberduck.io/changelog/</releaseNotes>
+    <docsUrl>https://duck.sh</docsUrl>
+    <bugTrackerUrl>https://trac.cyberduck.io</bugTrackerUrl>
+    <mailingListUrl>https://lists.cyberduck.io</mailingListUrl>
     <dependencies>
       <dependency id="dotnet4.7" version="4.7.2053.0" />
     </dependencies>
