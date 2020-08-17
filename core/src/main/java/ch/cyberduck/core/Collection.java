@@ -131,6 +131,9 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     public void replace(int row, E item) {
         super.remove(row);
         super.add(row, item);
+        for(CollectionListener<E> listener : listeners) {
+            listener.collectionItemChanged(item);
+        }
     }
 
     @Override
