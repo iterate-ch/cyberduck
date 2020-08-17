@@ -85,6 +85,9 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             final Long fileId = file != null ? Long.parseLong(node.getFileid(file, new DisabledListProgressListener())) : null;
             UserFileKeySetBatchRequest request;
             do {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Request a list of missing file keys for file %s", file));
+                }
                 final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).missingFileKeys(StringUtils.EMPTY,
                     fileId, null, null, null, null);
                 final Map<Long, UserUserPublicKey> publicKeys =
@@ -111,6 +114,9 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                     request.addItemsItem(keySetRequest);
                 }
                 if(!request.getItems().isEmpty()) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Set file keys with %s", request));
+                    }
                     new NodesApi(session.getClient()).setUserFileKeys(request, StringUtils.EMPTY);
                 }
             }
