@@ -23,6 +23,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -82,6 +83,9 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection {
         public int compare(final Host o1, final Host o2) {
             final int i = o1.compareTo(o2);
             if(i == 0) {
+                if(!StringUtils.equals(o1.getDefaultPath(), o2.getDefaultPath())) {
+                    return StringUtils.compare(o1.getDefaultPath(), o2.getDefaultPath());
+                }
                 // Additionally to default fields check for changed labels
                 if(!o1.getLabels().equals(o2.getLabels())) {
                     return -1;
