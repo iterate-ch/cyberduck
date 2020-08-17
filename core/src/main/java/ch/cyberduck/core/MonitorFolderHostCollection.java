@@ -83,6 +83,10 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection {
         public int compare(final Host o1, final Host o2) {
             final int i = o1.compareTo(o2);
             if(i == 0) {
+                // Additionally to default fields check for nickname
+                if(!StringUtils.equals(o1.getNickname(), o2.getNickname())) {
+                    return StringUtils.compare(o1.getNickname(), o2.getNickname());
+                }
                 if(!StringUtils.equals(o1.getDefaultPath(), o2.getDefaultPath())) {
                     return StringUtils.compare(o1.getDefaultPath(), o2.getDefaultPath());
                 }
