@@ -36,6 +36,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.NullOutputStream;
+import org.apache.log4j.Logger;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -47,6 +48,7 @@ import com.dracoon.sdk.crypto.CryptoSystemException;
 import com.dracoon.sdk.crypto.InvalidFileKeyException;
 
 public class SDSEncryptionBulkFeature implements Bulk<Void> {
+    private static final Logger log = Logger.getLogger(SDSEncryptionBulkFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -71,21 +73,29 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                         status.setFilekey(nodeid.getFileKey(fileKey));
                         if(PreferencesFactory.get().getBoolean("sds.upload.s3.enable")) {
                             if(session.configuration().stream().anyMatch(property -> "use_s3_storage".equals(property.getKey()) && String.valueOf(true).equals(property.getValue()))) {
-                                // Pre-compute file key tag for upload to S3 with multiple parts
-                                final InputStream in = entry.getKey().local.getInputStream();
-                                final OutputStream out;
-                                try {
-                                    out = new TripleCryptOutputStream<>(session, new StatusOutputStream<TransferStatus>(NullOutputStream.NULL_OUTPUT_STREAM) {
-                                        @Override
-                                        public TransferStatus getStatus() {
-                                            return status;
-                                        }
-                                    }, Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status);
+                                if(entry.getKey().local != null) {
+                                    if(log.isDebugEnabled()) {
+                                        log.debug(String.format("Pre-compute file key tag for upload to S3 for %s", entry));
+                                    }
+                                    // Pre-compute file key tag for upload to S3 with multiple parts
+                                    final InputStream in = entry.getKey().local.getInputStream();
+                                    final OutputStream out;
+                                    try {
+                                        out = new TripleCryptOutputStream<>(session, new StatusOutputStream<TransferStatus>(NullOutputStream.NULL_OUTPUT_STREAM) {
+                                            @Override
+                                            public TransferStatus getStatus() {
+                                                return status;
+                                            }
+                                        }, Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status);
+                                    }
+                                    catch(CryptoSystemException | InvalidFileKeyException e) {
+                                        throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, entry.getKey().remote);
+                                    }
+                                    new StreamCopier(status, new TransferStatus()).transfer(in, out);
                                 }
-                                catch(CryptoSystemException | InvalidFileKeyException e) {
-                                    throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, entry.getKey().remote);
+                                else {
+                                    log.warn(String.format("Missing local file in transfer item %s", entry));
                                 }
-                                new StreamCopier(status, new TransferStatus()).transfer(in, out);
                             }
                         }
                     }
@@ -121,9 +131,13 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                             final Path file = entry.getKey().remote;
                             final Path container = new PathContainerService().getContainer(file);
                             if(rooms.get(container)) {
-                                final VersionId version = entry.getValue().getVersion();
+                                final TransferStatus status = entry.getValue();
+                                final VersionId version = status.getVersion();
                                 if(null != version) {
                                     background.operate(session, callback, file.withAttributes(new PathAttributes(file.attributes()).withVersionId(version.id)));
+                                }
+                                else {
+                                    log.warn(String.format("Missing fileid in transfer status %s for file %s", status, file));
                                 }
                             }
                         }
