@@ -3,6 +3,7 @@ class Duck < Formula
   homepage "https://duck.sh/"
   url "${ARCHIVE}"
   sha256 "${ARCHIVE.SHA256}"
+  license GPL-3.0-only
 
   def install
     # Because compiling would need a JDK and xcodebuild we just use the pre-compiled binary.

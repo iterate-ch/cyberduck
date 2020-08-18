@@ -4,6 +4,7 @@ class Duck < Formula
   # check the changelog for the latest stable version: https://cyberduck.io/changelog/
   url "${SOURCE}"
   sha256 "${SOURCE.SHA256}"
+  license GPL-3.0-only
   head "https://svn.cyberduck.io/trunk/"
 
   depends_on :java => ["1.8", :build]
