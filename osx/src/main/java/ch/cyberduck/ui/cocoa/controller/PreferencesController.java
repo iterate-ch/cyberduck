@@ -1895,6 +1895,9 @@ public class PreferencesController extends ToolbarWindowController {
         protocolCombobox.addItemWithTitle(title);
         protocolCombobox.lastItem().setRepresentedObject(String.valueOf(protocol.hashCode()));
         protocolCombobox.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
+        if(protocol.isDeprecated()) {
+            protocolCombobox.lastItem().setEnabled(false);
+        }
     }
 
     @Action
