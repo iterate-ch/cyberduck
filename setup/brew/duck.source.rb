@@ -7,15 +7,20 @@ class Duck < Formula
   license GPL-3.0-only
   head "https://svn.cyberduck.io/trunk/"
 
-  depends_on :java => ["1.8", :build]
-  depends_on :xcode => :build
   depends_on "ant" => :build
+  depends_on java: ["1.8", :build]
   depends_on "maven" => :build
+  depends_on xcode: :build
 
   def install
-    ENV.java_cache
+    xcconfig = buildpath/"Overrides.xcconfig"
+    xcconfig.write <<~EOS
+      OTHER_LDFLAGS = -headerpad_max_install_names
+    EOS
+    ENV["XCODE_XCCONFIG_FILE"] = xcconfig
     revision = version.to_s.rpartition(".").last
-    system "mvn", "-DskipTests", "-Dgit.commitsCount=#{revision}", "--projects", "cli/osx", "--also-make", "verify"
+    system "mvn", "-DskipTests", "-Dgit.commitsCount=#{revision}",
+                  "--projects", "cli/osx", "--also-make", "verify"
     libexec.install Dir["cli/osx/target/duck.bundle/*"]
     bin.install_symlink "#{libexec}/Contents/MacOS/duck" => "duck"
   end
