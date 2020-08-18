@@ -24,10 +24,14 @@ import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptOutputStream;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
+
 public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
+    private static final Logger log = Logger.getLogger(SDSDelegatingWriteFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -42,6 +46,9 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
     @Override
     public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(nodeid.isEncrypted(file)) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return encrypting writer for %s", file));
+            }
             // File key is set in encryption bulk feature if container is encrypted
             return new TripleCryptWriteFeature(session, nodeid, proxy).write(file, status, callback);
         }

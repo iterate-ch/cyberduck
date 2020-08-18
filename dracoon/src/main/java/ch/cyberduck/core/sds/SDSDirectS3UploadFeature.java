@@ -184,6 +184,9 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
             }
             etags.forEach((key, value) -> completeS3FileUploadRequest.addPartsItem(
                 new S3FileUploadPart().partEtag(value.getChecksum().hash).partNumber(key)));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Complete file upload with %s for %s", completeS3FileUploadRequest, file));
+            }
             new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
             // Polling
             final ScheduledThreadPool polling = new ScheduledThreadPool();
