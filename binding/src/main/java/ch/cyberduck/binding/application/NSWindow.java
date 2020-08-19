@@ -1657,4 +1657,13 @@ public abstract class NSWindow extends NSResponder {
      * @param value A Boolean value that indicates whether the window prevents application termination when modal.
      */
     public abstract void setPreventsApplicationTerminationWhenModal(final boolean value);
+
+    /**
+     * When the value of this property is true, the title bar does not draw its background, which allows all content
+     * underneath it to show through. It only makes sense to set this property to true when
+     * NSFullSizeContentViewWindowMask is also set.
+     *
+     * @param value A Boolean value that indicates whether the title bar draws its background.
+     */
+    public abstract void setTitlebarAppearsTransparent(final boolean value);
 }
