@@ -47,7 +47,7 @@ public class SDSQuotaFeature implements Quota {
         try {
             final Path home = new DefaultHomeFinderService(session).find();
             if(!home.isRoot()) {
-                final Node node = new NodesApi(session.getClient()).getFsNode(
+                final Node node = new NodesApi(session.getClient()).requestNode(
                     Long.parseLong(nodeid.getFileid(home, new DisabledListProgressListener())), StringUtils.EMPTY, null);
                 if(null == node.getQuota()) {
                     log.warn(String.format("No quota set for node %s", home));
@@ -56,7 +56,7 @@ public class SDSQuotaFeature implements Quota {
                     return new Space(node.getSize(), node.getQuota() - node.getSize());
                 }
             }
-            final CustomerData info = new UserApi(session.getClient()).getCustomerInfo(StringUtils.EMPTY);
+            final CustomerData info = new UserApi(session.getClient()).requestCustomerInfo(StringUtils.EMPTY);
             return new Space(info.getSpaceUsed(), info.getSpaceLimit() - info.getSpaceUsed());
         }
         catch(ApiException e) {

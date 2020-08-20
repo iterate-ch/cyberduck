@@ -111,7 +111,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
                 .size(-1 == status.getLength() ? null : status.getLength())
                 .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName());
-            final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient()).createFileUpload(createFileUploadRequest, StringUtils.EMPTY);
+            final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
+                .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("upload started for %s with response %s", file, createFileUploadResponse));
             }
@@ -197,7 +198,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
                 public void run() {
                     try {
                         final S3FileUploadStatus uploadStatus = new NodesApi(session.getClient())
-                            .getUploadStatus(createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
+                            .requestUploadStatusFiles(createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
                         switch(uploadStatus.getStatus()) {
                             case "finishing":
                                 // Expected

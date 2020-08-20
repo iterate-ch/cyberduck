@@ -279,14 +279,14 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 break;
         }
         try {
-            configuration.addAll(new ConfigApi(client).getSystemSettings(StringUtils.EMPTY).getItems());
+            configuration.addAll(new ConfigApi(client).requestSystemSettings(StringUtils.EMPTY).getItems());
         }
         catch(ApiException e) {
             // Precondition: Right "Config Read" required.
             log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e)));
         }
         try {
-            final UserAccount account = new UserApi(client).getUserInfo(StringUtils.EMPTY, null, false);
+            final UserAccount account = new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated as user %s", account));
             }
@@ -295,7 +295,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     credentials.setUsername(account.getLogin());
             }
             userAccount.set(new UserAccountWrapper(account));
-            keyPair.set(new UserApi(client).getUserKeyPair(StringUtils.EMPTY));
+            keyPair.set(new UserApi(client).requestUserKeyPair(StringUtils.EMPTY));
             final UserPrivateKey privateKey = new UserPrivateKey();
             final UserKeyPairContainer keyPairContainer = keyPair.get();
             privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
@@ -319,7 +319,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService().map(e)));
         }
         try {
-            softwareVersion.set(new PublicApi(client).getSoftwareVersion(null));
+            softwareVersion.set(new PublicApi(client).requestSoftwareVersion(null));
         }
         catch(ApiException e) {
             log.warn(String.format("Ignore failure reading version. %s", new SDSExceptionMappingService().map(e)));
@@ -353,7 +353,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserAccountWrapper userAccount() throws BackgroundException {
         if(this.userAccount.get() == null) {
             try {
-                userAccount.set(new UserAccountWrapper(new UserApi(client).getUserInfo(StringUtils.EMPTY, null, false)));
+                userAccount.set(new UserAccountWrapper(new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null)));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user info. %s", e.getMessage()));
@@ -366,7 +366,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserKeyPairContainer keyPair() throws BackgroundException {
         if(keyPair.get() == null) {
             try {
-                keyPair.set(new UserApi(client).getUserKeyPair(StringUtils.EMPTY));
+                keyPair.set(new UserApi(client).requestUserKeyPair(StringUtils.EMPTY));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
@@ -379,7 +379,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public SoftwareVersionData softwareVersion() throws BackgroundException {
         if(softwareVersion.get() == null) {
             try {
-                softwareVersion.set(new PublicApi(client).getSoftwareVersion(null));
+                softwareVersion.set(new PublicApi(client).requestSoftwareVersion(null));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
