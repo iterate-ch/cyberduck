@@ -2,7 +2,6 @@ package ch.cyberduck.core.sds.io.swagger.client.api;
 
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
-import ch.cyberduck.core.sds.io.swagger.client.ApiResponse;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
 
@@ -15,8 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-04-08T17:57:49.759+02:00")
-public class DownloadsApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-08-20T10:17:39.204928+02:00[Europe/Zurich]")public class DownloadsApi {
   private ApiClient apiClient;
 
   public DownloadsApi() {
@@ -37,37 +35,22 @@ public class DownloadsApi {
 
   /**
    * Download avatar
-   * ### &amp;#128640; Since version 4.11.0  ### Functional Description:   Download avatar for given UserID and UUID.  ### Precondition: Valid UUID.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.11.0&lt;/h3&gt;  ### Description: Download avatar for given user ID and UUID.  ### Precondition: Valid UUID.  ### Postcondition: Stream is returned.  ### Further Information: None.
    * @param userId User ID (required)
    * @param uuid UUID of the avatar (required)
-   * @return Integer
+   * @return String
    * @throws ApiException if fails to make API call
    */
-  public Integer downloadAvatar(Long userId, String uuid) throws ApiException {
-    return downloadAvatarWithHttpInfo(userId, uuid).getData();
-      }
-
-  /**
-   * Download avatar
-   * ### &amp;#128640; Since version 4.11.0  ### Functional Description:   Download avatar for given UserID and UUID.  ### Precondition: Valid UUID.  ### Effects: None.  ### &amp;#9432; Further Information: None.
-   * @param userId User ID (required)
-   * @param uuid UUID of the avatar (required)
-   * @return ApiResponse&lt;Integer&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Integer> downloadAvatarWithHttpInfo(Long userId, String uuid) throws ApiException {
+  public String downloadAvatar(Long userId, String uuid) throws ApiException {
     Object localVarPostBody = null;
-    
     // verify the required parameter 'userId' is set
     if (userId == null) {
       throw new ApiException(400, "Missing the required parameter 'userId' when calling downloadAvatar");
     }
-    
     // verify the required parameter 'uuid' is set
     if (uuid == null) {
       throw new ApiException(400, "Missing the required parameter 'uuid' when calling downloadAvatar");
     }
-    
     // create path and map variables
     String localVarPath = "/v4/downloads/avatar/{user_id}/{uuid}"
       .replaceAll("\\{" + "user_id" + "\\}", apiClient.escapeString(userId.toString()))
@@ -79,8 +62,8 @@ public class DownloadsApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    
-    
+
+
     final String[] localVarAccepts = {
       "application/octet-stream"
     };
@@ -93,41 +76,26 @@ public class DownloadsApi {
 
     String[] localVarAuthNames = new String[] {  };
 
-    GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
+    GenericType<String> localVarReturnType = new GenericType<String>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
+  }
   /**
    * Download file
-   * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).
+   * ### Description: Download a file.  ### Precondition: Valid download token.  ### Postcondition: Stream is returned.  ### Further Information: Range requests are supported.
    * @param token Download token (required)
-   * @param range Range e.g. &#x60;bytes&#x3D;0-999&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+   * @param range Range  e.g. &#x60;bytes&#x3D;0-999&#x60; (optional)
    * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
    * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
-   * @return Integer
    * @throws ApiException if fails to make API call
+   * Range Requests
+   * @see <a href="https://tools.ietf.org/html/rfc7233">Download file Documentation</a>
    */
-  public Integer getFileDataByToken(String token, String range, Boolean genericMimetype, Boolean inline) throws ApiException {
-    return getFileDataByTokenWithHttpInfo(token, range, genericMimetype, inline).getData();
-      }
-
-  /**
-   * Download file
-   * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).
-   * @param token Download token (required)
-   * @param range Range e.g. &#x60;bytes&#x3D;0-999&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
-   * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
-   * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
-   * @return ApiResponse&lt;Integer&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Integer> getFileDataByTokenWithHttpInfo(String token, String range, Boolean genericMimetype, Boolean inline) throws ApiException {
+  public void downloadFileViaToken(String token, String range, Boolean genericMimetype, Boolean inline) throws ApiException {
     Object localVarPostBody = null;
-    
     // verify the required parameter 'token' is set
     if (token == null) {
-      throw new ApiException(400, "Missing the required parameter 'token' when calling getFileDataByToken");
+      throw new ApiException(400, "Missing the required parameter 'token' when calling downloadFileViaToken");
     }
-    
     // create path and map variables
     String localVarPath = "/v4/downloads/{token}"
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
@@ -143,7 +111,7 @@ public class DownloadsApi {
     if (range != null)
       localVarHeaderParams.put("Range", apiClient.parameterToString(range));
 
-    
+
     final String[] localVarAccepts = {
       "application/octet-stream"
     };
@@ -156,41 +124,25 @@ public class DownloadsApi {
 
     String[] localVarAuthNames = new String[] {  };
 
-    GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
+    apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
   /**
    * Download file
-   * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).
+   * ### Description: Download a file.  ### Precondition: Valid download token.  ### Postcondition: Stream is returned.  ### Further Information: Range requests are supported.
    * @param token Download token (required)
-   * @param range Range e.g. &#x60;bytes&#x3D;0-999&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+   * @param range Range  e.g. &#x60;bytes&#x3D;0-999&#x60; (optional)
    * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
    * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
-   * @return Integer
    * @throws ApiException if fails to make API call
+   * Range Requests
+   * @see <a href="https://tools.ietf.org/html/rfc7233">Download file Documentation</a>
    */
-  public Integer getFileDataByToken1(String token, String range, Boolean genericMimetype, Boolean inline) throws ApiException {
-    return getFileDataByToken1WithHttpInfo(token, range, genericMimetype, inline).getData();
-      }
-
-  /**
-   * Download file
-   * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).
-   * @param token Download token (required)
-   * @param range Range e.g. &#x60;bytes&#x3D;0-999&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
-   * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
-   * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
-   * @return ApiResponse&lt;Integer&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Integer> getFileDataByToken1WithHttpInfo(String token, String range, Boolean genericMimetype, Boolean inline) throws ApiException {
+  public void downloadFileViaToken1(String token, String range, Boolean genericMimetype, Boolean inline) throws ApiException {
     Object localVarPostBody = null;
-    
     // verify the required parameter 'token' is set
     if (token == null) {
-      throw new ApiException(400, "Missing the required parameter 'token' when calling getFileDataByToken1");
+      throw new ApiException(400, "Missing the required parameter 'token' when calling downloadFileViaToken1");
     }
-    
     // create path and map variables
     String localVarPath = "/v4/downloads/{token}"
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
@@ -206,48 +158,33 @@ public class DownloadsApi {
     if (range != null)
       localVarHeaderParams.put("Range", apiClient.parameterToString(range));
 
-    
+
     final String[] localVarAccepts = {
       "application/octet-stream"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      "application/json"
+      
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
     String[] localVarAuthNames = new String[] {  };
 
-    GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
-    return apiClient.invokeAPI(localVarPath, "HEAD", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
+    apiClient.invokeAPI(localVarPath, "HEAD", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
   /**
-   * Download ZIP file(s)
-   * ### Functional Description:   Download multiple files in a ZIP archive.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Create a download token with &#x60;POST /nodes/zip&#x60; API.
+   * Download ZIP archive
+   * ### Description: Download multiple files in a ZIP archive.  ### Precondition: Valid download token.  ### Postcondition: Stream is returned.  ### Further Information: Create a download token with &#x60;POST /nodes/zip&#x60; API.
    * @param token Download token (required)
-   * @return Integer
    * @throws ApiException if fails to make API call
    */
-  public Integer getZipFileByToken(String token) throws ApiException {
-    return getZipFileByTokenWithHttpInfo(token).getData();
-      }
-
-  /**
-   * Download ZIP file(s)
-   * ### Functional Description:   Download multiple files in a ZIP archive.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Create a download token with &#x60;POST /nodes/zip&#x60; API.
-   * @param token Download token (required)
-   * @return ApiResponse&lt;Integer&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Integer> getZipFileByTokenWithHttpInfo(String token) throws ApiException {
+  public void downloadZipArchiveViaToken(String token) throws ApiException {
     Object localVarPostBody = null;
-    
     // verify the required parameter 'token' is set
     if (token == null) {
-      throw new ApiException(400, "Missing the required parameter 'token' when calling getZipFileByToken");
+      throw new ApiException(400, "Missing the required parameter 'token' when calling downloadZipArchiveViaToken");
     }
-    
     // create path and map variables
     String localVarPath = "/v4/downloads/zip/{token}"
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
@@ -258,8 +195,8 @@ public class DownloadsApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    
-    
+
+
     final String[] localVarAccepts = {
       "application/octet-stream"
     };
@@ -272,7 +209,6 @@ public class DownloadsApi {
 
     String[] localVarAuthNames = new String[] {  };
 
-    GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
+    apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
 }
