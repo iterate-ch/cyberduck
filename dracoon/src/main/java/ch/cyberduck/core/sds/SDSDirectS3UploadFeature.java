@@ -267,6 +267,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
                 status.setNonces(overall.getNonces());
+                status.setFilekey(overall.getFilekey());
                 final VersionId part = SDSDirectS3UploadFeature.super.upload(
                     file, local, throttle, listener, status, overall, new StreamProgress() {
                         @Override
