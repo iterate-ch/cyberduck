@@ -73,7 +73,7 @@ public class BrickSession extends DAVSession {
         final Credentials credentials = host.getCredentials();
         if(!credentials.isPasswordAuthentication()) {
             // No prompt on explicit connect
-            this.pair(host, new DisabledConnectionCallback(), cancel);
+            this.pair(host, new DisabledConnectionCallback(), cancel).setSaved(true);
         }
         try {
             super.login(proxy, prompt, cancel);

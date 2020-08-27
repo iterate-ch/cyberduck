@@ -130,42 +130,39 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     protected SDSApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         if(PreferencesFactory.get().getBoolean("sds.oauth.migrate.enable")) {
-            switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
-                case sql:
-                case radius:
-                case active_directory:
-                    final Credentials credentials = host.getCredentials();
-                    if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()))) {
-                        log.warn(String.format("Skip migration with missing credentials for %s", host));
+            if(host.getProtocol().isDeprecated()) {
+                final Credentials credentials = host.getCredentials();
+                if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()))) {
+                    log.warn(String.format("Skip migration with missing credentials for %s", host));
+                }
+                else {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Attempt migration to OAuth flow for %s", host));
                     }
-                    else {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Attempt migration to OAuth flow for %s", host));
-                        }
-                        try {
-                            // Search for installed connection profile using OAuth authorization method
-                            for(Protocol oauth : ProtocolFactory.get().find(new OAuthFinderPredicate(host.getProtocol().getIdentifier()))) {
-                                // Run password flow to attempt to migrate to OAuth
-                                final TokenResponse response = new PasswordTokenRequest(new ApacheHttpTransport(builder.build(proxy, this, prompt).build()),
-                                    new JacksonFactory(), new GenericUrl(Scheme.isURL(oauth.getOAuthTokenUrl()) ? oauth.getOAuthTokenUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
-                                    oauth.getScheme(), host.getPort(), null, host.getHostname(), oauth.getOAuthTokenUrl())),
-                                    host.getCredentials().getUsername(), host.getCredentials().getPassword()
-                                )
-                                    .setClientAuthentication(new BasicAuthentication(oauth.getOAuthClientId(), oauth.getOAuthClientSecret()))
-                                    .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
-                                    .execute();
-                                final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
-                                credentials.setOauth(new OAuthTokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds));
-                                credentials.setSaved(true);
-                                log.warn(String.format("Switch bookmark to protocol %s", oauth));
-                                host.setProtocol(oauth);
-                                break;
-                            }
-                        }
-                        catch(IOException e) {
-                            log.warn(String.format("Failure %s running password flow to migrate to OAuth", e));
+                    try {
+                        // Search for installed connection profile using OAuth authorization method
+                        for(Protocol oauth : ProtocolFactory.get().find(new OAuthFinderPredicate(host.getProtocol().getIdentifier()))) {
+                            // Run password flow to attempt to migrate to OAuth
+                            final TokenResponse response = new PasswordTokenRequest(new ApacheHttpTransport(builder.build(proxy, this, prompt).build()),
+                                new JacksonFactory(), new GenericUrl(Scheme.isURL(oauth.getOAuthTokenUrl()) ? oauth.getOAuthTokenUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
+                                oauth.getScheme(), host.getPort(), null, host.getHostname(), oauth.getOAuthTokenUrl())),
+                                host.getCredentials().getUsername(), host.getCredentials().getPassword()
+                            )
+                                .setClientAuthentication(new BasicAuthentication(oauth.getOAuthClientId(), oauth.getOAuthClientSecret()))
+                                .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
+                                .execute();
+                            final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
+                            credentials.setOauth(new OAuthTokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds));
+                            credentials.setSaved(true);
+                            log.warn(String.format("Switch bookmark %s to protocol %s", host, oauth));
+                            host.setProtocol(oauth);
+                            break;
                         }
                     }
+                    catch(IOException e) {
+                        log.warn(String.format("Failure %s running password flow to migrate to OAuth", e));
+                    }
+                }
             }
         }
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
@@ -411,8 +408,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
         }
         if(type == Upload.class) {
-            if(configuration.stream().anyMatch(entry -> "use_s3_storage".equals(entry.getKey()) && String.valueOf(true).equals(entry.getValue()))) {
-                return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3WriteFeature(this)));
+            if(PreferencesFactory.get().getBoolean("sds.upload.s3.enable")) {
+                if(configuration.stream().anyMatch(entry -> "use_s3_storage".equals(entry.getKey()) && String.valueOf(true).equals(entry.getValue()))) {
+                    return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3WriteFeature(this)));
+                }
             }
             return (T) new DefaultUploadFeature(new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid)));
         }

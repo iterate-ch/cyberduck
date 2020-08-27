@@ -201,7 +201,7 @@ public class CryptoVault implements Vault {
                 new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
         }
         this.unlock(session, masterkey, masterKeyFileContent, passphrase, bookmark, prompt,
-            MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()),
+            MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName()),
             keychain);
         return this;
     }
@@ -242,7 +242,7 @@ public class CryptoVault implements Vault {
         catch(CryptoAuthenticationException e) {
             this.unlock(session, masterKeyFile, masterKeyFileContent, null, bookmark,
                 prompt, String.format("%s %s.", e.getDetail(),
-                    MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName())), keychain);
+                    MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())), keychain);
         }
     }
 

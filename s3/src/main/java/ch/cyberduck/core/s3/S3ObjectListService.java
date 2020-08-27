@@ -59,14 +59,18 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return this.list(directory, listener, String.valueOf(Path.DELIMITER), preferences.getInteger("s3.listing.chunksize"));
-    }
-
-    @Override
     public ListService withCache(final Cache<Path> cache) {
         attributes.withCache(cache);
         return this;
+    }
+
+    @Override
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        return this.list(directory, listener, String.valueOf(Path.DELIMITER));
+    }
+
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter) throws BackgroundException {
+        return this.list(directory, listener, delimiter, preferences.getInteger("s3.listing.chunksize"));
     }
 
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {

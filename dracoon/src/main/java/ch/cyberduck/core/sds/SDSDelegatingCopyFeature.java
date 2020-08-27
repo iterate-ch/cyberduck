@@ -42,7 +42,7 @@ public class SDSDelegatingCopyFeature implements Copy {
         // Copy between encrypted and unencrypted data room
         if(nodeid.isEncrypted(target)) {
             // File key must be set for new upload
-            nodeid.setFileKey(status);
+            status.setFilekey(nodeid.getFileKey());
         }
         return copy.copy(source, target, status, callback);
     }

@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.WebUrlProvider;
 
 import java.net.URI;
 import java.text.MessageFormat;
@@ -51,6 +52,7 @@ public class B2UrlProvider implements UrlProvider {
                 URIEncoder.encode(containerService.getKey(file)));
             list.add(new DescriptiveUrl(URI.create(download), DescriptiveUrl.Type.http,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), Scheme.https.name().toUpperCase(Locale.ROOT))));
+            list.addAll(new WebUrlProvider(session.getHost()).toUrl(file));
         }
         return list;
     }

@@ -4101,6 +4101,7 @@
 				INFOPLIST_FILE = "$(PROJECT_DIR)/setup/pkg/Info.plist";
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @executable_path/../Frameworks";
 				MACH_O_TYPE = mh_execute;
 				PRODUCT_BUNDLE_IDENTIFIER = sh.duck;
 				PRODUCT_MODULE_NAME = duck;
@@ -4288,6 +4289,7 @@
 				INFOPLIST_FILE = "$(PROJECT_DIR)/setup/pkg/Info.plist";
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @executable_path/../Frameworks";
 				MACH_O_TYPE = mh_execute;
 				PRODUCT_BUNDLE_IDENTIFIER = sh.duck;
 				PRODUCT_MODULE_NAME = duck;

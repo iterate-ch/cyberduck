@@ -23,9 +23,11 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Comparator;
 
 public class MonitorFolderHostCollection extends AbstractFolderHostCollection {
     private static final Logger log = Logger.getLogger(MonitorFolderHostCollection.class);
@@ -61,15 +63,40 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection {
                 final Host bookmark = HostReaderFactory.get().read(file);
                 final int index = this.indexOf(bookmark);
                 if(index != -1) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Replace bookmark %s at index %d", bookmark, index));
+                    // Found bookmark with matching UUID
+                    if(new HostEditComparator().compare(bookmark, this.get(index)) != 0) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Replace bookmark %s at index %d", bookmark, index));
+                        }
+                        this.replace(index, bookmark);
                     }
-                    this.replace(index, bookmark);
                 }
             }
             catch(AccessDeniedException e) {
                 log.warn(String.format("Failure reading file %s", file));
             }
+        }
+    }
+
+    private static final class HostEditComparator implements Comparator<Host> {
+        @Override
+        public int compare(final Host o1, final Host o2) {
+            final int i = o1.compareTo(o2);
+            if(i == 0) {
+                // Additionally to default fields check for nickname
+                if(!StringUtils.equals(o1.getNickname(), o2.getNickname())) {
+                    return StringUtils.compare(o1.getNickname(), o2.getNickname());
+                }
+                if(!StringUtils.equals(o1.getDefaultPath(), o2.getDefaultPath())) {
+                    return StringUtils.compare(o1.getDefaultPath(), o2.getDefaultPath());
+                }
+                // Additionally to default fields check for changed labels
+                if(!o1.getLabels().equals(o2.getLabels())) {
+                    return -1;
+                }
+                return 0;
+            }
+            return i;
         }
     }
 

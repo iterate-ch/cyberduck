@@ -1,17 +1,21 @@
 Cyberduck
 https://cyberduck.io/
 
+7.5.1
+- [Bugfix] Changes not saved when editing bookmark (Windows)
+- [Bugfix] Failure running application (CLI, macOS) (#11139)
+- [Bugfix] Navigation buttons in browser window do not work (macOS) (#11140)
+- [Bugfix] Upload files using S3 direct upload to encrypted rooms (DRACOON)
+- [Bugfix] Upload files to encrypted rooms (CLI, DRACOON)
+
 7.5.0
 - [Feature] Interoperability with macOS 11
-- [Bugfix] Use STANDARD for default storage class (Google Storage)
-- [Bugfix] Switch to UTF-8 for encoding HTTP authentication header (WebDAV)
-
-7.4.3
 - [Feature] Column for storage class in browser (S3)
+- [Bugfix] Use STANDARD for default storage class (Google Storage) (#11062)
+- [Bugfix] Switch to UTF-8 for encoding HTTP authentication header (WebDAV)
+- [Bugfix] SNI support for TLS connections (FTP) (#9257)
 - [Bugfix] Handle formatting errors in ~/.aws/credentials (S3)
 - [Bugfix] Crash accessing files with colon in name (Windows) (#11075)
-
-7.4.2
 - [Bugfix] Support Team Drives for sharing files (Google Drive)
 
 7.4.1

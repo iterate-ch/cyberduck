@@ -41,6 +41,7 @@ import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.logging.LoggerPrintStream;
 import ch.cyberduck.core.manta.MantaProtocol;
 import ch.cyberduck.core.nextcloud.NextcloudProtocol;
 import ch.cyberduck.core.nio.LocalProtocol;
@@ -72,6 +73,7 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.vault.LoadingVaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistryFactory;
+import ch.cyberduck.core.worker.AttributesWorker;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.core.worker.HomeFinderWorker;
@@ -99,6 +101,11 @@ import com.google.common.util.concurrent.Uninterruptibles;
 
 public class Terminal {
     private static final Logger log = Logger.getLogger(Terminal.class);
+
+    static {
+        System.err.close();
+        System.setErr(new LoggerPrintStream());
+    }
 
     private final Preferences preferences;
     private final TerminalController controller;
@@ -269,6 +276,8 @@ public class Terminal {
             else {
                 remote = new CommandLinePathParser(input).parse(uri);
             }
+            // Set remote file attributes
+            remote.withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source, new AttributesWorker(remote))));
             if(input.hasOption(TerminalOptionsBuilder.Params.vault.name())) {
                 final Path vault;
                 if(StringUtils.startsWith(input.getOptionValue(action.name()), TildePathExpander.PREFIX)) {

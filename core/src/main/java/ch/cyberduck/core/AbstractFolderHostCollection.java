@@ -117,23 +117,18 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     }
 
     protected void save(final Host bookmark) {
-        if(this.isLocked()) {
-            log.debug(String.format("Skip saving bookmark %s while loading", bookmark));
+        try {
+            if(!folder.exists()) {
+                new DefaultLocalDirectoryFeature().mkdir(folder);
+            }
+            final Local f = this.getFile(bookmark);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Save bookmark %s to %s", bookmark, f));
+            }
+            writer.write(bookmark, f);
         }
-        else {
-            try {
-                if(!folder.exists()) {
-                    new DefaultLocalDirectoryFeature().mkdir(folder);
-                }
-                final Local f = this.getFile(bookmark);
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Save bookmark %s", f));
-                }
-                writer.write(bookmark, f);
-            }
-            catch(AccessDeniedException e) {
-                log.warn(String.format("Failure saving item in collection %s", e.getMessage()));
-            }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure saving item in collection %s", e.getMessage()));
         }
     }
 
@@ -168,29 +163,35 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void collectionItemAdded(final Host bookmark) {
-        this.save(bookmark);
-        this.sort();
+        if(!this.isLocked()) {
+            this.save(bookmark);
+            this.sort();
+        }
         // Notify listeners
         super.collectionItemAdded(bookmark);
     }
 
     @Override
     public void collectionItemRemoved(final Host bookmark) {
-        final Local file = this.getFile(bookmark);
-        try {
-            file.delete();
+        if(!this.isLocked()) {
+            final Local file = this.getFile(bookmark);
+            try {
+                file.delete();
+            }
+            catch(AccessDeniedException | NotfoundException e) {
+                log.error(String.format("Failure removing bookmark %s", e.getMessage()));
+            }
+            this.sort();
         }
-        catch(AccessDeniedException | NotfoundException e) {
-            log.error(String.format("Failure removing bookmark %s", e.getMessage()));
-        }
-        this.sort();
         // Notify listeners
         super.collectionItemRemoved(bookmark);
     }
 
     @Override
     public void collectionItemChanged(final Host bookmark) {
-        this.save(bookmark);
+        if(!this.isLocked()) {
+            this.save(bookmark);
+        }
         super.collectionItemChanged(bookmark);
     }
 }

@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>7.4.4-SNAPSHOT</version>
+    <version>7.5.3-SNAPSHOT</version>
 
     <modules>
         <!-- Core components -->
@@ -74,7 +74,7 @@
         <argLine />
         <jna-version>5.6.0</jna-version>
         <jersey-version>2.31</jersey-version>
-        <jackson-version>2.10.4</jackson-version>
+        <jackson-version>2.10.5</jackson-version>
         <slf4j-version>1.7.30</slf4j-version>
         <bouncycastle-version>1.66</bouncycastle-version>
         <httpclient-version>4.5.12</httpclient-version>
@@ -86,6 +86,12 @@
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna</artifactId>
+                <version>${jna-version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>net.java.dev.jna</groupId>
+                <artifactId>jna-min</artifactId>
                 <version>${jna-version}</version>
             </dependency>
             <dependency>
@@ -396,7 +402,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                     </configuration>

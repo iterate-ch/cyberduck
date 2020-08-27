@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>7.4.4-SNAPSHOT</version>
+        <version>7.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
@@ -115,7 +115,7 @@
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
+            <artifactId>jna-min</artifactId>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>

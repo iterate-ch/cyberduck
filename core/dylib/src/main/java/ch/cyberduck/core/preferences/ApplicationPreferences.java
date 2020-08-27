@@ -23,6 +23,7 @@ import ch.cyberduck.core.aquaticprime.ReceiptFactory;
 import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleRegexLocale;
+import ch.cyberduck.core.io.watchservice.FSEventWatchService;
 import ch.cyberduck.core.local.DisabledFilesystemBookmarkResolver;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
@@ -74,6 +75,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.symlink.class", WorkspaceSymlinkFeature.class.getName());
         this.setDefault("factory.terminalservice.class", ApplescriptTerminalService.class.getName());
         this.setDefault("factory.badgelabeler.class", WorkspaceApplicationBadgeLabeler.class.getName());
+        this.setDefault("factory.watchservice.class", FSEventWatchService.class.getName());
         this.setDefault("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
         if(null == this.getDefault("SUExpectsDSASignature")) {
             this.setDefault("factory.licensefactory.class", ReceiptFactory.class.getName());
