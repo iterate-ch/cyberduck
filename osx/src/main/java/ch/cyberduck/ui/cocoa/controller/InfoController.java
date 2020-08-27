@@ -98,11 +98,8 @@ public class InfoController extends ToolbarWindowController {
     private static NSPoint cascade = new NSPoint(0, 0);
 
     private final Controller controller;
-
     private final SessionPool session;
-
     private final NSComboBoxCell aclPermissionCellPrototype = NSComboBoxCell.comboBoxCell();
-
     private final NSNotificationCenter notificationCenter
         = NSNotificationCenter.defaultCenter();
 
@@ -112,7 +109,6 @@ public class InfoController extends ToolbarWindowController {
     private List<Path> files;
 
     private final FileDescriptor descriptor = FileDescriptorFactory.get();
-
     private final LoginCallback prompt = LoginCallbackFactory.get(this);
 
     private final PathContainerService containerService
@@ -294,6 +290,9 @@ public class InfoController extends ToolbarWindowController {
         window.setShowsResizeIndicator(true);
         window.setContentMinSize(window.frame().size);
         window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
+        if(window.respondsToSelector(Foundation.selector("setToolbarStyle:"))) {
+            window.setToolbarStyle(NSWindow.NSWindowToolbarStyle.NSWindowToolbarStyleUnified);
+        }
         super.setWindow(window);
         if(!preferences.getBoolean("browser.info.inspector")) {
             cascade = this.cascade(cascade);
