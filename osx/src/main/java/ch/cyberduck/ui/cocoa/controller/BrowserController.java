@@ -638,7 +638,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void setWindow(NSWindow window) {
         // Save frame rectangle
         window.setFrameAutosaveName("Browser");
-        window.setTitle(preferences.getProperty("application.name"));
+        if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+            window.setTitle(StringUtils.EMPTY);
+            window.setSubtitle(StringUtils.EMPTY);
+        }
+        else {
+            window.setTitle(preferences.getProperty("application.name"));
+        }
         window.setMiniwindowImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
@@ -3140,7 +3146,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     @Override
                     public void init() {
                         super.init();
-                        window.setTitle(BookmarkNameProvider.toString(bookmark, true));
+                        if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+                            window.setTitle(BookmarkNameProvider.toProtocol(bookmark));
+                            window.setSubtitle(BookmarkNameProvider.toHostname(bookmark, true));
+                        }
+                        else {
+                            window.setTitle(BookmarkNameProvider.toString(bookmark, true));
+                        }
                         window.setRepresentedFilename(StringUtils.EMPTY);
                         // Update status icon
                         bookmarkTable.setNeedsDisplay();
@@ -3219,7 +3231,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 pool = SessionPool.DISCONNECTED;
                 cache.clear();
                 setWorkdir(null);
-                window.setTitle(preferences.getProperty("application.name"));
+                window.setTitle(StringUtils.EMPTY);
+                if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+                    window.setSubtitle(StringUtils.EMPTY);
+                }
                 window.setRepresentedFilename(StringUtils.EMPTY);
                 navigation.clear();
                 disconnected.run();
