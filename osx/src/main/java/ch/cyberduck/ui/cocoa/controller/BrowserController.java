@@ -646,6 +646,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(window.respondsToSelector(Foundation.selector("setTabbingIdentifier:"))) {
             window.setTabbingIdentifier(preferences.getProperty("browser.window.tabbing.identifier"));
         }
+        if(window.respondsToSelector(Foundation.selector("setToolbarStyle:"))) {
+            window.setToolbarStyle(NSWindow.NSWindowToolbarStyle.NSWindowToolbarStyleUnified);
+        }
+        if(window.respondsToSelector(Foundation.selector("setTitlebarSeparatorStyle:"))) {
+            window.setTitlebarSeparatorStyle(NSWindow.NSTitlebarSeparatorStyle.NSTitlebarSeparatorStyleNone);
+        }
         super.setWindow(window);
         // Accept file promises from history tab
         window.registerForDraggedTypes(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType));
