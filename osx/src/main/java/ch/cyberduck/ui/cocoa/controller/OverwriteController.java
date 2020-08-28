@@ -15,9 +15,9 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -49,7 +49,7 @@ public class OverwriteController extends ProxyController {
      */
     public void overwrite(final List<Path> selected, final MainAction action) {
         StringBuilder alertText = new StringBuilder(
-                LocaleFactory.localizedString("A file with the same name already exists. Do you want to replace the existing file?"));
+            LocaleFactory.localizedString("A file with the same name already exists. Do you want to replace the existing file?"));
         int i = 0;
         Iterator<Path> iter;
         boolean shouldWarn = false;
@@ -68,13 +68,13 @@ public class OverwriteController extends ProxyController {
         }
         if(shouldWarn) {
             NSAlert alert = NSAlert.alert(
-                    LocaleFactory.localizedString("Overwrite"), //title
-                    alertText.toString(),
-                    LocaleFactory.localizedString("Overwrite"), // defaultbutton
-                    LocaleFactory.localizedString("Cancel"), //alternative button
-                    null //other button
+                LocaleFactory.localizedString("Overwrite"), //title
+                alertText.toString(),
+                LocaleFactory.localizedString("Overwrite"), // defaultbutton
+                LocaleFactory.localizedString("Cancel"), //alternative button
+                null //other button
             );
-            parent.alert(alert, new DisabledSheetCallback() {
+            parent.alert(alert, new SheetCallback() {
                 @Override
                 public void callback(final int returncode) {
                     if(returncode == DEFAULT_OPTION) {
