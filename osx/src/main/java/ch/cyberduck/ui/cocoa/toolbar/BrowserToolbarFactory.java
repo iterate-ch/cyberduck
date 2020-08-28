@@ -23,6 +23,7 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSPopUpButton;
+import ch.cyberduck.binding.application.NSSearchToolbarItem;
 import ch.cyberduck.binding.application.NSSegmentedControl;
 import ch.cyberduck.binding.application.NSToolbarItem;
 import ch.cyberduck.binding.application.NSView;
@@ -136,6 +137,12 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
             @Override
             public String tooltip() {
                 return LocaleFactory.localizedString("Connect to server");
+            }
+        },
+        search {
+            @Override
+            public Selector action() {
+                return Foundation.selector("searchFieldTextDidChange:");
             }
         },
         tools {
@@ -432,7 +439,13 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
     @Override
     public NSToolbarItem create(final String identifier) {
         if(!toolbarItems.containsKey(identifier)) {
-            toolbarItems.put(identifier, CDToolbarItem.itemWithIdentifier(identifier));
+            switch(BrowserToolbarItem.valueOf(identifier)) {
+                case search:
+                    toolbarItems.put(identifier, NSSearchToolbarItem.itemWithIdentifier(identifier));
+                    break;
+                default:
+                    toolbarItems.put(identifier, CDToolbarItem.itemWithIdentifier(identifier));
+            }
         }
         final NSToolbarItem item = toolbarItems.get(identifier);
         try {
@@ -577,6 +590,12 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     item.setView(button);
                     return item;
                 }
+                case search: {
+                    item.setLabel(search.label());
+                    item.setPaletteLabel(search.label());
+                    item.setView(controller.getSearchField());
+                    return item;
+                }
                 default: {
                     item.setLabel(type.label());
                     item.setPaletteLabel(LocaleFactory.localizedString(type.label()));
@@ -601,45 +620,49 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
     @Override
     public NSArray getDefault() {
         return NSArray.arrayWithObjects(
-                connect.name(),
-                NSToolbarItem.NSToolbarSeparatorItemIdentifier,
-                quickconnect.name(),
-                tools.name(),
-                NSToolbarItem.NSToolbarSeparatorItemIdentifier,
-                reload.name(),
-                edit.name(),
-                NSToolbarItem.NSToolbarFlexibleSpaceItemIdentifier,
-                disconnect.name()
+            navigation.name(),
+            connect.name(),
+            NSToolbarItem.NSToolbarSeparatorItemIdentifier,
+            quickconnect.name(),
+            tools.name(),
+            NSToolbarItem.NSToolbarSeparatorItemIdentifier,
+            reload.name(),
+            edit.name(),
+            NSToolbarItem.NSToolbarFlexibleSpaceItemIdentifier,
+            search.name(),
+            disconnect.name()
         );
     }
 
     @Override
     public NSArray getAllowed() {
         return NSArray.arrayWithObjects(
-                connect.name(),
-                browserview.name(),
-                transfers.name(),
-                quickconnect.name(),
-                tools.name(),
-                reload.name(),
-                encoding.name(),
-                synchronize.name(),
-                download.name(),
-                upload.name(),
-                edit.name(),
-                delete.name(),
-                newfolder.name(),
-                addbookmark.name(),
-                info.name(),
-                webbrowser.name(),
-                terminal.name(),
-                archive.name(),
-                BrowserToolbarItem.quicklook.name(),
-                disconnect.name(),
-                NSToolbarItem.NSToolbarCustomizeToolbarItemIdentifier,
-                NSToolbarItem.NSToolbarSpaceItemIdentifier,
-                NSToolbarItem.NSToolbarSeparatorItemIdentifier,
-                NSToolbarItem.NSToolbarFlexibleSpaceItemIdentifier
+            navigation.name(),
+            connect.name(),
+            browserview.name(),
+            transfers.name(),
+            quickconnect.name(),
+            tools.name(),
+            reload.name(),
+            encoding.name(),
+            synchronize.name(),
+            download.name(),
+            upload.name(),
+            edit.name(),
+            delete.name(),
+            newfolder.name(),
+            addbookmark.name(),
+            info.name(),
+            webbrowser.name(),
+            terminal.name(),
+            archive.name(),
+            quicklook.name(),
+            search.name(),
+            disconnect.name(),
+            NSToolbarItem.NSToolbarCustomizeToolbarItemIdentifier,
+            NSToolbarItem.NSToolbarSpaceItemIdentifier,
+            NSToolbarItem.NSToolbarSeparatorItemIdentifier,
+            NSToolbarItem.NSToolbarFlexibleSpaceItemIdentifier
         );
     }
 }

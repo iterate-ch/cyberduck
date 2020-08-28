@@ -1677,6 +1677,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
     }
 
+    public NSSearchField getSearchField() {
+        return searchField;
+    }
+
     @Action
     public void setSearchField(NSSearchField searchField) {
         this.searchField = searchField;
