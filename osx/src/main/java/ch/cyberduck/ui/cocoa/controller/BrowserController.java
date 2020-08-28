@@ -19,7 +19,6 @@ import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Delegate;
-import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.SheetInvoker;
 import ch.cyberduck.binding.WindowController;
@@ -331,7 +330,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public static NSUInteger applicationShouldTerminate(final NSApplication app) {
         // Determine if there are any open connections
         for(final BrowserController controller : MainController.getBrowsers()) {
-            if(!controller.unmount(new DisabledSheetCallback() {
+            if(!controller.unmount(new SheetCallback() {
                                        @Override
                                        public void callback(final int returncode) {
                                            if(returncode == DEFAULT_OPTION) { //Disconnect
@@ -3146,7 +3145,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return True if the unmount process has finished, false if the user has to agree first to close the connection
      */
     public boolean unmount(final Runnable disconnected) {
-        return this.unmount(new DisabledSheetCallback() {
+        return this.unmount(new SheetCallback() {
             @Override
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
