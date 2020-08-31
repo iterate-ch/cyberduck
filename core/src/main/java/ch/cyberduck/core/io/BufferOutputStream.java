@@ -55,7 +55,9 @@ public class BufferOutputStream extends ProxyOutputStream {
         }
         final byte[] chunk = new byte[len];
         System.arraycopy(bytes, off, chunk, 0, len);
-        buffer.write(chunk, offset);
+        if(buffer.write(chunk, offset) != len) {
+            log.warn(String.format("Failure buffering chunk of size %d", len));
+        }
         super.write(bytes, off, len);
     }
 
