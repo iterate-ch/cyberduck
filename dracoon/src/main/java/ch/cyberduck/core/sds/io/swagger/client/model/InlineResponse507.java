@@ -14,45 +14,12 @@ package ch.cyberduck.core.sds.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.cyberduck.core.sds.io.swagger.client.model.PresignedUrl;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.ArrayList;
-import java.util.List;
 /**
- * List of generated presigned URLs
+ * InlineResponse507
  */
-@Schema(description = "List of generated presigned URLs")
+
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-08-31T11:26:27.086143+02:00[Europe/Zurich]")
-public class PresignedUrlList {
-  @JsonProperty("urls")
-  private List<PresignedUrl> urls = new ArrayList<>();
-
-  public PresignedUrlList urls(List<PresignedUrl> urls) {
-    this.urls = urls;
-    return this;
-  }
-
-  public PresignedUrlList addUrlsItem(PresignedUrl urlsItem) {
-    this.urls.add(urlsItem);
-    return this;
-  }
-
-   /**
-   * List of S3 presigned URLs
-   * @return urls
-  **/
-  @Schema(required = true, description = "List of S3 presigned URLs")
-  public List<PresignedUrl> getUrls() {
-    return urls;
-  }
-
-  public void setUrls(List<PresignedUrl> urls) {
-    this.urls = urls;
-  }
-
+public class InlineResponse507 implements OneOfinlineResponse507 {
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -62,22 +29,20 @@ public class PresignedUrlList {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    PresignedUrlList presignedUrlList = (PresignedUrlList) o;
-    return Objects.equals(this.urls, presignedUrlList.urls);
+    return true;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(urls);
+    return Objects.hash();
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class PresignedUrlList {\n");
+    sb.append("class InlineResponse507 {\n");
     
-    sb.append("    urls: ").append(toIndentedString(urls)).append("\n");
     sb.append("}");
     return sb.toString();
   }

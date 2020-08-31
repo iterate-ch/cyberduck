@@ -15,7 +15,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.CreateShareUploadChannelRes
 import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import java.io.File;
 import ch.cyberduck.core.sds.io.swagger.client.model.GeneratePresignedUrlsRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse404;
+import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse507;
 import ch.cyberduck.core.sds.io.swagger.client.model.OpenIdAuthInfo;
 import ch.cyberduck.core.sds.io.swagger.client.model.PresignedUrlList;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadShare;
@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-08-20T10:17:39.204928+02:00[Europe/Zurich]")public class PublicApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-08-31T11:26:27.086143+02:00[Europe/Zurich]")public class PublicApi {
   private ApiClient apiClient;
 
   public PublicApi() {

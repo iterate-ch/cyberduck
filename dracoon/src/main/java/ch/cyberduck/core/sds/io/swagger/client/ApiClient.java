@@ -50,7 +50,7 @@ import ch.cyberduck.core.sds.io.swagger.client.auth.HttpBasicAuth;
 import ch.cyberduck.core.sds.io.swagger.client.auth.ApiKeyAuth;
 import ch.cyberduck.core.sds.io.swagger.client.auth.OAuth;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-08-20T10:17:39.204928+02:00[Europe/Zurich]")public class ApiClient {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-08-31T11:26:27.086143+02:00[Europe/Zurich]")public class ApiClient {
   protected Map<String, String> defaultHeaderMap = new HashMap<String, String>();
   protected String basePath = "https://duck.dracoon.com/api";
   protected boolean debugging = false;

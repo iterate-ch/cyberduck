@@ -11,7 +11,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.ChunkUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import java.io.File;
-import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse404;
+import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse507;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-08-20T10:17:39.204928+02:00[Europe/Zurich]")public class UploadsApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-08-31T11:26:27.086143+02:00[Europe/Zurich]")public class UploadsApi {
   private ApiClient apiClient;
 
   public UploadsApi() {

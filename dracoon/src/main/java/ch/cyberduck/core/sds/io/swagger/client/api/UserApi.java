@@ -14,7 +14,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.CustomerData;
 import ch.cyberduck.core.sds.io.swagger.client.model.EnableCustomerEncryptionRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import java.io.File;
-import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse400;
 import ch.cyberduck.core.sds.io.swagger.client.model.NotificationConfig;
 import ch.cyberduck.core.sds.io.swagger.client.model.NotificationConfigChangeRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.NotificationConfigList;
@@ -35,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-08-20T10:17:39.204928+02:00[Europe/Zurich]")public class UserApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-08-31T11:26:27.086143+02:00[Europe/Zurich]")public class UserApi {
   private ApiClient apiClient;
 
   public UserApi() {
@@ -1291,18 +1290,17 @@ import java.util.Map;
   }
   /**
    * Change avatar
-   * ### Description: Change the avatar.  ### Precondition: Authenticated user.  ### Postcondition: Avatar is changed.  ### Further Information: * Media type **MUST** be &#x60;jpeg&#x60; or &#x60;png&#x60; * File size **MUST** bei less than &#x60;5 MB&#x60; * Dimensions **MUST** be &#x60;256x256 px&#x60;
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.11.0&lt;/h3&gt;  ### Description: Change the avatar.  ### Precondition: Authenticated user.  ### Postcondition: Avatar is changed.  ### Further Information: * Media type **MUST** be &#x60;jpeg&#x60; or &#x60;png&#x60; * File size **MUST** bei less than &#x60;5 MB&#x60; * Dimensions **MUST** be &#x60;256x256 px&#x60;
    * @param file  (required)
-   * @param xSdsAuthToken2 Authentication token (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return Avatar
    * @throws ApiException if fails to make API call
    */
-  public Avatar uploadAvatarAsBinary1(File file, String xSdsAuthToken2, String xSdsAuthToken) throws ApiException {
+  public Avatar uploadAvatarAsMultipart(File file, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'file' is set
     if (file == null) {
-      throw new ApiException(400, "Missing the required parameter 'file' when calling uploadAvatarAsBinary1");
+      throw new ApiException(400, "Missing the required parameter 'file' when calling uploadAvatarAsMultipart");
     }
     // create path and map variables
     String localVarPath = "/v4/user/account/avatar";
@@ -1313,8 +1311,6 @@ import java.util.Map;
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
