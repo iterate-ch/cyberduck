@@ -55,9 +55,4 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
         }
         return false;
     }
-
-    @Override
-    public long getRetryInterval() {
-        return 0;
-    }
 }
