@@ -21,6 +21,8 @@
         <string>brick</string>
         <key>Vendor</key>
         <string>Action Verb</string>
+        <key>Bundled</key>
+        <true/>
         <key>Description</key>
         <string>Files.com</string>
         <key>Default Hostname</key>
