@@ -82,9 +82,6 @@ public class BrickPairingSchedulerFeature {
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
-            }
-            catch(Exception e) {
-                log.error(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
                 callback.close(null);
                 this.shutdown();
             }
