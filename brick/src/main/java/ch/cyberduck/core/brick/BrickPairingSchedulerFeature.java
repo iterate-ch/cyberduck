@@ -71,8 +71,13 @@ public class BrickPairingSchedulerFeature {
     }
 
     public Credentials repeat(final PasswordCallback callback) {
+        final long timeout = preferences.getLong("brick.pairing.interrupt.ms");
+        final long start = System.currentTimeMillis();
         scheduler.repeat(() -> {
             try {
+                if(System.currentTimeMillis() - start > timeout) {
+                    throw new ConnectionCanceledException(String.format("Interrupt polling for pairing key after %d", timeout));
+                }
                 this.operate(callback);
             }
             catch(ConnectionCanceledException e) {
