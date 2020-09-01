@@ -98,9 +98,8 @@ public class BrickPairingSchedulerFeature {
      * Pool for pairing key from service
      *
      * @param callback Callback when service returns 200
-     * @return Pairing keys
      */
-    private Credentials operate(final PasswordCallback callback) throws BackgroundException {
+    private void operate(final PasswordCallback callback) throws BackgroundException {
         try {
             final HttpPost resource = new HttpPost(String.format("%s/api/rest/v1/sessions/pairing_key/%s",
                 new HostUrlProvider().withUsername(false).withPath(false).get(session.getHost()), token));
@@ -150,7 +149,6 @@ public class BrickPairingSchedulerFeature {
                 }
             }
             callback.close(credentials.getUsername());
-            return credentials;
         }
         catch(JsonParseException e) {
             throw new DefaultIOExceptionMappingService().map(new IOException(e.getMessage(), e));
@@ -160,7 +158,7 @@ public class BrickPairingSchedulerFeature {
                 case HttpStatus.SC_NOT_FOUND:
                     log.warn(String.format("Missing login for pairing key %s", token));
                     cancel.verify();
-                    return null;
+                    break;
                 default:
                     throw new DefaultHttpResponseExceptionMappingService().map(e);
             }
