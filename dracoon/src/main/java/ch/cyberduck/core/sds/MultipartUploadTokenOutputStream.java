@@ -57,8 +57,7 @@ public class MultipartUploadTokenOutputStream extends OutputStream {
     private Long offset = 0L;
     private final Long length;
 
-    public MultipartUploadTokenOutputStream(final SDSSession session, final SDSNodeIdProvider nodeid,
-                                            final Path file, final TransferStatus status, final String uploadToken) {
+    public MultipartUploadTokenOutputStream(final SDSSession session, final Path file, final TransferStatus status, final String uploadToken) {
         this.session = session;
         this.file = file;
         this.uploadToken = uploadToken;
