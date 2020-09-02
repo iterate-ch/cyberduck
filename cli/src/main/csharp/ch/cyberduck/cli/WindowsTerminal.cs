@@ -38,14 +38,7 @@ namespace Ch.Cyberduck.Cli
 
             var preferences = new WindowsTerminalPreferences();
             open(args, preferences);
-            try
-            {
-                preferences.save();
-            }
-            catch
-            {
-                // Ignore failures saving preferences.
-            }
+            preferences.save();
         }
     }
 }

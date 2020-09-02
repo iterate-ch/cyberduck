@@ -75,9 +75,17 @@ namespace Ch.Cyberduck.Core.Preferences
         public override void save()
         {
             Log.debug("Saving preferences");
-            // re-set field to force save
-            Settings.Default.CdSettings = settings;
-            Settings.Default.Save();
+            try
+            {
+                // re-set field to force save
+                Settings.Default.CdSettings = settings;
+                Settings.Default.Save();
+            }
+            catch
+            {
+                // Ignore failures saving preferences.
+                Log.error("Could not save defaults");
+            }
         }
 
         public override void setProperty(string property, string value)
