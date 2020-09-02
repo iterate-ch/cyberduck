@@ -46,9 +46,9 @@ public class MemorySegementingOutputStream extends SegmentingOutputStream {
     @Override
     protected void checkThreshold(final int count) throws IOException {
         if(buffer.size() >= threshold) {
+            this.reset();
             this.flush(false);
         }
-        super.checkThreshold(count);
     }
 
     @Override
@@ -57,9 +57,9 @@ public class MemorySegementingOutputStream extends SegmentingOutputStream {
     }
 
     /**
-     * @param keepBelowThreshold Keep last segment smaller than threshold in buffer
+     * @param force Write last segment to proxy regardless if threshold is reached
      */
-    private void flush(final boolean keepBelowThreshold) throws IOException {
+    private void flush(final boolean force) throws IOException {
         // Copy from memory file to output
         final byte[] content = buffer.toByteArray();
         // Re-use buffer
@@ -67,7 +67,7 @@ public class MemorySegementingOutputStream extends SegmentingOutputStream {
         for(int offset = 0; offset < content.length; offset += threshold) {
             int len = Math.min(threshold, content.length - offset);
             final byte[] bytes = Arrays.copyOfRange(content, offset, offset + len);
-            if(keepBelowThreshold && len < threshold) {
+            if(!force && len < threshold) {
                 // Write to start of buffer
                 this.write(bytes);
             }
