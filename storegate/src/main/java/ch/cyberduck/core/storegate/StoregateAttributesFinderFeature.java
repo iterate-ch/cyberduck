@@ -17,6 +17,7 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -65,6 +66,16 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
         }
         if((f.getFlags() & File.FlagsEnum.Hidden.getValue()) == File.FlagsEnum.Hidden.getValue()) {
             attrs.setHidden(true);
+        }
+        // NoAccess	0
+        // ReadOnly	 1
+        // ReadWrite 2
+        // FullControl 99
+        if(File.PermissionEnum.NUMBER_1.getValue().equals(f.getPermission().getValue())) {
+            attrs.setPermission(new Permission(Permission.Action.read, Permission.Action.none, Permission.Action.none));
+        }
+        else {
+            attrs.setPermission(new Permission(Permission.Action.all, Permission.Action.none, Permission.Action.none));
         }
         return attrs;
     }
