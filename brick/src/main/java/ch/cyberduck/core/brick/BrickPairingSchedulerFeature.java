@@ -71,8 +71,13 @@ public class BrickPairingSchedulerFeature {
     }
 
     public Credentials repeat(final PasswordCallback callback) {
+        final long timeout = preferences.getLong("brick.pairing.interrupt.ms");
+        final long start = System.currentTimeMillis();
         scheduler.repeat(() -> {
             try {
+                if(System.currentTimeMillis() - start > timeout) {
+                    throw new ConnectionCanceledException(String.format("Interrupt polling for pairing key after %d", timeout));
+                }
                 this.operate(callback);
             }
             catch(ConnectionCanceledException e) {
@@ -82,9 +87,6 @@ public class BrickPairingSchedulerFeature {
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
-            }
-            catch(Exception e) {
-                log.error(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
                 callback.close(null);
                 this.shutdown();
             }
@@ -96,9 +98,8 @@ public class BrickPairingSchedulerFeature {
      * Pool for pairing key from service
      *
      * @param callback Callback when service returns 200
-     * @return Pairing keys
      */
-    private Credentials operate(final PasswordCallback callback) throws BackgroundException {
+    private void operate(final PasswordCallback callback) throws BackgroundException {
         try {
             final HttpPost resource = new HttpPost(String.format("%s/api/rest/v1/sessions/pairing_key/%s",
                 new HostUrlProvider().withUsername(false).withPath(false).get(session.getHost()), token));
@@ -148,7 +149,6 @@ public class BrickPairingSchedulerFeature {
                 }
             }
             callback.close(credentials.getUsername());
-            return credentials;
         }
         catch(JsonParseException e) {
             throw new DefaultIOExceptionMappingService().map(new IOException(e.getMessage(), e));
@@ -158,7 +158,7 @@ public class BrickPairingSchedulerFeature {
                 case HttpStatus.SC_NOT_FOUND:
                     log.warn(String.format("Missing login for pairing key %s", token));
                     cancel.verify();
-                    return null;
+                    break;
                 default:
                     throw new DefaultHttpResponseExceptionMappingService().map(e);
             }
