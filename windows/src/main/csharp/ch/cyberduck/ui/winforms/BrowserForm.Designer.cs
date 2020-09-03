@@ -1339,7 +1339,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.cryptomatorToolStripMenuItem.Name = "cryptomatorToolStripMenuItem";
             this.cryptomatorToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.cryptomatorToolStripMenuItem.Text = "Lock Vault";
+            this.cryptomatorToolStripMenuItem.Text = "Unlock Vault";
             // 
             // toolStripSeparator40
             // 
@@ -2277,7 +2277,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.cryptomatorContxtStripMenuItem.Name = "cryptomatorContxtStripMenuItem";
             this.cryptomatorContxtStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.cryptomatorContxtStripMenuItem.Text = "Lock Vault";
+            this.cryptomatorContxtStripMenuItem.Text = "Unlock Vault";
             // 
             // expandArchiveContextToolStripMenuItem
             // 
@@ -2422,9 +2422,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cryptomatorToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.cryptomatorToolStripButton.Name = "cryptomatorToolStripButton";
             this.cryptomatorToolStripButton.Size = new System.Drawing.Size(65, 53);
-            this.cryptomatorToolStripButton.Text = "Lock Vault";
+            this.cryptomatorToolStripButton.Text = "Unlock Vault";
             this.cryptomatorToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.cryptomatorToolStripButton.ToolTipText = "Lock Vault";
+            this.cryptomatorToolStripButton.ToolTipText = "Unlock Vault";
             // 
             // logToolStripButton
             // 
@@ -3291,7 +3291,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // cryptomatorBrowserContextMenuItem
             // 
             this.cryptomatorBrowserContextMenuItem.Index = 24;
-            this.cryptomatorBrowserContextMenuItem.Text = "Lock Vault";
+            this.cryptomatorBrowserContextMenuItem.Text = "Unlock Vault";
             // 
             // menuItem125
             // 
