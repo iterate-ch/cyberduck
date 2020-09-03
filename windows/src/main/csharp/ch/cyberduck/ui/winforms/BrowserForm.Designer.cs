@@ -3296,7 +3296,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // menuItem125
             // 
             this.menuItem125.Index = 25;
-            this.menuItem125.Text = "";
+            this.menuItem125.Text = "-";
             // 
             // createArchiveBrowserContextMenuItem
             // 
