@@ -645,7 +645,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // cryptomatorMainMenuItem
             // 
             this.cryptomatorMainMenuItem.Index = 26;
-            this.cryptomatorMainMenuItem.Text = "Lock Vault";
+            this.cryptomatorMainMenuItem.Text = "Unlock Vault";
             // 
             // menuItem57
             // 
