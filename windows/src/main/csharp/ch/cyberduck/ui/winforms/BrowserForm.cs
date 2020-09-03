@@ -2129,7 +2129,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(new ToolStripItem[] {revertToolStripMenuItem, revertContxtStripMenuItem},
                 new[] {revertMainMenuItem, revertBrowserContextMenuItem}, (sender, args) => RevertFile(),
                 () => ValidateRevertFile());
-            Commands.Add(new ToolStripItem[] {cryptomatorToolStripMenuItem, cryptomatorContxtStripMenuItem},
+            Commands.Add(new ToolStripItem[] {cryptomatorToolStripMenuItem, cryptomatorContxtStripMenuItem, cryptomatorToolStripButton},
                 new[] {cryptomatorMainMenuItem, cryptomatorBrowserContextMenuItem}, (sender, args) => LockUnlockVault(),
                 () => ValidateLockUnlockVault());
             Commands.Add(new ToolStripItem[] {createArchiveToolStripMenuItem, createArchiveContextToolStripMenuItem},
