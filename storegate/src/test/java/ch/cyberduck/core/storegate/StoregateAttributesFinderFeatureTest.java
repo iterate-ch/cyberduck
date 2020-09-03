@@ -41,6 +41,7 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        assertTrue(room.attributes().getPermission().isExecutable());
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
             new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes attr = new StoregateAttributesFinderFeature(session, nodeid).find(test);
@@ -48,6 +49,9 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
         assertEquals(Checksum.NONE, attr.getChecksum());
         assertNull(attr.getETag());
         assertNull(attr.getVersionId());
+        assertFalse(attr.getPermission().isExecutable());
+        assertTrue(attr.getPermission().isReadable());
+        assertTrue(attr.getPermission().isWritable());
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
