@@ -38,7 +38,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <rect key="contentRect" x="67" y="115" width="601" height="451"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <value key="minSize" type="size" width="600" height="200"/>
             <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="601" height="451"/>
@@ -414,6 +414,14 @@ CA
                 <menuItem isSeparatorItem="YES" id="87">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
+                <menuItem title="Lock Vault" keyEquivalent="l" id="oiv-b0-EWZ">
+                    <connections>
+                        <action selector="lockUnlockEncryptedVaultButtonClicked:" target="-1" id="0Jf-FX-vuw"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="VuF-ps-dL0">
+                    <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                </menuItem>
                 <menuItem title="Skapa arkiv" id="88">
                     <menu key="submenu" title="Skapa arkiv" id="89"/>
                 </menuItem>
@@ -516,6 +524,7 @@ DQ
                     </menu>
                 </menuItem>
             </items>
+            <point key="canvasLocation" x="-327" y="215"/>
         </menu>
         <button verticalHuggingPriority="750" id="124">
             <rect key="frame" x="0.0" y="0.0" width="123" height="19"/>

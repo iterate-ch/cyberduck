@@ -30,7 +30,20 @@ public interface VaultRegistry {
      */
     Vault find(Session session, Path file) throws VaultUnlockCancelException;
 
+    /**
+     * Add vault to registry
+     *
+     * @param vault Vault
+     * @return True if not already previously registered
+     */
     boolean add(Vault vault);
+
+    /**
+     * Lock and remove from registry
+     *
+     * @param vault Vault directory
+     */
+    boolean close(Path vault);
 
     /**
      * Close and remove all vaults in registry

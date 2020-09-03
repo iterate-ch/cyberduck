@@ -21,6 +21,7 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.preferences.Preferences;
@@ -61,9 +62,29 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     }
 
     @Override
+    public boolean add(final Vault vault) {
+        return super.add(vault);
+    }
+
+    @Override
+    public boolean close(final Path directory) {
+        return this.removeIf(vault -> {
+            if(new SimplePathPredicate(vault.getHome()).test(directory)) {
+                vault.close();
+                directory.attributes().setVault(null);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    @Override
     public boolean contains(final Path directory) {
         for(Vault vault : this) {
             if(directory.equals(vault.getHome())) {
+                return true;
+            }
+            if(directory.isChild(vault.getHome())) {
                 return true;
             }
         }

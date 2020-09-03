@@ -50,6 +50,7 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.keychain.SFCertificatePanel;
 import ch.cyberduck.core.keychain.SecurityFunctions;
 import ch.cyberduck.core.local.Application;
@@ -84,13 +85,17 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.LoadingVaultLookupListener;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultFactory;
+import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.worker.CopyWorker;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.CreateSymlinkWorker;
 import ch.cyberduck.core.worker.CreateVaultWorker;
 import ch.cyberduck.core.worker.DownloadShareWorker;
+import ch.cyberduck.core.worker.LoadVaultWorker;
+import ch.cyberduck.core.worker.LockVaultWorker;
 import ch.cyberduck.core.worker.MountWorker;
 import ch.cyberduck.core.worker.SearchWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
@@ -397,7 +402,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         if(null == filter) {
             this.searchField.setStringValue(StringUtils.EMPTY);
-            this.filenameFilter = SearchFilterFactory.create(this.showHiddenFiles);
+            this.filenameFilter = SearchFilterFactory.create(showHiddenFiles);
         }
         else {
             this.filenameFilter = filter;
@@ -2334,6 +2339,30 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Action
+    public void lockUnlockEncryptedVaultButtonClicked(final ID sender) {
+        final Path directory = new UploadTargetFinder(workdir).find(this.getSelectedPath());
+        if(directory.attributes().getVault() != null) {
+            // Lock and remove all open vaults
+            this.background(new WorkerBackgroundAction<>(this, pool, new LockVaultWorker(pool.getVault(), directory.attributes().getVault()) {
+                @Override
+                public void cleanup(final Path vault) {
+                    reload(vault, Collections.singleton(vault), Collections.emptyList(), true);
+                }
+            }));
+        }
+        else {
+            // Unlock vault
+            this.background(new WorkerBackgroundAction<>(this, pool, new LoadVaultWorker(new LoadingVaultLookupListener(pool.getVault(),
+                PasswordStoreFactory.get(), PasswordCallbackFactory.get(this)), directory) {
+                @Override
+                public void cleanup(final Vault vault) {
+                    reload(vault.getHome(), Collections.singleton(vault.getHome()), Collections.emptyList(), true);
+                }
+            }));
+        }
+    }
+
+    @Action
     public void renameFileButtonClicked(final ID sender) {
         final NSTableView browser = this.getSelectedBrowserView();
         browser.editRow(browser.columnWithIdentifier(BrowserColumn.filename.name()),
@@ -3348,6 +3377,20 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else if(action.equals(Foundation.selector("quicklookButtonClicked:"))) {
             item.setKeyEquivalent(" ");
             item.setKeyEquivalentModifierMask(0);
+        }
+        else if(action.equals(Foundation.selector("lockUnlockEncryptedVaultButtonClicked:"))) {
+            if(this.isMounted()) {
+                final Path selected = new UploadTargetFinder(this.workdir()).find(this.getSelectedPath());
+                final VaultRegistry registry = pool.getVault();
+                if(registry.contains(selected)) {
+                    item.setTitle(LocaleFactory.localizedString("Lock Vault", "Cryptomator"));
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
+                }
+                else {
+                    item.setTitle(LocaleFactory.localizedString("Unlock Vault", "Cryptomator"));
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate"));
+                }
+            }
         }
         return this.validate(action);
     }

@@ -19,30 +19,31 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
-import ch.cyberduck.core.vault.VaultLookupListener;
+import ch.cyberduck.core.vault.VaultRegistry;
 
+import java.text.MessageFormat;
 import java.util.Objects;
 
-public class LoadVaultWorker extends Worker<Vault> {
+public class LockVaultWorker extends Worker<Path> {
 
-    private final VaultLookupListener listener;
-    private final Path directory;
+    private final VaultRegistry registry;
+    private final Path vault;
 
-    public LoadVaultWorker(final VaultLookupListener listener, final Path directory) {
-        this.listener = listener;
-        this.directory = directory;
+    public LockVaultWorker(final VaultRegistry registry, final Path vault) {
+        this.registry = registry;
+        this.vault = vault;
     }
 
     @Override
-    public Vault run(final Session<?> session) throws BackgroundException {
-        return listener.load(session, directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER);
+    public Path run(final Session<?> session) throws BackgroundException {
+        registry.close(vault);
+        return vault;
     }
 
     @Override
     public String getActivity() {
-        return LocaleFactory.localizedString("Unlock Vault", "Cryptomator");
+        return MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
+            vault.getName());
     }
 
     @Override
@@ -53,19 +54,19 @@ public class LoadVaultWorker extends Worker<Vault> {
         if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        final LoadVaultWorker that = (LoadVaultWorker) o;
-        return Objects.equals(directory, that.directory);
+        final LockVaultWorker that = (LockVaultWorker) o;
+        return Objects.equals(vault, that.vault);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(directory);
+        return Objects.hash(vault);
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LoadVaultWorker{");
-        sb.append("directory=").append(directory);
+        final StringBuilder sb = new StringBuilder("LockVaultWorker{");
+        sb.append("directory=").append(vault);
         sb.append('}');
         return sb.toString();
     }
