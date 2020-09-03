@@ -1133,18 +1133,19 @@ namespace Ch.Cyberduck.Ui.Controller
         }
         private bool View_ValidateLockUnlockVault()
         {
-            if (IsMounted())
+            if (IsBrowser() && IsMounted() && !PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect"))
             {
                 Path selected = new UploadTargetFinder(Workdir).find(SelectedPath);
                 VaultRegistry registry = Session.getVault();
                 if (registry.contains(selected))
                 {
                     View.SetCryptomatorVaultTitle(LocaleFactory.localizedString("Lock Vault", "Cryptomator"));
+                    return true;
+
                 }
-                else
-                {
-                    View.SetCryptomatorVaultTitle(LocaleFactory.localizedString("Unlock Vault", "Cryptomator"));
-                }
+                View.SetCryptomatorVaultTitle(LocaleFactory.localizedString("Unlock Vault", "Cryptomator"));
+                return null != Cache.get(Workdir).find(new SimplePathPredicate(Path.Type.file,
+                    String.Format("{0}{1}{2}", Workdir.getAbsolute(), Path.DELIMITER, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME)));
             }
             return false;
         }

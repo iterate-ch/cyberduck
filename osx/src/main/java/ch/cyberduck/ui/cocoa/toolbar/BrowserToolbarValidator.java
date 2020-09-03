@@ -378,7 +378,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             return false;
         }
         else if(action.equals(cryptomator.action())) {
-            if(this.isBrowser() && controller.isMounted()) {
+            if(this.isBrowser() && controller.isMounted() && !PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect")) {
                 final Path selected = new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath());
                 final VaultRegistry registry = controller.getSession().getVault();
                 if(registry.contains(selected)) {
