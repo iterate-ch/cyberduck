@@ -26,12 +26,15 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
+import org.apache.log4j.Logger;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class Worker<T> {
+    private static final Logger log = Logger.getLogger(Worker.class);
 
     private final AtomicBoolean canceled
             = new AtomicBoolean();
@@ -70,6 +73,7 @@ public abstract class Worker<T> {
     }
 
     public void cancel() {
+        log.warn(String.format("Cancel worker %s", this));
         canceled.set(true);
     }
 
@@ -102,5 +106,13 @@ public abstract class Worker<T> {
          * @return True to descend into directories
          */
         boolean recurse(Path directory, T value);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Worker{");
+        sb.append("canceled=").append(canceled);
+        sb.append('}');
+        return sb.toString();
     }
 }
