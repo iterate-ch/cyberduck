@@ -71,12 +71,17 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
         // ReadOnly	 1
         // ReadWrite 2
         // FullControl 99
+        final Permission permission;
         if(File.PermissionEnum.NUMBER_1.getValue().equals(f.getPermission().getValue())) {
-            attrs.setPermission(new Permission(Permission.Action.read, Permission.Action.none, Permission.Action.none));
+            permission = new Permission(Permission.Action.read, Permission.Action.none, Permission.Action.none);
         }
         else {
-            attrs.setPermission(new Permission(Permission.Action.all, Permission.Action.none, Permission.Action.none));
+            permission = new Permission(Permission.Action.read_write, Permission.Action.none, Permission.Action.none);
         }
+        if((f.getFlags() & File.FlagsEnum.Folder.getValue()) == File.FlagsEnum.Folder.getValue()) {
+            permission.setUser(permission.getUser().or(Permission.Action.execute));
+        }
+        attrs.setPermission(permission);
         return attrs;
     }
 }
