@@ -661,6 +661,8 @@ public class Host implements Serializable, Comparable<Host> {
         sb.append(", uuid='").append(uuid).append('\'');
         sb.append(", nickname='").append(nickname).append('\'');
         sb.append(", defaultpath='").append(defaultpath).append('\'');
+        sb.append(", workdir=").append(workdir);
+        sb.append(", labels=").append(labels);
         sb.append('}');
         return sb.toString();
     }
