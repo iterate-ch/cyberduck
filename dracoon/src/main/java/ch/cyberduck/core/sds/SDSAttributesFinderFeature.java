@@ -137,6 +137,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         attributes.setCreationDate(node.getCreatedAt() != null ? node.getCreatedAt().getMillis() : -1L);
         attributes.setModificationDate(node.getUpdatedAt() != null ? node.getUpdatedAt().getMillis() : -1L);
         attributes.setSize(node.getSize());
+        attributes.setQuota(node.getQuota());
         attributes.setPermission(this.toPermission(node));
         attributes.setOwner(node.getUpdatedBy().getDisplayName());
         attributes.setAcl(this.toAcl(node));
