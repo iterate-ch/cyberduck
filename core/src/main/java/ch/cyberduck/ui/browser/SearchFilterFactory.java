@@ -31,7 +31,7 @@ public class SearchFilterFactory {
     /**
      * Filter hidden files.
      */
-    public static final Filter<Path> HIDDEN_FILTER = new RegexFilter();
+    public static final Filter<Path> HIDDEN_FILTER = new DefaultBrowserFilter();
 
     public static Filter<Path> create(final String input, final boolean hidden) {
         if(StringUtils.isBlank(input)) {
