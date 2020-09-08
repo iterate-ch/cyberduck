@@ -46,14 +46,14 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * Quota of folder
      */
-    private long quota = -1;
+    private Long quota;
 
     /**
      * The file modification date in milliseconds
      */
     private long modified = -1;
     /**
-     * Last accessed timestamp in millliseconds
+     * Last accessed timestamp in milliseconds
      */
     private long accessed = -1;
     /**
@@ -191,7 +191,7 @@ public class PathAttributes extends Attributes implements Serializable {
         if(size != -1) {
             dict.setStringForKey(String.valueOf(size), "Size");
         }
-        if(quota != -1) {
+        if(quota != null) {
             dict.setStringForKey(String.valueOf(quota), "Quota");
         }
         if(modified != -1) {
@@ -269,7 +269,7 @@ public class PathAttributes extends Attributes implements Serializable {
         return quota;
     }
 
-    public void setQuota(final long quota) {
+    public void setQuota(final Long quota) {
         this.quota = quota;
     }
 
