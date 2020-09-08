@@ -9,7 +9,7 @@
         <key>Description</key>
         <string>Spectra S3 (HTTPS)</string>
         <key>Authorization</key>
-        <string>AWS4HMACSHA256</string>
+        <string>AWS2</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Port</key>
