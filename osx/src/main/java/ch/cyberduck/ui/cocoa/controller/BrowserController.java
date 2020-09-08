@@ -214,7 +214,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * Caching files listings of previously listed directories
      */
     private final Cache<Path> cache
-        = new ReverseLookupCache<Path>(new PathCache(preferences.getInteger("browser.cache.size")), preferences.getInteger("browser.cache.size"));
+        = new ReverseLookupCache<>(new PathCache(preferences.getInteger("browser.cache.size")), preferences.getInteger("browser.cache.size"));
 
     private Scheduler scheduler;
 
@@ -517,17 +517,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     }
                 }
                 // Delay render until path is cached in the background
-                this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, pool,
-                        new SessionListWorker(cache, folder, listener) {
-                            @Override
-                            public void cleanup(final AttributedList<Path> list) {
-                                // Put into cache
-                                super.cleanup(list);
-                                // Update the working directory if listing is successful
-                                if(!(AttributedList.<Path>emptyList() == list)) {
-                                    // Reload browser
-                                    reload(browser, model, workdir, selected, folder);
-                                }
+                this.background(new WorkerBackgroundAction<>(this, pool,
+                    new SessionListWorker(cache, folder, listener) {
+                        @Override
+                        public void cleanup(final AttributedList<Path> list) {
+                            // Put into cache
+                            super.cleanup(list);
+                            // Update the working directory if listing is successful
+                            if(!(AttributedList.<Path>emptyList() == list)) {
+                                // Reload browser
+                                reload(browser, model, workdir, selected, folder);
+                            }
                             }
                         }
                     )
@@ -582,7 +582,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     private void updateQuickLookSelection(final List<Path> selected) {
-        final List<TransferItem> downloads = new ArrayList<TransferItem>();
+        final List<TransferItem> downloads = new ArrayList<>();
         for(Path file : selected) {
             if(!file.isFile()) {
                 continue;
@@ -623,7 +623,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final AbstractBrowserTableDelegate delegate = this.getSelectedBrowserDelegate();
         final NSTableView view = this.getSelectedBrowserView();
         final NSIndexSet iterator = view.selectedRowIndexes();
-        final List<Path> selected = new ArrayList<Path>();
+        final List<Path> selected = new ArrayList<>();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             final Path file = delegate.pathAtRow(index.intValue());
             if(null == file) {
@@ -1726,7 +1726,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     if(null == action) {
                         return;
                     }
-                    switch(Integer.valueOf(action.toString())) {
+                    switch(Integer.parseInt(action.toString())) {
                         case NSText.NSReturnTextMovement:
                             // Prompt for recursive search when pressing return key
                             final NSAlert alert = NSAlert.alert(
@@ -1741,7 +1741,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                 public void callback(int returncode) {
                                     if(returncode == DEFAULT_OPTION) {
                                         // Delay render until path is cached in the background
-                                        background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, pool,
+                                        background(new WorkerBackgroundAction<>(BrowserController.this, pool,
                                             new SearchWorker(workdir, filenameFilter, cache, listener) {
                                                 @Override
                                                 public void cleanup(final AttributedList<Path> list) {
@@ -1863,7 +1863,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void deleteBookmarkButtonClicked(final ID sender) {
         NSIndexSet iterator = bookmarkTable.selectedRowIndexes();
-        final List<Host> selected = new ArrayList<Host>();
+        final List<Host> selected = new ArrayList<>();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             selected.add(bookmarkModel.getSource().get(index.intValue()));
         }
@@ -2171,7 +2171,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void reloadButtonClicked(final ID sender) {
         if(this.isMounted()) {
             // Find folders to reload
-            final Set<Path> folders = new HashSet<Path>();
+            final Set<Path> folders = new HashSet<>();
             switch(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view"))) {
                 case outline: {
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
@@ -2238,7 +2238,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final CreateFileController sheet = new CreateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateFileController.Callback() {
             @Override
             public void callback(final boolean edit, final Path file) {
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
+                background(new WorkerBackgroundAction<>(BrowserController.this, pool,
                     new TouchWorker(file) {
                         @Override
                         public void cleanup(final Path folder) {
@@ -2259,7 +2259,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void createSymlinkButtonClicked(final ID sender) {
         final CreateSymlinkController sheet = new CreateSymlinkController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateSymlinkController.Callback() {
             public void callback(final Path selected, final Path link) {
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, pool, new CreateSymlinkWorker(link, selected.getName()) {
+                background(new WorkerBackgroundAction<>(BrowserController.this, pool, new CreateSymlinkWorker(link, selected.getName()) {
                     @Override
                     public void cleanup(final Path symlink) {
                         reload(workdir, Collections.singletonList(symlink), Collections.singletonList(symlink));
@@ -2275,20 +2275,20 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final DuplicateFileController sheet = new DuplicateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new DuplicateFileController.Callback() {
             @Override
             public void callback(final Map<Path, Path> selected) {
-                new OverwriteController(BrowserController.this).overwrite(new ArrayList<Path>(selected.values()), new DefaultMainAction() {
+                new OverwriteController(BrowserController.this).overwrite(new ArrayList<>(selected.values()), new DefaultMainAction() {
                     @Override
                     public void run() {
-                        background(new WorkerBackgroundAction<Map<Path, Path>>(BrowserController.this, pool,
-                                new CopyWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool, cache,
-                                    BrowserController.this, LoginCallbackFactory.get(BrowserController.this)) {
-                                    @Override
-                                    public void cleanup(final Map<Path, Path> result) {
-                                        final List<Path> changed = new ArrayList<>();
-                                        changed.addAll(result.keySet());
-                                        changed.addAll(result.values());
-                                        reload(workdir, changed, new ArrayList<Path>(selected.values()));
-                                    }
+                        background(new WorkerBackgroundAction<>(BrowserController.this, pool,
+                            new CopyWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool, cache,
+                                BrowserController.this, LoginCallbackFactory.get(BrowserController.this)) {
+                                @Override
+                                public void cleanup(final Map<Path, Path> result) {
+                                    final List<Path> changed = new ArrayList<>();
+                                    changed.addAll(result.keySet());
+                                    changed.addAll(result.values());
+                                    reload(workdir, changed, new ArrayList<>(selected.values()));
                                 }
+                            }
                             )
                         );
                     }
@@ -2306,7 +2306,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
             @Override
             public void callback(final Path folder, final String region) {
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
+                background(new WorkerBackgroundAction<>(BrowserController.this, pool,
                     new CreateDirectoryWorker(folder, region) {
                         @Override
                         public void cleanup(final Path folder) {
@@ -2325,7 +2325,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             feature != null ? feature.getLocations() : Collections.emptySet(), new VaultController.Callback() {
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
+                background(new WorkerBackgroundAction<>(BrowserController.this, pool,
                     new CreateVaultWorker(region, passphrase, PasswordStoreFactory.get(), VaultFactory.get(folder, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER)) {
                         @Override
                         public void cleanup(final Path vault) {
@@ -2383,13 +2383,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void sendCustomCommandClicked(final ID sender) {
         final CommandController controller = new CommandController(this, pool);
-        final SheetInvoker sheet = new SheetInvoker(new SheetCallback() {
-            @Override
-            public void callback(final int returncode) {
-                controller.callback(returncode);
-            }
-        }, this, controller);
-
+        final SheetInvoker sheet = new SheetInvoker(controller, this, controller);
         sheet.beginSheet();
     }
 
@@ -2415,7 +2409,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     protected void edit(final Editor editor, final Path file) {
-        this.background(new WorkerBackgroundAction<Transfer>(this, pool, editor.open(
+        this.background(new WorkerBackgroundAction<>(this, pool, editor.open(
             new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(),
             new DefaultEditorListener(this, pool, editor, new DefaultEditorListener.Listener() {
                 @Override
@@ -2460,17 +2454,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void shareFileButtonClicked(final ID sender) {
         final Path file = this.getSelectedPath();
-        this.background(new WorkerBackgroundAction<DescriptiveUrl>(this, pool,
-                new DownloadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this)) {
-                    @Override
-                    public void cleanup(final DescriptiveUrl url) {
-                        // Display
-                        if(!DescriptiveUrl.EMPTY.equals(url)) {
-                            final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Create Download Share", "Share"),
-                                MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
-                                LocaleFactory.localizedString("Continue", "Credentials"),
-                                LocaleFactory.localizedString("Copy", "Main"),
-                                null)) {
+        this.background(new WorkerBackgroundAction<>(this, pool,
+            new DownloadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this)) {
+                @Override
+                public void cleanup(final DescriptiveUrl url) {
+                    // Display
+                    if(!DescriptiveUrl.EMPTY.equals(url)) {
+                        final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Create Download Share", "Share"),
+                            MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
+                            LocaleFactory.localizedString("Continue", "Credentials"),
+                            LocaleFactory.localizedString("Copy", "Main"),
+                            null)) {
                                 @Override
                                 public void callback(final int returncode) {
                                     switch(returncode) {
@@ -2521,7 +2515,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(sheet.URL() != null) {
                 final Local target = LocalFactory.get(sheet.URL().path());
                 new DownloadDirectoryFinder().save(pool.getHost(), target);
-                final List<TransferItem> downloads = new ArrayList<TransferItem>();
+                final List<TransferItem> downloads = new ArrayList<>();
                 for(Path file : this.getSelectedPaths()) {
                     downloads.add(new TransferItem(file, LocalFactory.get(target, file.getName())));
                 }
@@ -2603,7 +2597,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void downloadButtonClicked(final ID sender) {
-        final List<TransferItem> downloads = new ArrayList<TransferItem>();
+        final List<TransferItem> downloads = new ArrayList<>();
         final Local folder = new DownloadDirectoryFinder().find(pool.getHost());
         for(Path file : this.getSelectedPaths()) {
             downloads.add(new TransferItem(
@@ -2653,7 +2647,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             // Selected files on the local filesystem
             final NSArray selected = sheet.URLs();
             final NSEnumerator iterator = selected.objectEnumerator();
-            final List<TransferItem> uploads = new ArrayList<TransferItem>();
+            final List<TransferItem> uploads = new ArrayList<>();
             boolean parentFound = false;
             Local parent = null;
             NSObject next;
@@ -2668,7 +2662,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 else if(parentFound && localParent != parent) {
                     parent = null;
                 }
-
                 uploads.add(new TransferItem(
                     new Path(destination, local.getName(),
                         local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local
@@ -2684,7 +2677,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     public void transfer(final Transfer transfer) {
-        final List<Path> selected = new ArrayList<Path>();
+        final List<Path> selected = new ArrayList<>();
         for(TransferItem i : transfer.getRoots()) {
             selected.add(i.remote);
         }
@@ -2902,13 +2895,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.size.name()))) {
                 copy.append(",");
                 if(-1 != next.attributes().getSize()) {
-                    copy.append(String.valueOf(next.attributes().getSize()));
+                    copy.append(next.attributes().getSize());
                 }
             }
             if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.modified.name()))) {
                 copy.append(",");
                 if(-1 != next.attributes().getModificationDate()) {
-                    copy.append(String.valueOf(next.attributes().getModificationDate()));
+                    copy.append(next.attributes().getModificationDate());
                 }
             }
             if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.owner.name()))) {
@@ -2967,7 +2960,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.upload(pboard);
         }
         else {
-            final Map<Path, Path> files = new HashMap<Path, Path>();
+            final Map<Path, Path> files = new HashMap<>();
             final Path parent = workdir;
             for(final Path next : pasteboard) {
                 Path renamed = new Path(parent, next.getName(), next.getType(), new PathAttributes(next.attributes()));
@@ -2978,10 +2971,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 new MoveController(this).rename(files);
             }
             if(pasteboard.isCopy()) {
-                new OverwriteController(BrowserController.this).overwrite(new ArrayList<Path>(files.values()), new DefaultMainAction() {
+                new OverwriteController(BrowserController.this).overwrite(new ArrayList<>(files.values()), new DefaultMainAction() {
                     @Override
                     public void run() {
-                        transfer(new CopyTransfer(pool.getHost(), pool.getHost(), files), new ArrayList<Path>(files.values()), true);
+                        transfer(new CopyTransfer(pool.getHost(), pool.getHost(), files), new ArrayList<>(files.values()), true);
                     }
                 });
             }
@@ -3001,7 +2994,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(o != null) {
                 if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
-                    final List<TransferItem> uploads = new ArrayList<TransferItem>();
+                    final List<TransferItem> uploads = new ArrayList<>();
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         final Local local = LocalFactory.get(elements.objectAtIndex(new NSUInteger(i)).toString());
                         uploads.add(new TransferItem(new Path(workdir, local.getName(),
@@ -3272,12 +3265,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Override
     public boolean windowShouldClose(final NSWindow sender) {
-        return this.unmount(new Runnable() {
-            @Override
-            public void run() {
-                sender.close();
-            }
-        });
+        return this.unmount(sender::close);
     }
 
     /**
@@ -3741,7 +3729,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
     }
 
-    private final class QuicklookTransferBackgroundAction extends BrowserTransferBackgroundAction {
+    private static final class QuicklookTransferBackgroundAction extends BrowserTransferBackgroundAction {
         private final QuickLook quicklook;
         private final List<TransferItem> downloads;
 
@@ -3775,7 +3763,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         @Override
         public void cleanup() {
             super.cleanup();
-            final List<Local> previews = new ArrayList<Local>();
+            final List<Local> previews = new ArrayList<>();
             for(TransferItem download : downloads) {
                 previews.add(download.local);
             }
