@@ -8,6 +8,8 @@
         <string>spectralogic-https</string>
         <key>Description</key>
         <string>Spectra S3 (HTTPS)</string>
+        <key>Authorization</key>
+        <string>AWS4HMACSHA256</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Port</key>
