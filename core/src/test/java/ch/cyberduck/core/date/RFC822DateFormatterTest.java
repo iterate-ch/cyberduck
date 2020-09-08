@@ -17,7 +17,8 @@ package ch.cyberduck.core.date;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class RFC822DateFormatterTest {
 
@@ -28,6 +29,6 @@ public class RFC822DateFormatterTest {
 
     @Test
     public void testParse() throws Exception {
-        assertEquals(1599688800000L, new RFC822DateFormatter().parse("Thu, 10 Sep 2020 00:00:00 GMT").getTime(), 0L);
+        assertEquals(1599696000000L, new RFC822DateFormatter().parse("Thu, 10 Sep 2020 00:00:00 GMT").getTime(), 0L);
     }
 }

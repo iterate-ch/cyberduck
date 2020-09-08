@@ -19,6 +19,7 @@ package ch.cyberduck.core.date;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class RFC822DateFormatter extends AbstractDateFormatter {
 
@@ -27,6 +28,10 @@ public class RFC822DateFormatter extends AbstractDateFormatter {
      */
     private static final SimpleDateFormat rfc822 =
         new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+
+    static {
+        rfc822.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
 
     public RFC822DateFormatter() {
         super(rfc822);
