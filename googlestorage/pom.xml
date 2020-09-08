@@ -23,7 +23,7 @@
     </parent>
     <artifactId>googlestorage</artifactId>
     <properties>
-        <google-api-services-storage-version>v1-rev20200813-1.30.10</google-api-services-storage-version>
+        <google-api-services-storage-version>v1-rev20200814-1.30.10</google-api-services-storage-version>
     </properties>
     <dependencies>
         <dependency>
