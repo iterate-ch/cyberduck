@@ -392,6 +392,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler SortBookmarksByHostname;
         public event VoidHandler RevertFile;
         public event ValidateCommand ValidateRevertFile;
+        public event VoidHandler RestoreFile;
+        public event ValidateCommand ValidateRestoreFile;
         public event VoidHandler LockUnlockVault;
         public event ValidateCommand ValidateLockUnlockVault;
 
@@ -2129,6 +2131,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(new ToolStripItem[] {revertToolStripMenuItem, revertContxtStripMenuItem},
                 new[] {revertMainMenuItem, revertBrowserContextMenuItem}, (sender, args) => RevertFile(),
                 () => ValidateRevertFile());
+            Commands.Add(new ToolStripItem[] {restoreToolStripMenuItem, restoreContxtStripMenuItem},
+                new[] {restoreMainMenuItem, restoreBrowserContextMenuItem}, (sender, args) => RestoreFile(),
+                () => ValidateRestoreFile());
             Commands.Add(new ToolStripItem[] {cryptomatorToolStripMenuItem, cryptomatorContxtStripMenuItem, cryptomatorToolStripButton},
                 new[] {cryptomatorMainMenuItem, cryptomatorBrowserContextMenuItem}, (sender, args) => LockUnlockVault(),
                 () => ValidateLockUnlockVault());

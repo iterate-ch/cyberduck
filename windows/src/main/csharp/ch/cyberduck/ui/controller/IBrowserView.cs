@@ -145,6 +145,8 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidateDelete;
         event VoidHandler RevertFile;
         event ValidateCommand ValidateRevertFile;
+        event VoidHandler RestoreFile;
+        event ValidateCommand ValidateRestoreFile;
         event VoidHandler LockUnlockVault;
         event ValidateCommand ValidateLockUnlockVault;
         event ArchivesHandler GetArchives;

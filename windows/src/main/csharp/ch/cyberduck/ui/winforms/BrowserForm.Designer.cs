@@ -62,6 +62,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuItem21 = new System.Windows.Forms.MenuItem();
             this.deleteMainMenuItem = new System.Windows.Forms.MenuItem();
             this.revertMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.restoreMainMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem24 = new System.Windows.Forms.MenuItem();
             this.cryptomatorMainMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem57 = new System.Windows.Forms.MenuItem();
@@ -169,6 +170,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator25 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.revertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.restoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.cryptomatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator40 = new System.Windows.Forms.ToolStripSeparator();
@@ -297,6 +299,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.revertContxtStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.restoreContxtStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.cryptomatorContxtStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -414,6 +417,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuItem101 = new System.Windows.Forms.MenuItem();
             this.deleteBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
             this.revertBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.restoreBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem110 = new System.Windows.Forms.MenuItem();
             this.cryptomatorBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem125 = new System.Windows.Forms.MenuItem();
@@ -501,6 +505,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuItem21,
             this.deleteMainMenuItem,
             this.revertMainMenuItem,
+            this.restoreMainMenuItem,
             this.menuItem24,
             this.cryptomatorMainMenuItem,
             this.menuItem57,
@@ -637,50 +642,55 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.revertMainMenuItem.Index = 24;
             this.revertMainMenuItem.Text = "Revert";
             // 
+            // restoreMainMenuItem
+            // 
+            this.restoreMainMenuItem.Index = 25;
+            this.restoreMainMenuItem.Text = "Restore";
+            // 
             // menuItem24
             // 
-            this.menuItem24.Index = 25;
+            this.menuItem24.Index = 26;
             this.menuItem24.Text = "-";
             // 
             // cryptomatorMainMenuItem
             // 
-            this.cryptomatorMainMenuItem.Index = 26;
+            this.cryptomatorMainMenuItem.Index = 27;
             this.cryptomatorMainMenuItem.Text = "Unlock Vault";
             // 
             // menuItem57
             // 
-            this.menuItem57.Index = 27;
+            this.menuItem57.Index = 28;
             this.menuItem57.Text = "-";
             // 
             // createArchiveMainMenuItem
             // 
-            this.createArchiveMainMenuItem.Index = 28;
+            this.createArchiveMainMenuItem.Index = 29;
             this.createArchiveMainMenuItem.Text = "Create Archive";
             // 
             // expandArchiveMainMenuItem
             // 
-            this.expandArchiveMainMenuItem.Index = 29;
+            this.expandArchiveMainMenuItem.Index = 30;
             this.expandArchiveMainMenuItem.Text = "Expand Archive";
             // 
             // menuItem27
             // 
-            this.menuItem27.Index = 30;
+            this.menuItem27.Index = 31;
             this.menuItem27.Text = "-";
             // 
             // printMainMenuItem
             // 
             this.printMainMenuItem.Enabled = false;
-            this.printMainMenuItem.Index = 31;
+            this.printMainMenuItem.Index = 32;
             this.printMainMenuItem.Text = "Print…";
             // 
             // menuItem29
             // 
-            this.menuItem29.Index = 32;
+            this.menuItem29.Index = 33;
             this.menuItem29.Text = "-";
             // 
             // exitMainMenuItem
             // 
-            this.exitMainMenuItem.Index = 33;
+            this.exitMainMenuItem.Index = 34;
             this.exitMainMenuItem.Text = "Exit";
             // 
             // mainMenuItem2
@@ -1177,6 +1187,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator25,
             this.deleteToolStripMenuItem,
             this.revertToolStripMenuItem,
+            this.restoreToolStripMenuItem,
             this.toolStripSeparator11,
             this.cryptomatorToolStripMenuItem,
             this.toolStripSeparator40,
@@ -1329,6 +1340,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.revertToolStripMenuItem.Name = "revertToolStripMenuItem";
             this.revertToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.revertToolStripMenuItem.Text = "Revert";
+            // 
+            // restoreToolStripMenuItem
+            // 
+            this.restoreToolStripMenuItem.Name = "restoreToolStripMenuItem";
+            this.restoreToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.restoreToolStripMenuItem.Text = "Restore";
             // 
             // toolStripSeparator11
             // 
@@ -2128,6 +2145,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator3,
             this.deleteContextToolStripMenuItem,
             this.revertContxtStripMenuItem,
+            this.restoreContxtStripMenuItem,
             this.toolStripSeparator4,
             this.cryptomatorContxtStripMenuItem,
             this.toolStripSeparator41,
@@ -2267,6 +2285,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.revertContxtStripMenuItem.Name = "revertContxtStripMenuItem";
             this.revertContxtStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.revertContxtStripMenuItem.Text = "Revert";
+            // 
+            // restoreContxtStripMenuItem
+            // 
+            this.restoreContxtStripMenuItem.Name = "restoreContxtStripMenuItem";
+            this.restoreContxtStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.restoreContxtStripMenuItem.Text = "Restore";
             // 
             // toolStripSeparator4
             // 
@@ -3159,6 +3183,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuItem101,
             this.deleteBrowserContextMenuItem,
             this.revertBrowserContextMenuItem,
+            this.restoreBrowserContextMenuItem,
             this.menuItem110,
             this.cryptomatorBrowserContextMenuItem,
             this.menuItem125,
@@ -3283,44 +3308,49 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.revertBrowserContextMenuItem.Index = 22;
             this.revertBrowserContextMenuItem.Text = "Revert";
             // 
+            // restoreBrowserContextMenuItem
+            // 
+            this.restoreBrowserContextMenuItem.Index = 23;
+            this.restoreBrowserContextMenuItem.Text = "Restore";
+            // 
             // menuItem110
             // 
-            this.menuItem110.Index = 23;
+            this.menuItem110.Index = 24;
             this.menuItem110.Text = "-";
             // 
             // cryptomatorBrowserContextMenuItem
             // 
-            this.cryptomatorBrowserContextMenuItem.Index = 24;
+            this.cryptomatorBrowserContextMenuItem.Index = 25;
             this.cryptomatorBrowserContextMenuItem.Text = "Unlock Vault";
             // 
             // menuItem125
             // 
-            this.menuItem125.Index = 25;
+            this.menuItem125.Index = 26;
             this.menuItem125.Text = "-";
             // 
             // createArchiveBrowserContextMenuItem
             // 
-            this.createArchiveBrowserContextMenuItem.Index = 26;
+            this.createArchiveBrowserContextMenuItem.Index = 27;
             this.createArchiveBrowserContextMenuItem.Text = "Create Archive";
             // 
             // expandArchiveBrowserContextMnuItem
             // 
-            this.expandArchiveBrowserContextMnuItem.Index = 27;
+            this.expandArchiveBrowserContextMnuItem.Index = 28;
             this.expandArchiveBrowserContextMnuItem.Text = "Expand Archive";
             // 
             // menuItem113
             // 
-            this.menuItem113.Index = 28;
+            this.menuItem113.Index = 29;
             this.menuItem113.Text = "-";
             // 
             // newBrowserBrowserContextMenuItem
             // 
-            this.newBrowserBrowserContextMenuItem.Index = 29;
+            this.newBrowserBrowserContextMenuItem.Index = 30;
             this.newBrowserBrowserContextMenuItem.Text = "New Browser";
             // 
             // newBookmarkBrowserContextMenuItem
             // 
-            this.newBookmarkBrowserContextMenuItem.Index = 30;
+            this.newBookmarkBrowserContextMenuItem.Index = 31;
             this.newBookmarkBrowserContextMenuItem.Text = "New Bookmark";
             // 
             // bookmarkContextMenu
@@ -3585,9 +3615,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator25;
         private System.Windows.Forms.ToolStripMenuItem revertToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem restoreToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cryptomatorToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator26;
         private System.Windows.Forms.ToolStripMenuItem revertContxtStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem restoreContxtStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cryptomatorContxtStripMenuItem;
         private System.Windows.Forms.ToolStrip actionToolStrip;
         private System.Windows.Forms.ToolStripButton newBookmarkToolStripButton;
@@ -3679,6 +3711,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.MenuItem menuItem21;
         private System.Windows.Forms.MenuItem deleteMainMenuItem;
         private System.Windows.Forms.MenuItem revertMainMenuItem;
+        private System.Windows.Forms.MenuItem restoreMainMenuItem;
         private System.Windows.Forms.MenuItem cryptomatorMainMenuItem;
         private System.Windows.Forms.MenuItem menuItem24;
         private System.Windows.Forms.MenuItem menuItem57;
@@ -3779,6 +3812,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.MenuItem menuItem101;
         private System.Windows.Forms.MenuItem deleteBrowserContextMenuItem;
         private System.Windows.Forms.MenuItem revertBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem restoreBrowserContextMenuItem;
         private System.Windows.Forms.MenuItem menuItem105;
         private System.Windows.Forms.MenuItem cryptomatorBrowserContextMenuItem;
         private System.Windows.Forms.MenuItem menuItem125;
