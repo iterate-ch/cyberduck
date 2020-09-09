@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Restore;
@@ -102,28 +103,35 @@ public class Glacier implements Restore {
     @Override
     public void restore(final Path file, final LoginCallback prompt) throws BackgroundException {
         final Path container = containerService.getContainer(file);
-        this.authenticated(new Authenticated<Void>() {
-            @Override
-            public Void call() throws BackgroundException {
-                try {
-                    final AmazonS3 client = client(container);
-                    // Standard - S3 Standard retrievals allow you to access any of your archived objects within several hours.
-                    // This is the default option for the GLACIER and DEEP_ARCHIVE retrieval requests that do not specify
-                    // the retrieval option. S3 Standard retrievals typically complete within 3-5 hours from the GLACIER
-                    // storage class and typically complete within 12 hours from the DEEP_ARCHIVE storage class.
-                    client.restoreObjectV2(new RestoreObjectRequest(container.getName(), containerService.getKey(file))
-                        // To restore a specific object version, you can provide a version ID. If you don't provide a version ID, Amazon S3 restores the current version.
-                        .withVersionId(file.attributes().getVersionId())
-                        .withExpirationInDays(preferences.getInteger("s3.glacier.restore.expiration.days"))
-                        .withGlacierJobParameters(new GlacierJobParameters().withTier(preferences.getProperty("s3.glacier.restore.tier")))
-                    );
+        try {
+            this.authenticated(new Authenticated<Void>() {
+                @Override
+                public Void call() throws BackgroundException {
+                    try {
+                        final AmazonS3 client = client(container);
+                        // Standard - S3 Standard retrievals allow you to access any of your archived objects within several hours.
+                        // This is the default option for the GLACIER and DEEP_ARCHIVE retrieval requests that do not specify
+                        // the retrieval option. S3 Standard retrievals typically complete within 3-5 hours from the GLACIER
+                        // storage class and typically complete within 12 hours from the DEEP_ARCHIVE storage class.
+                        client.restoreObjectV2(new RestoreObjectRequest(container.getName(), containerService.getKey(file))
+                            // To restore a specific object version, you can provide a version ID. If you don't provide a version ID, Amazon S3 restores the current version.
+                            .withVersionId(file.attributes().getVersionId())
+                            .withExpirationInDays(preferences.getInteger("s3.glacier.restore.expiration.days"))
+                            .withGlacierJobParameters(new GlacierJobParameters().withTier(preferences.getProperty("s3.glacier.restore.tier")))
+                        );
+                        // 200 Reply if already restored
+                    }
+                    catch(AmazonClientException e) {
+                        throw new AmazonServiceExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+                    }
+                    return null;
                 }
-                catch(AmazonClientException e) {
-                    throw new AmazonServiceExceptionMappingService().map("Failure to write attributes of {0}", e, file);
-                }
-                return null;
-            }
-        }, prompt);
+            }, prompt);
+        }
+        catch(ConflictException e) {
+            // 409 when restore is in progress
+            log.warn(String.format("Restore for %s already in progress %s", file, e));
+        }
     }
 
     @Override
