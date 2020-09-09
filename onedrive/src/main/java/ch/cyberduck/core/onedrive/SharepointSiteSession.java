@@ -24,8 +24,11 @@ import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.types.GroupItem;
 import org.nuxeo.onedrive.client.types.Site;
+
+import java.util.Objects;
 
 public class SharepointSiteSession extends AbstractSharepointSession {
     public SharepointSiteSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -39,14 +42,18 @@ public class SharepointSiteSession extends AbstractSharepointSession {
 
     @Override
     public Site getSite(final Path file) throws BackgroundException {
-        if (file.isRoot()) {
+        final Path parent = file.getParent();
+        if (parent.isRoot()) {
             String path = host.getDefaultPath();
+            if (StringUtils.isBlank(path) || "/".equals(path)) {
+                return Site.byId(getClient(), "root");
+            }
             if (!path.startsWith("/")) {
                 path = "/" + path;
             }
-            return new Site(getClient(), host.getHostname(), path);
+            return Site.byPath(Site.byHostname(getClient(), host.getHostname()), path);
         }
-        return new Site(getClient(), fileIdProvider.getFileid(file.getParent(), new DisabledListProgressListener()));
+        return Site.byId(getClient(), fileIdProvider.getFileid(parent, new DisabledListProgressListener()));
     }
 
     @Override

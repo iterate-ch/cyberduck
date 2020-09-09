@@ -47,7 +47,7 @@ public class SharepointSession extends AbstractSharepointSession {
 
     @Override
     public Site getSite(final Path file) throws BackgroundException {
-        return new Site(getClient(), fileIdProvider.getFileid(file.getParent(), new DisabledListProgressListener()));
+        return Site.byId(getClient(), fileIdProvider.getFileid(file.getParent(), new DisabledListProgressListener()));
     }
 
     @Override

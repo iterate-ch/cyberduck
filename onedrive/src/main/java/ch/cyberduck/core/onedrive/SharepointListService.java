@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
@@ -28,9 +29,15 @@ import ch.cyberduck.core.onedrive.features.sharepoint.GroupDrivesListService;
 import ch.cyberduck.core.onedrive.features.sharepoint.SiteDrivesListService;
 import ch.cyberduck.core.onedrive.features.sharepoint.SitesListService;
 
+import org.apache.log4j.Logger;
+import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.types.Site;
+
+import java.io.IOException;
 import java.util.EnumSet;
 
 public class SharepointListService extends AbstractSharepointListService {
+    static final Logger log = Logger.getLogger(SharepointListService.class);
 
     public static final String DEFAULT_ID = "DEFAULT_NAME";
     public static final String DRIVES_ID = "DRIVES_NAME";
@@ -51,7 +58,29 @@ public class SharepointListService extends AbstractSharepointListService {
 
     @Override
     AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return addDefaultItems(directory, listener);
+        final AttributedList<Path> list = new AttributedList<>();
+        try {
+            final Site site = Site.byId(session.getClient(), "root");
+            final Site.Metadata metadata = site.getMetadata();
+            final EnumSet<Path.Type> type = DEFAULT_NAME.getType().clone();
+            type.add(Path.Type.symboliclink);
+            final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new PathAttributes());
+            path.setSymlinkTarget(
+                new Path(SITES_NAME, metadata.getSiteCollection().getHostname(), SITES_NAME.getType(),
+                    new PathAttributes().withVersionId(metadata.getId())));
+            list.add(path);
+        }
+        catch(IOException ex) {
+            log.error("Cannot get default site. Skipping.", ex);
+        }
+        addDefaultItems(list);
+        listener.chunk(directory, list);
+        return list;
+    }
+
+    static void addDefaultItems(final AttributedList<Path> list) throws BackgroundException {
+        list.add(GROUPS_NAME);
+        list.add(SITES_NAME);
     }
 
     @Override

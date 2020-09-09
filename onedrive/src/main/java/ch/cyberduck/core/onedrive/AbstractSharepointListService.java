@@ -75,15 +75,6 @@ public abstract class AbstractSharepointListService implements ListService {
         return this;
     }
 
-    AttributedList<Path> addDefaultItems(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> list = new AttributedList<>();
-        list.add(DEFAULT_NAME);
-        list.add(GROUPS_NAME);
-        list.add(SITES_NAME);
-        listener.chunk(directory, list);
-        return list;
-    }
-
     AttributedList<Path> addSiteItems(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
         list.add(new Path(directory, DRIVES_NAME.getName(), DRIVES_NAME.getType(), DRIVES_NAME.attributes()));
