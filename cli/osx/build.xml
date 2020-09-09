@@ -26,7 +26,7 @@
     <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="cli"/>
 
-    <property name="build.lipo.arch.remove" value="i386"/>
+    <property name="build.lipo.arch.remove" value="i386,arm64"/>
 
     <import file="../../runtime.xml"/>
     <import file="../../codesign.xml"/>

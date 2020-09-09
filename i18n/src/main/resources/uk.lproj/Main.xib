@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16097.3" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097.3"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -18,7 +18,6 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customObject id="223" customClass="NSApplication"/>
         <customObject id="224" customClass="NSApplication">
             <connections>
                 <outlet property="delegate" destination="-2" id="363"/>
@@ -217,24 +216,34 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem title="Повернути" id="270">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="revertFileButtonClicked:" target="-1" id="390"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="271"/>
+                            <menuItem title="Lock Vault" keyEquivalent="l" id="bBu-IP-reP">
+                                <connections>
+                                    <action selector="lockUnlockEncryptedVaultButtonClicked:" target="-1" id="GdE-9v-Sbq"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="mtY-h2-1n1"/>
                             <menuItem title="Створити Архів" id="272">
                                 <menu key="submenu" title="Створити Архів" id="273"/>
                             </menuItem>
                             <menuItem title="Розархівувати" id="274">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="unarchiveButtonClicked:" target="-1" id="391"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Xdd-Sj-x3y"/>
                             <menuItem title="Відкрити URL" id="256">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Відкрити URL" id="257"/>
                             </menuItem>
                             <menuItem title="Поділитися…" id="Dp0-uw-cX3">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="shareFileButtonClicked:" target="-1" id="div-9S-FkG"/>
                                 </connections>
@@ -310,34 +319,31 @@ CA
                                     <action selector="browserSwitchMenuClicked:" target="-1" id="401"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="294">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="294"/>
                             <menuItem title="Колонка" id="295">
                                 <menu key="submenu" title="Колонка" id="296"/>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="297">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="297"/>
                             <menuItem title="Приховати Панель інструментів" id="298">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="toggleToolbarShown:" target="-1" id="402"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Налаштувати Панель інструментів…" tag="1" id="299">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="runToolbarCustomizationPalette:" target="-1" id="403"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="300">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="300"/>
                             <menuItem title="Показати Приховані Файли" keyEquivalent="R" id="301">
                                 <connections>
                                     <action selector="showHiddenFilesClicked:" target="-1" id="404"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Кодування Тексту" id="302">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Кодування Тексту" id="303"/>
                             </menuItem>
                         </items>
@@ -351,9 +357,7 @@ CA
                                     <action selector="reloadButtonClicked:" target="-1" id="406"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="309">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="309"/>
                             <menuItem title="Перейти до теки…" keyEquivalent="g" id="310">
                                 <connections>
                                     <action selector="gotoButtonClicked:" target="-1" id="407"/>
@@ -384,9 +388,7 @@ CA
                                     <action selector="searchButtonClicked:" target="-1" id="412"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="316">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="316"/>
                             <menuItem title="Надіслати Команду…" keyEquivalent="c" id="317">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
@@ -399,9 +401,7 @@ CA
                                     <action selector="openTerminalButtonClicked:" target="-1" id="414"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="319">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="319"/>
                             <menuItem title="Стоп" keyEquivalent="." id="320">
                                 <connections>
                                     <action selector="interruptButtonClicked:" target="-1" id="415"/>
@@ -448,9 +448,7 @@ CA
                                     </items>
                                 </menu>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="330">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="330"/>
                             <menuItem title="Нова закладка" keyEquivalent="B" id="331">
                                 <connections>
                                     <action selector="addBookmarkButtonClicked:" target="-1" id="421"/>
@@ -473,9 +471,7 @@ CA
                                     <action selector="duplicateBookmarkButtonClicked:" target="-1" id="424"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="335">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="335"/>
                         </items>
                     </menu>
                 </menuItem>
@@ -487,9 +483,7 @@ CA
                                     <action selector="performMiniaturize:" target="-1" id="425"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" tag="1" id="339">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" tag="1" id="339"/>
                             <menuItem title="Передачі" keyEquivalent="t" id="340">
                                 <connections>
                                     <action selector="showTransferQueueClicked:" target="-1" id="426"/>
@@ -500,10 +494,9 @@ CA
                                     <action selector="showActivityWindowClicked:" target="-1" id="427"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="342">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="342"/>
                             <menuItem title="Помістити Всі на Передній план" tag="2" id="343">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="arrangeInFront:" target="-1" id="428"/>
                                 </connections>
@@ -531,9 +524,7 @@ CA
                                     <action selector="acknowledgmentsMenuClicked:" target="-2" id="431"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="349">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="349"/>
                             <menuItem title="Повідомити про помилку" id="350">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>

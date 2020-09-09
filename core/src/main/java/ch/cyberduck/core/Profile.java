@@ -235,7 +235,10 @@ public class Profile implements Protocol, Serializable {
     @Override
     public String icon() {
         if(null == icon) {
-            return parent.icon();
+            if(null == disk) {
+                return parent.icon();
+            }
+            return disk.getAbsolute();
         }
         // Temporary file
         return icon.getAbsolute();

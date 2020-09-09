@@ -50,6 +50,10 @@ public class PathAttributesDictionary {
         if(sizeObj != null) {
             attributes.setSize(Long.parseLong(sizeObj));
         }
+        final String quotaObj = dict.stringForKey("Quota");
+        if(quotaObj != null) {
+            attributes.setQuota(Long.parseLong(quotaObj));
+        }
         final String modifiedObj = dict.stringForKey("Modified");
         if(modifiedObj != null) {
             attributes.setModificationDate(Long.parseLong(modifiedObj));

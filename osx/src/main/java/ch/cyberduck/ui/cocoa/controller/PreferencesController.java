@@ -1862,23 +1862,19 @@ public class PreferencesController extends ToolbarWindowController {
         this.protocolCombobox.setAction(Foundation.selector("protocolComboboxClicked:"));
         this.protocolCombobox.removeAllItems();
         final ProtocolFactory protocols = ProtocolFactory.get();
-        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
-            EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav)))) {
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav)))) {
             this.addProtocol(protocol);
         }
         this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
-            EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2, Protocol.Type.dracoon, Protocol.Type.googlestorage)))) {
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2, Protocol.Type.googlestorage)))) {
             this.addProtocol(protocol);
         }
         this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
-            EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud)))) {
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.dracoon, Protocol.Type.brick)))) {
             this.addProtocol(protocol);
         }
         this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
-            EnumSet.of(Protocol.Type.file)))) {
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.file)))) {
             this.addProtocol(protocol);
         }
         this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());

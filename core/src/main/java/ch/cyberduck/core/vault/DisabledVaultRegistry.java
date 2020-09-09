@@ -45,4 +45,9 @@ public class DisabledVaultRegistry implements VaultRegistry {
     public boolean add(final Vault vault) {
         return false;
     }
+
+    @Override
+    public boolean close(final Path vault) {
+        return false;
+    }
 }

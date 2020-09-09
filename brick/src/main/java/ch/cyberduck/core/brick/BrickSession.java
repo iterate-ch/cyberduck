@@ -65,6 +65,7 @@ public class BrickSession extends DAVSession {
     public DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
+        configuration.setServiceUnavailableRetryStrategy(new BrickUnauthorizedRetryStrategy(this, prompt));
         return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
 
@@ -152,4 +153,5 @@ public class BrickSession extends DAVSession {
         }
         return super._getFeature(type);
     }
+
 }
