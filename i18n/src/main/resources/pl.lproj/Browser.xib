@@ -58,7 +58,7 @@
                                             <rect key="frame" x="-1" y="0.0" width="603" height="34"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                             <view key="contentView" id="dgO-pC-QOS">
-                                                <rect key="frame" x="1" y="1" width="601" height="32"/>
+                                                <rect key="frame" x="3" y="3" width="597" height="28"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9">
