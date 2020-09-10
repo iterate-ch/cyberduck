@@ -82,16 +82,12 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     private final ClientConfiguration configuration;
     private final Location locationFeature;
 
-    private final X509TrustManager trust;
-    private final X509KeyManager key;
     private final Map<Path, Distribution> distributions;
 
     public CloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
                                                final Map<Path, Distribution> distributions) {
         this.session = session;
         this.bookmark = session.getHost();
-        this.trust = trust;
-        this.key = key;
         this.distributions = distributions;
         this.configuration = new CustomClientConfiguration(bookmark,
             new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key);
@@ -310,7 +306,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     public void invalidate(final Path container, final Distribution.Method method, final List<Path> files, final LoginCallback prompt) throws BackgroundException {
         try {
             final Distribution d = this.read(container, method, prompt);
-            final List<String> keys = new ArrayList<String>();
+            final List<String> keys = new ArrayList<>();
             for(Path file : files) {
                 if(containerService.isContainer(file)) {
                     // To invalidate all of the objects in a distribution
@@ -654,7 +650,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             }
             if(this.getFeature(DistributionLogging.class, method) != null) {
                 try {
-                    distribution.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(
+                    distribution.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(bookmark.getRegion())).list(
                         new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
                         new DisabledListProgressListener()).toList());
                 }
@@ -696,7 +692,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
             }
             if(this.getFeature(DistributionLogging.class, method) != null) {
-                distribution.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(
+                distribution.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(bookmark.getRegion())).list(
                     new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
                     new DisabledListProgressListener()).toList());
             }
