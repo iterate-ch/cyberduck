@@ -228,7 +228,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     @Override
     public void login(final Proxy proxy, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
         final SoftwareVersionData version = this.softwareVersion();
-        Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(version.getRestApiVersion());
+        final Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(version.getRestApiVersion());
         if(matcher.matches()) {
             if(new Version(matcher.group(1)).compareTo(new Version(PreferencesFactory.get().getProperty("sds.version.lts"))) < 0) {
                 throw new InteroperabilityException(
