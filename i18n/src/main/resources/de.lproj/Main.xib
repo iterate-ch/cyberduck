@@ -221,6 +221,12 @@ CA
                                     <action selector="revertFileButtonClicked:" target="-1" id="390"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Restore" id="HZ5-Ge-Ctg">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="restoreFileButtonClicked:" target="-1" id="O09-Td-L1T"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="271"/>
                             <menuItem title="Tresor sperren" keyEquivalent="l" id="bBu-IP-reP">
                                 <connections>

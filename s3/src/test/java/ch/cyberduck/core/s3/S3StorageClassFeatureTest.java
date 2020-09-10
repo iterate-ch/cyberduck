@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -67,6 +68,22 @@ public class S3StorageClassFeatureTest extends AbstractS3Test {
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, feature.getClass(test));
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3AttributesFinderFeature(session).find(test).getStorageClass());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testSetClassFileInGlacier() throws Exception {
+        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final TransferStatus status = new TransferStatus();
+        status.setStorageClass("GLACIER");
+        final Path test = new S3TouchFeature(session).touch(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), status);
+        final S3StorageClassFeature feature = new S3StorageClassFeature(session);
+        assertEquals(S3Object.STORAGE_CLASS_GLACIER, feature.getClass(test));
+        try {
+            feature.setClass(test, S3Object.STORAGE_CLASS_STANDARD);
+        }
+        finally {
+            new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
     }
 
     @Test

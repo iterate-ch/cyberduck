@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Restore;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Versioning;
@@ -297,6 +298,13 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {
                 return controller.getSession().getFeature(Versioning.class) != null &&
                     controller.getSession().getFeature(Versioning.class).isRevertable(controller.getSelectedPath());
+            }
+            return false;
+        }
+        else if(action.equals(Foundation.selector("restoreFileButtonClicked:"))) {
+            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {
+                return controller.getSession().getFeature(Restore.class) != null &&
+                    controller.getSession().getFeature(Restore.class).isRestorable(controller.getSelectedPath());
             }
             return false;
         }

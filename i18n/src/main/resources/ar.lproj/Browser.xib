@@ -411,6 +411,12 @@ CA
                         <action selector="revertFileButtonClicked:" target="-1" id="182"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Restore" id="7eU-SG-dx0">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="restoreFileButtonClicked:" target="-1" id="BbY-Jj-ck7"/>
+                    </connections>
+                </menuItem>
                 <menuItem isSeparatorItem="YES" id="87">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>

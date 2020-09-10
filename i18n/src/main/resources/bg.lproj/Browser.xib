@@ -222,7 +222,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="buttonCell:48:image" imagePosition="only" alignment="left" id="48">
                                     <behavior key="behavior" lightByContents="YES"/>
-                                    <font key="font" metaFont="label"/>
+                                    <font key="font" metaFont="system" size="10"/>
                                 </buttonCell>
                             </button>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="49">
@@ -409,6 +409,12 @@ CA
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="revertFileButtonClicked:" target="-1" id="182"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Restore" id="7eU-SG-dx0">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="restoreFileButtonClicked:" target="-1" id="BbY-Jj-ck7"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="87">

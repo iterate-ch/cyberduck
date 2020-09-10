@@ -22,7 +22,9 @@
     </parent>
     <artifactId>spectra</artifactId>
     <packaging>jar</packaging>
-
+    <properties>
+        <ds3-sdk-version>5.2.0</ds3-sdk-version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
@@ -44,7 +46,7 @@
         <dependency>
             <groupId>ch.iterate.spectralogic</groupId>
             <artifactId>ds3-sdk</artifactId>
-            <version>5.0.8</version>
+            <version>${ds3-sdk-version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.codehaus.woodstox</groupId>

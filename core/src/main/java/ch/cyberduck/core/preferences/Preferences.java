@@ -711,10 +711,15 @@ public abstract class Preferences implements Locales {
         this.setDefault("s3.accelerate.prompt", String.valueOf(false));
 
         this.setDefault("s3.versioning.enable", String.valueOf(true));
-        /**
+        /*
          * Reference previous versions in file attributes
          */
         this.setDefault("s3.versioning.references.enable", String.valueOf(false));
+        /*
+         * Standard,Bulk,Expedited
+         */
+        this.setDefault("s3.glacier.restore.tier", "Standard");
+        this.setDefault("s3.glacier.restore.expiration.days", String.valueOf(2));
 
         /*
           A prefix to apply to log file names

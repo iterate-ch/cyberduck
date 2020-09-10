@@ -49,6 +49,7 @@ import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -325,6 +326,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                     }
                 }
             );
+        }
+        if(type == Restore.class) {
+            return (T) new Glacier(this, trust, key);
         }
         return super._getFeature(type);
     }

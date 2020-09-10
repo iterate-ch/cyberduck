@@ -105,7 +105,6 @@ import ch.cyberduck.ui.browser.BrowserColumn;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.browser.PathReloadFinder;
 import ch.cyberduck.ui.browser.RecursiveSearchFilter;
-import ch.cyberduck.ui.browser.RegexFilter;
 import ch.cyberduck.ui.browser.SearchFilterFactory;
 import ch.cyberduck.ui.browser.UploadDirectoryFinder;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
@@ -295,11 +294,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     {
         if(PreferencesFactory.get().getBoolean("browser.showHidden")) {
-            this.filenameFilter = new NullFilter<Path>();
+            this.filenameFilter = SearchFilterFactory.NULL_FILTER;
             this.showHiddenFiles = true;
         }
         else {
-            this.filenameFilter = new RegexFilter();
+            this.filenameFilter = SearchFilterFactory.HIDDEN_FILTER;
             this.showHiddenFiles = false;
         }
     }
@@ -2444,6 +2443,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void revertFileButtonClicked(final ID sender) {
         new RevertController(this).revert(this.getSelectedPaths());
+    }
+
+    @Action
+    public void restoreFileButtonClicked(final ID sender) {
+        new RestoreController(this).restore(this.getSelectedPaths());
     }
 
     @Action
