@@ -3656,7 +3656,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object vault)
                 {
-                    _controller.Reload((Path)vault, new HashSet<Path>(){(Path)vault}, new List<Path>(), true);
+                    if (vault != null) {
+                        _controller.Reload((Path)vault, new HashSet<Path>(){(Path)vault}, new List<Path>(), true);
+                    }
                 }
             }
         }
@@ -3682,7 +3684,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object vault)
                 {
-                    _controller.Reload(((Vault)vault).getHome(), new HashSet<Path>(){ ((Vault)vault).getHome()}, new List<Path>(), true);
+                    if (vault != null) {
+                        _controller.Reload(((Vault)vault).getHome(), new HashSet<Path>(){ ((Vault)vault).getHome()}, new List<Path>(), true);
+                    }
                 }
             }
         }

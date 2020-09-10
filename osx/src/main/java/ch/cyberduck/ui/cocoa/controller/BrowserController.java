@@ -2345,7 +2345,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.background(new WorkerBackgroundAction<>(this, pool, new LockVaultWorker(pool.getVault(), directory.attributes().getVault()) {
                 @Override
                 public void cleanup(final Path vault) {
-                    reload(vault, Collections.singleton(vault), Collections.emptyList(), true);
+                    if(vault != null) {
+                        reload(vault, Collections.singleton(vault), Collections.emptyList(), true);
+                    }
                 }
             }));
         }
@@ -2355,7 +2357,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 PasswordStoreFactory.get(), PasswordCallbackFactory.get(this)), directory) {
                 @Override
                 public void cleanup(final Vault vault) {
-                    reload(vault.getHome(), Collections.singleton(vault.getHome()), Collections.emptyList(), true);
+                    if(vault != null) {
+                        reload(vault.getHome(), Collections.singleton(vault.getHome()), Collections.emptyList(), true);
+                    }
                 }
             }));
         }
