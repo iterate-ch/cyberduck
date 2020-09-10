@@ -4,6 +4,7 @@ https://cyberduck.io/
 7.6.0
 - [Feature] Lock and unlock vaults using option in menu or toolbar (Cryptomator) (#10798)
 - [Feature] Support for Files.com using native REST API (Files.com)
+- [Feature] Restore files in Glacier storage class (S3)
 
 7.5.1
 - [Bugfix] Changes not saved when editing bookmark (Windows)
