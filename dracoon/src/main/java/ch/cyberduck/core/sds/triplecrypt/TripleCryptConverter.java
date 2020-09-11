@@ -21,6 +21,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.PrivateKeyContainer;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicKeyContainer;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 
+import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
@@ -28,51 +29,39 @@ import com.dracoon.sdk.crypto.model.UserPublicKey;
 
 public class TripleCryptConverter {
     public static FileKey toSwaggerFileKey(final EncryptedFileKey k) {
-        return new FileKey().key(k.getKey()).iv(k.getIv()).tag(k.getTag()).version(k.getVersion());
+        return new FileKey().key(k.getKey()).iv(k.getIv()).tag(k.getTag()).version(k.getVersion().getValue());
     }
 
     public static FileKey toSwaggerFileKey(final PlainFileKey k) {
-        return new FileKey().key(k.getKey()).iv(k.getIv()).tag(k.getTag()).version(k.getVersion());
+        return new FileKey().key(k.getKey()).iv(k.getIv()).tag(k.getTag()).version(k.getVersion().getValue());
     }
 
     public static UserKeyPairContainer toSwaggerUserKeyPairContainer(final UserKeyPair pair) {
         final UserKeyPairContainer container = new UserKeyPairContainer();
-        container.setPrivateKeyContainer(new PrivateKeyContainer().privateKey(pair.getUserPrivateKey().getPrivateKey()).version(pair.getUserPrivateKey().getVersion()));
-        container.setPublicKeyContainer(new PublicKeyContainer().publicKey(pair.getUserPublicKey().getPublicKey()).version(pair.getUserPublicKey().getVersion()));
+        container.setPrivateKeyContainer(new PrivateKeyContainer().privateKey(pair.getUserPrivateKey().getPrivateKey()).version(pair.getUserPrivateKey().getVersion().getValue()));
+        container.setPublicKeyContainer(new PublicKeyContainer().publicKey(pair.getUserPublicKey().getPublicKey()).version(pair.getUserPublicKey().getVersion().getValue()));
         return container;
     }
 
-    public static UserPublicKey toCryptoUserPublicKey(final PublicKeyContainer c) {
-        final UserPublicKey key = new UserPublicKey();
-        key.setPublicKey(c.getPublicKey());
-        key.setVersion(c.getVersion());
-        return key;
+    public static UserPublicKey toCryptoUserPublicKey(final PublicKeyContainer c) throws UnknownVersionException {
+        return new UserPublicKey(UserKeyPair.Version.getByValue(c.getVersion()), c.getPublicKey());
     }
 
-    public static PlainFileKey toCryptoPlainFileKey(final FileKey key) {
-        final PlainFileKey fileKey = new PlainFileKey();
-        fileKey.setKey(key.getKey());
-        fileKey.setIv(key.getIv());
+    public static PlainFileKey toCryptoPlainFileKey(final FileKey key) throws UnknownVersionException {
+        final PlainFileKey fileKey = new PlainFileKey(PlainFileKey.Version.getByValue(key.getVersion()), key.getKey(), key.getIv());
         fileKey.setTag(key.getTag());
-        fileKey.setVersion(key.getVersion());
         return fileKey;
     }
 
-    public static EncryptedFileKey toCryptoEncryptedFileKey(final FileKeyContainer key) {
-        final EncryptedFileKey fileKey = new EncryptedFileKey();
-        fileKey.setKey(key.getKey());
-        fileKey.setIv(key.getIv());
+    public static EncryptedFileKey toCryptoEncryptedFileKey(final FileKeyContainer key) throws UnknownVersionException {
+        final EncryptedFileKey fileKey = new EncryptedFileKey(EncryptedFileKey.Version.getByValue(key.getVersion()), key.getKey(), key.getIv());
         fileKey.setTag(key.getTag());
-        fileKey.setVersion(key.getVersion());
         return fileKey;
     }
 
-    public static EncryptedFileKey toCryptoEncryptedFileKey(final FileKey k) {
-        final EncryptedFileKey key = new EncryptedFileKey();
-        key.setKey(k.getKey());
-        key.setIv(k.getIv());
+    public static EncryptedFileKey toCryptoEncryptedFileKey(final FileKey k) throws UnknownVersionException {
+        final EncryptedFileKey key = new EncryptedFileKey(EncryptedFileKey.Version.getByValue(k.getVersion()), k.getKey(), k.getIv());
         key.setTag(k.getTag());
-        key.setVersion(k.getVersion());
         return key;
     }
 }

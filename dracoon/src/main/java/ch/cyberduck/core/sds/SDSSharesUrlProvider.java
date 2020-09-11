@@ -50,11 +50,12 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import com.dracoon.sdk.crypto.Crypto;
-import com.dracoon.sdk.crypto.CryptoException;
+import com.dracoon.sdk.crypto.error.CryptoException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 import com.dracoon.sdk.crypto.model.UserPrivateKey;
+import com.dracoon.sdk.crypto.model.UserPublicKey;
 
 public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadShareRequest, CreateUploadShareRequest> {
     private static final Logger log = Logger.getLogger(SDSSharesUrlProvider.class);
@@ -132,24 +133,26 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
             if(nodeid.isEncrypted(file)) {
                 // get existing file key associated with the sharing user
                 final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(fileid, StringUtils.EMPTY);
-                final UserPrivateKey privateKey = new UserPrivateKey();
                 final UserKeyPairContainer keyPairContainer = session.keyPair();
-                privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
-                privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
-                final UserKeyPair userKeyPair = new UserKeyPair();
-                userKeyPair.setUserPrivateKey(privateKey);
+                final UserPrivateKey privateKey = new UserPrivateKey(UserKeyPair.Version.getByValue(keyPairContainer.getPrivateKeyContainer().getVersion()),
+                    keyPairContainer.getPrivateKeyContainer().getPrivateKey());
+                final UserPublicKey publicKey = new UserPublicKey(UserKeyPair.Version.getByValue(keyPairContainer.getPublicKeyContainer().getVersion()),
+                    keyPairContainer.getPublicKeyContainer().getPublicKey());
+                final UserKeyPair userKeyPair = new UserKeyPair(privateKey, publicKey);
                 final Credentials passphrase = new TripleCryptKeyPair().unlock(callback, bookmark, userKeyPair);
                 final PlainFileKey plainFileKey = Crypto.decryptFileKey(TripleCryptConverter.toCryptoEncryptedFileKey(key), privateKey, passphrase.getPassword());
                 // encrypt file key with a new key pair
                 final UserKeyPair pair;
                 if(null == options.getPassword()) {
-                    pair = Crypto.generateUserKeyPair(callback.prompt(
+                    //TODO version
+                    pair = Crypto.generateUserKeyPair(UserKeyPair.Version.RSA2048, callback.prompt(
                         bookmark, LocaleFactory.localizedString("Passphrase", "Cryptomator"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions().icon(session.getHost().getProtocol().disk())
                     ).getPassword());
                 }
                 else {
-                    pair = Crypto.generateUserKeyPair(options.getPassword());
+                    //TODO version
+                    pair = Crypto.generateUserKeyPair(UserKeyPair.Version.RSA2048, options.getPassword());
                 }
                 final EncryptedFileKey encryptedFileKey = Crypto.encryptFileKey(plainFileKey, pair.getUserPublicKey());
                 options.setPassword(null);

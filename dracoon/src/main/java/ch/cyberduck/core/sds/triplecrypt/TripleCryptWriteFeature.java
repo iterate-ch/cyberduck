@@ -33,8 +33,8 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 import com.dracoon.sdk.crypto.Crypto;
-import com.dracoon.sdk.crypto.CryptoSystemException;
-import com.dracoon.sdk.crypto.InvalidFileKeyException;
+import com.dracoon.sdk.crypto.error.CryptoSystemException;
+import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 public class TripleCryptWriteFeature implements Write<VersionId> {
@@ -65,7 +65,7 @@ public class TripleCryptWriteFeature implements Write<VersionId> {
                 Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status
             );
         }
-        catch(CryptoSystemException | InvalidFileKeyException e) {
+        catch(CryptoSystemException | UnknownVersionException e) {
             throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file);
         }
         catch(IOException e) {

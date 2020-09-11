@@ -72,9 +72,10 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.dracoon.sdk.crypto.CryptoException;
+import com.dracoon.sdk.crypto.error.CryptoException;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 import com.dracoon.sdk.crypto.model.UserPrivateKey;
+import com.dracoon.sdk.crypto.model.UserPublicKey;
 import com.google.api.client.auth.oauth2.PasswordTokenRequest;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.http.BasicAuthentication;
@@ -296,12 +297,12 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             userAccount.set(new UserAccountWrapper(account));
             keyPair.set(new UserApi(client).requestUserKeyPair(StringUtils.EMPTY));
-            final UserPrivateKey privateKey = new UserPrivateKey();
             final UserKeyPairContainer keyPairContainer = keyPair.get();
-            privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
-            privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
-            final UserKeyPair userKeyPair = new UserKeyPair();
-            userKeyPair.setUserPrivateKey(privateKey);
+            final UserPrivateKey privateKey = new UserPrivateKey(UserKeyPair.Version.getByValue(keyPairContainer.getPrivateKeyContainer().getVersion()),
+                keyPairContainer.getPrivateKeyContainer().getPrivateKey());
+            final UserPublicKey publicKey = new UserPublicKey(UserKeyPair.Version.getByValue(keyPairContainer.getPublicKeyContainer().getVersion()),
+                keyPairContainer.getPublicKeyContainer().getPublicKey());
+            final UserKeyPair userKeyPair = new UserKeyPair(privateKey, publicKey);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt to unlock private key %s", privateKey));
             }

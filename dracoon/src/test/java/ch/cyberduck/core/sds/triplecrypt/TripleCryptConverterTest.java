@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 
 import com.dracoon.sdk.crypto.Crypto;
+import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
@@ -34,7 +35,8 @@ public class TripleCryptConverterTest {
     @Test
     public void testFileKey() throws Exception {
         final JSON json = new JSON();
-        final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
+        //TODO version
+        final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey(PlainFileKey.Version.AES256GCM));
         assertNotNull(fileKey.getIv());
         assertNotNull(fileKey.getKey());
         assertNull(fileKey.getTag());

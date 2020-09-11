@@ -40,11 +40,12 @@ import org.apache.log4j.Logger;
 import java.io.InputStream;
 
 import com.dracoon.sdk.crypto.Crypto;
-import com.dracoon.sdk.crypto.CryptoException;
 import com.dracoon.sdk.crypto.CryptoUtils;
+import com.dracoon.sdk.crypto.error.CryptoException;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 import com.dracoon.sdk.crypto.model.UserPrivateKey;
+import com.dracoon.sdk.crypto.model.UserPublicKey;
 
 public class TripleCryptReadFeature implements Read {
     private static final Logger log = Logger.getLogger(TripleCryptReadFeature.class);
@@ -64,12 +65,13 @@ public class TripleCryptReadFeature implements Read {
         try {
             final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(
                 Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY);
-            final UserPrivateKey privateKey = new UserPrivateKey();
+            //TODO version
             final UserKeyPairContainer keyPairContainer = session.keyPair();
-            privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
-            privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
-            final UserKeyPair userKeyPair = new UserKeyPair();
-            userKeyPair.setUserPrivateKey(privateKey);
+            final UserPrivateKey privateKey = new UserPrivateKey(UserKeyPair.Version.getByValue(keyPairContainer.getPrivateKeyContainer().getVersion()),
+                keyPairContainer.getPrivateKeyContainer().getPrivateKey());
+            final UserPublicKey publicKey = new UserPublicKey(UserKeyPair.Version.getByValue(keyPairContainer.getPublicKeyContainer().getVersion()),
+                keyPairContainer.getPublicKeyContainer().getPublicKey());
+            final UserKeyPair userKeyPair = new UserKeyPair(privateKey, publicKey);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt to unlock private key %s", privateKey));
             }

@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import com.dracoon.sdk.crypto.CryptoException;
 import com.dracoon.sdk.crypto.FileDecryptionCipher;
+import com.dracoon.sdk.crypto.error.CryptoException;
 import com.dracoon.sdk.crypto.model.EncryptedDataContainer;
 import com.dracoon.sdk.crypto.model.PlainDataContainer;
 

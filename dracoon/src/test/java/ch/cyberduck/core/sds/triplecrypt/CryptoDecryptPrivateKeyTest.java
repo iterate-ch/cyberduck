@@ -21,7 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.dracoon.sdk.crypto.Crypto;
-import com.dracoon.sdk.crypto.CryptoConstants;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 import com.dracoon.sdk.crypto.model.UserPrivateKey;
 import com.dracoon.sdk.crypto.model.UserPublicKey;
@@ -69,14 +68,12 @@ public class CryptoDecryptPrivateKeyTest {
             "S+2l6QSAHZF3rmD0D7lSGMu0rdF648h8HkLsoABONdoHJrCE5ehnBvSLd34Hdwt7\n" +
             "-----END ENCRYPTED PRIVATE KEY-----\n";
 
-        final UserKeyPair pair = new UserKeyPair();
-        final UserPrivateKey privateKey = new UserPrivateKey();
-        privateKey.setPrivateKey(pk);
-        privateKey.setVersion(CryptoConstants.DEFAULT_VERSION);
-        pair.setUserPrivateKey(privateKey);
-        final UserPublicKey publicKey = new UserPublicKey();
-        publicKey.setPublicKey(StringUtils.EMPTY);
-        pair.setUserPublicKey(publicKey);
+        //TODO version
+        final UserPrivateKey privateKey = new UserPrivateKey(UserKeyPair.Version.RSA2048, pk);
+        //TODO version
+        final UserPublicKey publicKey = new UserPublicKey(UserKeyPair.Version.RSA2048, StringUtils.EMPTY);
+        final UserKeyPair pair = new UserKeyPair(privateKey, publicKey);
+
         Assert.assertTrue(Crypto.checkUserKeyPair(pair, "abcdabc1"));
     }
 }
