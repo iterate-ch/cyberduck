@@ -847,7 +847,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("webdav.ntlm.domain", StringUtils.EMPTY);
         this.setDefault("webdav.ntlm.workstation", StringUtils.EMPTY);
 
-        /**
+        /*
          * Enable Integrated Windows Authentication (IWA) for target server authentication
          */
         this.setDefault("webdav.ntlm.windows.authentication.enable", String.valueOf(false));
@@ -924,7 +924,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("transfer.connection.retry.delay", String.valueOf(0));
         this.setDefault("connection.retry.backoff.enable", String.valueOf(false));
 
-        /**
+        /*
          * Enable login prompt in connect retry
          */
         this.setDefault("connection.retry.login.enable", String.valueOf(true));
@@ -1158,7 +1158,7 @@ public abstract class Preferences implements Locales {
 
     public Map<String, String> getMap(final String property) {
         final List<String> list = this.getList(property);
-        final Map<String, String> table = new HashMap<String, String>();
+        final Map<String, String> table = new HashMap<>();
         for(String m : list) {
             if(StringUtils.isBlank(m)) {
                 continue;
