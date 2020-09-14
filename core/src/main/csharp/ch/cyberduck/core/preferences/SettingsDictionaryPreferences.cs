@@ -155,6 +155,11 @@ namespace Ch.Cyberduck.Core.Preferences
 
         protected override void setDefaults()
         {
+            string codeBase = Assembly.GetEntryAssembly().CodeBase;
+            UriBuilder uri = new UriBuilder(codeBase);
+            string path = Uri.UnescapeDataString(uri.Path);
+            java.lang.System.setProperty("jna.boot.library.path", Path.GetDirectoryName(path));
+
             base.setDefaults();
 
             this.setDefault("application.name", Application.ProductName);
