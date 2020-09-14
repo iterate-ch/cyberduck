@@ -221,7 +221,7 @@ CA
                                     <action selector="revertFileButtonClicked:" target="-1" id="390"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Restore" id="HZ5-Ge-Ctg">
+                            <menuItem title="Obnovit" id="HZ5-Ge-Ctg">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="restoreFileButtonClicked:" target="-1" id="O09-Td-L1T"/>
