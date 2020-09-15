@@ -140,7 +140,7 @@
                                     <goal>generate</goal>
                                 </goals>
                                 <configuration>
-                                    <inputSpec>https://duck.dracoon.com/api/spec_v4/</inputSpec>
+                                    <inputSpec>https://cryptotest.dracoon.dev/api/spec_v4/</inputSpec>
                                     <language>java</language>
                                     <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.sds.io.swagger.client.model</modelPackage>
