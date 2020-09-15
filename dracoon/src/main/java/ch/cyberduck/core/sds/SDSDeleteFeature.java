@@ -50,7 +50,7 @@ public class SDSDeleteFeature implements Delete {
         for(Path file : files.keySet()) {
             callback.delete(file);
             try {
-                new NodesApi(session.getClient()).deleteNode(
+                new NodesApi(session.getClient()).removeNode(
                     Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY);
             }
             catch(ApiException e) {

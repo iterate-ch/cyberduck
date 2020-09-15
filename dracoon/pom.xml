@@ -108,6 +108,11 @@
             <artifactId>dracoon-crypto-sdk</artifactId>
             <version>1.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>2.1.4</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -127,7 +132,7 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>io.swagger</groupId>
+                        <groupId>io.swagger.codegen.v3</groupId>
                         <artifactId>swagger-codegen-maven-plugin</artifactId>
                         <executions>
                             <execution>

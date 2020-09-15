@@ -15,6 +15,7 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.MultiPart;
@@ -25,7 +26,6 @@ import java.io.InputStream;
 
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import org.glassfish.jersey.logging.LoggingFeature;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -50,8 +50,7 @@ import ch.cyberduck.core.sds.io.swagger.client.auth.HttpBasicAuth;
 import ch.cyberduck.core.sds.io.swagger.client.auth.ApiKeyAuth;
 import ch.cyberduck.core.sds.io.swagger.client.auth.OAuth;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-04-08T17:57:49.759+02:00")
-public class ApiClient {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-15T09:21:49.036118+02:00[Europe/Zurich]")public class ApiClient {
   protected Map<String, String> defaultHeaderMap = new HashMap<String, String>();
   protected String basePath = "https://duck.dracoon.com/api";
   protected boolean debugging = false;
@@ -63,6 +62,9 @@ public class ApiClient {
   protected String tempFolderPath = null;
 
   protected Map<String, Authentication> authentications;
+
+  protected int statusCode;
+  protected Map<String, List<String>> responseHeaders;
 
   protected DateFormat dateFormat;
 
@@ -77,7 +79,7 @@ public class ApiClient {
 
     // Setup authentications (key: authentication name, value: authentication).
     authentications = new HashMap<String, Authentication>();
-    authentications.put("DRACOON-OAuth", new OAuth());
+    authentications.put("oauth2", new OAuth());
     // Prevent the authentications from being modified.
     authentications = Collections.unmodifiableMap(authentications);
   }
@@ -106,6 +108,22 @@ public class ApiClient {
   public ApiClient setBasePath(String basePath) {
     this.basePath = basePath;
     return this;
+  }
+
+  /**
+   * Gets the status code of the previous request
+   * @return Status code
+   */
+  public int getStatusCode() {
+    return statusCode;
+  }
+
+  /**
+   * Gets the response headers of the previous request
+   * @return Response headers
+   */
+  public Map<String, List<String>> getResponseHeaders() {
+    return responseHeaders;
   }
 
   /**
@@ -285,22 +303,22 @@ public class ApiClient {
    * read timeout (in milliseconds).
    * @return Read timeout
    */
-  public int getReadTimeout() {
-    return readTimeout;
-  }
-  
-  /**
-   * Set the read timeout (in milliseconds).
-   * A value of 0 means no timeout, otherwise values must be between 1 and
-   * {@link Integer#MAX_VALUE}.
-   * @param readTimeout Read timeout in milliseconds
-   * @return API client
-   */
-  public ApiClient setReadTimeout(int readTimeout) {
-    this.readTimeout = readTimeout;
-    httpClient.property(ClientProperties.READ_TIMEOUT, readTimeout);
-    return this;
-  }
+   public int getReadTimeout() {
+     return readTimeout;
+   }
+
+   /**
+    * Set the read timeout (in milliseconds).
+    * A value of 0 means no timeout, otherwise values must be between 1 and
+    * {@link Integer#MAX_VALUE}.
+    * @param readTimeout Read timeout in milliseconds
+    * @return API client
+    */
+    public ApiClient setReadTimeout(int readTimeout) {
+      this.readTimeout = readTimeout;
+      httpClient.property(ClientProperties.READ_TIMEOUT, readTimeout);
+      return this;
+    }
 
   /**
    * Get the date format used to parse/format date parameters.
@@ -564,6 +582,8 @@ public class ApiClient {
     List<Object> contentTypes = response.getHeaders().get("Content-Type");
     if (contentTypes != null && !contentTypes.isEmpty())
       contentType = String.valueOf(contentTypes.get(0));
+    if (contentType == null)
+      throw new ApiException(500, "missing Content-Type in response");
 
     return response.readEntity(returnType);
   }
@@ -636,7 +656,7 @@ public class ApiClient {
    * @return The response body in type of string
    * @throws ApiException API exception
    */
-  public <T> ApiResponse<T> invokeAPI(String path, String method, List<Pair> queryParams, Object body, Map<String, String> headerParams, Map<String, Object> formParams, String accept, String contentType, String[] authNames, GenericType<T> returnType) throws ApiException {
+  public <T> T invokeAPI(String path, String method, List<Pair> queryParams, Object body, Map<String, String> headerParams, Map<String, Object> formParams, String accept, String contentType, String[] authNames, GenericType<T> returnType) throws ApiException {
     updateParamsForAuth(authNames, queryParams, headerParams);
 
     // Not using `.target(this.basePath).path(path)` below,
@@ -651,7 +671,11 @@ public class ApiClient {
       }
     }
 
-    Invocation.Builder invocationBuilder = target.request().accept(accept);
+    Invocation.Builder invocationBuilder = target.request();
+    
+    if (accept != null) {
+    	invocationBuilder = invocationBuilder.accept(accept);
+    }
 
     for (Entry<String, String> entry : headerParams.entrySet()) {
       String value = entry.getValue();
@@ -691,16 +715,16 @@ public class ApiClient {
         throw new ApiException(500, "unknown method type " + method);
       }
 
-      int statusCode = response.getStatusInfo().getStatusCode();
-      Map<String, List<String>> responseHeaders = buildResponseHeaders(response);
+      statusCode = response.getStatusInfo().getStatusCode();
+      responseHeaders = buildResponseHeaders(response);
 
       if (response.getStatus() == Status.NO_CONTENT.getStatusCode()) {
-        return new ApiResponse<>(statusCode, responseHeaders);
+        return null;
       } else if (response.getStatusInfo().getFamily() == Status.Family.SUCCESSFUL) {
         if (returnType == null)
-          return new ApiResponse<>(statusCode, responseHeaders);
+          return null;
         else
-          return new ApiResponse<>(statusCode, responseHeaders, deserialize(response, returnType));
+          return deserialize(response, returnType);
       } else {
         String message = "error";
         String respBody = null;

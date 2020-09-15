@@ -211,7 +211,7 @@ public class PresignedMultipartOutputStream extends OutputStream {
                         public void run() {
                             try {
                                 final S3FileUploadStatus uploadStatus = new NodesApi(session.getClient())
-                                    .getUploadStatus(createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
+                                    .requestUploadStatusFiles(createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
                                 switch(uploadStatus.getStatus()) {
                                     case "finishing":
                                         // Expected

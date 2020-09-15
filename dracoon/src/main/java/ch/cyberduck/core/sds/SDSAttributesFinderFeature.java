@@ -81,12 +81,12 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         }
         try {
             if(file.attributes().isDuplicate()) {
-                final DeletedNode node = new NodesApi(session.getClient()).getFsDeletedNode(Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())),
+                final DeletedNode node = new NodesApi(session.getClient()).requestDeletedNode(Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())),
                     StringUtils.EMPTY, null);
                 return this.toAttributes(node);
             }
             else {
-                final Node node = new NodesApi(session.getClient()).getFsNode(
+                final Node node = new NodesApi(session.getClient()).requestNode(
                     Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
                 final PathAttributes attr = this.toAttributes(node);
                 if(references) {
@@ -111,10 +111,10 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
             DeletedNodeVersionsList nodes;
             final AttributedList<Path> versions = new AttributedList<>();
             do {
-                nodes = new NodesApi(session.getClient()).getFsDeletedNodeVersions(file.getName(),
+                nodes = new NodesApi(session.getClient()).requestDeletedNodeVersions(
                     Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())),
-                    file.isFile() ? "file" : "folder", StringUtils.EMPTY, null,
-                    chunksize, offset, null);
+                    file.isFile() ? "file" : "folder", file.getName(), StringUtils.EMPTY, null,
+                    offset, chunksize, null);
                 for(DeletedNode item : nodes.getItems()) {
                     versions.add(new Path(file.getParent(), file.getName(), file.getType(),
                         this.toAttributes(item)));
