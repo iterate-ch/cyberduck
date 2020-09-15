@@ -15,7 +15,6 @@ package ch.cyberduck.core.sds.triplecrypt;
  * GNU General Public License for more details.
  */
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,10 +67,8 @@ public class CryptoDecryptPrivateKeyTest {
             "S+2l6QSAHZF3rmD0D7lSGMu0rdF648h8HkLsoABONdoHJrCE5ehnBvSLd34Hdwt7\n" +
             "-----END ENCRYPTED PRIVATE KEY-----\n";
 
-        //TODO version
         final UserPrivateKey privateKey = new UserPrivateKey(UserKeyPair.Version.RSA2048, pk);
-        //TODO version
-        final UserPublicKey publicKey = new UserPublicKey(UserKeyPair.Version.RSA2048, StringUtils.EMPTY);
+        final UserPublicKey publicKey = new UserPublicKey(UserKeyPair.Version.RSA2048, "pubkey");
         final UserKeyPair pair = new UserKeyPair(privateKey, publicKey);
 
         Assert.assertTrue(Crypto.checkUserKeyPair(pair, "abcdabc1"));

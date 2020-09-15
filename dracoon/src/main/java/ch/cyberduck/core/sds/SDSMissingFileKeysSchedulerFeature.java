@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileFileKeys;
 import ch.cyberduck.core.sds.io.swagger.client.model.MissingKeysResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetBatchRequest;
@@ -49,6 +50,11 @@ import java.util.stream.Collectors;
 
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.error.CryptoException;
+import com.dracoon.sdk.crypto.error.CryptoSystemException;
+import com.dracoon.sdk.crypto.error.InvalidFileKeyException;
+import com.dracoon.sdk.crypto.error.InvalidKeyPairException;
+import com.dracoon.sdk.crypto.error.InvalidPasswordException;
+import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
@@ -85,12 +91,13 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             final IdProvider node = session.getFeature(IdProvider.class);
             final Long fileId = file != null ? Long.parseLong(node.getFileid(file, new DisabledListProgressListener())) : null;
             UserFileKeySetBatchRequest request;
+            boolean migrated = false;
             do {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Request a list of missing file keys for file %s", file));
                 }
                 final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
-                    null, null, null, fileId, null, null);
+                    null, null, null, fileId, null, null, null);
                 final Map<Long, UserUserPublicKey> publicKeys =
                     missingKeys.getUsers().stream().collect(Collectors.toMap(UserUserPublicKey::getId, Function.identity()));
                 final Map<Long, FileFileKeys> files =
@@ -103,11 +110,19 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                         .fileId(item.getFileId())
                         .userId(item.getUserId());
                     processed.add(keySetRequest);
-                    final PlainFileKey plainFileKey = Crypto.decryptFileKey(
-                        TripleCryptConverter.toCryptoEncryptedFileKey(fileKeys.getFileKeyContainer()), privateKey, passphrase.getPassword());
-                    final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
-                        plainFileKey, TripleCryptConverter.toCryptoUserPublicKey(pubkey.getPublicKeyContainer())
-                    );
+                    EncryptedFileKey encryptFileKey;
+                    if(file == null && item.getUserId().equals(((SDSSession) session).userAccount().getId())) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Migrate deprecated file key for %s", file));
+                        }
+                        final UserKeyPair deprecated = TripleCryptConverter.toCryptoUserKeyPair(((SDSSession) session).keyPairDeprecated());
+                        final Credentials credentials = new TripleCryptKeyPair().unlock(callback, session.getHost(), deprecated);
+                        encryptFileKey = this.encryptFileKey(privateKey, credentials, pubkey, fileKeys);
+                        migrated = true;
+                    }
+                    else {
+                        encryptFileKey = this.encryptFileKey(privateKey, passphrase, pubkey, fileKeys);
+                    }
                     keySetRequest.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Missing file key for file with id %d processed", item.getFileId()));
@@ -122,6 +137,9 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                 }
             }
             while(!request.getItems().isEmpty());
+            if(migrated) {
+                this.deleteDeprecatedKeyPair((SDSSession) session);
+            }
             return processed;
         }
         catch(ApiException e) {
@@ -130,5 +148,23 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
         catch(CryptoException e) {
             throw new TripleCryptExceptionMappingService().map(e);
         }
+    }
+
+    private void deleteDeprecatedKeyPair(SDSSession session) throws ApiException, BackgroundException {
+        final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
+            null, 1, null, null, session.userAccount().getId(), "previous_user_key", null);
+        if(missingKeys.getItems().isEmpty()) {
+            log.info("Deleting deprecated key pair");
+        }
+        new UserApi(session.getClient()).removeUserKeyPair(session.keyPairDeprecated().getPublicKeyContainer().getVersion(), null);
+    }
+
+    private EncryptedFileKey encryptFileKey(final UserPrivateKey privateKey, final Credentials passphrase,
+                                            final UserUserPublicKey pubkey, final FileFileKeys fileKeys)
+        throws InvalidFileKeyException, InvalidKeyPairException, InvalidPasswordException, CryptoSystemException, UnknownVersionException {
+        final PlainFileKey plainFileKey = Crypto.decryptFileKey(
+            TripleCryptConverter.toCryptoEncryptedFileKey(fileKeys.getFileKeyContainer()), privateKey, passphrase.getPassword());
+        return Crypto.encryptFileKey(
+            plainFileKey, TripleCryptConverter.toCryptoUserPublicKey(pubkey.getPublicKeyContainer()));
     }
 }

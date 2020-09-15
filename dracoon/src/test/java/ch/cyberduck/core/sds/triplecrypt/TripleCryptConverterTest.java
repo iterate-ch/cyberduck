@@ -35,7 +35,6 @@ public class TripleCryptConverterTest {
     @Test
     public void testFileKey() throws Exception {
         final JSON json = new JSON();
-        //TODO version
         final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey(PlainFileKey.Version.AES256GCM));
         assertNotNull(fileKey.getIv());
         assertNotNull(fileKey.getKey());

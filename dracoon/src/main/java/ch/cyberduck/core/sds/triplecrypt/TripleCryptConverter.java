@@ -25,6 +25,7 @@ import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
+import com.dracoon.sdk.crypto.model.UserPrivateKey;
 import com.dracoon.sdk.crypto.model.UserPublicKey;
 
 public class TripleCryptConverter {
@@ -41,6 +42,14 @@ public class TripleCryptConverter {
         container.setPrivateKeyContainer(new PrivateKeyContainer().privateKey(pair.getUserPrivateKey().getPrivateKey()).version(pair.getUserPrivateKey().getVersion().getValue()));
         container.setPublicKeyContainer(new PublicKeyContainer().publicKey(pair.getUserPublicKey().getPublicKey()).version(pair.getUserPublicKey().getVersion().getValue()));
         return container;
+    }
+
+    public static UserKeyPair toCryptoUserKeyPair(final UserKeyPairContainer c) throws UnknownVersionException {
+        final UserPrivateKey privateKey = new UserPrivateKey(UserKeyPair.Version.getByValue(c.getPrivateKeyContainer().getVersion()),
+            c.getPrivateKeyContainer().getPrivateKey());
+        final UserPublicKey publicKey = new UserPublicKey(UserKeyPair.Version.getByValue(c.getPublicKeyContainer().getVersion()),
+            c.getPublicKeyContainer().getPublicKey());
+        return new UserKeyPair(privateKey, publicKey);
     }
 
     public static UserPublicKey toCryptoUserPublicKey(final PublicKeyContainer c) throws UnknownVersionException {
