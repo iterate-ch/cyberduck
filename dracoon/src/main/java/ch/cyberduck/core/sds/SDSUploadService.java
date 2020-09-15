@@ -37,6 +37,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -63,6 +64,7 @@ public class SDSUploadService {
         try {
             final CreateFileUploadRequest body = new CreateFileUploadRequest()
                 .size(-1 == status.getLength() ? null : status.getLength())
+                .timestampModification(status.getTimestamp() != null ? new DateTime(status.getTimestamp()) : null)
                 .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName());
             return new NodesApi(session.getClient()).createFileUploadChannel(body, StringUtils.EMPTY).getToken();

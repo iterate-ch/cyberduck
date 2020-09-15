@@ -436,6 +436,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(type == AttributesFinder.class) {
             return (T) new SDSAttributesFinderFeature(this, nodeid);
         }
+        if(type == Timestamp.class) {
+            return (T) new SDSTimestampFeature(this, nodeid);
+        }
         if(type == Move.class) {
             return (T) new SDSDelegatingMoveFeature(this, nodeid, new SDSMoveFeature(this, nodeid));
         }
