@@ -26,7 +26,7 @@ import org.joda.time.DateTime;
  * A CreateFolderRequest object
  */
 @ApiModel(description = "A CreateFolderRequest object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-04-08T17:57:06.518+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
 public class CreateFolderRequest {
   @JsonProperty("parentID")
   private String parentID = null;

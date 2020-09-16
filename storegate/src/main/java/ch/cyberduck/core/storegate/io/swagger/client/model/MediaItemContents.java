@@ -29,7 +29,7 @@ import java.util.List;
  * Contains a list of mediaItems
  */
 @ApiModel(description = "Contains a list of mediaItems")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-04-08T17:57:06.518+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
 public class MediaItemContents {
   @JsonProperty("parent")
   private MediaFolder parent = null;

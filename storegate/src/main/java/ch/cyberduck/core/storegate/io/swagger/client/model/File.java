@@ -26,7 +26,7 @@ import org.joda.time.DateTime;
  * A resource item.
  */
 @ApiModel(description = "A resource item.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-04-08T17:57:06.518+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
 public class File {
   @JsonProperty("versions")
   private Integer versions = null;
@@ -111,25 +111,29 @@ public class File {
    * Indicates the item type.
    */
   public enum FlagsEnum {
-      None(0),
-
-      Folder(1),
-
-      Shared(2),
-
-      Locked(4),
-
-      Image(8),
-
-      Streamable(16),
-
-      Video(32),
-
-      Doc(64),
-
-      StreamableDoc(128),
-
-      Hidden(512);
+    NUMBER_0(0),
+    
+    NUMBER_1(1),
+    
+    NUMBER_2(2),
+    
+    NUMBER_4(4),
+    
+    NUMBER_8(8),
+    
+    NUMBER_16(16),
+    
+    NUMBER_32(32),
+    
+    NUMBER_64(64),
+    
+    NUMBER_128(128),
+    
+    NUMBER_256(256),
+    
+    NUMBER_512(512),
+    
+    NUMBER_1024(1024);
 
     private Integer value;
 

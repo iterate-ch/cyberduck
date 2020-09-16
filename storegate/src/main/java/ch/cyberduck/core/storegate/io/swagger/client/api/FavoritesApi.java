@@ -8,8 +8,9 @@ import ch.cyberduck.core.storegate.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
-import ch.cyberduck.core.storegate.io.swagger.client.model.FileLock;
-import ch.cyberduck.core.storegate.io.swagger.client.model.FileLockRequest;
+import ch.cyberduck.core.storegate.io.swagger.client.model.CreateFavoriteRequest;
+import ch.cyberduck.core.storegate.io.swagger.client.model.File;
+import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateFavoriteRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,14 +18,14 @@ import java.util.List;
 import java.util.Map;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
-public class FileLocksApi {
+public class FavoritesApi {
   private ApiClient apiClient;
 
-  public FileLocksApi() {
+  public FavoritesApi() {
     this(Configuration.getDefaultApiClient());
   }
 
-  public FileLocksApi(ApiClient apiClient) {
+  public FavoritesApi(ApiClient apiClient) {
     this.apiClient = apiClient;
   }
 
@@ -37,41 +38,33 @@ public class FileLocksApi {
   }
 
   /**
-   * Create lock
+   * Creates a new Favorite.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
-   * @param fileId  (required)
-   * @param request  (required)
-   * @return FileLock
+   * @param createFavoriteRequest createFolderRequest (required)
+   * @return File
    * @throws ApiException if fails to make API call
    */
-  public FileLock fileLocksCreateLock(String fileId, FileLockRequest request) throws ApiException {
-    return fileLocksCreateLockWithHttpInfo(fileId, request).getData();
+  public File favoritesCreate(CreateFavoriteRequest createFavoriteRequest) throws ApiException {
+    return favoritesCreateWithHttpInfo(createFavoriteRequest).getData();
       }
 
   /**
-   * Create lock
+   * Creates a new Favorite.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
-   * @param fileId  (required)
-   * @param request  (required)
-   * @return ApiResponse&lt;FileLock&gt;
+   * @param createFavoriteRequest createFolderRequest (required)
+   * @return ApiResponse&lt;File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<FileLock> fileLocksCreateLockWithHttpInfo(String fileId, FileLockRequest request) throws ApiException {
-    Object localVarPostBody = request;
+  public ApiResponse<File> favoritesCreateWithHttpInfo(CreateFavoriteRequest createFavoriteRequest) throws ApiException {
+    Object localVarPostBody = createFavoriteRequest;
     
-    // verify the required parameter 'fileId' is set
-    if (fileId == null) {
-      throw new ApiException(400, "Missing the required parameter 'fileId' when calling fileLocksCreateLock");
-    }
-    
-    // verify the required parameter 'request' is set
-    if (request == null) {
-      throw new ApiException(400, "Missing the required parameter 'request' when calling fileLocksCreateLock");
+    // verify the required parameter 'createFavoriteRequest' is set
+    if (createFavoriteRequest == null) {
+      throw new ApiException(400, "Missing the required parameter 'createFavoriteRequest' when calling favoritesCreate");
     }
     
     // create path and map variables
-    String localVarPath = "/v4/filelocks/{fileId}"
-      .replaceAll("\\{" + "fileId" + "\\}", apiClient.escapeString(fileId.toString()));
+    String localVarPath = "/v4/favorites";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -93,45 +86,37 @@ public class FileLocksApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<FileLock> localVarReturnType = new GenericType<FileLock>() {};
+    GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Delete lock.
+   * Deletes a directory or file.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
-   * @param fileId  (required)
-   * @param lockId  (required)
+   * @param id The FileId of the favorite to delete. (required)
    * @throws ApiException if fails to make API call
    */
-  public void fileLocksDeleteLock(String fileId, String lockId) throws ApiException {
+  public void favoritesDelete(String id) throws ApiException {
 
-    fileLocksDeleteLockWithHttpInfo(fileId, lockId);
+    favoritesDeleteWithHttpInfo(id);
   }
 
   /**
-   * Delete lock.
+   * Deletes a directory or file.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
-   * @param fileId  (required)
-   * @param lockId  (required)
+   * @param id The FileId of the favorite to delete. (required)
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<Void> fileLocksDeleteLockWithHttpInfo(String fileId, String lockId) throws ApiException {
+  public ApiResponse<Void> favoritesDeleteWithHttpInfo(String id) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'fileId' is set
-    if (fileId == null) {
-      throw new ApiException(400, "Missing the required parameter 'fileId' when calling fileLocksDeleteLock");
-    }
-    
-    // verify the required parameter 'lockId' is set
-    if (lockId == null) {
-      throw new ApiException(400, "Missing the required parameter 'lockId' when calling fileLocksDeleteLock");
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling favoritesDelete");
     }
     
     // create path and map variables
-    String localVarPath = "/v4/filelocks/{fileId}/{lockId}"
-      .replaceAll("\\{" + "fileId" + "\\}", apiClient.escapeString(fileId.toString()))
-      .replaceAll("\\{" + "lockId" + "\\}", apiClient.escapeString(lockId.toString()));
+    String localVarPath = "/v4/favorites/{id}"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -157,34 +142,26 @@ public class FileLocksApi {
     return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * Get lock.
+   * Get all fovorites
    * 
-   * @param fileId  (required)
-   * @return FileLock
+   * @return List&lt;File&gt;
    * @throws ApiException if fails to make API call
    */
-  public FileLock fileLocksFindLock(String fileId) throws ApiException {
-    return fileLocksFindLockWithHttpInfo(fileId).getData();
+  public List<File> favoritesGetAll() throws ApiException {
+    return favoritesGetAllWithHttpInfo().getData();
       }
 
   /**
-   * Get lock.
+   * Get all fovorites
    * 
-   * @param fileId  (required)
-   * @return ApiResponse&lt;FileLock&gt;
+   * @return ApiResponse&lt;List&lt;File&gt;&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<FileLock> fileLocksFindLockWithHttpInfo(String fileId) throws ApiException {
+  public ApiResponse<List<File>> favoritesGetAllWithHttpInfo() throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'fileId' is set
-    if (fileId == null) {
-      throw new ApiException(400, "Missing the required parameter 'fileId' when calling fileLocksFindLock");
-    }
-    
     // create path and map variables
-    String localVarPath = "/v4/filelocks/{fileId}"
-      .replaceAll("\\{" + "fileId" + "\\}", apiClient.escapeString(fileId.toString()));
+    String localVarPath = "/v4/favorites";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -206,53 +183,45 @@ public class FileLocksApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<FileLock> localVarReturnType = new GenericType<FileLock>() {};
+    GenericType<List<File>> localVarReturnType = new GenericType<List<File>>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Update lock
+   * Update Favorite Order              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
-   * @param fileId  (required)
-   * @param lockId  (required)
-   * @param request  (required)
-   * @return FileLock
+   * @param id  (required)
+   * @param updateFavoriteRequest  (required)
+   * @return File
    * @throws ApiException if fails to make API call
    */
-  public FileLock fileLocksUpdateLock(String fileId, String lockId, FileLockRequest request) throws ApiException {
-    return fileLocksUpdateLockWithHttpInfo(fileId, lockId, request).getData();
+  public File favoritesUpdate(String id, UpdateFavoriteRequest updateFavoriteRequest) throws ApiException {
+    return favoritesUpdateWithHttpInfo(id, updateFavoriteRequest).getData();
       }
 
   /**
-   * Update lock
+   * Update Favorite Order              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
-   * @param fileId  (required)
-   * @param lockId  (required)
-   * @param request  (required)
-   * @return ApiResponse&lt;FileLock&gt;
+   * @param id  (required)
+   * @param updateFavoriteRequest  (required)
+   * @return ApiResponse&lt;File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<FileLock> fileLocksUpdateLockWithHttpInfo(String fileId, String lockId, FileLockRequest request) throws ApiException {
-    Object localVarPostBody = request;
+  public ApiResponse<File> favoritesUpdateWithHttpInfo(String id, UpdateFavoriteRequest updateFavoriteRequest) throws ApiException {
+    Object localVarPostBody = updateFavoriteRequest;
     
-    // verify the required parameter 'fileId' is set
-    if (fileId == null) {
-      throw new ApiException(400, "Missing the required parameter 'fileId' when calling fileLocksUpdateLock");
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling favoritesUpdate");
     }
     
-    // verify the required parameter 'lockId' is set
-    if (lockId == null) {
-      throw new ApiException(400, "Missing the required parameter 'lockId' when calling fileLocksUpdateLock");
-    }
-    
-    // verify the required parameter 'request' is set
-    if (request == null) {
-      throw new ApiException(400, "Missing the required parameter 'request' when calling fileLocksUpdateLock");
+    // verify the required parameter 'updateFavoriteRequest' is set
+    if (updateFavoriteRequest == null) {
+      throw new ApiException(400, "Missing the required parameter 'updateFavoriteRequest' when calling favoritesUpdate");
     }
     
     // create path and map variables
-    String localVarPath = "/v4/filelocks/{fileId}/{lockId}"
-      .replaceAll("\\{" + "fileId" + "\\}", apiClient.escapeString(fileId.toString()))
-      .replaceAll("\\{" + "lockId" + "\\}", apiClient.escapeString(lockId.toString()));
+    String localVarPath = "/v4/favorites/{id}"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -274,7 +243,7 @@ public class FileLocksApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<FileLock> localVarReturnType = new GenericType<FileLock>() {};
+    GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
 }

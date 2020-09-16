@@ -26,7 +26,7 @@ import org.joda.time.DateTime;
  * A file version.
  */
 @ApiModel(description = "A file version.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-04-08T17:57:06.518+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
 public class FileVersion {
   @JsonProperty("version")
   private Integer version = null;
@@ -79,7 +79,9 @@ public class FileVersion {
     
     NUMBER_256(256),
     
-    NUMBER_512(512);
+    NUMBER_512(512),
+    
+    NUMBER_1024(1024);
 
     private Integer value;
 

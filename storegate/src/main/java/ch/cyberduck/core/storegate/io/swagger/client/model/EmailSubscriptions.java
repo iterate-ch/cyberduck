@@ -25,10 +25,13 @@ import io.swagger.annotations.ApiModelProperty;
  * Email Subscriptions
  */
 @ApiModel(description = "Email Subscriptions")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-04-08T17:57:06.518+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
 public class EmailSubscriptions {
   @JsonProperty("newsletter")
   private Boolean newsletter = null;
+
+  @JsonProperty("loginNotification")
+  private Boolean loginNotification = null;
 
   @JsonProperty("backupReports")
   private Boolean backupReports = null;
@@ -52,6 +55,24 @@ public class EmailSubscriptions {
 
   public void setNewsletter(Boolean newsletter) {
     this.newsletter = newsletter;
+  }
+
+  public EmailSubscriptions loginNotification(Boolean loginNotification) {
+    this.loginNotification = loginNotification;
+    return this;
+  }
+
+   /**
+   * Login Notification Subscription
+   * @return loginNotification
+  **/
+  @ApiModelProperty(value = "Login Notification Subscription")
+  public Boolean isLoginNotification() {
+    return loginNotification;
+  }
+
+  public void setLoginNotification(Boolean loginNotification) {
+    this.loginNotification = loginNotification;
   }
 
   public EmailSubscriptions backupReports(Boolean backupReports) {
@@ -101,13 +122,14 @@ public class EmailSubscriptions {
     }
     EmailSubscriptions emailSubscriptions = (EmailSubscriptions) o;
     return Objects.equals(this.newsletter, emailSubscriptions.newsletter) &&
+        Objects.equals(this.loginNotification, emailSubscriptions.loginNotification) &&
         Objects.equals(this.backupReports, emailSubscriptions.backupReports) &&
         Objects.equals(this.backupAlerts, emailSubscriptions.backupAlerts);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(newsletter, backupReports, backupAlerts);
+    return Objects.hash(newsletter, loginNotification, backupReports, backupAlerts);
   }
 
 
@@ -117,6 +139,7 @@ public class EmailSubscriptions {
     sb.append("class EmailSubscriptions {\n");
     
     sb.append("    newsletter: ").append(toIndentedString(newsletter)).append("\n");
+    sb.append("    loginNotification: ").append(toIndentedString(loginNotification)).append("\n");
     sb.append("    backupReports: ").append(toIndentedString(backupReports)).append("\n");
     sb.append("    backupAlerts: ").append(toIndentedString(backupAlerts)).append("\n");
     sb.append("}");
