@@ -15,69 +15,70 @@ package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.cyberduck.core.storegate.io.swagger.client.model.MediaFolder;
+import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Contains a list of mediaFolders
+ * Contains a list of grouped file items.
  */
-@ApiModel(description = "Contains a list of mediaFolders")
+@ApiModel(description = "Contains a list of grouped file items.")
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
-public class MediaFolderContents {
-  @JsonProperty("mediaFolders")
-  private List<MediaFolder> mediaFolders = null;
-
+public class RecentGroupedContents {
   @JsonProperty("totalRowCount")
   private Integer totalRowCount = null;
 
-  public MediaFolderContents mediaFolders(List<MediaFolder> mediaFolders) {
-    this.mediaFolders = mediaFolders;
-    return this;
-  }
+  @JsonProperty("groups")
+  private Map<String, List<File>> groups = null;
 
-  public MediaFolderContents addMediaFoldersItem(MediaFolder mediaFoldersItem) {
-    if (this.mediaFolders == null) {
-      this.mediaFolders = new ArrayList<>();
-    }
-    this.mediaFolders.add(mediaFoldersItem);
-    return this;
-  }
-
-   /**
-   * The list of items.
-   * @return mediaFolders
-  **/
-  @ApiModelProperty(value = "The list of items.")
-  public List<MediaFolder> getMediaFolders() {
-    return mediaFolders;
-  }
-
-  public void setMediaFolders(List<MediaFolder> mediaFolders) {
-    this.mediaFolders = mediaFolders;
-  }
-
-  public MediaFolderContents totalRowCount(Integer totalRowCount) {
+  public RecentGroupedContents totalRowCount(Integer totalRowCount) {
     this.totalRowCount = totalRowCount;
     return this;
   }
 
    /**
-   * Total number of item.
+   * Total number of items.
    * @return totalRowCount
   **/
-  @ApiModelProperty(value = "Total number of item.")
+  @ApiModelProperty(value = "Total number of items.")
   public Integer getTotalRowCount() {
     return totalRowCount;
   }
 
   public void setTotalRowCount(Integer totalRowCount) {
     this.totalRowCount = totalRowCount;
+  }
+
+  public RecentGroupedContents groups(Map<String, List<File>> groups) {
+    this.groups = groups;
+    return this;
+  }
+
+  public RecentGroupedContents putGroupsItem(String key, List<File> groupsItem) {
+    if (this.groups == null) {
+      this.groups = new HashMap<>();
+    }
+    this.groups.put(key, groupsItem);
+    return this;
+  }
+
+   /**
+   * The list of items.
+   * @return groups
+  **/
+  @ApiModelProperty(value = "The list of items.")
+  public Map<String, List<File>> getGroups() {
+    return groups;
+  }
+
+  public void setGroups(Map<String, List<File>> groups) {
+    this.groups = groups;
   }
 
 
@@ -89,24 +90,24 @@ public class MediaFolderContents {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    MediaFolderContents mediaFolderContents = (MediaFolderContents) o;
-    return Objects.equals(this.mediaFolders, mediaFolderContents.mediaFolders) &&
-        Objects.equals(this.totalRowCount, mediaFolderContents.totalRowCount);
+    RecentGroupedContents recentGroupedContents = (RecentGroupedContents) o;
+    return Objects.equals(this.totalRowCount, recentGroupedContents.totalRowCount) &&
+        Objects.equals(this.groups, recentGroupedContents.groups);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(mediaFolders, totalRowCount);
+    return Objects.hash(totalRowCount, groups);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class MediaFolderContents {\n");
+    sb.append("class RecentGroupedContents {\n");
     
-    sb.append("    mediaFolders: ").append(toIndentedString(mediaFolders)).append("\n");
     sb.append("    totalRowCount: ").append(toIndentedString(totalRowCount)).append("\n");
+    sb.append("    groups: ").append(toIndentedString(groups)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -28,7 +28,7 @@ import java.util.List;
  * A eventContent object
  */
 @ApiModel(description = "A eventContent object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
 public class EventContents {
   @JsonProperty("totalRowCount")
   private Integer totalRowCount = null;

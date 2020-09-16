@@ -25,13 +25,19 @@ import io.swagger.annotations.ApiModelProperty;
  * A CreateUser request object
  */
 @ApiModel(description = "A CreateUser request object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
 public class CreateUserRequest {
   @JsonProperty("username")
   private String username = null;
 
   @JsonProperty("password")
   private String password = null;
+
+  @JsonProperty("socialSecurityNumber")
+  private String socialSecurityNumber = null;
+
+  @JsonProperty("nonEId")
+  private Boolean nonEId = null;
 
   @JsonProperty("firstName")
   private String firstName = null;
@@ -128,6 +134,42 @@ public class CreateUserRequest {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public CreateUserRequest socialSecurityNumber(String socialSecurityNumber) {
+    this.socialSecurityNumber = socialSecurityNumber;
+    return this;
+  }
+
+   /**
+   * The SocialSecurityNumber used for eID registration
+   * @return socialSecurityNumber
+  **/
+  @ApiModelProperty(value = "The SocialSecurityNumber used for eID registration")
+  public String getSocialSecurityNumber() {
+    return socialSecurityNumber;
+  }
+
+  public void setSocialSecurityNumber(String socialSecurityNumber) {
+    this.socialSecurityNumber = socialSecurityNumber;
+  }
+
+  public CreateUserRequest nonEId(Boolean nonEId) {
+    this.nonEId = nonEId;
+    return this;
+  }
+
+   /**
+   * A non eID registration on a eID account
+   * @return nonEId
+  **/
+  @ApiModelProperty(value = "A non eID registration on a eID account")
+  public Boolean isNonEId() {
+    return nonEId;
+  }
+
+  public void setNonEId(Boolean nonEId) {
+    this.nonEId = nonEId;
   }
 
   public CreateUserRequest firstName(String firstName) {
@@ -251,6 +293,8 @@ public class CreateUserRequest {
     CreateUserRequest createUserRequest = (CreateUserRequest) o;
     return Objects.equals(this.username, createUserRequest.username) &&
         Objects.equals(this.password, createUserRequest.password) &&
+        Objects.equals(this.socialSecurityNumber, createUserRequest.socialSecurityNumber) &&
+        Objects.equals(this.nonEId, createUserRequest.nonEId) &&
         Objects.equals(this.firstName, createUserRequest.firstName) &&
         Objects.equals(this.lastName, createUserRequest.lastName) &&
         Objects.equals(this.email, createUserRequest.email) &&
@@ -261,7 +305,7 @@ public class CreateUserRequest {
 
   @Override
   public int hashCode() {
-    return Objects.hash(username, password, firstName, lastName, email, reservedSpaceSize, allowProductRegistration, commonRootPermission);
+    return Objects.hash(username, password, socialSecurityNumber, nonEId, firstName, lastName, email, reservedSpaceSize, allowProductRegistration, commonRootPermission);
   }
 
 
@@ -272,6 +316,8 @@ public class CreateUserRequest {
     
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("    password: ").append(toIndentedString(password)).append("\n");
+    sb.append("    socialSecurityNumber: ").append(toIndentedString(socialSecurityNumber)).append("\n");
+    sb.append("    nonEId: ").append(toIndentedString(nonEId)).append("\n");
     sb.append("    firstName: ").append(toIndentedString(firstName)).append("\n");
     sb.append("    lastName: ").append(toIndentedString(lastName)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");

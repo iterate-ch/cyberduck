@@ -61,10 +61,10 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
             attrs.setCreationDate(f.getUploaded().getMillis());
         }
         attrs.setSize(f.getSize());
-        if((f.getFlags() & File.FlagsEnum.Locked.getValue()) == File.FlagsEnum.Locked.getValue()) {
+        if((f.getFlags().getValue() & File.FlagsEnum.NUMBER_4.getValue()) == File.FlagsEnum.NUMBER_4.getValue()) {
             attrs.setLockId(Boolean.TRUE.toString());
         }
-        if((f.getFlags() & File.FlagsEnum.Hidden.getValue()) == File.FlagsEnum.Hidden.getValue()) {
+        if((f.getFlags().getValue() & File.FlagsEnum.NUMBER_512.getValue()) == File.FlagsEnum.NUMBER_512.getValue()) {
             attrs.setHidden(true);
         }
         // NoAccess	0

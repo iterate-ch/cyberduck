@@ -30,7 +30,7 @@ import org.joda.time.DateTime;
  * A enhanced shared mediaFolder
  */
 @ApiModel(description = "A enhanced shared mediaFolder")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
 public class MediaShare {
   @JsonProperty("url")
   private String url = null;

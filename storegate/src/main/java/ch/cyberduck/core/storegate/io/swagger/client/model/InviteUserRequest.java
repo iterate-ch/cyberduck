@@ -22,11 +22,17 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * A UpdateUserRequest request object
+ * 
  */
-@ApiModel(description = "A UpdateUserRequest request object")
+@ApiModel(description = "")
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
-public class UpdateUserRequest {
+public class InviteUserRequest {
+  @JsonProperty("socialSecurityNumber")
+  private String socialSecurityNumber = null;
+
+  @JsonProperty("nonEId")
+  private Boolean nonEId = null;
+
   @JsonProperty("firstName")
   private String firstName = null;
 
@@ -88,7 +94,43 @@ public class UpdateUserRequest {
   @JsonProperty("commonRootPermission")
   private CommonRootPermissionEnum commonRootPermission = null;
 
-  public UpdateUserRequest firstName(String firstName) {
+  public InviteUserRequest socialSecurityNumber(String socialSecurityNumber) {
+    this.socialSecurityNumber = socialSecurityNumber;
+    return this;
+  }
+
+   /**
+   * The SocialSecurityNumber used for eID registration
+   * @return socialSecurityNumber
+  **/
+  @ApiModelProperty(value = "The SocialSecurityNumber used for eID registration")
+  public String getSocialSecurityNumber() {
+    return socialSecurityNumber;
+  }
+
+  public void setSocialSecurityNumber(String socialSecurityNumber) {
+    this.socialSecurityNumber = socialSecurityNumber;
+  }
+
+  public InviteUserRequest nonEId(Boolean nonEId) {
+    this.nonEId = nonEId;
+    return this;
+  }
+
+   /**
+   * A non eID registration on a eID account
+   * @return nonEId
+  **/
+  @ApiModelProperty(value = "A non eID registration on a eID account")
+  public Boolean isNonEId() {
+    return nonEId;
+  }
+
+  public void setNonEId(Boolean nonEId) {
+    this.nonEId = nonEId;
+  }
+
+  public InviteUserRequest firstName(String firstName) {
     this.firstName = firstName;
     return this;
   }
@@ -106,7 +148,7 @@ public class UpdateUserRequest {
     this.firstName = firstName;
   }
 
-  public UpdateUserRequest lastName(String lastName) {
+  public InviteUserRequest lastName(String lastName) {
     this.lastName = lastName;
     return this;
   }
@@ -124,7 +166,7 @@ public class UpdateUserRequest {
     this.lastName = lastName;
   }
 
-  public UpdateUserRequest email(String email) {
+  public InviteUserRequest email(String email) {
     this.email = email;
     return this;
   }
@@ -142,7 +184,7 @@ public class UpdateUserRequest {
     this.email = email;
   }
 
-  public UpdateUserRequest reservedSpaceSize(Long reservedSpaceSize) {
+  public InviteUserRequest reservedSpaceSize(Long reservedSpaceSize) {
     this.reservedSpaceSize = reservedSpaceSize;
     return this;
   }
@@ -161,7 +203,7 @@ public class UpdateUserRequest {
     this.reservedSpaceSize = reservedSpaceSize;
   }
 
-  public UpdateUserRequest allowProductRegistration(Boolean allowProductRegistration) {
+  public InviteUserRequest allowProductRegistration(Boolean allowProductRegistration) {
     this.allowProductRegistration = allowProductRegistration;
     return this;
   }
@@ -179,7 +221,7 @@ public class UpdateUserRequest {
     this.allowProductRegistration = allowProductRegistration;
   }
 
-  public UpdateUserRequest commonRootPermission(CommonRootPermissionEnum commonRootPermission) {
+  public InviteUserRequest commonRootPermission(CommonRootPermissionEnum commonRootPermission) {
     this.commonRootPermission = commonRootPermission;
     return this;
   }
@@ -206,26 +248,30 @@ public class UpdateUserRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UpdateUserRequest updateUserRequest = (UpdateUserRequest) o;
-    return Objects.equals(this.firstName, updateUserRequest.firstName) &&
-        Objects.equals(this.lastName, updateUserRequest.lastName) &&
-        Objects.equals(this.email, updateUserRequest.email) &&
-        Objects.equals(this.reservedSpaceSize, updateUserRequest.reservedSpaceSize) &&
-        Objects.equals(this.allowProductRegistration, updateUserRequest.allowProductRegistration) &&
-        Objects.equals(this.commonRootPermission, updateUserRequest.commonRootPermission);
+    InviteUserRequest inviteUserRequest = (InviteUserRequest) o;
+    return Objects.equals(this.socialSecurityNumber, inviteUserRequest.socialSecurityNumber) &&
+        Objects.equals(this.nonEId, inviteUserRequest.nonEId) &&
+        Objects.equals(this.firstName, inviteUserRequest.firstName) &&
+        Objects.equals(this.lastName, inviteUserRequest.lastName) &&
+        Objects.equals(this.email, inviteUserRequest.email) &&
+        Objects.equals(this.reservedSpaceSize, inviteUserRequest.reservedSpaceSize) &&
+        Objects.equals(this.allowProductRegistration, inviteUserRequest.allowProductRegistration) &&
+        Objects.equals(this.commonRootPermission, inviteUserRequest.commonRootPermission);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(firstName, lastName, email, reservedSpaceSize, allowProductRegistration, commonRootPermission);
+    return Objects.hash(socialSecurityNumber, nonEId, firstName, lastName, email, reservedSpaceSize, allowProductRegistration, commonRootPermission);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class UpdateUserRequest {\n");
+    sb.append("class InviteUserRequest {\n");
     
+    sb.append("    socialSecurityNumber: ").append(toIndentedString(socialSecurityNumber)).append("\n");
+    sb.append("    nonEId: ").append(toIndentedString(nonEId)).append("\n");
     sb.append("    firstName: ").append(toIndentedString(firstName)).append("\n");
     sb.append("    lastName: ").append(toIndentedString(lastName)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");

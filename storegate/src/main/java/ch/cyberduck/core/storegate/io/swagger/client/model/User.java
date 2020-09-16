@@ -26,7 +26,7 @@ import org.joda.time.DateTime;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
 public class User {
   @JsonProperty("id")
   private String id = null;
@@ -96,6 +96,9 @@ public class User {
 
   @JsonProperty("lastLogin")
   private DateTime lastLogin = null;
+
+  @JsonProperty("ssn")
+  private String ssn = null;
 
   @JsonProperty("email")
   private String email = null;
@@ -220,6 +223,24 @@ public class User {
     this.lastLogin = lastLogin;
   }
 
+  public User ssn(String ssn) {
+    this.ssn = ssn;
+    return this;
+  }
+
+   /**
+   * User SSN
+   * @return ssn
+  **/
+  @ApiModelProperty(value = "User SSN")
+  public String getSsn() {
+    return ssn;
+  }
+
+  public void setSsn(String ssn) {
+    this.ssn = ssn;
+  }
+
   public User email(String email) {
     this.email = email;
     return this;
@@ -326,6 +347,7 @@ public class User {
         Objects.equals(this.flags, user.flags) &&
         Objects.equals(this.created, user.created) &&
         Objects.equals(this.lastLogin, user.lastLogin) &&
+        Objects.equals(this.ssn, user.ssn) &&
         Objects.equals(this.email, user.email) &&
         Objects.equals(this.username, user.username) &&
         Objects.equals(this.firstName, user.firstName) &&
@@ -335,7 +357,7 @@ public class User {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, isAdmin, isSubAdmin, flags, created, lastLogin, email, username, firstName, lastName, company);
+    return Objects.hash(id, isAdmin, isSubAdmin, flags, created, lastLogin, ssn, email, username, firstName, lastName, company);
   }
 
 
@@ -350,6 +372,7 @@ public class User {
     sb.append("    flags: ").append(toIndentedString(flags)).append("\n");
     sb.append("    created: ").append(toIndentedString(created)).append("\n");
     sb.append("    lastLogin: ").append(toIndentedString(lastLogin)).append("\n");
+    sb.append("    ssn: ").append(toIndentedString(ssn)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("    firstName: ").append(toIndentedString(firstName)).append("\n");

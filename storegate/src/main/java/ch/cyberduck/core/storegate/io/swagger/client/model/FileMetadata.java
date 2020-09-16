@@ -26,7 +26,7 @@ import org.joda.time.DateTime;
  * A file metadata object
  */
 @ApiModel(description = "A file metadata object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
 public class FileMetadata {
   @JsonProperty("id")
   private String id = null;
@@ -72,7 +72,13 @@ public class FileMetadata {
     
     NUMBER_64(64),
     
-    NUMBER_128(128);
+    NUMBER_128(128),
+    
+    NUMBER_256(256),
+    
+    NUMBER_512(512),
+    
+    NUMBER_1024(1024);
 
     private Integer value;
 
@@ -103,6 +109,9 @@ public class FileMetadata {
 
   @JsonProperty("flags")
   private FlagsEnum flags = null;
+
+  @JsonProperty("lockId")
+  private String lockId = null;
 
   public FileMetadata id(String id) {
     this.id = id;
@@ -266,6 +275,24 @@ public class FileMetadata {
     this.flags = flags;
   }
 
+  public FileMetadata lockId(String lockId) {
+    this.lockId = lockId;
+    return this;
+  }
+
+   /**
+   * Not used any more
+   * @return lockId
+  **/
+  @ApiModelProperty(value = "Not used any more")
+  public String getLockId() {
+    return lockId;
+  }
+
+  public void setLockId(String lockId) {
+    this.lockId = lockId;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -284,12 +311,13 @@ public class FileMetadata {
         Objects.equals(this.created, fileMetadata.created) &&
         Objects.equals(this.accessed, fileMetadata.accessed) &&
         Objects.equals(this.attributes, fileMetadata.attributes) &&
-        Objects.equals(this.flags, fileMetadata.flags);
+        Objects.equals(this.flags, fileMetadata.flags) &&
+        Objects.equals(this.lockId, fileMetadata.lockId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, fileName, parentId, fileSize, modified, created, accessed, attributes, flags);
+    return Objects.hash(id, fileName, parentId, fileSize, modified, created, accessed, attributes, flags, lockId);
   }
 
 
@@ -307,6 +335,7 @@ public class FileMetadata {
     sb.append("    accessed: ").append(toIndentedString(accessed)).append("\n");
     sb.append("    attributes: ").append(toIndentedString(attributes)).append("\n");
     sb.append("    flags: ").append(toIndentedString(flags)).append("\n");
+    sb.append("    lockId: ").append(toIndentedString(lockId)).append("\n");
     sb.append("}");
     return sb.toString();
   }

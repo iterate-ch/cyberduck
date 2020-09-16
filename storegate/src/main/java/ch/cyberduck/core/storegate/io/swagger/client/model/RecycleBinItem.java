@@ -26,7 +26,7 @@ import org.joda.time.DateTime;
  * A recyclebin item.
  */
 @ApiModel(description = "A recyclebin item.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
 public class RecycleBinItem {
   @JsonProperty("originalLocation")
   private String originalLocation = null;
@@ -92,6 +92,9 @@ public class RecycleBinItem {
   @JsonProperty("path")
   private String path = null;
 
+  @JsonProperty("createdById")
+  private String createdById = null;
+
   @JsonProperty("id")
   private String id = null;
 
@@ -137,7 +140,9 @@ public class RecycleBinItem {
     
     NUMBER_256(256),
     
-    NUMBER_512(512);
+    NUMBER_512(512),
+    
+    NUMBER_1024(1024);
 
     private Integer value;
 
@@ -298,6 +303,24 @@ public class RecycleBinItem {
     this.path = path;
   }
 
+  public RecycleBinItem createdById(String createdById) {
+    this.createdById = createdById;
+    return this;
+  }
+
+   /**
+   * The created by id.
+   * @return createdById
+  **/
+  @ApiModelProperty(value = "The created by id.")
+  public String getCreatedById() {
+    return createdById;
+  }
+
+  public void setCreatedById(String createdById) {
+    this.createdById = createdById;
+  }
+
   public RecycleBinItem id(String id) {
     this.id = id;
     return this;
@@ -448,10 +471,10 @@ public class RecycleBinItem {
   }
 
    /**
-   * The owner.
+   * The owner id.
    * @return ownerId
   **/
-  @ApiModelProperty(value = "The owner.")
+  @ApiModelProperty(value = "The owner id.")
   public String getOwnerId() {
     return ownerId;
   }
@@ -477,6 +500,7 @@ public class RecycleBinItem {
         Objects.equals(this.permission, recycleBinItem.permission) &&
         Objects.equals(this.md5, recycleBinItem.md5) &&
         Objects.equals(this.path, recycleBinItem.path) &&
+        Objects.equals(this.createdById, recycleBinItem.createdById) &&
         Objects.equals(this.id, recycleBinItem.id) &&
         Objects.equals(this.name, recycleBinItem.name) &&
         Objects.equals(this.size, recycleBinItem.size) &&
@@ -490,7 +514,7 @@ public class RecycleBinItem {
 
   @Override
   public int hashCode() {
-    return Objects.hash(originalLocation, deleted, deletedBy, versions, permission, md5, path, id, name, size, created, modified, uploaded, accessed, flags, ownerId);
+    return Objects.hash(originalLocation, deleted, deletedBy, versions, permission, md5, path, createdById, id, name, size, created, modified, uploaded, accessed, flags, ownerId);
   }
 
 
@@ -506,6 +530,7 @@ public class RecycleBinItem {
     sb.append("    permission: ").append(toIndentedString(permission)).append("\n");
     sb.append("    md5: ").append(toIndentedString(md5)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
+    sb.append("    createdById: ").append(toIndentedString(createdById)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    size: ").append(toIndentedString(size)).append("\n");
