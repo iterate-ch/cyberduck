@@ -23,11 +23,16 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ProxyLoginFailureException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,9 +40,16 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.StringReader;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
+
+import com.dracoon.sdk.crypto.Crypto;
+import com.dracoon.sdk.crypto.model.UserKeyPair;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import static org.junit.Assert.*;
 
@@ -185,5 +197,57 @@ public class SDSSessionTest extends AbstractSDSTest {
             }
         );
         c.connect(session, new DisabledCancelCallback());
+    }
+
+    @Test
+    public void testKeyPairMigration() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "cryptotest.dracoon.dev",
+            new Credentials(System.getProperties().getProperty("sds.user.cryptotest"), System.getProperties().getProperty("sds.key.cryptotest")));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                throw new LoginCanceledException();
+            }
+        }, new DisabledHostKeyCallback(),
+            new DisabledPasswordStore(), new DisabledProgressListener());
+        connect.check(session, PathCache.empty(), new DisabledCancelCallback());
+        final UserApi userApi = new UserApi(session.getClient());
+        try {
+            userApi.removeUserKeyPair(UserKeyPair.Version.RSA2048.getValue(), null);
+            userApi.removeUserKeyPair(UserKeyPair.Version.RSA4096.getValue(), null);
+        }
+        catch(ApiException e) {
+            final JsonObject json = JsonParser.parseReader(new StringReader(e.getResponseBody())).getAsJsonObject();
+            if(json.has("errorCode")) {
+                if(json.get("errorCode").isJsonPrimitive()) {
+                    final int errorCode = json.getAsJsonPrimitive("errorCode").getAsInt();
+                    if(errorCode == -70020) {
+                        // Ignore - User has no keypair with this algorithm version
+                    }
+                    else {
+                        throw e;
+                    }
+                }
+            }
+        }
+        // create legacy key pair
+        final UserKeyPair userKeyPair = Crypto.generateUserKeyPair(UserKeyPair.Version.RSA2048, "eth[oh8uv4Eesij");
+        userApi.setUserKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(userKeyPair), null);
+        List<UserKeyPairContainer> keyPairs = userApi.requestUserKeyPairs(null, null);
+        assertEquals(1, keyPairs.size());
+        // login to start migration
+        session.getHost().setCredentials(
+            new Credentials(System.getProperties().getProperty("sds.user.cryptotest"), System.getProperties().getProperty("sds.key.cryptotest")));
+        session.login(Proxy.DIRECT, new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("eth[oh8uv4Eesij");
+            }
+        }, new DisabledCancelCallback());
+        keyPairs = userApi.requestUserKeyPairs(null, null);
+        assertEquals(2, keyPairs.size());
+        assertEquals(UserKeyPair.Version.RSA4096.getValue(), session.keyPair().getPublicKeyContainer().getVersion());
+        assertEquals(UserKeyPair.Version.RSA2048.getValue(), session.keyPairDeprecated().getPublicKeyContainer().getVersion());
     }
 }
