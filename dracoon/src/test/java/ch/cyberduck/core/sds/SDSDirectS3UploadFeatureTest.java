@@ -49,7 +49,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
+public class SDSDirectS3UploadFeatureTest extends AbstractS3DirectSDSTest {
 
     @Test
     public void testUploadBelowMultipartSize() throws Exception {
