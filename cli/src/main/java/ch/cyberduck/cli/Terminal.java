@@ -274,8 +274,16 @@ public class Terminal {
             else {
                 remote = new CommandLinePathParser(input).parse(uri);
             }
-            // Set remote file attributes
-            remote.withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source, new AttributesWorker(remote))));
+            switch(action) {
+                case edit:
+                case download:
+                case copy:
+                case synchronize:
+                case delete:
+                    // Set remote file attributes
+                    remote.withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source, new AttributesWorker(remote))));
+                    break;
+            }
             if(input.hasOption(TerminalOptionsBuilder.Params.vault.name())) {
                 final Path vault;
                 if(StringUtils.startsWith(input.getOptionValue(action.name()), TildePathExpander.PREFIX)) {
