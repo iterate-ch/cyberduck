@@ -61,11 +61,11 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
             attrs.setCreationDate(f.getUploaded().getMillis());
         }
         attrs.setSize(f.getSize());
-        if((f.getFlags().getValue() & File.FlagsEnum.NUMBER_4.getValue()) == File.FlagsEnum.NUMBER_4.getValue()) {
+        if((f.getFlags() & File.FlagsEnum.NUMBER_4.getValue()) == File.FlagsEnum.NUMBER_4.getValue()) {
             // This item is locked by some user
             attrs.setLockId(Boolean.TRUE.toString());
         }
-        if((f.getFlags().getValue() & File.FlagsEnum.NUMBER_512.getValue()) == File.FlagsEnum.NUMBER_512.getValue()) {
+        if((f.getFlags() & File.FlagsEnum.NUMBER_512.getValue()) == File.FlagsEnum.NUMBER_512.getValue()) {
             // This item is hidden
             attrs.setHidden(true);
         }
@@ -74,13 +74,13 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
         // ReadWrite 2
         // FullControl 99
         final Permission permission;
-        if(File.PermissionEnum.NUMBER_1.getValue().equals(f.getPermission().getValue())) {
-            permission = new Permission(Permission.Action.read, Permission.Action.none, Permission.Action.none);
-        }
-        else {
+        if((f.getPermission().getValue() & File.PermissionEnum.NUMBER_2.getValue()) == File.PermissionEnum.NUMBER_2.getValue()) {
             permission = new Permission(Permission.Action.read_write, Permission.Action.none, Permission.Action.none);
         }
-        if((f.getFlags().getValue() & File.FlagsEnum.NUMBER_1.getValue()) == File.FlagsEnum.NUMBER_1.getValue()) {
+        else {
+            permission = new Permission(Permission.Action.read, Permission.Action.none, Permission.Action.none);
+        }
+        if((f.getFlags() & File.FlagsEnum.NUMBER_1.getValue()) == File.FlagsEnum.NUMBER_1.getValue()) {
             // This item is a folder
             permission.setUser(permission.getUser().or(Permission.Action.execute));
         }

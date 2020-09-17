@@ -13,14 +13,15 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
+import org.joda.time.DateTime;
+
 import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.joda.time.DateTime;
 
 /**
  * 
@@ -141,7 +142,7 @@ public class ExtendedUser {
   }
 
   @JsonProperty("flags")
-  private FlagsEnum flags = null;
+  private Integer flags = null;
 
   @JsonProperty("created")
   private DateTime created = null;
@@ -275,7 +276,7 @@ public class ExtendedUser {
     this.isSubAdmin = isSubAdmin;
   }
 
-  public ExtendedUser flags(FlagsEnum flags) {
+  public ExtendedUser flags(Integer flags) {
     this.flags = flags;
     return this;
   }
@@ -285,11 +286,11 @@ public class ExtendedUser {
    * @return flags
   **/
   @ApiModelProperty(value = "Account status")
-  public FlagsEnum getFlags() {
+  public Integer getFlags() {
     return flags;
   }
 
-  public void setFlags(FlagsEnum flags) {
+  public void setFlags(Integer flags) {
     this.flags = flags;
   }
 
