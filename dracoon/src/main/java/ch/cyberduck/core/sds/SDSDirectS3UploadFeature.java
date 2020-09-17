@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -27,9 +28,14 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.BufferOutputStream;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.FileBuffer;
+import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -43,6 +49,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.S3FileUploadPart;
 import ch.cyberduck.core.sds.io.swagger.client.model.S3FileUploadStatus;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptOutputStream;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
@@ -54,6 +61,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -117,41 +126,19 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
                 log.debug(String.format("upload started for %s with response %s", file, createFileUploadResponse));
             }
             final Map<Integer, TransferStatus> etags = new HashMap<>();
+            final List<PresignedUrl> presignedUrls = this.retrievePresignedUrls(createFileUploadResponse, status);
+            final List<Future<TransferStatus>> parts = new ArrayList<>();
             // Full size of file
             final long size = status.getLength() + status.getOffset();
-            final GeneratePresignedUrlsRequest presignedUrlsRequest = new GeneratePresignedUrlsRequest().firstPartNumber(1);
-            final List<PresignedUrl> presignedUrls = new ArrayList<>();
-            {
-                long remaining = status.getLength();
-                // Determine number of parts
-                for(int partNumber = 1; remaining > 0; partNumber++) {
-                    final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
-                    if(partNumber > 1 && length < Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize)) {
-                        // Separate last part with non default part size
-                        presignedUrls.addAll(new NodesApi(session.getClient()).generatePresignedUrlsFiles(
-                            new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size(length),
-                            createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls());
-                    }
-                    else {
-                        presignedUrlsRequest.lastPartNumber(partNumber).size(length);
-                    }
-                    remaining -= length;
-                }
-            }
-            presignedUrls.addAll(0, new NodesApi(session.getClient()).generatePresignedUrlsFiles(presignedUrlsRequest,
-                createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls());
-            final List<Future<TransferStatus>> parts = new ArrayList<>();
-            {
-                long offset = 0;
-                long remaining = status.getLength();
-                for(int partNumber = 1; remaining > 0; partNumber++) {
-                    final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
-                    final PresignedUrl presignedUrl = presignedUrls.get(partNumber - 1);
-                    parts.add(this.submit(pool, file, local, throttle, listener, status,
-                        presignedUrl.getUrl(), presignedUrl.getPartNumber(), offset, length, callback));
-                    remaining -= length;
-                    offset += length;
-                }
+            long offset = 0;
+            long remaining = status.getLength();
+            for(int partNumber = 1; remaining > 0; partNumber++) {
+                final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
+                final PresignedUrl presignedUrl = presignedUrls.get(partNumber - 1);
+                parts.add(this.submit(pool, file, local, throttle, listener, status,
+                    presignedUrl.getUrl(), presignedUrl.getPartNumber(), offset, length, callback));
+                remaining -= length;
+                offset += length;
             }
             for(Future<TransferStatus> future : parts) {
                 try {
@@ -246,6 +233,34 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
             // Cancel future tasks
             pool.shutdown(false);
         }
+    }
+
+    private List<PresignedUrl> retrievePresignedUrls(final CreateFileUploadResponse createFileUploadResponse,
+                                                     final TransferStatus status) throws ApiException {
+        // Full size of file
+        final long size = status.getLength() + status.getOffset();
+        final List<PresignedUrl> presignedUrls = new ArrayList<>();
+        final GeneratePresignedUrlsRequest presignedUrlsRequest = new GeneratePresignedUrlsRequest().firstPartNumber(1);
+        {
+            long remaining = status.getLength();
+            // Determine number of parts
+            for(int partNumber = 1; remaining > 0; partNumber++) {
+                final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
+                if(partNumber > 1 && length < Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize)) {
+                    // Separate last part with non default part size
+                    presignedUrls.addAll(new NodesApi(session.getClient()).generatePresignedUrlsFiles(
+                        new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size(length),
+                        createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls());
+                }
+                else {
+                    presignedUrlsRequest.lastPartNumber(partNumber).size(length);
+                }
+                remaining -= length;
+            }
+        }
+        presignedUrls.addAll(0, new NodesApi(session.getClient()).generatePresignedUrlsFiles(presignedUrlsRequest,
+            createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls());
+        return presignedUrls;
     }
 
     private Future<TransferStatus> submit(final ThreadPool pool, final Path file, final Local local,
