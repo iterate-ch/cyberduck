@@ -50,4 +50,31 @@ public interface Buffer {
     interface Factory {
         Buffer create(Path file);
     }
+
+    Buffer NULL = new Buffer() {
+        @Override
+        public int write(final byte[] chunk, final Long offset) throws IOException {
+            throw new IOException();
+        }
+
+        @Override
+        public int read(final byte[] buffer, final Long offset) throws IOException {
+            throw new IOException();
+        }
+
+        @Override
+        public Long length() {
+            return 0L;
+        }
+
+        @Override
+        public void close() {
+            // No-op
+        }
+
+        @Override
+        public void truncate(final Long length) {
+            // No-op
+        }
+    };
 }
