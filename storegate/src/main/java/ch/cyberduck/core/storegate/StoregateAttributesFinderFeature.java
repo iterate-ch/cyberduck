@@ -62,9 +62,11 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
         }
         attrs.setSize(f.getSize());
         if((f.getFlags().getValue() & File.FlagsEnum.NUMBER_4.getValue()) == File.FlagsEnum.NUMBER_4.getValue()) {
+            // This item is locked by some user
             attrs.setLockId(Boolean.TRUE.toString());
         }
         if((f.getFlags().getValue() & File.FlagsEnum.NUMBER_512.getValue()) == File.FlagsEnum.NUMBER_512.getValue()) {
+            // This item is hidden
             attrs.setHidden(true);
         }
         // NoAccess	0
@@ -78,7 +80,8 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
         else {
             permission = new Permission(Permission.Action.read_write, Permission.Action.none, Permission.Action.none);
         }
-        if((f.getFlags() & File.FlagsEnum.Folder.getValue()) == File.FlagsEnum.Folder.getValue()) {
+        if((f.getFlags().getValue() & File.FlagsEnum.NUMBER_1.getValue()) == File.FlagsEnum.NUMBER_1.getValue()) {
+            // This item is a folder
             permission.setUser(permission.getUser().or(Permission.Action.execute));
         }
         attrs.setPermission(permission);
