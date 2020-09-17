@@ -16,18 +16,23 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptReadFeature;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -35,16 +40,16 @@ import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
+public class SDSDirectS3UploadFeatureTest extends AbstractS3DirectSDSTest {
 
     @Test
     public void testUploadBelowMultipartSize() throws Exception {
@@ -121,7 +126,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
     @Test
     public void testTripleCryptUploadBelowMultipartSize() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid, new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session)));
+        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid, new SDSDirectS3WriteFeature(session));
         final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -139,6 +144,16 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final PathAttributes attributes = new SDSListService(session, nodeid).list(room,
             new DisabledListProgressListener()).get(test).attributes();
         assertEquals(random.length, attributes.getSize());
+        final byte[] compare = new byte[random.length];
+        final InputStream stream = new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(test, new TransferStatus(), new DisabledConnectionCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                return new VaultCredentials("eth[oh8uv4Eesij");
+            }
+        });
+        IOUtils.readFully(stream, compare);
+        stream.close();
+        assertArrayEquals(random, compare);
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
@@ -146,7 +161,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
     @Test
     public void testTripleCryptUploadExactMultipartSize() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid, new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session)));
+        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid, new SDSDirectS3WriteFeature(session));
         final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -164,6 +179,16 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final PathAttributes attributes = new SDSListService(session, nodeid).list(room,
             new DisabledListProgressListener()).get(test).attributes();
         assertEquals(random.length, attributes.getSize());
+        final byte[] compare = new byte[random.length];
+        final InputStream stream = new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(test, new TransferStatus(), new DisabledConnectionCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                return new VaultCredentials("eth[oh8uv4Eesij");
+            }
+        });
+        IOUtils.readFully(stream, compare);
+        stream.close();
+        assertArrayEquals(random, compare);
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
@@ -171,7 +196,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
     @Test
     public void testTripleCryptUploadMultipleParts() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid, new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session)));
+        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid, new SDSDirectS3WriteFeature(session));
         final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -189,6 +214,16 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final PathAttributes attributes = new SDSListService(session, nodeid).list(room,
             new DisabledListProgressListener()).get(test).attributes();
         assertEquals(random.length, attributes.getSize());
+        final byte[] compare = new byte[random.length];
+        final InputStream stream = new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(test, new TransferStatus(), new DisabledConnectionCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                return new VaultCredentials("eth[oh8uv4Eesij");
+            }
+        });
+        IOUtils.readFully(stream, compare);
+        stream.close();
+        assertArrayEquals(random, compare);
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
