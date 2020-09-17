@@ -4,6 +4,7 @@ https://cyberduck.io/
 7.6.1
 - [Bugfix] Unable to authenticate using PuTTY Pageant (SFTP, Windows)
 - [Bugfix] Set modification date on uploaded files (DRACOON)
+- [Bugfix] Failure authenticating with proxy using Integrated Windows Authentication (IWA) authentication (WebDAV, Windows)
 
 7.6.0
 - [Feature] Lock and unlock vaults using option in menu or toolbar (Cryptomator) (#10798)
