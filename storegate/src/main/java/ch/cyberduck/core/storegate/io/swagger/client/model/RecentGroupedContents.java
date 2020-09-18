@@ -29,7 +29,10 @@ import java.util.Map;
  * Contains a list of grouped file items.
  */
 @ApiModel(description = "Contains a list of grouped file items.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class RecentGroupedContents {
   @JsonProperty("totalRowCount")
   private Integer totalRowCount = null;

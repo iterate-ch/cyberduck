@@ -13,67 +13,26 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-import org.joda.time.DateTime;
-
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.joda.time.DateTime;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class ExtendedUser {
-  /**
-   * Permission for common root
-   */
-  public enum CommonRootPermissionEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_4(4),
-    
-    NUMBER_99(99),
-    
-    NUMBER_MINUS_1(-1);
-
-    private Integer value;
-
-    CommonRootPermissionEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static CommonRootPermissionEnum fromValue(String text) {
-      for (CommonRootPermissionEnum b : CommonRootPermissionEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("commonRootPermission")
-  private CommonRootPermissionEnum commonRootPermission = null;
+  private Integer commonRootPermission = null;
 
   @JsonProperty("reservedSpaceSize")
   private Long reservedSpaceSize = null;
@@ -89,57 +48,6 @@ public class ExtendedUser {
 
   @JsonProperty("isSubAdmin")
   private Boolean isSubAdmin = null;
-
-  /**
-   * Account status
-   */
-  public enum FlagsEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_4(4),
-    
-    NUMBER_8(8),
-    
-    NUMBER_16(16),
-    
-    NUMBER_32(32),
-    
-    NUMBER_64(64),
-    
-    NUMBER_128(128),
-    
-    NUMBER_256(256);
-
-    private Integer value;
-
-    FlagsEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static FlagsEnum fromValue(String text) {
-      for (FlagsEnum b : FlagsEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
 
   @JsonProperty("flags")
   private Integer flags = null;
@@ -168,21 +76,21 @@ public class ExtendedUser {
   @JsonProperty("company")
   private String company = null;
 
-  public ExtendedUser commonRootPermission(CommonRootPermissionEnum commonRootPermission) {
+  public ExtendedUser commonRootPermission(Integer commonRootPermission) {
     this.commonRootPermission = commonRootPermission;
     return this;
   }
 
    /**
-   * Permission for common root
+   * Permission for common root (0 &#x3D; NoAccess, 1 &#x3D; ReadOnly, 2 &#x3D; ReadWrite, 4 &#x3D; Synchronize, 99 &#x3D; FullControl, -1 &#x3D; None)
    * @return commonRootPermission
   **/
-  @ApiModelProperty(value = "Permission for common root")
-  public CommonRootPermissionEnum getCommonRootPermission() {
+  @ApiModelProperty(value = "Permission for common root (0 = NoAccess, 1 = ReadOnly, 2 = ReadWrite, 4 = Synchronize, 99 = FullControl, -1 = None)")
+  public Integer getCommonRootPermission() {
     return commonRootPermission;
   }
 
-  public void setCommonRootPermission(CommonRootPermissionEnum commonRootPermission) {
+  public void setCommonRootPermission(Integer commonRootPermission) {
     this.commonRootPermission = commonRootPermission;
   }
 
@@ -282,10 +190,10 @@ public class ExtendedUser {
   }
 
    /**
-   * Account status
+   * Account status (0 &#x3D; None, 1 &#x3D; TemporaryUser, 2 &#x3D; Disabled, 4 &#x3D; Pending, 8 &#x3D; LockedDuePayment, 16 &#x3D; RequireNewPassword, 32 &#x3D; TwoFactorEnabled, 64 &#x3D; UnVerified, 128 &#x3D; SingleSignOn, 256 &#x3D; ForceTwoFactor)
    * @return flags
   **/
-  @ApiModelProperty(value = "Account status")
+  @ApiModelProperty(value = "Account status (0 = None, 1 = TemporaryUser, 2 = Disabled, 4 = Pending, 8 = LockedDuePayment, 16 = RequireNewPassword, 32 = TwoFactorEnabled, 64 = UnVerified, 128 = SingleSignOn, 256 = ForceTwoFactor)")
   public Integer getFlags() {
     return flags;
   }

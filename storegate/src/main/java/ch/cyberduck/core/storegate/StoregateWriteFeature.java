@@ -184,7 +184,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
             else {
                 meta.setAttributes(0);
             }
-            meta.setFlags(FileMetadata.FlagsEnum.NUMBER_0.getValue());
+            meta.setFlags(0);
             if(status.getLockId() != null) {
                 request.addHeader("X-Lock-Id", status.getLockId().toString());
             }
