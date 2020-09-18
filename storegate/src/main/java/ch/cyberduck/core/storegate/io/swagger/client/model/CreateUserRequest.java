@@ -25,7 +25,10 @@ import io.swagger.annotations.ApiModelProperty;
  * A CreateUser request object
  */
 @ApiModel(description = "A CreateUser request object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class CreateUserRequest {
   @JsonProperty("username")
   private String username = null;
@@ -54,51 +57,8 @@ public class CreateUserRequest {
   @JsonProperty("allowProductRegistration")
   private Boolean allowProductRegistration = null;
 
-  /**
-   * The Permission for Common root
-   */
-  public enum CommonRootPermissionEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_4(4),
-    
-    NUMBER_99(99),
-    
-    NUMBER_MINUS_1(-1);
-
-    private Integer value;
-
-    CommonRootPermissionEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static CommonRootPermissionEnum fromValue(String text) {
-      for (CommonRootPermissionEnum b : CommonRootPermissionEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("commonRootPermission")
-  private CommonRootPermissionEnum commonRootPermission = null;
+  private Integer commonRootPermission = null;
 
   public CreateUserRequest username(String username) {
     this.username = username;
@@ -263,21 +223,21 @@ public class CreateUserRequest {
     this.allowProductRegistration = allowProductRegistration;
   }
 
-  public CreateUserRequest commonRootPermission(CommonRootPermissionEnum commonRootPermission) {
+  public CreateUserRequest commonRootPermission(Integer commonRootPermission) {
     this.commonRootPermission = commonRootPermission;
     return this;
   }
 
    /**
-   * The Permission for Common root
+   * The Permission for Common root (0 &#x3D; NoAccess, 1 &#x3D; ReadOnly, 2 &#x3D; ReadWrite, 4 &#x3D; Synchronize, 99 &#x3D; FullControl, -1 &#x3D; None)
    * @return commonRootPermission
   **/
-  @ApiModelProperty(value = "The Permission for Common root")
-  public CommonRootPermissionEnum getCommonRootPermission() {
+  @ApiModelProperty(value = "The Permission for Common root (0 = NoAccess, 1 = ReadOnly, 2 = ReadWrite, 4 = Synchronize, 99 = FullControl, -1 = None)")
+  public Integer getCommonRootPermission() {
     return commonRootPermission;
   }
 
-  public void setCommonRootPermission(CommonRootPermissionEnum commonRootPermission) {
+  public void setCommonRootPermission(Integer commonRootPermission) {
     this.commonRootPermission = commonRootPermission;
   }
 

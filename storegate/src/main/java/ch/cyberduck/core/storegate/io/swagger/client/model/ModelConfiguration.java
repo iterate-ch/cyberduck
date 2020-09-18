@@ -25,7 +25,10 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class ModelConfiguration {
   @JsonProperty("hasMulti")
   private Boolean hasMulti = null;
@@ -99,53 +102,8 @@ public class ModelConfiguration {
   @JsonProperty("hideSplash")
   private Boolean hideSplash = null;
 
-  /**
-   * What features are available in settings
-   */
-  public enum UserAccountModeEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_3(3),
-    
-    NUMBER_4(4),
-    
-    NUMBER_5(5),
-    
-    NUMBER_6(6);
-
-    private Integer value;
-
-    UserAccountModeEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static UserAccountModeEnum fromValue(String text) {
-      for (UserAccountModeEnum b : UserAccountModeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("userAccountMode")
-  private UserAccountModeEnum userAccountMode = null;
+  private Integer userAccountMode = null;
 
   @JsonProperty("allowShare")
   private Boolean allowShare = null;
@@ -615,21 +573,21 @@ public class ModelConfiguration {
     this.hideSplash = hideSplash;
   }
 
-  public ModelConfiguration userAccountMode(UserAccountModeEnum userAccountMode) {
+  public ModelConfiguration userAccountMode(Integer userAccountMode) {
     this.userAccountMode = userAccountMode;
     return this;
   }
 
    /**
-   * What features are available in settings
+   * What features are available in settings (0 &#x3D; Deny, 1 &#x3D; Setting, 2 &#x3D; Overview, 3 &#x3D; UserSetting, 4 &#x3D; OverviewPlus, 5 &#x3D; Upgrade, 6 &#x3D; Full)
    * @return userAccountMode
   **/
-  @ApiModelProperty(value = "What features are available in settings")
-  public UserAccountModeEnum getUserAccountMode() {
+  @ApiModelProperty(value = "What features are available in settings (0 = Deny, 1 = Setting, 2 = Overview, 3 = UserSetting, 4 = OverviewPlus, 5 = Upgrade, 6 = Full)")
+  public Integer getUserAccountMode() {
     return userAccountMode;
   }
 
-  public void setUserAccountMode(UserAccountModeEnum userAccountMode) {
+  public void setUserAccountMode(Integer userAccountMode) {
     this.userAccountMode = userAccountMode;
   }
 

@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
 public class PublicSharesApi {
   private ApiClient apiClient;
 
@@ -46,7 +46,7 @@ public class PublicSharesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression Name, Created, Modified, Size (desc/asc) (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param includeParent Include the parent (required)
    * @return FileContents
    * @throws ApiException if fails to make API call
@@ -63,7 +63,7 @@ public class PublicSharesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression Name, Created, Modified, Size (desc/asc) (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param includeParent Include the parent (required)
    * @return ApiResponse&lt;FileContents&gt;
    * @throws ApiException if fails to make API call

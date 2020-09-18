@@ -27,7 +27,10 @@ import java.util.List;
  * A share mail request object
  */
 @ApiModel(description = "A share mail request object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class ShareMailRequest {
   @JsonProperty("sendToEmails")
   private List<String> sendToEmails = null;

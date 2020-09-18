@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
 public class FilesApi {
   private ApiClient apiClient;
 
@@ -274,14 +274,15 @@ public class FilesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression \&quot;Name desc\&quot;  is acceptable Name, Created, Modified, Size (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param includeHidden Include hidden folders and files (required)
    * @param includeParent Include parent in the response (File) if set to true (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
    * @return FileContents
    * @throws ApiException if fails to make API call
    */
-  public FileContents filesGet(String path, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent) throws ApiException {
-    return filesGetWithHttpInfo(path, pageIndex, pageSize, sortExpression, filter, includeHidden, includeParent).getData();
+  public FileContents filesGet(String path, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent, Boolean sortTogether) throws ApiException {
+    return filesGetWithHttpInfo(path, pageIndex, pageSize, sortExpression, filter, includeHidden, includeParent, sortTogether).getData();
       }
 
   /**
@@ -291,13 +292,14 @@ public class FilesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression \&quot;Name desc\&quot;  is acceptable Name, Created, Modified, Size (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param includeHidden Include hidden folders and files (required)
    * @param includeParent Include parent in the response (File) if set to true (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
    * @return ApiResponse&lt;FileContents&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<FileContents> filesGetWithHttpInfo(String path, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent) throws ApiException {
+  public ApiResponse<FileContents> filesGetWithHttpInfo(String path, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent, Boolean sortTogether) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'path' is set
@@ -350,6 +352,7 @@ public class FilesApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "includeHidden", includeHidden));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "includeParent", includeParent));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortTogether", sortTogether));
 
     
     
@@ -375,14 +378,15 @@ public class FilesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression \&quot;Name desc\&quot;  is acceptable Name, Created, Modified, Size (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param includeHidden Include hidden folders and files (required)
    * @param includeParent Include parent in the response (File) if set to true (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
    * @return FileContents
    * @throws ApiException if fails to make API call
    */
-  public FileContents filesGetById(String id, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent) throws ApiException {
-    return filesGetByIdWithHttpInfo(id, pageIndex, pageSize, sortExpression, filter, includeHidden, includeParent).getData();
+  public FileContents filesGetById(String id, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent, Boolean sortTogether) throws ApiException {
+    return filesGetByIdWithHttpInfo(id, pageIndex, pageSize, sortExpression, filter, includeHidden, includeParent, sortTogether).getData();
       }
 
   /**
@@ -392,13 +396,14 @@ public class FilesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression \&quot;Name desc\&quot;  is acceptable Name, Created, Modified, Size (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param includeHidden Include hidden folders and files (required)
    * @param includeParent Include parent in the response (File) if set to true (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
    * @return ApiResponse&lt;FileContents&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<FileContents> filesGetByIdWithHttpInfo(String id, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent) throws ApiException {
+  public ApiResponse<FileContents> filesGetByIdWithHttpInfo(String id, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent, Boolean sortTogether) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'id' is set
@@ -451,6 +456,7 @@ public class FilesApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "includeHidden", includeHidden));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "includeParent", includeParent));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortTogether", sortTogether));
 
     
     
@@ -583,7 +589,7 @@ public class FilesApi {
    * 
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param sortExpression Sort expression (optional)
    * @param reversed Reverse list with oldest first (Obsolete, only used if sortExpression is empty) (optional)
    * @return SearchFileContents
@@ -598,7 +604,7 @@ public class FilesApi {
    * 
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param sortExpression Sort expression (optional)
    * @param reversed Reverse list with oldest first (Obsolete, only used if sortExpression is empty) (optional)
    * @return ApiResponse&lt;SearchFileContents&gt;
@@ -658,8 +664,8 @@ public class FilesApi {
    * 
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (required)
-   * @param groupBy Day, Month (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
+   * @param groupBy Day, Month (0 &#x3D; Day, 1 &#x3D; Month) (required)
    * @param sortExpression Sort expression (optional)
    * @param reversed Reverse list with oldest first (Obsolete, only used if sortExpression is empty) (optional)
    * @return RecentGroupedContents
@@ -674,8 +680,8 @@ public class FilesApi {
    * 
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (required)
-   * @param groupBy Day, Month (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
+   * @param groupBy Day, Month (0 &#x3D; Day, 1 &#x3D; Month) (required)
    * @param sortExpression Sort expression (optional)
    * @param reversed Reverse list with oldest first (Obsolete, only used if sortExpression is empty) (optional)
    * @return ApiResponse&lt;RecentGroupedContents&gt;
@@ -962,11 +968,12 @@ public class FilesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression Name, Created, Modified, Accessed (desc/asc) (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
    * @return SearchFileContents
    * @throws ApiException if fails to make API call
    */
-  public SearchFileContents filesSearch(String searchCriteria, String searchRoot, Integer pageIndex, Integer pageSize, String sortExpression) throws ApiException {
-    return filesSearchWithHttpInfo(searchCriteria, searchRoot, pageIndex, pageSize, sortExpression).getData();
+  public SearchFileContents filesSearch(String searchCriteria, String searchRoot, Integer pageIndex, Integer pageSize, String sortExpression, Boolean sortTogether) throws ApiException {
+    return filesSearchWithHttpInfo(searchCriteria, searchRoot, pageIndex, pageSize, sortExpression, sortTogether).getData();
       }
 
   /**
@@ -977,10 +984,11 @@ public class FilesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression Name, Created, Modified, Accessed (desc/asc) (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
    * @return ApiResponse&lt;SearchFileContents&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<SearchFileContents> filesSearchWithHttpInfo(String searchCriteria, String searchRoot, Integer pageIndex, Integer pageSize, String sortExpression) throws ApiException {
+  public ApiResponse<SearchFileContents> filesSearchWithHttpInfo(String searchCriteria, String searchRoot, Integer pageIndex, Integer pageSize, String sortExpression, Boolean sortTogether) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'searchCriteria' is set
@@ -1021,6 +1029,95 @@ public class FilesApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageIndex", pageIndex));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageSize", pageSize));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortExpression", sortExpression));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortTogether", sortTogether));
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<SearchFileContents> localVarReturnType = new GenericType<SearchFileContents>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Search contents, this can list contents in a specific folder or all files in entire space.
+   * 
+   * @param id The id of the reaource to search in (required)
+   * @param searchCriteria Searchstring (required)
+   * @param pageIndex Index of page (required)
+   * @param pageSize Max rows per page (required)
+   * @param sortExpression Name, Created, Modified, Accessed (desc/asc) (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
+   * @return SearchFileContents
+   * @throws ApiException if fails to make API call
+   */
+  public SearchFileContents filesSearchById(String id, String searchCriteria, Integer pageIndex, Integer pageSize, String sortExpression, Boolean sortTogether) throws ApiException {
+    return filesSearchByIdWithHttpInfo(id, searchCriteria, pageIndex, pageSize, sortExpression, sortTogether).getData();
+      }
+
+  /**
+   * Search contents, this can list contents in a specific folder or all files in entire space.
+   * 
+   * @param id The id of the reaource to search in (required)
+   * @param searchCriteria Searchstring (required)
+   * @param pageIndex Index of page (required)
+   * @param pageSize Max rows per page (required)
+   * @param sortExpression Name, Created, Modified, Accessed (desc/asc) (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
+   * @return ApiResponse&lt;SearchFileContents&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<SearchFileContents> filesSearchByIdWithHttpInfo(String id, String searchCriteria, Integer pageIndex, Integer pageSize, String sortExpression, Boolean sortTogether) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling filesSearchById");
+    }
+    
+    // verify the required parameter 'searchCriteria' is set
+    if (searchCriteria == null) {
+      throw new ApiException(400, "Missing the required parameter 'searchCriteria' when calling filesSearchById");
+    }
+    
+    // verify the required parameter 'pageIndex' is set
+    if (pageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'pageIndex' when calling filesSearchById");
+    }
+    
+    // verify the required parameter 'pageSize' is set
+    if (pageSize == null) {
+      throw new ApiException(400, "Missing the required parameter 'pageSize' when calling filesSearchById");
+    }
+    
+    // verify the required parameter 'sortExpression' is set
+    if (sortExpression == null) {
+      throw new ApiException(400, "Missing the required parameter 'sortExpression' when calling filesSearchById");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4/files/{id}/search"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "searchCriteria", searchCriteria));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageIndex", pageIndex));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageSize", pageSize));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortExpression", sortExpression));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortTogether", sortTogether));
 
     
     

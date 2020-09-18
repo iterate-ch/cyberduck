@@ -28,7 +28,10 @@ import java.util.List;
  * Contains a list of PathFiles.
  */
 @ApiModel(description = "Contains a list of PathFiles.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class SearchFileContents {
   @JsonProperty("totalRowCount")
   private Integer totalRowCount = null;

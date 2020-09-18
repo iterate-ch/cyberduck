@@ -13,21 +13,23 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-import org.joda.time.DateTime;
-
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.joda.time.DateTime;
 
 /**
  * A file version.
  */
 @ApiModel(description = "A file version.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-16T20:27:33.275+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class FileVersion {
   @JsonProperty("version")
   private Integer version = null;
@@ -55,61 +57,6 @@ public class FileVersion {
 
   @JsonProperty("accessed")
   private DateTime accessed = null;
-
-  /**
-   * Indicates the item type.
-   */
-  public enum FlagsEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_4(4),
-    
-    NUMBER_8(8),
-    
-    NUMBER_16(16),
-    
-    NUMBER_32(32),
-    
-    NUMBER_64(64),
-    
-    NUMBER_128(128),
-    
-    NUMBER_256(256),
-    
-    NUMBER_512(512),
-    
-    NUMBER_1024(1024);
-
-    private Integer value;
-
-    FlagsEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static FlagsEnum fromValue(String text) {
-      for (FlagsEnum b : FlagsEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
 
   @JsonProperty("flags")
   private Integer flags = null;
@@ -285,10 +232,10 @@ public class FileVersion {
   }
 
    /**
-   * Indicates the item type.
+   * Indicates the item type. (0 &#x3D; None, 1 &#x3D; Folder, 2 &#x3D; Shared, 4 &#x3D; Locked, 8 &#x3D; Image, 16 &#x3D; Streamable, 32 &#x3D; Video, 64 &#x3D; Doc, 128 &#x3D; StreamableDoc, 256 &#x3D; HasThumbnail, 512 &#x3D; Hidden, 1024 &#x3D; Favorite)
    * @return flags
   **/
-  @ApiModelProperty(value = "Indicates the item type.")
+  @ApiModelProperty(value = "Indicates the item type. (0 = None, 1 = Folder, 2 = Shared, 4 = Locked, 8 = Image, 16 = Streamable, 32 = Video, 64 = Doc, 128 = StreamableDoc, 256 = HasThumbnail, 512 = Hidden, 1024 = Favorite)")
   public Integer getFlags() {
     return flags;
   }
