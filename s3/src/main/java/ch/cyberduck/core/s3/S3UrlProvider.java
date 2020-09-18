@@ -66,8 +66,8 @@ public class S3UrlProvider implements UrlProvider {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.isFile()) {
             // Publicly accessible URL of given object
-            list.add(this.toUrl(file, session.getHost().getProtocol().getScheme()));
-            list.add(this.toUrl(file, Scheme.http));
+            list.add(this.toUrl(file, session.getHost().getProtocol().getScheme(), session.getHost().getPort()));
+            list.add(this.toUrl(file, Scheme.http, 80));
             if(!session.getHost().getCredentials().isAnonymousLogin()) {
                 // X-Amz-Expires must be less than a week (in seconds); that is, the given X-Amz-Expires must be less
                 // than 604800 seconds
@@ -112,21 +112,21 @@ public class S3UrlProvider implements UrlProvider {
      * @param scheme Protocol
      * @return URL to be displayed in browser
      */
-    protected DescriptiveUrl toUrl(final Path file, final Scheme scheme) {
+    protected DescriptiveUrl toUrl(final Path file, final Scheme scheme, final int port) {
         final StringBuilder url = new StringBuilder(scheme.name());
         url.append("://");
         if(file.isRoot()) {
             url.append(session.getHost().getHostname());
-            if(session.getHost().getPort() != scheme.getPort()) {
-                url.append(":").append(session.getHost().getPort());
+            if(port != scheme.getPort()) {
+                url.append(":").append(port);
             }
         }
         else {
             final String hostname = this.getHostnameForContainer(containerService.getContainer(file));
             if(hostname.startsWith(containerService.getContainer(file).getName())) {
                 url.append(hostname);
-                if(session.getHost().getPort() != scheme.getPort()) {
-                    url.append(":").append(session.getHost().getPort());
+                if(port != scheme.getPort()) {
+                    url.append(":").append(port);
                 }
                 if(!containerService.isContainer(file)) {
                     url.append(Path.DELIMITER);
@@ -135,8 +135,8 @@ public class S3UrlProvider implements UrlProvider {
             }
             else {
                 url.append(session.getHost().getHostname());
-                if(session.getHost().getPort() != scheme.getPort()) {
-                    url.append(":").append(session.getHost().getPort());
+                if(port != scheme.getPort()) {
+                    url.append(":").append(port);
                 }
                 url.append(URIEncoder.encode(file.getAbsolute()));
             }

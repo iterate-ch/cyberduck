@@ -57,15 +57,19 @@ public class S3UrlProviderTest {
     @Test
     public void testHttpUri() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
-        assertEquals("https://test-us-east-1-cyberduck.s3.amazonaws.com/key",
-            new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck/key", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.http).getUrl());
+        final Iterator<DescriptiveUrl> http = new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck/key",
+            EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.http).iterator();
+        assertEquals("https://test-us-east-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
+        assertEquals("http://test-us-east-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
     }
 
     @Test
     public void testHttpUriCustomPort() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), 8443));
-        assertEquals("https://test-us-east-1-cyberduck.s3.amazonaws.com:8443/key",
-            new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck/key", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.http).getUrl());
+        final Iterator<DescriptiveUrl> http = new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck/key",
+            EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.http).iterator();
+        assertEquals("https://test-us-east-1-cyberduck.s3.amazonaws.com:8443/key", http.next().getUrl());
+        assertEquals("http://test-us-east-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
     }
 
     @Test
