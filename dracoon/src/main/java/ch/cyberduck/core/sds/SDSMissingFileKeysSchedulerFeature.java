@@ -117,7 +117,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                         }
                         final UserKeyPair deprecated = TripleCryptConverter.toCryptoUserKeyPair(((SDSSession) session).keyPairDeprecated());
                         final Credentials credentials = new TripleCryptKeyPair().unlock(callback, session.getHost(), deprecated);
-                        encryptFileKey = this.encryptFileKey(privateKey, credentials, pubkey, fileKeys);
+                        encryptFileKey = this.encryptFileKey(deprecated.getUserPrivateKey(), credentials, pubkey, fileKeys);
                         migrated = true;
                     }
                     else {
