@@ -338,23 +338,23 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     private void unlockTripleCryptKeyPair(final LoginCallback controller) throws ApiException, CryptoException, BackgroundException {
         final Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
-        if(matcher.matches()) {
-            if(new Version(matcher.group(1)).compareTo(new Version("4.24.0")) >= 0) {
-                final List<UserKeyPairContainer> pairs = new UserApi(client).requestUserKeyPairs(StringUtils.EMPTY, null);
-                if(pairs.size() == 0) {
-                    return;
-                }
-                boolean migrated = false;
-                for(UserKeyPairContainer pair : pairs) {
-                    if(requiredKeyPairVersion == TripleCryptConverter.toCryptoUserKeyPair(pair).getUserPublicKey().getVersion()) {
-                        migrated = true;
-                        break;
+        try {
+            if(matcher.matches()) {
+                if(new Version(matcher.group(1)).compareTo(new Version("4.24.0")) >= 0) {
+                    final List<UserKeyPairContainer> pairs = new UserApi(client).requestUserKeyPairs(StringUtils.EMPTY, null);
+                    if(pairs.size() == 0) {
+                        return;
                     }
-                }
-                if(!migrated) {
-                    final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null);
-                    final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(deprecated);
-                    try {
+                    boolean migrated = false;
+                    for(UserKeyPairContainer pair : pairs) {
+                        if(requiredKeyPairVersion == TripleCryptConverter.toCryptoUserKeyPair(pair).getUserPublicKey().getVersion()) {
+                            migrated = true;
+                            break;
+                        }
+                    }
+                    if(!migrated) {
+                        final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null);
+                        final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(deprecated);
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Attempt to unlock and migrate private key %s", keypair.getUserPrivateKey()));
                         }
@@ -371,14 +371,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         new UserApi(client).createAndPreserveUserKeyPair(request, null);
                         keyPairDeprecated.set(deprecated);
                     }
-                    catch(LoginCanceledException e) {
-                        log.warn("Ignore cancel unlocking triple crypt private key pair");
-                    }
                 }
             }
-        }
-        try {
-            keyPair.set(new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, requiredKeyPairVersion.getValue(), null));
+            final UserKeyPairContainer container = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, requiredKeyPairVersion.getValue(), null);
+            keyPair.set(container);
             final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(keyPair.get());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt to unlock private key %s", keypair.getUserPrivateKey()));
@@ -388,6 +384,11 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         catch(LoginCanceledException e) {
             log.warn("Ignore cancel unlocking triple crypt private key pair");
         }
+    }
+
+    public void resetUserKeyPairs() {
+        keyPair.set(null);
+        keyPairDeprecated.set(null);
     }
 
     private String login(final LoginCallback controller, final LoginRequest request) throws BackgroundException {
@@ -445,9 +446,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             try {
                 keyPair.set(new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, requiredKeyPairVersion.getValue(), null));
             }
-            catch(ApiException e) {
-                log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
-                throw new SDSExceptionMappingService().map(e);
+            catch(ApiException api) {
+                log.warn(String.format("Failure updating user key pair for required algorithm. %s", api.getMessage()));
+                // fallback
+                keyPair.set(this.keyPairDeprecated());
             }
         }
         return keyPair.get();
