@@ -13,14 +13,15 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
+import org.joda.time.DateTime;
+
 import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.joda.time.DateTime;
 
 /**
  * A recyclebin item.
@@ -172,7 +173,7 @@ public class RecycleBinItem {
   }
 
   @JsonProperty("flags")
-  private FlagsEnum flags = null;
+  private Integer flags = null;
 
   @JsonProperty("ownerId")
   private String ownerId = null;
@@ -447,7 +448,7 @@ public class RecycleBinItem {
     this.accessed = accessed;
   }
 
-  public RecycleBinItem flags(FlagsEnum flags) {
+  public RecycleBinItem flags(Integer flags) {
     this.flags = flags;
     return this;
   }
@@ -457,11 +458,11 @@ public class RecycleBinItem {
    * @return flags
   **/
   @ApiModelProperty(value = "Indicates the item type.")
-  public FlagsEnum getFlags() {
+  public Integer getFlags() {
     return flags;
   }
 
-  public void setFlags(FlagsEnum flags) {
+  public void setFlags(Integer flags) {
     this.flags = flags;
   }
 
