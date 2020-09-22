@@ -636,9 +636,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
     @Override
     public NSArray getDefault() {
         return NSArray.arrayWithObjects(
-            navigation.name(),
             connect.name(),
-
             quickconnect.name(),
             tools.name(),
             NSToolbarItem.NSToolbarSeparatorItemIdentifier,
@@ -653,7 +651,6 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
     @Override
     public NSArray getAllowed() {
         return NSArray.arrayWithObjects(
-            navigation.name(),
             connect.name(),
             browserview.name(),
             transfers.name(),
