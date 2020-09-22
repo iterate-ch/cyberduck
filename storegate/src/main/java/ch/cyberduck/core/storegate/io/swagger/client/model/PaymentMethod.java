@@ -27,7 +27,10 @@ import java.util.List;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class PaymentMethod {
   @JsonProperty("id")
   private String id = null;
@@ -35,45 +38,8 @@ public class PaymentMethod {
   @JsonProperty("name")
   private String name = null;
 
-  /**
-   * Payment method type
-   */
-  public enum TypeEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2);
-
-    private Integer value;
-
-    TypeEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static TypeEnum fromValue(String text) {
-      for (TypeEnum b : TypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("type")
-  private TypeEnum type = null;
+  private Integer type = null;
 
   @JsonProperty("countries")
   private List<String> countries = null;
@@ -117,21 +83,21 @@ public class PaymentMethod {
     this.name = name;
   }
 
-  public PaymentMethod type(TypeEnum type) {
+  public PaymentMethod type(Integer type) {
     this.type = type;
     return this;
   }
 
    /**
-   * Payment method type
+   * Payment method type (0 &#x3D; Missing, 1 &#x3D; Creditcard, 2 &#x3D; Invoice)
    * @return type
   **/
-  @ApiModelProperty(value = "Payment method type")
-  public TypeEnum getType() {
+  @ApiModelProperty(value = "Payment method type (0 = Missing, 1 = Creditcard, 2 = Invoice)")
+  public Integer getType() {
     return type;
   }
 
-  public void setType(TypeEnum type) {
+  public void setType(Integer type) {
     this.type = type;
   }
 

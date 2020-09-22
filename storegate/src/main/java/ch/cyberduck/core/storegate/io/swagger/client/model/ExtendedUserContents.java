@@ -28,7 +28,10 @@ import java.util.List;
  * A ExtendedUserContents object
  */
 @ApiModel(description = "A ExtendedUserContents object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class ExtendedUserContents {
   @JsonProperty("users")
   private List<ExtendedUser> users = null;

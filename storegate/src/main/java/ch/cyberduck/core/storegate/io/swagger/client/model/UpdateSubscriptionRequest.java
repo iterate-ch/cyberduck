@@ -22,16 +22,16 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 
+ * A Update subscription request object
  */
-@ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@ApiModel(description = "A Update subscription request object")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class UpdateSubscriptionRequest {
   @JsonProperty("salepackageId")
   private String salepackageId = null;
-
-  @JsonProperty("campaignId")
-  private String campaignId = null;
 
   @JsonProperty("storageId")
   private String storageId = null;
@@ -67,24 +67,6 @@ public class UpdateSubscriptionRequest {
 
   public void setSalepackageId(String salepackageId) {
     this.salepackageId = salepackageId;
-  }
-
-  public UpdateSubscriptionRequest campaignId(String campaignId) {
-    this.campaignId = campaignId;
-    return this;
-  }
-
-   /**
-   * 
-   * @return campaignId
-  **/
-  @ApiModelProperty(value = "")
-  public String getCampaignId() {
-    return campaignId;
-  }
-
-  public void setCampaignId(String campaignId) {
-    this.campaignId = campaignId;
   }
 
   public UpdateSubscriptionRequest storageId(String storageId) {
@@ -206,7 +188,6 @@ public class UpdateSubscriptionRequest {
     }
     UpdateSubscriptionRequest updateSubscriptionRequest = (UpdateSubscriptionRequest) o;
     return Objects.equals(this.salepackageId, updateSubscriptionRequest.salepackageId) &&
-        Objects.equals(this.campaignId, updateSubscriptionRequest.campaignId) &&
         Objects.equals(this.storageId, updateSubscriptionRequest.storageId) &&
         Objects.equals(this.multiId, updateSubscriptionRequest.multiId) &&
         Objects.equals(this.backupId, updateSubscriptionRequest.backupId) &&
@@ -217,7 +198,7 @@ public class UpdateSubscriptionRequest {
 
   @Override
   public int hashCode() {
-    return Objects.hash(salepackageId, campaignId, storageId, multiId, backupId, syncId, bankIDId, url);
+    return Objects.hash(salepackageId, storageId, multiId, backupId, syncId, bankIDId, url);
   }
 
 
@@ -227,7 +208,6 @@ public class UpdateSubscriptionRequest {
     sb.append("class UpdateSubscriptionRequest {\n");
     
     sb.append("    salepackageId: ").append(toIndentedString(salepackageId)).append("\n");
-    sb.append("    campaignId: ").append(toIndentedString(campaignId)).append("\n");
     sb.append("    storageId: ").append(toIndentedString(storageId)).append("\n");
     sb.append("    multiId: ").append(toIndentedString(multiId)).append("\n");
     sb.append("    backupId: ").append(toIndentedString(backupId)).append("\n");

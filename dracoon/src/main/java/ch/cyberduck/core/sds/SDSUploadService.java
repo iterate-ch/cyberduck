@@ -37,6 +37,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -63,9 +64,10 @@ public class SDSUploadService {
         try {
             final CreateFileUploadRequest body = new CreateFileUploadRequest()
                 .size(-1 == status.getLength() ? null : status.getLength())
+                .timestampModification(status.getTimestamp() != null ? new DateTime(status.getTimestamp()) : null)
                 .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName());
-            return new NodesApi(session.getClient()).createFileUpload(body, StringUtils.EMPTY).getToken();
+            return new NodesApi(session.getClient()).createFileUploadChannel(body, StringUtils.EMPTY).getToken();
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
@@ -86,7 +88,7 @@ public class SDSUploadService {
                 );
                 body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
             }
-            final Node upload = new UploadsApi(session.getClient()).completeFileUploadByToken(uploadToken, null, body);
+            final Node upload = new UploadsApi(session.getClient()).completeFileUploadByToken(body, uploadToken);
             if(!upload.isIsEncrypted()) {
                 final Checksum checksum = status.getChecksum();
                 if(Checksum.NONE != checksum) {

@@ -30,11 +30,11 @@ public class BufferOutputStream extends ProxyOutputStream {
     private Long offset;
 
     public BufferOutputStream(final Buffer buffer) {
-        this(new NullOutputStream(), buffer, 0L);
+        this(NullOutputStream.NULL_OUTPUT_STREAM, buffer, 0L);
     }
 
     public BufferOutputStream(final Buffer buffer, final Long offset) {
-        this(new NullOutputStream(), buffer, offset);
+        this(NullOutputStream.NULL_OUTPUT_STREAM, buffer, offset);
     }
 
     public BufferOutputStream(final OutputStream proxy, final Buffer buffer, final Long offset) {
@@ -55,7 +55,9 @@ public class BufferOutputStream extends ProxyOutputStream {
         }
         final byte[] chunk = new byte[len];
         System.arraycopy(bytes, off, chunk, 0, len);
-        buffer.write(chunk, offset);
+        if(buffer.write(chunk, offset) != len) {
+            log.warn(String.format("Failure buffering chunk of size %d", len));
+        }
         super.write(bytes, off, len);
     }
 

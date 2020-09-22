@@ -8,6 +8,7 @@ import ch.cyberduck.core.storegate.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
+import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileContents;
 import ch.cyberduck.core.storegate.io.swagger.client.model.MediaItemContents;
 import ch.cyberduck.core.storegate.io.swagger.client.model.PublicShareInfo;
@@ -17,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
 public class PublicSharesApi {
   private ApiClient apiClient;
 
@@ -45,7 +46,7 @@ public class PublicSharesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression Name, Created, Modified, Size (desc/asc) (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param includeParent Include the parent (required)
    * @return FileContents
    * @throws ApiException if fails to make API call
@@ -62,7 +63,7 @@ public class PublicSharesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression Name, Created, Modified, Size (desc/asc) (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param includeParent Include the parent (required)
    * @return ApiResponse&lt;FileContents&gt;
    * @throws ApiException if fails to make API call
@@ -142,10 +143,10 @@ public class PublicSharesApi {
    * Gets the root folder/file on a share.
    * 
    * @param id The share id (required)
-   * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
+   * @return File
    * @throws ApiException if fails to make API call
    */
-  public ch.cyberduck.core.storegate.io.swagger.client.model.File publicSharesGetPublicFileShareFile(String id) throws ApiException {
+  public File publicSharesGetPublicFileShareFile(String id) throws ApiException {
     return publicSharesGetPublicFileShareFileWithHttpInfo(id).getData();
       }
 
@@ -153,10 +154,10 @@ public class PublicSharesApi {
    * Gets the root folder/file on a share.
    * 
    * @param id The share id (required)
-   * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
+   * @return ApiResponse&lt;File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> publicSharesGetPublicFileShareFileWithHttpInfo(String id) throws ApiException {
+  public ApiResponse<File> publicSharesGetPublicFileShareFileWithHttpInfo(String id) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'id' is set
@@ -188,7 +189,7 @@ public class PublicSharesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File>() {};
+    GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**

@@ -42,7 +42,7 @@ public class StoregateCopyFeature implements Copy {
             final CopyFileRequest copy = new CopyFileRequest()
                 .name(target.getName())
                 .parentID(fileid.getFileid(target.getParent(), new DisabledListProgressListener()))
-                .mode(CopyFileRequest.ModeEnum.NUMBER_1); // Overwrite
+                .mode(1); // Overwrite
             final File file = new FilesApi(session.getClient()).filesCopy(
                 fileid.getFileid(source, new DisabledListProgressListener()), copy);
             return new Path(target.getParent(), target.getName(), target.getType(),

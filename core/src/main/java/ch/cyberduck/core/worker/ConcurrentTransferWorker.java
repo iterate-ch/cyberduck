@@ -54,7 +54,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private final SessionPool destination;
 
     private final CompletionService<TransferStatus> completion;
-    // Keep number of submited tasks
+    // Keep number of submitted tasks
     private final AtomicInteger size = new AtomicInteger();
     private final ThreadPool pool;
 

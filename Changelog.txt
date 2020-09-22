@@ -1,6 +1,17 @@
 Cyberduck
 https://cyberduck.io/
 
+7.6.1
+- [Bugfix] Unable to authenticate using PuTTY Pageant (SFTP, Windows)
+- [Bugfix] Set modification date on uploaded files (DRACOON)
+- [Bugfix] Failure authenticating with proxy using Integrated Windows Authentication (IWA) authentication (WebDAV, Windows)
+
+7.6.0
+- [Feature] Lock and unlock vaults using option in menu or toolbar (Cryptomator) (#10798)
+- [Feature] Support for Files.com using native REST API (Files.com)
+- [Feature] Restore files in Glacier storage class (S3)
+- [Feature] Support for AES/GCM (aes128-gcm@openssh.com, aes256-gcm@openssh.com) ciphers (SFTP) (#9809)
+
 7.5.1
 - [Bugfix] Changes not saved when editing bookmark (Windows)
 - [Bugfix] Failure running application (CLI, macOS) (#11139)

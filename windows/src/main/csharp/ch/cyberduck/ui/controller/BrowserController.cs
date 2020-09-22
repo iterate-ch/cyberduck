@@ -175,6 +175,10 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ValidateDelete += View_ValidateDelete;
             View.RevertFile += View_RevertFile;
             View.ValidateRevertFile += View_ValidateRevertFile;
+            View.RestoreFile += View_RestoreFile;
+            View.ValidateRestoreFile += View_ValidateRestoreFile;
+            View.LockUnlockVault += View_LockUnlockVault;
+            View.ValidateLockUnlockVault += View_ValidateLockUnlockVault;
             View.GetArchives += View_GetArchives;
             View.GetCopyUrls += View_GetCopyUrls;
             View.GetOpenUrls += View_GetOpenUrls;
@@ -310,6 +314,23 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Exit += View_Exit;
             View.SetBookmarkModel(_bookmarkCollection, null);
             SetNavigation(false);
+        }
+
+        private void View_LockUnlockVault()
+        {
+            Path directory = new UploadTargetFinder(Workdir).find(SelectedPath);
+            if( directory.attributes().getVault() != null)
+            {
+                // Lock and remove all open vaults
+                LockVaultAction lockVault = new LockVaultAction(this, Session.getVault(), directory.attributes().getVault());
+                Background(lockVault);
+            }
+            else
+            {
+                // Unlock vault
+                LoadVaultAction loadVault = new LoadVaultAction(this, Session.getVault(), directory);
+                Background(loadVault);
+            }
         }
 
         private void View_CreateShareLink()
@@ -1112,6 +1133,33 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             return false;
         }
+        private bool View_ValidateRestoreFile()
+        {
+            if (IsMounted() && SelectedPaths.Count == 1)
+            {
+                return Session.getFeature(typeof(Restore)) != null &&
+                    ((Restore) Session.getFeature(typeof(Restore))).isRestorable(SelectedPath);
+            }
+            return false;
+        }
+        private bool View_ValidateLockUnlockVault()
+        {
+            if (IsBrowser() && IsMounted() && !PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect"))
+            {
+                Path selected = new UploadTargetFinder(Workdir).find(SelectedPath);
+                VaultRegistry registry = Session.getVault();
+                if (registry.contains(selected))
+                {
+                    View.SetCryptomatorVaultTitle(LocaleFactory.localizedString("Lock Vault", "Cryptomator"));
+                    return true;
+
+                }
+                View.SetCryptomatorVaultTitle(LocaleFactory.localizedString("Unlock Vault", "Cryptomator"));
+                return null != Cache.get(Workdir).find(new SimplePathPredicate(Path.Type.file,
+                    String.Format("{0}{1}{2}", Workdir.getAbsolute(), Path.DELIMITER, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME)));
+            }
+            return false;
+        }
 
         private void View_RevertFile()
         {
@@ -1121,6 +1169,16 @@ namespace Ch.Cyberduck.Ui.Controller
         private void RevertPaths(IList<Path> files)
         {
             Background(new RevertAction(this, files));
+        }
+
+        private void View_RestoreFile()
+        {
+            RestorePaths(SelectedPaths);
+        }
+
+        private void RestorePaths(IList<Path> files)
+        {
+            Background(new RestoreAction(this, files));
         }
 
         private void View_ToggleBookmarks()
@@ -2526,7 +2584,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="workdir">Use working directory as the current root of the browser</param>
         /// <param name="selected">Selected files in browser</param>
@@ -3492,18 +3550,41 @@ namespace Ch.Cyberduck.Ui.Controller
             private class InnerRevertWorker : RevertWorker
             {
                 private readonly BrowserController _controller;
-                private readonly IList<Path> _files;
 
                 public InnerRevertWorker(BrowserController controller, IList<Path> files)
                     : base(Utils.ConvertToJavaList(files))
                 {
                     _controller = controller;
-                    _files = files;
                 }
 
                 public override void cleanup(object result)
                 {
                     IList<Path> files = (IList<Path>) Utils.ConvertFromJavaList<Path>((List) result);
+                    _controller.Reload(_controller.Workdir, files, files);
+                }
+            }
+        }
+
+        private class RestoreAction : WorkerBackgroundAction
+        {
+            public RestoreAction(BrowserController controller, IList<Path> files)
+                : base(controller, controller.Session, new InnerRestoreWorker(controller, files))
+            {
+            }
+
+            private class InnerRestoreWorker : RestoreWorker
+            {
+                private readonly BrowserController _controller;
+
+                public InnerRestoreWorker(BrowserController controller, IList<Path> files)
+                    : base(LoginCallbackFactory.get(controller), Utils.ConvertToJavaList(files))
+                {
+                    _controller = controller;
+                }
+
+                public override void cleanup(object result)
+                {
+                    IList<Path> files = (IList<Path>)Utils.ConvertFromJavaList<Path>((List)result);
                     _controller.Reload(_controller.Workdir, files, files);
                 }
             }
@@ -3537,7 +3618,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         string title = LocaleFactory.localizedString("Create Download Share", "Share");
                         string commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Continue", "Credentials"),
                             LocaleFactory.localizedString("Copy", "Main"));
-                        _controller.CommandBox(title, title, MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS") + "\n\n{1}", _file.getName(), url.getUrl()), 
+                        _controller.CommandBox(title, title, MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS") + "\n\n{1}", _file.getName(), url.getUrl()),
                             commandButtons,
                             false, null, TaskDialogIcon.Information,
                             delegate (int option, System.Boolean verificationChecked)
@@ -3549,6 +3630,62 @@ namespace Ch.Cyberduck.Ui.Controller
                                         break;
                                 }
                             });
+                    }
+                }
+            }
+        }
+
+        private class LockVaultAction : WorkerBackgroundAction
+        {
+            public LockVaultAction(BrowserController controller, VaultRegistry registry, Path directory)
+                : base(controller, controller.Session, new InnerLockVaultWorker(controller, registry, directory))
+            {
+            }
+
+            private class InnerLockVaultWorker : LockVaultWorker
+            {
+                private readonly BrowserController _controller;
+                private readonly Path _directory;
+
+                public InnerLockVaultWorker(BrowserController controller, VaultRegistry registry, Path directory)
+                    : base(registry, directory)
+                {
+                    _controller = controller;
+                    _directory = directory;
+                }
+
+                public override void cleanup(object vault)
+                {
+                    if (vault != null) {
+                        _controller.Reload((Path)vault, new HashSet<Path>(){(Path)vault}, new List<Path>(), true);
+                    }
+                }
+            }
+        }
+        private class LoadVaultAction : WorkerBackgroundAction
+        {
+            public LoadVaultAction(BrowserController controller, VaultRegistry registry, Path directory)
+                : base(controller, controller.Session, new InnerLoadVaultWorker(controller, registry, directory))
+            {
+            }
+
+            private class InnerLoadVaultWorker : LoadVaultWorker
+            {
+                private readonly BrowserController _controller;
+                private readonly Path _directory;
+
+                public InnerLoadVaultWorker(BrowserController controller, VaultRegistry registry, Path directory)
+                    : base(new LoadingVaultLookupListener(registry,
+                        PasswordStoreFactory.get(), PasswordCallbackFactory.get(controller)), directory)
+                {
+                    _controller = controller;
+                    _directory = directory;
+                }
+
+                public override void cleanup(object vault)
+                {
+                    if (vault != null) {
+                        _controller.Reload(((Vault)vault).getHome(), new HashSet<Path>(){ ((Vault)vault).getHome()}, new List<Path>(), true);
                     }
                 }
             }

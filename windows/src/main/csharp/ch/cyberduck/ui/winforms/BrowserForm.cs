@@ -392,6 +392,10 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler SortBookmarksByHostname;
         public event VoidHandler RevertFile;
         public event ValidateCommand ValidateRevertFile;
+        public event VoidHandler RestoreFile;
+        public event ValidateCommand ValidateRestoreFile;
+        public event VoidHandler LockUnlockVault;
+        public event ValidateCommand ValidateLockUnlockVault;
 
         public void UpdateBookmarks()
         {
@@ -862,6 +866,17 @@ namespace Ch.Cyberduck.Ui.Winforms
         public void StartSearch()
         {
             searchTextBox.Focus();
+        }
+
+        public void SetCryptomatorVaultTitle(string title)
+        {
+            cryptomatorMainMenuItem.Text = title;
+            cryptomatorToolStripMenuItem.Text = title;
+            cryptomatorContxtStripMenuItem.Text = title;
+            cryptomatorToolStripButton.Text = title;
+            cryptomatorToolStripButton.ToolTipText = title;
+            cryptomatorToolStripMenuItem1.Text = title;
+            cryptomatorToolbarMenuItem.Text = title;
         }
 
         public bool SearchEnabled
@@ -1513,6 +1528,20 @@ namespace Ch.Cyberduck.Ui.Winforms
             m.Tag = logToolbarMenuItem;
             customizeToolbarMainMenuItem.MenuItems.Add(m);
 
+            cryptomatorToolStripMenuItem1.CheckOnClick = true;
+            h = delegate
+            {
+                cryptomatorToolbarMenuItem.Checked = !cryptomatorToolbarMenuItem.Checked;
+                cryptomatorToolStripButton.Visible = !cryptomatorToolStripButton.Visible;
+                UpdateSeparators();
+                PreferencesFactory.get().setProperty("browser.toolbar.cryptomator", cryptomatorToolStripButton.Visible);
+            };
+            cryptomatorToolStripMenuItem1.Click += h;
+            cryptomatorToolbarMenuItem.Click += h;
+            m = new MenuItem(cryptomatorToolbarMenuItem.Text, h);
+            m.Tag = cryptomatorToolbarMenuItem;
+            customizeToolbarMainMenuItem.MenuItems.Add(m);
+
             bool b1 =
                 openConnectionToolStripButton.Visible =
                     PreferencesFactory.get().getBoolean("browser.toolbar.openconnection");
@@ -1539,6 +1568,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             bool b13 =
                 transfersToolStripButton.Visible = PreferencesFactory.get().getBoolean("browser.toolbar.transfers");
             bool b14 = logToolStripButton.Visible = PreferencesFactory.get().getBoolean("browser.toolbar.log");
+            bool b15 = cryptomatorToolStripButton.Visible = PreferencesFactory.get().getBoolean("browser.toolbar.cryptomator");
 
             // update menu entries
             openConnectionToolStripMenuItem1.Checked = b1;
@@ -1555,6 +1585,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             uploadToolStripMenuItem1.Checked = b12;
             transfersToolStripMenuItem1.Checked = b13;
             logToolStripMenuItem1.Checked = b14;
+            cryptomatorToolStripMenuItem1.Checked = b15;
 
             openConnectionToolbarMenuItem.Checked = b1;
             quickConnectToolbarMenuItem.Checked = b2;
@@ -1570,6 +1601,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             uploadToolbarMenuItem.Checked = b12;
             transfersToolbarMenuItem.Checked = b13;
             logToolbarMenuItem.Checked = b14;
+            cryptomatorToolbarMenuItem.Checked = b15;
 
             UpdateSeparators();
         }
@@ -2099,6 +2131,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(new ToolStripItem[] {revertToolStripMenuItem, revertContxtStripMenuItem},
                 new[] {revertMainMenuItem, revertBrowserContextMenuItem}, (sender, args) => RevertFile(),
                 () => ValidateRevertFile());
+            Commands.Add(new ToolStripItem[] {restoreToolStripMenuItem, restoreContxtStripMenuItem},
+                new[] {restoreMainMenuItem, restoreBrowserContextMenuItem}, (sender, args) => RestoreFile(),
+                () => ValidateRestoreFile());
+            Commands.Add(new ToolStripItem[] {cryptomatorToolStripMenuItem, cryptomatorContxtStripMenuItem, cryptomatorToolStripButton},
+                new[] {cryptomatorMainMenuItem, cryptomatorBrowserContextMenuItem}, (sender, args) => LockUnlockVault(),
+                () => ValidateLockUnlockVault());
             Commands.Add(new ToolStripItem[] {createArchiveToolStripMenuItem, createArchiveContextToolStripMenuItem},
                 new[] {createArchiveMainMenuItem, createArchiveBrowserContextMenuItem}, (sender, args) => { },
                 () => ValidateCreateArchive());

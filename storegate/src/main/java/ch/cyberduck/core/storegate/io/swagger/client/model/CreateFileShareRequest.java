@@ -29,7 +29,10 @@ import org.joda.time.DateTime;
  * A share parameters request object
  */
 @ApiModel(description = "A share parameters request object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class CreateFileShareRequest {
   @JsonProperty("fileId")
   private String fileId = null;
@@ -64,45 +67,8 @@ public class CreateFileShareRequest {
   @JsonProperty("bankIDContacts")
   private List<BankIDContact> bankIDContacts = null;
 
-  /**
-   * Share AuthMethod
-   */
-  public enum AuthMethodEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2);
-
-    private Integer value;
-
-    AuthMethodEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static AuthMethodEnum fromValue(String text) {
-      for (AuthMethodEnum b : AuthMethodEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("authMethod")
-  private AuthMethodEnum authMethod = null;
+  private Integer authMethod = null;
 
   @JsonProperty("allowOfficeOnline")
   private Boolean allowOfficeOnline = null;
@@ -332,21 +298,21 @@ public class CreateFileShareRequest {
     this.bankIDContacts = bankIDContacts;
   }
 
-  public CreateFileShareRequest authMethod(AuthMethodEnum authMethod) {
+  public CreateFileShareRequest authMethod(Integer authMethod) {
     this.authMethod = authMethod;
     return this;
   }
 
    /**
-   * Share AuthMethod
+   * Share AuthMethod (0 &#x3D; None, 1 &#x3D; Password, 2 &#x3D; BankID)
    * @return authMethod
   **/
-  @ApiModelProperty(value = "Share AuthMethod")
-  public AuthMethodEnum getAuthMethod() {
+  @ApiModelProperty(value = "Share AuthMethod (0 = None, 1 = Password, 2 = BankID)")
+  public Integer getAuthMethod() {
     return authMethod;
   }
 
-  public void setAuthMethod(AuthMethodEnum authMethod) {
+  public void setAuthMethod(Integer authMethod) {
     this.authMethod = authMethod;
   }
 

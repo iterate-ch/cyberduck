@@ -12,6 +12,8 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.AccountInfo;
 import ch.cyberduck.core.storegate.io.swagger.client.model.AccountSettings;
 import ch.cyberduck.core.storegate.io.swagger.client.model.AccountStorage;
 import ch.cyberduck.core.storegate.io.swagger.client.model.ChangePasswordRequest;
+import ch.cyberduck.core.storegate.io.swagger.client.model.EmailSubscriptions;
+import ch.cyberduck.core.storegate.io.swagger.client.model.EmailSubscriptionsRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.MultiAccountStorage;
 import ch.cyberduck.core.storegate.io.swagger.client.model.MultiSettings;
 import ch.cyberduck.core.storegate.io.swagger.client.model.PartnerRetailer;
@@ -25,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
 public class AccountSettingsApi {
   private ApiClient apiClient;
 
@@ -232,6 +234,67 @@ public class AccountSettingsApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
+   * Gets email subscriptions for account
+   * 
+   * @param id accountid (required)
+   * @param md5 md5 of the email if other than account email (required)
+   * @return EmailSubscriptions
+   * @throws ApiException if fails to make API call
+   */
+  public EmailSubscriptions accountSettingsGetEmailSubscriptions(String id, String md5) throws ApiException {
+    return accountSettingsGetEmailSubscriptionsWithHttpInfo(id, md5).getData();
+      }
+
+  /**
+   * Gets email subscriptions for account
+   * 
+   * @param id accountid (required)
+   * @param md5 md5 of the email if other than account email (required)
+   * @return ApiResponse&lt;EmailSubscriptions&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<EmailSubscriptions> accountSettingsGetEmailSubscriptionsWithHttpInfo(String id, String md5) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling accountSettingsGetEmailSubscriptions");
+    }
+    
+    // verify the required parameter 'md5' is set
+    if (md5 == null) {
+      throw new ApiException(400, "Missing the required parameter 'md5' when calling accountSettingsGetEmailSubscriptions");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4/account/public/unsubscribe/{id}/{md5}"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()))
+      .replaceAll("\\{" + "md5" + "\\}", apiClient.escapeString(md5.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<EmailSubscriptions> localVarReturnType = new GenericType<EmailSubscriptions>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
    * Get multi settings.
    * 
    * @return MultiSettings
@@ -356,6 +419,73 @@ public class AccountSettingsApi {
     // create path and map variables
     String localVarPath = "/v4/account/public/resetpassword/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json", "text/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
+   * Updates email subscriptions for account
+   * 
+   * @param id accountid (required)
+   * @param emailSubscriptionsRequest  (required)
+   * @param md5 md5 of the email if other than account email (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void accountSettingsUpdateEmailSubscriptions(String id, EmailSubscriptionsRequest emailSubscriptionsRequest, String md5) throws ApiException {
+
+    accountSettingsUpdateEmailSubscriptionsWithHttpInfo(id, emailSubscriptionsRequest, md5);
+  }
+
+  /**
+   * Updates email subscriptions for account
+   * 
+   * @param id accountid (required)
+   * @param emailSubscriptionsRequest  (required)
+   * @param md5 md5 of the email if other than account email (required)
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> accountSettingsUpdateEmailSubscriptionsWithHttpInfo(String id, EmailSubscriptionsRequest emailSubscriptionsRequest, String md5) throws ApiException {
+    Object localVarPostBody = emailSubscriptionsRequest;
+    
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling accountSettingsUpdateEmailSubscriptions");
+    }
+    
+    // verify the required parameter 'emailSubscriptionsRequest' is set
+    if (emailSubscriptionsRequest == null) {
+      throw new ApiException(400, "Missing the required parameter 'emailSubscriptionsRequest' when calling accountSettingsUpdateEmailSubscriptions");
+    }
+    
+    // verify the required parameter 'md5' is set
+    if (md5 == null) {
+      throw new ApiException(400, "Missing the required parameter 'md5' when calling accountSettingsUpdateEmailSubscriptions");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4/account/public/unsubscribe/{id}/{md5}"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()))
+      .replaceAll("\\{" + "md5" + "\\}", apiClient.escapeString(md5.toString()));
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();

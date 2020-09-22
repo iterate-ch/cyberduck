@@ -99,25 +99,17 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     private static final Logger log = Logger.getLogger(BrowserTableDataSource.class);
 
     private final SizeFormatter sizeFormatter = SizeFormatterFactory.get();
-
     private final AbstractUserDateFormatter dateFormatter = UserDateFormatterFactory.get();
-
     private final IconCache<NSImage> icons = IconCacheFactory.get();
-
     private final FileDescriptor descriptor = FileDescriptorFactory.get();
-
     private final Preferences preferences = PreferencesFactory.get();
-
     private final LRUCache<Item, NSAttributedString> attributed = LRUCache.build(
         preferences.getInteger("browser.model.cache.size")
     );
-
     private final LRUCache<Path, AttributedList<Path>> filtered = LRUCache.build(
         preferences.getInteger("browser.model.cache.size")
     );
-
     protected final BrowserController controller;
-
     protected final Cache<Path> cache;
 
     private static final class Item {

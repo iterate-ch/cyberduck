@@ -17,7 +17,6 @@ package ch.cyberduck.core.worker;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
@@ -30,7 +29,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.browser.RegexFilter;
+import ch.cyberduck.ui.browser.SearchFilterFactory;
 
 import org.apache.log4j.Logger;
 
@@ -42,7 +41,6 @@ public class TouchWorker extends Worker<Path> {
     private static final Logger log = Logger.getLogger(TouchWorker.class);
 
     private final Path file;
-    private final Filter<Path> hidden = new RegexFilter();
 
     public TouchWorker(final Path file) {
         this.file = file;
@@ -55,7 +53,7 @@ public class TouchWorker extends Worker<Path> {
             log.debug(String.format("Run with feature %s", feature));
         }
         final TransferStatus status = new TransferStatus()
-            .hidden(!new RegexFilter().accept(file))
+            .hidden(!SearchFilterFactory.HIDDEN_FILTER.accept(file))
             .exists(false)
             .length(0L)
             .withMime(new MappingMimeTypeService().getMime(file.getName()))

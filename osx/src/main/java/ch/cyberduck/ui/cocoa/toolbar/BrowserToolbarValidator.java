@@ -15,13 +15,16 @@ package ch.cyberduck.ui.cocoa.toolbar;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSPasteboard;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSToolbarItem;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.core.Archive;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.TerminalServiceFactory;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.features.Command;
@@ -31,10 +34,13 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Restore;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
@@ -58,7 +64,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
     public boolean validate(final NSToolbarItem item) {
         final String identifier = item.itemIdentifier();
         switch(valueOf(identifier)) {
-            case disconnect:
+            case disconnect: {
                 if(!controller.isIdle()) {
                     item.setLabel(stop.label());
                     item.setPaletteLabel(stop.label());
@@ -72,6 +78,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                     item.setImage(disconnect.image());
                 }
                 break;
+            }
             case archive: {
                 final Path selected = controller.getSelectedPath();
                 if(null != selected) {
@@ -92,6 +99,16 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                 final NSPopUpButton popup = Rococoa.cast(item.view(), NSPopUpButton.class);
                 popup.selectItemAtIndex(popup.indexOfItemWithRepresentedObject(controller.isMounted() ?
                     controller.getSession().getHost().getEncoding() : PreferencesFactory.get().getProperty("browser.charset.encoding")));
+            }
+            case cryptomator: {
+                final Path selected = new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath());
+                final VaultRegistry registry = controller.getSession().getVault();
+                if(registry.contains(selected)) {
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
+                }
+                else {
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate"));
+                }
             }
         }
         return this.validate(item.action());
@@ -284,6 +301,13 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             }
             return false;
         }
+        else if(action.equals(Foundation.selector("restoreFileButtonClicked:"))) {
+            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {
+                return controller.getSession().getFeature(Restore.class) != null &&
+                    controller.getSession().getFeature(Restore.class).isRestorable(controller.getSelectedPath());
+            }
+            return false;
+        }
         else if(action.equals(reload.action())) {
             return this.isBrowser() && controller.isMounted();
         }
@@ -358,6 +382,20 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                     }
                     return true;
                 }
+            }
+            return false;
+        }
+        else if(action.equals(cryptomator.action())) {
+            if(this.isBrowser() && controller.isMounted() && !PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect")) {
+                final Path selected = new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath());
+                final VaultRegistry registry = controller.getSession().getVault();
+                if(registry.contains(selected)) {
+                    // Allow to lock vault
+                    return true;
+                }
+                final AttributedList<Path> cache = controller.getCache().get(controller.workdir());
+                return null != cache.find(new SimplePathPredicate(Path.Type.file,
+                    String.format("%s%s%s", controller.workdir().getAbsolute(), Path.DELIMITER, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME)));
             }
             return false;
         }

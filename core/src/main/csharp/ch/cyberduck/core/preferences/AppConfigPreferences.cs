@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NotImplementedException = System.NotImplementedException;
+using System.Reflection;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
@@ -75,18 +76,41 @@ namespace Ch.Cyberduck.Core.Preferences
         public override void save()
         {
             Log.debug("Saving preferences");
-            // re-set field to force save
-            Settings.Default.CdSettings = settings;
-            Settings.Default.Save();
+            try
+            {
+                // re-set field to force save
+                Settings.Default.CdSettings = settings;
+                Settings.Default.Save();
+            }
+            catch
+            {
+                // Ignore failures saving preferences.
+                Log.error("Could not save defaults");
+            }
         }
 
         public override void setProperty(string property, string value)
         {
             Log.info("setProperty: " + property + "," + value);
-            settings[property] = value;
+            try
+            {
+                settings[property] = value;
+            }
+            catch
+            {
+                // Ignore failures setting preferences.
+                Log.error("Could not set property: " + property);
+            }
         }
 
         public override List systemLocales() => locales.systemLocales();
+
+        protected override void setDefaults()
+        {
+            SetJNAPath();
+
+            base.setDefaults();
+        }
 
         private void ValidatePreferences()
         {
@@ -101,6 +125,18 @@ namespace Ch.Cyberduck.Core.Preferences
                     File.Move(ex.Filename, $"{ex.Filename}_{DateTime.Now:yyyyMMddHHmmssffff}");
                 }
             }
+        }
+
+        protected virtual void SetJNAPath()
+        {
+            string codeBase = Assembly.GetEntryAssembly().CodeBase;
+            UriBuilder uri = new UriBuilder(codeBase);
+            SetJNAPath(Path.GetDirectoryName(Uri.UnescapeDataString(uri.Path)));
+        }
+
+        protected void SetJNAPath(string assemblyPath)
+        {
+            java.lang.System.setProperty("jna.boot.library.path", assemblyPath);
         }
     }
 }

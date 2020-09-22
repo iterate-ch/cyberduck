@@ -51,8 +51,8 @@ public class StoregateListService implements ListService {
             final AttributedList<Path> list = new AttributedList<>();
             for(RootFolder root : session.roots()) {
                 switch(root.getRootFolderType()) {
-                    case NUMBER_0: // My Files
-                    case NUMBER_1: // Common
+                    case 0: // My Files
+                    case 1: // Common
                         final PathAttributes attr = new PathAttributes().withVersionId(root.getId());
                         attr.setModificationDate(root.getModified().getMillis());
                         attr.setCreationDate(root.getCreated().getMillis());
@@ -76,11 +76,12 @@ public class StoregateListService implements ListService {
                         "Name asc",
                         0, // All
                         true,
+                        false,
                         false
                     );
                     for(File f : files.getFiles()) {
                         final PathAttributes attrs = attributes.toAttributes(f);
-                        final EnumSet<Path.Type> type = (f.getFlags() & File.FlagsEnum.Folder.getValue()) == File.FlagsEnum.Folder.getValue() ?
+                        final EnumSet<Path.Type> type = (f.getFlags() & 1) == 1 ?
                             EnumSet.of(Path.Type.directory) :
                             EnumSet.of(Path.Type.file);
                         final Path p = new Path(directory, f.getName(), type, attrs);

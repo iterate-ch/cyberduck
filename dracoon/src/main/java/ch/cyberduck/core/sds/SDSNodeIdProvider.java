@@ -98,10 +98,11 @@ public class SDSNodeIdProvider implements IdProvider {
             int offset = 0;
             NodeList nodes;
             do {
-                nodes = new NodesApi(session.getClient()).searchFsNodes(URIEncoder.encode(normalizer.normalize(file.getName()).toString()),
-                    StringUtils.EMPTY, null, -1,
+                nodes = new NodesApi(session.getClient()).searchNodes(
+                    URIEncoder.encode(normalizer.normalize(file.getName()).toString()),
+                    StringUtils.EMPTY, -1, null,
                     String.format("type:eq:%s|parentPath:eq:%s/", type, file.getParent().isRoot() ? StringUtils.EMPTY : file.getParent().getAbsolute()),
-                    chunksize, offset, null, null);
+                    null, offset, chunksize, null);
                 for(Node node : nodes.getItems()) {
                     if(node.getName().equals(normalizer.normalize(file.getName()).toString())) {
                         if(log.isInfoEnabled()) {
@@ -154,10 +155,10 @@ public class SDSNodeIdProvider implements IdProvider {
     }
 
     public ByteBuffer getFileKey() throws BackgroundException {
-        return this.getFileKey(TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey()));
+        return this.toBuffer(TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey()));
     }
 
-    public ByteBuffer getFileKey(final FileKey fileKey) throws BackgroundException {
+    public ByteBuffer toBuffer(final FileKey fileKey) throws BackgroundException {
         final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {

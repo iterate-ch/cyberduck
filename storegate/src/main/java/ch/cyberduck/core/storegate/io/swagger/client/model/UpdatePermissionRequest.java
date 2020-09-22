@@ -28,7 +28,10 @@ import java.util.Map;
  * A Update Permission request object
  */
 @ApiModel(description = "A Update Permission request object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T16:57:23.991+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class UpdatePermissionRequest {
   /**
    * Gets or Sets inner

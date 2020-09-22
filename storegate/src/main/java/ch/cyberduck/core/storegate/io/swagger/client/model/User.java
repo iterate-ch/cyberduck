@@ -26,7 +26,10 @@ import org.joda.time.DateTime;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class User {
   @JsonProperty("id")
   private String id = null;
@@ -37,65 +40,17 @@ public class User {
   @JsonProperty("isSubAdmin")
   private Boolean isSubAdmin = null;
 
-  /**
-   * Account status
-   */
-  public enum FlagsEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_4(4),
-    
-    NUMBER_8(8),
-    
-    NUMBER_16(16),
-    
-    NUMBER_32(32),
-    
-    NUMBER_64(64),
-    
-    NUMBER_128(128),
-    
-    NUMBER_256(256);
-
-    private Integer value;
-
-    FlagsEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static FlagsEnum fromValue(String text) {
-      for (FlagsEnum b : FlagsEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("flags")
-  private FlagsEnum flags = null;
+  private Integer flags = null;
 
   @JsonProperty("created")
   private DateTime created = null;
 
   @JsonProperty("lastLogin")
   private DateTime lastLogin = null;
+
+  @JsonProperty("ssn")
+  private String ssn = null;
 
   @JsonProperty("email")
   private String email = null;
@@ -166,21 +121,21 @@ public class User {
     this.isSubAdmin = isSubAdmin;
   }
 
-  public User flags(FlagsEnum flags) {
+  public User flags(Integer flags) {
     this.flags = flags;
     return this;
   }
 
    /**
-   * Account status
+   * Account status (0 &#x3D; None, 1 &#x3D; TemporaryUser, 2 &#x3D; Disabled, 4 &#x3D; Pending, 8 &#x3D; LockedDuePayment, 16 &#x3D; RequireNewPassword, 32 &#x3D; TwoFactorEnabled, 64 &#x3D; UnVerified, 128 &#x3D; SingleSignOn, 256 &#x3D; ForceTwoFactor)
    * @return flags
   **/
-  @ApiModelProperty(value = "Account status")
-  public FlagsEnum getFlags() {
+  @ApiModelProperty(value = "Account status (0 = None, 1 = TemporaryUser, 2 = Disabled, 4 = Pending, 8 = LockedDuePayment, 16 = RequireNewPassword, 32 = TwoFactorEnabled, 64 = UnVerified, 128 = SingleSignOn, 256 = ForceTwoFactor)")
+  public Integer getFlags() {
     return flags;
   }
 
-  public void setFlags(FlagsEnum flags) {
+  public void setFlags(Integer flags) {
     this.flags = flags;
   }
 
@@ -218,6 +173,24 @@ public class User {
 
   public void setLastLogin(DateTime lastLogin) {
     this.lastLogin = lastLogin;
+  }
+
+  public User ssn(String ssn) {
+    this.ssn = ssn;
+    return this;
+  }
+
+   /**
+   * User SSN
+   * @return ssn
+  **/
+  @ApiModelProperty(value = "User SSN")
+  public String getSsn() {
+    return ssn;
+  }
+
+  public void setSsn(String ssn) {
+    this.ssn = ssn;
   }
 
   public User email(String email) {
@@ -326,6 +299,7 @@ public class User {
         Objects.equals(this.flags, user.flags) &&
         Objects.equals(this.created, user.created) &&
         Objects.equals(this.lastLogin, user.lastLogin) &&
+        Objects.equals(this.ssn, user.ssn) &&
         Objects.equals(this.email, user.email) &&
         Objects.equals(this.username, user.username) &&
         Objects.equals(this.firstName, user.firstName) &&
@@ -335,7 +309,7 @@ public class User {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, isAdmin, isSubAdmin, flags, created, lastLogin, email, username, firstName, lastName, company);
+    return Objects.hash(id, isAdmin, isSubAdmin, flags, created, lastLogin, ssn, email, username, firstName, lastName, company);
   }
 
 
@@ -350,6 +324,7 @@ public class User {
     sb.append("    flags: ").append(toIndentedString(flags)).append("\n");
     sb.append("    created: ").append(toIndentedString(created)).append("\n");
     sb.append("    lastLogin: ").append(toIndentedString(lastLogin)).append("\n");
+    sb.append("    ssn: ").append(toIndentedString(ssn)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("    firstName: ").append(toIndentedString(firstName)).append("\n");

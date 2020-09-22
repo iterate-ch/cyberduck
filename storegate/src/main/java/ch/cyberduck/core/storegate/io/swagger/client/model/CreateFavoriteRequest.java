@@ -22,51 +22,33 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 
+ * A CreateMediaItemRequest request object
  */
-@ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
-public class Content {
-  @JsonProperty("description")
-  private String description = null;
+@ApiModel(description = "A CreateMediaItemRequest request object")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
 
-  @JsonProperty("value")
-  private String value = null;
 
-  public Content description(String description) {
-    this.description = description;
+
+public class CreateFavoriteRequest {
+  @JsonProperty("fileId")
+  private String fileId = null;
+
+  public CreateFavoriteRequest fileId(String fileId) {
+    this.fileId = fileId;
     return this;
   }
 
    /**
-   * 
-   * @return description
+   * The Name
+   * @return fileId
   **/
-  @ApiModelProperty(value = "")
-  public String getDescription() {
-    return description;
+  @ApiModelProperty(value = "The Name")
+  public String getFileId() {
+    return fileId;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public Content value(String value) {
-    this.value = value;
-    return this;
-  }
-
-   /**
-   * 
-   * @return value
-  **/
-  @ApiModelProperty(value = "")
-  public String getValue() {
-    return value;
-  }
-
-  public void setValue(String value) {
-    this.value = value;
+  public void setFileId(String fileId) {
+    this.fileId = fileId;
   }
 
 
@@ -78,24 +60,22 @@ public class Content {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Content content = (Content) o;
-    return Objects.equals(this.description, content.description) &&
-        Objects.equals(this.value, content.value);
+    CreateFavoriteRequest createFavoriteRequest = (CreateFavoriteRequest) o;
+    return Objects.equals(this.fileId, createFavoriteRequest.fileId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(description, value);
+    return Objects.hash(fileId);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Content {\n");
+    sb.append("class CreateFavoriteRequest {\n");
     
-    sb.append("    description: ").append(toIndentedString(description)).append("\n");
-    sb.append("    value: ").append(toIndentedString(value)).append("\n");
+    sb.append("    fileId: ").append(toIndentedString(fileId)).append("\n");
     sb.append("}");
     return sb.toString();
   }

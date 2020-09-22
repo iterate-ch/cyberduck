@@ -26,7 +26,10 @@ import org.joda.time.DateTime;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class WebDavPassword {
   @JsonProperty("name")
   private String name = null;
@@ -40,43 +43,8 @@ public class WebDavPassword {
   @JsonProperty("lastLogin")
   private DateTime lastLogin = null;
 
-  /**
-   * 
-   */
-  public enum TypeEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1);
-
-    private Integer value;
-
-    TypeEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static TypeEnum fromValue(String text) {
-      for (TypeEnum b : TypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("type")
-  private TypeEnum type = null;
+  private Integer type = null;
 
   @JsonProperty("password")
   private String password = null;
@@ -153,21 +121,21 @@ public class WebDavPassword {
     this.lastLogin = lastLogin;
   }
 
-  public WebDavPassword type(TypeEnum type) {
+  public WebDavPassword type(Integer type) {
     this.type = type;
     return this;
   }
 
    /**
-   * 
+   *  (0 &#x3D; MapDrive, 1 &#x3D; Manual)
    * @return type
   **/
-  @ApiModelProperty(value = "")
-  public TypeEnum getType() {
+  @ApiModelProperty(value = " (0 = MapDrive, 1 = Manual)")
+  public Integer getType() {
     return type;
   }
 
-  public void setType(TypeEnum type) {
+  public void setType(Integer type) {
     this.type = type;
   }
 

@@ -67,7 +67,7 @@ public class VaultRegistryListService implements ListService {
         }
         catch(VaultUnlockCancelException e) {
             log.warn(String.format("Canceled loading vault %s. %s", e.getVault(), e));
-            throw e;
+            return proxy.list(directory, listener);
         }
     }
 

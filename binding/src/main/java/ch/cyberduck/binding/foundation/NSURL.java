@@ -37,7 +37,7 @@ public abstract class NSURL extends NSObject {
 
     public static NSURL URLByResolvingBookmarkData(NSData bookmark, int options, ObjCObjectByReference error) {
         return CLASS.URLByResolvingBookmarkData_options_relativeToURL_bookmarkDataIsStale_error(bookmark,
-                options, null, false, error);
+            options, null, false, error);
     }
 
     public interface _Class extends ObjCClass {
@@ -48,8 +48,8 @@ public abstract class NSURL extends NSObject {
         NSURL fileURLWithPath_isDirectory(String path, boolean isDir);
 
         /**
-         * Original signature : <code>fileURLWithPath(String*)</code><br>
-         * Better to use fileURLWithPath:isDirectory: if you know if the path is a file vs directory, as it saves an i/o.<br>
+         * Original signature : <code>fileURLWithPath(String*)</code><br> Better to use fileURLWithPath:isDirectory: if
+         * you know if the path is a file vs directory, as it saves an i/o.<br>
          * <i>native declaration : :29</i>
          */
         NSURL fileURLWithPath(String path);
@@ -70,25 +70,26 @@ public abstract class NSURL extends NSObject {
          * Returns a new URL made by resolving bookmark data.
          *
          * @param bookmarkData The bookmark data the URL is derived from.
-         * @param options      Options taken into account when resolving the bookmark data.
-         *                     To resolve a security-scoped bookmark to support App Sandbox, you must include (by way of bitwise OR operators
-         *                     with any other options in this parameter) the NSURLBookmarkResolutionWithSecurityScope option.
-         * @param relativeURL  The base URL that the bookmark data is relative to.
-         *                     To resolve an app-scoped bookmark, use a value of nil.
-         *                     To resolve a document-scoped bookmark, use the absolute path (despite this parameter’s name) to the document from which you retrieved the bookmark.
-         * @param isStale      On return, if YES, the bookmark data is stale. Your app should create a new bookmark using the returned URL
-         *                     and use it in place of any stored copies of the existing bookmark.
+         * @param options      Options taken into account when resolving the bookmark data. To resolve a security-scoped
+         *                     bookmark to support App Sandbox, you must include (by way of bitwise OR operators with
+         *                     any other options in this parameter) the NSURLBookmarkResolutionWithSecurityScope
+         *                     option.
+         * @param relativeURL  The base URL that the bookmark data is relative to. To resolve an app-scoped bookmark,
+         *                     use a value of nil. To resolve a document-scoped bookmark, use the absolute path (despite
+         *                     this parameter’s name) to the document from which you retrieved the bookmark.
+         * @param isStale      On return, if YES, the bookmark data is stale. Your app should create a new bookmark
+         *                     using the returned URL and use it in place of any stored copies of the existing
+         *                     bookmark.
          * @param error        The error that occurred in the case that the URL cannot be created.
          * @return A new URL made by resolving bookmarkData.
          */
         NSURL URLByResolvingBookmarkData_options_relativeToURL_bookmarkDataIsStale_error(
-                NSData bookmarkData, int options, NSURL relativeURL, boolean isStale, ObjCObjectByReference error);
+            NSData bookmarkData, int options, NSURL relativeURL, boolean isStale, ObjCObjectByReference error);
 
     }
 
     /**
-     * Convenience initializers<br>
-     * Original signature : <code>initWithScheme(String*, String*, String*)</code><br>
+     * Convenience initializers<br> Original signature : <code>initWithScheme(String*, String*, String*)</code><br>
      * <i>native declaration : :24</i>
      */
     public abstract NSURL initWithScheme_host_path(String scheme, String host, String path);
@@ -100,22 +101,21 @@ public abstract class NSURL extends NSObject {
     public abstract NSURL initFileURLWithPath_isDirectory(String path, boolean isDir);
 
     /**
-     * Original signature : <code>initFileURLWithPath(String*)</code><br>
-     * Better to use initFileURLWithPath:isDirectory: if you know if the path is a file vs directory, as it saves an i/o.<br>
+     * Original signature : <code>initFileURLWithPath(String*)</code><br> Better to use initFileURLWithPath:isDirectory:
+     * if you know if the path is a file vs directory, as it saves an i/o.<br>
      * <i>native declaration : :26</i>
      */
     public abstract NSURL initFileURLWithPath(String path);
 
     /**
-     * These methods expect their string arguments to contain any percent escape codes that are necessary<br>
-     * Original signature : <code>initWithString(String*)</code><br>
+     * These methods expect their string arguments to contain any percent escape codes that are necessary<br> Original
+     * signature : <code>initWithString(String*)</code><br>
      * <i>native declaration : :32</i>
      */
     public abstract NSURL initWithString(String URLString);
 
     /**
-     * Original signature : <code>initWithString(String*, NSURL*)</code><br>
-     * It is an error for URLString to be nil<br>
+     * Original signature : <code>initWithString(String*, NSURL*)</code><br> It is an error for URLString to be nil<br>
      * <i>native declaration : :33</i>
      */
     public abstract NSURL initWithString_relativeToURL(String URLString, NSURL baseURL);
@@ -127,29 +127,28 @@ public abstract class NSURL extends NSObject {
     public abstract String absoluteString();
 
     /**
-     * Original signature : <code>String* relativeString()</code><br>
-     * The relative portion of a URL.  If baseURL is nil, or if the receiver is itself absolute, this is the same as absoluteString<br>
+     * Original signature : <code>String* relativeString()</code><br> The relative portion of a URL.  If baseURL is nil,
+     * or if the receiver is itself absolute, this is the same as absoluteString<br>
      * <i>native declaration : :38</i>
      */
     public abstract String relativeString();
 
     /**
-     * Original signature : <code>NSURL* baseURL()</code><br>
-     * may be nil.<br>
+     * Original signature : <code>NSURL* baseURL()</code><br> may be nil.<br>
      * <i>native declaration : :39</i>
      */
     public abstract NSURL baseURL();
 
     /**
-     * Original signature : <code>NSURL* absoluteURL()</code><br>
-     * if the receiver is itself absolute, this will return self.<br>
+     * Original signature : <code>NSURL* absoluteURL()</code><br> if the receiver is itself absolute, this will return
+     * self.<br>
      * <i>native declaration : :40</i>
      */
     public abstract NSURL absoluteURL();
 
     /**
-     * Any URL is composed of these two basic pieces.  The full URL would be the concatenation of [myURL scheme], ':', [myURL resourceSpecifier]<br>
-     * Original signature : <code>String* scheme()</code><br>
+     * Any URL is composed of these two basic pieces.  The full URL would be the concatenation of [myURL scheme], ':',
+     * [myURL resourceSpecifier]<br> Original signature : <code>String* scheme()</code><br>
      * <i>native declaration : :43</i>
      */
     public abstract String scheme();
@@ -161,8 +160,10 @@ public abstract class NSURL extends NSObject {
     public abstract String resourceSpecifier();
 
     /**
-     * If the URL conforms to rfc 1808 (the most common form of URL), the following accessors will return the various components; otherwise they return nil.  The litmus test for conformance is as recommended in RFC 1808 - whether the first two characters of resourceSpecifier is @"//".  In all cases, they return the component's value after resolving the receiver against its base URL.<br>
-     * Original signature : <code>String* host()</code><br>
+     * If the URL conforms to rfc 1808 (the most common form of URL), the following accessors will return the various
+     * components; otherwise they return nil.  The litmus test for conformance is as recommended in RFC 1808 - whether
+     * the first two characters of resourceSpecifier is @"//".  In all cases, they return the component's value after
+     * resolving the receiver against its base URL.<br> Original signature : <code>String* host()</code><br>
      * <i>native declaration : :47</i>
      */
     public abstract String host();
@@ -210,15 +211,14 @@ public abstract class NSURL extends NSObject {
     public abstract String query();
 
     /**
-     * Original signature : <code>String* relativePath()</code><br>
-     * The same as path if baseURL is nil<br>
+     * Original signature : <code>String* relativePath()</code><br> The same as path if baseURL is nil<br>
      * <i>native declaration : :55</i>
      */
     public abstract String relativePath();
 
     /**
-     * Original signature : <code>BOOL isFileURL()</code><br>
-     * Whether the scheme is file:; if [myURL isFileURL] is YES, then [myURL path] is suitable for input into NSFileManager or NSPathUtilities.<br>
+     * Original signature : <code>BOOL isFileURL()</code><br> Whether the scheme is file:; if [myURL isFileURL] is YES,
+     * then [myURL path] is suitable for input into NSFileManager or NSPathUtilities.<br>
      * <i>native declaration : :57</i>
      */
     public abstract boolean isFileURL();
@@ -230,15 +230,17 @@ public abstract class NSURL extends NSObject {
     public abstract NSURL standardizedURL();
 
     /**
-     * File reference URLs use a URL path syntax that identifies a file system object by reference, not by path. This form of
-     * file URL remains valid when the file system path of the URL’s underlying resource changes.
+     * File reference URLs use a URL path syntax that identifies a file system object by reference, not by path. This
+     * form of file URL remains valid when the file system path of the URL’s underlying resource changes.
      * <p/>
-     * If the original URL is a file path URL, this method converts it to a file reference URL. If the original URL is a file
-     * reference URL, the returned URL is identical. If the original URL is not a file URL, this method returns nil.
+     * If the original URL is a file path URL, this method converts it to a file reference URL. If the original URL is a
+     * file reference URL, the returned URL is identical. If the original URL is not a file URL, this method returns
+     * nil.
      * <p/>
      * File reference URLs cannot be created to file system objects which do not exist or are not reachable.
      * <p/>
-     * In some areas of the file system hierarchy, file reference URLs cannot be generated to the leaf node of the URL path.
+     * In some areas of the file system hierarchy, file reference URLs cannot be generated to the leaf node of the URL
+     * path.
      *
      * @return Returns a new file reference URL that points to the same resource as the original URL.
      */
@@ -250,8 +252,9 @@ public abstract class NSURL extends NSObject {
     public abstract boolean isFileReferenceURL();
 
     /**
-     * Original signature : <code>NSData* resourceDataUsingCache(BOOL)</code><br>
-     * Blocks to load the data if necessary.  If shouldUseCache is YES, then if an equivalent URL has already been loaded and cached, its resource data will be returned immediately.  If shouldUseCache is NO, a new load will be started<br>
+     * Original signature : <code>NSData* resourceDataUsingCache(BOOL)</code><br> Blocks to load the data if necessary.
+     * If shouldUseCache is YES, then if an equivalent URL has already been loaded and cached, its resource data will be
+     * returned immediately.  If shouldUseCache is NO, a new load will be started<br>
      * <i>from NSURLLoading native declaration : :84</i>
      */
     public abstract NSData resourceDataUsingCache(boolean shouldUseCache);
@@ -268,14 +271,15 @@ public abstract class NSURL extends NSObject {
     public abstract NSObject propertyForKey(String propertyKey);
 
     /**
-     * These attempt to write the given arguments for the resource specified by the URL; they return success or failure<br>
-     * Original signature : <code>BOOL setResourceData(NSData*)</code><br>
+     * These attempt to write the given arguments for the resource specified by the URL; they return success or
+     * failure<br> Original signature : <code>BOOL setResourceData(NSData*)</code><br>
      * <i>from NSURLLoading native declaration : :89</i>
      */
     public abstract boolean setResourceData(NSData data);
 
     /**
-     * In an app that has adopted App Sandbox, makes the resource pointed to by a security-scoped URL available to the app.
+     * In an app that has adopted App Sandbox, makes the resource pointed to by a security-scoped URL available to the
+     * app.
      *
      * @return YES if the request to access the resource succeeded; otherwise, NO.
      */
@@ -293,14 +297,14 @@ public abstract class NSURL extends NSObject {
      * @param options     Options taken into account when creating the bookmark for the URL. To create a security-scoped
      *                    bookmark to support App Sandbox, include the NSURLBookmarkCreationWithSecurityScope flag.
      * @param keys        An array of names of URL resource properties.
-     * @param relativeURL The URL that the bookmark data will be relative to.
-     *                    To create an app-scoped bookmark, use a value of nil.
-     *                    To create a document-scoped bookmark, use the absolute path (despite this parameter’s name) to the document file that is to own the new security-scoped bookmark.
+     * @param relativeURL The URL that the bookmark data will be relative to. To create an app-scoped bookmark, use a
+     *                    value of nil. To create a document-scoped bookmark, use the absolute path (despite this
+     *                    parameter’s name) to the document file that is to own the new security-scoped bookmark.
      * @param error       The error that occurred in the case that the bookmark data cannot be created.
      * @return Returns a bookmark for the URL, created with specified options and resource values
      */
     public abstract NSData bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
-            int options, NSArray keys, NSURL relativeURL, ObjCObjectByReference error);
+        int options, NSArray keys, NSURL relativeURL, ObjCObjectByReference error);
 
     public interface NSURLBookmarkCreationOptions {
         /**
@@ -309,19 +313,20 @@ public abstract class NSURL extends NSObject {
         int NSURLBookmarkCreationSuitableForBookmarkFile = (1 << 10);
 
         /**
-         * Specifies that you want to create a security-scoped bookmark that, when resolved, provides a security-scoped URL allowing
-         * read/write access to a file-system resource; for use in an app that adopts App Sandbox. For more information, see App
-         * Sandbox Design Guide. Note that this flag cannot be used in conjunction with either NSURLBookmarkCreationMinimalBookmark
-         * or NSURLBookmarkCreationSuitableForBookmarkFile.
+         * Specifies that you want to create a security-scoped bookmark that, when resolved, provides a security-scoped
+         * URL allowing read/write access to a file-system resource; for use in an app that adopts App Sandbox. For more
+         * information, see App Sandbox Design Guide. Note that this flag cannot be used in conjunction with either
+         * NSURLBookmarkCreationMinimalBookmark or NSURLBookmarkCreationSuitableForBookmarkFile.
          * <p/>
          * Available in OS X v10.7 and later.
          */
         int NSURLBookmarkCreationWithSecurityScope = (1 << 11);
 
         /**
-         * When combined with the NSURLBookmarkCreationWithSecurityScope option, specifies that you want to create a security-scoped
-         * bookmark that, when resolved, provides a security-scoped URL allowing read-only access to a file-system resource;
-         * for use in an app that adopts App Sandbox. For more information, see App Sandbox Design Guide.
+         * When combined with the NSURLBookmarkCreationWithSecurityScope option, specifies that you want to create a
+         * security-scoped bookmark that, when resolved, provides a security-scoped URL allowing read-only access to a
+         * file-system resource; for use in an app that adopts App Sandbox. For more information, see App Sandbox Design
+         * Guide.
          * <p/>
          * Available in OS X v10.7 and later.
          */
@@ -330,9 +335,30 @@ public abstract class NSURL extends NSObject {
 
     public interface NSURLBookmarkResolutionOptions {
         /**
-         * Specifies that the security scope, applied to the bookmark when it was created, should be used during resolution of the bookmark data.
-         * Available in OS X v10.7 and later.
+         * Specifies that the security scope, applied to the bookmark when it was created, should be used during
+         * resolution of the bookmark data. Available in OS X v10.7 and later.
          */
         int NSURLBookmarkResolutionWithSecurityScope = (1 << 10);
     }
+
+    /**
+     * This method first checks if the URL object already caches the specified resource values. If so, it returns the
+     * cached resource values to the caller. If not, then this method synchronously obtains the resource values from the
+     * backing store, adds the resource values to the URL object's cache, and returns the resource values to the
+     * caller.
+     * <p>
+     * The type of the returned resource value varies by resource property; for details, see the documentation for the
+     * key you want to access.
+     * <p>
+     * If the result dictionary does not contain a resource value for one or more of the requested resource keys, it
+     * means those resource properties are not available for the URL, and no errors occurred when determining those
+     * resource properties were not available.
+     *
+     * @param keys  An array of property keys for the desired resource properties.
+     * @param error The error that occurred if one or more resource values could not be retrieved. This parameter is
+     *              optional. If you are not interested in receiving error information, you can pass nil.
+     * @return If an error occurs, this method returns nil and populates the object pointer referenced by error with
+     * additional information.
+     */
+    public abstract NSDictionary resourceValuesForKeys_error(NSArray keys, ObjCObjectByReference error);
 }

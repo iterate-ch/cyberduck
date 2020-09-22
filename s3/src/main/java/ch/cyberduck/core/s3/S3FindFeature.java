@@ -18,7 +18,9 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -26,9 +28,14 @@ import ch.cyberduck.core.features.Find;
 
 public class S3FindFeature implements Find {
 
+    private final PathContainerService containerService
+        = new S3PathContainerService();
+
+    private final S3Session session;
     private final S3AttributesFinderFeature attributes;
 
     public S3FindFeature(final S3Session session) {
+        this.session = session;
         this.attributes = new S3AttributesFinderFeature(session);
     }
 
@@ -38,8 +45,20 @@ public class S3FindFeature implements Find {
             return true;
         }
         try {
-            attributes.find(file);
-            return true;
+            if(file.isFile() || file.isPlaceholder()) {
+                attributes.find(file);
+                return true;
+            }
+            else {
+                // Check for common prefix
+                try {
+                    new S3ObjectListService(session).list(file, new DisabledListProgressListener(), containerService.getKey(file));
+                    return true;
+                }
+                catch(NotfoundException e) {
+                    throw e;
+                }
+            }
         }
         catch(NotfoundException e) {
             return false;

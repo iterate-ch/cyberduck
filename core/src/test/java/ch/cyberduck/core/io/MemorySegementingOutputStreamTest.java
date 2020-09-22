@@ -25,6 +25,20 @@ import static org.junit.Assert.assertEquals;
 public class MemorySegementingOutputStreamTest {
 
     @Test
+    public void testFlush() throws Exception {
+        final ByteArrayOutputStream proxy = new ByteArrayOutputStream(20);
+        final MemorySegementingOutputStream out = new MemorySegementingOutputStream(proxy, 32768);
+        final byte[] content = RandomUtils.nextBytes(40500);
+        out.write(content, 0, 32800);
+        assertEquals(32768, proxy.toByteArray().length);
+        out.flush();
+        assertEquals(32800, proxy.toByteArray().length);
+        out.write(content, 32800, 7700);
+        out.close();
+        assertArrayEquals(content, proxy.toByteArray());
+    }
+
+    @Test
     public void testCopy1() throws Exception {
         final ByteArrayOutputStream proxy = new ByteArrayOutputStream(20);
         final MemorySegementingOutputStream out = new MemorySegementingOutputStream(proxy, 32768);

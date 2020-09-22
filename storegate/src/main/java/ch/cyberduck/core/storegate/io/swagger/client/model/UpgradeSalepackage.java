@@ -27,8 +27,14 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class UpgradeSalepackage {
+  @JsonProperty("campaignId")
+  private String campaignId = null;
+
   @JsonProperty("description")
   private String description = null;
 
@@ -37,9 +43,6 @@ public class UpgradeSalepackage {
 
   @JsonProperty("startFee")
   private Double startFee = null;
-
-  @JsonProperty("campaignPrice")
-  private CampaignPrice campaignPrice = null;
 
   @JsonProperty("id")
   private String id = null;
@@ -70,6 +73,30 @@ public class UpgradeSalepackage {
 
   @JsonProperty("isInclVAT")
   private Boolean isInclVAT = null;
+
+  @JsonProperty("campaignPrice")
+  private CampaignPrice campaignPrice = null;
+
+  @JsonProperty("campaignText")
+  private String campaignText = null;
+
+  public UpgradeSalepackage campaignId(String campaignId) {
+    this.campaignId = campaignId;
+    return this;
+  }
+
+   /**
+   * 
+   * @return campaignId
+  **/
+  @ApiModelProperty(value = "")
+  public String getCampaignId() {
+    return campaignId;
+  }
+
+  public void setCampaignId(String campaignId) {
+    this.campaignId = campaignId;
+  }
 
   public UpgradeSalepackage description(String description) {
     this.description = description;
@@ -123,24 +150,6 @@ public class UpgradeSalepackage {
 
   public void setStartFee(Double startFee) {
     this.startFee = startFee;
-  }
-
-  public UpgradeSalepackage campaignPrice(CampaignPrice campaignPrice) {
-    this.campaignPrice = campaignPrice;
-    return this;
-  }
-
-   /**
-   * 
-   * @return campaignPrice
-  **/
-  @ApiModelProperty(value = "")
-  public CampaignPrice getCampaignPrice() {
-    return campaignPrice;
-  }
-
-  public void setCampaignPrice(CampaignPrice campaignPrice) {
-    this.campaignPrice = campaignPrice;
   }
 
   public UpgradeSalepackage id(String id) {
@@ -323,6 +332,42 @@ public class UpgradeSalepackage {
     this.isInclVAT = isInclVAT;
   }
 
+  public UpgradeSalepackage campaignPrice(CampaignPrice campaignPrice) {
+    this.campaignPrice = campaignPrice;
+    return this;
+  }
+
+   /**
+   * 
+   * @return campaignPrice
+  **/
+  @ApiModelProperty(value = "")
+  public CampaignPrice getCampaignPrice() {
+    return campaignPrice;
+  }
+
+  public void setCampaignPrice(CampaignPrice campaignPrice) {
+    this.campaignPrice = campaignPrice;
+  }
+
+  public UpgradeSalepackage campaignText(String campaignText) {
+    this.campaignText = campaignText;
+    return this;
+  }
+
+   /**
+   * 
+   * @return campaignText
+  **/
+  @ApiModelProperty(value = "")
+  public String getCampaignText() {
+    return campaignText;
+  }
+
+  public void setCampaignText(String campaignText) {
+    this.campaignText = campaignText;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -333,10 +378,10 @@ public class UpgradeSalepackage {
       return false;
     }
     UpgradeSalepackage upgradeSalepackage = (UpgradeSalepackage) o;
-    return Objects.equals(this.description, upgradeSalepackage.description) &&
+    return Objects.equals(this.campaignId, upgradeSalepackage.campaignId) &&
+        Objects.equals(this.description, upgradeSalepackage.description) &&
         Objects.equals(this.saleText, upgradeSalepackage.saleText) &&
         Objects.equals(this.startFee, upgradeSalepackage.startFee) &&
-        Objects.equals(this.campaignPrice, upgradeSalepackage.campaignPrice) &&
         Objects.equals(this.id, upgradeSalepackage.id) &&
         Objects.equals(this.name, upgradeSalepackage.name) &&
         Objects.equals(this.monthlyFee, upgradeSalepackage.monthlyFee) &&
@@ -346,12 +391,14 @@ public class UpgradeSalepackage {
         Objects.equals(this.sync, upgradeSalepackage.sync) &&
         Objects.equals(this.bankID, upgradeSalepackage.bankID) &&
         Objects.equals(this.currency, upgradeSalepackage.currency) &&
-        Objects.equals(this.isInclVAT, upgradeSalepackage.isInclVAT);
+        Objects.equals(this.isInclVAT, upgradeSalepackage.isInclVAT) &&
+        Objects.equals(this.campaignPrice, upgradeSalepackage.campaignPrice) &&
+        Objects.equals(this.campaignText, upgradeSalepackage.campaignText);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(description, saleText, startFee, campaignPrice, id, name, monthlyFee, storage, multi, backup, sync, bankID, currency, isInclVAT);
+    return Objects.hash(campaignId, description, saleText, startFee, id, name, monthlyFee, storage, multi, backup, sync, bankID, currency, isInclVAT, campaignPrice, campaignText);
   }
 
 
@@ -360,10 +407,10 @@ public class UpgradeSalepackage {
     StringBuilder sb = new StringBuilder();
     sb.append("class UpgradeSalepackage {\n");
     
+    sb.append("    campaignId: ").append(toIndentedString(campaignId)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    saleText: ").append(toIndentedString(saleText)).append("\n");
     sb.append("    startFee: ").append(toIndentedString(startFee)).append("\n");
-    sb.append("    campaignPrice: ").append(toIndentedString(campaignPrice)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    monthlyFee: ").append(toIndentedString(monthlyFee)).append("\n");
@@ -374,6 +421,8 @@ public class UpgradeSalepackage {
     sb.append("    bankID: ").append(toIndentedString(bankID)).append("\n");
     sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
     sb.append("    isInclVAT: ").append(toIndentedString(isInclVAT)).append("\n");
+    sb.append("    campaignPrice: ").append(toIndentedString(campaignPrice)).append("\n");
+    sb.append("    campaignText: ").append(toIndentedString(campaignText)).append("\n");
     sb.append("}");
     return sb.toString();
   }

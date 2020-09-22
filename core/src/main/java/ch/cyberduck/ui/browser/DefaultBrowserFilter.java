@@ -25,15 +25,15 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class RegexFilter implements Filter<Path> {
+public class DefaultBrowserFilter implements Filter<Path> {
 
     private final Pattern pattern;
 
-    public RegexFilter() {
+    public DefaultBrowserFilter() {
         this(Pattern.compile(PreferencesFactory.get().getProperty("browser.hidden.regex")));
     }
 
-    public RegexFilter(final Pattern pattern) {
+    public DefaultBrowserFilter(final Pattern pattern) {
         this.pattern = pattern;
     }
 
@@ -72,10 +72,10 @@ public class RegexFilter implements Filter<Path> {
         if(this == o) {
             return true;
         }
-        if(!(o instanceof RegexFilter)) {
+        if(!(o instanceof DefaultBrowserFilter)) {
             return false;
         }
-        final RegexFilter that = (RegexFilter) o;
+        final DefaultBrowserFilter that = (DefaultBrowserFilter) o;
         return Objects.equals(pattern, that.pattern);
     }
 

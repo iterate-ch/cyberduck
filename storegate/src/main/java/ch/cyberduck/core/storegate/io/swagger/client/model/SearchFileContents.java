@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
+import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -27,13 +28,16 @@ import java.util.List;
  * Contains a list of PathFiles.
  */
 @ApiModel(description = "Contains a list of PathFiles.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class SearchFileContents {
   @JsonProperty("totalRowCount")
   private Integer totalRowCount = null;
 
   @JsonProperty("files")
-  private List<ch.cyberduck.core.storegate.io.swagger.client.model.File> files = null;
+  private List<File> files = null;
 
   public SearchFileContents totalRowCount(Integer totalRowCount) {
     this.totalRowCount = totalRowCount;
@@ -53,12 +57,12 @@ public class SearchFileContents {
     this.totalRowCount = totalRowCount;
   }
 
-  public SearchFileContents files(List<ch.cyberduck.core.storegate.io.swagger.client.model.File> files) {
+  public SearchFileContents files(List<File> files) {
     this.files = files;
     return this;
   }
 
-  public SearchFileContents addFilesItem(ch.cyberduck.core.storegate.io.swagger.client.model.File filesItem) {
+  public SearchFileContents addFilesItem(File filesItem) {
     if (this.files == null) {
       this.files = new ArrayList<>();
     }
@@ -71,11 +75,11 @@ public class SearchFileContents {
    * @return files
   **/
   @ApiModelProperty(value = "The list of items.")
-  public List<ch.cyberduck.core.storegate.io.swagger.client.model.File> getFiles() {
+  public List<File> getFiles() {
     return files;
   }
 
-  public void setFiles(List<ch.cyberduck.core.storegate.io.swagger.client.model.File> files) {
+  public void setFiles(List<File> files) {
     this.files = files;
   }
 

@@ -15,6 +15,7 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -37,6 +38,11 @@ public class LoadVaultWorker extends Worker<Vault> {
     @Override
     public Vault run(final Session<?> session) throws BackgroundException {
         return listener.load(session, directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER);
+    }
+
+    @Override
+    public String getActivity() {
+        return LocaleFactory.localizedString("Unlock Vault", "Cryptomator");
     }
 
     @Override

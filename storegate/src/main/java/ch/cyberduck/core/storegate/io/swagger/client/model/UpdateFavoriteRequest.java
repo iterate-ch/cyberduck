@@ -22,30 +22,33 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 
+ * A CreateMediaItemRequest request object
  */
-@ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
-public class PasswordProtected {
-  @JsonProperty("currentPassword")
-  private String currentPassword = null;
+@ApiModel(description = "A CreateMediaItemRequest request object")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
 
-  public PasswordProtected currentPassword(String currentPassword) {
-    this.currentPassword = currentPassword;
+
+
+public class UpdateFavoriteRequest {
+  @JsonProperty("order")
+  private Integer order = null;
+
+  public UpdateFavoriteRequest order(Integer order) {
+    this.order = order;
     return this;
   }
 
    /**
    * 
-   * @return currentPassword
+   * @return order
   **/
   @ApiModelProperty(value = "")
-  public String getCurrentPassword() {
-    return currentPassword;
+  public Integer getOrder() {
+    return order;
   }
 
-  public void setCurrentPassword(String currentPassword) {
-    this.currentPassword = currentPassword;
+  public void setOrder(Integer order) {
+    this.order = order;
   }
 
 
@@ -57,22 +60,22 @@ public class PasswordProtected {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    PasswordProtected passwordProtected = (PasswordProtected) o;
-    return Objects.equals(this.currentPassword, passwordProtected.currentPassword);
+    UpdateFavoriteRequest updateFavoriteRequest = (UpdateFavoriteRequest) o;
+    return Objects.equals(this.order, updateFavoriteRequest.order);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(currentPassword);
+    return Objects.hash(order);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class PasswordProtected {\n");
+    sb.append("class UpdateFavoriteRequest {\n");
     
-    sb.append("    currentPassword: ").append(toIndentedString(currentPassword)).append("\n");
+    sb.append("    order: ").append(toIndentedString(order)).append("\n");
     sb.append("}");
     return sb.toString();
   }

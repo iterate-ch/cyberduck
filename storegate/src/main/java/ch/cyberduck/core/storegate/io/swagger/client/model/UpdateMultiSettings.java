@@ -25,7 +25,10 @@ import io.swagger.annotations.ApiModelProperty;
  * Update a accounts multi settings. Properties that are null/undefined/missing are not updated
  */
 @ApiModel(description = "Update a accounts multi settings. Properties that are null/undefined/missing are not updated")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class UpdateMultiSettings {
   @JsonProperty("officeOnline")
   private Boolean officeOnline = null;
@@ -36,60 +39,29 @@ public class UpdateMultiSettings {
   @JsonProperty("versions")
   private Integer versions = null;
 
-  /**
-   * Permission for common root
-   */
-  public enum CommonRootPermissionEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_4(4),
-    
-    NUMBER_99(99),
-    
-    NUMBER_MINUS_1(-1);
-
-    private Integer value;
-
-    CommonRootPermissionEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static CommonRootPermissionEnum fromValue(String text) {
-      for (CommonRootPermissionEnum b : CommonRootPermissionEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("commonRootPermission")
-  private CommonRootPermissionEnum commonRootPermission = null;
+  private Integer commonRootPermission = null;
 
   @JsonProperty("extendedPermissions")
   private Boolean extendedPermissions = null;
+
+  @JsonProperty("hideAlbums")
+  private Boolean hideAlbums = null;
+
+  @JsonProperty("hidePhotos")
+  private Boolean hidePhotos = null;
+
+  @JsonProperty("disableMoveFromCommon")
+  private Boolean disableMoveFromCommon = null;
 
   @JsonProperty("allowShare")
   private Boolean allowShare = null;
 
   @JsonProperty("forceTwoFactor")
   private Boolean forceTwoFactor = null;
+
+  @JsonProperty("eidRequired")
+  private Boolean eidRequired = null;
 
   public UpdateMultiSettings officeOnline(Boolean officeOnline) {
     this.officeOnline = officeOnline;
@@ -145,21 +117,21 @@ public class UpdateMultiSettings {
     this.versions = versions;
   }
 
-  public UpdateMultiSettings commonRootPermission(CommonRootPermissionEnum commonRootPermission) {
+  public UpdateMultiSettings commonRootPermission(Integer commonRootPermission) {
     this.commonRootPermission = commonRootPermission;
     return this;
   }
 
    /**
-   * Permission for common root
+   * Permission for common root (0 &#x3D; NoAccess, 1 &#x3D; ReadOnly, 2 &#x3D; ReadWrite, 4 &#x3D; Synchronize, 99 &#x3D; FullControl, -1 &#x3D; None)
    * @return commonRootPermission
   **/
-  @ApiModelProperty(value = "Permission for common root")
-  public CommonRootPermissionEnum getCommonRootPermission() {
+  @ApiModelProperty(value = "Permission for common root (0 = NoAccess, 1 = ReadOnly, 2 = ReadWrite, 4 = Synchronize, 99 = FullControl, -1 = None)")
+  public Integer getCommonRootPermission() {
     return commonRootPermission;
   }
 
-  public void setCommonRootPermission(CommonRootPermissionEnum commonRootPermission) {
+  public void setCommonRootPermission(Integer commonRootPermission) {
     this.commonRootPermission = commonRootPermission;
   }
 
@@ -179,6 +151,60 @@ public class UpdateMultiSettings {
 
   public void setExtendedPermissions(Boolean extendedPermissions) {
     this.extendedPermissions = extendedPermissions;
+  }
+
+  public UpdateMultiSettings hideAlbums(Boolean hideAlbums) {
+    this.hideAlbums = hideAlbums;
+    return this;
+  }
+
+   /**
+   * Extended permissions in common
+   * @return hideAlbums
+  **/
+  @ApiModelProperty(value = "Extended permissions in common")
+  public Boolean isHideAlbums() {
+    return hideAlbums;
+  }
+
+  public void setHideAlbums(Boolean hideAlbums) {
+    this.hideAlbums = hideAlbums;
+  }
+
+  public UpdateMultiSettings hidePhotos(Boolean hidePhotos) {
+    this.hidePhotos = hidePhotos;
+    return this;
+  }
+
+   /**
+   * Extended permissions in common
+   * @return hidePhotos
+  **/
+  @ApiModelProperty(value = "Extended permissions in common")
+  public Boolean isHidePhotos() {
+    return hidePhotos;
+  }
+
+  public void setHidePhotos(Boolean hidePhotos) {
+    this.hidePhotos = hidePhotos;
+  }
+
+  public UpdateMultiSettings disableMoveFromCommon(Boolean disableMoveFromCommon) {
+    this.disableMoveFromCommon = disableMoveFromCommon;
+    return this;
+  }
+
+   /**
+   * Extended permissions in common
+   * @return disableMoveFromCommon
+  **/
+  @ApiModelProperty(value = "Extended permissions in common")
+  public Boolean isDisableMoveFromCommon() {
+    return disableMoveFromCommon;
+  }
+
+  public void setDisableMoveFromCommon(Boolean disableMoveFromCommon) {
+    this.disableMoveFromCommon = disableMoveFromCommon;
   }
 
   public UpdateMultiSettings allowShare(Boolean allowShare) {
@@ -217,6 +243,24 @@ public class UpdateMultiSettings {
     this.forceTwoFactor = forceTwoFactor;
   }
 
+  public UpdateMultiSettings eidRequired(Boolean eidRequired) {
+    this.eidRequired = eidRequired;
+    return this;
+  }
+
+   /**
+   * Force BankID for all users and shares
+   * @return eidRequired
+  **/
+  @ApiModelProperty(value = "Force BankID for all users and shares")
+  public Boolean isEidRequired() {
+    return eidRequired;
+  }
+
+  public void setEidRequired(Boolean eidRequired) {
+    this.eidRequired = eidRequired;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -232,13 +276,17 @@ public class UpdateMultiSettings {
         Objects.equals(this.versions, updateMultiSettings.versions) &&
         Objects.equals(this.commonRootPermission, updateMultiSettings.commonRootPermission) &&
         Objects.equals(this.extendedPermissions, updateMultiSettings.extendedPermissions) &&
+        Objects.equals(this.hideAlbums, updateMultiSettings.hideAlbums) &&
+        Objects.equals(this.hidePhotos, updateMultiSettings.hidePhotos) &&
+        Objects.equals(this.disableMoveFromCommon, updateMultiSettings.disableMoveFromCommon) &&
         Objects.equals(this.allowShare, updateMultiSettings.allowShare) &&
-        Objects.equals(this.forceTwoFactor, updateMultiSettings.forceTwoFactor);
+        Objects.equals(this.forceTwoFactor, updateMultiSettings.forceTwoFactor) &&
+        Objects.equals(this.eidRequired, updateMultiSettings.eidRequired);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(officeOnline, recycleBin, versions, commonRootPermission, extendedPermissions, allowShare, forceTwoFactor);
+    return Objects.hash(officeOnline, recycleBin, versions, commonRootPermission, extendedPermissions, hideAlbums, hidePhotos, disableMoveFromCommon, allowShare, forceTwoFactor, eidRequired);
   }
 
 
@@ -252,8 +300,12 @@ public class UpdateMultiSettings {
     sb.append("    versions: ").append(toIndentedString(versions)).append("\n");
     sb.append("    commonRootPermission: ").append(toIndentedString(commonRootPermission)).append("\n");
     sb.append("    extendedPermissions: ").append(toIndentedString(extendedPermissions)).append("\n");
+    sb.append("    hideAlbums: ").append(toIndentedString(hideAlbums)).append("\n");
+    sb.append("    hidePhotos: ").append(toIndentedString(hidePhotos)).append("\n");
+    sb.append("    disableMoveFromCommon: ").append(toIndentedString(disableMoveFromCommon)).append("\n");
     sb.append("    allowShare: ").append(toIndentedString(allowShare)).append("\n");
     sb.append("    forceTwoFactor: ").append(toIndentedString(forceTwoFactor)).append("\n");
+    sb.append("    eidRequired: ").append(toIndentedString(eidRequired)).append("\n");
     sb.append("}");
     return sb.toString();
   }

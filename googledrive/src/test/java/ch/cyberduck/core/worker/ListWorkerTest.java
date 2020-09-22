@@ -30,7 +30,7 @@ import ch.cyberduck.core.googledrive.DriveHomeFinderService;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
-import ch.cyberduck.ui.browser.RegexFilter;
+import ch.cyberduck.ui.browser.DefaultBrowserFilter;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -70,7 +70,7 @@ public class ListWorkerTest extends AbstractDriveTest {
             worker.cleanup(list);
             assertTrue(cache.containsKey(parent));
             final AttributedList<Path> l = cache.get(parent);
-            assertEquals(1, l.filter(new RegexFilter()).size());
+            assertEquals(1, l.filter(new DefaultBrowserFilter()).size());
             assertEquals(2, l.size());
         }
         {
@@ -86,7 +86,7 @@ public class ListWorkerTest extends AbstractDriveTest {
             worker.cleanup(list);
             assertTrue(cache.containsKey(parent));
             final AttributedList<Path> l = cache.get(parent);
-            assertEquals(0, l.filter(new RegexFilter()).size());
+            assertEquals(0, l.filter(new DefaultBrowserFilter()).size());
             assertEquals(2, l.size());
         }
         new DriveDeleteFeature(session, fileidProvider).delete(Collections.singletonList(parent), new DisabledLoginCallback(), new Delete.DisabledCallback());

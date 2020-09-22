@@ -179,7 +179,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
                 file.delete();
             }
             catch(AccessDeniedException | NotfoundException e) {
-                log.error(String.format("Failure removing bookmark %s", e.getMessage()));
+                log.warn(String.format("Failure removing bookmark %s", e.getMessage()));
             }
             this.sort();
         }

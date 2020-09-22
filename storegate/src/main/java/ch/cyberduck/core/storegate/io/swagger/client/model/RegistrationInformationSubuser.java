@@ -25,7 +25,10 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class RegistrationInformationSubuser {
   @JsonProperty("partnerId")
   private String partnerId = null;
@@ -44,6 +47,9 @@ public class RegistrationInformationSubuser {
 
   @JsonProperty("isBankIDLogin")
   private Boolean isBankIDLogin = null;
+
+  @JsonProperty("socialSecurityNumber")
+  private String socialSecurityNumber = null;
 
   @JsonProperty("email")
   private String email = null;
@@ -162,6 +168,24 @@ public class RegistrationInformationSubuser {
     this.isBankIDLogin = isBankIDLogin;
   }
 
+  public RegistrationInformationSubuser socialSecurityNumber(String socialSecurityNumber) {
+    this.socialSecurityNumber = socialSecurityNumber;
+    return this;
+  }
+
+   /**
+   * SocialSecurityNumber is set by admin
+   * @return socialSecurityNumber
+  **/
+  @ApiModelProperty(value = "SocialSecurityNumber is set by admin")
+  public String getSocialSecurityNumber() {
+    return socialSecurityNumber;
+  }
+
+  public void setSocialSecurityNumber(String socialSecurityNumber) {
+    this.socialSecurityNumber = socialSecurityNumber;
+  }
+
   public RegistrationInformationSubuser email(String email) {
     this.email = email;
     return this;
@@ -232,6 +256,7 @@ public class RegistrationInformationSubuser {
         Objects.equals(this.adminCompany, registrationInformationSubuser.adminCompany) &&
         Objects.equals(this.salepackageName, registrationInformationSubuser.salepackageName) &&
         Objects.equals(this.isBankIDLogin, registrationInformationSubuser.isBankIDLogin) &&
+        Objects.equals(this.socialSecurityNumber, registrationInformationSubuser.socialSecurityNumber) &&
         Objects.equals(this.email, registrationInformationSubuser.email) &&
         Objects.equals(this.firstName, registrationInformationSubuser.firstName) &&
         Objects.equals(this.lastName, registrationInformationSubuser.lastName);
@@ -239,7 +264,7 @@ public class RegistrationInformationSubuser {
 
   @Override
   public int hashCode() {
-    return Objects.hash(partnerId, retailerId, adminName, adminCompany, salepackageName, isBankIDLogin, email, firstName, lastName);
+    return Objects.hash(partnerId, retailerId, adminName, adminCompany, salepackageName, isBankIDLogin, socialSecurityNumber, email, firstName, lastName);
   }
 
 
@@ -254,6 +279,7 @@ public class RegistrationInformationSubuser {
     sb.append("    adminCompany: ").append(toIndentedString(adminCompany)).append("\n");
     sb.append("    salepackageName: ").append(toIndentedString(salepackageName)).append("\n");
     sb.append("    isBankIDLogin: ").append(toIndentedString(isBankIDLogin)).append("\n");
+    sb.append("    socialSecurityNumber: ").append(toIndentedString(socialSecurityNumber)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    firstName: ").append(toIndentedString(firstName)).append("\n");
     sb.append("    lastName: ").append(toIndentedString(lastName)).append("\n");

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
 public class RegistrationApi {
   private ApiClient apiClient;
 
@@ -106,11 +106,12 @@ public class RegistrationApi {
    * @param backupId  (optional)
    * @param syncId  (optional)
    * @param bankIDId  (optional)
+   * @param direct  (optional)
    * @return RegistrationInformation
    * @throws ApiException if fails to make API call
    */
-  public RegistrationInformation registrationRegisterAccount(String partnerId, String salepackageId, String retailerId, String trialId, String campaignId, String storageId, String multiId, String backupId, String syncId, String bankIDId) throws ApiException {
-    return registrationRegisterAccountWithHttpInfo(partnerId, salepackageId, retailerId, trialId, campaignId, storageId, multiId, backupId, syncId, bankIDId).getData();
+  public RegistrationInformation registrationRegisterAccount(String partnerId, String salepackageId, String retailerId, String trialId, String campaignId, String storageId, String multiId, String backupId, String syncId, String bankIDId, Boolean direct) throws ApiException {
+    return registrationRegisterAccountWithHttpInfo(partnerId, salepackageId, retailerId, trialId, campaignId, storageId, multiId, backupId, syncId, bankIDId, direct).getData();
       }
 
   /**
@@ -126,10 +127,11 @@ public class RegistrationApi {
    * @param backupId  (optional)
    * @param syncId  (optional)
    * @param bankIDId  (optional)
+   * @param direct  (optional)
    * @return ApiResponse&lt;RegistrationInformation&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<RegistrationInformation> registrationRegisterAccountWithHttpInfo(String partnerId, String salepackageId, String retailerId, String trialId, String campaignId, String storageId, String multiId, String backupId, String syncId, String bankIDId) throws ApiException {
+  public ApiResponse<RegistrationInformation> registrationRegisterAccountWithHttpInfo(String partnerId, String salepackageId, String retailerId, String trialId, String campaignId, String storageId, String multiId, String backupId, String syncId, String bankIDId, Boolean direct) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'partnerId' is set
@@ -160,6 +162,7 @@ public class RegistrationApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "BackupId", backupId));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "SyncId", syncId));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "BankIDId", bankIDId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "Direct", direct));
 
     
     

@@ -16,6 +16,7 @@ package ch.cyberduck.core.storegate.io.swagger.client.model;
 import java.util.Objects;
 import java.util.Arrays;
 import ch.cyberduck.core.storegate.io.swagger.client.model.BankIDContact;
+import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -29,13 +30,16 @@ import org.joda.time.DateTime;
  * A FileShare
  */
 @ApiModel(description = "A FileShare")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class FileShare {
   @JsonProperty("url")
   private String url = null;
 
   @JsonProperty("pathFile")
-  private ch.cyberduck.core.storegate.io.swagger.client.model.File pathFile = null;
+  private File pathFile = null;
 
   @JsonProperty("id")
   private String id = null;
@@ -82,45 +86,8 @@ public class FileShare {
   @JsonProperty("bankIDContacts")
   private List<BankIDContact> bankIDContacts = null;
 
-  /**
-   * Share AuthMethod
-   */
-  public enum AuthMethodEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2);
-
-    private Integer value;
-
-    AuthMethodEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static AuthMethodEnum fromValue(String text) {
-      for (AuthMethodEnum b : AuthMethodEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("authMethod")
-  private AuthMethodEnum authMethod = null;
+  private Integer authMethod = null;
 
   @JsonProperty("allowOfficeOnline")
   private Boolean allowOfficeOnline = null;
@@ -146,7 +113,7 @@ public class FileShare {
     this.url = url;
   }
 
-  public FileShare pathFile(ch.cyberduck.core.storegate.io.swagger.client.model.File pathFile) {
+  public FileShare pathFile(File pathFile) {
     this.pathFile = pathFile;
     return this;
   }
@@ -156,11 +123,11 @@ public class FileShare {
    * @return pathFile
   **/
   @ApiModelProperty(value = "The shared item.")
-  public ch.cyberduck.core.storegate.io.swagger.client.model.File getPathFile() {
+  public File getPathFile() {
     return pathFile;
   }
 
-  public void setPathFile(ch.cyberduck.core.storegate.io.swagger.client.model.File pathFile) {
+  public void setPathFile(File pathFile) {
     this.pathFile = pathFile;
   }
 
@@ -458,21 +425,21 @@ public class FileShare {
     this.bankIDContacts = bankIDContacts;
   }
 
-  public FileShare authMethod(AuthMethodEnum authMethod) {
+  public FileShare authMethod(Integer authMethod) {
     this.authMethod = authMethod;
     return this;
   }
 
    /**
-   * Share AuthMethod
+   * Share AuthMethod (0 &#x3D; None, 1 &#x3D; Password, 2 &#x3D; BankID)
    * @return authMethod
   **/
-  @ApiModelProperty(value = "Share AuthMethod")
-  public AuthMethodEnum getAuthMethod() {
+  @ApiModelProperty(value = "Share AuthMethod (0 = None, 1 = Password, 2 = BankID)")
+  public Integer getAuthMethod() {
     return authMethod;
   }
 
-  public void setAuthMethod(AuthMethodEnum authMethod) {
+  public void setAuthMethod(Integer authMethod) {
     this.authMethod = authMethod;
   }
 

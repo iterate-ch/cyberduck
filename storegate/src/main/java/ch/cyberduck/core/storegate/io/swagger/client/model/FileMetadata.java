@@ -26,7 +26,10 @@ import org.joda.time.DateTime;
  * A file metadata object
  */
 @ApiModel(description = "A file metadata object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class FileMetadata {
   @JsonProperty("id")
   private String id = null;
@@ -52,57 +55,11 @@ public class FileMetadata {
   @JsonProperty("attributes")
   private Integer attributes = null;
 
-  /**
-   * The file Flags
-   */
-  public enum FlagsEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_4(4),
-    
-    NUMBER_8(8),
-    
-    NUMBER_16(16),
-    
-    NUMBER_32(32),
-    
-    NUMBER_64(64),
-    
-    NUMBER_128(128);
-
-    private Integer value;
-
-    FlagsEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static FlagsEnum fromValue(String text) {
-      for (FlagsEnum b : FlagsEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("flags")
-  private FlagsEnum flags = null;
+  private Integer flags = null;
+
+  @JsonProperty("lockId")
+  private String lockId = null;
 
   public FileMetadata id(String id) {
     this.id = id;
@@ -248,22 +205,40 @@ public class FileMetadata {
     this.attributes = attributes;
   }
 
-  public FileMetadata flags(FlagsEnum flags) {
+  public FileMetadata flags(Integer flags) {
     this.flags = flags;
     return this;
   }
 
    /**
-   * The file Flags
+   * The file Flags (0 &#x3D; None, 1 &#x3D; Folder, 2 &#x3D; Shared, 4 &#x3D; Locked, 8 &#x3D; Image, 16 &#x3D; Streamable, 32 &#x3D; Video, 64 &#x3D; Doc, 128 &#x3D; StreamableDoc, 256 &#x3D; HasThumbnail, 512 &#x3D; Hidden, 1024 &#x3D; Favorite)
    * @return flags
   **/
-  @ApiModelProperty(value = "The file Flags")
-  public FlagsEnum getFlags() {
+  @ApiModelProperty(value = "The file Flags (0 = None, 1 = Folder, 2 = Shared, 4 = Locked, 8 = Image, 16 = Streamable, 32 = Video, 64 = Doc, 128 = StreamableDoc, 256 = HasThumbnail, 512 = Hidden, 1024 = Favorite)")
+  public Integer getFlags() {
     return flags;
   }
 
-  public void setFlags(FlagsEnum flags) {
+  public void setFlags(Integer flags) {
     this.flags = flags;
+  }
+
+  public FileMetadata lockId(String lockId) {
+    this.lockId = lockId;
+    return this;
+  }
+
+   /**
+   * Not used any more
+   * @return lockId
+  **/
+  @ApiModelProperty(value = "Not used any more")
+  public String getLockId() {
+    return lockId;
+  }
+
+  public void setLockId(String lockId) {
+    this.lockId = lockId;
   }
 
 
@@ -284,12 +259,13 @@ public class FileMetadata {
         Objects.equals(this.created, fileMetadata.created) &&
         Objects.equals(this.accessed, fileMetadata.accessed) &&
         Objects.equals(this.attributes, fileMetadata.attributes) &&
-        Objects.equals(this.flags, fileMetadata.flags);
+        Objects.equals(this.flags, fileMetadata.flags) &&
+        Objects.equals(this.lockId, fileMetadata.lockId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, fileName, parentId, fileSize, modified, created, accessed, attributes, flags);
+    return Objects.hash(id, fileName, parentId, fileSize, modified, created, accessed, attributes, flags, lockId);
   }
 
 
@@ -307,6 +283,7 @@ public class FileMetadata {
     sb.append("    accessed: ").append(toIndentedString(accessed)).append("\n");
     sb.append("    attributes: ").append(toIndentedString(attributes)).append("\n");
     sb.append("    flags: ").append(toIndentedString(flags)).append("\n");
+    sb.append("    lockId: ").append(toIndentedString(lockId)).append("\n");
     sb.append("}");
     return sb.toString();
   }

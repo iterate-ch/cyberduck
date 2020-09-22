@@ -274,8 +274,16 @@ public class Terminal {
             else {
                 remote = new CommandLinePathParser(input).parse(uri);
             }
-            // Set remote file attributes
-            remote.withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source, new AttributesWorker(remote))));
+            switch(action) {
+                case edit:
+                case download:
+                case copy:
+                case synchronize:
+                case delete:
+                    // Set remote file attributes
+                    remote.withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source, new AttributesWorker(remote))));
+                    break;
+            }
             if(input.hasOption(TerminalOptionsBuilder.Params.vault.name())) {
                 final Path vault;
                 if(StringUtils.startsWith(input.getOptionValue(action.name()), TildePathExpander.PREFIX)) {
@@ -348,33 +356,33 @@ public class Terminal {
 
     protected void configure(final CommandLine input) {
         final boolean preserve = input.hasOption(TerminalOptionsBuilder.Params.preserve.name());
-        preferences.setProperty("queue.upload.permissions.change", preserve);
-        preferences.setProperty("queue.upload.timestamp.change", preserve);
-        preferences.setProperty("queue.download.permissions.change", preserve);
-        preferences.setProperty("queue.download.timestamp.change", preserve);
+        preferences.setDefault("queue.upload.permissions.change", String.valueOf(preserve));
+        preferences.setDefault("queue.upload.timestamp.change", String.valueOf(preserve));
+        preferences.setDefault("queue.download.permissions.change", String.valueOf(preserve));
+        preferences.setDefault("queue.download.timestamp.change", String.valueOf(preserve));
         final boolean retry = input.hasOption(TerminalOptionsBuilder.Params.retry.name());
         if(retry) {
             if(StringUtils.isNotBlank(input.getOptionValue(TerminalOptionsBuilder.Params.retry.name()))) {
-                preferences.setProperty("connection.retry",
-                    NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.retry.name()), 1));
+                preferences.setDefault("connection.retry",
+                    String.valueOf(NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.retry.name()), 1)));
             }
             else {
-                preferences.setProperty("connection.retry", 1);
+                preferences.setDefault("connection.retry", String.valueOf(1));
             }
         }
         else {
-            preferences.setProperty("connection.retry", 0);
+            preferences.setDefault("connection.retry", String.valueOf(0));
         }
         final boolean udt = input.hasOption(TerminalOptionsBuilder.Params.udt.name());
         if(udt) {
-            preferences.setProperty("s3.download.udt.threshold", 0L);
-            preferences.setProperty("s3.upload.udt.threshold", 0L);
+            preferences.setDefault("s3.download.udt.threshold", String.valueOf(0L));
+            preferences.setDefault("s3.upload.udt.threshold", String.valueOf(0L));
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
-            preferences.setProperty("queue.connections.limit",
-                NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.parallel.name()), 2));
+            preferences.setDefault("queue.connections.limit",
+                String.valueOf(NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.parallel.name()), 2)));
         }
-        preferences.setProperty("connection.login.keychain", !input.hasOption(TerminalOptionsBuilder.Params.nokeychain.name()));
+        preferences.setDefault("connection.login.keychain", String.valueOf(!input.hasOption(TerminalOptionsBuilder.Params.nokeychain.name())));
     }
 
     protected Exit transfer(final Transfer transfer, final SessionPool source, final SessionPool destination) {

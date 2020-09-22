@@ -673,13 +673,22 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("TransferStatus{");
-        sb.append("exists=").append(exists);
+        sb.append("rename=").append(rename);
+        sb.append(", exists=").append(exists);
         sb.append(", append=").append(append);
-        sb.append(", segments=").append(segments);
+        sb.append(", segment=").append(segment);
         sb.append(", offset=").append(offset);
         sb.append(", length=").append(length);
-        sb.append(", canceled=").append(canceled);
-        sb.append(", renamed=").append(rename);
+        sb.append(", checksum=").append(checksum);
+        sb.append(", mime='").append(mime).append('\'');
+        sb.append(", permission=").append(permission);
+        sb.append(", acl=").append(acl);
+        sb.append(", encryption=").append(encryption);
+        sb.append(", storageClass='").append(storageClass).append('\'');
+        sb.append(", timestamp=").append(timestamp);
+        sb.append(", parameters=").append(parameters);
+        sb.append(", metadata=").append(metadata);
+        sb.append(", lockId=").append(lockId);
         sb.append(", version=").append(version);
         sb.append('}');
         return sb.toString();

@@ -26,7 +26,10 @@ import io.swagger.annotations.ApiModelProperty;
  * Item containing information about a public available share.
  */
 @ApiModel(description = "Item containing information about a public available share.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class PublicShareInfo {
   @JsonProperty("id")
   private String id = null;
@@ -34,47 +37,8 @@ public class PublicShareInfo {
   @JsonProperty("name")
   private String name = null;
 
-  /**
-   * Indicated the sharetype
-   */
-  public enum TypeEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_3(3);
-
-    private Integer value;
-
-    TypeEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static TypeEnum fromValue(String text) {
-      for (TypeEnum b : TypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("type")
-  private TypeEnum type = null;
+  private Integer type = null;
 
   @JsonProperty("fileAllowUpload")
   private Boolean fileAllowUpload = null;
@@ -94,45 +58,8 @@ public class PublicShareInfo {
   @JsonProperty("retailerId")
   private String retailerId = null;
 
-  /**
-   * 
-   */
-  public enum AuthMethodEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2);
-
-    private Integer value;
-
-    AuthMethodEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static AuthMethodEnum fromValue(String text) {
-      for (AuthMethodEnum b : AuthMethodEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("authMethod")
-  private AuthMethodEnum authMethod = null;
+  private Integer authMethod = null;
 
   @JsonProperty("fileAllowOfficeOnline")
   private Boolean fileAllowOfficeOnline = null;
@@ -176,21 +103,21 @@ public class PublicShareInfo {
     this.name = name;
   }
 
-  public PublicShareInfo type(TypeEnum type) {
+  public PublicShareInfo type(Integer type) {
     this.type = type;
     return this;
   }
 
    /**
-   * Indicated the sharetype
+   * Indicated the sharetype (0 &#x3D; Folder, 1 &#x3D; File, 2 &#x3D; Image, 3 &#x3D; Media)
    * @return type
   **/
-  @ApiModelProperty(value = "Indicated the sharetype")
-  public TypeEnum getType() {
+  @ApiModelProperty(value = "Indicated the sharetype (0 = Folder, 1 = File, 2 = Image, 3 = Media)")
+  public Integer getType() {
     return type;
   }
 
-  public void setType(TypeEnum type) {
+  public void setType(Integer type) {
     this.type = type;
   }
 
@@ -302,21 +229,21 @@ public class PublicShareInfo {
     this.retailerId = retailerId;
   }
 
-  public PublicShareInfo authMethod(AuthMethodEnum authMethod) {
+  public PublicShareInfo authMethod(Integer authMethod) {
     this.authMethod = authMethod;
     return this;
   }
 
    /**
-   * 
+   *  (0 &#x3D; None, 1 &#x3D; Password, 2 &#x3D; BankID)
    * @return authMethod
   **/
-  @ApiModelProperty(value = "")
-  public AuthMethodEnum getAuthMethod() {
+  @ApiModelProperty(value = " (0 = None, 1 = Password, 2 = BankID)")
+  public Integer getAuthMethod() {
     return authMethod;
   }
 
-  public void setAuthMethod(AuthMethodEnum authMethod) {
+  public void setAuthMethod(Integer authMethod) {
     this.authMethod = authMethod;
   }
 

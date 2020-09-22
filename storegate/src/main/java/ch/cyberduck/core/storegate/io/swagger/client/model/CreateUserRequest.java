@@ -25,13 +25,22 @@ import io.swagger.annotations.ApiModelProperty;
  * A CreateUser request object
  */
 @ApiModel(description = "A CreateUser request object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class CreateUserRequest {
   @JsonProperty("username")
   private String username = null;
 
   @JsonProperty("password")
   private String password = null;
+
+  @JsonProperty("socialSecurityNumber")
+  private String socialSecurityNumber = null;
+
+  @JsonProperty("nonEId")
+  private Boolean nonEId = null;
 
   @JsonProperty("firstName")
   private String firstName = null;
@@ -48,51 +57,8 @@ public class CreateUserRequest {
   @JsonProperty("allowProductRegistration")
   private Boolean allowProductRegistration = null;
 
-  /**
-   * The Permission for Common root
-   */
-  public enum CommonRootPermissionEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_4(4),
-    
-    NUMBER_99(99),
-    
-    NUMBER_MINUS_1(-1);
-
-    private Integer value;
-
-    CommonRootPermissionEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static CommonRootPermissionEnum fromValue(String text) {
-      for (CommonRootPermissionEnum b : CommonRootPermissionEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("commonRootPermission")
-  private CommonRootPermissionEnum commonRootPermission = null;
+  private Integer commonRootPermission = null;
 
   public CreateUserRequest username(String username) {
     this.username = username;
@@ -128,6 +94,42 @@ public class CreateUserRequest {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public CreateUserRequest socialSecurityNumber(String socialSecurityNumber) {
+    this.socialSecurityNumber = socialSecurityNumber;
+    return this;
+  }
+
+   /**
+   * The SocialSecurityNumber used for eID registration
+   * @return socialSecurityNumber
+  **/
+  @ApiModelProperty(value = "The SocialSecurityNumber used for eID registration")
+  public String getSocialSecurityNumber() {
+    return socialSecurityNumber;
+  }
+
+  public void setSocialSecurityNumber(String socialSecurityNumber) {
+    this.socialSecurityNumber = socialSecurityNumber;
+  }
+
+  public CreateUserRequest nonEId(Boolean nonEId) {
+    this.nonEId = nonEId;
+    return this;
+  }
+
+   /**
+   * A non eID registration on a eID account
+   * @return nonEId
+  **/
+  @ApiModelProperty(value = "A non eID registration on a eID account")
+  public Boolean isNonEId() {
+    return nonEId;
+  }
+
+  public void setNonEId(Boolean nonEId) {
+    this.nonEId = nonEId;
   }
 
   public CreateUserRequest firstName(String firstName) {
@@ -221,21 +223,21 @@ public class CreateUserRequest {
     this.allowProductRegistration = allowProductRegistration;
   }
 
-  public CreateUserRequest commonRootPermission(CommonRootPermissionEnum commonRootPermission) {
+  public CreateUserRequest commonRootPermission(Integer commonRootPermission) {
     this.commonRootPermission = commonRootPermission;
     return this;
   }
 
    /**
-   * The Permission for Common root
+   * The Permission for Common root (0 &#x3D; NoAccess, 1 &#x3D; ReadOnly, 2 &#x3D; ReadWrite, 4 &#x3D; Synchronize, 99 &#x3D; FullControl, -1 &#x3D; None)
    * @return commonRootPermission
   **/
-  @ApiModelProperty(value = "The Permission for Common root")
-  public CommonRootPermissionEnum getCommonRootPermission() {
+  @ApiModelProperty(value = "The Permission for Common root (0 = NoAccess, 1 = ReadOnly, 2 = ReadWrite, 4 = Synchronize, 99 = FullControl, -1 = None)")
+  public Integer getCommonRootPermission() {
     return commonRootPermission;
   }
 
-  public void setCommonRootPermission(CommonRootPermissionEnum commonRootPermission) {
+  public void setCommonRootPermission(Integer commonRootPermission) {
     this.commonRootPermission = commonRootPermission;
   }
 
@@ -251,6 +253,8 @@ public class CreateUserRequest {
     CreateUserRequest createUserRequest = (CreateUserRequest) o;
     return Objects.equals(this.username, createUserRequest.username) &&
         Objects.equals(this.password, createUserRequest.password) &&
+        Objects.equals(this.socialSecurityNumber, createUserRequest.socialSecurityNumber) &&
+        Objects.equals(this.nonEId, createUserRequest.nonEId) &&
         Objects.equals(this.firstName, createUserRequest.firstName) &&
         Objects.equals(this.lastName, createUserRequest.lastName) &&
         Objects.equals(this.email, createUserRequest.email) &&
@@ -261,7 +265,7 @@ public class CreateUserRequest {
 
   @Override
   public int hashCode() {
-    return Objects.hash(username, password, firstName, lastName, email, reservedSpaceSize, allowProductRegistration, commonRootPermission);
+    return Objects.hash(username, password, socialSecurityNumber, nonEId, firstName, lastName, email, reservedSpaceSize, allowProductRegistration, commonRootPermission);
   }
 
 
@@ -272,6 +276,8 @@ public class CreateUserRequest {
     
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("    password: ").append(toIndentedString(password)).append("\n");
+    sb.append("    socialSecurityNumber: ").append(toIndentedString(socialSecurityNumber)).append("\n");
+    sb.append("    nonEId: ").append(toIndentedString(nonEId)).append("\n");
     sb.append("    firstName: ").append(toIndentedString(firstName)).append("\n");
     sb.append("    lastName: ").append(toIndentedString(lastName)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");

@@ -42,7 +42,6 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(SDSMultipartWriteFeature.class);
 
     private final SDSSession session;
-    private final SDSNodeIdProvider nodeid;
     private final Find finder;
     private final AttributesFinder attributes;
     private final SDSUploadService upload;
@@ -53,7 +52,6 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
 
     public SDSMultipartWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Find finder, final AttributesFinder attributes) {
         this.session = session;
-        this.nodeid = nodeid;
         this.finder = finder;
         this.attributes = attributes;
         this.upload = new SDSUploadService(session, nodeid);
@@ -62,7 +60,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     @Override
     public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String uploadToken = upload.start(file, status);
-        final MultipartUploadTokenOutputStream proxy = new MultipartUploadTokenOutputStream(session, nodeid, file, status, uploadToken);
+        final MultipartUploadTokenOutputStream proxy = new MultipartUploadTokenOutputStream(session, file, status, uploadToken);
         return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy, PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
             private final AtomicBoolean close = new AtomicBoolean();
 

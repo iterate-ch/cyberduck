@@ -28,5 +28,14 @@ public interface Quota {
 
         public final Long used;
         public final Long available;
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Space{");
+            sb.append("used=").append(used);
+            sb.append(", available=").append(available);
+            sb.append('}');
+            return sb.toString();
+        }
     }
 }
