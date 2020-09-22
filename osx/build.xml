@@ -28,7 +28,7 @@
 
     <property name="spotlight" value="${module}/spotlight"/>
 
-    <property name="app.runtime.system.min" value="10.8"/>
+    <property name="app.runtime.system.min" value="10.9"/>
 
     <property name="build.xcodeoptions.default"
               value="JAVA_HOME=${java.home} SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
