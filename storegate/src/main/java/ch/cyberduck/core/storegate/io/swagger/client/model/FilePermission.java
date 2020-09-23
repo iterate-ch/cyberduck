@@ -25,7 +25,10 @@ import io.swagger.annotations.ApiModelProperty;
  * File permission.
  */
 @ApiModel(description = "File permission.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class FilePermission {
   @JsonProperty("id")
   private String id = null;
@@ -33,97 +36,11 @@ public class FilePermission {
   @JsonProperty("isGroup")
   private Boolean isGroup = null;
 
-  /**
-   * The permission.
-   */
-  public enum PermissionEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_4(4),
-    
-    NUMBER_99(99),
-    
-    NUMBER_MINUS_1(-1);
-
-    private Integer value;
-
-    PermissionEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static PermissionEnum fromValue(String text) {
-      for (PermissionEnum b : PermissionEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("permission")
-  private PermissionEnum permission = null;
-
-  /**
-   * The permission.
-   */
-  public enum ParentPermissionEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_4(4),
-    
-    NUMBER_99(99),
-    
-    NUMBER_MINUS_1(-1);
-
-    private Integer value;
-
-    ParentPermissionEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static ParentPermissionEnum fromValue(String text) {
-      for (ParentPermissionEnum b : ParentPermissionEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
+  private Integer permission = null;
 
   @JsonProperty("parentPermission")
-  private ParentPermissionEnum parentPermission = null;
+  private Integer parentPermission = null;
 
   public FilePermission id(String id) {
     this.id = id;
@@ -161,39 +78,39 @@ public class FilePermission {
     this.isGroup = isGroup;
   }
 
-  public FilePermission permission(PermissionEnum permission) {
+  public FilePermission permission(Integer permission) {
     this.permission = permission;
     return this;
   }
 
    /**
-   * The permission.
+   * The permission. (0 &#x3D; NoAccess, 1 &#x3D; ReadOnly, 2 &#x3D; ReadWrite, 4 &#x3D; Synchronize, 99 &#x3D; FullControl, -1 &#x3D; None)
    * @return permission
   **/
-  @ApiModelProperty(value = "The permission.")
-  public PermissionEnum getPermission() {
+  @ApiModelProperty(value = "The permission. (0 = NoAccess, 1 = ReadOnly, 2 = ReadWrite, 4 = Synchronize, 99 = FullControl, -1 = None)")
+  public Integer getPermission() {
     return permission;
   }
 
-  public void setPermission(PermissionEnum permission) {
+  public void setPermission(Integer permission) {
     this.permission = permission;
   }
 
-  public FilePermission parentPermission(ParentPermissionEnum parentPermission) {
+  public FilePermission parentPermission(Integer parentPermission) {
     this.parentPermission = parentPermission;
     return this;
   }
 
    /**
-   * The permission.
+   * The permission. (0 &#x3D; NoAccess, 1 &#x3D; ReadOnly, 2 &#x3D; ReadWrite, 4 &#x3D; Synchronize, 99 &#x3D; FullControl, -1 &#x3D; None)
    * @return parentPermission
   **/
-  @ApiModelProperty(value = "The permission.")
-  public ParentPermissionEnum getParentPermission() {
+  @ApiModelProperty(value = "The permission. (0 = NoAccess, 1 = ReadOnly, 2 = ReadWrite, 4 = Synchronize, 99 = FullControl, -1 = None)")
+  public Integer getParentPermission() {
     return parentPermission;
   }
 
-  public void setParentPermission(ParentPermissionEnum parentPermission) {
+  public void setParentPermission(Integer parentPermission) {
     this.parentPermission = parentPermission;
   }
 

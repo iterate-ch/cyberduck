@@ -202,7 +202,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" imagePosition="only" alignment="left" id="29">
                             <behavior key="behavior" lightByContents="YES"/>
-                            <font key="font" metaFont="label"/>
+                            <font key="font" metaFont="system" size="10"/>
                         </buttonCell>
                     </button>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="87">
@@ -347,7 +347,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="buttonCell:43:image" imagePosition="only" alignment="left" id="43">
                                     <behavior key="behavior" lightByContents="YES"/>
-                                    <font key="font" metaFont="label"/>
+                                    <font key="font" metaFont="system" size="10"/>
                                 </buttonCell>
                             </button>
                             <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="44">

@@ -29,7 +29,10 @@ import org.joda.time.DateTime;
  * Information about the enhanced share.
  */
 @ApiModel(description = "Information about the enhanced share.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class Share {
   @JsonProperty("itemId")
   private String itemId = null;
@@ -40,47 +43,8 @@ public class Share {
   @JsonProperty("path")
   private String path = null;
 
-  /**
-   * Indicated the sharetype
-   */
-  public enum TypeEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_3(3);
-
-    private Integer value;
-
-    TypeEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static TypeEnum fromValue(String text) {
-      for (TypeEnum b : TypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("type")
-  private TypeEnum type = null;
+  private Integer type = null;
 
   @JsonProperty("id")
   private String id = null;
@@ -127,45 +91,8 @@ public class Share {
   @JsonProperty("bankIDContacts")
   private List<BankIDContact> bankIDContacts = null;
 
-  /**
-   * Share AuthMethod
-   */
-  public enum AuthMethodEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2);
-
-    private Integer value;
-
-    AuthMethodEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static AuthMethodEnum fromValue(String text) {
-      for (AuthMethodEnum b : AuthMethodEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("authMethod")
-  private AuthMethodEnum authMethod = null;
+  private Integer authMethod = null;
 
   @JsonProperty("allowOfficeOnline")
   private Boolean allowOfficeOnline = null;
@@ -227,21 +154,21 @@ public class Share {
     this.path = path;
   }
 
-  public Share type(TypeEnum type) {
+  public Share type(Integer type) {
     this.type = type;
     return this;
   }
 
    /**
-   * Indicated the sharetype
+   * Indicated the sharetype (0 &#x3D; Folder, 1 &#x3D; File, 2 &#x3D; Image, 3 &#x3D; Media)
    * @return type
   **/
-  @ApiModelProperty(value = "Indicated the sharetype")
-  public TypeEnum getType() {
+  @ApiModelProperty(value = "Indicated the sharetype (0 = Folder, 1 = File, 2 = Image, 3 = Media)")
+  public Integer getType() {
     return type;
   }
 
-  public void setType(TypeEnum type) {
+  public void setType(Integer type) {
     this.type = type;
   }
 
@@ -539,21 +466,21 @@ public class Share {
     this.bankIDContacts = bankIDContacts;
   }
 
-  public Share authMethod(AuthMethodEnum authMethod) {
+  public Share authMethod(Integer authMethod) {
     this.authMethod = authMethod;
     return this;
   }
 
    /**
-   * Share AuthMethod
+   * Share AuthMethod (0 &#x3D; None, 1 &#x3D; Password, 2 &#x3D; BankID)
    * @return authMethod
   **/
-  @ApiModelProperty(value = "Share AuthMethod")
-  public AuthMethodEnum getAuthMethod() {
+  @ApiModelProperty(value = "Share AuthMethod (0 = None, 1 = Password, 2 = BankID)")
+  public Integer getAuthMethod() {
     return authMethod;
   }
 
-  public void setAuthMethod(AuthMethodEnum authMethod) {
+  public void setAuthMethod(Integer authMethod) {
     this.authMethod = authMethod;
   }
 

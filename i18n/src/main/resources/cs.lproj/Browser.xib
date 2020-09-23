@@ -58,7 +58,7 @@
                                             <rect key="frame" x="-1" y="0.0" width="603" height="34"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                             <view key="contentView" id="dgO-pC-QOS">
-                                                <rect key="frame" x="1" y="1" width="601" height="32"/>
+                                                <rect key="frame" x="3" y="3" width="597" height="28"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9">
@@ -222,7 +222,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="buttonCell:48:image" imagePosition="only" alignment="left" id="48">
                                     <behavior key="behavior" lightByContents="YES"/>
-                                    <font key="font" metaFont="label"/>
+                                    <font key="font" metaFont="system" size="10"/>
                                 </buttonCell>
                             </button>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="49">
@@ -321,7 +321,7 @@
                         <action selector="createFolderButtonClicked:" target="-1" id="166"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Nové Šifrované úložiště…" keyEquivalent="N" id="6n9-Af-09P">
+                <menuItem title="Nové šifrované úložiště…" keyEquivalent="N" id="6n9-Af-09P">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                     <connections>
                         <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
@@ -411,10 +411,16 @@ CA
                         <action selector="revertFileButtonClicked:" target="-1" id="182"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Obnovit" id="7eU-SG-dx0">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="restoreFileButtonClicked:" target="-1" id="BbY-Jj-ck7"/>
+                    </connections>
+                </menuItem>
                 <menuItem isSeparatorItem="YES" id="87">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Lock Vault" keyEquivalent="l" id="oiv-b0-EWZ">
+                <menuItem title="Uzamknout úložiště" keyEquivalent="l" id="oiv-b0-EWZ">
                     <connections>
                         <action selector="lockUnlockEncryptedVaultButtonClicked:" target="-1" id="0Jf-FX-vuw"/>
                     </connections>

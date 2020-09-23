@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
+import ch.cyberduck.core.storegate.io.swagger.client.model.CampaignPrice;
 import ch.cyberduck.core.storegate.io.swagger.client.model.SalepackageProduct;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -26,7 +27,10 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class Salepackage {
   @JsonProperty("id")
   private String id = null;
@@ -57,6 +61,12 @@ public class Salepackage {
 
   @JsonProperty("isInclVAT")
   private Boolean isInclVAT = null;
+
+  @JsonProperty("campaignPrice")
+  private CampaignPrice campaignPrice = null;
+
+  @JsonProperty("campaignText")
+  private String campaignText = null;
 
   public Salepackage id(String id) {
     this.id = id;
@@ -238,6 +248,42 @@ public class Salepackage {
     this.isInclVAT = isInclVAT;
   }
 
+  public Salepackage campaignPrice(CampaignPrice campaignPrice) {
+    this.campaignPrice = campaignPrice;
+    return this;
+  }
+
+   /**
+   * 
+   * @return campaignPrice
+  **/
+  @ApiModelProperty(value = "")
+  public CampaignPrice getCampaignPrice() {
+    return campaignPrice;
+  }
+
+  public void setCampaignPrice(CampaignPrice campaignPrice) {
+    this.campaignPrice = campaignPrice;
+  }
+
+  public Salepackage campaignText(String campaignText) {
+    this.campaignText = campaignText;
+    return this;
+  }
+
+   /**
+   * 
+   * @return campaignText
+  **/
+  @ApiModelProperty(value = "")
+  public String getCampaignText() {
+    return campaignText;
+  }
+
+  public void setCampaignText(String campaignText) {
+    this.campaignText = campaignText;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -257,12 +303,14 @@ public class Salepackage {
         Objects.equals(this.sync, salepackage.sync) &&
         Objects.equals(this.bankID, salepackage.bankID) &&
         Objects.equals(this.currency, salepackage.currency) &&
-        Objects.equals(this.isInclVAT, salepackage.isInclVAT);
+        Objects.equals(this.isInclVAT, salepackage.isInclVAT) &&
+        Objects.equals(this.campaignPrice, salepackage.campaignPrice) &&
+        Objects.equals(this.campaignText, salepackage.campaignText);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, monthlyFee, storage, multi, backup, sync, bankID, currency, isInclVAT);
+    return Objects.hash(id, name, monthlyFee, storage, multi, backup, sync, bankID, currency, isInclVAT, campaignPrice, campaignText);
   }
 
 
@@ -281,6 +329,8 @@ public class Salepackage {
     sb.append("    bankID: ").append(toIndentedString(bankID)).append("\n");
     sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
     sb.append("    isInclVAT: ").append(toIndentedString(isInclVAT)).append("\n");
+    sb.append("    campaignPrice: ").append(toIndentedString(campaignPrice)).append("\n");
+    sb.append("    campaignText: ").append(toIndentedString(campaignText)).append("\n");
     sb.append("}");
     return sb.toString();
   }

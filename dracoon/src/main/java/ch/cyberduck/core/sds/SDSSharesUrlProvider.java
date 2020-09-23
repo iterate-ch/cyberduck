@@ -130,7 +130,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
             final Long fileid = Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()));
             if(nodeid.isEncrypted(file)) {
                 // get existing file key associated with the sharing user
-                final FileKey key = new NodesApi(session.getClient()).getUserFileKey(fileid, StringUtils.EMPTY);
+                final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(fileid, StringUtils.EMPTY);
                 final UserPrivateKey privateKey = new UserPrivateKey();
                 final UserKeyPairContainer keyPairContainer = session.keyPair();
                 privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());

@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NotImplementedException = System.NotImplementedException;
+using System.Reflection;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
@@ -104,6 +105,13 @@ namespace Ch.Cyberduck.Core.Preferences
 
         public override List systemLocales() => locales.systemLocales();
 
+        protected override void setDefaults()
+        {
+            SetJNAPath();
+
+            base.setDefaults();
+        }
+
         private void ValidatePreferences()
         {
             try
@@ -117,6 +125,18 @@ namespace Ch.Cyberduck.Core.Preferences
                     File.Move(ex.Filename, $"{ex.Filename}_{DateTime.Now:yyyyMMddHHmmssffff}");
                 }
             }
+        }
+
+        protected virtual void SetJNAPath()
+        {
+            string codeBase = Assembly.GetEntryAssembly().CodeBase;
+            UriBuilder uri = new UriBuilder(codeBase);
+            SetJNAPath(Path.GetDirectoryName(Uri.UnescapeDataString(uri.Path)));
+        }
+
+        protected void SetJNAPath(string assemblyPath)
+        {
+            java.lang.System.setProperty("jna.boot.library.path", assemblyPath);
         }
     }
 }

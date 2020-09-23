@@ -228,7 +228,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     @Override
     public void login(final Proxy proxy, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
         final SoftwareVersionData version = this.softwareVersion();
-        Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(version.getRestApiVersion());
+        final Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(version.getRestApiVersion());
         if(matcher.matches()) {
             if(new Version(matcher.group(1)).compareTo(new Version(PreferencesFactory.get().getProperty("sds.version.lts"))) < 0) {
                 throw new InteroperabilityException(
@@ -279,14 +279,14 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 break;
         }
         try {
-            configuration.addAll(new ConfigApi(client).getSystemSettings(StringUtils.EMPTY).getItems());
+            configuration.addAll(new ConfigApi(client).requestSystemSettings(StringUtils.EMPTY).getItems());
         }
         catch(ApiException e) {
             // Precondition: Right "Config Read" required.
             log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e)));
         }
         try {
-            final UserAccount account = new UserApi(client).getUserInfo(StringUtils.EMPTY, null, false);
+            final UserAccount account = new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated as user %s", account));
             }
@@ -295,7 +295,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     credentials.setUsername(account.getLogin());
             }
             userAccount.set(new UserAccountWrapper(account));
-            keyPair.set(new UserApi(client).getUserKeyPair(StringUtils.EMPTY));
+            keyPair.set(new UserApi(client).requestUserKeyPair(StringUtils.EMPTY));
             final UserPrivateKey privateKey = new UserPrivateKey();
             final UserKeyPairContainer keyPairContainer = keyPair.get();
             privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
@@ -319,7 +319,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService().map(e)));
         }
         try {
-            softwareVersion.set(new PublicApi(client).getSoftwareVersion(null));
+            softwareVersion.set(new PublicApi(client).requestSoftwareVersion(null));
         }
         catch(ApiException e) {
             log.warn(String.format("Ignore failure reading version. %s", new SDSExceptionMappingService().map(e)));
@@ -353,7 +353,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserAccountWrapper userAccount() throws BackgroundException {
         if(this.userAccount.get() == null) {
             try {
-                userAccount.set(new UserAccountWrapper(new UserApi(client).getUserInfo(StringUtils.EMPTY, null, false)));
+                userAccount.set(new UserAccountWrapper(new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null)));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user info. %s", e.getMessage()));
@@ -366,7 +366,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserKeyPairContainer keyPair() throws BackgroundException {
         if(keyPair.get() == null) {
             try {
-                keyPair.set(new UserApi(client).getUserKeyPair(StringUtils.EMPTY));
+                keyPair.set(new UserApi(client).requestUserKeyPair(StringUtils.EMPTY));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
@@ -379,7 +379,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public SoftwareVersionData softwareVersion() throws BackgroundException {
         if(softwareVersion.get() == null) {
             try {
-                softwareVersion.set(new PublicApi(client).getSoftwareVersion(null));
+                softwareVersion.set(new PublicApi(client).requestSoftwareVersion(null));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
@@ -410,7 +410,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(type == Upload.class) {
             if(PreferencesFactory.get().getBoolean("sds.upload.s3.enable")) {
                 if(configuration.stream().anyMatch(entry -> "use_s3_storage".equals(entry.getKey()) && String.valueOf(true).equals(entry.getValue()))) {
-                    return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3WriteFeature(this)));
+                    return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this));
                 }
             }
             return (T) new DefaultUploadFeature(new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid)));
@@ -435,6 +435,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == AttributesFinder.class) {
             return (T) new SDSAttributesFinderFeature(this, nodeid);
+        }
+        if(type == Timestamp.class) {
+            return (T) new SDSTimestampFeature(this, nodeid);
         }
         if(type == Move.class) {
             return (T) new SDSDelegatingMoveFeature(this, nodeid, new SDSMoveFeature(this, nodeid));

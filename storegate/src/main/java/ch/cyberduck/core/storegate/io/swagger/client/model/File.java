@@ -13,94 +13,38 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-/*
- * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
-
-import org.joda.time.DateTime;
-
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.joda.time.DateTime;
 
 /**
  * A resource item.
  */
 @ApiModel(description = "A resource item.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:29:58.296+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class File {
   @JsonProperty("versions")
   private Integer versions = null;
 
-  @JsonProperty("flags")
-  private Integer flags = null;
-
-  /**
-   * Included if the item supports permission
-   */
-  public enum PermissionEnum {
-    NUMBER_0(0),
-
-    NUMBER_1(1),
-
-    NUMBER_2(2),
-
-    NUMBER_4(4),
-
-    NUMBER_99(99),
-
-    NUMBER_MINUS_1(-1);
-
-    private Integer value;
-
-    PermissionEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static PermissionEnum fromValue(String text) {
-      for (PermissionEnum b : PermissionEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("permission")
-  private PermissionEnum permission = null;
+  private Integer permission = null;
 
   @JsonProperty("md5")
   private String md5 = null;
 
   @JsonProperty("path")
   private String path = null;
+
+  @JsonProperty("createdById")
+  private String createdById = null;
 
   @JsonProperty("id")
   private String id = null;
@@ -120,56 +64,11 @@ public class File {
   @JsonProperty("uploaded")
   private DateTime uploaded = null;
 
-    /**
-     * Indicates the item type.
-     */
-    public enum FlagsEnum {
-        None(0),
+  @JsonProperty("accessed")
+  private DateTime accessed = null;
 
-        Folder(1),
-
-        Shared(2),
-
-        Locked(4),
-
-        Image(8),
-
-        Streamable(16),
-
-        Video(32),
-
-        Doc(64),
-
-        StreamableDoc(128),
-
-        Hidden(512);
-
-        private Integer value;
-
-        FlagsEnum(Integer value) {
-            this.value = value;
-        }
-
-        @JsonValue
-        public Integer getValue() {
-            return value;
-        }
-
-        @Override
-        public String toString() {
-            return String.valueOf(value);
-        }
-
-        @JsonCreator
-        public static FlagsEnum fromValue(String text) {
-            for(FlagsEnum b : FlagsEnum.values()) {
-                if(String.valueOf(b.value).equals(text)) {
-                    return b;
-                }
-            }
-            return null;
-        }
-    }
+  @JsonProperty("flags")
+  private Integer flags = null;
 
   @JsonProperty("ownerId")
   private String ownerId = null;
@@ -192,21 +91,21 @@ public class File {
     this.versions = versions;
   }
 
-  public File permission(PermissionEnum permission) {
+  public File permission(Integer permission) {
     this.permission = permission;
     return this;
   }
 
    /**
-   * Included if the item supports permission
+   * Included if the item supports permission (0 &#x3D; NoAccess, 1 &#x3D; ReadOnly, 2 &#x3D; ReadWrite, 4 &#x3D; Synchronize, 99 &#x3D; FullControl, -1 &#x3D; None)
    * @return permission
   **/
-  @ApiModelProperty(value = "Included if the item supports permission")
-  public PermissionEnum getPermission() {
+  @ApiModelProperty(value = "Included if the item supports permission (0 = NoAccess, 1 = ReadOnly, 2 = ReadWrite, 4 = Synchronize, 99 = FullControl, -1 = None)")
+  public Integer getPermission() {
     return permission;
   }
 
-  public void setPermission(PermissionEnum permission) {
+  public void setPermission(Integer permission) {
     this.permission = permission;
   }
 
@@ -216,10 +115,10 @@ public class File {
   }
 
    /**
-   *
+   * Not Checksum. Only avaialable for SyncClient
    * @return md5
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Not Checksum. Only avaialable for SyncClient")
   public String getMd5() {
     return md5;
   }
@@ -244,6 +143,24 @@ public class File {
 
   public void setPath(String path) {
     this.path = path;
+  }
+
+  public File createdById(String createdById) {
+    this.createdById = createdById;
+    return this;
+  }
+
+   /**
+   * The created by id.
+   * @return createdById
+  **/
+  @ApiModelProperty(value = "The created by id.")
+  public String getCreatedById() {
+    return createdById;
+  }
+
+  public void setCreatedById(String createdById) {
+    this.createdById = createdById;
   }
 
   public File id(String id) {
@@ -354,16 +271,34 @@ public class File {
     this.uploaded = uploaded;
   }
 
+  public File accessed(DateTime accessed) {
+    this.accessed = accessed;
+    return this;
+  }
+
+   /**
+   * The date and time the item was last accessed.
+   * @return accessed
+  **/
+  @ApiModelProperty(value = "The date and time the item was last accessed.")
+  public DateTime getAccessed() {
+    return accessed;
+  }
+
+  public void setAccessed(DateTime accessed) {
+    this.accessed = accessed;
+  }
+
   public File flags(Integer flags) {
     this.flags = flags;
     return this;
   }
 
    /**
-   * Indicates the item type.
+   * Indicates the item type. (0 &#x3D; None, 1 &#x3D; Folder, 2 &#x3D; Shared, 4 &#x3D; Locked, 8 &#x3D; Image, 16 &#x3D; Streamable, 32 &#x3D; Video, 64 &#x3D; Doc, 128 &#x3D; StreamableDoc, 256 &#x3D; HasThumbnail, 512 &#x3D; Hidden, 1024 &#x3D; Favorite)
    * @return flags
   **/
-  @ApiModelProperty(value = "Indicates the item type.")
+  @ApiModelProperty(value = "Indicates the item type. (0 = None, 1 = Folder, 2 = Shared, 4 = Locked, 8 = Image, 16 = Streamable, 32 = Video, 64 = Doc, 128 = StreamableDoc, 256 = HasThumbnail, 512 = Hidden, 1024 = Favorite)")
   public Integer getFlags() {
     return flags;
   }
@@ -378,10 +313,10 @@ public class File {
   }
 
    /**
-   * The owner.
+   * The owner id.
    * @return ownerId
   **/
-  @ApiModelProperty(value = "The owner.")
+  @ApiModelProperty(value = "The owner id.")
   public String getOwnerId() {
     return ownerId;
   }
@@ -392,49 +327,53 @@ public class File {
 
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    File resource = (File) o;
-    return Objects.equals(this.versions, resource.versions) &&
-        Objects.equals(this.permission, resource.permission) &&
-        Objects.equals(this.md5, resource.md5) &&
-        Objects.equals(this.path, resource.path) &&
-        Objects.equals(this.id, resource.id) &&
-        Objects.equals(this.name, resource.name) &&
-        Objects.equals(this.size, resource.size) &&
-        Objects.equals(this.created, resource.created) &&
-        Objects.equals(this.modified, resource.modified) &&
-        Objects.equals(this.uploaded, resource.uploaded) &&
-        Objects.equals(this.flags, resource.flags) &&
-        Objects.equals(this.ownerId, resource.ownerId);
+    File file = (File) o;
+    return Objects.equals(this.versions, file.versions) &&
+        Objects.equals(this.permission, file.permission) &&
+        Objects.equals(this.md5, file.md5) &&
+        Objects.equals(this.path, file.path) &&
+        Objects.equals(this.createdById, file.createdById) &&
+        Objects.equals(this.id, file.id) &&
+        Objects.equals(this.name, file.name) &&
+        Objects.equals(this.size, file.size) &&
+        Objects.equals(this.created, file.created) &&
+        Objects.equals(this.modified, file.modified) &&
+        Objects.equals(this.uploaded, file.uploaded) &&
+        Objects.equals(this.accessed, file.accessed) &&
+        Objects.equals(this.flags, file.flags) &&
+        Objects.equals(this.ownerId, file.ownerId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(versions, permission, md5, path, id, name, size, created, modified, uploaded, flags, ownerId);
+    return Objects.hash(versions, permission, md5, path, createdById, id, name, size, created, modified, uploaded, accessed, flags, ownerId);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Resource {\n");
-
+    sb.append("class File {\n");
+    
     sb.append("    versions: ").append(toIndentedString(versions)).append("\n");
     sb.append("    permission: ").append(toIndentedString(permission)).append("\n");
     sb.append("    md5: ").append(toIndentedString(md5)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
+    sb.append("    createdById: ").append(toIndentedString(createdById)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    size: ").append(toIndentedString(size)).append("\n");
     sb.append("    created: ").append(toIndentedString(created)).append("\n");
     sb.append("    modified: ").append(toIndentedString(modified)).append("\n");
     sb.append("    uploaded: ").append(toIndentedString(uploaded)).append("\n");
+    sb.append("    accessed: ").append(toIndentedString(accessed)).append("\n");
     sb.append("    flags: ").append(toIndentedString(flags)).append("\n");
     sb.append("    ownerId: ").append(toIndentedString(ownerId)).append("\n");
     sb.append("}");
@@ -445,7 +384,7 @@ public class File {
    * Convert the given object to string with each line indented by 4 spaces
    * (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

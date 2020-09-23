@@ -53,6 +53,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
         try {
             if(containerService.isContainer(folder)) {
                 final CreateRoomRequest roomRequest = new CreateRoomRequest();
+                roomRequest.setParentId(null);
                 final UserAccountWrapper user = session.userAccount();
                 roomRequest.addAdminIdsItem(user.getId());
                 roomRequest.setAdminGroupIds(null);

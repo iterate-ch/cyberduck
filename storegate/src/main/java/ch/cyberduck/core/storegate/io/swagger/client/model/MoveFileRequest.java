@@ -25,7 +25,10 @@ import io.swagger.annotations.ApiModelProperty;
  * A MoveRequest object
  */
 @ApiModel(description = "A MoveRequest object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class MoveFileRequest {
   @JsonProperty("parentID")
   private String parentID = null;
@@ -33,45 +36,8 @@ public class MoveFileRequest {
   @JsonProperty("name")
   private String name = null;
 
-  /**
-   * Move mode
-   */
-  public enum ModeEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2);
-
-    private Integer value;
-
-    ModeEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static ModeEnum fromValue(String text) {
-      for (ModeEnum b : ModeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("mode")
-  private ModeEnum mode = null;
+  private Integer mode = null;
 
   public MoveFileRequest parentID(String parentID) {
     this.parentID = parentID;
@@ -109,21 +75,21 @@ public class MoveFileRequest {
     this.name = name;
   }
 
-  public MoveFileRequest mode(ModeEnum mode) {
+  public MoveFileRequest mode(Integer mode) {
     this.mode = mode;
     return this;
   }
 
    /**
-   * Move mode
+   * Move mode (0 &#x3D; None, 1 &#x3D; Overwrite, 2 &#x3D; KeepBoth)
    * @return mode
   **/
-  @ApiModelProperty(value = "Move mode")
-  public ModeEnum getMode() {
+  @ApiModelProperty(value = "Move mode (0 = None, 1 = Overwrite, 2 = KeepBoth)")
+  public Integer getMode() {
     return mode;
   }
 
-  public void setMode(ModeEnum mode) {
+  public void setMode(Integer mode) {
     this.mode = mode;
   }
 

@@ -27,7 +27,10 @@ import org.joda.time.DateTime;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class Invoice {
   @JsonProperty("customerNumber")
   private String customerNumber = null;
@@ -59,49 +62,8 @@ public class Invoice {
   @JsonProperty("paymentPeriodId")
   private String paymentPeriodId = null;
 
-  /**
-   * 
-   */
-  public enum StatusEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_3(3),
-    
-    NUMBER_4(4);
-
-    private Integer value;
-
-    StatusEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static StatusEnum fromValue(String text) {
-      for (StatusEnum b : StatusEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("status")
-  private StatusEnum status = null;
+  private Integer status = null;
 
   @JsonProperty("totalAmountInclVAT")
   private Double totalAmountInclVAT = null;
@@ -289,21 +251,21 @@ public class Invoice {
     this.paymentPeriodId = paymentPeriodId;
   }
 
-  public Invoice status(StatusEnum status) {
+  public Invoice status(Integer status) {
     this.status = status;
     return this;
   }
 
    /**
-   * 
+   *  (0 &#x3D; None, 1 &#x3D; Unpayed, 2 &#x3D; Free, 3 &#x3D; Payed, 4 &#x3D; Erased)
    * @return status
   **/
-  @ApiModelProperty(value = "")
-  public StatusEnum getStatus() {
+  @ApiModelProperty(value = " (0 = None, 1 = Unpayed, 2 = Free, 3 = Payed, 4 = Erased)")
+  public Integer getStatus() {
     return status;
   }
 
-  public void setStatus(StatusEnum status) {
+  public void setStatus(Integer status) {
     this.status = status;
   }
 

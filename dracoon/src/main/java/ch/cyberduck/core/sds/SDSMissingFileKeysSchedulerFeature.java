@@ -88,8 +88,8 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Request a list of missing file keys for file %s", file));
                 }
-                final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).missingFileKeys(StringUtils.EMPTY,
-                    fileId, null, null, null, null);
+                final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
+                    null, null, null, fileId, null, null);
                 final Map<Long, UserUserPublicKey> publicKeys =
                     missingKeys.getUsers().stream().collect(Collectors.toMap(UserUserPublicKey::getId, Function.identity()));
                 final Map<Long, FileFileKeys> files =

@@ -175,6 +175,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ValidateDelete += View_ValidateDelete;
             View.RevertFile += View_RevertFile;
             View.ValidateRevertFile += View_ValidateRevertFile;
+            View.RestoreFile += View_RestoreFile;
+            View.ValidateRestoreFile += View_ValidateRestoreFile;
             View.LockUnlockVault += View_LockUnlockVault;
             View.ValidateLockUnlockVault += View_ValidateLockUnlockVault;
             View.GetArchives += View_GetArchives;
@@ -1131,6 +1133,15 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             return false;
         }
+        private bool View_ValidateRestoreFile()
+        {
+            if (IsMounted() && SelectedPaths.Count == 1)
+            {
+                return Session.getFeature(typeof(Restore)) != null &&
+                    ((Restore) Session.getFeature(typeof(Restore))).isRestorable(SelectedPath);
+            }
+            return false;
+        }
         private bool View_ValidateLockUnlockVault()
         {
             if (IsBrowser() && IsMounted() && !PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect"))
@@ -1158,6 +1169,16 @@ namespace Ch.Cyberduck.Ui.Controller
         private void RevertPaths(IList<Path> files)
         {
             Background(new RevertAction(this, files));
+        }
+
+        private void View_RestoreFile()
+        {
+            RestorePaths(SelectedPaths);
+        }
+
+        private void RestorePaths(IList<Path> files)
+        {
+            Background(new RestoreAction(this, files));
         }
 
         private void View_ToggleBookmarks()
@@ -3529,18 +3550,41 @@ namespace Ch.Cyberduck.Ui.Controller
             private class InnerRevertWorker : RevertWorker
             {
                 private readonly BrowserController _controller;
-                private readonly IList<Path> _files;
 
                 public InnerRevertWorker(BrowserController controller, IList<Path> files)
                     : base(Utils.ConvertToJavaList(files))
                 {
                     _controller = controller;
-                    _files = files;
                 }
 
                 public override void cleanup(object result)
                 {
                     IList<Path> files = (IList<Path>) Utils.ConvertFromJavaList<Path>((List) result);
+                    _controller.Reload(_controller.Workdir, files, files);
+                }
+            }
+        }
+
+        private class RestoreAction : WorkerBackgroundAction
+        {
+            public RestoreAction(BrowserController controller, IList<Path> files)
+                : base(controller, controller.Session, new InnerRestoreWorker(controller, files))
+            {
+            }
+
+            private class InnerRestoreWorker : RestoreWorker
+            {
+                private readonly BrowserController _controller;
+
+                public InnerRestoreWorker(BrowserController controller, IList<Path> files)
+                    : base(LoginCallbackFactory.get(controller), Utils.ConvertToJavaList(files))
+                {
+                    _controller = controller;
+                }
+
+                public override void cleanup(object result)
+                {
+                    IList<Path> files = (IList<Path>)Utils.ConvertFromJavaList<Path>((List)result);
                     _controller.Reload(_controller.Workdir, files, files);
                 }
             }
@@ -3612,7 +3656,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object vault)
                 {
-                    _controller.Reload((Path)vault, new HashSet<Path>(){(Path)vault}, new List<Path>(), true);
+                    if (vault != null) {
+                        _controller.Reload((Path)vault, new HashSet<Path>(){(Path)vault}, new List<Path>(), true);
+                    }
                 }
             }
         }
@@ -3638,7 +3684,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object vault)
                 {
-                    _controller.Reload(((Vault)vault).getHome(), new HashSet<Path>(){ ((Vault)vault).getHome()}, new List<Path>(), true);
+                    if (vault != null) {
+                        _controller.Reload(((Vault)vault).getHome(), new HashSet<Path>(){ ((Vault)vault).getHome()}, new List<Path>(), true);
+                    }
                 }
             }
         }

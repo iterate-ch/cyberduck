@@ -10,9 +10,11 @@ import javax.ws.rs.core.GenericType;
 
 import ch.cyberduck.core.storegate.io.swagger.client.model.CopyFileRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.CreateFolderRequest;
+import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileContents;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileVersion;
 import ch.cyberduck.core.storegate.io.swagger.client.model.MoveFileRequest;
+import ch.cyberduck.core.storegate.io.swagger.client.model.RecentGroupedContents;
 import ch.cyberduck.core.storegate.io.swagger.client.model.SearchFileContents;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateFilePropertiesRequest;
 
@@ -21,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
 public class FilesApi {
   private ApiClient apiClient;
 
@@ -46,10 +48,10 @@ public class FilesApi {
    * 
    * @param id The id of the reaource to copy (required)
    * @param copyFileRequest The request data (required)
-   * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
+   * @return File
    * @throws ApiException if fails to make API call
    */
-  public ch.cyberduck.core.storegate.io.swagger.client.model.File filesCopy(String id, CopyFileRequest copyFileRequest) throws ApiException {
+  public File filesCopy(String id, CopyFileRequest copyFileRequest) throws ApiException {
     return filesCopyWithHttpInfo(id, copyFileRequest).getData();
       }
 
@@ -58,10 +60,10 @@ public class FilesApi {
    * 
    * @param id The id of the reaource to copy (required)
    * @param copyFileRequest The request data (required)
-   * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
+   * @return ApiResponse&lt;File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> filesCopyWithHttpInfo(String id, CopyFileRequest copyFileRequest) throws ApiException {
+  public ApiResponse<File> filesCopyWithHttpInfo(String id, CopyFileRequest copyFileRequest) throws ApiException {
     Object localVarPostBody = copyFileRequest;
     
     // verify the required parameter 'id' is set
@@ -98,17 +100,17 @@ public class FilesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File>() {};
+    GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Creates a new file of type folder.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param createFolderRequest createFolderRequest (required)
-   * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
+   * @return File
    * @throws ApiException if fails to make API call
    */
-  public ch.cyberduck.core.storegate.io.swagger.client.model.File filesCreateFolder(CreateFolderRequest createFolderRequest) throws ApiException {
+  public File filesCreateFolder(CreateFolderRequest createFolderRequest) throws ApiException {
     return filesCreateFolderWithHttpInfo(createFolderRequest).getData();
       }
 
@@ -116,10 +118,10 @@ public class FilesApi {
    * Creates a new file of type folder.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param createFolderRequest createFolderRequest (required)
-   * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
+   * @return ApiResponse&lt;File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> filesCreateFolderWithHttpInfo(CreateFolderRequest createFolderRequest) throws ApiException {
+  public ApiResponse<File> filesCreateFolderWithHttpInfo(CreateFolderRequest createFolderRequest) throws ApiException {
     Object localVarPostBody = createFolderRequest;
     
     // verify the required parameter 'createFolderRequest' is set
@@ -150,7 +152,7 @@ public class FilesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File>() {};
+    GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
@@ -272,14 +274,15 @@ public class FilesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression \&quot;Name desc\&quot;  is acceptable Name, Created, Modified, Size (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param includeHidden Include hidden folders and files (required)
    * @param includeParent Include parent in the response (File) if set to true (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
    * @return FileContents
    * @throws ApiException if fails to make API call
    */
-  public FileContents filesGet(String path, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent) throws ApiException {
-    return filesGetWithHttpInfo(path, pageIndex, pageSize, sortExpression, filter, includeHidden, includeParent).getData();
+  public FileContents filesGet(String path, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent, Boolean sortTogether) throws ApiException {
+    return filesGetWithHttpInfo(path, pageIndex, pageSize, sortExpression, filter, includeHidden, includeParent, sortTogether).getData();
       }
 
   /**
@@ -289,13 +292,14 @@ public class FilesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression \&quot;Name desc\&quot;  is acceptable Name, Created, Modified, Size (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param includeHidden Include hidden folders and files (required)
    * @param includeParent Include parent in the response (File) if set to true (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
    * @return ApiResponse&lt;FileContents&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<FileContents> filesGetWithHttpInfo(String path, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent) throws ApiException {
+  public ApiResponse<FileContents> filesGetWithHttpInfo(String path, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent, Boolean sortTogether) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'path' is set
@@ -348,6 +352,7 @@ public class FilesApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "includeHidden", includeHidden));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "includeParent", includeParent));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortTogether", sortTogether));
 
     
     
@@ -373,14 +378,15 @@ public class FilesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression \&quot;Name desc\&quot;  is acceptable Name, Created, Modified, Size (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param includeHidden Include hidden folders and files (required)
    * @param includeParent Include parent in the response (File) if set to true (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
    * @return FileContents
    * @throws ApiException if fails to make API call
    */
-  public FileContents filesGetById(String id, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent) throws ApiException {
-    return filesGetByIdWithHttpInfo(id, pageIndex, pageSize, sortExpression, filter, includeHidden, includeParent).getData();
+  public FileContents filesGetById(String id, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent, Boolean sortTogether) throws ApiException {
+    return filesGetByIdWithHttpInfo(id, pageIndex, pageSize, sortExpression, filter, includeHidden, includeParent, sortTogether).getData();
       }
 
   /**
@@ -390,13 +396,14 @@ public class FilesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression \&quot;Name desc\&quot;  is acceptable Name, Created, Modified, Size (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, Video&#x3D;4, Media&#x3D;5, Files&#x3D;6 (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param includeHidden Include hidden folders and files (required)
    * @param includeParent Include parent in the response (File) if set to true (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
    * @return ApiResponse&lt;FileContents&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<FileContents> filesGetByIdWithHttpInfo(String id, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent) throws ApiException {
+  public ApiResponse<FileContents> filesGetByIdWithHttpInfo(String id, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeHidden, Boolean includeParent, Boolean sortTogether) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'id' is set
@@ -449,6 +456,7 @@ public class FilesApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "includeHidden", includeHidden));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "includeParent", includeParent));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortTogether", sortTogether));
 
     
     
@@ -525,10 +533,10 @@ public class FilesApi {
    * 
    * @param id The id of the reaource (required)
    * @param numberOfPhotos Number of photos (optional)
-   * @return List&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
+   * @return List&lt;File&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<ch.cyberduck.core.storegate.io.swagger.client.model.File> filesGetRandomPhotos(String id, Integer numberOfPhotos) throws ApiException {
+  public List<File> filesGetRandomPhotos(String id, Integer numberOfPhotos) throws ApiException {
     return filesGetRandomPhotosWithHttpInfo(id, numberOfPhotos).getData();
       }
 
@@ -537,10 +545,10 @@ public class FilesApi {
    * 
    * @param id The id of the reaource (required)
    * @param numberOfPhotos Number of photos (optional)
-   * @return ApiResponse&lt;List&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;&gt;
+   * @return ApiResponse&lt;List&lt;File&gt;&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<List<ch.cyberduck.core.storegate.io.swagger.client.model.File>> filesGetRandomPhotosWithHttpInfo(String id, Integer numberOfPhotos) throws ApiException {
+  public ApiResponse<List<File>> filesGetRandomPhotosWithHttpInfo(String id, Integer numberOfPhotos) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'id' is set
@@ -573,15 +581,15 @@ public class FilesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<List<ch.cyberduck.core.storegate.io.swagger.client.model.File>> localVarReturnType = new GenericType<List<ch.cyberduck.core.storegate.io.swagger.client.model.File>>() {};
+    GenericType<List<File>> localVarReturnType = new GenericType<List<File>>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * This lists recent contents in entire space.
+   * This lists grouped recent contents from entire space.
    * 
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param sortExpression Sort expression (optional)
    * @param reversed Reverse list with oldest first (Obsolete, only used if sortExpression is empty) (optional)
    * @return SearchFileContents
@@ -592,11 +600,11 @@ public class FilesApi {
       }
 
   /**
-   * This lists recent contents in entire space.
+   * This lists grouped recent contents from entire space.
    * 
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
-   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
    * @param sortExpression Sort expression (optional)
    * @param reversed Reverse list with oldest first (Obsolete, only used if sortExpression is empty) (optional)
    * @return ApiResponse&lt;SearchFileContents&gt;
@@ -649,6 +657,89 @@ public class FilesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<SearchFileContents> localVarReturnType = new GenericType<SearchFileContents>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * This lists recent grouped contents from the entire space.
+   * 
+   * @param pageIndex Index of page (required)
+   * @param pageSize Max rows per page (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
+   * @param groupBy Day, Month (0 &#x3D; Day, 1 &#x3D; Month) (required)
+   * @param sortExpression Sort expression (optional)
+   * @param reversed Reverse list with oldest first (Obsolete, only used if sortExpression is empty) (optional)
+   * @return RecentGroupedContents
+   * @throws ApiException if fails to make API call
+   */
+  public RecentGroupedContents filesGetRecentGroupes(Integer pageIndex, Integer pageSize, Integer filter, Integer groupBy, String sortExpression, Boolean reversed) throws ApiException {
+    return filesGetRecentGroupesWithHttpInfo(pageIndex, pageSize, filter, groupBy, sortExpression, reversed).getData();
+      }
+
+  /**
+   * This lists recent grouped contents from the entire space.
+   * 
+   * @param pageIndex Index of page (required)
+   * @param pageSize Max rows per page (required)
+   * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (0 &#x3D; All, 1 &#x3D; Folder, 2 &#x3D; Image, 3 &#x3D; Doc, 4 &#x3D; Video, 5 &#x3D; Media, 6 &#x3D; Files) (required)
+   * @param groupBy Day, Month (0 &#x3D; Day, 1 &#x3D; Month) (required)
+   * @param sortExpression Sort expression (optional)
+   * @param reversed Reverse list with oldest first (Obsolete, only used if sortExpression is empty) (optional)
+   * @return ApiResponse&lt;RecentGroupedContents&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<RecentGroupedContents> filesGetRecentGroupesWithHttpInfo(Integer pageIndex, Integer pageSize, Integer filter, Integer groupBy, String sortExpression, Boolean reversed) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // verify the required parameter 'pageIndex' is set
+    if (pageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'pageIndex' when calling filesGetRecentGroupes");
+    }
+    
+    // verify the required parameter 'pageSize' is set
+    if (pageSize == null) {
+      throw new ApiException(400, "Missing the required parameter 'pageSize' when calling filesGetRecentGroupes");
+    }
+    
+    // verify the required parameter 'filter' is set
+    if (filter == null) {
+      throw new ApiException(400, "Missing the required parameter 'filter' when calling filesGetRecentGroupes");
+    }
+    
+    // verify the required parameter 'groupBy' is set
+    if (groupBy == null) {
+      throw new ApiException(400, "Missing the required parameter 'groupBy' when calling filesGetRecentGroupes");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4/files/recent/groups";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageIndex", pageIndex));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageSize", pageSize));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "groupBy", groupBy));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortExpression", sortExpression));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "reversed", reversed));
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<RecentGroupedContents> localVarReturnType = new GenericType<RecentGroupedContents>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
@@ -708,10 +799,10 @@ public class FilesApi {
    * Gets a file by id
    * 
    * @param id  (required)
-   * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
+   * @return File
    * @throws ApiException if fails to make API call
    */
-  public ch.cyberduck.core.storegate.io.swagger.client.model.File filesGet_0(String id) throws ApiException {
+  public File filesGet_0(String id) throws ApiException {
     return filesGet_0WithHttpInfo(id).getData();
       }
 
@@ -719,10 +810,10 @@ public class FilesApi {
    * Gets a file by id
    * 
    * @param id  (required)
-   * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
+   * @return ApiResponse&lt;File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> filesGet_0WithHttpInfo(String id) throws ApiException {
+  public ApiResponse<File> filesGet_0WithHttpInfo(String id) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'id' is set
@@ -754,17 +845,17 @@ public class FilesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File>() {};
+    GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Gets a file by path.
    * 
    * @param path The path to the file to get, this path should be URL encoded (required)
-   * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
+   * @return File
    * @throws ApiException if fails to make API call
    */
-  public ch.cyberduck.core.storegate.io.swagger.client.model.File filesGet_1(String path) throws ApiException {
+  public File filesGet_1(String path) throws ApiException {
     return filesGet_1WithHttpInfo(path).getData();
       }
 
@@ -772,10 +863,10 @@ public class FilesApi {
    * Gets a file by path.
    * 
    * @param path The path to the file to get, this path should be URL encoded (required)
-   * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
+   * @return ApiResponse&lt;File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> filesGet_1WithHttpInfo(String path) throws ApiException {
+  public ApiResponse<File> filesGet_1WithHttpInfo(String path) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'path' is set
@@ -807,7 +898,7 @@ public class FilesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File>() {};
+    GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
@@ -877,11 +968,12 @@ public class FilesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression Name, Created, Modified, Accessed (desc/asc) (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
    * @return SearchFileContents
    * @throws ApiException if fails to make API call
    */
-  public SearchFileContents filesSearch(String searchCriteria, String searchRoot, Integer pageIndex, Integer pageSize, String sortExpression) throws ApiException {
-    return filesSearchWithHttpInfo(searchCriteria, searchRoot, pageIndex, pageSize, sortExpression).getData();
+  public SearchFileContents filesSearch(String searchCriteria, String searchRoot, Integer pageIndex, Integer pageSize, String sortExpression, Boolean sortTogether) throws ApiException {
+    return filesSearchWithHttpInfo(searchCriteria, searchRoot, pageIndex, pageSize, sortExpression, sortTogether).getData();
       }
 
   /**
@@ -892,10 +984,11 @@ public class FilesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression Name, Created, Modified, Accessed (desc/asc) (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
    * @return ApiResponse&lt;SearchFileContents&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<SearchFileContents> filesSearchWithHttpInfo(String searchCriteria, String searchRoot, Integer pageIndex, Integer pageSize, String sortExpression) throws ApiException {
+  public ApiResponse<SearchFileContents> filesSearchWithHttpInfo(String searchCriteria, String searchRoot, Integer pageIndex, Integer pageSize, String sortExpression, Boolean sortTogether) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'searchCriteria' is set
@@ -936,6 +1029,95 @@ public class FilesApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageIndex", pageIndex));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageSize", pageSize));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortExpression", sortExpression));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortTogether", sortTogether));
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<SearchFileContents> localVarReturnType = new GenericType<SearchFileContents>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Search contents, this can list contents in a specific folder or all files in entire space.
+   * 
+   * @param id The id of the reaource to search in (required)
+   * @param searchCriteria Searchstring (required)
+   * @param pageIndex Index of page (required)
+   * @param pageSize Max rows per page (required)
+   * @param sortExpression Name, Created, Modified, Accessed (desc/asc) (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
+   * @return SearchFileContents
+   * @throws ApiException if fails to make API call
+   */
+  public SearchFileContents filesSearchById(String id, String searchCriteria, Integer pageIndex, Integer pageSize, String sortExpression, Boolean sortTogether) throws ApiException {
+    return filesSearchByIdWithHttpInfo(id, searchCriteria, pageIndex, pageSize, sortExpression, sortTogether).getData();
+      }
+
+  /**
+   * Search contents, this can list contents in a specific folder or all files in entire space.
+   * 
+   * @param id The id of the reaource to search in (required)
+   * @param searchCriteria Searchstring (required)
+   * @param pageIndex Index of page (required)
+   * @param pageSize Max rows per page (required)
+   * @param sortExpression Name, Created, Modified, Accessed (desc/asc) (required)
+   * @param sortTogether Set to true to sort folders and files together (optional)
+   * @return ApiResponse&lt;SearchFileContents&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<SearchFileContents> filesSearchByIdWithHttpInfo(String id, String searchCriteria, Integer pageIndex, Integer pageSize, String sortExpression, Boolean sortTogether) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling filesSearchById");
+    }
+    
+    // verify the required parameter 'searchCriteria' is set
+    if (searchCriteria == null) {
+      throw new ApiException(400, "Missing the required parameter 'searchCriteria' when calling filesSearchById");
+    }
+    
+    // verify the required parameter 'pageIndex' is set
+    if (pageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'pageIndex' when calling filesSearchById");
+    }
+    
+    // verify the required parameter 'pageSize' is set
+    if (pageSize == null) {
+      throw new ApiException(400, "Missing the required parameter 'pageSize' when calling filesSearchById");
+    }
+    
+    // verify the required parameter 'sortExpression' is set
+    if (sortExpression == null) {
+      throw new ApiException(400, "Missing the required parameter 'sortExpression' when calling filesSearchById");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4/files/{id}/search"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "searchCriteria", searchCriteria));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageIndex", pageIndex));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageSize", pageSize));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortExpression", sortExpression));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortTogether", sortTogether));
 
     
     
@@ -959,10 +1141,10 @@ public class FilesApi {
    * 
    * @param id  (required)
    * @param updateFilePropertiesRequest  (required)
-   * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
+   * @return File
    * @throws ApiException if fails to make API call
    */
-  public ch.cyberduck.core.storegate.io.swagger.client.model.File filesUpdateFile(String id, UpdateFilePropertiesRequest updateFilePropertiesRequest) throws ApiException {
+  public File filesUpdateFile(String id, UpdateFilePropertiesRequest updateFilePropertiesRequest) throws ApiException {
     return filesUpdateFileWithHttpInfo(id, updateFilePropertiesRequest).getData();
       }
 
@@ -971,10 +1153,10 @@ public class FilesApi {
    * 
    * @param id  (required)
    * @param updateFilePropertiesRequest  (required)
-   * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
+   * @return ApiResponse&lt;File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> filesUpdateFileWithHttpInfo(String id, UpdateFilePropertiesRequest updateFilePropertiesRequest) throws ApiException {
+  public ApiResponse<File> filesUpdateFileWithHttpInfo(String id, UpdateFilePropertiesRequest updateFilePropertiesRequest) throws ApiException {
     Object localVarPostBody = updateFilePropertiesRequest;
     
     // verify the required parameter 'id' is set
@@ -1011,7 +1193,7 @@ public class FilesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File>() {};
+    GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
 }

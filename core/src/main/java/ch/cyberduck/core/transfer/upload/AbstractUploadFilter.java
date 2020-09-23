@@ -44,7 +44,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
-import ch.cyberduck.ui.browser.RegexFilter;
+import ch.cyberduck.ui.browser.SearchFilterFactory;
 
 import org.apache.log4j.Logger;
 
@@ -59,7 +59,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     private final Session<?> session;
     private final SymlinkResolver<Local> symlinkResolver;
-    private final Filter<Path> hidden = new RegexFilter();
+    private final Filter<Path> hidden = SearchFilterFactory.HIDDEN_FILTER;
 
     protected Find find;
     protected AttributesFinder attribute;

@@ -25,7 +25,10 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class ModelConfiguration {
   @JsonProperty("hasMulti")
   private Boolean hasMulti = null;
@@ -63,6 +66,12 @@ public class ModelConfiguration {
   @JsonProperty("hasMedia")
   private Boolean hasMedia = null;
 
+  @JsonProperty("isMoveFromCommonDisabled")
+  private Boolean isMoveFromCommonDisabled = null;
+
+  @JsonProperty("hasPhotos")
+  private Boolean hasPhotos = null;
+
   @JsonProperty("hasSync")
   private Boolean hasSync = null;
 
@@ -93,53 +102,8 @@ public class ModelConfiguration {
   @JsonProperty("hideSplash")
   private Boolean hideSplash = null;
 
-  /**
-   * What features are available in settings
-   */
-  public enum UserAccountModeEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_3(3),
-    
-    NUMBER_4(4),
-    
-    NUMBER_5(5),
-    
-    NUMBER_6(6);
-
-    private Integer value;
-
-    UserAccountModeEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static UserAccountModeEnum fromValue(String text) {
-      for (UserAccountModeEnum b : UserAccountModeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("userAccountMode")
-  private UserAccountModeEnum userAccountMode = null;
+  private Integer userAccountMode = null;
 
   @JsonProperty("allowShare")
   private Boolean allowShare = null;
@@ -156,6 +120,9 @@ public class ModelConfiguration {
   @JsonProperty("hasWebDavPasswords")
   private Boolean hasWebDavPasswords = null;
 
+  @JsonProperty("isShareBankIDAuthAvailable")
+  private Boolean isShareBankIDAuthAvailable = null;
+
   @JsonProperty("hasShareBankIDAuth")
   private Boolean hasShareBankIDAuth = null;
 
@@ -170,6 +137,9 @@ public class ModelConfiguration {
 
   @JsonProperty("hasApps")
   private Boolean hasApps = null;
+
+  @JsonProperty("isBankIDVerificationRequired")
+  private Boolean isBankIDVerificationRequired = null;
 
   public ModelConfiguration hasMulti(Boolean hasMulti) {
     this.hasMulti = hasMulti;
@@ -387,6 +357,42 @@ public class ModelConfiguration {
     this.hasMedia = hasMedia;
   }
 
+  public ModelConfiguration isMoveFromCommonDisabled(Boolean isMoveFromCommonDisabled) {
+    this.isMoveFromCommonDisabled = isMoveFromCommonDisabled;
+    return this;
+  }
+
+   /**
+   * Is moving files from Common disabled
+   * @return isMoveFromCommonDisabled
+  **/
+  @ApiModelProperty(value = "Is moving files from Common disabled")
+  public Boolean isIsMoveFromCommonDisabled() {
+    return isMoveFromCommonDisabled;
+  }
+
+  public void setIsMoveFromCommonDisabled(Boolean isMoveFromCommonDisabled) {
+    this.isMoveFromCommonDisabled = isMoveFromCommonDisabled;
+  }
+
+  public ModelConfiguration hasPhotos(Boolean hasPhotos) {
+    this.hasPhotos = hasPhotos;
+    return this;
+  }
+
+   /**
+   * Does the account have Photos
+   * @return hasPhotos
+  **/
+  @ApiModelProperty(value = "Does the account have Photos")
+  public Boolean isHasPhotos() {
+    return hasPhotos;
+  }
+
+  public void setHasPhotos(Boolean hasPhotos) {
+    this.hasPhotos = hasPhotos;
+  }
+
   public ModelConfiguration hasSync(Boolean hasSync) {
     this.hasSync = hasSync;
     return this;
@@ -567,21 +573,21 @@ public class ModelConfiguration {
     this.hideSplash = hideSplash;
   }
 
-  public ModelConfiguration userAccountMode(UserAccountModeEnum userAccountMode) {
+  public ModelConfiguration userAccountMode(Integer userAccountMode) {
     this.userAccountMode = userAccountMode;
     return this;
   }
 
    /**
-   * What features are available in settings
+   * What features are available in settings (0 &#x3D; Deny, 1 &#x3D; Setting, 2 &#x3D; Overview, 3 &#x3D; UserSetting, 4 &#x3D; OverviewPlus, 5 &#x3D; Upgrade, 6 &#x3D; Full)
    * @return userAccountMode
   **/
-  @ApiModelProperty(value = "What features are available in settings")
-  public UserAccountModeEnum getUserAccountMode() {
+  @ApiModelProperty(value = "What features are available in settings (0 = Deny, 1 = Setting, 2 = Overview, 3 = UserSetting, 4 = OverviewPlus, 5 = Upgrade, 6 = Full)")
+  public Integer getUserAccountMode() {
     return userAccountMode;
   }
 
-  public void setUserAccountMode(UserAccountModeEnum userAccountMode) {
+  public void setUserAccountMode(Integer userAccountMode) {
     this.userAccountMode = userAccountMode;
   }
 
@@ -675,6 +681,24 @@ public class ModelConfiguration {
     this.hasWebDavPasswords = hasWebDavPasswords;
   }
 
+  public ModelConfiguration isShareBankIDAuthAvailable(Boolean isShareBankIDAuthAvailable) {
+    this.isShareBankIDAuthAvailable = isShareBankIDAuthAvailable;
+    return this;
+  }
+
+   /**
+   * Can public shares protected by BankID (Sweden only) be activated
+   * @return isShareBankIDAuthAvailable
+  **/
+  @ApiModelProperty(value = "Can public shares protected by BankID (Sweden only) be activated")
+  public Boolean isIsShareBankIDAuthAvailable() {
+    return isShareBankIDAuthAvailable;
+  }
+
+  public void setIsShareBankIDAuthAvailable(Boolean isShareBankIDAuthAvailable) {
+    this.isShareBankIDAuthAvailable = isShareBankIDAuthAvailable;
+  }
+
   public ModelConfiguration hasShareBankIDAuth(Boolean hasShareBankIDAuth) {
     this.hasShareBankIDAuth = hasShareBankIDAuth;
     return this;
@@ -765,6 +789,24 @@ public class ModelConfiguration {
     this.hasApps = hasApps;
   }
 
+  public ModelConfiguration isBankIDVerificationRequired(Boolean isBankIDVerificationRequired) {
+    this.isBankIDVerificationRequired = isBankIDVerificationRequired;
+    return this;
+  }
+
+   /**
+   * Only sett if Admin and IsBankIDLogin is true
+   * @return isBankIDVerificationRequired
+  **/
+  @ApiModelProperty(value = "Only sett if Admin and IsBankIDLogin is true")
+  public Boolean isIsBankIDVerificationRequired() {
+    return isBankIDVerificationRequired;
+  }
+
+  public void setIsBankIDVerificationRequired(Boolean isBankIDVerificationRequired) {
+    this.isBankIDVerificationRequired = isBankIDVerificationRequired;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -787,6 +829,8 @@ public class ModelConfiguration {
         Objects.equals(this.hasUnlimitedBackup, _configuration.hasUnlimitedBackup) &&
         Objects.equals(this.hasKlsBackup, _configuration.hasKlsBackup) &&
         Objects.equals(this.hasMedia, _configuration.hasMedia) &&
+        Objects.equals(this.isMoveFromCommonDisabled, _configuration.isMoveFromCommonDisabled) &&
+        Objects.equals(this.hasPhotos, _configuration.hasPhotos) &&
         Objects.equals(this.hasSync, _configuration.hasSync) &&
         Objects.equals(this.hasAutostore, _configuration.hasAutostore) &&
         Objects.equals(this.hasOfficeOnline, _configuration.hasOfficeOnline) &&
@@ -803,16 +847,18 @@ public class ModelConfiguration {
         Objects.equals(this.hasVersioning, _configuration.hasVersioning) &&
         Objects.equals(this.hasWebDav, _configuration.hasWebDav) &&
         Objects.equals(this.hasWebDavPasswords, _configuration.hasWebDavPasswords) &&
+        Objects.equals(this.isShareBankIDAuthAvailable, _configuration.isShareBankIDAuthAvailable) &&
         Objects.equals(this.hasShareBankIDAuth, _configuration.hasShareBankIDAuth) &&
         Objects.equals(this.hasShareOfficeOnline, _configuration.hasShareOfficeOnline) &&
         Objects.equals(this.hasMyFiles, _configuration.hasMyFiles) &&
         Objects.equals(this.isBankIDLogin, _configuration.isBankIDLogin) &&
-        Objects.equals(this.hasApps, _configuration.hasApps);
+        Objects.equals(this.hasApps, _configuration.hasApps) &&
+        Objects.equals(this.isBankIDVerificationRequired, _configuration.isBankIDVerificationRequired);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(hasMulti, hasCommon, hasPermissions, hasExtendedPermissions, hasTeamSync, hasGroups, hasQuota, hasInspection, hasBackup, hasUnlimitedBackup, hasKlsBackup, hasMedia, hasSync, hasAutostore, hasOfficeOnline, hasRecycleBin, showHiddenFiles, showUsername, startPage, locale, theme, hideSplash, userAccountMode, allowShare, hasEvents, hasVersioning, hasWebDav, hasWebDavPasswords, hasShareBankIDAuth, hasShareOfficeOnline, hasMyFiles, isBankIDLogin, hasApps);
+    return Objects.hash(hasMulti, hasCommon, hasPermissions, hasExtendedPermissions, hasTeamSync, hasGroups, hasQuota, hasInspection, hasBackup, hasUnlimitedBackup, hasKlsBackup, hasMedia, isMoveFromCommonDisabled, hasPhotos, hasSync, hasAutostore, hasOfficeOnline, hasRecycleBin, showHiddenFiles, showUsername, startPage, locale, theme, hideSplash, userAccountMode, allowShare, hasEvents, hasVersioning, hasWebDav, hasWebDavPasswords, isShareBankIDAuthAvailable, hasShareBankIDAuth, hasShareOfficeOnline, hasMyFiles, isBankIDLogin, hasApps, isBankIDVerificationRequired);
   }
 
 
@@ -833,6 +879,8 @@ public class ModelConfiguration {
     sb.append("    hasUnlimitedBackup: ").append(toIndentedString(hasUnlimitedBackup)).append("\n");
     sb.append("    hasKlsBackup: ").append(toIndentedString(hasKlsBackup)).append("\n");
     sb.append("    hasMedia: ").append(toIndentedString(hasMedia)).append("\n");
+    sb.append("    isMoveFromCommonDisabled: ").append(toIndentedString(isMoveFromCommonDisabled)).append("\n");
+    sb.append("    hasPhotos: ").append(toIndentedString(hasPhotos)).append("\n");
     sb.append("    hasSync: ").append(toIndentedString(hasSync)).append("\n");
     sb.append("    hasAutostore: ").append(toIndentedString(hasAutostore)).append("\n");
     sb.append("    hasOfficeOnline: ").append(toIndentedString(hasOfficeOnline)).append("\n");
@@ -849,11 +897,13 @@ public class ModelConfiguration {
     sb.append("    hasVersioning: ").append(toIndentedString(hasVersioning)).append("\n");
     sb.append("    hasWebDav: ").append(toIndentedString(hasWebDav)).append("\n");
     sb.append("    hasWebDavPasswords: ").append(toIndentedString(hasWebDavPasswords)).append("\n");
+    sb.append("    isShareBankIDAuthAvailable: ").append(toIndentedString(isShareBankIDAuthAvailable)).append("\n");
     sb.append("    hasShareBankIDAuth: ").append(toIndentedString(hasShareBankIDAuth)).append("\n");
     sb.append("    hasShareOfficeOnline: ").append(toIndentedString(hasShareOfficeOnline)).append("\n");
     sb.append("    hasMyFiles: ").append(toIndentedString(hasMyFiles)).append("\n");
     sb.append("    isBankIDLogin: ").append(toIndentedString(isBankIDLogin)).append("\n");
     sb.append("    hasApps: ").append(toIndentedString(hasApps)).append("\n");
+    sb.append("    isBankIDVerificationRequired: ").append(toIndentedString(isBankIDVerificationRequired)).append("\n");
     sb.append("}");
     return sb.toString();
   }

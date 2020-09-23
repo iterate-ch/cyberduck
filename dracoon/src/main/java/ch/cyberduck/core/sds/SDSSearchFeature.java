@@ -55,9 +55,13 @@ public class SDSSearchFeature implements Search {
             int offset = 0;
             NodeList nodes;
             do {
-                nodes = new NodesApi(session.getClient()).searchFsNodes(
-                    String.format("*%s*", new NFCNormalizer().normalize(regex.toPattern().pattern())), StringUtils.EMPTY, null,
-                    -1, null, chunksize, offset, Long.valueOf(nodeid.getFileid(workdir, listener)), null);
+                nodes = new NodesApi(session.getClient()).searchNodes(
+                    String.format("*%s*", new NFCNormalizer().normalize(regex.toPattern().pattern())),
+                    StringUtils.EMPTY,
+                    -1,
+                    Long.valueOf(nodeid.getFileid(workdir, listener)),
+                    null, null, offset, chunksize, StringUtils.EMPTY
+                );
                 final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
                 for(Node node : nodes.getItems()) {
                     final PathAttributes attributes = feature.toAttributes(node);

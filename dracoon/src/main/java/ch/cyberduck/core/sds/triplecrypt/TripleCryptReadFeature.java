@@ -62,7 +62,7 @@ public class TripleCryptReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final FileKey key = new NodesApi(session.getClient()).getUserFileKey(
+            final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(
                 Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY);
             final UserPrivateKey privateKey = new UserPrivateKey();
             final UserKeyPairContainer keyPairContainer = session.keyPair();

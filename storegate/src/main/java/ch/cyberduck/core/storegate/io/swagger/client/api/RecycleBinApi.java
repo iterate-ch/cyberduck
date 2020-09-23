@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
 public class RecycleBinApi {
   private ApiClient apiClient;
 
@@ -199,7 +199,7 @@ public class RecycleBinApi {
    * Restores (moves) the recycle bin item back to the original location
    * 
    * @param id The recycle bin item to remove (required)
-   * @param mode 0 &#x3D; None (returns error on conflict), 1 &#x3D; Overwrite (deletes conflict on target), 2 &#x3D; KeepBoth (renames the moved resource) (required)
+   * @param mode 0 &#x3D; None (returns error on conflict), 1 &#x3D; Overwrite (deletes conflict on target), 2 &#x3D; KeepBoth (renames the moved resource) (0 &#x3D; None, 1 &#x3D; Overwrite, 2 &#x3D; KeepBoth) (required)
    * @throws ApiException if fails to make API call
    */
   public void recycleBinRestoreRecycleBinItem(String id, Integer mode) throws ApiException {
@@ -211,7 +211,7 @@ public class RecycleBinApi {
    * Restores (moves) the recycle bin item back to the original location
    * 
    * @param id The recycle bin item to remove (required)
-   * @param mode 0 &#x3D; None (returns error on conflict), 1 &#x3D; Overwrite (deletes conflict on target), 2 &#x3D; KeepBoth (renames the moved resource) (required)
+   * @param mode 0 &#x3D; None (returns error on conflict), 1 &#x3D; Overwrite (deletes conflict on target), 2 &#x3D; KeepBoth (renames the moved resource) (0 &#x3D; None, 1 &#x3D; Overwrite, 2 &#x3D; KeepBoth) (required)
    * @throws ApiException if fails to make API call
    */
   public ApiResponse<Void> recycleBinRestoreRecycleBinItemWithHttpInfo(String id, Integer mode) throws ApiException {

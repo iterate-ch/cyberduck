@@ -24,28 +24,15 @@ import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptOutputStream;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.output.NullOutputStream;
 import org.apache.log4j.Logger;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.dracoon.sdk.crypto.Crypto;
-import com.dracoon.sdk.crypto.CryptoSystemException;
-import com.dracoon.sdk.crypto.InvalidFileKeyException;
 
 public class SDSEncryptionBulkFeature implements Bulk<Void> {
     private static final Logger log = Logger.getLogger(SDSEncryptionBulkFeature.class);
@@ -69,35 +56,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                     final Path container = new PathContainerService().getContainer(entry.getKey().remote);
                     if(rooms.get(container)) {
                         final TransferStatus status = entry.getValue();
-                        final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
-                        status.setFilekey(nodeid.getFileKey(fileKey));
-                        if(PreferencesFactory.get().getBoolean("sds.upload.s3.enable")) {
-                            if(session.configuration().stream().anyMatch(property -> "use_s3_storage".equals(property.getKey()) && String.valueOf(true).equals(property.getValue()))) {
-                                if(entry.getKey().local != null) {
-                                    if(log.isDebugEnabled()) {
-                                        log.debug(String.format("Pre-compute file key tag for upload to S3 for %s", entry));
-                                    }
-                                    // Pre-compute file key tag for upload to S3 with multiple parts
-                                    final InputStream in = entry.getKey().local.getInputStream();
-                                    final OutputStream out;
-                                    try {
-                                        out = new TripleCryptOutputStream<>(session, new StatusOutputStream<TransferStatus>(NullOutputStream.NULL_OUTPUT_STREAM) {
-                                            @Override
-                                            public TransferStatus getStatus() {
-                                                return status;
-                                            }
-                                        }, Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status);
-                                    }
-                                    catch(CryptoSystemException | InvalidFileKeyException e) {
-                                        throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, entry.getKey().remote);
-                                    }
-                                    new StreamCopier(status, new TransferStatus()).transfer(in, out);
-                                }
-                                else {
-                                    log.warn(String.format("Missing local file in transfer item %s", entry));
-                                }
-                            }
-                        }
+                        status.setFilekey(nodeid.getFileKey());
                     }
                 }
             }

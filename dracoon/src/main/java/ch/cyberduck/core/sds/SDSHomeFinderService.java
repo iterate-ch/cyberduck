@@ -51,7 +51,7 @@ public class SDSHomeFinderService extends DefaultHomeFinderService {
         else {
             final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
             try {
-                final Node node = new NodesApi(session.getClient()).getFsNode(
+                final Node node = new NodesApi(session.getClient()).requestNode(
                     Long.parseLong(nodeid.getFileid(directory, new DisabledListProgressListener())), StringUtils.EMPTY, null);
                 directory.setAttributes(feature.toAttributes(node));
                 directory.setType(feature.toType(node));

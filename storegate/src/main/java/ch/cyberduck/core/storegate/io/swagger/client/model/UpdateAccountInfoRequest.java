@@ -25,7 +25,10 @@ import io.swagger.annotations.ApiModelProperty;
  * Update account info.
  */
 @ApiModel(description = "Update account info.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
+
+
+
 public class UpdateAccountInfoRequest {
   @JsonProperty("socialSecurityNumber")
   private String socialSecurityNumber = null;

@@ -54,6 +54,7 @@
             <fx:platform basedir="${java.home}">
                 <fx:jvmarg value="-Djna.nounpack=true"/>
                 <fx:jvmarg value="-Djna.noclasspath=true"/>
+                <fx:jvmarg value="-Djna.nosys=false"/>
                 <fx:jvmarg value="-Djava.awt.headless=true"/>
                 <fx:jvmarg value="-Dsun.jnu.encoding=utf-8"/>
                 <fx:jvmarg value="-Dfile.encoding=utf-8"/>

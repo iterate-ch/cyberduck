@@ -11,6 +11,7 @@ import javax.ws.rs.core.GenericType;
 import ch.cyberduck.core.storegate.io.swagger.client.model.CreateUserRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.ExtendedUser;
 import ch.cyberduck.core.storegate.io.swagger.client.model.ExtendedUserContents;
+import ch.cyberduck.core.storegate.io.swagger.client.model.InviteUserRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateUserRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.User;
 
@@ -19,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-09-18T14:15:21.736+02:00")
 public class UsersApi {
   private ApiClient apiClient;
 
@@ -589,27 +590,27 @@ public class UsersApi {
   /**
    * Create a new user via invite
    * 
-   * @param createUserRequest The CreateUserRequest (required)
+   * @param inviteUserRequest The CreateUserRequest (required)
    * @return ExtendedUser
    * @throws ApiException if fails to make API call
    */
-  public ExtendedUser usersPostInvite(UpdateUserRequest createUserRequest) throws ApiException {
-    return usersPostInviteWithHttpInfo(createUserRequest).getData();
+  public ExtendedUser usersPostInvite(InviteUserRequest inviteUserRequest) throws ApiException {
+    return usersPostInviteWithHttpInfo(inviteUserRequest).getData();
       }
 
   /**
    * Create a new user via invite
    * 
-   * @param createUserRequest The CreateUserRequest (required)
+   * @param inviteUserRequest The CreateUserRequest (required)
    * @return ApiResponse&lt;ExtendedUser&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<ExtendedUser> usersPostInviteWithHttpInfo(UpdateUserRequest createUserRequest) throws ApiException {
-    Object localVarPostBody = createUserRequest;
+  public ApiResponse<ExtendedUser> usersPostInviteWithHttpInfo(InviteUserRequest inviteUserRequest) throws ApiException {
+    Object localVarPostBody = inviteUserRequest;
     
-    // verify the required parameter 'createUserRequest' is set
-    if (createUserRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'createUserRequest' when calling usersPostInvite");
+    // verify the required parameter 'inviteUserRequest' is set
+    if (inviteUserRequest == null) {
+      throw new ApiException(400, "Missing the required parameter 'inviteUserRequest' when calling usersPostInvite");
     }
     
     // create path and map variables
