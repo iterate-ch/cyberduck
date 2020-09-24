@@ -15,26 +15,23 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
-import ch.cyberduck.core.onedrive.features.sharepoint.GroupListService;
 import ch.cyberduck.core.onedrive.features.sharepoint.GroupDrivesListService;
-import ch.cyberduck.core.onedrive.features.sharepoint.SiteDrivesListService;
-import ch.cyberduck.core.onedrive.features.sharepoint.SitesListService;
+import ch.cyberduck.core.onedrive.features.sharepoint.GroupListService;
 
 import org.apache.log4j.Logger;
-import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.Site;
 
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class SharepointListService extends AbstractSharepointListService {
     static final Logger log = Logger.getLogger(SharepointListService.class);
@@ -56,23 +53,28 @@ public class SharepointListService extends AbstractSharepointListService {
         this.session = session;
     }
 
-    @Override
-    AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> list = new AttributedList<>();
+    private Optional<Path> getDefault(final Path directory) {
         try {
             final Site site = Site.byId(session.getClient(), "root");
             final Site.Metadata metadata = site.getMetadata();
             final EnumSet<Path.Type> type = DEFAULT_NAME.getType().clone();
             type.add(Path.Type.symboliclink);
-            final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new PathAttributes());
+            final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new PathAttributes(DEFAULT_NAME.attributes()));
             path.setSymlinkTarget(
                 new Path(SITES_NAME, metadata.getSiteCollection().getHostname(), SITES_NAME.getType(),
                     new PathAttributes().withVersionId(metadata.getId())));
-            list.add(path);
+            return Optional.of(path);
         }
         catch(IOException ex) {
             log.error("Cannot get default site. Skipping.", ex);
         }
+        return Optional.empty();
+    }
+
+    @Override
+    AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        final AttributedList<Path> list = new AttributedList<>();
+        getDefault(directory).ifPresent(list::add);
         addDefaultItems(list);
         listener.chunk(directory, list);
         return list;
@@ -85,15 +87,33 @@ public class SharepointListService extends AbstractSharepointListService {
 
     @Override
     boolean processList(final Path directory, final ListProgressListener listener, final ProcessListResult result) throws BackgroundException {
-        if(DEFAULT_ID.equals(directory.attributes().getVersionId())) {
-            // TODO: Create Symlink to /Sites/<Sitename>/<Drives>/<Drive ID>
-            return result.withChildren(new GraphDrivesListService(session).list(directory, listener)).success();
+        // TODO: This does not work for Bookmark defaultpath=/Default, as SimplePathPredicate in FileIdProvider checks for
+        //  Type which is not set for automtically mounted paths. This has to be resolved prior checking the file id here
+        final String versionId = getIdProvider().getFileid(directory, new DisabledListProgressListener());
+        if(DEFAULT_ID.equals(versionId)) {
+            final Path symlinkTarget;
+            if(directory.getSymlinkTarget() == null) {
+                final Optional<Path> defaultDirectory = getDefault(directory.getParent());
+                if(defaultDirectory.isPresent()) {
+                    symlinkTarget = defaultDirectory.get().getSymlinkTarget();
+                }
+                else {
+                    throw new NotfoundException(String.format("%s not found.", directory.getAbsolute()));
+                }
+            }
+            else {
+                symlinkTarget = directory.getSymlinkTarget();
+            }
+            return result.withChildren(new GraphDrivesListService(session).list(symlinkTarget, listener)).success();
         }
-        else if(GROUPS_ID.equals(directory.attributes().getVersionId())) {
+        else if(GROUPS_ID.equals(versionId)) {
             return result.withChildren(new GroupListService(session).list(directory, listener)).success();
         }
-        else if(GROUPS_ID.equals(directory.getParent().attributes().getVersionId())) {
-            return result.withChildren(new GroupDrivesListService(session).list(directory, listener)).success();
+        else {
+            final String parentId = getIdProvider().getFileid(directory.getParent(), new DisabledListProgressListener());
+            if(GROUPS_ID.equals(parentId)) {
+                return result.withChildren(new GroupDrivesListService(session).list(directory, listener)).success();
+            }
         }
 
         return false;
