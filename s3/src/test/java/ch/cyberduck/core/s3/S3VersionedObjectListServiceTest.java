@@ -191,6 +191,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertFalse(hidden(directory, new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener())));
+        directory.attributes().setVersionId(null);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(hidden(directory, new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener())));
     }
