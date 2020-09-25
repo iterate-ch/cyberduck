@@ -142,17 +142,15 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 final Credentials passphrase = new TripleCryptKeyPair().unlock(callback, bookmark, userKeyPair);
                 final PlainFileKey plainFileKey = Crypto.decryptFileKey(TripleCryptConverter.toCryptoEncryptedFileKey(key), privateKey, passphrase.getPassword());
                 // encrypt file key with a new key pair
-                final UserKeyPair pair;
-                if(null == options.getPassword()) {
-                    pair = Crypto.generateUserKeyPair(callback.prompt(
-                        bookmark, LocaleFactory.localizedString("Passphrase", "Cryptomator"),
-                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions().icon(bookmark.getProtocol().disk())
-                    ).getPassword());
-                }
-                else {
-                    pair = Crypto.generateUserKeyPair(options.getPassword());
-                }
+                final UserKeyPair pair = Crypto.generateUserKeyPair(callback.prompt(
+                    bookmark, LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions().icon(bookmark.getProtocol().disk())
+                ).getPassword());
                 final EncryptedFileKey encryptedFileKey = Crypto.encryptFileKey(plainFileKey, pair.getUserPublicKey());
+                options.setKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(pair));
+                options.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptedFileKey));
+            }
+            if(null == options.getPassword()) {
                 try {
                     options.setPassword(callback.prompt(bookmark,
                         LocaleFactory.localizedString("Passphrase", "Cryptomator"),
@@ -162,8 +160,6 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 catch(LoginCanceledException e) {
                     // Ignore no password set
                 }
-                options.setKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(pair));
-                options.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptedFileKey));
             }
             final DownloadShare share = new SharesApi(session.getClient()).createDownloadShare(
                 options.nodeId(fileid), StringUtils.EMPTY, null);
@@ -204,14 +200,16 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 log.warn(String.format("Use default share options %s", options));
             }
             final Host bookmark = session.getHost();
-            try {
-                options.setPassword(callback.prompt(bookmark,
-                    LocaleFactory.localizedString("Passphrase", "Cryptomator"),
-                    MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
-                    new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword());
-            }
-            catch(LoginCanceledException e) {
-                // Ignore no password set
+            if(null == options.getPassword()) {
+                try {
+                    options.setPassword(callback.prompt(bookmark,
+                        LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                        MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
+                        new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword());
+                }
+                catch(LoginCanceledException e) {
+                    // Ignore no password set
+                }
             }
             final UploadShare share = new SharesApi(session.getClient()).createUploadShare(
                 options.targetId(Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()))), StringUtils.EMPTY, null);
