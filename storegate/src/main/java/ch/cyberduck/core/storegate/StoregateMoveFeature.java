@@ -90,7 +90,6 @@ public class StoregateMoveFeature implements Move {
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
-        return false;
+        return true;
     }
-
 }

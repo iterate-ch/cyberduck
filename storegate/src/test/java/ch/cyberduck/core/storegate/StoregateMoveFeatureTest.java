@@ -101,6 +101,7 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final String foldername = new AlphanumericRandomStringService().random();
         final Path test = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(room, foldername, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path testsub = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(test, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(0, session.getMetrics().get(Copy.class));
