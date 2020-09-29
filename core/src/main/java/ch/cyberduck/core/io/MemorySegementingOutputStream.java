@@ -53,13 +53,14 @@ public class MemorySegementingOutputStream extends SegmentingOutputStream {
 
     @Override
     public void flush() throws IOException {
+        log.warn(String.format("Flush stream %s", proxy));
         this.flush(true);
     }
 
     /**
      * @param force Write last segment to proxy regardless if threshold is reached
      */
-    private void flush(final boolean force) throws IOException {
+    protected void flush(final boolean force) throws IOException {
         // Copy from memory file to output
         final byte[] content = buffer.toByteArray();
         // Re-use buffer
