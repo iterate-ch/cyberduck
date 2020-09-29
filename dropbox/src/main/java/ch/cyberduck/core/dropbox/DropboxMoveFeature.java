@@ -60,5 +60,4 @@ public class DropboxMoveFeature implements Move {
     public boolean isRecursive(final Path source, final Path target) {
         return true;
     }
-
 }

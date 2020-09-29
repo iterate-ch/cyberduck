@@ -125,9 +125,4 @@ public class SwiftMultipleDeleteFeature implements Delete {
             }
         }
     }
-
-    @Override
-    public boolean isRecursive() {
-        return false;
-    }
 }

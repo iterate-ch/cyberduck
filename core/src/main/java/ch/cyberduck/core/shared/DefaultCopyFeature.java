@@ -63,11 +63,6 @@ public class DefaultCopyFeature implements Copy {
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return false;
-    }
-
-    @Override
     public boolean isSupported(final Path source, final Path target) {
         switch(from.getHost().getProtocol().getType()) {
             case ftp:

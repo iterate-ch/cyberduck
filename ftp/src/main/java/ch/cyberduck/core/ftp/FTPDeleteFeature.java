@@ -65,9 +65,4 @@ public class FTPDeleteFeature implements Delete {
     public boolean isSupported(final Path file) {
         return true;
     }
-
-    @Override
-    public boolean isRecursive() {
-        return false;
-    }
 }

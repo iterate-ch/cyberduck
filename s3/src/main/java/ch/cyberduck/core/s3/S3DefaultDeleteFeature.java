@@ -94,9 +94,4 @@ public class S3DefaultDeleteFeature implements Delete {
             }
         }
     }
-
-    @Override
-    public boolean isRecursive() {
-        return false;
-    }
 }
