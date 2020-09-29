@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -32,6 +33,7 @@ import org.nuxeo.onedrive.client.types.Site;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class SharepointListService extends AbstractSharepointListService {
     static final Logger log = Logger.getLogger(SharepointListService.class);
@@ -45,6 +47,8 @@ public class SharepointListService extends AbstractSharepointListService {
     public static final Path DRIVES_NAME = new Path("/Drives", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DRIVES_ID));
     public static final Path GROUPS_NAME = new Path("/Groups", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(GROUPS_ID));
     public static final Path SITES_NAME = new Path("/Sites", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(SITES_ID));
+
+    public static final Predicate<Path> DEFAULT_PREDICATE = new CaseInsensitivePathPredicate(DEFAULT_NAME);
 
     private final SharepointSession session;
 
@@ -85,25 +89,32 @@ public class SharepointListService extends AbstractSharepointListService {
         list.add(SITES_NAME);
     }
 
+    static boolean isDefaultPath(final Path directory) {
+        return DEFAULT_PREDICATE.test(directory);
+    }
+
+    Path findDefaultPath(final Path directory) throws BackgroundException {
+        if(isDefaultPath(directory)) {
+            return getDefault(directory.getParent()).orElseThrow(() -> new NotfoundException(String.format("%s not found.", directory.getAbsolute())));
+        }
+        return directory;
+    }
+
+    Path getDefaultSymlinkTarget(final Path directory) throws BackgroundException {
+        if (directory.getSymlinkTarget() != null) {
+            return directory.getSymlinkTarget();
+        }
+        return getDefault(directory.getParent()).orElseThrow(() -> new NotfoundException(String.format("%s not found.", directory.getAbsolute()))).getSymlinkTarget();
+    }
+
     @Override
-    boolean processList(final Path directory, final ListProgressListener listener, final ProcessListResult result) throws BackgroundException {
-        // TODO: This does not work for Bookmark defaultpath=/Default, as SimplePathPredicate in FileIdProvider checks for
-        //  Type which is not set for automtically mounted paths. This has to be resolved prior checking the file id here
+    boolean processList(Path directory, final ListProgressListener listener, final ProcessListResult result) throws BackgroundException {
+        // check whether this has been passed by bookmark defaultpath
+        directory = findDefaultPath(directory);
+
         final String versionId = getIdProvider().getFileid(directory, new DisabledListProgressListener());
         if(DEFAULT_ID.equals(versionId)) {
-            final Path symlinkTarget;
-            if(directory.getSymlinkTarget() == null) {
-                final Optional<Path> defaultDirectory = getDefault(directory.getParent());
-                if(defaultDirectory.isPresent()) {
-                    symlinkTarget = defaultDirectory.get().getSymlinkTarget();
-                }
-                else {
-                    throw new NotfoundException(String.format("%s not found.", directory.getAbsolute()));
-                }
-            }
-            else {
-                symlinkTarget = directory.getSymlinkTarget();
-            }
+            final Path symlinkTarget = getDefaultSymlinkTarget(directory);
             return result.withChildren(new GraphDrivesListService(session).list(symlinkTarget, listener)).success();
         }
         else if(GROUPS_ID.equals(versionId)) {
