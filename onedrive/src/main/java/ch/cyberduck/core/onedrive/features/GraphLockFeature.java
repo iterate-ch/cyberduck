@@ -13,12 +13,14 @@ package ch.cyberduck.core.onedrive.features;/*
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
@@ -49,7 +51,9 @@ public class GraphLockFeature implements Lock {
     @Override
     public void unlock(final Path file, final Object token) throws BackgroundException {
         try {
-            Files.checkin(session.toItem(file), "Updated by Mountain Duck");
+            Files.checkin(session.toItem(file), String.format("%s-%s",
+                PreferencesFactory.get().getProperty("application.name"),
+                new AlphanumericRandomStringService().random()));
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Failure to check in file {0}", e, file);
