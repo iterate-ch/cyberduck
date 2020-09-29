@@ -36,7 +36,9 @@ public interface Copy {
      * @param target Target file or folder
      * @return True if the implementation can copy directories recursively
      */
-    boolean isRecursive(Path source, Path target);
+    default boolean isRecursive(Path source, Path target) {
+        return false;
+    }
 
     /**
      * @param source Source file or folder

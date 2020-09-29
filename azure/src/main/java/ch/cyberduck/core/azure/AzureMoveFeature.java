@@ -39,7 +39,7 @@ public class AzureMoveFeature implements Move {
     private final PathContainerService containerService
             = new AzurePathContainerService();
 
-    private Delete delete;
+    private final Delete delete;
 
     public AzureMoveFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
@@ -57,10 +57,5 @@ public class AzureMoveFeature implements Move {
         final Path copy = new AzureCopyFeature(session, context).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
         delete.delete(Collections.singletonList(file), connectionCallback, callback);
         return copy;
-    }
-
-    @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return false;
     }
 }

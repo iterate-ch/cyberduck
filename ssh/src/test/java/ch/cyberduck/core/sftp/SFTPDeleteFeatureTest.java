@@ -56,6 +56,8 @@ public class SFTPDeleteFeatureTest extends AbstractSFTPTest {
         new SFTPDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         final Path file = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(file, new TransferStatus());
-        new SFTPDeleteFeature(session).delete(Arrays.asList(folder, file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path subdir = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new SFTPDirectoryFeature(session).mkdir(subdir, null, new TransferStatus());
+        new SFTPDeleteFeature(session).delete(Arrays.asList(subdir, file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

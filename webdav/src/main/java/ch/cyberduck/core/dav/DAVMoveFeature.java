@@ -72,5 +72,4 @@ public class DAVMoveFeature implements Move {
     public boolean isRecursive(final Path source, final Path target) {
         return true;
     }
-
 }

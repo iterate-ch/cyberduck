@@ -39,7 +39,9 @@ public interface Delete {
         return file.attributes().getPermission().isWritable();
     }
 
-    boolean isRecursive();
+    default boolean isRecursive() {
+        return false;
+    }
 
     interface Callback {
         void delete(Path file);
