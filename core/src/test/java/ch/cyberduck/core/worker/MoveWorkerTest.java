@@ -55,9 +55,19 @@ public class MoveWorkerTest {
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Delete.class) {
                     return (T) new Delete() {
+                        private final AtomicInteger count = new AtomicInteger();
+
                         @Override
                         public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
-                            //
+                            for(Path file : files.keySet()) {
+                                if(count.get() == 0) {
+                                    assertEquals(new Path("/t/d", EnumSet.of(Path.Type.directory)), file);
+                                }
+                                if(count.get() == 1) {
+                                    assertEquals(new Path("/t", EnumSet.of(Path.Type.directory)), file);
+                                }
+                                count.incrementAndGet();
+                            }
                         }
 
                         @Override

@@ -41,12 +41,15 @@ import ch.cyberduck.ui.comparator.TimestampComparator;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class MoveWorker extends Worker<Map<Path, Path>> {
     private static final Logger log = Logger.getLogger(MoveWorker.class);
@@ -119,10 +122,20 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                         );
                     }
                 }
-                for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                    if(r.getKey().isDirectory() && !feature.isRecursive(r.getKey(), r.getValue())) {
-                        log.warn(String.format("Delete source directory %s", r.getKey()));
-                        session.getFeature(Delete.class).delete(Collections.singletonMap(r.getKey(), new TransferStatus().withLockId(this.getLockId(r.getKey()))), callback, new Delete.DisabledCallback());
+                // Find previous folders to be deleted
+                final List<Path> folders = recursive.entrySet().stream()
+                    .filter(f -> !feature.isRecursive(f.getKey(), f.getValue()))
+                    .collect(Collectors.toCollection(ArrayList::new)).stream()
+                    .map(Map.Entry::getKey).filter(Path::isDirectory)
+                    .collect(Collectors.toCollection(ArrayList::new));
+                if(!folders.isEmpty()) {
+                    // Must delete inverse
+                    Collections.reverse(folders);
+                    final Delete delete = session.getFeature(Delete.class);
+                    for(Path folder : folders) {
+                        log.warn(String.format("Delete source directory %s", folder));
+                        delete.delete(Collections.singletonMap(folder,
+                            new TransferStatus().withLockId(this.getLockId(folder))), callback, new Delete.DisabledCallback());
                     }
                 }
             }
