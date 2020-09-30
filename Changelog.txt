@@ -2,6 +2,7 @@ Cyberduck
 https://cyberduck.io/
 
 7.6.2
+- [Feature] Allow to set password for shared link of file (Dropbox, Nextcloud, DRACOON)
 - [Bugfix] Missing folders with delete marker on placeholder for buckets with versioning enabled (S3)
 
 7.6.1
