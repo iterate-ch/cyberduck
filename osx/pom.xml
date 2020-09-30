@@ -289,7 +289,7 @@
                             <dependency>
                                 <groupId>org.codehaus.groovy</groupId>
                                 <artifactId>groovy-dateutil</artifactId>
-                                <version>3.0.5</version>
+                                <version>3.0.6</version>
                             </dependency>
                         </dependencies>
                     </plugin>
