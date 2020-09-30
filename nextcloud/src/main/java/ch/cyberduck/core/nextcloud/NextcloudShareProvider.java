@@ -22,6 +22,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -31,6 +32,8 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.AbstractResponseHandler;
@@ -84,6 +87,20 @@ public class NextcloudShareProvider implements PromptUrlProvider {
         resource.setHeader(HttpHeaders.ACCEPT, "application/xml");
         try {
             return new DescriptiveUrl(session.getClient().execute(resource, new AbstractResponseHandler<URI>() {
+                @Override
+                public URI handleResponse(final HttpResponse response) throws HttpResponseException, IOException {
+                    final StatusLine statusLine = response.getStatusLine();
+                    final HttpEntity entity = response.getEntity();
+                    if(statusLine.getStatusCode() >= 300) {
+                        final StringAppender message = new StringAppender();
+                        message.append(statusLine.getReasonPhrase());
+                        final ocs error = new XmlMapper().readValue(entity.getContent(), ocs.class);
+                        message.append(error.meta.message);
+                        throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
+                    }
+                    return super.handleResponse(response);
+                }
+
                 @Override
                 public URI handleEntity(final HttpEntity entity) throws IOException {
                     final XmlMapper mapper = new XmlMapper();
@@ -181,10 +198,17 @@ public class NextcloudShareProvider implements PromptUrlProvider {
     */
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static final class ocs {
+        public meta meta;
         public data data;
 
         @JsonIgnoreProperties(ignoreUnknown = true)
+        private static final class meta {
+            public String status;
+            public String statuscode;
+            public String message;
+        }
 
+        @JsonIgnoreProperties(ignoreUnknown = true)
         private static final class data {
             public int id;
             public String url;
