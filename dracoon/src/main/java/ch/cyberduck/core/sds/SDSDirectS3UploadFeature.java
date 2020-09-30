@@ -152,7 +152,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
                         }
                     }, Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status);
                 }
-                catch(CryptoSystemException | InvalidFileKeyException e) {
+                catch(CryptoSystemException e) {
                     throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file);
                 }
                 new StreamCopier(status, new TransferStatus()).transfer(in, out);
