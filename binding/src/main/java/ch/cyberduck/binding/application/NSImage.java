@@ -91,6 +91,8 @@ public abstract class NSImage extends NSObject implements NSCopying {
          */
         NSImage imageNamed(String name);
 
+        NSImage imageWithSystemSymbolName_accessibilityDescription(String symbolName, String description);
+
         /**
          * These return union of all the types registered with NSImageRep.<br> Original signature : <code>NSArray*
          * imageUnfilteredFileTypes()</code><br>
