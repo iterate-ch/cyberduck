@@ -147,7 +147,7 @@
             <dependency>
                 <groupId>commons-net</groupId>
                 <artifactId>commons-net</artifactId>
-                <version>3.6</version>
+                <version>3.7.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
