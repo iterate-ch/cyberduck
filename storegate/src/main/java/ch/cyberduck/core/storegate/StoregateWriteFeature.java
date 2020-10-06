@@ -20,6 +20,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -188,7 +189,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
             if(status.getLockId() != null) {
                 request.addHeader("X-Lock-Id", status.getLockId().toString());
             }
-            meta.setFileName(file.getName());
+            meta.setFileName(URIEncoder.encode(file.getName()));
             meta.setParentId(fileid.getFileid(file.getParent(), new DisabledListProgressListener()));
             meta.setFileSize(status.getLength() > 0 ? status.getLength() : null);
             meta.setCreated(DateTime.now());
