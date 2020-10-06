@@ -735,11 +735,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             view.setFrameSize(new NSSize(button.frame().size.width.doubleValue() + 10d, button.frame().size.height.doubleValue()));
             view.addSubview(button);
             accessoryView = NSTitlebarAccessoryViewController.create();
+            accessoryView.setView(view);
             if(accessoryView.respondsToSelector(Foundation.selector("setAutomaticallyAdjustsSize:"))) {
                 accessoryView.setAutomaticallyAdjustsSize(true);
             }
             accessoryView.setLayoutAttribute(NSTitlebarAccessoryViewController.NSLayoutAttributeBottom);
-            accessoryView.setView(view);
         }
     }
 
