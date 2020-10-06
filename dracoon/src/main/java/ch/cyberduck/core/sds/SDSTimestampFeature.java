@@ -15,15 +15,21 @@ package ch.cyberduck.core.sds;/*
 
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFileRequest;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SDSTimestampFeature extends DefaultTimestampFeature {
 
@@ -38,6 +44,13 @@ public class SDSTimestampFeature extends DefaultTimestampFeature {
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
+            final SoftwareVersionData version = session.softwareVersion();
+            final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
+            if(matcher.matches()) {
+                if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.22))) < 0) {
+                    throw new UnsupportedException();
+                }
+            }
             new NodesApi(session.getClient()).updateFile(new UpdateFileRequest().timestampModification(new DateTime(status.getTimestamp())),
                 Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
         }
