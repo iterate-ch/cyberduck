@@ -72,9 +72,11 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
         // NoAccess	0
         // ReadOnly	 1
         // ReadWrite 2
+        // Synchronize	4	Read, write access and permission to syncronize using desktop client.
         // FullControl 99
         final Permission permission;
-        if((f.getPermission() & 2) == 2) {
+        if((f.getPermission() & 2) == 2
+            || (f.getPermission() & 4) == 4) {
             permission = new Permission(Permission.Action.read_write, Permission.Action.none, Permission.Action.none);
         }
         else {
