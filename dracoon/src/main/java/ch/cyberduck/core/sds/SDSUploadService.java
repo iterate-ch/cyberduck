@@ -70,9 +70,14 @@ public class SDSUploadService {
                 .size(-1 == status.getLength() ? null : status.getLength())
                 .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName());
+            final SoftwareVersionData version = session.softwareVersion();
+            final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
+            if(matcher.matches()) {
+                if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.15))) < 0) {
+                    body.directS3Upload(null);
+                }
+            }
             if(status.getTimestamp() != null) {
-                final SoftwareVersionData version = session.softwareVersion();
-                final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
                 if(matcher.matches()) {
                     if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.22))) >= 0) {
                         body.timestampModification(new DateTime(status.getTimestamp()));
