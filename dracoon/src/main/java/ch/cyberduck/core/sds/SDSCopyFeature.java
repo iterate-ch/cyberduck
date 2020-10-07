@@ -21,8 +21,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.CopyNode;
 import ch.cyberduck.core.sds.io.swagger.client.model.CopyNodesRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -51,8 +53,9 @@ public class SDSCopyFeature implements Copy {
         try {
             final Node node = new NodesApi(session.getClient()).copyNodes(
                 new CopyNodesRequest()
-                    .addNodeIdsItem(Long.parseLong(nodeid.getFileid(source, new DisabledListProgressListener())))
-                    .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE),
+                    .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE)
+                    .addItemsItem(new CopyNode().id(Long.parseLong(nodeid.getFileid(source, new DisabledListProgressListener()))))
+                    .keepShareLinks(PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep")),
                 // Target Parent Node ID
                 Long.parseLong(nodeid.getFileid(target.getParent(), new DisabledListProgressListener())),
                 StringUtils.EMPTY, null);
