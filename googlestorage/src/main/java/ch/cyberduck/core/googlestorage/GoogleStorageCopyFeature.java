@@ -22,11 +22,16 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 
+import com.google.api.services.storage.Storage;
+import com.google.api.services.storage.model.RewriteResponse;
 import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageCopyFeature implements Copy {
+    private static final Logger log = Logger.getLogger(GoogleStorageMoveFeature.class);
 
     private final PathContainerService containerService
         = new GoogleStoragePathContainerService();
@@ -40,12 +45,18 @@ public class GoogleStorageCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final StorageObject object = session.getClient().objects().copy(containerService.getContainer(source).getName(), containerService.getKey(source),
-                containerService.getContainer(target).getName(), containerService.getKey(target),
-                session.getClient().objects().get(
-                    containerService.getContainer(source).getName(), containerService.getKey(source)).execute()).execute();
+            final StorageObject storageObject = session.getClient().objects().get(
+                containerService.getContainer(source).getName(), containerService.getKey(source)).execute();
+            final Storage.Objects.Rewrite rewrite = session.getClient().objects().rewrite(containerService.getContainer(source).getName(), containerService.getKey(source),
+                containerService.getContainer(target).getName(), containerService.getKey(target), storageObject);
+            final RewriteResponse response = rewrite.execute();
+            // Include this field (from the previous rewrite response) on each rewrite request after the first one,
+            // until the rewrite response 'done' flag is true.
+            while(!rewrite.setRewriteToken(response.getRewriteToken()).execute().getDone()) {
+                log.warn(String.format("Pending rewrite for object %s", storageObject));
+            }
             return new Path(target.getParent(), target.getName(), target.getType(),
-                new GoogleStorageAttributesFinderFeature(session).toAttributes(object));
+                new GoogleStorageAttributesFinderFeature(session).toAttributes(response.getResource()));
         }
         catch(IOException e) {
             throw new GoogleStorageExceptionMappingService().map("Cannot copy {0}", e, source);
