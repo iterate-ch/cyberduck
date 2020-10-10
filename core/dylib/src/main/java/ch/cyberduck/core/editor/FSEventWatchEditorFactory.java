@@ -69,6 +69,7 @@ public class FSEventWatchEditorFactory extends EditorFactory {
         this.add(new Application("com.tacosw.TacoHTMLEdit", "Taco HTML Edit"));
         this.add(new Application("com.macrabbit.Espresso", "Espresso"));
         this.add(new Application("net.experiya.ScinteX", "ScinteX"));
+        this.add(new Application("com.microsoft.VSCode", "Visual Studio Code"));
     }
 
     private void add(Application application) {
