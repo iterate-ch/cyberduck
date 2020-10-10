@@ -71,6 +71,7 @@ public class FSEventWatchEditorFactory extends EditorFactory {
         this.add(new Application("net.experiya.ScinteX", "ScinteX"));
         this.add(new Application("com.microsoft.VSCode", "Visual Studio Code"));
         this.add(new Application("com.panic.Nova", "nova"));
+        this.add(new Application("io.brackets.appshell", "Brackets"));
     }
 
     private void add(Application application) {
