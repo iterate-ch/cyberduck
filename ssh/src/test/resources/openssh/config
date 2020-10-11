@@ -5,3 +5,15 @@ Host alias
 
 Host portalias
     Port 555
+
+Host server2
+    HostName 192.168.5.38
+    ProxyJump user1@jumphost1.example.org:22
+    User fred
+
+Host bastion-host-nickname
+    HostName bastion-hostname
+
+Host remote-host-nickname
+    HostName remote-hostname
+    ProxyJump bastion-host-nickname

@@ -18,6 +18,7 @@ package ch.cyberduck.core.sftp.openssh;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
@@ -33,6 +34,28 @@ public class OpenSSHHostnameConfiguratorTest {
                 new OpenSshConfig(
                         new Local("src/test/resources", "openssh/config")));
         assertEquals("cyberduck.ch", c.getHostname("alias"));
+    }
+
+    @Test
+    public void testJumpHostAlias() {
+        OpenSSHHostnameConfigurator c = new OpenSSHHostnameConfigurator(
+                new OpenSshConfig(
+                        new Local("src/test/resources", "openssh/config")));
+        final Host jumpHost = c.getJumphost("remote-host-nickname");
+        assertEquals("bastion-hostname", jumpHost.getHostname());
+        assertEquals("", jumpHost.getCredentials().getUsername());
+        assertEquals(22, jumpHost.getPort());
+    }
+
+    @Test
+    public void testJumpHost() {
+        OpenSSHHostnameConfigurator c = new OpenSSHHostnameConfigurator(
+                new OpenSshConfig(
+                        new Local("src/test/resources", "openssh/config")));
+        final Host jumpHost = c.getJumphost("server2");
+        assertEquals("jumphost1.example.org", jumpHost.getHostname());
+        assertEquals("user1", jumpHost.getCredentials().getUsername());
+        assertEquals(22, jumpHost.getPort());
     }
 
     @Test
