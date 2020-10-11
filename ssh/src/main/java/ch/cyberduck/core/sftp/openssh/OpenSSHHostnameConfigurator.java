@@ -18,19 +18,12 @@ package ch.cyberduck.core.sftp.openssh;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.HostnameConfigurator;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.exception.HostParserException;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-
-import java.util.Collections;
 
 public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
     private static final Logger log = Logger.getLogger(OpenSSHHostnameConfigurator.class);
@@ -69,26 +62,6 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
             return -1;
         }
         return configuration.lookup(alias).getPort();
-    }
-
-    public Host getJumphost(final String alias) {
-        if(StringUtils.isBlank(alias)) {
-            return null;
-        }
-        final String proxyJump = configuration.lookup(alias).getProxyJump();
-        if(StringUtils.isBlank(proxyJump)) {
-            return null;
-        }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Found jump host configuration %s from %s", proxyJump, configuration));
-        }
-        try {
-            return new HostParser(new ProtocolFactory(Collections.singleton(new SFTPProtocol())), new SFTPProtocol()).get(proxyJump);
-        }
-        catch(HostParserException e) {
-            log.warn(String.format("Failure parsing JumpHost directive %s", proxyJump));
-            return null;
-        }
     }
 
     @Override

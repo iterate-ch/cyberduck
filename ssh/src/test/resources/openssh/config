@@ -13,6 +13,8 @@ Host server2
 
 Host bastion-host-nickname
     HostName bastion-hostname
+    User user1
+    Port 2222
 
 Host remote-host-nickname
     HostName remote-hostname
