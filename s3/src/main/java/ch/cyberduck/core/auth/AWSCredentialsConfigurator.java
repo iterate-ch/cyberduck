@@ -21,6 +21,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 
 import org.apache.log4j.Logger;
+import org.jets3t.service.security.ProviderCredentials;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;
@@ -69,25 +70,25 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
         }
     }
 
-    public static AWSCredentialsProvider toAWSCredentialsProvider(final Credentials credentials) {
-        return credentials.isTokenAuthentication() ?
+    public static AWSCredentialsProvider toAWSCredentialsProvider(final ProviderCredentials credentials) {
+        return credentials instanceof org.jets3t.service.security.AWSSessionCredentials ?
             new AWSSessionCredentialsProvider() {
                 @Override
                 public AWSSessionCredentials getCredentials() {
                     return new AWSSessionCredentials() {
                         @Override
                         public String getSessionToken() {
-                            return credentials.getToken();
+                            return ((org.jets3t.service.security.AWSSessionCredentials) credentials).getSessionToken();
                         }
 
                         @Override
                         public String getAWSAccessKeyId() {
-                            return credentials.getUsername();
+                            return credentials.getAccessKey();
                         }
 
                         @Override
                         public String getAWSSecretKey() {
-                            return credentials.getPassword();
+                            return credentials.getSecretKey();
                         }
                     };
                 }
@@ -100,12 +101,12 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
             new AWSStaticCredentialsProvider(new AWSCredentials() {
                 @Override
                 public String getAWSAccessKeyId() {
-                    return credentials.getUsername();
+                    return credentials.getAccessKey();
                 }
 
                 @Override
                 public String getAWSSecretKey() {
-                    return credentials.getPassword();
+                    return credentials.getSecretKey();
                 }
             });
     }

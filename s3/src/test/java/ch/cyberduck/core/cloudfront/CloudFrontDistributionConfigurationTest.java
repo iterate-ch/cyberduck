@@ -1,9 +1,7 @@
 package ch.cyberduck.core.cloudfront;
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -11,7 +9,6 @@ import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
@@ -90,36 +87,6 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
         assertEquals(URI.create("rtmp://s9xwj9xzlfydi.cloudfront.net/cfx/st"), distribution.getUrl());
         assertNull(distribution.getIndexDocument());
         assertNull(distribution.getErrorDocument());
-    }
-
-    @Test(expected = LoginCanceledException.class)
-    public void testReadLoginFailure() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        final S3Session session = new S3Session(host);
-        final DistributionConfiguration configuration
-            = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager(), Collections.emptyMap());
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
-    }
-
-    @Test
-    public void testReadLoginFailureFix() throws Exception {
-        assertTrue(session.isConnected());
-        session.getHost().getCredentials().setPassword(null);
-        assertNull(session.getHost().getCredentials().getPassword());
-        final DistributionConfiguration configuration
-            = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager(), Collections.emptyMap());
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final AtomicBoolean set = new AtomicBoolean();
-        configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
-                set.set(true);
-                return new Credentials(username, System.getProperties().getProperty("s3.secret"));
-            }
-        });
-        assertTrue(set.get());
-        session.close();
     }
 
     @Test
