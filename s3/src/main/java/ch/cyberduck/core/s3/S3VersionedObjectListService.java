@@ -217,7 +217,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         null, null, false);
                     if(versions.getItems().length == 1) {
                         final BaseVersionOrDeleteMarker version = versions.getItems()[0];
-                        if(version.getKey().equals(common)) {
+                        if(URIEncoder.decode(version.getKey()).equals(common)) {
                             attributes.setVersionId(version.getVersionId());
                             if(version.isDeleteMarker()) {
                                 attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
