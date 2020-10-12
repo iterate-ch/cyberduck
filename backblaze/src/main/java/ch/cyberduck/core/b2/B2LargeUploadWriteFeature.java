@@ -208,6 +208,10 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                         // No single file upload and zero parts
                         overall.setVersion(new VersionId(new B2TouchFeature(session, fileid).touch(file, new TransferStatus()).attributes().getVersionId()));
                     }
+                    else {
+                        // Cancel upload
+                        session.getClient().cancelLargeFileUpload(overall.getVersion().id);
+                    }
                 }
                 else {
                     completed.sort(new Comparator<B2UploadPartResponse>() {
