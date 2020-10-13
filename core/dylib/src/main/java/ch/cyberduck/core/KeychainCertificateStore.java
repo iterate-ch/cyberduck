@@ -73,8 +73,6 @@ public final class KeychainCertificateStore implements CertificateStore {
             case SecTrustResultType.kSecTrustResultUnspecified:
                 // Accepted by user keychain setting explicitly
             case SecTrustResultType.kSecTrustResultProceed:
-                // Added for #11118; possible cause https://support.apple.com/en-us/HT210176
-            case SecTrustResultType.kSecTrustResultRecoverableTrustFailure:
                 return true;
             default:
                 if(log.isDebugEnabled()) {
