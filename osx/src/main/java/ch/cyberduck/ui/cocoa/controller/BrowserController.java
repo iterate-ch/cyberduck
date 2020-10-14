@@ -739,7 +739,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(accessoryView.respondsToSelector(Foundation.selector("setAutomaticallyAdjustsSize:"))) {
                 accessoryView.setAutomaticallyAdjustsSize(true);
             }
-            accessoryView.setLayoutAttribute(NSTitlebarAccessoryViewController.NSLayoutAttributeBottom);
+            accessoryView.setLayoutAttribute(NSTitlebarAccessoryViewController.NSLayoutAttributeRight);
         }
     }
 
