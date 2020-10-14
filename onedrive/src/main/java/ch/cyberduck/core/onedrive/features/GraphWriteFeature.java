@@ -147,7 +147,7 @@ public class GraphWriteFeature implements Write<Void> {
                 header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), length);
             }
             try {
-                new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
+                new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                     @Override
                     public Void call() throws BackgroundException {
                         try {
