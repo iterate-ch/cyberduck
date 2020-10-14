@@ -17,9 +17,13 @@ package ch.cyberduck.core.onedrive.features;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
@@ -31,6 +35,9 @@ import ch.cyberduck.core.io.FileBuffer;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.threading.BackgroundExceptionCallable;
+import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -76,9 +83,28 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
                     else {
                         final HttpResponseOutputStream<Void> out = new GraphWriteFeature(session).write(file,
                             range, callback);
-                        IOUtils.copy(new BufferInputStream(buffer), out);
-                        out.close();
-                        log.info(String.format("Completed upload for %s with status %s", file, range));
+                        new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
+                            @Override
+                            public Void call() throws BackgroundException {
+                                try {
+                                    IOUtils.copy(new BufferInputStream(buffer), out);
+                                    out.close();
+                                    log.info(String.format("Completed upload for %s with status %s", file, range));
+                                    return null;
+                                }
+                                catch(IOException e) {
+                                    throw new DefaultIOExceptionMappingService().map(e);
+                                }
+                            }
+                        }, status) {
+                            @Override
+                            public boolean retry(final BackgroundException failure, final ProgressListener progress, final BackgroundActionState cancel) {
+                                if(failure instanceof InteroperabilityException) {
+                                    return super.retry(new RetriableAccessDeniedException(failure.getDetail(), failure), progress, cancel);
+                                }
+                                return super.retry(failure, progress, cancel);
+                            }
+                        }.call();
                     }
                     super.close();
                 }
