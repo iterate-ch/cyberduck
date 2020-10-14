@@ -807,6 +807,7 @@ public abstract class Preferences implements Locales {
         // Each part can be anywhere from 100MB to 5GB in size
         this.setDefault("b2.upload.largeobject.size", String.valueOf(100 * 1024L * 1024L));
         this.setDefault("b2.upload.largeobject.size.minimum", String.valueOf(5 * 1024L * 1024L));
+        this.setDefault("b2.copy.largeobject.threshold", String.valueOf(10 * 1024L * 1024L)); // 10MB
 
         this.setDefault("b2.metadata.default", StringUtils.EMPTY);
 

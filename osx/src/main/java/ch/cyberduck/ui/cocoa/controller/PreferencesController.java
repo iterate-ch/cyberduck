@@ -56,7 +56,6 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.Arrays;
@@ -268,8 +267,9 @@ public class PreferencesController extends ToolbarWindowController {
     public void setWindow(NSWindow window) {
         window.setExcludedFromWindowsMenu(true);
         window.setFrameAutosaveName("Preferences");
-        window.setContentMinSize(window.frame().size);
-        window.setContentMaxSize(new NSSize(800, window.frame().size.height.doubleValue()));
+        if(window.respondsToSelector(Foundation.selector("setToolbarStyle:"))) {
+            window.setToolbarStyle(NSWindow.NSWindowToolbarStyle.NSWindowToolbarStylePreference);
+        }
         super.setWindow(window);
     }
 

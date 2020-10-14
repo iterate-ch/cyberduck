@@ -44,6 +44,7 @@ import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -53,15 +54,6 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class S3VersionedObjectListServiceTest extends AbstractS3Test {
-
-    @Test
-    public void testDirectory() throws Exception {
-        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        assertTrue(new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
-    }
 
     @Test
     public void testList() throws Exception {
@@ -183,5 +175,81 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         assertTrue(new S3VersionedObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
         assertTrue(new S3VersionedObjectListService(session).list(placeholder, new DisabledListProgressListener()).isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    //                                         | directory placeholder without delete marker | directory placeholder with delete marker  | no directory placeholder
+    // no child objects                        |               !hidden (1)                   |                    hidden (2)             |          xxx
+    // all child objects have a delete marker  |               !hidden (3)                   |                    hidden (4)             |         hidden (5)
+    // some child objects have a delete marker |               !hidden (6)                   |                    !hidden (7)            |         !hidden (8)
+    //
+
+    /*
+        Testcases (1) and (2)
+     */
+    @Test
+    public void testDirectoyPlaceholderNoChildren() throws Exception {
+        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertFalse(hidden(directory, new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener())));
+        directory.attributes().setVersionId(null);
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(hidden(directory, new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener())));
+    }
+
+    /*
+        Testcases (3), (4), (6) and (7)
+     */
+    @Test
+    public void testDirectoyPlaceholderWithChildren() throws Exception {
+        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertTrue(new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
+        final Path child1 = new S3TouchFeature(session).touch(new Path(directory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new S3VersionedObjectListService(session).list(directory, new DisabledListProgressListener()).contains(child1));
+        child1.attributes().setVersionId(null);
+        final Path child2 = new S3TouchFeature(session).touch(new Path(directory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new S3VersionedObjectListService(session).list(directory, new DisabledListProgressListener()).contains(child2));
+        child2.attributes().setVersionId(null);
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(child1), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(hidden(child1, new S3VersionedObjectListService(session).list(directory, new DisabledListProgressListener())));
+        assertFalse(hidden(directory, new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener())));
+        directory.attributes().setVersionId(null);
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(hidden(directory, new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener())));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(child2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(hidden(child2, new S3VersionedObjectListService(session).list(directory, new DisabledListProgressListener())));
+        assertTrue(hidden(directory, new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener())));
+    }
+
+    /*
+        Testcases (5) and (8)
+     */
+    @Test
+    public void testNoDirectoyPlaceholderWithChildren() throws Exception {
+        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path directory = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path child1 = new S3TouchFeature(session).touch(new Path(directory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
+        assertTrue(new S3VersionedObjectListService(session).list(directory, new DisabledListProgressListener()).contains(child1));
+        child1.attributes().setVersionId(null);
+        final Path child2 = new S3TouchFeature(session).touch(new Path(directory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new S3VersionedObjectListService(session).list(directory, new DisabledListProgressListener()).contains(child2));
+        child2.attributes().setVersionId(null);
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(child1), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(hidden(child1, new S3VersionedObjectListService(session).list(directory, new DisabledListProgressListener())));
+        assertFalse(hidden(directory, new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener())));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(child2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(hidden(child2, new S3VersionedObjectListService(session).list(directory, new DisabledListProgressListener())));
+        assertTrue(hidden(directory, new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener())));
+    }
+
+    private boolean hidden(final Path path, final AttributedList<Path> list) {
+        for(Path p : list) {
+            if(new SimplePathPredicate(p).equals(new SimplePathPredicate(path))) {
+                return p.attributes().isDuplicate();
+            }
+        }
+        fail(MessageFormat.format("Path {0} not found", path));
+        return false;
     }
 }

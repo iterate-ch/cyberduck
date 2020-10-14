@@ -23,9 +23,10 @@
 
     <import file="../../build.xml"/>
 
-    <property name="app.runtime.system.min" value="10.8"/>
+    <property name="app.runtime.archs" value="x86_64"/>
+    <property name="app.runtime.system.min" value="10.9"/>
     <property name="build.xcodeoptions"
-              value="OTHER_LDFLAGS=-headerpad_max_install_names SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
+              value="OTHER_LDFLAGS=-headerpad_max_install_names SYMROOT=${build} SDKROOT=macosx ARCHS=${app.runtime.archs} MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 
     <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="libcore"/>

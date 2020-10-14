@@ -22,10 +22,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.util.Map;
 
 public class GoogleStorageDeleteFeature implements Delete {
+    private static final Logger log = Logger.getLogger(GoogleStorageDeleteFeature.class);
 
     private final PathContainerService containerService
         = new GoogleStoragePathContainerService();
@@ -44,6 +47,9 @@ public class GoogleStorageDeleteFeature implements Delete {
                 if(containerService.isContainer(file)) {
                     session.getClient().buckets().delete(file.getName()).execute();
                 }
+                else if(file.isPlaceholder()) {
+                    log.warn(String.format("Do not attempt to delete placeholder %s", file));
+                }
                 else {
                     session.getClient().objects().delete(containerService.getContainer(file).getName(), containerService.getKey(file)).execute();
                 }
@@ -57,10 +63,5 @@ public class GoogleStorageDeleteFeature implements Delete {
     @Override
     public boolean isSupported(final Path file) {
         return true;
-    }
-
-    @Override
-    public boolean isRecursive() {
-        return false;
     }
 }

@@ -32,7 +32,7 @@ public class B2ThresholdCopyFeature implements Copy {
     private final Long threshold;
 
     public B2ThresholdCopyFeature(final B2Session session, final B2FileidProvider fileid) {
-        this(session, fileid, PreferencesFactory.get().getLong("b2.upload.largeobject.threshold"));
+        this(session, fileid, PreferencesFactory.get().getLong("b2.copy.largeobject.threshold"));
     }
 
     public B2ThresholdCopyFeature(final B2Session session, final B2FileidProvider fileid, final Long threshold) {

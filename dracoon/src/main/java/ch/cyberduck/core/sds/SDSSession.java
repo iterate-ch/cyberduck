@@ -91,7 +91,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static final int DEFAULT_CHUNKSIZE = 16;
 
-    private static final String VERSION_REGEX = "(([0-9]+)\\.([0-9]+)\\.([0-9]+)).*";
+    public static final String VERSION_REGEX = "(([0-9]+)\\.([0-9]+)\\.([0-9]+)).*";
 
     protected SDSErrorResponseInterceptor retryHandler;
     protected OAuth2RequestInterceptor authorizationService;

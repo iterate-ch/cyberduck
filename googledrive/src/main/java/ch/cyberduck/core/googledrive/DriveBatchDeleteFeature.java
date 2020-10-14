@@ -91,11 +91,6 @@ public class DriveBatchDeleteFeature implements Delete {
         }
     }
 
-    @Override
-    public boolean isRecursive() {
-        return false;
-    }
-
     private static class DeleteBatchCallback<V> extends JsonBatchCallback<V> {
         private final Path file;
         private final List<BackgroundException> failures;

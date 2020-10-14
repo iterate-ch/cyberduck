@@ -179,9 +179,4 @@ public class B2LargeCopyFeature implements Copy {
             }
         }, overall));
     }
-
-    @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return false;
-    }
 }

@@ -66,5 +66,4 @@ public class FTPMoveFeature implements Move {
     public boolean isSupported(final Path source, final Path target) {
         return true;
     }
-
 }

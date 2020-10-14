@@ -199,11 +199,18 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     public static boolean isAwsHostname(final String hostname) {
-        // Matches s3.amazonaws.com
-        // Matches s3.cn-north-1.amazonaws.com.cn
-        // Matches s3.cn-northwest-1.amazonaws.com.cn
-        // Matches s3-us-gov-west-1.amazonaws.com
-        return hostname.matches("s3(\\.[a-z0-9\\-]+)?\\.amazonaws\\.com(\\.cn)?");
+        return isAwsHostname(hostname, true);
+    }
+
+    public static boolean isAwsHostname(final String hostname, boolean cn) {
+        if(cn) {
+            // Matches s3.amazonaws.com
+            // Matches s3.cn-north-1.amazonaws.com.cn
+            // Matches s3.cn-northwest-1.amazonaws.com.cn
+            // Matches s3-us-gov-west-1.amazonaws.com
+            return hostname.matches("s3(\\.[a-z0-9\\-]+)?\\.amazonaws\\.com(\\.cn)?");
+        }
+        return hostname.matches("s3(\\.[a-z0-9\\-]+)?\\.amazonaws\\.com");
     }
 
     @Override

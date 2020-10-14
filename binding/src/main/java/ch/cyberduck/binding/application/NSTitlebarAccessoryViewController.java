@@ -39,5 +39,7 @@ public abstract class NSTitlebarAccessoryViewController extends NSResponder {
 
     public abstract void setLayoutAttribute(NSInteger layout);
 
+    public abstract void setAutomaticallyAdjustsSize(boolean value);
+
     public abstract void setView(NSView view);
 }

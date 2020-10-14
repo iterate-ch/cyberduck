@@ -15,9 +15,11 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import java.util.Objects;
+
 public class Version implements Comparable<Version> {
 
-    private String version;
+    private final String version;
 
     public Version(String version) {
         this.version = version;
@@ -39,6 +41,11 @@ public class Version implements Comparable<Version> {
             }
         }
         return 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(version);
     }
 
     @Override

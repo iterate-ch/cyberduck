@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17156" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17156"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -38,7 +38,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <rect key="contentRect" x="67" y="115" width="601" height="451"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1669"/>
             <value key="minSize" type="size" width="600" height="200"/>
             <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="601" height="451"/>
@@ -115,9 +115,6 @@
                                                 <rect key="frame" x="-22" y="1" width="15" height="431"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <connections>
-                                                <outlet property="nextKeyView" destination="55" id="161"/>
-                                            </connections>
                                         </scrollView>
                                         <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" minValue="16" maxValue="100" doubleValue="16" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="28">
                                             <rect key="frame" x="284" y="184" width="32" height="32"/>
@@ -244,17 +241,8 @@
                                 <rect key="frame" x="0.0" y="-2" width="603" height="5"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                             </box>
-                            <searchField wantsLayer="YES" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="55">
-                                <rect key="frame" x="469" y="7" width="124" height="22"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" bezelStyle="round" id="56">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </searchFieldCell>
-                            </searchField>
                             <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="57">
-                                <rect key="frame" x="423" y="5" width="41" height="24"/>
+                                <rect key="frame" x="554" y="5" width="41" height="24"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="58">
                                     <font key="font" metaFont="system"/>
@@ -279,11 +267,11 @@
                                 </segmentedCell>
                             </segmentedControl>
                             <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="59">
-                                <rect key="frame" x="238" y="4" width="183" height="26"/>
+                                <rect key="frame" x="238" y="4" width="313" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="truncatingMiddle" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="62" id="60">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="OtherViews" id="61">
                                         <items>
                                             <menuItem title=" " state="on" id="62"/>
@@ -316,7 +304,7 @@
                     </customView>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="132" y="147"/>
+            <point key="canvasLocation" x="131.5" y="146.5"/>
         </window>
         <menu title="Menu" id="65">
             <items>
@@ -552,6 +540,16 @@ DQ
                 <font key="font" metaFont="message" size="11"/>
             </buttonCell>
         </button>
+        <searchField wantsLayer="YES" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="55">
+            <rect key="frame" x="0.0" y="0.0" width="124" height="22"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+            <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" bezelStyle="round" id="56">
+                <font key="font" metaFont="system"/>
+                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+            </searchFieldCell>
+            <point key="canvasLocation" x="-10" y="463"/>
+        </searchField>
     </objects>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>

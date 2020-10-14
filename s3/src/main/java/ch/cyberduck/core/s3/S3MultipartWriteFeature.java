@@ -119,7 +119,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
          * Completed parts
          */
         private final List<MultipartPart> completed
-            = new ArrayList<MultipartPart>();
+            = new ArrayList<>();
 
         private final MultipartUpload multipart;
         private final Path file;
@@ -145,10 +145,10 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
             try {
-                completed.add(new DefaultRetryCallable<MultipartPart>(session.getHost(), new BackgroundExceptionCallable<MultipartPart>() {
+                completed.add(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<MultipartPart>() {
                     @Override
                     public MultipartPart call() throws BackgroundException {
-                        final Map<String, String> parameters = new HashMap<String, String>();
+                        final Map<String, String> parameters = new HashMap<>();
                         parameters.put("uploadId", multipart.getUploadId());
                         parameters.put("partNumber", String.valueOf(++partNumber));
                         final TransferStatus status = new TransferStatus().withParameters(parameters).length(len);

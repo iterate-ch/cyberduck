@@ -23,6 +23,7 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSPopUpButton;
+import ch.cyberduck.binding.application.NSSearchToolbarItem;
 import ch.cyberduck.binding.application.NSSegmentedControl;
 import ch.cyberduck.binding.application.NSToolbarItem;
 import ch.cyberduck.binding.application.NSView;
@@ -136,6 +137,12 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
             @Override
             public String tooltip() {
                 return LocaleFactory.localizedString("Connect to server");
+            }
+        },
+        search {
+            @Override
+            public Selector action() {
+                return Foundation.selector("searchFieldTextDidChange:");
             }
         },
         tools {
@@ -436,7 +443,13 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
     @Override
     public NSToolbarItem create(final String identifier) {
         if(!toolbarItems.containsKey(identifier)) {
-            toolbarItems.put(identifier, CDToolbarItem.itemWithIdentifier(identifier));
+            switch(BrowserToolbarItem.valueOf(identifier)) {
+                case search:
+                    toolbarItems.put(identifier, NSSearchToolbarItem.itemWithIdentifier(identifier));
+                    break;
+                default:
+                    toolbarItems.put(identifier, CDToolbarItem.itemWithIdentifier(identifier));
+            }
         }
         final NSToolbarItem item = toolbarItems.get(identifier);
         try {
@@ -593,6 +606,12 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     item.setView(button);
                     return item;
                 }
+                case search: {
+                    item.setLabel(search.label());
+                    item.setPaletteLabel(search.label());
+                    item.setView(controller.getSearchField());
+                    return item;
+                }
                 default: {
                     item.setLabel(type.label());
                     item.setPaletteLabel(LocaleFactory.localizedString(type.label()));
@@ -624,6 +643,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
             reload.name(),
             edit.name(),
             NSToolbarItem.NSToolbarFlexibleSpaceItemIdentifier,
+            search.name(),
             disconnect.name()
         );
     }
@@ -651,6 +671,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
             archive.name(),
             quicklook.name(),
             cryptomator.name(),
+            search.name(),
             disconnect.name(),
             NSToolbarItem.NSToolbarCustomizeToolbarItemIdentifier,
             NSToolbarItem.NSToolbarSpaceItemIdentifier,

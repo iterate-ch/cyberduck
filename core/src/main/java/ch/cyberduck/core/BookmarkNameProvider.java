@@ -35,23 +35,43 @@ public final class BookmarkNameProvider {
             if(StringUtils.isNotBlank(bookmark.getProtocol().getDefaultNickname())) {
                 return bookmark.getProtocol().getDefaultNickname();
             }
-            final String prefix;
             // Return default bookmark name
-            if(username && !bookmark.getCredentials().isAnonymousLogin() && StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
-                prefix = String.format("%s@", bookmark.getCredentials().getUsername());
+            final String hostname = toHostname(bookmark, username);
+            if(StringUtils.isBlank(hostname)) {
+                return bookmark.getProtocol().getName();
             }
-            else {
-                prefix = StringUtils.EMPTY;
-            }
-            if(StringUtils.isNotBlank(bookmark.getHostname())) {
-                return String.format("%s%s \u2013 %s", prefix, StringUtils.strip(bookmark.getHostname()), bookmark.getProtocol().getName());
-            }
-            if(StringUtils.isNotBlank(bookmark.getProtocol().getDefaultHostname())) {
-                return String.format("%s%s \u2013 %s", prefix, StringUtils.strip(bookmark.getProtocol().getDefaultHostname()), bookmark.getProtocol().getName());
-            }
-            return String.format("%s%s", prefix, bookmark.getProtocol().getName());
+            return hostname + StringUtils.SPACE + '\u2013' + StringUtils.SPACE + bookmark.getProtocol().getName();
         }
         // Return custom bookmark name set
         return bookmark.getNickname();
+    }
+
+    public static String toProtocol(final Host bookmark) {
+        if(StringUtils.isEmpty(bookmark.getNickname())) {
+            if(StringUtils.isNotBlank(bookmark.getProtocol().getDefaultNickname())) {
+                return bookmark.getProtocol().getDefaultNickname();
+            }
+            return bookmark.getProtocol().getName();
+        }
+        // Return custom bookmark name set
+        return bookmark.getNickname();
+    }
+
+    public static String toHostname(final Host bookmark) {
+        return toHostname(bookmark, false);
+    }
+
+    public static String toHostname(final Host bookmark, final boolean username) {
+        final StringBuilder prefix = new StringBuilder();
+        if(username && !bookmark.getCredentials().isAnonymousLogin() && StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
+            prefix.append(String.format("%s@", bookmark.getCredentials().getUsername()));
+        }
+        if(StringUtils.isNotBlank(bookmark.getHostname())) {
+            prefix.append(StringUtils.strip(bookmark.getHostname()));
+        }
+        else if(StringUtils.isNotBlank(bookmark.getProtocol().getDefaultHostname())) {
+            prefix.append(StringUtils.strip(bookmark.getProtocol().getDefaultHostname()));
+        }
+        return prefix.toString();
     }
 }

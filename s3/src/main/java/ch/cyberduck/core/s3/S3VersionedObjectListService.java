@@ -217,20 +217,17 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         null, null, false);
                     if(versions.getItems().length == 1) {
                         final BaseVersionOrDeleteMarker version = versions.getItems()[0];
-                        if(version.getKey().equals(common)) {
+                        if(URIEncoder.decode(version.getKey()).equals(common)) {
                             attributes.setVersionId(version.getVersionId());
                             if(version.isDeleteMarker()) {
                                 attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-                                attributes.setDuplicate(true);
                             }
                         }
-                        else {
-                            // no placeholder but objects inside - need to check if all of them are deleted
-                            final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
-                                null, 1, null, false);
-                            if(unversioned.getObjects().length == 0) {
-                                attributes.setDuplicate(true);
-                            }
+                        // no placeholder but objects inside - need to check if all of them are deleted
+                        final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
+                            null, 1, null, false);
+                        if(unversioned.getObjects().length == 0) {
+                            attributes.setDuplicate(true);
                         }
                     }
                     return prefix;

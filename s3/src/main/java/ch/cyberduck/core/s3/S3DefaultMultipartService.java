@@ -67,6 +67,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
         // not yet been completed or aborted.
         String nextUploadIdMarker = null;
         String nextKeyMarker = null;
+        boolean isTruncated;
         do {
             final String prefix = containerService.isContainer(file) ? StringUtils.EMPTY : containerService.getKey(file);
             final MultipartUploadChunk chunk;
@@ -98,8 +99,9 @@ public class S3DefaultMultipartService implements S3MultipartService {
             });
             nextKeyMarker = chunk.getPriorLastKey();
             nextUploadIdMarker = chunk.getPriorLastIdMarker();
+            isTruncated = !chunk.isListingComplete();
         }
-        while(nextUploadIdMarker != null);
+        while(isTruncated && nextUploadIdMarker != null);
         if(log.isInfoEnabled()) {
             for(MultipartUpload upload : uploads) {
                 log.info(String.format("Found multipart upload %s for %s", upload, file));

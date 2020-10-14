@@ -20,8 +20,9 @@
     <property name="cli.bundle" value="${build}/duck.bundle"/>
 
     <property name="app.name" value="Cyberduck"/>
-    <property name="app.runtime.system.min" value="10.8"/>
-    <property name="build.xcodeoptions" value="SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
+    <property name="app.runtime.archs" value="x86_64"/>
+    <property name="app.runtime.system.min" value="10.9"/>
+    <property name="build.xcodeoptions" value="SYMROOT=${build} SDKROOT=macosx ARCHS=${app.runtime.archs} MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 
     <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="cli"/>

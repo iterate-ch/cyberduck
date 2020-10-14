@@ -641,13 +641,25 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void setWindow(NSWindow window) {
         // Save frame rectangle
         window.setFrameAutosaveName("Browser");
-        window.setTitle(preferences.getProperty("application.name"));
+        if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+            window.setTitle(StringUtils.EMPTY);
+            window.setSubtitle(StringUtils.EMPTY);
+        }
+        else {
+            window.setTitle(preferences.getProperty("application.name"));
+        }
         window.setMiniwindowImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
         window.setContentMinSize(new NSSize(600d, 200d));
         if(window.respondsToSelector(Foundation.selector("setTabbingIdentifier:"))) {
             window.setTabbingIdentifier(preferences.getProperty("browser.window.tabbing.identifier"));
+        }
+        if(window.respondsToSelector(Foundation.selector("setToolbarStyle:"))) {
+            window.setToolbarStyle(NSWindow.NSWindowToolbarStyle.NSWindowToolbarStyleUnified);
+        }
+        if(window.respondsToSelector(Foundation.selector("setTitlebarSeparatorStyle:"))) {
+            window.setTitlebarSeparatorStyle(NSWindow.NSTitlebarSeparatorStyle.NSTitlebarSeparatorStyleNone);
         }
         super.setWindow(window);
         // Accept file promises from history tab
@@ -723,8 +735,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             view.setFrameSize(new NSSize(button.frame().size.width.doubleValue() + 10d, button.frame().size.height.doubleValue()));
             view.addSubview(button);
             accessoryView = NSTitlebarAccessoryViewController.create();
-            accessoryView.setLayoutAttribute(NSTitlebarAccessoryViewController.NSLayoutAttributeRight);
             accessoryView.setView(view);
+            if(accessoryView.respondsToSelector(Foundation.selector("setAutomaticallyAdjustsSize:"))) {
+                accessoryView.setAutomaticallyAdjustsSize(true);
+            }
+            accessoryView.setLayoutAttribute(NSTitlebarAccessoryViewController.NSLayoutAttributeRight);
         }
     }
 
@@ -1663,6 +1678,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         catch(HostParserException e) {
             log.warn(e);
         }
+    }
+
+    public NSSearchField getSearchField() {
+        return searchField;
     }
 
     @Action
@@ -3160,7 +3179,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     @Override
                     public void init() {
                         super.init();
-                        window.setTitle(BookmarkNameProvider.toString(bookmark, true));
+                        if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+                            window.setTitle(BookmarkNameProvider.toProtocol(bookmark));
+                            window.setSubtitle(BookmarkNameProvider.toHostname(bookmark, true));
+                        }
+                        else {
+                            window.setTitle(BookmarkNameProvider.toString(bookmark, true));
+                        }
                         window.setRepresentedFilename(StringUtils.EMPTY);
                         // Update status icon
                         bookmarkTable.setNeedsDisplay();
@@ -3239,7 +3264,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 pool = SessionPool.DISCONNECTED;
                 cache.clear();
                 setWorkdir(null);
-                window.setTitle(preferences.getProperty("application.name"));
+                window.setTitle(StringUtils.EMPTY);
+                if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+                    window.setSubtitle(StringUtils.EMPTY);
+                }
                 window.setRepresentedFilename(StringUtils.EMPTY);
                 navigation.clear();
                 disconnected.run();

@@ -58,9 +58,4 @@ public class LocalDeleteFeature implements Delete {
             }
         }
     }
-
-    @Override
-    public boolean isRecursive() {
-        return false;
-    }
 }
