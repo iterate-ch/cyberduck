@@ -297,7 +297,7 @@
             <dependency>
                 <groupId>com.google.oauth-client</groupId>
                 <artifactId>google-oauth-client</artifactId>
-                <version>1.31.0</version>
+                <version>1.31.1</version>
             </dependency>
             <dependency>
                 <groupId>com.google.api-client</groupId>
