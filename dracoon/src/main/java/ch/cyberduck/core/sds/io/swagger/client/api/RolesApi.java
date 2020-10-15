@@ -1,22 +1,25 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
+
+import javax.ws.rs.core.GenericType;
+
+import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.GroupIds;
 import ch.cyberduck.core.sds.io.swagger.client.model.RoleGroupList;
 import ch.cyberduck.core.sds.io.swagger.client.model.RoleList;
 import ch.cyberduck.core.sds.io.swagger.client.model.RoleUserList;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserIds;
 
-import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-11T16:33:00.814633+02:00[Europe/Zurich]")public class RolesApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class RolesApi {
   private ApiClient apiClient;
 
   public RolesApi() {

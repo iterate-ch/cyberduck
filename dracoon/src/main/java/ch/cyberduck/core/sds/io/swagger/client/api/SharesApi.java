@@ -1,9 +1,12 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
+
+import javax.ws.rs.core.GenericType;
+
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateUploadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.DeleteDownloadSharesRequest;
@@ -11,19 +14,20 @@ import ch.cyberduck.core.sds.io.swagger.client.model.DeleteUploadSharesRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.DownloadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.DownloadShareLinkEmail;
 import ch.cyberduck.core.sds.io.swagger.client.model.DownloadShareList;
+import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse400;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateDownloadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateUploadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UploadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.UploadShareLinkEmail;
 import ch.cyberduck.core.sds.io.swagger.client.model.UploadShareList;
 
-import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-11T16:33:00.814633+02:00[Europe/Zurich]")public class SharesApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class SharesApi {
   private ApiClient apiClient;
 
   public SharesApi() {

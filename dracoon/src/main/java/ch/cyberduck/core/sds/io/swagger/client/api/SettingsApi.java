@@ -1,13 +1,17 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
+
+import javax.ws.rs.core.GenericType;
+
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateKeyPairRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateWebhookRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CustomerSettingsRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CustomerSettingsResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.EventTypeList;
 import ch.cyberduck.core.sds.io.swagger.client.model.NotificationChannelActivationRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.NotificationChannelList;
@@ -16,13 +20,12 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.io.swagger.client.model.Webhook;
 import ch.cyberduck.core.sds.io.swagger.client.model.WebhookList;
 
-import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-11T16:33:00.814633+02:00[Europe/Zurich]")public class SettingsApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class SettingsApi {
   private ApiClient apiClient;
 
   public SettingsApi() {
@@ -43,7 +46,7 @@ import java.util.Map;
 
   /**
    * Create system rescue key pair and preserve copy of old private key (NEW)
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Create system rescue key pair and preserve copy of old private key.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; required.  ### Postcondition: System rescue key pair is created.   Copy of old private key is preserved.  ### Further Information: You can submit your old private key, encrypted with your current password.   This allows migrating file keys encrypted with your old key pair to the new one. 
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Create system rescue key pair and preserve copy of old private key.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; required.  ### Postcondition: System rescue key pair is created.   Copy of old private key is preserved.  ### Further Information: You can submit your old private key, encrypted with your current password.   This allows migrating file keys encrypted with your old key pair to the new one. 
    * @param body  (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
@@ -129,7 +132,7 @@ import java.util.Map;
   /**
    * Remove system rescue key pair (NEW)
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Remove the system rescue key pair.  ### Precondition: * Authenticated user * Existence of own key pair  ### Postcondition: Key pair is removed (cf. further information below).  ### Further Information: Please set a new system rescue key pair first and re-encrypt file keys with it.   If no version is set, deleted key pair with lowest preference value.   Although, &#x60;version&#x60; **SHOULD** be set. 
-   * @param version Version&lt;sup style&#x3D;\&quot;color:green;\&quot;&gt;&lt;b&gt; * new&lt;/b&gt;&lt;/sup&gt; (optional)
+   * @param version Version (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
@@ -206,7 +209,7 @@ import java.util.Map;
   }
   /**
    * Request all system rescue key pairs (NEW)
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Retrieve all key pairs to allow migrating system-rescue-key-encrypted file keys.  ### Precondition: * Authenticated user * Existence of own key pair  ### Postcondition: List of key pairs is returned.  ### Further Information: In the case of an algorithm migration of a system rescue key, one should create the new key pair before deleting the old one.   This allows re-encrypting file keys with the new key pair, using the old one.    This API allows to retrieve both key pairs, in contrast to &#x60;GET /settings/keypair&#x60;, which only delivers the preferred one. 
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Retrieve all system rescue key pairs to allow migrating system-rescue-key-encrypted file keys.  ### Precondition: * Authenticated user * Existence of own key pair  ### Postcondition: List of key pairs is returned.  ### Further Information: In the case of an algorithm migration of a system rescue key, one should create the new key pair before deleting the old one.   This allows re-encrypting file keys with the new key pair, using the old one.    This API allows to retrieve both key pairs, in contrast to &#x60;GET /settings/keypair&#x60;, which only delivers the preferred one. 
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return List&lt;UserKeyPairContainer&gt;
@@ -407,7 +410,7 @@ import java.util.Map;
    * Request system rescue key pair (NEW)
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Retrieve the system rescue key pair.  ### Precondition: * Authenticated user * Existence of own key pair  ### Postcondition: Key pair is returned.  ### Further Information: If more than one key pair exists the one with highest preference value is returned. 
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param version Version&lt;sup style&#x3D;\&quot;color:green;\&quot;&gt;&lt;b&gt; * new&lt;/b&gt;&lt;/sup&gt; (optional)
+   * @param version Version (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return UserKeyPairContainer
    * @throws ApiException if fails to make API call

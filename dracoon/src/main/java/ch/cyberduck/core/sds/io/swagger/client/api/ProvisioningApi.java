@@ -1,15 +1,20 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
+
+import javax.ws.rs.core.GenericType;
+
 import ch.cyberduck.core.sds.io.swagger.client.model.AttributesResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateWebhookRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.Customer;
 import ch.cyberduck.core.sds.io.swagger.client.model.CustomerAttributes;
 import ch.cyberduck.core.sds.io.swagger.client.model.CustomerList;
+import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.EventTypeList;
+import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse400;
 import ch.cyberduck.core.sds.io.swagger.client.model.NewCustomerRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.NewCustomerResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateCustomerRequest;
@@ -19,13 +24,12 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserList;
 import ch.cyberduck.core.sds.io.swagger.client.model.Webhook;
 import ch.cyberduck.core.sds.io.swagger.client.model.WebhookList;
 
-import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-11T16:33:00.814633+02:00[Europe/Zurich]")public class ProvisioningApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class ProvisioningApi {
   private ApiClient apiClient;
 
   public ProvisioningApi() {

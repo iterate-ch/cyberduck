@@ -1,19 +1,72 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
-import ch.cyberduck.core.sds.io.swagger.client.model.*;
 
 import javax.ws.rs.core.GenericType;
+
+import ch.cyberduck.core.sds.io.swagger.client.model.ChangeNodeCommentRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.ChunkUploadResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.Comment;
+import ch.cyberduck.core.sds.io.swagger.client.model.CommentList;
+import ch.cyberduck.core.sds.io.swagger.client.model.CompleteS3FileUploadRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.ConfigRoomRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CopyNodesRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateFolderRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateKeyPairRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateNodeCommentRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateRoomRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.DeleteDeletedNodesRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.DeleteNodesRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNode;
+import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNodeSummaryList;
+import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNodeVersionsList;
+import ch.cyberduck.core.sds.io.swagger.client.model.DownloadTokenGenerateResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.EncryptRoomRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import java.io.File;
+import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
+import ch.cyberduck.core.sds.io.swagger.client.model.GeneratePresignedUrlsRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.LogEventList;
+import ch.cyberduck.core.sds.io.swagger.client.model.MissingKeysResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.MoveNodesRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
+import ch.cyberduck.core.sds.io.swagger.client.model.NodeParentList;
+import ch.cyberduck.core.sds.io.swagger.client.model.PendingAssignmentList;
+import ch.cyberduck.core.sds.io.swagger.client.model.PendingAssignmentsRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.PresignedUrlList;
+import ch.cyberduck.core.sds.io.swagger.client.model.RestoreDeletedNodesRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.RoomGroupList;
+import ch.cyberduck.core.sds.io.swagger.client.model.RoomGroupsAddBatchRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.RoomGroupsDeleteBatchRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.RoomUserList;
+import ch.cyberduck.core.sds.io.swagger.client.model.RoomUsersAddBatchRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.RoomUsersDeleteBatchRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.RoomWebhookList;
+import ch.cyberduck.core.sds.io.swagger.client.model.S3FileUploadStatus;
+import ch.cyberduck.core.sds.io.swagger.client.model.S3TagIds;
+import ch.cyberduck.core.sds.io.swagger.client.model.S3TagList;
+import ch.cyberduck.core.sds.io.swagger.client.model.SyslogEventList;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFileRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFolderRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomWebhookRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetBatchRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
+import ch.cyberduck.core.sds.io.swagger.client.model.ZipDownloadRequest;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-11T16:33:00.814633+02:00[Europe/Zurich]")public class NodesApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class NodesApi {
   private ApiClient apiClient;
 
   public NodesApi() {
@@ -593,7 +646,7 @@ import java.util.Map;
    * Download file
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.3.0&lt;/h3&gt;  ### Use &#x60;downloads&#x60; API  ### Description: Download a file.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in parent room.  ### Postcondition: Stream is returned.  ### Further Information: Range requests are supported for details.
    * @param fileId File ID (required)
-   * @param range Range  e.g. &#x60;bytes&#x3D;0-999/3980&#x60; (optional)
+   * @param range Range   e.g. &#x60;bytes&#x3D;0-999/3980&#x60; (optional)
    * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
    * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
    * @param xSdsAuthToken Authentication token (optional)
@@ -645,7 +698,7 @@ import java.util.Map;
    * Download file
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.3.0&lt;/h3&gt;  ### Use &#x60;downloads&#x60; API  ### Description: Download a file.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in parent room.  ### Postcondition: Stream is returned.  ### Further Information: Range requests are supported for details.
    * @param fileId File ID (required)
-   * @param range Range  e.g. &#x60;bytes&#x3D;0-999/3980&#x60; (optional)
+   * @param range Range   e.g. &#x60;bytes&#x3D;0-999/3980&#x60; (optional)
    * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
    * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
    * @param xSdsAuthToken Authentication token (optional)
@@ -1265,9 +1318,9 @@ import java.util.Map;
   }
   /**
    * Remove rooms&#x27;s rescue key pair (NEW)
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Delete room&#x27;s rescue key pair.  ### Precondition: Authenticated user.  ### Postcondition: Key pair is removed (cf. further information below).  ### Further Information: Please set a new room rescue key pair first and re-encrypt file keys with it.   If no version is set, deleted key pair with lowest preference value.   Although, &#x60;version&#x60; **SHOULD** be set. 
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Delete room rescue key pair.  ### Precondition: Authenticated user.  ### Postcondition: Key pair is removed (cf. further information below).  ### Further Information: Please set a new room rescue key pair first and re-encrypt file keys with it.   If no version is set, deleted key pair with lowest preference value.   Although, &#x60;version&#x60; **SHOULD** be set. 
    * @param roomId Room ID (required)
-   * @param version Version&lt;sup style&#x3D;\&quot;color:green;\&quot;&gt;&lt;b&gt; * new&lt;/b&gt;&lt;/sup&gt; (optional)
+   * @param version Version (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
@@ -1530,7 +1583,7 @@ import java.util.Map;
    * @param roomId Room ID (optional)
    * @param fileId File ID (optional)
    * @param userId User ID (optional)
-   * @param useKey Determines which key should be used&lt;sup style&#x3D;\&quot;color:green;\&quot;&gt;&lt;b&gt; * new&lt;/b&gt;&lt;/sup&gt; (optional)
+   * @param useKey Determines which key should be used (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return MissingKeysResponse
    * @throws ApiException if fails to make API call
@@ -1813,27 +1866,26 @@ import java.util.Map;
   }
   /**
    * Request events of a room
-   * ### Description: Retrieve syslog (audit log) events related to a room.  ### Precondition: Requires &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions on that room.  ### Postcondition: List of events is returned.  ### Further Information: Output may be limited to a certain number of entries.   Please use filter criteria and paging.  Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are supported.    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;time:desc&#x60;   Sort by &#x60;time&#x60; descending (default sort option).  &lt;/details&gt;  ### Sorting options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | &#x60;time&#x60; | Event timestamp |  &lt;/details&gt;
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.3.0&lt;/h3&gt;  ### Description: Retrieve syslog (audit log) events related to a room.  ### Precondition: Requires &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions on that room.  ### Postcondition: List of events is returned.  ### Further Information: Output may be limited to a certain number of entries.   Please use filter criteria and paging.  Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are supported.    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;time:desc&#x60;   Sort by &#x60;time&#x60; descending (default sort option).  &lt;/details&gt;  ### Sorting options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | &#x60;time&#x60; | Event timestamp |  &lt;/details&gt;
    * @param roomId Room ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @param sort Sort string (optional)
    * @param offset Range offset (optional)
    * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
-   * @param dateStart Filter events from given date  e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
-   * @param dateEnd Filter events until given date  e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
-   * @param type Operation ID  cf. &#x60;GET /eventlog/operations&#x60; (optional)
+   * @param dateStart Filter events from given date   e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param dateEnd Filter events until given date   e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param type Operation ID   cf. &#x60;GET /eventlog/operations&#x60; (optional)
    * @param userId User ID (optional)
    * @param status Operation status:  * &#x60;0&#x60; - Success  * &#x60;2&#x60; - Error (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return LogEventList
    * @throws ApiException if fails to make API call
    */
-  public LogEventList requestRoomActivitiesLogAsCsv1(Long roomId, String xSdsDateFormat, String sort, Integer offset, Integer limit, String dateStart, String dateEnd, Integer type, Long userId, Integer status, String xSdsAuthToken) throws ApiException {
+  public LogEventList requestRoomActivitiesLogAsJson(Long roomId, String xSdsDateFormat, String sort, Integer offset, Integer limit, String dateStart, String dateEnd, Integer type, Long userId, Integer status, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'roomId' is set
     if (roomId == null) {
-      throw new ApiException(400, "Missing the required parameter 'roomId' when calling requestRoomActivitiesLogAsCsv1");
+      throw new ApiException(400, "Missing the required parameter 'roomId' when calling requestRoomActivitiesLogAsJson");
     }
     // create path and map variables
     String localVarPath = "/v4/nodes/rooms/{room_id}/events"
@@ -1857,12 +1909,10 @@ import java.util.Map;
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
 
     final String[] localVarAccepts = {
-      "application/json", "text/csv"
+      "application/json"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1884,9 +1934,9 @@ import java.util.Map;
    * @param sort Sort string (optional)
    * @param offset Range offset (optional)
    * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
-   * @param dateStart Filter events from given date  e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
-   * @param dateEnd Filter events until given date  e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
-   * @param type Operation ID  cf. &#x60;GET /eventlog/operations&#x60; (optional)
+   * @param dateStart Filter events from given date   e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param dateEnd Filter events until given date   e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param type Operation ID   cf. &#x60;GET /eventlog/operations&#x60; (optional)
    * @param userId User ID (optional)
    * @param status Operation status:  * &#x60;0&#x60; - Success  * &#x60;2&#x60; - Error (optional)
    * @param xSdsAuthToken Authentication token (optional)
@@ -1895,11 +1945,11 @@ import java.util.Map;
    * @deprecated
    */
   @Deprecated
-  public SyslogEventList requestRoomActivitiesLogAsCsvOld1(Long roomId, String xSdsDateFormat, String sort, Integer offset, Integer limit, String dateStart, String dateEnd, Integer type, Long userId, Integer status, String xSdsAuthToken) throws ApiException {
+  public SyslogEventList requestRoomActivitiesLogAsJsonOld(Long roomId, String xSdsDateFormat, String sort, Integer offset, Integer limit, String dateStart, String dateEnd, Integer type, Long userId, Integer status, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'roomId' is set
     if (roomId == null) {
-      throw new ApiException(400, "Missing the required parameter 'roomId' when calling requestRoomActivitiesLogAsCsvOld1");
+      throw new ApiException(400, "Missing the required parameter 'roomId' when calling requestRoomActivitiesLogAsJsonOld");
     }
     // create path and map variables
     String localVarPath = "/v4/nodes/rooms/{room_id}/activities_log"
@@ -1923,12 +1973,10 @@ import java.util.Map;
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
 
     final String[] localVarAccepts = {
-      "application/json", "text/csv"
+      "application/json"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1997,7 +2045,7 @@ import java.util.Map;
    * Request room rescue key
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.24.0&lt;/h3&gt;  ### Description:   Returns the file key for the room emergency password / rescue key of a certain file (if available).  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in parent room.  ### Postcondition: File key is returned.  ### Further Information: None.
    * @param fileId File ID (required)
-   * @param version Version&lt;sup style&#x3D;\&quot;color:green;\&quot;&gt;&lt;b&gt; * new&lt;/b&gt;&lt;/sup&gt; (optional)
+   * @param version Version (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return FileKey
    * @throws ApiException if fails to make API call
@@ -2042,10 +2090,10 @@ import java.util.Map;
   }
   /**
    * Request room rescue key
-   * ### Description:   Retrieve the room emergency password (rescue key).  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in that room.  ### Postcondition: Key pair is returned.  ### Further Information: None.
+   * ### Description:   Retrieve the room rescue key pair.  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in that room.  ### Postcondition: Key pair is returned.  ### Further Information: None.
    * @param roomId Room ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param version Version&lt;sup style&#x3D;\&quot;color:green;\&quot;&gt;&lt;b&gt; * new&lt;/b&gt;&lt;/sup&gt; (optional)
+   * @param version Version (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return UserKeyPairContainer
    * @throws ApiException if fails to make API call
@@ -2090,7 +2138,7 @@ import java.util.Map;
   }
   /**
    * Request all room rescue key pairs (NEW)
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Retrieve all key pairs to allow migrating room-rescue-key-encrypted file keys.  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in that room.  ### Postcondition: List of key pairs is returned.  ### Further Information: In the case of an algorithm migration of a room rescue key, one should create the new key pair before deleting the old one. This allows re-encrypting file keys with the new key pair, using the old one.    This API allows to retrieve both key pairs, in contrast to &#x60;GET /nodes/rooms/{room_id}/keypair&#x60;, which only delivers the preferred one. 
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Retrieve all room rescue key pairs to allow migrating room-rescue-key-encrypted file keys.  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in that room.  ### Postcondition: List of key pairs is returned.  ### Further Information: In the case of an algorithm migration to a room rescue key pair, one should create the new key pair before deleting the old one. This allows re-encrypting file keys with the new key pair, using the old one.  This API allows to retrieve both key pairs, in contrast to &#x60;GET /nodes/rooms/{room_id}/keypair&#x60;, which only delivers the preferred one. 
    * @param roomId Room ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @param xSdsAuthToken Authentication token (optional)
@@ -2232,7 +2280,7 @@ import java.util.Map;
    * Request system rescue key
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.24.0&lt;/h3&gt;  ### Description:   Returns the file key for the system emergency password / rescue key of a certain file (if available).  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in parent room.  ### Postcondition: File key is returned.  ### Further Information: None.
    * @param fileId File ID (required)
-   * @param version Version&lt;sup style&#x3D;\&quot;color:green;\&quot;&gt;&lt;b&gt; * new&lt;/b&gt;&lt;/sup&gt; (optional)
+   * @param version Version (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return FileKey
    * @throws ApiException if fails to make API call
@@ -2322,7 +2370,7 @@ import java.util.Map;
    * Request user&#x27;s file key
    * ### Description:   Returns the file key for the current user (if available).  ### Precondition: User with one of the following permissions in parent room: &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt;  ### Postcondition: File key is returned.  ### Further Information: The symmetric file key is encrypted with the user&#x27;s public key.   File keys are generated with the workflow _\&quot;Generate file keys\&quot;_ that starts at &#x60;GET /nodes/missingFileKeys&#x60;.
    * @param fileId File ID (required)
-   * @param version Version&lt;sup style&#x3D;\&quot;color:green;\&quot;&gt;&lt;b&gt; * new&lt;/b&gt;&lt;/sup&gt; (optional)
+   * @param version Version (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return FileKey
    * @throws ApiException if fails to make API call
@@ -2991,8 +3039,7 @@ import java.util.Map;
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.9.0&lt;/h3&gt;  ### Use &#x60;uploads&#x60; API  ### Description:   Uploads a file or parts of it in an active upload channel.  ### Precondition: An upload channel has been created.  ### Postcondition: A file or parts of it are uploaded to a temporary location.  ### Further Information: This endpoints supports chunked upload.    Following &#x60;Content-Types&#x60; are supported by this API: * &#x60;multipart/form-data&#x60; * provided &#x60;Content-Type&#x60;     For both file upload types set the correct &#x60;Content-Type&#x60; header and body.    ### Examples:    * &#x60;multipart/form-data&#x60; &#x60;&#x60;&#x60; POST /api/v4/nodes/files/uploads/{upload_id} HTTP/1.1  Header: ... Content-Type: multipart/form-data; boundary&#x3D;----WebKitFormBoundary7MA4YWxkTrZu0gW ...  Body: ------WebKitFormBoundary7MA4YWxkTrZu0gW Content-Disposition: form-data; name&#x3D;\&quot;file\&quot;; filename&#x3D;\&quot;file.txt\&quot; Content-Type: text/plain  Content of file.txt ------WebKitFormBoundary7MA4YWxkTrZu0gW-- &#x60;&#x60;&#x60;  * any other &#x60;Content-Type&#x60;   &#x60;&#x60;&#x60; POST /api/v4/nodes/files/uploads/{upload_id}  HTTP/1.1  Header: ... Content-Type: { ... } ...  Body: raw content &#x60;&#x60;&#x60;
    * @param file  (required)
    * @param uploadId Upload channel ID (required)
-   * @param contentRange Content-Range  e.g. &#x60;bytes 0-999/3980&#x60; (optional)
-   * @param xSdsAuthToken2 Authentication token (optional)
+   * @param contentRange Content-Range   e.g. &#x60;bytes 0-999/3980&#x60; (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return ChunkUploadResponse
    * @throws ApiException if fails to make API call
@@ -3001,15 +3048,15 @@ import java.util.Map;
    * @see <a href="https://tools.ietf.org/html/rfc7233">Upload file Documentation</a>
    */
   @Deprecated
-  public ChunkUploadResponse uploadFileAsBinary1(File file, String uploadId, String contentRange, String xSdsAuthToken2, String xSdsAuthToken) throws ApiException {
+  public ChunkUploadResponse uploadFileAsMultipart(File file, String uploadId, String contentRange, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'file' is set
     if (file == null) {
-      throw new ApiException(400, "Missing the required parameter 'file' when calling uploadFileAsBinary1");
+      throw new ApiException(400, "Missing the required parameter 'file' when calling uploadFileAsMultipart");
     }
     // verify the required parameter 'uploadId' is set
     if (uploadId == null) {
-      throw new ApiException(400, "Missing the required parameter 'uploadId' when calling uploadFileAsBinary1");
+      throw new ApiException(400, "Missing the required parameter 'uploadId' when calling uploadFileAsMultipart");
     }
     // create path and map variables
     String localVarPath = "/v4/nodes/files/uploads/{upload_id}"
@@ -3023,8 +3070,6 @@ import java.util.Map;
 
     if (contentRange != null)
       localVarHeaderParams.put("Content-Range", apiClient.parameterToString(contentRange));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 

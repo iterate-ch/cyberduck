@@ -1,11 +1,16 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
+
+import javax.ws.rs.core.GenericType;
+
 import ch.cyberduck.core.sds.io.swagger.client.model.AttributesResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateUserRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse400;
 import ch.cyberduck.core.sds.io.swagger.client.model.LastAdminUserRoomList;
 import ch.cyberduck.core.sds.io.swagger.client.model.RoleList;
 import ch.cyberduck.core.sds.io.swagger.client.model.RoomTreeDataList;
@@ -15,13 +20,12 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserData;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserGroupList;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserList;
 
-import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-11T16:33:00.814633+02:00[Europe/Zurich]")public class UsersApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class UsersApi {
   private ApiClient apiClient;
 
   public UsersApi() {

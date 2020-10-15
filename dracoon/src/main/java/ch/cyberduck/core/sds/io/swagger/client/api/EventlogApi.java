@@ -1,20 +1,23 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
+
+import javax.ws.rs.core.GenericType;
+
 import ch.cyberduck.core.sds.io.swagger.client.model.AuditNodeResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.LogEventList;
 import ch.cyberduck.core.sds.io.swagger.client.model.LogOperationList;
 
-import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-11T16:33:00.814633+02:00[Europe/Zurich]")public class EventlogApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class EventlogApi {
   private ApiClient apiClient;
 
   public EventlogApi() {
@@ -83,23 +86,22 @@ import java.util.Map;
   }
   /**
    * Request system events
-   * ### Description:  Retrieve eventlog (audit log) events.  ### Precondition: Role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Log Auditor&lt;/span&gt; required.  ### Postcondition: List of audit log events is returned.  ### Further Information: Output is limited to **500** entries.   For more results please use filter criteria and paging (&#x60;offset&#x60; + &#x60;limit&#x60;).   ---  Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are supported.    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;time:desc&#x60;   Sort by &#x60;time&#x60; descending (default sort option).  &lt;/details&gt;  ### Sorting options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | &#x60;time&#x60; | Event timestamp |  &lt;/details&gt;
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.3.0&lt;/h3&gt;  ### Description:  Retrieve eventlog (audit log) events.  ### Precondition: Role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Log Auditor&lt;/span&gt; required.  ### Postcondition: List of audit log events is returned.  ### Further Information: Output is limited to **500** entries.   For more results please use filter criteria and paging (&#x60;offset&#x60; + &#x60;limit&#x60;).   Allowed &#x60;Accept-Header&#x60;: * &#x60;Accept: application/json&#x60; * &#x60;Accept: text/csv&#x60;    ---  Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are supported.    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;time:desc&#x60;   Sort by &#x60;time&#x60; descending (default sort option).  &lt;/details&gt;  ### Sorting options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | &#x60;time&#x60; | Event timestamp |  &lt;/details&gt;
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @param sort Sort string (optional)
    * @param offset Range offset (optional)
    * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
-   * @param dateStart Filter events from given date  e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
-   * @param dateEnd Filter events until given date  e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
-   * @param type Operation ID  cf. &#x60;GET /eventlog/operations&#x60; (optional)
+   * @param dateStart Filter events from given date   e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param dateEnd Filter events until given date   e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param type Operation ID   cf. &#x60;GET /eventlog/operations&#x60; (optional)
    * @param userId User ID (optional)
    * @param status Operation status:  * &#x60;0&#x60; - Success  * &#x60;2&#x60; - Error (optional)
    * @param userClient User client (optional)
    * @param xSdsAuthToken Authentication token (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return LogEventList
    * @throws ApiException if fails to make API call
    */
-  public LogEventList requestLogEventsAsCsv1(String xSdsDateFormat, String sort, Integer offset, Integer limit, String dateStart, String dateEnd, Integer type, Long userId, String status, String userClient, String xSdsAuthToken) throws ApiException {
+  public LogEventList requestLogEventsAsJson(String xSdsDateFormat, String sort, Integer offset, Integer limit, String dateStart, String dateEnd, Integer type, Long userId, String status, String userClient, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     // create path and map variables
     String localVarPath = "/v4/eventlog/events";
@@ -123,12 +125,10 @@ import java.util.Map;
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
 
     final String[] localVarAccepts = {
-      "application/json", "text/csv"
+      "application/json"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 

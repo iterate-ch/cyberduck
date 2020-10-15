@@ -1,21 +1,25 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
-import ch.cyberduck.core.sds.io.swagger.client.model.ChunkUploadResponse;
-import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 
 import javax.ws.rs.core.GenericType;
+
+import ch.cyberduck.core.sds.io.swagger.client.model.ChunkUploadResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import java.io.File;
+import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse507;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-11T16:33:00.814633+02:00[Europe/Zurich]")public class UploadsApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class UploadsApi {
   private ApiClient apiClient;
 
   public UploadsApi() {
@@ -124,21 +128,21 @@ The &#x60;resolutionStrategy&#x60; in that case will be always &#x60;autorename&
    * ### Description:   Upload a (chunk of a) file.  ### Precondition: Valid upload token.  ### Postcondition: Chunk uploaded.  ### Further Information: Range requests are supported.    Following &#x60;Content-Types&#x60; are supported by this API: * &#x60;multipart/form-data&#x60; * provided &#x60;Content-Type&#x60;  For both file upload types set the correct &#x60;Content-Type&#x60; header and body.    ### Examples:    * &#x60;multipart/form-data&#x60; &#x60;&#x60;&#x60; POST /api/v4/uploads/{token} HTTP/1.1  Header: ... Content-Type: multipart/form-data; boundary&#x3D;----WebKitFormBoundary7MA4YWxkTrZu0gW ...  Body: ------WebKitFormBoundary7MA4YWxkTrZu0gW Content-Disposition: form-data; name&#x3D;\&quot;file\&quot;; filename&#x3D;\&quot;file.txt\&quot; Content-Type: text/plain  Content of file.txt ------WebKitFormBoundary7MA4YWxkTrZu0gW-- &#x60;&#x60;&#x60;  * any other &#x60;Content-Type&#x60;  &#x60;&#x60;&#x60; POST /api/v4/uploads/{token} HTTP/1.1  Header: ... Content-Type: { ... } ...  Body: raw content &#x60;&#x60;&#x60; 
    * @param file  (required)
    * @param token Upload token (required)
-   * @param contentRange Content-Range  e.g. &#x60;bytes 0-999/3980&#x60; (optional)
+   * @param contentRange Content-Range   e.g. &#x60;bytes 0-999/3980&#x60; (optional)
    * @return ChunkUploadResponse
    * @throws ApiException if fails to make API call
    * Range Requests
    * @see <a href="https://tools.ietf.org/html/rfc7233">Upload file Documentation</a>
    */
-  public ChunkUploadResponse uploadFileByTokenAsMultipart1(File file, String token, String contentRange) throws ApiException {
+  public ChunkUploadResponse uploadFileByTokenAsBinary1(File file, String token, String contentRange) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'file' is set
     if (file == null) {
-      throw new ApiException(400, "Missing the required parameter 'file' when calling uploadFileByTokenAsMultipart1");
+      throw new ApiException(400, "Missing the required parameter 'file' when calling uploadFileByTokenAsBinary1");
     }
     // verify the required parameter 'token' is set
     if (token == null) {
-      throw new ApiException(400, "Missing the required parameter 'token' when calling uploadFileByTokenAsMultipart1");
+      throw new ApiException(400, "Missing the required parameter 'token' when calling uploadFileByTokenAsBinary1");
     }
     // create path and map variables
     String localVarPath = "/v4/uploads/{token}"

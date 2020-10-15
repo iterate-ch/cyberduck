@@ -1,18 +1,36 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
-import ch.cyberduck.core.sds.io.swagger.client.model.*;
 
 import javax.ws.rs.core.GenericType;
+
+import ch.cyberduck.core.sds.io.swagger.client.model.ActiveDirectoryConfig;
+import ch.cyberduck.core.sds.io.swagger.client.model.ActiveDirectoryConfigList;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateActiveDirectoryConfigRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateOAuthClientRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateOpenIdIdpConfigRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse400;
+import ch.cyberduck.core.sds.io.swagger.client.model.OAuthClient;
+import ch.cyberduck.core.sds.io.swagger.client.model.OpenIdIdpConfig;
+import ch.cyberduck.core.sds.io.swagger.client.model.RadiusConfig;
+import ch.cyberduck.core.sds.io.swagger.client.model.RadiusConfigCreateRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.RadiusConfigUpdateRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.TestActiveDirectoryConfigRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.TestActiveDirectoryConfigResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateActiveDirectoryConfigRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateOAuthClientRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateOpenIdIdpConfigRequest;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-11T16:33:00.814633+02:00[Europe/Zurich]")public class SystemAuthConfigApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class SystemAuthConfigApi {
   private ApiClient apiClient;
 
   public SystemAuthConfigApi() {

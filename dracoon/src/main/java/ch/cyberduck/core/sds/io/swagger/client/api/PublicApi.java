@@ -1,19 +1,41 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
-import ch.cyberduck.core.sds.io.swagger.client.model.*;
 
 import javax.ws.rs.core.GenericType;
+
+import ch.cyberduck.core.sds.io.swagger.client.model.ActiveDirectoryAuthInfo;
+import ch.cyberduck.core.sds.io.swagger.client.model.ChunkUploadResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.CompleteS3ShareUploadRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateShareUploadChannelRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateShareUploadChannelResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import java.io.File;
+import ch.cyberduck.core.sds.io.swagger.client.model.GeneratePresignedUrlsRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse507;
+import ch.cyberduck.core.sds.io.swagger.client.model.OpenIdAuthInfo;
+import ch.cyberduck.core.sds.io.swagger.client.model.PresignedUrlList;
+import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadShare;
+import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadTokenGenerateRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadTokenGenerateResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.PublicUploadShare;
+import ch.cyberduck.core.sds.io.swagger.client.model.PublicUploadedFileData;
+import ch.cyberduck.core.sds.io.swagger.client.model.S3ShareUploadStatus;
+import ch.cyberduck.core.sds.io.swagger.client.model.SdsServerTime;
+import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
+import ch.cyberduck.core.sds.io.swagger.client.model.SystemInfo;
+import ch.cyberduck.core.sds.io.swagger.client.model.ThirdPartyDependenciesData;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeyList;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-11T16:33:00.814633+02:00[Europe/Zurich]")public class PublicApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class PublicApi {
   private ApiClient apiClient;
 
   public PublicApi() {
@@ -228,7 +250,7 @@ import java.util.Map;
    * ### Description:   Download a file (or zip archive if target is a folder or room).  ### Precondition: Valid download token.  ### Postcondition: Stream is returned.  ### Further Information: Range requests are supported.   Range requests are not allowed for zip archive download.
    * @param accessKey Access key (required)
    * @param token Download token (required)
-   * @param range Range  e.g. &#x60;bytes&#x3D;0-999&#x60; (optional)
+   * @param range Range   e.g. &#x60;bytes&#x3D;0-999&#x60; (optional)
    * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
    * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
    * @throws ApiException if fails to make API call
@@ -281,7 +303,7 @@ import java.util.Map;
    * ### Description:   Download a file (or zip archive if target is a folder or room).  ### Precondition: Valid download token.  ### Postcondition: Stream is returned.  ### Further Information: Range requests are supported.   Range requests are not allowed for zip archive download.
    * @param accessKey Access key (required)
    * @param token Download token (required)
-   * @param range Range  e.g. &#x60;bytes&#x3D;0-999&#x60; (optional)
+   * @param range Range   e.g. &#x60;bytes&#x3D;0-999&#x60; (optional)
    * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
    * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
    * @throws ApiException if fails to make API call
@@ -788,7 +810,7 @@ import java.util.Map;
    * @param uploadId Upload channel ID (required)
    * @param file  (optional)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param contentRange Content-Range  e.g. &#x60;bytes 0-999/3980&#x60; (optional)
+   * @param contentRange Content-Range   e.g. &#x60;bytes 0-999/3980&#x60; (optional)
    * @return ChunkUploadResponse
    * @throws ApiException if fails to make API call
    * Range Requests
