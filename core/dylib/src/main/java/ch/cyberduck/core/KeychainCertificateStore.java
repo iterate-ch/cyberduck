@@ -149,8 +149,13 @@ public final class KeychainCertificateStore implements CertificateStore {
         final NSMutableArray certs = NSMutableArray.arrayWithCapacity(new NSUInteger(certificates.size()));
         for(X509Certificate certificate : certificates) {
             try {
-                certs.addObject(SecurityFunctions.library.SecCertificateCreateWithData(null,
-                    NSData.dataWithBase64EncodedString(Base64.encodeBase64String(certificate.getEncoded()))));
+                final SecCertificateRef certificateRef = SecurityFunctions.library.SecCertificateCreateWithData(null,
+                    NSData.dataWithBase64EncodedString(Base64.encodeBase64String(certificate.getEncoded())));
+                if(null == certificateRef) {
+                    log.error(String.format("Error creating converting from ASN.1 DER encoded certificate %s", certificate));
+                    continue;
+                }
+                certs.addObject(certificateRef);
             }
             catch(CertificateEncodingException e) {
                 log.error(String.format("Failure %s retrieving encoded  certificate", e));
