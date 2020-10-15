@@ -101,7 +101,7 @@ public class SharepointListService extends AbstractSharepointListService {
     }
 
     Path getDefaultSymlinkTarget(final Path directory) throws BackgroundException {
-        if (directory.getSymlinkTarget() != null) {
+        if(directory.getSymlinkTarget() != null) {
             return directory.getSymlinkTarget();
         }
         return getDefault(directory.getParent()).orElseThrow(() -> new NotfoundException(String.format("%s not found.", directory.getAbsolute()))).getSymlinkTarget();
@@ -115,15 +115,18 @@ public class SharepointListService extends AbstractSharepointListService {
         final String versionId = getIdProvider().getFileid(directory, new DisabledListProgressListener());
         if(DEFAULT_ID.equals(versionId)) {
             final Path symlinkTarget = getDefaultSymlinkTarget(directory);
-            return result.withChildren(new GraphDrivesListService(session).list(symlinkTarget, listener)).success();
+            return result.withChildren(list(symlinkTarget, listener)).success();
         }
         else if(GROUPS_ID.equals(versionId)) {
             return result.withChildren(new GroupListService(session).list(directory, listener)).success();
         }
         else {
-            final String parentId = getIdProvider().getFileid(directory.getParent(), new DisabledListProgressListener());
-            if(GROUPS_ID.equals(parentId)) {
-                return result.withChildren(new GroupDrivesListService(session).list(directory, listener)).success();
+            final Path parent = directory.getParent();
+            if(!parent.isRoot()) {
+                final String parentId = getIdProvider().getFileid(parent, new DisabledListProgressListener());
+                if(GROUPS_ID.equals(parentId)) {
+                    return result.withChildren(new GroupDrivesListService(session).list(directory, listener)).success();
+                }
             }
         }
 
