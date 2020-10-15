@@ -60,6 +60,8 @@ public abstract class NSMutableArray extends NSArray {
      * Original signature : <code>void insertObject(id, NSUInteger)</code><br>
      * <i>native declaration : :83</i>
      */
+    public abstract void insertObject_atIndex(PointerType anObject, NSUInteger index);
+
     public abstract void insertObject_atIndex(NSObject anObject, NSUInteger index);
 
     public abstract void insertObject_atIndex(String anObject, NSUInteger index);
