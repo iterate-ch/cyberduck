@@ -20,33 +20,33 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
-import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.userauth.method.AuthNone;
 
 public class SFTPNoneAuthentication implements AuthenticationProvider<Boolean> {
     private static final Logger log = Logger.getLogger(SFTPNoneAuthentication.class);
 
-    private final SFTPSession session;
+    private final SSHClient client;
 
-    public SFTPNoneAuthentication(final SFTPSession session) {
-        this.session = session;
+    public SFTPNoneAuthentication(final SSHClient client) {
+        this.client = client;
     }
 
     @Override
     public Boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel)
-            throws BackgroundException {
+        throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using none authentication with credentials %s", bookmark.getCredentials()));
         }
         try {
-            session.getClient().auth(bookmark.getCredentials().getUsername(), new AuthNone());
-            return session.getClient().isAuthenticated();
+            client.auth(bookmark.getCredentials().getUsername(), new AuthNone());
+            return client.isAuthenticated();
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);

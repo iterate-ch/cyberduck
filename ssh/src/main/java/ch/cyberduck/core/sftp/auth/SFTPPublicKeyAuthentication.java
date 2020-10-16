@@ -26,7 +26,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
-import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile;
+import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
 import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
 import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
@@ -52,10 +52,10 @@ import net.schmizz.sshj.userauth.password.Resource;
 public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boolean> {
     private static final Logger log = Logger.getLogger(SFTPPublicKeyAuthentication.class);
 
-    private final SFTPSession session;
+    private final SSHClient client;
 
-    public SFTPPublicKeyAuthentication(final SFTPSession session) {
-        this.session = session;
+    public SFTPPublicKeyAuthentication(final SSHClient client) {
+        this.client = client;
     }
 
     @Override
@@ -125,8 +125,8 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                         return false;
                     }
                 });
-                session.getClient().auth(credentials.getUsername(), new AuthPublickey(provider));
-                return session.getClient().isAuthenticated();
+                client.auth(credentials.getUsername(), new AuthPublickey(provider));
+                return client.isAuthenticated();
             }
             catch(IOException e) {
                 if(canceled.get()) {

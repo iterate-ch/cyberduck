@@ -33,6 +33,6 @@ public class SFTPChallengeResponseAuthenticationTest extends AbstractSFTPTest {
     @Test(expected = LoginFailureException.class)
     @Ignore
     public void testAuthenticate() throws Exception {
-        assertFalse(new SFTPChallengeResponseAuthentication(session).authenticate(session.getHost(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertFalse(new SFTPChallengeResponseAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback(), new DisabledCancelCallback()));
     }
 }

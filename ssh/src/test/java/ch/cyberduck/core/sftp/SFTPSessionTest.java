@@ -67,7 +67,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         for(net.schmizz.sshj.common.Factory.Named<MAC> mac : defaultConfig.getMACFactories()) {
             final DefaultConfig configuration = new DefaultConfig();
             configuration.setMACFactories(Collections.singletonList(mac));
-            final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
+            final SSHClient client = session.connect(new DisabledHostKeyCallback(), new DisabledLoginCallback(), configuration);
             assertTrue(client.isConnected());
             client.close();
         }
@@ -77,7 +77,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     public void testAES256CTRCipher() throws Exception {
         final DefaultConfig configuration = new DefaultConfig();
         configuration.setCipherFactories(Collections.singletonList(new AES256CTR.Factory()));
-        final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
+        final SSHClient client = session.connect(new DisabledHostKeyCallback(), new DisabledLoginCallback(), configuration);
         assertTrue(client.isConnected());
         client.close();
     }
@@ -86,7 +86,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     public void testECDHNistPKeyExchange() throws Exception {
         final DefaultConfig configuration = new DefaultConfig();
         configuration.setKeyExchangeFactories(Collections.singletonList(new ECDHNistP.Factory256()));
-        final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
+        final SSHClient client = session.connect(new DisabledHostKeyCallback(), new DisabledLoginCallback(), configuration);
         assertTrue(client.isConnected());
         client.close();
     }

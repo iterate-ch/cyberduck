@@ -26,7 +26,6 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
-import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +38,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
+import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.userauth.method.AuthKeyboardInteractive;
 import net.schmizz.sshj.userauth.method.ChallengeResponseProvider;
 import net.schmizz.sshj.userauth.password.Resource;
@@ -48,10 +48,10 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
 
     private static final Pattern DEFAULT_PROMPT_PATTERN = Pattern.compile(".*[pP]assword.*", Pattern.DOTALL);
 
-    private final SFTPSession session;
+    private final SSHClient client;
 
-    public SFTPChallengeResponseAuthentication(final SFTPSession session) {
-        this.session = session;
+    public SFTPChallengeResponseAuthentication(final SSHClient client) {
+        this.client = client;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
         final AtomicBoolean canceled = new AtomicBoolean();
         final AtomicBoolean publickey = new AtomicBoolean();
         try {
-            session.getClient().auth(bookmark.getCredentials().getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
+            client.auth(bookmark.getCredentials().getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
                 private String name = StringUtils.EMPTY;
                 private String instruction = StringUtils.EMPTY;
 
@@ -147,14 +147,14 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
         }
         catch(IOException e) {
             if(publickey.get()) {
-                return new SFTPPublicKeyAuthentication(session).authenticate(bookmark, callback, cancel);
+                return new SFTPPublicKeyAuthentication(client).authenticate(bookmark, callback, cancel);
             }
             if(canceled.get()) {
                 throw new LoginCanceledException();
             }
             throw new SFTPExceptionMappingService().map(e);
         }
-        return session.getClient().isAuthenticated();
+        return client.isAuthenticated();
     }
 
     @Override

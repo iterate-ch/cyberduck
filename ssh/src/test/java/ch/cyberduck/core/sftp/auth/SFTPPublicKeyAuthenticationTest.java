@@ -79,7 +79,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
             // Reconnect
             session.disconnect();
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-            assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(session.getHost(), new DisabledLoginCallback() {
+            assertTrue(new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                     fail();
@@ -151,7 +151,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
             final AtomicBoolean p = new AtomicBoolean();
             session.getHost().getCredentials().setIdentity(key);
-            assertFalse(new SFTPPublicKeyAuthentication(session).authenticate(session.getHost(), new DisabledLoginCallback() {
+            assertFalse(new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                     p.set(true);
@@ -206,7 +206,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
             session.disconnect();
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
             session.getHost().getCredentials().setIdentity(key);
-            assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(session.getHost(), new DisabledLoginCallback() {
+            assertTrue(new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                     b.set(true);
@@ -231,7 +231,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
             session.disconnect();
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
             session.getHost().getCredentials().setIdentity(key);
-            assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(session.getHost(), new DisabledLoginCallback() {
+            assertTrue(new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                     fail();
