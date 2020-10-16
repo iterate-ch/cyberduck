@@ -136,7 +136,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
     @Test
     public void testFileKeyMigration() throws Exception {
         final Host host = new Host(new SDSProtocol(), "cryptoiterate.dracoon.dev",
-            new Credentials(System.getProperties().getProperty("sds.user.cryptotest"), System.getProperties().getProperty("sds.key.cryptotest")));
+            new Credentials(System.getProperties().getProperty("sds.crypto.user"), System.getProperties().getProperty("sds.crypto.key")));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -169,7 +169,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final VersionId version = out.getStatus();
         // login to start migration
         session.getHost().setCredentials(
-            new Credentials(System.getProperties().getProperty("sds.user.cryptotest"), System.getProperties().getProperty("sds.key.cryptotest")));
+            new Credentials(System.getProperties().getProperty("sds.crypto.user"), System.getProperties().getProperty("sds.crypto.key")));
         session.login(Proxy.DIRECT, new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {

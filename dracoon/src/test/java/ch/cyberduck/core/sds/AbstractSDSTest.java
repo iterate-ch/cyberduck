@@ -45,7 +45,7 @@ public class AbstractSDSTest {
 
     @Before
     public void setup() throws Exception {
-        session = new SDSSession(new Host(new SDSProtocol(), "cryptoiterate.dracoon.com", new Credentials(
+        session = new SDSSession(new Host(new SDSProtocol(), "cryptoiterate.dracoon.dev", new Credentials(
             System.getProperties().getProperty("sds.crypto.user"), System.getProperties().getProperty("sds.crypto.key")
         )), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.enableMetrics();
