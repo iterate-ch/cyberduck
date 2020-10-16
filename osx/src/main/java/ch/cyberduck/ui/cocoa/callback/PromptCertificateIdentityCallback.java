@@ -61,7 +61,7 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
         }, true);
         final SFChooseIdentityPanel panel = ref.get();
         panel.setDomain(hostname);
-        final SecPolicyRef policyRef = SecurityFunctions.library.SecPolicyCreateSSL(false, hostname);
+        final SecPolicyRef policyRef = SecurityFunctions.library.SecPolicyCreateSSL(true, hostname);
         panel.setPolicies(policyRef);
         FoundationKitFunctions.library.CFRelease(policyRef);
         panel.setShowsHelp(false);

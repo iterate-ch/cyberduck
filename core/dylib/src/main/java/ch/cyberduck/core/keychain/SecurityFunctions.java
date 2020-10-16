@@ -21,6 +21,7 @@ import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSString;
 
+import org.rococoa.ObjCObjectByReference;
 import org.rococoa.internal.RococoaTypeMapper;
 
 import java.util.Collections;
@@ -95,6 +96,19 @@ public interface SecurityFunctions extends Library {
      * @return A result code. See Security Framework Result Codes.
      */
     int SecTrustEvaluate(SecTrustRef trust, SecTrustResultType result);
+
+    /**
+     * Evaluates trust for the specified certificate and policies.
+     *
+     * @param trust The trust management object to evaluate. A trust management object includes the certificate to be
+     *              verified plus the policy or policies to be used in evaluating trust. It can optionally also include
+     *              other certificates to be used in verifying the first certificate. Use the
+     *              SecTrustCreateWithCertificates function to create a trust management object.
+     * @param error An error pointer the method uses to return an error when trust evaluation fails. Set to nil to
+     *              ignore the error.
+     * @return YES if the certificate is trusted; otherwise, NO.
+     */
+    boolean SecTrustEvaluateWithError(SecTrustRef trust, ObjCObjectByReference error);
 
     /**
      * Returns a policy object for evaluating SSL certificate chains.
@@ -186,11 +200,36 @@ public interface SecurityFunctions extends Library {
      *                    or until the next call to the function SecTrustEvaluate that uses this trust management
      *                    object.
      *                    <p>
-     *                    typedef struct { CSSM_TP_APPLE_CERT_STATUS   StatusBits; uint32
-     *                    NumStatusCodes; CSSM_RETURN                 *StatusCodes; uint32                      Index;
-     *                    CSSM_DL_DB_HANDLE           DlDbHandle; CSSM_DB_UNIQUE_RECORD_PTR   UniqueRecord; }
-     *                    CSSM_TP_APPLE_EVIDENCE_INFO;
+     *                    typedef struct { CSSM_TP_APPLE_CERT_STATUS   StatusBits; uint32 NumStatusCodes; CSSM_RETURN
+     *                    *StatusCodes; uint32                      Index; CSSM_DL_DB_HANDLE DlDbHandle;
+     *                    CSSM_DB_UNIQUE_RECORD_PTR   UniqueRecord; } CSSM_TP_APPLE_EVIDENCE_INFO;
      * @return A result code. See Security Framework Result Codes.
      */
     int SecTrustGetResult(SecTrustRef trustRef, SecTrustResultType result, PointerByReference certChain, PointerByReference statusChain);
+
+    /**
+     * Sets option flags for customizing evaluation of a trust object.
+     *
+     * @param trust   The trust object to modify.
+     * @param options The new set of option flags. For a list of options, see SecTrustOptionFlags.
+     * @return A result code. See Security Framework Result Codes.
+     */
+    int SecTrustSetOptions(SecTrustRef trust, int options);
+
+    /**
+     * Reenables trusting built-in anchor certificates.
+     *
+     * @param trust                  The trust management object containing the certificate you want to evaluate. A
+     *                               trust management object includes the certificate to be verified plus the policy or
+     *                               policies to be used in evaluating trust. It can optionally also include other
+     *                               certificates to be used in verifying the first certificate. Use the
+     *                               SecTrustCreateWithCertificates function to create a trust management object.
+     * @param anchorCertificatesOnly If true, disables trusting any anchors other than the ones passed in with the
+     *                               SecTrustSetAnchorCertificates function.  If false, the built-in anchor certificates
+     *                               are also trusted. If SecTrustSetAnchorCertificates is called and
+     *                               SecTrustSetAnchorCertificatesOnly is not called, only the anchors explicitly passed
+     *                               in are trusted.
+     * @return A result code. See Security Framework Result Codes.
+     */
+    int SecTrustSetAnchorCertificatesOnly(SecTrustRef trust, boolean anchorCertificatesOnly);
 }

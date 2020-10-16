@@ -61,18 +61,27 @@ public final class KeychainCertificateStore implements CertificateStore {
         if(certificates.isEmpty()) {
             return false;
         }
+        int err;
+        // Specify true on the client side to return a policy for SSL server certificates
         final SecPolicyRef policyRef = SecurityFunctions.library.SecPolicyCreateSSL(true, hostname);
         final PointerByReference reference = new PointerByReference();
-        SecurityFunctions.library.SecTrustCreateWithCertificates(toDEREncodedCertificates(certificates), policyRef, reference);
+        err = SecurityFunctions.library.SecTrustCreateWithCertificates(toDEREncodedCertificates(certificates), policyRef, reference);
+        if(0 != err) {
+            log.error(String.format("SecTrustCreateWithCertificates returning error %d", err));
+            return false;
+        }
         final SecTrustRef trustRef = new SecTrustRef(reference.getValue());
         final SecTrustResultType trustResultType = new SecTrustResultType();
-        SecurityFunctions.library.SecTrustEvaluate(trustRef, trustResultType);
+        err = SecurityFunctions.library.SecTrustEvaluate(trustRef, trustResultType);
+        if(0 != err) {
+            log.error(String.format("SecTrustEvaluate returning error %d", err));
+            return false;
+        }
         FoundationKitFunctions.library.CFRelease(trustRef);
         FoundationKitFunctions.library.CFRelease(policyRef);
         switch(trustResultType.getValue()) {
-            case SecTrustResultType.kSecTrustResultUnspecified:
-                // Accepted by user keychain setting explicitly
-            case SecTrustResultType.kSecTrustResultProceed:
+            case SecTrustResultType.kSecTrustResultUnspecified: // Implicitly trusted
+            case SecTrustResultType.kSecTrustResultProceed: // Accepted by user keychain setting explicitly
                 return true;
             default:
                 if(log.isDebugEnabled()) {
@@ -104,7 +113,12 @@ public final class KeychainCertificateStore implements CertificateStore {
 
     public static X509Certificate toX509Certificate(final SecIdentityRef identityRef) {
         final PointerByReference reference = new PointerByReference();
-        SecurityFunctions.library.SecIdentityCopyCertificate(identityRef, reference);
+        int err;
+        err = SecurityFunctions.library.SecIdentityCopyCertificate(identityRef, reference);
+        if(0 != err) {
+            log.error(String.format("SecIdentityCopyCertificate returning error %d", err));
+            return null;
+        }
         final SecCertificateRef certificateRef = new SecCertificateRef(reference.getValue());
         try {
             final CertificateFactory factory = CertificateFactory.getInstance("X.509");
@@ -135,11 +149,16 @@ public final class KeychainCertificateStore implements CertificateStore {
         final NSMutableArray certs = NSMutableArray.arrayWithCapacity(new NSUInteger(certificates.size()));
         for(X509Certificate certificate : certificates) {
             try {
-                certs.addObject(SecurityFunctions.library.SecCertificateCreateWithData(null,
-                    NSData.dataWithBase64EncodedString(Base64.encodeBase64String(certificate.getEncoded()))));
+                final SecCertificateRef certificateRef = SecurityFunctions.library.SecCertificateCreateWithData(null,
+                    NSData.dataWithBase64EncodedString(Base64.encodeBase64String(certificate.getEncoded())));
+                if(null == certificateRef) {
+                    log.error(String.format("Error creating converting from ASN.1 DER encoded certificate %s", certificate));
+                    continue;
+                }
+                certs.insertObject_atIndex(certificateRef, new NSUInteger(0));
             }
             catch(CertificateEncodingException e) {
-                log.error(String.format("Failure %s retrieving encoded  certificate", e));
+                log.error(String.format("Failure %s retrieving encoded certificate", e));
             }
         }
         return certs;
