@@ -34,7 +34,7 @@ public class LoginConnectionServiceTest {
                     return new Proxy(Proxy.Type.HTTP, "proxy.local", 6666);
                 }
             });
-        s.check(session, PathCache.empty(), new DisabledCancelCallback());
+        s.check(session, new DisabledCancelCallback());
     }
 
     @Test
@@ -55,7 +55,7 @@ public class LoginConnectionServiceTest {
             new DisabledProgressListener()
         );
         try {
-            s.check(session, PathCache.empty(), new DisabledCancelCallback());
+            s.check(session, new DisabledCancelCallback());
             fail();
         }
         catch(ResolveFailedException e) {
@@ -70,7 +70,7 @@ public class LoginConnectionServiceTest {
                 public boolean isConnected() {
                     return false;
                 }
-            }, PathCache.empty(), new DisabledCancelCallback());
+            }, new DisabledCancelCallback());
             fail();
         }
         catch(LoginCanceledException e) {
@@ -82,7 +82,7 @@ public class LoginConnectionServiceTest {
     public void testNoHostname() throws Exception {
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
             new DisabledProgressListener());
-        s.check(new NullSession(new Host(new TestProtocol(), "")), PathCache.empty(), new DisabledCancelCallback());
+        s.check(new NullSession(new Host(new TestProtocol(), "")), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -136,7 +136,7 @@ public class LoginConnectionServiceTest {
             }
         };
         try {
-            s.check(session, PathCache.empty(), new DisabledCancelCallback());
+            s.check(session, new DisabledCancelCallback());
         }
         finally {
             assertTrue(keychain.get());
@@ -161,7 +161,7 @@ public class LoginConnectionServiceTest {
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
             new DisabledProgressListener());
         try {
-            l.connect(session, PathCache.empty(), new DisabledCancelCallback());
+            l.connect(session, new DisabledCancelCallback());
             fail();
         }
         catch(LoginCanceledException e) {

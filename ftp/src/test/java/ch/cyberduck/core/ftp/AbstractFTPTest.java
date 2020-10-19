@@ -102,7 +102,7 @@ public class AbstractFTPTest {
                 //
             }
         }, new DisabledHostKeyCallback(), new TestPasswordStore(), new DisabledProgressListener());
-        login.check(session, PathCache.empty(), new DisabledCancelCallback());
+        login.check(session, new DisabledCancelCallback());
     }
 
     public static class TestPasswordStore extends DisabledPasswordStore {

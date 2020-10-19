@@ -25,7 +25,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -63,7 +62,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
                     return null;
                 }
             }, new DisabledProgressListener());
-        login.check(session, PathCache.empty(), new DisabledCancelCallback());
+        login.check(session, new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -82,7 +81,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
                     return null;
                 }
             }, new DisabledProgressListener());
-        login.check(session, PathCache.empty(), new DisabledCancelCallback());
+        login.check(session, new DisabledCancelCallback());
     }
 
     @Test
@@ -103,7 +102,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
                     return null;
                 }
             }, new DisabledProgressListener());
-        login.check(session, PathCache.empty(), new DisabledCancelCallback());
+        login.check(session, new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -125,7 +124,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
                     return null;
                 }
             }, new DisabledProgressListener());
-        login.check(session, PathCache.empty(), new DisabledCancelCallback());
+        login.check(session, new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)

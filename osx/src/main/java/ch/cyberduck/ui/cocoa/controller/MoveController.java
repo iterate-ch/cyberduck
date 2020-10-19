@@ -72,7 +72,7 @@ public class MoveController extends ProxyController {
             @Override
             public void run() {
                 final SessionPool pool = parent.getSession();
-                final MoveWorker move = new MoveWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(parent, cache, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
+                final MoveWorker move = new MoveWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(parent, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
                     @Override
                     public void cleanup(final Map<Path, Path> result) {
                         final List<Path> changed = new ArrayList<>();

@@ -2297,7 +2297,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     @Override
                     public void run() {
                         background(new WorkerBackgroundAction<>(BrowserController.this, pool,
-                            new CopyWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool, cache,
+                            new CopyWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(BrowserController.this, pool.getHost()) : pool, cache,
                                 BrowserController.this, LoginCallbackFactory.get(BrowserController.this)) {
                                 @Override
                                 public void cleanup(final Map<Path, Path> result) {
@@ -3142,7 +3142,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             @Override
             public void run() {
                 // The browser has no session, we are allowed to proceed
-                pool = SessionPoolFactory.create(BrowserController.this, cache, bookmark, SessionPoolFactory.Usage.browser);
+                pool = SessionPoolFactory.create(BrowserController.this, bookmark, SessionPoolFactory.Usage.browser);
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
                     new MountWorker(bookmark, cache, listener) {
                         @Override

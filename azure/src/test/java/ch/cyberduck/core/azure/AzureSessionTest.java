@@ -9,7 +9,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.AclPermission;
@@ -45,7 +44,7 @@ public class AzureSessionTest {
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -73,7 +72,7 @@ public class AzureSessionTest {
         final AzureSession session = new AzureSession(host);
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
-        connect.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        connect.connect(session, new DisabledCancelCallback());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -115,7 +114,7 @@ public class AzureSessionTest {
             }
         }, new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
-        connect.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        connect.connect(session, new DisabledCancelCallback());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -136,7 +135,7 @@ public class AzureSessionTest {
                 return super.prompt(bookmark, username, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -154,6 +153,6 @@ public class AzureSessionTest {
                 return super.prompt(bookmark, username, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
     }
 }

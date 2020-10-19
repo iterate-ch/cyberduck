@@ -11,7 +11,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Read;
@@ -66,7 +65,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
-        service.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        service.connect(session, new DisabledCancelCallback());
         final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
         // Unknown length in status
         final TransferStatus status = new TransferStatus() {
@@ -91,7 +90,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
-        service.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        service.connect(session, new DisabledCancelCallback());
         final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
         // Unknown length in status
         final TransferStatus status = new TransferStatus();

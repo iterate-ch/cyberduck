@@ -24,7 +24,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
@@ -65,7 +64,7 @@ public abstract class AbstractGraphTest {
             }
         }, new DisabledHostKeyCallback(), passwordStore(),
             new DisabledProgressListener());
-        login.check(session, PathCache.empty(), new DisabledCancelCallback());
+        login.check(session, new DisabledCancelCallback());
     }
 
     protected abstract Protocol protocol();

@@ -17,11 +17,9 @@ package ch.cyberduck.core.pool;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -40,16 +38,14 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     private final ConnectionService connect;
     private final X509TrustManager trust;
     private final X509KeyManager key;
-    private final Cache<Path> cache;
     private final Host bookmark;
     private final VaultRegistry registry;
 
     public PooledSessionFactory(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                                final Cache<Path> cache, final Host bookmark, final VaultRegistry registry) {
+                                final Host bookmark, final VaultRegistry registry) {
         this.connect = connect;
         this.trust = trust;
         this.key = key;
-        this.cache = cache;
         this.bookmark = bookmark;
         this.registry = registry;
     }
@@ -74,7 +70,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
             log.debug(String.format("Activate session %s", session));
         }
         // Load vault to increment open count for pooled vault
-        connect.check(session, cache, new DisabledCancelCallback());
+        connect.check(session, new DisabledCancelCallback());
     }
 
     @Override

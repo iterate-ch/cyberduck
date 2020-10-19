@@ -2759,7 +2759,7 @@ namespace Ch.Cyberduck.Ui.Controller
             CallbackDelegate callbackDelegate =
                 delegate
                 {
-                    Session = SessionPoolFactory.create(this, _cache, host, SessionPoolFactory.Usage.browser);
+                    Session = SessionPoolFactory.create(this, host, SessionPoolFactory.Usage.browser);
                     background(new MountAction(this, Session, host, _limitListener));
                 };
             Unmount(callbackDelegate);
@@ -3451,7 +3451,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public InnerMoveWorker(BrowserController controller, Map files, PathCache cache)
                     : base(files,
                         controller.Session.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful
-                            ? SessionPoolFactory.create(controller, cache, controller.Session.getHost())
+                            ? SessionPoolFactory.create(controller, controller.Session.getHost())
                             : controller.Session, cache, controller, LoginCallbackFactory.get(controller))
 {
                     _controller = controller;
@@ -3484,7 +3484,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public InnerCopyWorker(BrowserController controller, Map files, PathCache cache)
                     : base(files,
                         controller.Session.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful
-                            ? SessionPoolFactory.create(controller, cache, controller.Session.getHost())
+                            ? SessionPoolFactory.create(controller, controller.Session.getHost())
                             : controller.Session, cache, controller, LoginCallbackFactory.get(controller))
                 {
                     _controller = controller;

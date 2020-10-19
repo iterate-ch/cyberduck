@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -64,6 +63,6 @@ public class AbstractBrickTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
-        login.check(session, PathCache.empty(), new DisabledCancelCallback());
+        login.check(session, new DisabledCancelCallback());
     }
 }

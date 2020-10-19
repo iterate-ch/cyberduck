@@ -675,8 +675,8 @@ namespace Ch.Cyberduck.Ui.Controller
             public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options,
                 TransferCallback callback, PathCache cache, ProgressListener listener)
                 : base(controller,
-                    null == transfer.getSource() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, cache, transfer.getSource(), listener),
-                    null == transfer.getDestination() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, cache, transfer.getDestination(), listener),
+                    null == transfer.getSource() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, transfer.getSource(), listener),
+                    null == transfer.getDestination() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, transfer.getDestination(), listener),
                     controller.GetController(transfer),
                     controller.GetController(transfer), 
                     transfer, options)
