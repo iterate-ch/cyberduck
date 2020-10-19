@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.MoveNode;
 import ch.cyberduck.core.sds.io.swagger.client.model.MoveNodesRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -37,6 +39,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SDSMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(SDSMoveFeature.class);
@@ -119,13 +123,28 @@ public class SDSMoveFeature implements Move {
                 log.warn(String.format("Deny move of %s with missing permissions for user", source));
                 return false;
             }
-            return true;
         }
         if(!acl.containsRole(source, SDSPermissionsFeature.CHANGE_ROLE)) {
             log.warn(String.format("Deny move of %s with missing permissions for user", source));
             return false;
         }
+        if(!StringUtils.equals(source.getName(), target.getName())) {
+            if(new CaseInsensitivePathPredicate(source).test(target)) {
+                try {
+                    final SoftwareVersionData version = session.softwareVersion();
+                    final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
+                    if(matcher.matches()) {
+                        if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.14))) < 0) {
+                            // SDS-1055
+                            return false;
+                        }
+                    }
+                }
+                catch(BackgroundException e) {
+                    log.warn(String.format("Ignore failure %s determining version", e));
+                }
+            }
+        }
         return true;
     }
-
 }
