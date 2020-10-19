@@ -18,10 +18,7 @@ package ch.cyberduck.core.pool;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -59,11 +56,6 @@ public interface SessionPool {
      * @return Connection configuration
      */
     Host getHost();
-
-    /**
-     * @return Directory listing cache
-     */
-    Cache<Path> getCache();
 
     /**
      * @return Shared vaults for sessions
@@ -110,11 +102,6 @@ public interface SessionPool {
         @Override
         public Host getHost() {
             return DISCONNECTED;
-        }
-
-        @Override
-        public Cache<Path> getCache() {
-            return PathCache.empty();
         }
 
         @Override
@@ -187,11 +174,6 @@ public interface SessionPool {
         @Override
         public Host getHost() {
             return session.getHost();
-        }
-
-        @Override
-        public PathCache getCache() {
-            return PathCache.empty();
         }
 
         @Override

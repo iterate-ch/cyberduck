@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
@@ -77,7 +76,7 @@ public class OneDriveBusinessContextLoginTest {
                 public String getPassword(String hostname, String user) {
                     return super.getPassword(hostname, user);
                 }
-            }, new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+            }, new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         assertEquals("/b!9prv2DvXt0Cua27a0kKBHlYP69u02QdCtkueQRimv8UsYPDHr-_uQoMvBiuYAjdH", (new OneDriveHomeFinderService(session).find().getAbsolute()));
     }
 }

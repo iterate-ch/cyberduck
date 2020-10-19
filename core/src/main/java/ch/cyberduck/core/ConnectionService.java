@@ -23,25 +23,23 @@ import ch.cyberduck.core.threading.CancelCallback;
 public interface ConnectionService {
 
     /**
-     * Assert that the connection to the remote host is still alive and opens connection if needed.
-     * Prompts for credentials and connect to server if not already connected.
+     * Assert that the connection to the remote host is still alive and opens connection if needed. Prompts for
+     * credentials and connect to server if not already connected.
      *
      * @param session  Session
-     * @param cache    Cache
      * @param callback Cancel
      * @return True if new connection was opened. False if connection is reused.
      * @throws BackgroundException If opening connection fails
      */
-    boolean check(Session<?> session, Cache<Path> cache, CancelCallback callback) throws BackgroundException;
+    boolean check(Session<?> session, CancelCallback callback) throws BackgroundException;
 
     /**
      * Open connection
      *
      * @param session  Connection
-     * @param cache    Directory cache
      * @param callback Cancel
      */
-    void connect(Session<?> session, Cache<Path> cache, CancelCallback callback) throws BackgroundException;
+    void connect(Session<?> session, CancelCallback callback) throws BackgroundException;
 
     /**
      * Disconnect

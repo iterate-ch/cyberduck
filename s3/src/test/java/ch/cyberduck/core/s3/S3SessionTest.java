@@ -290,7 +290,7 @@ public class S3SessionTest extends AbstractS3Test {
             new DisabledPasswordStore(),
             new DisabledProgressListener()
         );
-        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        c.connect(session, new DisabledCancelCallback());
         assertTrue(verified.get());
         session.close();
     }

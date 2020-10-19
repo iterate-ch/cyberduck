@@ -26,7 +26,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Read;
@@ -57,16 +56,16 @@ public class AbstractEditorTest {
     public void testEquals() {
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         assertEquals(
-                new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
-                new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file)))
+            new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
+            new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file)))
         );
         assertNotEquals(
-                new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
-                new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/g", EnumSet.of(Path.Type.file)))
+            new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
+            new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/g", EnumSet.of(Path.Type.file)))
         );
         assertNotEquals(
-                new DisabledEditor(new Application("a"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
-                new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file)))
+            new DisabledEditor(new Application("a"), new StatelessSessionPool(new TestLoginConnectionService(), session, new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
+            new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file)))
         );
     }
 
@@ -98,8 +97,8 @@ public class AbstractEditorTest {
         final AtomicBoolean e = new AtomicBoolean();
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
         file.attributes().setSize("content".getBytes().length);
-        final AbstractEditor editor = new AbstractEditor(new Application("com.editor"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(),
-                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), file, new DisabledProgressListener()) {
+        final AbstractEditor editor = new AbstractEditor(new Application("com.editor"), new StatelessSessionPool(new TestLoginConnectionService(), session,
+            new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), file, new DisabledProgressListener()) {
             @Override
             public void close() {
                 //

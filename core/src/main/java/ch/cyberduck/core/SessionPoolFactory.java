@@ -39,64 +39,64 @@ public class SessionPoolFactory {
         //
     }
 
-    public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark) {
-        return create(controller, cache, bookmark, controller);
+    public static SessionPool create(final Controller controller, final Host bookmark) {
+        return create(controller, bookmark, controller);
     }
 
-    public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark,
+    public static SessionPool create(final Controller controller, final Host bookmark,
                                      final ProgressListener listener) {
-        return create(controller, cache, bookmark, listener, Usage.transfer);
+        return create(controller, bookmark, listener, Usage.transfer);
     }
 
-    public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark,
+    public static SessionPool create(final Controller controller, final Host bookmark,
                                      final Usage... usage) {
-        return create(controller, cache, bookmark, controller, usage);
+        return create(controller, bookmark, controller, usage);
     }
 
-    public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark,
+    public static SessionPool create(final Controller controller, final Host bookmark,
                                      final ProgressListener listener, final TranscriptListener transcript, final Usage... usage) {
-        return create(controller, cache, bookmark, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller,
+        return create(controller, bookmark, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller,
             bookmark.getProtocol()), listener, transcript, usage);
     }
 
-    public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark,
+    public static SessionPool create(final Controller controller, final Host bookmark,
                                      final ProgressListener listener, final Usage... usage) {
-        return create(controller, cache, bookmark, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller,
+        return create(controller, bookmark, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller,
             bookmark.getProtocol()), listener, controller, usage);
     }
 
-    public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark,
+    public static SessionPool create(final Controller controller, final Host bookmark,
                                      final HostPasswordStore keychain, final LoginCallback login, final HostKeyCallback key,
                                      final ProgressListener listener, final TranscriptListener transcript,
                                      final Usage... usage) {
         final LoginConnectionService connect = new LoginConnectionService(login, key, keychain, listener);
-        return create(connect, transcript, cache, bookmark,
+        return create(connect, transcript, bookmark,
             new KeychainX509TrustManager(CertificateTrustCallbackFactory.get(controller), new DefaultTrustManagerHostnameCallback(bookmark), CertificateStoreFactory.get()),
             new KeychainX509KeyManager(CertificateIdentityCallbackFactory.get(controller), bookmark, CertificateStoreFactory.get()),
             VaultRegistryFactory.create(keychain, login), usage);
     }
 
     public static SessionPool create(final ConnectionService connect, final TranscriptListener transcript,
-                                     final Cache<Path> cache, final Host bookmark,
+                                     final Host bookmark,
                                      final X509TrustManager x509TrustManager, final X509KeyManager x509KeyManager,
                                      final VaultRegistry registry,
                                      final Usage... usage) {
         switch(bookmark.getProtocol().getStatefulness()) {
             case stateful:
                 if(Arrays.asList(usage).contains(Usage.browser)) {
-                    return stateful(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
+                    return stateful(connect, transcript, bookmark, x509TrustManager, x509KeyManager, registry);
                 }
                 // Break through to default pool
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Create new pooled connection pool for %s", bookmark));
                 }
-                return new DefaultSessionPool(connect, x509TrustManager, x509KeyManager, registry, cache, transcript, bookmark)
+                return new DefaultSessionPool(connect, x509TrustManager, x509KeyManager, registry, transcript, bookmark)
                     .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
                     .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
                     .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
             default:
                 // Stateless protocol
-                return stateless(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
+                return stateless(connect, transcript, bookmark, x509TrustManager, x509KeyManager, registry);
         }
     }
 
@@ -104,28 +104,28 @@ public class SessionPoolFactory {
      * @return Single stateless session
      */
     protected static SessionPool stateless(final ConnectionService connect, final TranscriptListener transcript,
-                                           final Cache<Path> cache, final Host bookmark,
+                                           final Host bookmark,
                                            final X509TrustManager trust, final X509KeyManager key,
                                            final VaultRegistry vault) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Create new stateless connection pool for %s", bookmark));
         }
         final Session<?> session = SessionFactory.create(bookmark, trust, key);
-        return new StatelessSessionPool(connect, session, cache, transcript, vault);
+        return new StatelessSessionPool(connect, session, transcript, vault);
     }
 
     /**
      * @return Single stateful session
      */
     protected static SessionPool stateful(final ConnectionService connect, final TranscriptListener transcript,
-                                          final Cache<Path> cache, final Host bookmark,
+                                          final Host bookmark,
                                           final X509TrustManager trust, final X509KeyManager key,
                                           final VaultRegistry vault) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Create new stateful connection pool for %s", bookmark));
         }
         final Session<?> session = SessionFactory.create(bookmark, trust, key);
-        return new StatefulSessionPool(connect, session, cache, transcript, vault);
+        return new StatefulSessionPool(connect, session, transcript, vault);
     }
 
     public enum Usage {

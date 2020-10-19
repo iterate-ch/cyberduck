@@ -69,6 +69,6 @@ public class AbstractS3DirectSDSTest {
             }
         }, new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
-        connect.check(session, PathCache.empty(), new DisabledCancelCallback());
+        connect.check(session, new DisabledCancelCallback());
     }
 }

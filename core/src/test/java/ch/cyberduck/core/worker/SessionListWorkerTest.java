@@ -53,8 +53,8 @@ public class SessionListWorkerTest {
             }
         };
         final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new StatelessSessionPool(
-                new TestLoginConnectionService(), session, PathCache.empty(),
-                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), worker));
+            new TestLoginConnectionService(), session,
+            new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), worker));
         assertTrue(task.get().isEmpty());
     }
 
@@ -80,8 +80,8 @@ public class SessionListWorkerTest {
             }
         };
         final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new StatelessSessionPool(
-                new TestLoginConnectionService(), session, PathCache.empty(),
-                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), worker));
+            new TestLoginConnectionService(), session,
+            new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), worker));
         assertNotNull(task.get());
         assertTrue(cache.containsKey(directory));
         assertEquals(1, cache.get(directory).size());

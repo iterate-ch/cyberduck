@@ -599,8 +599,8 @@ public final class TransferController extends WindowController implements Transf
         final Host source = transfer.getSource();
         final Host destination = transfer.getDestination();
         final TransferBackgroundAction action = new TransferCollectionBackgroundAction(this,
-            null == source ? SessionPool.DISCONNECTED : SessionPoolFactory.create(this, cache, source, progress),
-            null == destination ? SessionPool.DISCONNECTED : SessionPoolFactory.create(this, cache, destination, progress),
+            null == source ? SessionPool.DISCONNECTED : SessionPoolFactory.create(this, source, progress),
+            null == destination ? SessionPool.DISCONNECTED : SessionPoolFactory.create(this, destination, progress),
             this, progress, transfer.withCache(cache), options) {
             @Override
             public void init() {

@@ -26,7 +26,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.cryptomator.CryptoVault;
@@ -132,6 +131,6 @@ public class AbstractSFTPTest {
         },
             new DisabledHostKeyCallback(),
             new DisabledPasswordStore(),
-            new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+            new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
     }
 }
