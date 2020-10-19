@@ -18,6 +18,8 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 
+import java.util.Optional;
+
 public class SharepointContainerService extends PathContainerService {
 
     @Override
@@ -30,18 +32,25 @@ public class SharepointContainerService extends PathContainerService {
         if(file.isRoot()) {
             return file;
         }
-        Path previous = file;
-        Path parent = file.getParent();
-        while(!parent.isRoot()) {
-            if(SharepointListService.DEFAULT_NAME.equals(parent.getParent())) {
-                return parent;
+        Path container = null;
+        Path next = file;
+        Path current = null, previous;
+        while(null == container && null != next) {
+            previous = current;
+            current = next;
+            next = !next.isRoot() ? next.getParent() : null;
+
+            final String versionId = current.attributes().getVersionId();
+            if(SharepointListService.DRIVES_ID.equals(versionId)) {
+                container = previous;
             }
-            else if(SharepointListService.GROUPS_NAME.equals(parent.getParent())) {
-                return previous;
+            else if(SharepointListService.GROUPS_ID.equals(versionId)) {
+                container = previous;
             }
-            previous = parent;
-            parent = parent.getParent();
+            else if(SharepointListService.SITES_ID.equals(versionId)) {
+                container = previous;
+            }
         }
-        return file;
+        return Optional.ofNullable(container).orElse(current);
     }
 }
