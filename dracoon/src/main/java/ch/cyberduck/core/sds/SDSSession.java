@@ -55,6 +55,7 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -434,8 +435,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 keyPairDeprecated.set(new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null));
             }
             catch(ApiException e) {
-                log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
-                throw new SDSExceptionMappingService().map(e);
+                if(e.getCode() == HttpStatus.SC_NOT_FOUND) {
+                    log.debug(String.format("User does not have a keypair for version %s", UserKeyPair.Version.RSA2048.getValue()));
+                }
+                else {
+                    log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
+                    throw new SDSExceptionMappingService().map(e);
+                }
             }
         }
         return keyPairDeprecated.get();

@@ -42,10 +42,12 @@ public class TripleCryptKeyPair {
 
     private final HostPasswordStore keychain = PasswordStoreFactory.get();
 
-    //TODO es müsste angezeigt werden können welche Passphrase abgefragt wird (alt oder neu - anhand der Version)
-    //TODO Können jetzt mehrere Passphrases haben, eine pro Version. Migration von Passphrase in Keychain?
     public Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair) throws CryptoException, LoginCanceledException {
         final String passphrase = keychain.getPassword(this.getServiceName(bookmark, keypair.getUserPublicKey().getVersion()), this.getAccountName(bookmark));
+        return this.unlock(callback, bookmark, keypair, passphrase);
+    }
+
+    public Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair, final String passphrase) throws CryptoException, LoginCanceledException {
         return this.unlock(callback, bookmark, keypair, passphrase, LocaleFactory.localizedString("Enter your decryption password to access encrypted data rooms.", "SDS"));
     }
 

@@ -59,7 +59,6 @@ import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 import com.dracoon.sdk.crypto.model.UserPrivateKey;
-import com.dracoon.sdk.crypto.model.UserPublicKey;
 
 public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature<List<UserFileKeySetRequest>, SDSApiClient> {
     private static final Logger log = Logger.getLogger(SDSMissingFileKeysSchedulerFeature.class);
@@ -81,13 +80,21 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                 return Collections.emptyList();
             }
             final List<UserFileKeySetRequest> processed = new ArrayList<>();
-            final UserKeyPairContainer keyPairContainer = ((SDSSession) session).keyPair();
-            final UserPrivateKey privateKey = new UserPrivateKey(UserKeyPair.Version.getByValue(keyPairContainer.getPrivateKeyContainer().getVersion()),
-                keyPairContainer.getPrivateKeyContainer().getPrivateKey());
-            final UserPublicKey publicKey = new UserPublicKey(UserKeyPair.Version.getByValue(keyPairContainer.getPublicKeyContainer().getVersion()),
-                keyPairContainer.getPublicKeyContainer().getPublicKey());
-            final UserKeyPair userKeyPair = new UserKeyPair(privateKey, publicKey);
-            final Credentials passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
+            final UserKeyPairContainer kp = ((SDSSession) session).keyPair();
+            final UserKeyPair keyPair = TripleCryptConverter.toCryptoUserKeyPair(kp);
+            final Credentials credentials = new TripleCryptKeyPair().unlock(callback, session.getHost(), keyPair);
+            final UserKeyPairContainer kpDeprecated = ((SDSSession) session).keyPairDeprecated();
+            UserKeyPair keyPairDeprecated = null;
+            Credentials credentialsDeprecated = null;
+            if(kpDeprecated != null) {
+                keyPairDeprecated = TripleCryptConverter.toCryptoUserKeyPair(kpDeprecated);
+                if(kpDeprecated.equals(kp)) {
+                    credentialsDeprecated = credentials;
+                }
+                else {
+                    credentialsDeprecated = new TripleCryptKeyPair().unlock(callback, session.getHost(), keyPairDeprecated);
+                }
+            }
             final IdProvider node = session.getFeature(IdProvider.class);
             final Long fileId = file != null ? Long.parseLong(node.getFileid(file, new DisabledListProgressListener())) : null;
             UserFileKeySetBatchRequest request;
@@ -113,15 +120,15 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                     EncryptedFileKey encryptFileKey;
                     if(file == null && item.getUserId().equals(((SDSSession) session).userAccount().getId())) {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Migrate deprecated file key for %s", file));
+                            log.debug(String.format("Migrate deprecated file key for file with id %s", item.getFileId()));
                         }
-                        final UserKeyPair deprecated = TripleCryptConverter.toCryptoUserKeyPair(((SDSSession) session).keyPairDeprecated());
-                        final Credentials credentials = new TripleCryptKeyPair().unlock(callback, session.getHost(), deprecated);
-                        encryptFileKey = this.encryptFileKey(deprecated.getUserPrivateKey(), credentials, pubkey, fileKeys);
+                        encryptFileKey = this.encryptFileKey(keyPairDeprecated.getUserPrivateKey(), credentialsDeprecated, pubkey, fileKeys);
                         migrated = true;
                     }
                     else {
-                        encryptFileKey = this.encryptFileKey(privateKey, passphrase, pubkey, fileKeys);
+                        final UserPrivateKey privateKey = this.getPrivateKeyForDecryption((SDSSession) session, fileKeys);
+                        encryptFileKey = this.encryptFileKey(privateKey, privateKey.getVersion() == UserKeyPair.Version.RSA2048 ?
+                            credentialsDeprecated : credentials, pubkey, fileKeys);
                     }
                     keySetRequest.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                     if(log.isDebugEnabled()) {
@@ -157,6 +164,15 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             log.info("Deleting deprecated key pair");
         }
         new UserApi(session.getClient()).removeUserKeyPair(session.keyPairDeprecated().getPublicKeyContainer().getVersion(), null);
+    }
+
+    private UserPrivateKey getPrivateKeyForDecryption(final SDSSession session, final FileFileKeys fileKeys) throws UnknownVersionException, BackgroundException {
+        switch(EncryptedFileKey.Version.getByValue(fileKeys.getFileKeyContainer().getVersion())) {
+            case RSA2048_AES256GCM:
+                return TripleCryptConverter.toCryptoUserPrivateKey(session.keyPairDeprecated().getPrivateKeyContainer());
+            default:
+                return TripleCryptConverter.toCryptoUserPrivateKey(session.keyPair().getPrivateKeyContainer());
+        }
     }
 
     private EncryptedFileKey encryptFileKey(final UserPrivateKey privateKey, final Credentials passphrase,

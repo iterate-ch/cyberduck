@@ -56,6 +56,10 @@ public class TripleCryptConverter {
         return new UserPublicKey(UserKeyPair.Version.getByValue(c.getVersion()), c.getPublicKey());
     }
 
+    public static UserPrivateKey toCryptoUserPrivateKey(final PrivateKeyContainer c) throws UnknownVersionException {
+        return new UserPrivateKey(UserKeyPair.Version.getByValue(c.getVersion()), c.getPrivateKey());
+    }
+
     public static PlainFileKey toCryptoPlainFileKey(final FileKey key) throws UnknownVersionException {
         final PlainFileKey fileKey = new PlainFileKey(PlainFileKey.Version.getByValue(key.getVersion()), key.getKey(), key.getIv());
         fileKey.setTag(key.getTag());

@@ -36,11 +36,11 @@ import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.io.StringReader;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -48,8 +48,6 @@ import java.util.List;
 
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import static org.junit.Assert.*;
 
@@ -201,8 +199,8 @@ public class SDSSessionTest extends AbstractSDSTest {
 
     @Test
     public void testKeyPairMigration() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "cryptotest.dracoon.dev",
-            new Credentials(System.getProperties().getProperty("sds.user.cryptotest"), System.getProperties().getProperty("sds.key.cryptotest")));
+        final Host host = new Host(new SDSProtocol(), session.getHost().getHostname(),
+            new Credentials(System.getProperties().getProperty("sds.crypto.user"), System.getProperties().getProperty("sds.crypto.key")));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -215,20 +213,24 @@ public class SDSSessionTest extends AbstractSDSTest {
         final UserApi userApi = new UserApi(session.getClient());
         try {
             userApi.removeUserKeyPair(UserKeyPair.Version.RSA2048.getValue(), null);
+        }
+        catch(ApiException e) {
+            if(e.getCode() == HttpStatus.SC_NOT_FOUND) {
+                //ignore
+            }
+            else {
+                throw e;
+            }
+        }
+        try {
             userApi.removeUserKeyPair(UserKeyPair.Version.RSA4096.getValue(), null);
         }
         catch(ApiException e) {
-            final JsonObject json = JsonParser.parseReader(new StringReader(e.getResponseBody())).getAsJsonObject();
-            if(json.has("errorCode")) {
-                if(json.get("errorCode").isJsonPrimitive()) {
-                    final int errorCode = json.getAsJsonPrimitive("errorCode").getAsInt();
-                    if(errorCode == -70020) {
-                        // Ignore - User has no keypair with this algorithm version
-                    }
-                    else {
-                        throw e;
-                    }
-                }
+            if(e.getCode() == HttpStatus.SC_NOT_FOUND) {
+                //ignore
+            }
+            else {
+                throw e;
             }
         }
         // create legacy key pair
@@ -238,7 +240,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertEquals(1, keyPairs.size());
         // login to start migration
         session.getHost().setCredentials(
-            new Credentials(System.getProperties().getProperty("sds.user.cryptotest"), System.getProperties().getProperty("sds.key.cryptotest")));
+            new Credentials(System.getProperties().getProperty("sds.crypto.user"), System.getProperties().getProperty("sds.crypto.key")));
         session.login(Proxy.DIRECT, new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
