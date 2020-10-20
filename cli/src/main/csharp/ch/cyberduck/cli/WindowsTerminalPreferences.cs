@@ -36,6 +36,12 @@ namespace Ch.Cyberduck.Cli
         {
         }
 
+        public override void setProperty(string property, string v)
+        {
+            base.setProperty(property, v);
+            save();
+        }
+
         protected override void setDefaults()
         {
             base.setDefaults();
