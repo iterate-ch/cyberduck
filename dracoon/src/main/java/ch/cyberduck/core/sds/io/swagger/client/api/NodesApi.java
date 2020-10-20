@@ -18,6 +18,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.CopyNodesRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFolderRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateKeyPairRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateNodeCommentRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateRoomRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.DeleteDeletedNodesRequest;
@@ -65,7 +66,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-15T09:21:49.036118+02:00[Europe/Zurich]")public class NodesApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class NodesApi {
   private ApiClient apiClient;
 
   public NodesApi() {
@@ -413,6 +414,52 @@ import java.util.Map;
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
+   * Create key pair and preserve copy of old private key (NEW)
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Create room rescue key pair and preserve copy of old private key.  ### Precondition: User needs to be a &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Room Administrator&lt;/span&gt;.  ### Postcondition: Room rescue key pair is created.   Copy of old private key is preserved.  ### Further Information: You can submit your old private key, encrypted with your current password.   This allows migrating file keys encrypted with your old key pair to the new one.
+   * @param body  (required)
+   * @param roomId Room ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void createAndPreserveRoomRescueKeyPair(CreateKeyPairRequest body, Long roomId, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = body;
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling createAndPreserveRoomRescueKeyPair");
+    }
+    // verify the required parameter 'roomId' is set
+    if (roomId == null) {
+      throw new ApiException(400, "Missing the required parameter 'roomId' when calling createAndPreserveRoomRescueKeyPair");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/nodes/rooms/{room_id}/keypairs"
+      .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
    * Create new file upload channel
    * ### Description: This endpoint creates a new upload channel which is the first step in any file upload workflow.  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; create&lt;/span&gt; permissions in the parent container (room or folder).  ### Postcondition: A new upload channel for a file is created.   Its ID and an upload token are returned.  ### Further Information: The upload ID is used for uploads with &#x60;X-Sds-Auth-Token&#x60; header, the upload token can be used for uploads without authentication header.  Please provide the size of the intended upload so that the quota can be checked in advanced and no data is transferred unnecessarily.  Notes are limited to **255** characters.  ### Node naming convention: * Node (room, folder, file) names are limited to **150** characters. * Not allowed names:   &#x60;&#x27;CON&#x27;, &#x27;PRN&#x27;, &#x27;AUX&#x27;, &#x27;NUL&#x27;, &#x27;COM1&#x27;, &#x27;COM2&#x27;, &#x27;COM3&#x27;, &#x27;COM4&#x27;, &#x27;COM5&#x27;, &#x27;COM6&#x27;, &#x27;COM7&#x27;, &#x27;COM8&#x27;, &#x27;COM9&#x27;, &#x27;LPT1&#x27;, &#x27;LPT2&#x27;, &#x27;LPT3&#x27;, &#x27;LPT4&#x27;, &#x27;LPT5&#x27;, &#x27;LPT6&#x27;, &#x27;LPT7&#x27;, &#x27;LPT8&#x27;, &#x27;LPT9&#x27;, (and any of those with an extension)&#x60; * Not allowed characters in names:   &#x60;&#x27;\\\\&#x27;, &#x27;&lt;&#x27;,&#x27;&gt;&#x27;, &#x27;:&#x27;, &#x27;\\\&quot;&#x27;, &#x27;|&#x27;, &#x27;?&#x27;, &#x27;*&#x27;, &#x27;/&#x27;, leading &#x27;-&#x27;, trailing &#x27;.&#x27; &#x60; 
    * @param body  (required)
@@ -599,7 +646,7 @@ import java.util.Map;
    * Download file
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.3.0&lt;/h3&gt;  ### Use &#x60;downloads&#x60; API  ### Description: Download a file.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in parent room.  ### Postcondition: Stream is returned.  ### Further Information: Range requests are supported for details.
    * @param fileId File ID (required)
-   * @param range Range  e.g. &#x60;bytes&#x3D;0-999/3980&#x60; (optional)
+   * @param range Range   e.g. &#x60;bytes&#x3D;0-999/3980&#x60; (optional)
    * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
    * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
    * @param xSdsAuthToken Authentication token (optional)
@@ -651,7 +698,7 @@ import java.util.Map;
    * Download file
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.3.0&lt;/h3&gt;  ### Use &#x60;downloads&#x60; API  ### Description: Download a file.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in parent room.  ### Postcondition: Stream is returned.  ### Further Information: Range requests are supported for details.
    * @param fileId File ID (required)
-   * @param range Range  e.g. &#x60;bytes&#x3D;0-999/3980&#x60; (optional)
+   * @param range Range   e.g. &#x60;bytes&#x3D;0-999/3980&#x60; (optional)
    * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
    * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
    * @param xSdsAuthToken Authentication token (optional)
@@ -1270,6 +1317,49 @@ import java.util.Map;
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
+   * Remove rooms&#x27;s rescue key pair (NEW)
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Delete room rescue key pair.  ### Precondition: Authenticated user.  ### Postcondition: Key pair is removed (cf. further information below).  ### Further Information: Please set a new room rescue key pair first and re-encrypt file keys with it.   If no version is set, deleted key pair with lowest preference value.   Although, &#x60;version&#x60; **SHOULD** be set. 
+   * @param roomId Room ID (required)
+   * @param version Version (NEW) (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void removeRoomRescueKeyPair(Long roomId, String version, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // verify the required parameter 'roomId' is set
+    if (roomId == null) {
+      throw new ApiException(400, "Missing the required parameter 'roomId' when calling removeRoomRescueKeyPair");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/nodes/rooms/{room_id}/keypair"
+      .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "version", version));
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
    * Request deleted node
    * ### Description:   Get metadata of a deleted node.  ### Precondition: User can access parent room and has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read recycle bin&lt;/span&gt; permissions.  ### Postcondition: Requested deleted node is returned.  ### Further Information: None.
    * @param deletedNodeId Deleted node ID (required)
@@ -1493,11 +1583,12 @@ import java.util.Map;
    * @param roomId Room ID (optional)
    * @param fileId File ID (optional)
    * @param userId User ID (optional)
+   * @param useKey Determines which key should be used (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return MissingKeysResponse
    * @throws ApiException if fails to make API call
    */
-  public MissingKeysResponse requestMissingFileKeys(Integer offset, Integer limit, Long roomId, Long fileId, Long userId, String xSdsAuthToken) throws ApiException {
+  public MissingKeysResponse requestMissingFileKeys(Integer offset, Integer limit, Long roomId, Long fileId, Long userId, String useKey, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     // create path and map variables
     String localVarPath = "/v4/nodes/missingFileKeys";
@@ -1512,6 +1603,7 @@ import java.util.Map;
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "room_id", roomId));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "file_id", fileId));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "user_id", userId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "use_key", useKey));
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
@@ -1780,9 +1872,9 @@ import java.util.Map;
    * @param sort Sort string (optional)
    * @param offset Range offset (optional)
    * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
-   * @param dateStart Filter events from given date  e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
-   * @param dateEnd Filter events until given date  e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
-   * @param type Operation ID  cf. &#x60;GET /eventlog/operations&#x60; (optional)
+   * @param dateStart Filter events from given date   e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param dateEnd Filter events until given date   e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param type Operation ID   cf. &#x60;GET /eventlog/operations&#x60; (optional)
    * @param userId User ID (optional)
    * @param status Operation status:  * &#x60;0&#x60; - Success  * &#x60;2&#x60; - Error (optional)
    * @param xSdsAuthToken Authentication token (optional)
@@ -1842,9 +1934,9 @@ import java.util.Map;
    * @param sort Sort string (optional)
    * @param offset Range offset (optional)
    * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
-   * @param dateStart Filter events from given date  e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
-   * @param dateEnd Filter events until given date  e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
-   * @param type Operation ID  cf. &#x60;GET /eventlog/operations&#x60; (optional)
+   * @param dateStart Filter events from given date   e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param dateEnd Filter events until given date   e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param type Operation ID   cf. &#x60;GET /eventlog/operations&#x60; (optional)
    * @param userId User ID (optional)
    * @param status Operation status:  * &#x60;0&#x60; - Success  * &#x60;2&#x60; - Error (optional)
    * @param xSdsAuthToken Authentication token (optional)
@@ -1950,14 +2042,17 @@ import java.util.Map;
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
-   * Request room emergency password (rescue key)
-   * ### Description:   Returns the file key for the room emergency password / rescue key of a certain file (if available).  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in parent room.  ### Postcondition: File key is returned.  ### Further Information: None.
+   * Request room rescue key
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.24.0&lt;/h3&gt;  ### Description:   Returns the file key for the room emergency password / rescue key of a certain file (if available).  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in parent room.  ### Postcondition: File key is returned.  ### Further Information: None.
    * @param fileId File ID (required)
+   * @param version Version (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return FileKey
    * @throws ApiException if fails to make API call
+   * @deprecated
    */
-  public FileKey requestRoomRescueKey(Long fileId, String xSdsAuthToken) throws ApiException {
+  @Deprecated
+  public FileKey requestRoomRescueKey(Long fileId, String version, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'fileId' is set
     if (fileId == null) {
@@ -1972,6 +2067,7 @@ import java.util.Map;
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "version", version));
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
@@ -1993,14 +2089,16 @@ import java.util.Map;
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
-   * Request room emergency password (rescue key)
-   * ### Description:   Retrieve the room emergency password (rescue key).  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in that room.  ### Postcondition: Key pair is returned.  ### Further Information: None.
+   * Request room rescue key
+   * ### Description:   Retrieve the room rescue key pair.  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in that room.  ### Postcondition: Key pair is returned.  ### Further Information: None.
    * @param roomId Room ID (required)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
+   * @param version Version (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return UserKeyPairContainer
    * @throws ApiException if fails to make API call
    */
-  public UserKeyPairContainer requestRoomRescueKeyPair(Long roomId, String xSdsAuthToken) throws ApiException {
+  public UserKeyPairContainer requestRoomRescueKeyPair(Long roomId, String xSdsDateFormat, String version, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'roomId' is set
     if (roomId == null) {
@@ -2015,7 +2113,10 @@ import java.util.Map;
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "version", version));
 
+    if (xSdsDateFormat != null)
+      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
@@ -2033,6 +2134,52 @@ import java.util.Map;
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<UserKeyPairContainer> localVarReturnType = new GenericType<UserKeyPairContainer>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Request all room rescue key pairs (NEW)
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Retrieve all room rescue key pairs to allow migrating room-rescue-key-encrypted file keys.  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in that room.  ### Postcondition: List of key pairs is returned.  ### Further Information: In the case of an algorithm migration to a room rescue key pair, one should create the new key pair before deleting the old one. This allows re-encrypting file keys with the new key pair, using the old one.  This API allows to retrieve both key pairs, in contrast to &#x60;GET /nodes/rooms/{room_id}/keypair&#x60;, which only delivers the preferred one. 
+   * @param roomId Room ID (required)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return List&lt;UserKeyPairContainer&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<UserKeyPairContainer> requestRoomRescueKeyPairs(Long roomId, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // verify the required parameter 'roomId' is set
+    if (roomId == null) {
+      throw new ApiException(400, "Missing the required parameter 'roomId' when calling requestRoomRescueKeyPairs");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/nodes/rooms/{room_id}/keypairs"
+      .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsDateFormat != null)
+      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<List<UserKeyPairContainer>> localVarReturnType = new GenericType<List<UserKeyPairContainer>>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -2130,14 +2277,17 @@ import java.util.Map;
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
-   * Request system emergency password (rescue key)
-   * ### Description:   Returns the file key for the system emergency password / rescue key of a certain file (if available).  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in parent room.  ### Postcondition: File key is returned.  ### Further Information: None.
+   * Request system rescue key
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.24.0&lt;/h3&gt;  ### Description:   Returns the file key for the system emergency password / rescue key of a certain file (if available).  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in parent room.  ### Postcondition: File key is returned.  ### Further Information: None.
    * @param fileId File ID (required)
+   * @param version Version (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return FileKey
    * @throws ApiException if fails to make API call
+   * @deprecated
    */
-  public FileKey requestSystemRescueKey(Long fileId, String xSdsAuthToken) throws ApiException {
+  @Deprecated
+  public FileKey requestSystemRescueKey(Long fileId, String version, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'fileId' is set
     if (fileId == null) {
@@ -2152,6 +2302,7 @@ import java.util.Map;
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "version", version));
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
@@ -2219,11 +2370,12 @@ import java.util.Map;
    * Request user&#x27;s file key
    * ### Description:   Returns the file key for the current user (if available).  ### Precondition: User with one of the following permissions in parent room: &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt;  ### Postcondition: File key is returned.  ### Further Information: The symmetric file key is encrypted with the user&#x27;s public key.   File keys are generated with the workflow _\&quot;Generate file keys\&quot;_ that starts at &#x60;GET /nodes/missingFileKeys&#x60;.
    * @param fileId File ID (required)
+   * @param version Version (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return FileKey
    * @throws ApiException if fails to make API call
    */
-  public FileKey requestUserFileKey(Long fileId, String xSdsAuthToken) throws ApiException {
+  public FileKey requestUserFileKey(Long fileId, String version, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'fileId' is set
     if (fileId == null) {
@@ -2238,6 +2390,7 @@ import java.util.Map;
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "version", version));
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
@@ -2452,6 +2605,52 @@ import java.util.Map;
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
+   * Set room&#x27;s rescue key pair (NEW)
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Set room rescue key pair.  ### Precondition: User needs to be a &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Room Administrator&lt;/span&gt;.  ### Postcondition: Key pair is set.  ### Further Information: Room rescue key pair can be used to upgrade algorithm.
+   * @param body  (required)
+   * @param roomId Room ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void setRoomRescueKeyPair(UserKeyPairContainer body, Long roomId, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = body;
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling setRoomRescueKeyPair");
+    }
+    // verify the required parameter 'roomId' is set
+    if (roomId == null) {
+      throw new ApiException(400, "Missing the required parameter 'roomId' when calling setRoomRescueKeyPair");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/nodes/rooms/{room_id}/keypair"
+      .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
    * Set S3 tags for a room
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.9.0&lt;/h3&gt;  ### Description:   Set S3 tags to a room.  ### Precondition: User needs to be a &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Room Administrator&lt;/span&gt;.  ### Postcondition: Provided S3 tags are assigned to a room.  ### Further Information: Every request overrides current S3 tags.   Mandatory S3 tag IDs **MUST** be sent.
    * @param body  (required)
@@ -2501,7 +2700,7 @@ import java.util.Map;
   }
   /**
    * Set file keys for a list of users and files
-   * ### Description:   Sets symmetric file keys for several users and files.  ### Precondition: User has file keys for the files.   Only returns users that owns one of the following permissions: &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt;  ### Postcondition: Stores new file keys for other users.  ### Further Information: Only users with copies of the file key (encrypted with their public keys) can access a certain file.   This endpoint is used for the distribution of file keys amongst an authorized user base.   User can set file key for himself.   The users who already have a file key are ignored and keep the distributed file key 
+   * ### Description:   Sets symmetric file keys for several users and files.  ### Precondition: User has file keys for the files.   Only settable by users that own one of the following permissions: &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change config&lt;/span&gt;  ### Postcondition: Stores new file keys for other users.  ### Further Information: Only users with copies of the file key (encrypted with their public keys) can access a certain file.   This endpoint is used for the distribution of file keys amongst an authorized user base.   User can set file key for himself.   The users who already have a file key are ignored and keep the distributed file key 
    * @param body  (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
@@ -2840,7 +3039,7 @@ import java.util.Map;
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.9.0&lt;/h3&gt;  ### Use &#x60;uploads&#x60; API  ### Description:   Uploads a file or parts of it in an active upload channel.  ### Precondition: An upload channel has been created.  ### Postcondition: A file or parts of it are uploaded to a temporary location.  ### Further Information: This endpoints supports chunked upload.    Following &#x60;Content-Types&#x60; are supported by this API: * &#x60;multipart/form-data&#x60; * provided &#x60;Content-Type&#x60;     For both file upload types set the correct &#x60;Content-Type&#x60; header and body.    ### Examples:    * &#x60;multipart/form-data&#x60; &#x60;&#x60;&#x60; POST /api/v4/nodes/files/uploads/{upload_id} HTTP/1.1  Header: ... Content-Type: multipart/form-data; boundary&#x3D;----WebKitFormBoundary7MA4YWxkTrZu0gW ...  Body: ------WebKitFormBoundary7MA4YWxkTrZu0gW Content-Disposition: form-data; name&#x3D;\&quot;file\&quot;; filename&#x3D;\&quot;file.txt\&quot; Content-Type: text/plain  Content of file.txt ------WebKitFormBoundary7MA4YWxkTrZu0gW-- &#x60;&#x60;&#x60;  * any other &#x60;Content-Type&#x60;   &#x60;&#x60;&#x60; POST /api/v4/nodes/files/uploads/{upload_id}  HTTP/1.1  Header: ... Content-Type: { ... } ...  Body: raw content &#x60;&#x60;&#x60;
    * @param file  (required)
    * @param uploadId Upload channel ID (required)
-   * @param contentRange Content-Range  e.g. &#x60;bytes 0-999/3980&#x60; (optional)
+   * @param contentRange Content-Range   e.g. &#x60;bytes 0-999/3980&#x60; (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return ChunkUploadResponse
    * @throws ApiException if fails to make API call

@@ -10,10 +10,12 @@ import javax.ws.rs.core.GenericType;
 import ch.cyberduck.core.sds.io.swagger.client.model.AttributesResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.Avatar;
 import ch.cyberduck.core.sds.io.swagger.client.model.ChangeUserPasswordRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateKeyPairRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CustomerData;
 import ch.cyberduck.core.sds.io.swagger.client.model.EnableCustomerEncryptionRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import java.io.File;
+import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse400;
 import ch.cyberduck.core.sds.io.swagger.client.model.NotificationConfig;
 import ch.cyberduck.core.sds.io.swagger.client.model.NotificationConfigChangeRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.NotificationConfigList;
@@ -34,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-15T09:21:49.036118+02:00[Europe/Zurich]")public class UserApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class UserApi {
   private ApiClient apiClient;
 
   public UserApi() {
@@ -94,13 +96,55 @@ import java.util.Map;
     apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
+   * Create key pair and preserve copy of old private key (NEW)
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Create user key pair and preserve copy of old private key.  ### Precondition: Authenticated user.  ### Postcondition: Key pair is created.   Copy of old private key is preserved.  ### Further Information: You can submit your old private key, encrypted with your current password.   This allows migrating file keys encrypted with your old key pair to the new one.
+   * @param body  (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void createAndPreserveUserKeyPair(CreateKeyPairRequest body, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = body;
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling createAndPreserveUserKeyPair");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/user/account/keypairs";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
    * Activate client-side encryption for customer
-   * ### Description:   Activate client-side encryption for according customer.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; required.  ### Postcondition: Client-side encryption is enabled.  ### Further Information: Sets the ability for this customer to encrypt rooms.   Once enabled on customer level, it **CANNOT** be unset.   On activation, a customer rescue key pair **MUST** be set.
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.24.0&lt;/h3&gt;  ### Use &#x60;POST /settings/keypair&#x60; API  ### Description:   Activate client-side encryption for according customer.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change config&lt;/span&gt; required.  ### Postcondition: Client-side encryption is enabled.  ### Further Information: Sets the ability for this customer to encrypt rooms.   Once enabled on customer level, it **CANNOT** be unset.   On activation, a customer rescue key pair **MUST** be set.
    * @param body  (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @return CustomerData
    * @throws ApiException if fails to make API call
+   * @deprecated
    */
+  @Deprecated
   public CustomerData enableCustomerEncryption(EnableCustomerEncryptionRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
@@ -473,11 +517,12 @@ import java.util.Map;
   }
   /**
    * Remove user&#x27;s key pair
-   * ### Description:   Delete the user&#x27;s key pair.  ### Precondition: Authenticated user.  ### Postcondition: Key pair is returned.  ### Further Information: This will also remove all file keys that were encrypted with the user&#x27;s public key.   If the user had exclusive access to some files, those are removed as well since decrypting them became impossible.
+   * ### Description:   Delete user key pair.  ### Precondition: Authenticated user.  ### Postcondition: Key pair is deleted.  ### Further Information: If parameter &#x60;version&#x60; is not set, this API deletes version A.   If two keys with the same version are set, this API deletes the older one.  This will also remove all file keys that were encrypted with the user public key. If the user had exclusive access to some files, those are removed as well since decrypting them became impossible.
+   * @param version Version (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void removeUserKeyPair(String xSdsAuthToken) throws ApiException {
+  public void removeUserKeyPair(String version, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     // create path and map variables
     String localVarPath = "/v4/user/account/keypair";
@@ -487,6 +532,7 @@ import java.util.Map;
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "version", version));
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
@@ -582,11 +628,13 @@ import java.util.Map;
   }
   /**
    * Request customer&#x27;s key pair
-   * ### Description:   Retrieve the customer rescue key pair.  ### Precondition: Authenticated user.  ### Postcondition: Key pair is returned.  ### Further Information: The private key is password-based; encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.24.0&lt;/h3&gt;  ### Use &#x60;GET /settings/keypair&#x60; API  ### Description:   Retrieve the customer rescue key pair.  ### Precondition: Authenticated user.  ### Postcondition: Key pair is returned.  ### Further Information: The private key is password-based encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
    * @param xSdsAuthToken Authentication token (optional)
    * @return UserKeyPairContainer
    * @throws ApiException if fails to make API call
+   * @deprecated
    */
+  @Deprecated
   public UserKeyPairContainer requestCustomerKeyPair(String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     // create path and map variables
@@ -829,12 +877,14 @@ import java.util.Map;
   }
   /**
    * Request user&#x27;s key pair
-   * ### Description:   Retrieve the user&#x27;s key pair.  ### Precondition: Authenticated user.  ### Postcondition: Key pair is returned.   ### Further Information: The private key is password-based; encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
+   * ### Description:   Retrieve the user key pair.  ### Precondition: Authenticated user.  ### Postcondition: Key pair is returned.   ### Further Information: The private key is password-based encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
+   * @param version Version (NEW) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return UserKeyPairContainer
    * @throws ApiException if fails to make API call
    */
-  public UserKeyPairContainer requestUserKeyPair(String xSdsAuthToken) throws ApiException {
+  public UserKeyPairContainer requestUserKeyPair(String xSdsDateFormat, String version, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     // create path and map variables
     String localVarPath = "/v4/user/account/keypair";
@@ -844,7 +894,10 @@ import java.util.Map;
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "version", version));
 
+    if (xSdsDateFormat != null)
+      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
@@ -862,6 +915,46 @@ import java.util.Map;
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<UserKeyPairContainer> localVarReturnType = new GenericType<UserKeyPairContainer>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Request all user key pairs (NEW)
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.24.0&lt;/h3&gt;  ### Description:   Retrieve all user key pairs to allow re-encrypting file keys without need for a second distributor.  ### Precondition: Authenticated user.  ### Postcondition: List of key pairs is returned.   ### Further Information: None.
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return List&lt;UserKeyPairContainer&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<UserKeyPairContainer> requestUserKeyPairs(String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // create path and map variables
+    String localVarPath = "/v4/user/account/keypairs";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsDateFormat != null)
+      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<List<UserKeyPairContainer>> localVarReturnType = new GenericType<List<UserKeyPairContainer>>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -947,7 +1040,7 @@ import java.util.Map;
   }
   /**
    * Set user&#x27;s key pair
-   * ### Description:   Set the user&#x27;s key pair.  ### Precondition: Authenticated user.  ### Postcondition: Key pair is set.  ### Further Information: Overwriting an existing key pair is **NOT** possible.   Please delete the existing key pair first.   The private key is password-based; encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
+   * ### Description:   Set the user key pair.  ### Precondition: Authenticated user.  ### Postcondition: Key pair is set.  ### Further Information: Overwriting an existing key pair is **NOT** possible.   Please delete the existing key pair first.   The private key is password-based encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
    * @param body  (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
@@ -1155,7 +1248,7 @@ import java.util.Map;
   }
   /**
    * Update notification configuration
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.20.0&lt;/h3&gt;  ### Description:   Update notification configuration for current user.   ### Precondition: Authenticated user.  ### Postcondition: Notification configuration is updated.  ### Further Information: Leave &#x60;channelIds&#x60; empty to disable notifications. Please note that channel &#x60;email instant&#x60; is not valid for &#x60;file.created&#x60; events
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.20.0&lt;/h3&gt;  ### Description:   Update notification configuration for current user.   ### Precondition: Authenticated user.  ### Postcondition: Notification configuration is updated.  ### Further Information: Leave &#x60;channelIds&#x60; empty to disable notifications.
    * @param body  (required)
    * @param id Unique identifier for a notification configuration (required)
    * @param xSdsAuthToken Authentication token (optional)
