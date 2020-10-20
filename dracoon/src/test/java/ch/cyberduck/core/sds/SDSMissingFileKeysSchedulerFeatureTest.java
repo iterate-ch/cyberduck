@@ -27,7 +27,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
@@ -145,7 +144,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
             }
         }, new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
-        connect.check(session, PathCache.empty(), new DisabledCancelCallback());
+        connect.check(session, new DisabledCancelCallback());
         final UserApi userApi = new UserApi(session.getClient());
         this.removeKeyPairs(userApi);
         session.resetUserKeyPairs();

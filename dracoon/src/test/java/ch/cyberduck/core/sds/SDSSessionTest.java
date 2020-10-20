@@ -209,7 +209,7 @@ public class SDSSessionTest extends AbstractSDSTest {
             }
         }, new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
-        connect.check(session, PathCache.empty(), new DisabledCancelCallback());
+        connect.check(session, new DisabledCancelCallback());
         final UserApi userApi = new UserApi(session.getClient());
         try {
             userApi.removeUserKeyPair(UserKeyPair.Version.RSA2048.getValue(), null);
