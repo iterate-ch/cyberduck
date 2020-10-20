@@ -19,19 +19,14 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.editor.EditSaveWorker;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.types.GroupItem;
 import org.nuxeo.onedrive.client.types.Site;
-import org.slf4j.LoggerFactory;
 
 public class SharepointSession extends AbstractSharepointSession {
     private static final Logger log = Logger.getLogger(SharepointSession.class);
@@ -64,34 +59,41 @@ public class SharepointSession extends AbstractSharepointSession {
         return super._getFeature(type);
     }
 
+    private static boolean isPlaceholderContainer(final String versionId) {
+        if(SharepointListService.DEFAULT_ID.equals(versionId)) {
+            // Must not write in /Default
+            return true;
+        }
+        if(SharepointListService.SITES_ID.equals(versionId)) {
+            // Must not write in Sites/
+            return true;
+        }
+        if(SharepointListService.GROUPS_ID.equals(versionId)) {
+            // Must not write in /Groups
+            return true;
+        }
+        if(SharepointListService.DRIVES_ID.equals(versionId)) {
+            // Must not write in Drives/
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean isAccessible(final Path file, final boolean container) {
-        if(file.isChild(SharepointListService.DEFAULT_NAME)) {
-            // handles /Default_Name
-            if(SharepointListService.DEFAULT_NAME.equals(file)) {
-                return false;
-            }
-            // handles /Default_Name/Drive-ID
-            if(!container && SharepointListService.DEFAULT_NAME.equals(file.getParent())) {
-                return false;
-            }
-        }
-        else if(file.isChild(SharepointListService.GROUPS_NAME)) {
-            // Handles /Groups_Name and /Groups_Name/Group
-            if(SharepointListService.GROUPS_NAME.equals(file) || SharepointListService.GROUPS_NAME.equals(file.getParent())) {
-                return false;
-            }
-            // handles /Groups_Name/Group/Drive-ID
-            if(!container && SharepointListService.GROUPS_NAME.equals(file.getParent().getParent())) {
-                return false;
-            }
-        }
-        else {
-            log.warn(String.format("File %s is neither in %s nor in %s", file, SharepointListService.DEFAULT_NAME, SharepointListService.GROUPS_NAME));
-            // This should never happen.
+        if(file.isRoot()) {
             return false;
         }
 
-        return super.isAccessible(file, container);
+        final Path containerPath = getContainer(file);
+        if(containerPath.isRoot()) {
+            return false;
+        }
+
+        if(!SharepointListService.DRIVES_ID.equals(containerPath.getParent().attributes().getVersionId())) {
+            return false;
+        }
+
+        return container || !containerPath.equals(file);
     }
 }
