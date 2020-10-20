@@ -52,7 +52,7 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
         if(!session.isSingleSite() && directory.getParent().isRoot()) {
             return Sites.getSites(session.getClient(), "*");
         }
-        return Sites.getSites(session.getSite(directory));
+        return Sites.getSites(session.getSite(directory.getParent()));
     }
 
     @Override

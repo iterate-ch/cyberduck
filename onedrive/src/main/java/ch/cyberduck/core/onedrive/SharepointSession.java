@@ -47,12 +47,12 @@ public class SharepointSession extends AbstractSharepointSession {
 
     @Override
     public Site getSite(final Path file) throws BackgroundException {
-        return Site.byId(getClient(), fileIdProvider.getFileid(file.getParent(), new DisabledListProgressListener()));
+        return Site.byId(getClient(), fileIdProvider.getFileid(file, new DisabledListProgressListener()));
     }
 
     @Override
     public GroupItem getGroup(final Path file) throws BackgroundException {
-        return new GroupItem(getClient(), fileIdProvider.getFileid(file.getParent(), new DisabledListProgressListener()));
+        return new GroupItem(getClient(), fileIdProvider.getFileid(file, new DisabledListProgressListener()));
     }
 
     @Override
