@@ -25,6 +25,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.onedrive.features.GraphBufferWriteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
+import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -77,6 +78,7 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
         final GraphBufferWriteFeature feature = new GraphBufferWriteFeature(session);
         final Path container = new OneDriveHomeFinderService(session).find();
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new GraphTouchFeature(session).touch(file, new TransferStatus());
         {
             final byte[] content = RandomUtils.nextBytes(42512);
             final TransferStatus status = new TransferStatus();

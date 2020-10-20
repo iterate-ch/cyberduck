@@ -37,8 +37,7 @@ namespace Ch.Cyberduck.Cli
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             var preferences = new WindowsTerminalPreferences();
-            open(args, preferences);
-            preferences.save();
+            open(args, preferences); // This exits the application, nothing beyond will run.
         }
     }
 }

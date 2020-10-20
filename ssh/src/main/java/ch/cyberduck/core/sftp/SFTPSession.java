@@ -39,6 +39,8 @@ import ch.cyberduck.core.sftp.auth.SFTPNoneAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPPasswordAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPPublicKeyAuthentication;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
+import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
+import ch.cyberduck.core.sftp.openssh.OpenSSHJumpHostConfigurator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -65,6 +67,7 @@ import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.DisconnectReason;
 import net.schmizz.sshj.common.SSHException;
+import net.schmizz.sshj.connection.channel.direct.DirectConnection;
 import net.schmizz.sshj.sftp.Request;
 import net.schmizz.sshj.sftp.Response;
 import net.schmizz.sshj.sftp.SFTPEngine;
@@ -107,34 +110,57 @@ public class SFTPSession extends Session<SSHClient> {
 
     @Override
     public SSHClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+        final DefaultConfig configuration = new DefaultConfig();
+        if("zlib".equals(preferences.getProperty("ssh.compression"))) {
+            configuration.setCompressionFactories(Arrays.asList(
+                new DelayedZlibCompression.Factory(),
+                new ZlibCompression.Factory(),
+                new NoneCompression.Factory()));
+        }
+        else {
+            configuration.setCompressionFactories(Collections.singletonList(new NoneCompression.Factory()));
+        }
+        configuration.setVersion(new PreferencesUseragentProvider().get());
+        final KeepAliveProvider heartbeat;
+        if(preferences.getProperty("ssh.heartbeat.provider").equals("keep-alive")) {
+            heartbeat = KeepAliveProvider.KEEP_ALIVE;
+        }
+        else {
+            heartbeat = KeepAliveProvider.HEARTBEAT;
+        }
+        configuration.setKeepAliveProvider(heartbeat);
+        return this.connect(key, prompt, configuration);
+    }
+
+    protected SSHClient connect(final HostKeyCallback key, final LoginCallback prompt, final Config configuration) throws BackgroundException {
+        final SSHClient connection = this.toClient(key, configuration);
         try {
-            final DefaultConfig configuration = new DefaultConfig();
-            if("zlib".equals(preferences.getProperty("ssh.compression"))) {
-                configuration.setCompressionFactories(Arrays.asList(
-                    new DelayedZlibCompression.Factory(),
-                    new ZlibCompression.Factory(),
-                    new NoneCompression.Factory()));
+            // Look for jump host configuration
+            final Host proxy = new OpenSSHJumpHostConfigurator().getJumphost(host.getHostname());
+            if(null != proxy) {
+                log.info(String.format("Connect using jump host configuration %s", proxy));
+                final SSHClient hop = this.toClient(key, configuration);
+                hop.connect(proxy.getHostname(), proxy.getPort());
+                proxy.setCredentials(new OpenSSHCredentialsConfigurator().configure(proxy));
+                // Authenticate with jump host
+                this.authenticate(hop, proxy, prompt, new DisabledCancelCallback());
+                final DirectConnection tunnel = hop.newDirectConnection(host.getHostname(), host.getPort());
+                // Connect to internal host
+                connection.connectVia(tunnel);
             }
             else {
-                configuration.setCompressionFactories(Collections.singletonList(new NoneCompression.Factory()));
+                connection.connect(HostnameConfiguratorFactory.get(host.getProtocol()).getHostname(host.getHostname()), host.getPort());
             }
-            configuration.setVersion(new PreferencesUseragentProvider().get());
-            final KeepAliveProvider heartbeat;
-            if(preferences.getProperty("ssh.heartbeat.provider").equals("keep-alive")) {
-                heartbeat = KeepAliveProvider.KEEP_ALIVE;
-            }
-            else {
-                heartbeat = KeepAliveProvider.HEARTBEAT;
-            }
-            configuration.setKeepAliveProvider(heartbeat);
-            return this.connect(key, configuration);
+            final KeepAlive keepalive = connection.getConnection().getKeepAlive();
+            keepalive.setKeepAliveInterval(preferences.getInteger("ssh.heartbeat.seconds"));
+            return connection;
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
         }
     }
 
-    protected SSHClient connect(final HostKeyCallback key, final Config configuration) throws IOException {
+    private SSHClient toClient(final HostKeyCallback key, final Config configuration) {
         final SSHClient connection = new SSHClient(configuration);
         final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
         connection.setTimeout(timeout);
@@ -162,9 +188,6 @@ public class SFTPSession extends Session<SSHClient> {
         disconnectListener = new StateDisconnectListener();
         final Transport transport = connection.getTransport();
         transport.setDisconnectListener(disconnectListener);
-        connection.connect(HostnameConfiguratorFactory.get(host.getProtocol()).getHostname(host.getHostname()), host.getPort());
-        final KeepAlive keepalive = connection.getConnection().getKeepAlive();
-        keepalive.setKeepAliveInterval(preferences.getInteger("ssh.heartbeat.seconds"));
         return connection;
     }
 
@@ -209,9 +232,13 @@ public class SFTPSession extends Session<SSHClient> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        this.authenticate(client, host, prompt, cancel);
+    }
+
+    private void authenticate(final SSHClient client, final Host host, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
         try {
-            if(new SFTPNoneAuthentication(this).authenticate(host, prompt, cancel)) {
+            if(new SFTPNoneAuthentication(client).authenticate(host, prompt, cancel)) {
                 return;
             }
         }
@@ -219,20 +246,20 @@ public class SFTPSession extends Session<SSHClient> {
             // Expected. The main purpose of sending this request is to get the list of supported methods from the server
         }
         // Ordered list of preferred authentication methods
-        final List<AuthenticationProvider<Boolean>> methods = new ArrayList<AuthenticationProvider<Boolean>>();
+        final List<AuthenticationProvider<Boolean>> methods = new ArrayList<>();
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
             switch(Factory.Platform.getDefault()) {
                 case windows:
-                    methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
+                    methods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
                     break;
                 default:
-                    methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
+                    methods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator()));
                     break;
             }
         }
-        methods.add(new SFTPPublicKeyAuthentication(this));
-        methods.add(new SFTPChallengeResponseAuthentication(this));
-        methods.add(new SFTPPasswordAuthentication(this));
+        methods.add(new SFTPPublicKeyAuthentication(client));
+        methods.add(new SFTPChallengeResponseAuthentication(client));
+        methods.add(new SFTPPasswordAuthentication(client));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt login with %d authentication methods %s", methods.size(), Arrays.toString(methods.toArray())));
         }
@@ -241,7 +268,7 @@ public class SFTPSession extends Session<SSHClient> {
             cancel.verify();
             try {
                 // Obtain latest list of allowed methods
-                final Collection allowed = (Collection) client.getUserAuth().getAllowedMethods();
+                final Collection allowed = client.getUserAuth().getAllowedMethods();
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Remaining authentication methods %s", Arrays.toString(allowed.toArray())));
                 }

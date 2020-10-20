@@ -1,6 +1,14 @@
 Cyberduck
 https://cyberduck.io/
 
+8.0.0
+- [Feature] Connect via SSH tunnel through bastion host with JumpHost configuration directive (SFTP) (#2865)
+- [Feature] Search field moved to toolbar (macOS)
+- [Bugfix] Accessing CloudFront and KMS configuration ignores ~/.aws/credentials (#11175)
+- [Bugfix] Failure deleting folder placeholder in versioned bucket (S3) (#11157)
+- [Bugfix] Server connection timeout when moving or duplicating large files (Backblaze B2) (#11185)
+- [Bugfix] Certificate trust prompt regardless of override in keychain (macOS) (#11118)
+
 7.6.2
 - [Feature] Allow to set password for shared link of file (Dropbox, Nextcloud, DRACOON)
 - [Bugfix] Missing folders with delete marker on placeholder for buckets with versioning enabled (S3)

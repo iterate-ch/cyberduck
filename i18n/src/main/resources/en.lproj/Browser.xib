@@ -38,7 +38,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <rect key="contentRect" x="67" y="115" width="601" height="451"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1669"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <value key="minSize" type="size" width="600" height="200"/>
             <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="601" height="451"/>
@@ -267,7 +267,7 @@
                                 </segmentedCell>
                             </segmentedControl>
                             <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="59">
-                                <rect key="frame" x="238" y="4" width="313" height="26"/>
+                                <rect key="frame" x="238" y="3" width="313" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="truncatingMiddle" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="62" id="60">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>

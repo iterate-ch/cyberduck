@@ -40,7 +40,7 @@ public class BrowserTransferBackgroundAction extends TransferBackgroundAction {
                                            final Transfer transfer, final TransferCallback callback, final TransferPrompt prompt) {
         super(controller,
             pool,
-            transfer.getType() == Transfer.Type.copy ? SessionPoolFactory.create(controller, pool.getCache(), transfer.getDestination()) : SessionPool.DISCONNECTED,
+            transfer.getType() == Transfer.Type.copy ? SessionPoolFactory.create(controller, transfer.getDestination()) : SessionPool.DISCONNECTED,
             new BrowserTransferAdapter(controller), controller, transfer, new TransferOptions(), prompt);
         this.transfer = transfer;
         this.callback = callback;

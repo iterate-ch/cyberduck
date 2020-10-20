@@ -5,7 +5,6 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
@@ -26,8 +25,8 @@ public class RegistryBackgroundActionTest {
                 throw new UnsupportedOperationException();
             }
         }, new StatelessSessionPool(
-                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol())), PathCache.empty(),
-                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback()))) {
+            new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol())),
+            new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback()))) {
             @Override
             public Boolean run(final Session<?> session) {
                 return false;

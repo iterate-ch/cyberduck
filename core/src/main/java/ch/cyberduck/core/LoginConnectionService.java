@@ -79,7 +79,7 @@ public class LoginConnectionService implements ConnectionService {
     }
 
     @Override
-    public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
+    public boolean check(final Session<?> session, final CancelCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
         if(bookmark.getProtocol().isHostnameConfigurable() && StringUtils.isBlank(bookmark.getHostname())) {
             throw new ConnectionCanceledException();
@@ -105,7 +105,7 @@ public class LoginConnectionService implements ConnectionService {
             }
             login.validate(bookmark, message.toString(), prompt, options);
         }
-        this.connect(session, cache, callback);
+        this.connect(session, callback);
         return true;
     }
 
@@ -123,7 +123,7 @@ public class LoginConnectionService implements ConnectionService {
     }
 
     @Override
-    public void connect(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
+    public void connect(final Session<?> session, final CancelCallback callback) throws BackgroundException {
         if(session.isConnected()) {
             this.close(session);
         }
@@ -166,7 +166,7 @@ public class LoginConnectionService implements ConnectionService {
         }
         // Login
         try {
-            this.authenticate(proxy, session, cache, callback);
+            this.authenticate(proxy, session, callback);
         }
         catch(BackgroundException e) {
             this.close(session);
@@ -174,15 +174,15 @@ public class LoginConnectionService implements ConnectionService {
         }
     }
 
-    private void authenticate(final Proxy proxy, final Session session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
+    private void authenticate(final Proxy proxy, final Session session, final CancelCallback callback) throws BackgroundException {
         if(!login.authenticate(proxy, session, listener, prompt, callback)) {
             if(session.isConnected()) {
                 // Next attempt with updated credentials but cancel when prompt is dismissed
-                this.authenticate(proxy, session, cache, callback);
+                this.authenticate(proxy, session, callback);
             }
             else {
                 // Reconnect and next attempt with updated credentials
-                this.connect(session, cache, callback);
+                this.connect(session, callback);
             }
         }
     }

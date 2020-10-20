@@ -26,7 +26,6 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
-import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +34,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.text.MessageFormat;
 
+import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.userauth.method.AuthPassword;
 import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.PasswordUpdateProvider;
@@ -43,10 +43,10 @@ import net.schmizz.sshj.userauth.password.Resource;
 public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolean> {
     private static final Logger log = Logger.getLogger(SFTPPasswordAuthentication.class);
 
-    private final SFTPSession session;
+    private final SSHClient client;
 
-    public SFTPPasswordAuthentication(final SFTPSession session) {
-        this.session = session;
+    public SFTPPasswordAuthentication(final SSHClient client) {
+        this.client = client;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
                 new LoginOptions(bookmark.getProtocol()).user(false));
             if(input.isPublicKeyAuthentication()) {
                 credentials.setIdentity(input.getIdentity());
-                return new SFTPPublicKeyAuthentication(session).authenticate(bookmark, callback, cancel);
+                return new SFTPPublicKeyAuthentication(client).authenticate(bookmark, callback, cancel);
             }
             credentials.setSaved(input.isSaved());
             credentials.setPassword(input.getPassword());
@@ -82,7 +82,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
         }
         try {
             // Use both password and keyboard-interactive
-            session.getClient().auth(credentials.getUsername(), new AuthPassword(new PasswordFinder() {
+            client.auth(credentials.getUsername(), new AuthPassword(new PasswordFinder() {
                 @Override
                 public char[] reqPassword(final Resource<?> resource) {
                     return credentials.getPassword().toCharArray();
@@ -112,7 +112,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
                     return false;
                 }
             }));
-            return session.getClient().isAuthenticated();
+            return client.isAuthenticated();
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);

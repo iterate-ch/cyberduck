@@ -2,13 +2,14 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.core.proxy.Proxy;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.net.URI;
 import java.util.EnumSet;
@@ -16,7 +17,6 @@ import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class S3UrlProviderTest {
 
     @Test
@@ -26,7 +26,12 @@ public class S3UrlProviderTest {
             public String getAuthorization() {
                 return S3Protocol.AuthenticationHeaderSignatureVersion.AWS2.name();
             }
-        }, new S3Protocol().getDefaultHostname()));
+        }, new S3Protocol().getDefaultHostname())) {
+            @Override
+            public RequestEntityRestStorageService getClient() {
+                return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+            }
+        };
         Path p = new Path("/bucket/f/key f", EnumSet.of(Path.Type.file));
         assertEquals(5, new S3UrlProvider(session, new DisabledPasswordStore() {
             @Override
@@ -75,7 +80,12 @@ public class S3UrlProviderTest {
     @Test
     public void testToSignedUrlAnonymous() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-            new Credentials("anonymous", null)));
+            new Credentials("anonymous", null))) {
+            @Override
+            public RequestEntityRestStorageService getClient() {
+                return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+            }
+        };
         assertEquals(DescriptiveUrl.EMPTY,
             new S3UrlProvider(session, new DisabledPasswordStore() {
                 @Override
@@ -89,7 +99,12 @@ public class S3UrlProviderTest {
     @Test
     public void testToSignedUrlThirdparty() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), "s.greenqloud.com",
-            new Credentials("k", "s")));
+            new Credentials("k", "s"))) {
+            @Override
+            public RequestEntityRestStorageService getClient() {
+                return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+            }
+        };
         final S3UrlProvider provider = new S3UrlProvider(session, new DisabledPasswordStore() {
             @Override
             public String findLoginPassword(final Host bookmark) {
@@ -105,7 +120,12 @@ public class S3UrlProviderTest {
     public void testToSignedUrl() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
             System.getProperties().getProperty("s3.key"), null
-        )));
+        ))) {
+            @Override
+            public RequestEntityRestStorageService getClient() {
+                return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+            }
+        };
         final S3UrlProvider provider = new S3UrlProvider(session, new DisabledPasswordStore() {
             @Override
             public String findLoginPassword(final Host bookmark) {

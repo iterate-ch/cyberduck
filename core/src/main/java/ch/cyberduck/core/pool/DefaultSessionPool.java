@@ -15,10 +15,8 @@ package ch.cyberduck.core.pool;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.TranscriptListener;
@@ -55,7 +53,6 @@ public class DefaultSessionPool implements SessionPool {
 
     private final ConnectionService connect;
     private final TranscriptListener transcript;
-    private final Cache<Path> cache;
     private final Host bookmark;
 
     private final VaultRegistry registry;
@@ -65,11 +62,10 @@ public class DefaultSessionPool implements SessionPool {
     private SessionPool features = SessionPool.DISCONNECTED;
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                              final VaultRegistry registry, final Cache<Path> cache, final TranscriptListener transcript,
+                              final VaultRegistry registry, final TranscriptListener transcript,
                               final Host bookmark) {
         this.connect = connect;
         this.registry = registry;
-        this.cache = cache;
         this.bookmark = bookmark;
         this.transcript = transcript;
         final GenericObjectPoolConfig<Session> configuration = new GenericObjectPoolConfig<Session>();
@@ -77,17 +73,16 @@ public class DefaultSessionPool implements SessionPool {
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
-        this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, cache, bookmark, registry), configuration);
+        this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, bookmark, registry), configuration);
         final AbandonedConfig abandon = new AbandonedConfig();
         abandon.setUseUsageTracking(true);
         this.pool.setAbandonedConfig(abandon);
     }
 
-    public DefaultSessionPool(final ConnectionService connect, final VaultRegistry registry, final Cache<Path> cache,
+    public DefaultSessionPool(final ConnectionService connect, final VaultRegistry registry,
                               final TranscriptListener transcript, final Host bookmark, final GenericObjectPool<Session> pool) {
         this.connect = connect;
         this.transcript = transcript;
-        this.cache = cache;
         this.bookmark = bookmark;
         this.registry = registry;
         this.pool = pool;
@@ -146,7 +141,7 @@ public class DefaultSessionPool implements SessionPool {
                         log.info(String.format("Borrowed session %s from pool %s", session, this));
                     }
                     if(DISCONNECTED == features) {
-                        features = new StatelessSessionPool(connect, session, cache, transcript, registry);
+                        features = new StatelessSessionPool(connect, session, transcript, registry);
                     }
                     return session.withListener(transcript);
                 }
@@ -255,11 +250,6 @@ public class DefaultSessionPool implements SessionPool {
     }
 
     @Override
-    public Cache<Path> getCache() {
-        return cache;
-    }
-
-    @Override
     public VaultRegistry getVault() {
         return registry;
     }
@@ -276,9 +266,6 @@ public class DefaultSessionPool implements SessionPool {
     public Session.State getState() {
         if(pool.isClosed()) {
             return Session.State.closed;
-        }
-        if(cache.isEmpty()) {
-            return Session.State.opening;
         }
         if(0 == pool.getNumIdle()) {
             return Session.State.opening;

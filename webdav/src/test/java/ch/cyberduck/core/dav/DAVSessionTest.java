@@ -171,7 +171,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             new DisabledHostKeyCallback(),
             new DisabledPasswordStore(),
             new DisabledProgressListener());
-        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        c.connect(session, new DisabledCancelCallback());
     }
 
     @Test
@@ -198,7 +198,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             new DisabledPasswordStore(),
             new DisabledProgressListener()
         );
-        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        c.connect(session, new DisabledCancelCallback());
         assertTrue(verified.get());
         session.close();
     }
@@ -221,7 +221,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         );
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
             new DisabledProgressListener());
-        s.check(session, PathCache.empty(), new DisabledCancelCallback());
+        s.check(session, new DisabledCancelCallback());
     }
 
     @Test
@@ -244,7 +244,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             new DisabledPasswordStore(),
             new DisabledProgressListener()
         );
-        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        c.connect(session, new DisabledCancelCallback());
         assertTrue(warning.get());
         session.close();
     }
@@ -267,7 +267,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 }
             }
         );
-        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        c.connect(session, new DisabledCancelCallback());
         session.close();
     }
 
@@ -295,7 +295,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 }
             }
         );
-        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        c.connect(session, new DisabledCancelCallback());
         session.close();
     }
 
@@ -335,7 +335,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             Executors.newSingleThreadExecutor().submit(new Callable<Void>() {
                 @Override
                 public Void call() throws Exception {
-                    c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+                    c.connect(session, new DisabledCancelCallback());
                     return null;
                 }
             }).get();
@@ -385,7 +385,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             Executors.newSingleThreadExecutor().submit(new Callable<Void>() {
                 @Override
                 public Void call() throws Exception {
-                    c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+                    c.connect(session, new DisabledCancelCallback());
                     return null;
                 }
             }).get();

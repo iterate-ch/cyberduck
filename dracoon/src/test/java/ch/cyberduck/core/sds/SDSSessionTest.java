@@ -155,7 +155,7 @@ public class SDSSessionTest extends AbstractSDSTest {
                 }
             }
         );
-        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        c.connect(session, new DisabledCancelCallback());
     }
 
     @Ignore
@@ -184,6 +184,6 @@ public class SDSSessionTest extends AbstractSDSTest {
                 }
             }
         );
-        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        c.connect(session, new DisabledCancelCallback());
     }
 }

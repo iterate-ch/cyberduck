@@ -10,7 +10,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -35,7 +34,7 @@ public class AzureDirectoryFeatureTest {
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final AzureDirectoryFeature feature = new AzureDirectoryFeature(session, null);
         final Path container = feature.mkdir(new Path(new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(container));
@@ -51,7 +50,7 @@ public class AzureDirectoryFeatureTest {
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final Path container = new Path("untitled folder", EnumSet.of(Path.Type.directory));
         final AzureDirectoryFeature feature = new AzureDirectoryFeature(session, null);
         assertFalse(feature.isSupported(container.getParent(), container.getName()));
@@ -68,7 +67,7 @@ public class AzureDirectoryFeatureTest {
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final Path container = new Path("/cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path placeholder = new AzureDirectoryFeature(session, null).mkdir(new Path(container, UUID.randomUUID().toString(),
                 EnumSet.of(Path.Type.directory)), null, new TransferStatus());

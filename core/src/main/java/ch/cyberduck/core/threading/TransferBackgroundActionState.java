@@ -16,12 +16,13 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.io.StreamCancelation;
 
 public final class TransferBackgroundActionState implements BackgroundActionState {
-    private final TransferStatus status;
 
-    public TransferBackgroundActionState(final TransferStatus status) {
+    private final StreamCancelation status;
+
+    public TransferBackgroundActionState(final StreamCancelation status) {
         this.status = status;
     }
 

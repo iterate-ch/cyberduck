@@ -21,13 +21,13 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
-import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
 import com.jcraft.jsch.agentproxy.Identity;
 import com.jcraft.jsch.agentproxy.sshj.AuthAgent;
+import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.Buffer;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
@@ -35,11 +35,11 @@ import net.schmizz.sshj.userauth.UserAuthException;
 public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> {
     private static final Logger log = Logger.getLogger(SFTPAgentAuthentication.class);
 
-    private final SFTPSession session;
+    private final SSHClient client;
     private final AgentAuthenticator agent;
 
-    public SFTPAgentAuthentication(final SFTPSession session, final AgentAuthenticator agent) {
-        this.session = session;
+    public SFTPAgentAuthentication(final SSHClient client, final AgentAuthenticator agent) {
+        this.client = client;
         this.agent = agent;
     }
 
@@ -51,7 +51,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
         }
         for(Identity identity : agent.getIdentities()) {
             try {
-                session.getClient().auth(bookmark.getCredentials().getUsername(), new AuthAgent(agent.getProxy(), identity));
+                client.auth(bookmark.getCredentials().getUsername(), new AuthAgent(agent.getProxy(), identity));
                 // Successfully authenticated
                 break;
             }
@@ -66,7 +66,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
                 throw new SFTPExceptionMappingService().map(e);
             }
         }
-        return session.getClient().isAuthenticated();
+        return client.isAuthenticated();
     }
 
     @Override

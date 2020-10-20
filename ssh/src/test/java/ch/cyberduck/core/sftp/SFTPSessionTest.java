@@ -12,7 +12,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.ChecksumException;
@@ -67,7 +66,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         for(net.schmizz.sshj.common.Factory.Named<MAC> mac : defaultConfig.getMACFactories()) {
             final DefaultConfig configuration = new DefaultConfig();
             configuration.setMACFactories(Collections.singletonList(mac));
-            final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
+            final SSHClient client = session.connect(new DisabledHostKeyCallback(), new DisabledLoginCallback(), configuration);
             assertTrue(client.isConnected());
             client.close();
         }
@@ -77,7 +76,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     public void testAES256CTRCipher() throws Exception {
         final DefaultConfig configuration = new DefaultConfig();
         configuration.setCipherFactories(Collections.singletonList(new AES256CTR.Factory()));
-        final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
+        final SSHClient client = session.connect(new DisabledHostKeyCallback(), new DisabledLoginCallback(), configuration);
         assertTrue(client.isConnected());
         client.close();
     }
@@ -86,7 +85,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     public void testECDHNistPKeyExchange() throws Exception {
         final DefaultConfig configuration = new DefaultConfig();
         configuration.setKeyExchangeFactories(Collections.singletonList(new ECDHNistP.Factory256()));
-        final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
+        final SSHClient client = session.connect(new DisabledHostKeyCallback(), new DisabledLoginCallback(), configuration);
         assertTrue(client.isConnected());
         client.close();
     }
@@ -111,7 +110,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
             new DisabledProgressListener());
         try {
-            login.connect(session, PathCache.empty(), new DisabledCancelCallback());
+            login.connect(session, new DisabledCancelCallback());
         }
         catch(LoginCanceledException e) {
             assertTrue(fail.get());
@@ -173,7 +172,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
             new DisabledProgressListener());
-        login.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        login.connect(session, new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -194,7 +193,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
             new DisabledProgressListener());
         try {
-            login.check(session, PathCache.empty(), new DisabledCancelCallback());
+            login.check(session, new DisabledCancelCallback());
         }
         catch(LoginCanceledException e) {
             assertTrue(change.get());
@@ -230,7 +229,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
             new DisabledProgressListener());
-        login.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        login.connect(session, new DisabledCancelCallback());
         assertTrue(change.get());
     }
 

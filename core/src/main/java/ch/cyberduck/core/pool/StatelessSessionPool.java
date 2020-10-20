@@ -15,10 +15,8 @@
 
 package ch.cyberduck.core.pool;
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -41,18 +39,16 @@ public class StatelessSessionPool implements SessionPool {
     private final ConnectionService connect;
     private final TranscriptListener transcript;
     private final Session<?> session;
-    private final Cache<Path> cache;
     private final VaultRegistry registry;
 
     private final Lock lock = new ReentrantLock();
 
-    public StatelessSessionPool(final ConnectionService connect, final Session<?> session, final Cache<Path> cache,
+    public StatelessSessionPool(final ConnectionService connect, final Session<?> session,
                                 final TranscriptListener transcript, final VaultRegistry registry) {
         this.connect = connect;
         this.transcript = transcript;
         this.session = session.withRegistry(registry);
         this.registry = registry;
-        this.cache = cache;
     }
 
 
@@ -60,7 +56,7 @@ public class StatelessSessionPool implements SessionPool {
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
         lock.lock();
         try {
-            connect.check(session.withListener(transcript), cache, new CancelCallback() {
+            connect.check(session.withListener(transcript), new CancelCallback() {
                 @Override
                 public void verify() throws ConnectionCanceledException {
                     if(callback.isCanceled()) {
@@ -143,11 +139,6 @@ public class StatelessSessionPool implements SessionPool {
     @Override
     public Host getHost() {
         return session.getHost();
-    }
-
-    @Override
-    public Cache<Path> getCache() {
-        return cache;
     }
 
     @Override

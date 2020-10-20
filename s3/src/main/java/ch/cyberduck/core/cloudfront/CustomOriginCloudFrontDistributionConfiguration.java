@@ -27,7 +27,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.WebUrlProvider;
@@ -74,7 +73,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private <T> T connected(final Connected<T> run, final LoginCallback prompt) throws BackgroundException {
         new LoginConnectionService(prompt, new DisabledHostKeyCallback(), PasswordStoreFactory.get(), new DisabledProgressListener())
-            .check(session, PathCache.empty(), new DisabledCancelCallback());
+            .check(session, new DisabledCancelCallback());
         return run.call();
     }
 

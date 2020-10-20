@@ -194,6 +194,13 @@ public class OpenSshConfig {
                     }
                 }
             }
+            else if("ProxyJump".equalsIgnoreCase(keyword)) {
+                for(final Host c : current) {
+                    if(c.proxyJump == null) {
+                        c.proxyJump = dequote(argValue);
+                    }
+                }
+            }
             else if("User".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.user == null) {
@@ -295,20 +302,19 @@ public class OpenSshConfig {
         boolean patternsApplied;
 
         String hostName;
-
+        String proxyJump;
         int port;
-
         Local identityFile;
-
         String user;
-
         String preferredAuthentications;
-
         Boolean batchMode;
 
         void copyFrom(final Host src) {
             if(hostName == null) {
                 hostName = src.hostName;
+            }
+            if(proxyJump == null) {
+                proxyJump = src.proxyJump;
             }
             if(port == 0) {
                 port = src.port;
@@ -332,6 +338,10 @@ public class OpenSshConfig {
          */
         public String getHostName() {
             return hostName;
+        }
+
+        public String getProxyJump() {
+            return proxyJump;
         }
 
         /**
@@ -376,9 +386,12 @@ public class OpenSshConfig {
         public String toString() {
             final StringBuilder sb = new StringBuilder("Host{");
             sb.append("hostName='").append(hostName).append('\'');
+            sb.append(", proxyJump='").append(proxyJump).append('\'');
             sb.append(", port=").append(port);
             sb.append(", identityFile=").append(identityFile);
             sb.append(", user='").append(user).append('\'');
+            sb.append(", preferredAuthentications='").append(preferredAuthentications).append('\'');
+            sb.append(", batchMode=").append(batchMode);
             sb.append('}');
             return sb.toString();
         }

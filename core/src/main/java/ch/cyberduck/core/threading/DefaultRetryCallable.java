@@ -20,7 +20,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.io.StreamCancelation;
 
 public class DefaultRetryCallable<T> extends AbstractRetryCallable<T> {
 
@@ -28,7 +28,7 @@ public class DefaultRetryCallable<T> extends AbstractRetryCallable<T> {
     private final ProgressListener listener;
     private final BackgroundActionState cancel;
 
-    public DefaultRetryCallable(final Host host, final BackgroundExceptionCallable<T> delegate, final TransferStatus status) {
+    public DefaultRetryCallable(final Host host, final BackgroundExceptionCallable<T> delegate, final StreamCancelation status) {
         this(host, delegate, new TransferBackgroundActionState(status));
     }
 

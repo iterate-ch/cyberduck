@@ -37,6 +37,6 @@ public class SFTPPasswordAuthenticationTest extends AbstractSFTPTest {
         session.disconnect();
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.getHost().getCredentials().setPassword("p");
-        assertFalse(new SFTPPasswordAuthentication(session).authenticate(session.getHost(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertFalse(new SFTPPasswordAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback(), new DisabledCancelCallback()));
     }
 }

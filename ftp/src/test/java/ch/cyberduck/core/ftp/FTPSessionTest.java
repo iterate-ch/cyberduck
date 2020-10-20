@@ -67,7 +67,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                 }
             });
         try {
-            c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+            c.connect(session, new DisabledCancelCallback());
         }
         catch(ConnectionRefusedException e) {
             assertEquals("Invalid response HTTP/1.1 403 Forbidden from HTTP proxy localhost. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", e.getDetail());
@@ -126,7 +126,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
-        l.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        l.connect(session, new DisabledCancelCallback());
         assertEquals(new FTPTLSProtocol(), host.getProtocol());
         assertTrue(warned.get());
     }
@@ -182,7 +182,7 @@ public class FTPSessionTest extends AbstractFTPTest {
             new DisabledHostKeyCallback(),
             new DisabledPasswordStore(),
             new DisabledProgressListener());
-        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        c.connect(session, new DisabledCancelCallback());
         assertTrue(callback.get());
     }
 }
