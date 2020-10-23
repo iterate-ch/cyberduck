@@ -27,6 +27,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -50,11 +51,10 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import com.dracoon.sdk.crypto.Crypto;
-import com.dracoon.sdk.crypto.CryptoException;
+import com.dracoon.sdk.crypto.error.CryptoException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
-import com.dracoon.sdk.crypto.model.UserPrivateKey;
 
 public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadShareRequest, CreateUploadShareRequest> {
     private static final Logger log = Logger.getLogger(SDSSharesUrlProvider.class);
@@ -131,25 +131,23 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
             final Host bookmark = session.getHost();
             if(nodeid.isEncrypted(file)) {
                 // get existing file key associated with the sharing user
-                final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(fileid, StringUtils.EMPTY);
-                final UserPrivateKey privateKey = new UserPrivateKey();
-                final UserKeyPairContainer keyPairContainer = session.keyPair();
-                privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
-                privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
-                final UserKeyPair userKeyPair = new UserKeyPair();
-                userKeyPair.setUserPrivateKey(privateKey);
+                final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(fileid, null, null);
+                final EncryptedFileKey encFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(key);
+                final UserKeyPairContainer keyPairContainer = this.getKeyPairForFileKey(encFileKey);
+                final UserKeyPair userKeyPair = TripleCryptConverter.toCryptoUserKeyPair(keyPairContainer);
                 final Credentials passphrase = new TripleCryptKeyPair().unlock(callback, bookmark, userKeyPair);
-                final PlainFileKey plainFileKey = Crypto.decryptFileKey(TripleCryptConverter.toCryptoEncryptedFileKey(key), privateKey, passphrase.getPassword());
+
+                final PlainFileKey plainFileKey = Crypto.decryptFileKey(encFileKey, userKeyPair.getUserPrivateKey(), passphrase.getPassword());
                 // encrypt file key with a new key pair
                 final UserKeyPair pair;
                 if(null == options.getPassword()) {
-                    pair = Crypto.generateUserKeyPair(callback.prompt(
+                    pair = Crypto.generateUserKeyPair(session.requiredKeyPairVersion(), callback.prompt(
                         bookmark, LocaleFactory.localizedString("Passphrase", "Cryptomator"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions().icon(session.getHost().getProtocol().disk())
                     ).getPassword());
                 }
                 else {
-                    pair = Crypto.generateUserKeyPair(options.getPassword());
+                    pair = Crypto.generateUserKeyPair(session.requiredKeyPairVersion(), options.getPassword());
                 }
                 final EncryptedFileKey encryptedFileKey = Crypto.encryptFileKey(plainFileKey, pair.getUserPublicKey());
                 options.setPassword(null);
@@ -181,6 +179,17 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
         }
         catch(CryptoException e) {
             throw new TripleCryptExceptionMappingService().map(e);
+        }
+    }
+
+    private UserKeyPairContainer getKeyPairForFileKey(EncryptedFileKey key) throws BackgroundException {
+        switch(key.getVersion()) {
+            case RSA2048_AES256GCM:
+                return session.keyPairDeprecated();
+            case RSA4096_AES256GCM:
+                return session.keyPair();
+            default:
+                throw new InteroperabilityException(String.format("Unknown version %s", key.getVersion()));
         }
     }
 

@@ -106,7 +106,7 @@
         <dependency>
             <groupId>com.dracoon</groupId>
             <artifactId>dracoon-crypto-sdk</artifactId>
-            <version>1.0.1</version>
+            <version>2.0.0</version>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
@@ -140,7 +140,7 @@
                                     <goal>generate</goal>
                                 </goals>
                                 <configuration>
-                                    <inputSpec>https://duck.dracoon.com/api/spec_v4/</inputSpec>
+                                    <inputSpec>https://cryptoiterate.dracoon.dev/api/spec_v4/</inputSpec>
                                     <language>java</language>
                                     <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.sds.io.swagger.client.model</modelPackage>

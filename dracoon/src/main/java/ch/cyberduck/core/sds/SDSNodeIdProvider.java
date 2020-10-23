@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import com.dracoon.sdk.crypto.Crypto;
+import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class SDSNodeIdProvider implements IdProvider {
@@ -155,7 +156,7 @@ public class SDSNodeIdProvider implements IdProvider {
     }
 
     public ByteBuffer getFileKey() throws BackgroundException {
-        return this.toBuffer(TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey()));
+        return this.toBuffer(TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey(PlainFileKey.Version.AES256GCM)));
     }
 
     public ByteBuffer toBuffer(final FileKey fileKey) throws BackgroundException {

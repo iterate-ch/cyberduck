@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-15T09:21:49.036118+02:00[Europe/Zurich]")public class EventlogApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class EventlogApi {
   private ApiClient apiClient;
 
   public EventlogApi() {
@@ -91,9 +91,9 @@ import java.util.Map;
    * @param sort Sort string (optional)
    * @param offset Range offset (optional)
    * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
-   * @param dateStart Filter events from given date  e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
-   * @param dateEnd Filter events until given date  e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
-   * @param type Operation ID  cf. &#x60;GET /eventlog/operations&#x60; (optional)
+   * @param dateStart Filter events from given date   e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param dateEnd Filter events until given date   e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param type Operation ID   cf. &#x60;GET /eventlog/operations&#x60; (optional)
    * @param userId User ID (optional)
    * @param status Operation status:  * &#x60;0&#x60; - Success  * &#x60;2&#x60; - Error (optional)
    * @param userClient User client (optional)

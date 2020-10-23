@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-09-15T09:21:49.036118+02:00[Europe/Zurich]")public class SystemStorageConfigApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class SystemStorageConfigApi {
   private ApiClient apiClient;
 
   public SystemStorageConfigApi() {
@@ -41,7 +41,7 @@ import java.util.Map;
 
   /**
    * Create S3 storage configuration
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.3.0&lt;/h3&gt;  ### Description:   Create new S3 configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: New S3 configuration is created.  ### Further Information: Forbidden characters in bucket names: [&#x60;.&#x60;]
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.3.0&lt;/h3&gt;  ### Description:   Create new S3 configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: New S3 configuration is created.  ### Further Information: Forbidden characters in bucket names: [&#x60;.&#x60;]   &#x60;bucketName&#x60; and &#x60;endpointUrl&#x60; are deprecated, use &#x60;bucketUrl&#x60; instead.  ### Virtual hosted style access  Example: https://&lt;span style&#x3D;\&quot;color:red;\&quot;&gt;bucket-name&lt;/span&gt;.s3.&lt;span style&#x3D;\&quot;color:red;\&quot;&gt;region&lt;/span&gt;.amazonaws.com/&lt;span style&#x3D;\&quot;color:red;\&quot;&gt;key-name&lt;/span&gt; 
    * @param body  (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @return S3Config
@@ -166,7 +166,7 @@ import java.util.Map;
   }
   /**
    * Request S3 storage configuration
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.3.0&lt;/h3&gt;  ### Description:   Retrieve S3 configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: S3 configuration is returned.  ### Further Information: None.
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.3.0&lt;/h3&gt;  ### Description:   Retrieve S3 configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: S3 configuration is returned.  ### Further Information: None.  ### Virtual hosted style access  Example: https://&lt;span style&#x3D;\&quot;color:red;\&quot;&gt;bucket-name&lt;/span&gt;.s3.&lt;span style&#x3D;\&quot;color:red;\&quot;&gt;region&lt;/span&gt;.amazonaws.com/&lt;span style&#x3D;\&quot;color:red;\&quot;&gt;key-name&lt;/span&gt; 
    * @param xSdsAuthToken Authentication token (optional)
    * @return S3Config
    * @throws ApiException if fails to make API call
@@ -283,7 +283,7 @@ import java.util.Map;
   }
   /**
    * Update S3 storage configuration
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.3.0&lt;/h3&gt;  ### Description:   Update existing S3 configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: S3 configuration is updated.  ### Further Information: None.
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.3.0&lt;/h3&gt;  ### Description:   Update existing S3 configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: S3 configuration is updated.  ### Further Information: Forbidden characters in bucket names: [&#x60;.&#x60;]   &#x60;bucketName&#x60; and &#x60;endpointUrl&#x60; are deprecated, use &#x60;bucketUrl&#x60; instead.  ### Virtual hosted style access  Example: https://&lt;span style&#x3D;\&quot;color:red;\&quot;&gt;bucket-name&lt;/span&gt;.s3.&lt;span style&#x3D;\&quot;color:red;\&quot;&gt;region&lt;/span&gt;.amazonaws.com/&lt;span style&#x3D;\&quot;color:red;\&quot;&gt;key-name&lt;/span&gt; 
    * @param body  (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @return S3Config

@@ -15,13 +15,11 @@ package ch.cyberduck.core.sds.triplecrypt;
  * GNU General Public License for more details.
  */
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.dracoon.sdk.crypto.Crypto;
-import com.dracoon.sdk.crypto.CryptoConstants;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 import com.dracoon.sdk.crypto.model.UserPrivateKey;
 import com.dracoon.sdk.crypto.model.UserPublicKey;
@@ -69,14 +67,10 @@ public class CryptoDecryptPrivateKeyTest {
             "S+2l6QSAHZF3rmD0D7lSGMu0rdF648h8HkLsoABONdoHJrCE5ehnBvSLd34Hdwt7\n" +
             "-----END ENCRYPTED PRIVATE KEY-----\n";
 
-        final UserKeyPair pair = new UserKeyPair();
-        final UserPrivateKey privateKey = new UserPrivateKey();
-        privateKey.setPrivateKey(pk);
-        privateKey.setVersion(CryptoConstants.DEFAULT_VERSION);
-        pair.setUserPrivateKey(privateKey);
-        final UserPublicKey publicKey = new UserPublicKey();
-        publicKey.setPublicKey(StringUtils.EMPTY);
-        pair.setUserPublicKey(publicKey);
+        final UserPrivateKey privateKey = new UserPrivateKey(UserKeyPair.Version.RSA2048, pk);
+        final UserPublicKey publicKey = new UserPublicKey(UserKeyPair.Version.RSA2048, "pubkey");
+        final UserKeyPair pair = new UserKeyPair(privateKey, publicKey);
+
         Assert.assertTrue(Crypto.checkUserKeyPair(pair, "abcdabc1"));
     }
 }

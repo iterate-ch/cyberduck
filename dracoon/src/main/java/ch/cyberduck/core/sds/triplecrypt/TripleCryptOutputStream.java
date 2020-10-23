@@ -32,10 +32,10 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import com.dracoon.sdk.crypto.CryptoException;
-import com.dracoon.sdk.crypto.CryptoSystemException;
 import com.dracoon.sdk.crypto.CryptoUtils;
 import com.dracoon.sdk.crypto.FileEncryptionCipher;
+import com.dracoon.sdk.crypto.error.CryptoException;
+import com.dracoon.sdk.crypto.error.CryptoSystemException;
 import com.dracoon.sdk.crypto.model.EncryptedDataContainer;
 import com.dracoon.sdk.crypto.model.PlainDataContainer;
 import com.fasterxml.jackson.databind.ObjectReader;
