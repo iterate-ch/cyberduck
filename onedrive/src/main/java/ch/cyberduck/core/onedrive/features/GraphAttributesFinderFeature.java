@@ -26,6 +26,7 @@ import ch.cyberduck.core.onedrive.GraphSession;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDriveRemoteItem;
 
@@ -64,15 +65,22 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         final PathAttributes attributes = new PathAttributes();
         attributes.setETag(metadata.getETag());
         attributes.setSize(metadata.getSize());
+        final OneDriveFolder.Reference parent = metadata.getParentReference();
         if(metadata instanceof OneDriveRemoteItem.Metadata) {
-            final OneDriveRemoteItem.Metadata remoteMetadata = (OneDriveRemoteItem.Metadata) metadata;
-            final OneDriveItem.Metadata originMetadata = remoteMetadata.getRemoteItem();
-            attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER),
-                metadata.getParentReference().getDriveId(), metadata.getId(),
-                originMetadata.getParentReference().getDriveId(), originMetadata.getId()));
+            final OneDriveItem.Metadata remoteMetadata = ((OneDriveRemoteItem.Metadata) metadata).getRemoteItem();
+            final OneDriveFolder.Reference remoteParent = remoteMetadata.getParentReference();
+            if(parent == null) {
+                attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER),
+                    remoteParent.getDriveId(), remoteParent.getId()));
+            }
+            else {
+                attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER),
+                    parent.getDriveId(), metadata.getId(),
+                    remoteParent.getDriveId(), remoteMetadata.getId()));
+            }
         }
         else {
-            attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER), metadata.getParentReference().getDriveId(), metadata.getId()));
+            attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER), parent.getDriveId(), metadata.getId()));
         }
         try {
             attributes.setLink(new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http));
