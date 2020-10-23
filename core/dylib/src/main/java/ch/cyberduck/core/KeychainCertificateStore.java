@@ -155,10 +155,10 @@ public final class KeychainCertificateStore implements CertificateStore {
                     log.error(String.format("Error creating converting from ASN.1 DER encoded certificate %s", certificate));
                     continue;
                 }
-                certs.insertObject_atIndex(certificateRef, new NSUInteger(0));
+                certs.addObject(certificateRef);
             }
             catch(CertificateEncodingException e) {
-                log.error(String.format("Failure %s retrieving encoded certificate", e));
+                log.error(String.format("Failure %s retrieving encoded  certificate", e));
             }
         }
         return certs;
