@@ -8,6 +8,9 @@ https://cyberduck.io/
 - [Bugfix] Failure deleting folder placeholder in versioned bucket (S3) (#11157)
 - [Bugfix] Server connection timeout when moving or duplicating large files (Backblaze B2) (#11185)
 - [Bugfix] Certificate trust prompt regardless of override in keychain (macOS) (#11118)
+- [Bugfix] Failure saving credentials (CLI, Windows) (#11098)
+- [Bugfix] Unable to connect to cn-north-1 (S3) (#11197)
+- [Bugfix] Access shared files (OneDrive Business) (#11102)
 
 7.6.2
 - [Feature] Allow to set password for shared link of file (Dropbox, Nextcloud, DRACOON)
