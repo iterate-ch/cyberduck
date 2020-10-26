@@ -19,6 +19,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.proxy.Proxy;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -45,7 +46,10 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                 if(executionCount <= MAX_RETRIES) {
                     // Pairing token no longer valid
                     try {
-                        session.pair(session.getHost(), prompt, new DisabledCancelCallback()).setSaved(true);
+                        // Reset credentials
+                        log.warn(String.format("Reset credentials after reply %s", response));
+                        session.getHost().getCredentials().reset();
+                        session.login(Proxy.DIRECT, prompt, new DisabledCancelCallback());
                         return true;
                     }
                     catch(BackgroundException e) {
