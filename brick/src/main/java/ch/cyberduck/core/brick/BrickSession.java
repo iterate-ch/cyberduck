@@ -88,6 +88,9 @@ public class BrickSession extends DAVSession {
 
     public Credentials pair(final Host bookmark, final ConnectionCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final String token = new BrickCredentialsConfigurator().configure(host).getToken();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Attempt pairing with token %s", token));
+        }
         final BrickPairingSchedulerFeature scheduler = new BrickPairingSchedulerFeature(this, token, bookmark, cancel);
         // Operate in background until canceled
         final ConnectionCallback lock = new DisabledConnectionCallback() {
