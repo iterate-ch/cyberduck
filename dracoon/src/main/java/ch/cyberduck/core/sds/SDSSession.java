@@ -80,6 +80,7 @@ import java.util.regex.Pattern;
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.error.CryptoException;
 import com.dracoon.sdk.crypto.error.UnknownVersionException;
+import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 import com.google.api.client.auth.oauth2.PasswordTokenRequest;
 import com.google.api.client.auth.oauth2.TokenResponse;
@@ -427,6 +428,17 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
         }
         return userAccount.get();
+    }
+
+    public UserKeyPairContainer getKeyPairForFileKey(final EncryptedFileKey.Version version) throws BackgroundException {
+        switch(version) {
+            case RSA2048_AES256GCM:
+                return this.keyPairDeprecated();
+            case RSA4096_AES256GCM:
+                return this.keyPair();
+            default:
+                throw new InteroperabilityException(String.format("Unknown version %s", version));
+        }
     }
 
     public UserKeyPairContainer keyPairDeprecated() throws BackgroundException {

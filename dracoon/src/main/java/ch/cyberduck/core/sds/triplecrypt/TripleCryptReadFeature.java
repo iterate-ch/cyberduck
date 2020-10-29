@@ -22,7 +22,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.sds.SDSExceptionMappingService;
@@ -65,7 +64,7 @@ public class TripleCryptReadFeature implements Read {
             final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(
                 Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), null, null);
             final EncryptedFileKey encFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(key);
-            final UserKeyPairContainer keyPairContainer = this.getKeyPairForFileKey(encFileKey);
+            final UserKeyPairContainer keyPairContainer = session.getKeyPairForFileKey(encFileKey.getVersion());
             final UserKeyPair userKeyPair = TripleCryptConverter.toCryptoUserKeyPair(keyPairContainer);
 
             if(log.isDebugEnabled()) {
@@ -93,16 +92,5 @@ public class TripleCryptReadFeature implements Read {
     @Override
     public boolean offset(final Path file) {
         return false;
-    }
-
-    private UserKeyPairContainer getKeyPairForFileKey(EncryptedFileKey key) throws BackgroundException {
-        switch(key.getVersion()) {
-            case RSA2048_AES256GCM:
-                return session.keyPairDeprecated();
-            case RSA4096_AES256GCM:
-                return session.keyPair();
-            default:
-                throw new InteroperabilityException(String.format("Unknown version %s", key.getVersion()));
-        }
     }
 }

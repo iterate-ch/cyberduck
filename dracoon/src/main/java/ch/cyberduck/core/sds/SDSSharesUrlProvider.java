@@ -27,7 +27,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -133,7 +132,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 // get existing file key associated with the sharing user
                 final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(fileid, null, null);
                 final EncryptedFileKey encFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(key);
-                final UserKeyPairContainer keyPairContainer = this.getKeyPairForFileKey(encFileKey);
+                final UserKeyPairContainer keyPairContainer = session.getKeyPairForFileKey(encFileKey.getVersion());
                 final UserKeyPair userKeyPair = TripleCryptConverter.toCryptoUserKeyPair(keyPairContainer);
                 final Credentials passphrase = new TripleCryptKeyPair().unlock(callback, bookmark, userKeyPair);
 
@@ -179,17 +178,6 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
         }
         catch(CryptoException e) {
             throw new TripleCryptExceptionMappingService().map(e);
-        }
-    }
-
-    private UserKeyPairContainer getKeyPairForFileKey(EncryptedFileKey key) throws BackgroundException {
-        switch(key.getVersion()) {
-            case RSA2048_AES256GCM:
-                return session.keyPairDeprecated();
-            case RSA4096_AES256GCM:
-                return session.keyPair();
-            default:
-                throw new InteroperabilityException(String.format("Unknown version %s", key.getVersion()));
         }
     }
 
