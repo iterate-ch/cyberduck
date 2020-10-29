@@ -22,7 +22,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFactory;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -53,7 +53,7 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                         // Reset credentials to force repairing
                         final Credentials credentials = session.getHost().getCredentials();
                         credentials.reset();
-                        session.login(Proxy.DIRECT, prompt, new DisabledCancelCallback());
+                        session.login(ProxyFactory.get().find(session.getHost()), prompt, new DisabledCancelCallback());
                         if(credentials.isSaved()) {
                             store.save(session.getHost());
                         }
