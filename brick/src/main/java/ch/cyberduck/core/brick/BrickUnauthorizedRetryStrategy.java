@@ -15,10 +15,14 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.proxy.ProxyFactory;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -30,6 +34,7 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
 
     private static final int MAX_RETRIES = 1;
 
+    private final HostPasswordStore store = PasswordStoreFactory.get();
     private final BrickSession session;
     private final LoginCallback prompt;
 
@@ -45,7 +50,14 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                 if(executionCount <= MAX_RETRIES) {
                     // Pairing token no longer valid
                     try {
-                        session.pair(session.getHost(), prompt, new DisabledCancelCallback()).setSaved(true);
+                        // Reset credentials to force repairing
+                        final Credentials credentials = session.getHost().getCredentials();
+                        credentials.reset();
+                        session.login(ProxyFactory.get().find(session.getHost()), prompt, new DisabledCancelCallback());
+                        if(credentials.isSaved()) {
+                            store.save(session.getHost());
+                        }
+                        credentials.reset();
                         return true;
                     }
                     catch(BackgroundException e) {
