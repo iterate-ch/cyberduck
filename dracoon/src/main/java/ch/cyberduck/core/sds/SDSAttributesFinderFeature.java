@@ -190,6 +190,9 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
             if(null != session.keyPair()) {
                 permission.setUser(permission.getUser().or(Permission.Action.read));
             }
+            else {
+                log.warn(String.format("Missing read permission for node %s with missing key pair", node));
+            }
         }
         else {
             permission.setUser(permission.getUser().or(Permission.Action.read));
