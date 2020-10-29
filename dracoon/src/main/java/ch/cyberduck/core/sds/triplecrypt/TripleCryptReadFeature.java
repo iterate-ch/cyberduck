@@ -22,7 +22,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.sds.SDSExceptionMappingService;
@@ -42,6 +41,8 @@ import java.io.InputStream;
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.CryptoUtils;
 import com.dracoon.sdk.crypto.error.CryptoException;
+import com.dracoon.sdk.crypto.error.InvalidFileKeyException;
+import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
@@ -65,22 +66,20 @@ public class TripleCryptReadFeature implements Read {
             final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(
                 Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), null, null);
             final EncryptedFileKey encFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(key);
-            final UserKeyPairContainer keyPairContainer = this.getKeyPairForFileKey(encFileKey);
-            final UserKeyPair userKeyPair = TripleCryptConverter.toCryptoUserKeyPair(keyPairContainer);
-
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Attempt to unlock private key %s", userKeyPair.getUserPrivateKey()));
-            }
-            final Credentials passphrase;
             try {
-                passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
+                final UserKeyPair userKeyPair = this.getUserKeyPair(encFileKey);
+                final PlainFileKey plainFileKey = Crypto.decryptFileKey(encFileKey, userKeyPair.getUserPrivateKey(), this.unlock(callback, userKeyPair).getPassword());
+                return new TripleCryptInputStream(proxy.read(file, status, callback),
+                    Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
             }
-            catch(LoginCanceledException e) {
-                throw new AccessDeniedException(LocaleFactory.localizedString("Decryption password required", "SDS"), e);
+            catch(InvalidFileKeyException e) {
+                log.warn(String.format("Failure %s  decrypting file key for %s. Invalidate cache", e, file));
+                session.resetUserKeyPairs();
+                final UserKeyPair userKeyPair = this.getUserKeyPair(encFileKey);
+                final PlainFileKey plainFileKey = Crypto.decryptFileKey(encFileKey, userKeyPair.getUserPrivateKey(), this.unlock(callback, userKeyPair).getPassword());
+                return new TripleCryptInputStream(proxy.read(file, status, callback),
+                    Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
             }
-            final PlainFileKey plainFileKey = Crypto.decryptFileKey(encFileKey, userKeyPair.getUserPrivateKey(), passphrase.getPassword());
-            return new TripleCryptInputStream(proxy.read(file, status, callback),
-                Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Download {0} failed", e, file);
@@ -90,19 +89,28 @@ public class TripleCryptReadFeature implements Read {
         }
     }
 
+    private Credentials unlock(final ConnectionCallback callback, final UserKeyPair userKeyPair) throws CryptoException, AccessDeniedException {
+        final Credentials passphrase;
+        try {
+            passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
+        }
+        catch(LoginCanceledException e) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Decryption password required", "SDS"), e);
+        }
+        return passphrase;
+    }
+
+    private UserKeyPair getUserKeyPair(final EncryptedFileKey encFileKey) throws BackgroundException, UnknownVersionException {
+        final UserKeyPairContainer keyPairContainer = session.getKeyPairForFileKey(encFileKey.getVersion());
+        final UserKeyPair userKeyPair = TripleCryptConverter.toCryptoUserKeyPair(keyPairContainer);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Attempt to unlock private key %s", userKeyPair.getUserPrivateKey()));
+        }
+        return userKeyPair;
+    }
+
     @Override
     public boolean offset(final Path file) {
         return false;
-    }
-
-    private UserKeyPairContainer getKeyPairForFileKey(EncryptedFileKey key) throws BackgroundException {
-        switch(key.getVersion()) {
-            case RSA2048_AES256GCM:
-                return session.keyPairDeprecated();
-            case RSA4096_AES256GCM:
-                return session.keyPair();
-            default:
-                throw new InteroperabilityException(String.format("Unknown version %s", key.getVersion()));
-        }
     }
 }
