@@ -272,6 +272,8 @@
         <string>update.pem</string>
         <key>SUExpectsDSASignature</key>
         <true/>
+        <key>SUFeedURL</key>
+        <string>${SPARKLEFEED}</string>
         #endif
         <key>NSServices</key>
         <array>
