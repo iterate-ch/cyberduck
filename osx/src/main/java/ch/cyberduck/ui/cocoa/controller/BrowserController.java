@@ -914,6 +914,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.bookmarkSwitchView.setAction(Foundation.selector("bookmarkSwitchButtonClicked:"));
     }
 
+    public NSSegmentedControl getBookmarkSwitchView() {
+        return bookmarkSwitchView;
+    }
+
     @Action
     public void bookmarkSwitchMenuClicked(final NSMenuItem sender) {
         switch(this.getSelectedTabView()) {
