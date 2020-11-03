@@ -430,6 +430,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         NSView view;
         if(this.getSelectedTabView() == BrowserTab.bookmarks) {
             window.makeFirstResponder(bookmarkTable);
+            bookmarkTableDelegate.selectionDidChange(NSNotification.notificationWithName(StringUtils.EMPTY, this.id()));
         }
         else {
             if(this.isMounted()) {
