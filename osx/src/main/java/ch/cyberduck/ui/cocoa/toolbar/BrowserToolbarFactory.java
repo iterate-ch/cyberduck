@@ -145,6 +145,17 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                 return Foundation.selector("searchFieldTextDidChange:");
             }
         },
+        tabswitch {
+            @Override
+            public String label() {
+                return StringUtils.EMPTY;
+            }
+
+            @Override
+            public Selector action() {
+                return Foundation.selector("bookmarkSwitchButtonClicked:");
+            }
+        },
         tools {
             @Override
             public String label() {
@@ -612,6 +623,15 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     item.setView(controller.getSearchField());
                     return item;
                 }
+                case tabswitch: {
+                    item.setLabel(tabswitch.label());
+                    item.setPaletteLabel(tabswitch.label());
+                    item.setView(controller.getBookmarkSwitchView());
+                    if(item.respondsToSelector(Foundation.selector("setNavigational:"))) {
+                        item.setNavigational(true);
+                    }
+                    return item;
+                }
                 default: {
                     item.setLabel(type.label());
                     item.setPaletteLabel(LocaleFactory.localizedString(type.label()));
@@ -637,9 +657,8 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
     public NSArray getDefault() {
         return NSArray.arrayWithObjects(
             connect.name(),
-            quickconnect.name(),
+            tabswitch.name(),
             tools.name(),
-            NSToolbarItem.NSToolbarSeparatorItemIdentifier,
             reload.name(),
             edit.name(),
             NSToolbarItem.NSToolbarFlexibleSpaceItemIdentifier,
@@ -651,6 +670,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
     @Override
     public NSArray getAllowed() {
         return NSArray.arrayWithObjects(
+            tabswitch.name(),
             connect.name(),
             browserview.name(),
             transfers.name(),

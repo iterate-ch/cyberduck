@@ -131,11 +131,11 @@
                                         <scrollView fixedFrame="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="31">
                                             <rect key="frame" x="-2" y="0.0" width="604" height="397"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <clipView key="contentView" ambiguous="YES" id="t14-pG-1DQ">
+                                            <clipView key="contentView" id="t14-pG-1DQ">
                                                 <rect key="frame" x="1" y="0.0" width="587" height="396"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <tableView focusRingType="none" verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="ListBrowserView" headerView="36" id="33" customClass="CDListView">
+                                                    <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="ListBrowserView" headerView="36" id="33" customClass="CDListView">
                                                         <rect key="frame" x="0.0" y="0.0" width="587" height="379"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
@@ -171,11 +171,11 @@
                                         <scrollView fixedFrame="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="39">
                                             <rect key="frame" x="-2" y="0.0" width="604" height="397"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <clipView key="contentView" ambiguous="YES" id="KUj-N5-PnR">
+                                            <clipView key="contentView" id="KUj-N5-PnR">
                                                 <rect key="frame" x="1" y="0.0" width="587" height="396"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <tableView focusRingType="none" verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="OutlineBrowserView" headerView="44" id="41" customClass="CDOutlineView">
+                                                    <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="OutlineBrowserView" headerView="44" id="41" customClass="CDOutlineView">
                                                         <rect key="frame" x="0.0" y="0.0" width="587" height="379"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
@@ -252,7 +252,7 @@
                                 </segmentedCell>
                             </segmentedControl>
                             <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="59">
-                                <rect key="frame" x="290" y="3" width="246" height="26"/>
+                                <rect key="frame" x="137" y="3" width="399" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="truncatingMiddle" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="62" id="60">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -264,21 +264,8 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="53">
-                                <rect key="frame" x="8" y="5" width="149" height="24"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="54">
-                                    <font key="font" metaFont="system"/>
-                                    <segments>
-                                        <segment width="35"/>
-                                        <segment width="35" selected="YES"/>
-                                        <segment width="35"/>
-                                        <segment width="35"/>
-                                    </segments>
-                                </segmentedCell>
-                            </segmentedControl>
                             <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="63">
-                                <rect key="frame" x="161" y="5" width="125" height="24"/>
+                                <rect key="frame" x="8" y="5" width="125" height="24"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="64">
                                     <font key="font" metaFont="system"/>
@@ -542,6 +529,20 @@ DQ
             </searchFieldCell>
             <point key="canvasLocation" x="-10" y="463"/>
         </searchField>
+        <segmentedControl verticalHuggingPriority="750" id="53">
+            <rect key="frame" x="0.0" y="0.0" width="149" height="24"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="54">
+                <font key="font" metaFont="system"/>
+                <segments>
+                    <segment width="35"/>
+                    <segment width="35" selected="YES"/>
+                    <segment width="35"/>
+                    <segment width="35"/>
+                </segments>
+            </segmentedCell>
+            <point key="canvasLocation" x="-42" y="576"/>
+        </segmentedControl>
     </objects>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>
