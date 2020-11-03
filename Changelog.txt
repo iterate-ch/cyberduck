@@ -1,7 +1,7 @@
 Cyberduck
 https://cyberduck.io/
 
-8.0.0
+7.7.0
 - [Feature] Connect via SSH tunnel through bastion host with JumpHost configuration directive (SFTP) (#2865)
 - [Feature] Search field moved to toolbar (macOS)
 - [Bugfix] Accessing CloudFront and KMS configuration ignores ~/.aws/credentials (#11175)
