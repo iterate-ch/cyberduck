@@ -1023,6 +1023,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
                 this.bookmarkTable.scrollRowToVisible(new NSInteger(row));
             }
+            else {
+                this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
+                this.bookmarkTable.scrollRowToVisible(new NSInteger(0));
+            }
+        }
+        else {
+            this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
+            this.bookmarkTable.scrollRowToVisible(new NSInteger(0));
         }
         this.getFocus();
     }
