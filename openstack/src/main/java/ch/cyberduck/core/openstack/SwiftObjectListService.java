@@ -19,7 +19,6 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -64,6 +63,11 @@ public class SwiftObjectListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        final String prefix = containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory) + Path.DELIMITER;
+        return this.list(directory, listener, prefix);
+    }
+
+    protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String prefix) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
             final int limit = PreferencesFactory.get().getInteger("openstack.list.object.limit");
@@ -72,19 +76,10 @@ public class SwiftObjectListService implements ListService {
             final Path container = containerService.getContainer(directory);
             do {
                 list = session.getClient().listObjectsStartingWith(regionService.lookup(container), container.getName(),
-                    containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory) + Path.DELIMITER,
-                    null, limit, marker, Path.DELIMITER);
+                    prefix, null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {
                     final PathAttributes attr = attributes.toAttributes(object);
-                    final EnumSet<Path.Type> types = "application/directory"
-                        .equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
-                    if(StringUtils.endsWith(object.getName(), String.valueOf(Path.DELIMITER))) {
-                        if(children.contains(new Path(directory, PathNormalizer.name(object.getName()), EnumSet.of(Path.Type.directory), attr))) {
-                            // There is already a real placeholder file with application/directory MIME type. Only
-                            // add virtual directory if the placeholder object is missing
-                            continue;
-                        }
-                    }
+                    final EnumSet<Path.Type> types = "application/directory".equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     attr.setOwner(container.attributes().getOwner());
                     attr.setRegion(container.attributes().getRegion());
                     children.add(new Path(directory, PathNormalizer.name(object.getName()), types, attr));
@@ -93,9 +88,20 @@ public class SwiftObjectListService implements ListService {
                 listener.chunk(directory, children);
             }
             while(list.size() == limit);
-            if(!containerService.isContainer(directory) && children.isEmpty()) {
-                if(!new SwiftFindFeature(session).find(directory)) {
-                    throw new NotfoundException(directory.getAbsolute());
+            if(!containerService.isContainer(directory)) {
+                if(children.isEmpty()) {
+                    try {
+                        if(0 == session.getClient().listObjectsStartingWith(regionService.lookup(container), container.getName(),
+                            containerService.getKey(directory), null, 1, null, Path.DELIMITER).size()) {
+                            throw new NotfoundException(directory.getAbsolute());
+                        }
+                    }
+                    catch(GenericException e) {
+                        throw new SwiftExceptionMappingService().map("Listing directory {0} failed", e, directory);
+                    }
+                    catch(IOException e) {
+                        throw new DefaultIOExceptionMappingService().map(e, directory);
+                    }
                 }
             }
             return children;

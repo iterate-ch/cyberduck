@@ -44,7 +44,7 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
         assertNotEquals(-1L, attributes.getModificationDate());
         // Test wrong type
         try {
-            f.find(new Path(container, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder)));
+            f.find(new Path(container, name, EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {
@@ -69,6 +69,7 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
         final Path file = new Path(container, name, EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(file, null, new TransferStatus());
         final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(file);
+        assertNotNull(attributes.getChecksum().hash);
         // Test wrong type
         try {
             new SwiftAttributesFinderFeature(session).find(new Path(container, name, EnumSet.of(Path.Type.file)));

@@ -69,7 +69,7 @@ public class SwiftDeleteFeatureTest extends AbstractSwiftTest {
         final Path test = new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final SwiftFindFeature find = new SwiftFindFeature(session);
-        assertFalse(find.find(placeholder));
+        assertTrue(find.find(placeholder));
         final SwiftObjectListService list = new SwiftObjectListService(session);
         // Must contain placeholder object returned
         final AttributedList<Path> children = list.list(placeholder.getParent(), new DisabledListProgressListener());
