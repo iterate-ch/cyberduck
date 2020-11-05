@@ -29,7 +29,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
 public class SDSTimestampFeatureTest extends AbstractSDSTest {
@@ -43,7 +43,7 @@ public class SDSTimestampFeatureTest extends AbstractSDSTest {
         new SDSTimestampFeature(session, nodeid).setTimestamp(test, 1599047952805L);
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
         final PathAttributes attributes = f.find(test);
-        assertNotEquals(1599047952805L, attributes.getModificationDate());
+        assertEquals(1599047952805L, attributes.getModificationDate());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
