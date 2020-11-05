@@ -22,18 +22,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
 
 public class SwiftFindFeature implements Find {
 
-    private final Headers feature;
+    private final SwiftSession session;
 
     public SwiftFindFeature(final SwiftSession session) {
-        this(new SwiftMetadataFeature(session));
-    }
-
-    public SwiftFindFeature(final Headers feature) {
-        this.feature = feature;
+        this.session = session;
     }
 
     @Override
@@ -42,7 +37,7 @@ public class SwiftFindFeature implements Find {
             return true;
         }
         try {
-            feature.getMetadata(file);
+            new SwiftAttributesFinderFeature(session).find(file);
             return true;
         }
         catch(NotfoundException e) {

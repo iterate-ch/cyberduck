@@ -69,11 +69,11 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
         return this.list(directory, listener, String.valueOf(Path.DELIMITER));
     }
 
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter) throws BackgroundException {
+    protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter) throws BackgroundException {
         return this.list(directory, listener, delimiter, preferences.getInteger("s3.listing.chunksize"));
     }
 
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {
+    protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {
         try {
             final String prefix = this.createPrefix(directory);
             // If this optional, Unicode string parameter is included with your request,
