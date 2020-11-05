@@ -134,8 +134,14 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setRevision(node.getBranchVersion());
         attributes.setChecksum(Checksum.parse(node.getHash()));
-        attributes.setCreationDate(node.getCreatedAt() != null ? node.getCreatedAt().getMillis() : -1L);
+        // Legacy
         attributes.setModificationDate(node.getUpdatedAt() != null ? node.getUpdatedAt().getMillis() : -1L);
+        // Override for >4.22
+        attributes.setModificationDate(node.getTimestampModification() != null ? node.getTimestampModification().getMillis() : -1L);
+        // Legacy
+        attributes.setCreationDate(node.getCreatedAt() != null ? node.getCreatedAt().getMillis() : -1L);
+        // Override for >4.22
+        attributes.setCreationDate(node.getTimestampCreation() != null ? node.getTimestampCreation().getMillis() : -1L);
         attributes.setSize(node.getSize());
         attributes.setQuota(node.getQuota());
         attributes.setPermission(this.toPermission(node));
