@@ -58,10 +58,21 @@ namespace Ch.Cyberduck.Core.Local
                 if (File.Exists(path))
                 {
                     FileVersionInfo info = FileVersionInfo.GetVersionInfo(path);
-                    applicationNameCache.Add(new KeyValuePair<string, Application>(application,
-                        new Application(
-                            application.ToLower(),
-                            info.FileDescription)));
+                    if (Utils.IsBlank(info.FileDescription))
+                    {
+                        // Does not contain version information
+                        applicationNameCache.Add(new KeyValuePair<string, Application>(application,
+                            new Application(
+                                application.ToLower(),
+                                FilenameUtils.getName(application))));
+                    }
+                    else
+                    {
+                        applicationNameCache.Add(new KeyValuePair<string, Application>(application,
+                            new Application(
+                                application.ToLower(),
+                                info.FileDescription)));
+                    }
                 }
                 else
                 {
