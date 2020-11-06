@@ -72,4 +72,18 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
         properties.setProperty(String.format("%s://%s@%s:%d", scheme, user, hostname, port), password);
         this.save(properties);
     }
+
+    @Override
+    public void deletePassword(final String serviceName, final String accountName) {
+        final Properties properties = this.load();
+        properties.remove(String.format("%s@%s", accountName, serviceName));
+        this.save(properties);
+    }
+
+    @Override
+    public void deletePassword(final Scheme scheme, final int port, final String hostname, final String user) {
+        final Properties properties = this.load();
+        properties.remove(String.format("%s://%s@%s:%d", scheme, user, hostname, port));
+        this.save(properties);
+    }
 }

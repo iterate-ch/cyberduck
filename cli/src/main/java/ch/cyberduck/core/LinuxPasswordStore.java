@@ -15,7 +15,6 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.freedesktop.secret.simple.SimpleCollection;
@@ -51,7 +50,7 @@ public class LinuxPasswordStore extends DefaultHostPasswordStore {
     }
 
     @Override
-    public void addPassword(final String serviceName, final String accountName, final String password) throws LocalAccessDeniedException {
+    public void addPassword(final String serviceName, final String accountName, final String password) {
         final List<String> list = keyring.getItems(this.createAttributes(password));
         if(list == null) {
             keyring.createItem(application, password, this.createAttributes(
@@ -73,7 +72,7 @@ public class LinuxPasswordStore extends DefaultHostPasswordStore {
     }
 
     @Override
-    public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) throws LocalAccessDeniedException {
+    public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
         final List<String> list = keyring.getItems(this.createAttributes(password));
         if(list == null) {
             keyring.createItem(application, password, this.createAttributes(
@@ -81,6 +80,24 @@ public class LinuxPasswordStore extends DefaultHostPasswordStore {
             ));
         }
 
+    }
+
+    @Override
+    public void deletePassword(final String serviceName, final String accountName) {
+        final List<String> list = keyring.getItems(this.createAttributes(String.format("%s@%s", accountName, serviceName)));
+        if(list != null) {
+            keyring.deleteItems(list);
+        }
+    }
+
+    @Override
+    public void deletePassword(final Scheme scheme, final int port, final String hostname, final String user) {
+        final List<String> list = keyring.getItems(this.createAttributes(
+            String.format("%s://%s@%s:%d", scheme, user, hostname, port)
+        ));
+        if(list != null) {
+            keyring.deleteItems(list);
+        }
     }
 
     private Map<String, String> createAttributes(final String key) {

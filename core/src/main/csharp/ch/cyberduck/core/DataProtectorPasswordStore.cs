@@ -30,7 +30,8 @@ namespace Ch.Cyberduck.Core
         // Login Password
         public override void addPassword(Scheme scheme, int port, String hostname, String user, String password)
         {
-            PreferencesFactory.get().setProperty(new HostUrlProvider().withPath(false).get(scheme, port, user, hostname, null), DataProtector.Encrypt(password));
+            string url = new HostUrlProvider().withPath(false).get(scheme, port, user, hostname, null);
+            PreferencesFactory.get().setProperty(url, DataProtector.Encrypt(password));
         }
 
         // Login Password
@@ -60,6 +61,17 @@ namespace Ch.Cyberduck.Core
                 return getPassword(Scheme.ftp, Scheme.ftp.getPort(), serviceName, user);
             }
             return DataProtector.Decrypt(password);
+        }
+
+        public override void deletePassword(String serviceName, String user)
+        {
+            PreferencesFactory.get().deleteProperty($"{serviceName} - {user}");
+        }
+
+        public override void deletePassword(Scheme scheme, int port, string hostName, string user)
+        {
+            string url = new HostUrlProvider().withPath(false).get(scheme, port, user, hostname, null);
+            PreferencesFactory.get().deleteProperty(url);
         }
     }
 }
