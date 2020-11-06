@@ -56,7 +56,11 @@ public class S3FindFeatureTest extends AbstractS3Test {
             new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
                 new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
         assertTrue(new S3FindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(session).find(test));
+        assertFalse(new S3FindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
+        assertFalse(new S3FindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
     }
 }

@@ -35,7 +35,6 @@ import java.util.Map;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.ContainerMetadata;
-import ch.iterate.openstack.swift.model.ObjectMetadata;
 
 public class SwiftMetadataFeature implements Headers {
     private static final Logger log = Logger.getLogger(SwiftMetadataFeature.class);
@@ -66,15 +65,12 @@ public class SwiftMetadataFeature implements Headers {
         try {
             if(containerService.isContainer(file)) {
                 final ContainerMetadata meta
-                        = session.getClient().getContainerMetaData(regionService.lookup(file),
-                        containerService.getContainer(file).getName());
+                    = session.getClient().getContainerMetaData(regionService.lookup(file),
+                    containerService.getContainer(file).getName());
                 return meta.getMetaData();
             }
             else {
-                final ObjectMetadata meta
-                        = session.getClient().getObjectMetaData(regionService.lookup(file),
-                        containerService.getContainer(file).getName(), containerService.getKey(file));
-                return meta.getMetaData();
+                return new SwiftAttributesFinderFeature(session).find(file).getMetadata();
             }
         }
         catch(GenericException e) {

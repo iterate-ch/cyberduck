@@ -33,6 +33,11 @@ public abstract class NSToolbarItem extends NSObject implements NSCopying, NSVal
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSToolbarItem", _Class.class);
 
     public static final String NSToolbarFlexibleItemIdentifier = "NSToolbarFlexibleSpaceItem";
+
+    /**
+     * In macOS 10.7 and later the separator icon has been removed from the toolbar and customization palettes. This
+     * constant is ignored.
+     */
     public static final String NSToolbarSeparatorItemIdentifier = "NSToolbarSeparatorItem";
     /**
      * Creates a new NSTrackingSeparatorToolbarItem and automatically configures it to track the divider of the sidebar
@@ -45,6 +50,8 @@ public abstract class NSToolbarItem extends NSObject implements NSCopying, NSVal
     public static final String NSToolbarShowFontsItemIdentifier = "NSToolbarShowFontsItem";
     public static final String NSToolbarCustomizeToolbarItemIdentifier = "NSToolbarCustomizeToolbarItem";
     public static final String NSToolbarPrintItemIdentifier = "NSToolbarPrintItem";
+    public static final String NSToolbarToggleSidebarItemIdentifier = "NSToolbarToggleSidebarItem";
+    public static final String NSToolbarCloudSharingItemIdentifier = "NSToolbarCloudSharingItem";
 
     public static final int VisibilityPriorityStandard = 0;
     public static final int VisibilityPriorityLow = -1000;

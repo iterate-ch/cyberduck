@@ -291,7 +291,7 @@ public class InfoController extends ToolbarWindowController {
         window.setContentMinSize(window.frame().size);
         window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
         if(window.respondsToSelector(Foundation.selector("setToolbarStyle:"))) {
-            window.setToolbarStyle(NSWindow.NSWindowToolbarStyle.NSWindowToolbarStyleUnified);
+            window.setToolbarStyle(NSWindow.NSWindowToolbarStyle.NSWindowToolbarStyleExpanded);
         }
         super.setWindow(window);
         if(!preferences.getBoolean("browser.info.inspector")) {

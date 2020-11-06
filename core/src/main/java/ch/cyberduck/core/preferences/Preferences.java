@@ -807,6 +807,7 @@ public abstract class Preferences implements Locales {
         // Each part can be anywhere from 100MB to 5GB in size
         this.setDefault("b2.upload.largeobject.size", String.valueOf(100 * 1024L * 1024L));
         this.setDefault("b2.upload.largeobject.size.minimum", String.valueOf(5 * 1024L * 1024L));
+        this.setDefault("b2.copy.largeobject.size", String.valueOf(5 * 1024L * 1024L)); // 5MB
         this.setDefault("b2.copy.largeobject.threshold", String.valueOf(10 * 1024L * 1024L)); // 10MB
 
         this.setDefault("b2.metadata.default", StringUtils.EMPTY);
@@ -817,7 +818,7 @@ public abstract class Preferences implements Locales {
         // Run missing file keys in bulk feature after upload
         this.setDefault("sds.encryption.missingkeys.upload", String.valueOf(true));
         this.setDefault("sds.encryption.missingkeys.scheduler.period", String.valueOf(120000)); // 2 minutes
-        this.setDefault("sds.encryption.keys.ttl", String.valueOf(3600000)); // 1 hour
+        this.setDefault("sds.encryption.keys.ttl", String.valueOf(600000)); // 10 minutes
         this.setDefault("sds.useracount.ttl", String.valueOf(3600000)); // 1 hour
         this.setDefault("sds.delete.dataroom.enable", String.valueOf(true));
         this.setDefault("sds.upload.sharelinks.keep", String.valueOf(true));

@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
@@ -68,11 +69,11 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
         container.attributes().setRegion("IAD");
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
         final Path placeholder = feature.mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        Thread.sleep(1000L);
         assertTrue(put.get());
         assertTrue(new SwiftFindFeature(session).find(placeholder));
         assertTrue(new DefaultFindFeature(session).find(placeholder));
         assertEquals(placeholder.attributes().getChecksum(), new SwiftAttributesFinderFeature(session).find(placeholder).getChecksum());
+        assertTrue(new SwiftObjectListService(session, new SwiftRegionService(session)).list(placeholder, new DisabledListProgressListener()).isEmpty());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session).find(placeholder));
     }

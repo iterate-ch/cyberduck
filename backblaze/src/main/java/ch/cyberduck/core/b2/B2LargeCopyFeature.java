@@ -65,7 +65,7 @@ public class B2LargeCopyFeature implements Copy {
     private final Integer concurrency;
 
     public B2LargeCopyFeature(final B2Session session, final B2FileidProvider fileid) {
-        this(session, fileid, PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
+        this(session, fileid, PreferencesFactory.get().getLong("b2.copy.largeobject.size"),
             PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency"));
     }
 

@@ -167,12 +167,9 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
     }
 
     private UserPrivateKey getPrivateKeyForDecryption(final SDSSession session, final FileFileKeys fileKeys) throws UnknownVersionException, BackgroundException {
-        switch(EncryptedFileKey.Version.getByValue(fileKeys.getFileKeyContainer().getVersion())) {
-            case RSA2048_AES256GCM:
-                return TripleCryptConverter.toCryptoUserPrivateKey(session.keyPairDeprecated().getPrivateKeyContainer());
-            default:
-                return TripleCryptConverter.toCryptoUserPrivateKey(session.keyPair().getPrivateKeyContainer());
-        }
+        return TripleCryptConverter.toCryptoUserPrivateKey(
+            session.getKeyPairForFileKey(EncryptedFileKey.Version.getByValue(
+                fileKeys.getFileKeyContainer().getVersion())).getPrivateKeyContainer());
     }
 
     private EncryptedFileKey encryptFileKey(final UserPrivateKey privateKey, final Credentials passphrase,

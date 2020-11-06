@@ -430,6 +430,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         NSView view;
         if(this.getSelectedTabView() == BrowserTab.bookmarks) {
             window.makeFirstResponder(bookmarkTable);
+            bookmarkTableDelegate.selectionDidChange(NSNotification.notificationWithName(StringUtils.EMPTY, this.id()));
         }
         else {
             if(this.isMounted()) {
@@ -642,12 +643,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         // Save frame rectangle
         window.setFrameAutosaveName("Browser");
         if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
-            window.setTitle(StringUtils.EMPTY);
             window.setSubtitle(StringUtils.EMPTY);
         }
-        else {
-            window.setTitle(preferences.getProperty("application.name"));
-        }
+        window.setTitle(preferences.getProperty("application.name"));
         window.setMiniwindowImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
@@ -916,6 +914,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.bookmarkSwitchView.setAction(Foundation.selector("bookmarkSwitchButtonClicked:"));
     }
 
+    public NSSegmentedControl getBookmarkSwitchView() {
+        return bookmarkSwitchView;
+    }
+
     @Action
     public void bookmarkSwitchMenuClicked(final NSMenuItem sender) {
         switch(this.getSelectedTabView()) {
@@ -1026,6 +1028,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
                 this.bookmarkTable.scrollRowToVisible(new NSInteger(row));
             }
+            else {
+                this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
+                this.bookmarkTable.scrollRowToVisible(new NSInteger(0));
+            }
+        }
+        else {
+            this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
+            this.bookmarkTable.scrollRowToVisible(new NSInteger(0));
         }
         this.getFocus();
     }

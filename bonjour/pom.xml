@@ -18,7 +18,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>7.6.5-SNAPSHOT</version>
+        <version>7.7.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>com.apple</groupId>
             <artifactId>dnssd</artifactId>
-            <version>1.0</version>
+            <version>1096.40.7</version>
         </dependency>
     </dependencies>
 
@@ -103,7 +103,7 @@
                     <artifactId>libjdns_sd</artifactId>
                     <type>dylib</type>
                     <scope>runtime</scope>
-                    <version>1.0</version>
+                    <version>1096.40.7</version>
                 </dependency>
             </dependencies>
         </profile>
