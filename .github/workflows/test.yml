@@ -2,15 +2,18 @@ name: Unit Tests
 
 on:
     push:
-        branches: [ master ]
+        branches:
+            - master
+            - feature/*
+            - bugfix/*
     pull_request:
-        branches: [ master ]
-
+        branches:
+            - master
 jobs:
     build:
-
-        runs-on: [ macos-latest, ubuntu-latest ]
-
+        runs-on:
+            - macos-latest
+            - ubuntu-latest
         steps:
             -   uses: actions/checkout@v2
             -   name: Set up JDK 1.8
