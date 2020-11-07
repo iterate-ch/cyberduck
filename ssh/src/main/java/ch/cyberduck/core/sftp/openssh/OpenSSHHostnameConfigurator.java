@@ -65,8 +65,9 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
     }
 
     @Override
-    public void reload() {
+    public HostnameConfigurator reload() {
         configuration.refresh();
+        return this;
     }
 
     @Override
