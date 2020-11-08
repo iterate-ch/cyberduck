@@ -20,6 +20,7 @@ package ch.cyberduck.binding.foundation;
  */
 
 import org.rococoa.ObjCClass;
+import org.rococoa.ObjCObject;
 import org.rococoa.ObjCObjectByReference;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -40,7 +41,7 @@ public abstract class NSArray extends NSObject {
         return CLASS.arrayWithContentsOfURL(url);
     }
 
-    public static NSArray arrayWithObject(NSObject anObject) {
+    public static NSArray arrayWithObject(ObjCObject anObject) {
         return CLASS.arrayWithObject(anObject);
     }
 
@@ -48,7 +49,7 @@ public abstract class NSArray extends NSObject {
         return CLASS.arrayWithObject(NSString.stringWithString(anObject));
     }
 
-    public static NSArray arrayWithObjects(NSObject... arrayWithObjects) {
+    public static NSArray arrayWithObjects(ObjCObject... arrayWithObjects) {
         return CLASS.arrayWithObjects(arrayWithObjects);
     }
 
@@ -67,7 +68,7 @@ public abstract class NSArray extends NSObject {
          * Original signature : <code>id arrayWithObject(id)</code><br>
          * <i>from NSArrayCreation native declaration : :61</i>
          */
-        NSArray arrayWithObject(NSObject anObject);
+        NSArray arrayWithObject(ObjCObject anObject);
 
         NSArray arrayWithObject(String anObject);
 
@@ -75,13 +76,13 @@ public abstract class NSArray extends NSObject {
          * Original signature : <code>id arrayWithObjects(const id*, NSUInteger)</code><br>
          * <i>from NSArrayCreation native declaration : :62</i>
          */
-        NSArray arrayWithObjects_count(NSObject objects, NSUInteger cnt);
+        NSArray arrayWithObjects_count(ObjCObject objects, NSUInteger cnt);
 
         /**
          * Original signature : <code>id arrayWithObjects(id, null)</code><br>
          * <i>from NSArrayCreation native declaration : :63</i>
          */
-        NSArray arrayWithObjects(NSObject... varargs);
+        NSArray arrayWithObjects(ObjCObject... varargs);
 
         NSArray arrayWithObjects(String... varargs);
 
