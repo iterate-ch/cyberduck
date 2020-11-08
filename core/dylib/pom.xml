@@ -58,6 +58,18 @@
                                             <type>zip</type>
                                             <version>81</version>
                                         </artifactItem>
+                                        <artifactItem>
+                                            <groupId>com.microsoft.appcenter</groupId>
+                                            <artifactId>AppCenter</artifactId>
+                                            <type>zip</type>
+                                            <version>1.0</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>com.microsoft.appcenter</groupId>
+                                            <artifactId>AppCenterCrashes</artifactId>
+                                            <type>zip</type>
+                                            <version>1.0</version>
+                                        </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
                                 </configuration>

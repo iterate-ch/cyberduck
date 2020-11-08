@@ -41,6 +41,8 @@
 		4724FA4726836D9000CF289B /* preferences-googlestorage.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4724FA4626836D9000CF289B /* preferences-googlestorage.pdf */; };
 		4732BDA813182C7F00CBC46B /* Download.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4732BD8613182C7F00CBC46B /* Download.strings */; };
 		473BF0871892968E0068B4C1 /* azure.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 473BF0851892968E0068B4C1 /* azure.tiff */; };
+		473C3F9A2558523D000AAD26 /* AppCenterCrashes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 473C3F992558523D000AAD26 /* AppCenterCrashes.framework */; };
+		473C3FA325586894000AAD26 /* AppCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 473C3FA125586894000AAD26 /* AppCenter.framework */; };
 		474163C106C4F64100AC0BD2 /* Info.xib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A306C4F64000AC0BD2 /* Info.xib */; };
 		474163C206C4F64100AC0BD2 /* Browser.xib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A506C4F64100AC0BD2 /* Browser.xib */; };
 		474163C306C4F64100AC0BD2 /* Main.xib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A706C4F64100AC0BD2 /* Main.xib */; };
@@ -243,8 +245,6 @@
 		47F3595D248A2A2F0095A386 /* Bookmark.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F35947248A2A2D0095A386 /* Bookmark.strings */; };
 		47F3595E248A2A2F0095A386 /* Preferences.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F3594F248A2A2E0095A386 /* Preferences.strings */; };
 		47F3595F248A2A2F0095A386 /* Main.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F35952248A2A2E0095A386 /* Main.strings */; };
-		47F85C191C0F101F00FDA856 /* UKCrashReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C151C0F101F00FDA856 /* UKCrashReporter.h */; };
-		47F85C1A1C0F101F00FDA856 /* UKCrashReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C161C0F101F00FDA856 /* UKCrashReporter.m */; };
 		47F85C1B1C0F101F00FDA856 /* UKSystemInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C171C0F101F00FDA856 /* UKSystemInfo.h */; };
 		47F85C1C1C0F101F00FDA856 /* UKSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C181C0F101F00FDA856 /* UKSystemInfo.m */; };
 		47F85C301C0F103E00FDA856 /* CDBookmarkCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C1E1C0F103E00FDA856 /* CDBookmarkCell.h */; };
@@ -270,6 +270,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		473C3F9C25585415000AAD26 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4739EF670856981300405FD3;
+			remoteInfo = libcore;
+		};
 		47FA2CEE1A28A10B0058614E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -616,6 +623,8 @@
 		47341E0A09A09CE90065FF57 /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = i18n/src/main/resources/sv.lproj/Crash.strings; sourceTree = "<group>"; };
 		4739EF730856981400405FD3 /* libcore.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libcore.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		473BF0851892968E0068B4C1 /* azure.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = azure.tiff; sourceTree = "<group>"; };
+		473C3F992558523D000AAD26 /* AppCenterCrashes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppCenterCrashes.framework; path = core/dylib/target/AppCenterCrashes.framework; sourceTree = "<group>"; };
+		473C3FA125586894000AAD26 /* AppCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppCenter.framework; path = core/dylib/target/AppCenter.framework; sourceTree = "<group>"; };
 		474163A406C4F64000AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = en; path = i18n/src/main/resources/en.lproj/Info.xib; sourceTree = "<group>"; };
 		474163A606C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = en; path = i18n/src/main/resources/en.lproj/Browser.xib; sourceTree = "<group>"; };
 		474163B006C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = en; path = i18n/src/main/resources/en.lproj/License.txt; sourceTree = "<group>"; };
@@ -1676,8 +1685,6 @@
 		47F35954248A2A2E0095A386 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = i18n/src/main/resources/hr.lproj/S3.strings; sourceTree = "<group>"; };
 		47F35955248A2A2E0095A386 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = i18n/src/main/resources/hr.lproj/Error.strings; sourceTree = "<group>"; };
 		47F35956248A2A2F0095A386 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = i18n/src/main/resources/hr.lproj/Azure.strings; sourceTree = "<group>"; };
-		47F85C151C0F101F00FDA856 /* UKCrashReporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UKCrashReporter.h; path = core/src/main/objc/UKCrashReporter.h; sourceTree = SOURCE_ROOT; };
-		47F85C161C0F101F00FDA856 /* UKCrashReporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UKCrashReporter.m; path = core/src/main/objc/UKCrashReporter.m; sourceTree = SOURCE_ROOT; };
 		47F85C171C0F101F00FDA856 /* UKSystemInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UKSystemInfo.h; path = core/src/main/objc/UKSystemInfo.h; sourceTree = SOURCE_ROOT; };
 		47F85C181C0F101F00FDA856 /* UKSystemInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UKSystemInfo.m; path = core/src/main/objc/UKSystemInfo.m; sourceTree = SOURCE_ROOT; };
 		47F85C1E1C0F103E00FDA856 /* CDBookmarkCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDBookmarkCell.h; path = osx/src/main/objc/CDBookmarkCell.h; sourceTree = "<group>"; };
@@ -1743,6 +1750,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				47C9427E2175D461008871C8 /* AppKit.framework in Frameworks */,
+				473C3FA325586894000AAD26 /* AppCenter.framework in Frameworks */,
+				473C3F9A2558523D000AAD26 /* AppCenterCrashes.framework in Frameworks */,
 				4705DFDC1C037A6D002466FA /* SystemConfiguration.framework in Frameworks */,
 				4723D1D724C24FDF0006CDE3 /* JavaNativeFoundation.framework in Frameworks */,
 				4705DFDA1C037A5E002466FA /* IOKit.framework in Frameworks */,
@@ -1816,6 +1825,8 @@
 				47FB0FD624B3C7FA00C6764E /* Security.framework */,
 				475D461C0D9953CD009450C4 /* SecurityInterface.framework */,
 				47FB0FDD24B3C88A00C6764E /* Foundation.framework */,
+				473C3FA125586894000AAD26 /* AppCenter.framework */,
+				473C3F992558523D000AAD26 /* AppCenterCrashes.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1827,8 +1838,6 @@
 				47EEFDC62386ECD100A3CAB0 /* UnifiedSystemLogAppender.m */,
 				474B843F1C15DB51004D562C /* Sandbox.h */,
 				474B84401C15DB51004D562C /* Sandbox.m */,
-				47F85C151C0F101F00FDA856 /* UKCrashReporter.h */,
-				47F85C161C0F101F00FDA856 /* UKCrashReporter.m */,
 				47F85C171C0F101F00FDA856 /* UKSystemInfo.h */,
 				47F85C181C0F101F00FDA856 /* UKSystemInfo.m */,
 				4705DFDE1C037AB5002466FA /* FinderSidebarService.h */,
@@ -2093,7 +2102,6 @@
 				4705E0061C037AB5002466FA /* LaunchServicesApplicationFinder.h in Headers */,
 				4705E00D1C037AB5002466FA /* SystemConfigurationProxy.h in Headers */,
 				474B84411C15DB51004D562C /* Sandbox.h in Headers */,
-				47F85C191C0F101F00FDA856 /* UKCrashReporter.h in Headers */,
 				47F85C1B1C0F101F00FDA856 /* UKSystemInfo.h in Headers */,
 				4705E0091C037AB5002466FA /* LaunchServicesQuarantineService.h in Headers */,
 				47820E3A20B58426006D0501 /* CDReachabilityMonitor.h in Headers */,
@@ -2134,6 +2142,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				473C3F9D25585415000AAD26 /* PBXTargetDependency */,
 			);
 			name = app;
 			productInstallPath = "$(USER_APPS_DIR)";
@@ -2511,7 +2520,7 @@
 				4705E0081C037AB5002466FA /* LaunchServicesFileDescriptor.m in Sources */,
 				4705E00A1C037AB5002466FA /* LaunchServicesQuarantineService.m in Sources */,
 				47F85C1C1C0F101F00FDA856 /* UKSystemInfo.m in Sources */,
-				47F85C1A1C0F101F00FDA856 /* UKCrashReporter.m in Sources */,
+				4705DFFD1C037AB5002466FA /* EMKeychainProxy.m in Sources */,
 				474B84421C15DB51004D562C /* Sandbox.m in Sources */,
 				47EEFDC82386ECD100A3CAB0 /* UnifiedSystemLogAppender.m in Sources */,
 				4705DFF71C037AB5002466FA /* FinderSidebarService.m in Sources */,
@@ -2550,6 +2559,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		473C3F9D25585415000AAD26 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4739EF670856981300405FD3 /* libcore */;
+			targetProxy = 473C3F9C25585415000AAD26 /* PBXContainerItemProxy */;
+		};
 		47FA2CEF1A28A10B0058614E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4739EF670856981300405FD3 /* libcore */;

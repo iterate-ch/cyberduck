@@ -52,6 +52,8 @@ import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.bonjour.NotificationRendezvousListener;
 import ch.cyberduck.core.bonjour.Rendezvous;
 import ch.cyberduck.core.bonjour.RendezvousFactory;
+import ch.cyberduck.core.crashreporter.AppCenterCrashReporter;
+import ch.cyberduck.core.crashreporter.CrashReporter;
 import ch.cyberduck.core.ctera.CTERAProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -1031,11 +1033,11 @@ public class MainController extends BundleController implements NSApplication.De
         });
         // Import thirdparty bookmarks.
         this.background(new ImporterBackgroundAction(bookmarks, bookmarksSemaphore));
-        final CrashReporter reporter = CrashReporter.create();
+        final CrashReporter reporter = new AppCenterCrashReporter();
         if(log.isInfoEnabled()) {
             log.info("Check for crash report");
         }
-        reporter.checkForCrash(preferences.getProperty("website.crash"));
+        reporter.check("99e6609f-1a6b-4606-bbd8-24324bc9ee72");
         if(updater.hasUpdatePrivileges()) {
             if(preferences.getBoolean("update.check")) {
                 final long next = preferences.getLong("update.check.timestamp") + preferences.getLong("update.check.interval") * 1000;
