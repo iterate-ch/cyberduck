@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive.features;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
@@ -32,16 +33,18 @@ import java.io.IOException;
 public class GraphQuotaFeature implements Quota {
 
     private final GraphSession session;
+    private final Home home;
 
-    public GraphQuotaFeature(final GraphSession session) {
+    public GraphQuotaFeature(final GraphSession session, final Home home) {
         this.session = session;
+        this.home = home;
     }
 
     @Override
     public Space get() throws BackgroundException {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = this.home.find();
         if(!session.isAccessible(home)) {
-            // not accessible (important for Sharepoint)1
+            // not accessible (important for Sharepoint)
             return new Space(0L, Long.MAX_VALUE);
         }
         final Drive.Metadata metadata;

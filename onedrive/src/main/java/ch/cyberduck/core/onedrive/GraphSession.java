@@ -230,7 +230,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) new GraphTimestampFeature(this);
         }
         if(type == Quota.class) {
-            return (T) new GraphQuotaFeature(this);
+            return (T) new GraphQuotaFeature(this, getFeature(Home.class));
         }
         if(type == PromptUrlProvider.class) {
             return (T) new GraphPromptUrlProvider(this);
