@@ -16,15 +16,10 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
@@ -32,7 +27,6 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
@@ -42,8 +36,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptWriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -134,17 +126,6 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testFileKeyMigration() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "cryptoiterate.dracoon.dev",
-            new Credentials(System.getProperties().getProperty("sds.crypto.user"), System.getProperties().getProperty("sds.crypto.key")));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                throw new LoginCanceledException();
-            }
-        }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
-        connect.check(session, new DisabledCancelCallback());
         final UserApi userApi = new UserApi(session.getClient());
         this.removeKeyPairs(userApi);
         session.resetUserKeyPairs();
@@ -153,7 +134,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         userApi.setUserKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(deprecated), null);
         List<UserKeyPairContainer> keyPairs = userApi.requestUserKeyPairs(null, null);
         assertEquals(1, keyPairs.size());
-        final Path room = new Path("cryptotest", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
+        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -166,15 +147,13 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final VersionId version = out.getStatus();
-        // login to start migration
-        session.getHost().setCredentials(
-            new Credentials(System.getProperties().getProperty("sds.crypto.user"), System.getProperties().getProperty("sds.crypto.key")));
-        session.login(Proxy.DIRECT, new DisabledLoginCallback() {
+        // Start migration
+        session.unlockTripleCryptKeyPair(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("eth[oh8uv4Eesij");
             }
-        }, new DisabledCancelCallback());
+        });
         keyPairs = userApi.requestUserKeyPairs(null, null);
         assertEquals(2, keyPairs.size());
         final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(Long.parseLong(version.id), null, null);

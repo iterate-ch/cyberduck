@@ -199,17 +199,6 @@ public class SDSSessionTest extends AbstractSDSTest {
 
     @Test
     public void testKeyPairMigration() throws Exception {
-        final Host host = new Host(new SDSProtocol(), session.getHost().getHostname(),
-            new Credentials(System.getProperties().getProperty("sds.crypto.user"), System.getProperties().getProperty("sds.crypto.key")));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                throw new LoginCanceledException();
-            }
-        }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
-        connect.check(session, new DisabledCancelCallback());
         final UserApi userApi = new UserApi(session.getClient());
         try {
             userApi.removeUserKeyPair(UserKeyPair.Version.RSA2048.getValue(), null);
@@ -238,15 +227,13 @@ public class SDSSessionTest extends AbstractSDSTest {
         userApi.setUserKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(userKeyPair), null);
         List<UserKeyPairContainer> keyPairs = userApi.requestUserKeyPairs(null, null);
         assertEquals(1, keyPairs.size());
-        // login to start migration
-        session.getHost().setCredentials(
-            new Credentials(System.getProperties().getProperty("sds.crypto.user"), System.getProperties().getProperty("sds.crypto.key")));
-        session.login(Proxy.DIRECT, new DisabledLoginCallback() {
+        // Start migration
+        session.unlockTripleCryptKeyPair(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("eth[oh8uv4Eesij");
             }
-        }, new DisabledCancelCallback());
+        });
         keyPairs = userApi.requestUserKeyPairs(null, null);
         assertEquals(2, keyPairs.size());
         assertEquals(UserKeyPair.Version.RSA4096.getValue(), session.keyPair().getPublicKeyContainer().getVersion());
