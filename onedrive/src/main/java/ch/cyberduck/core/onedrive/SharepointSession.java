@@ -59,26 +59,6 @@ public class SharepointSession extends AbstractSharepointSession {
         return super._getFeature(type);
     }
 
-    private static boolean isPlaceholderContainer(final String versionId) {
-        if(SharepointListService.DEFAULT_ID.equals(versionId)) {
-            // Must not write in /Default
-            return true;
-        }
-        if(SharepointListService.SITES_ID.equals(versionId)) {
-            // Must not write in Sites/
-            return true;
-        }
-        if(SharepointListService.GROUPS_ID.equals(versionId)) {
-            // Must not write in /Groups
-            return true;
-        }
-        if(SharepointListService.DRIVES_ID.equals(versionId)) {
-            // Must not write in Drives/
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public boolean isAccessible(final Path file, final boolean container) {
         if(file.isRoot()) {
@@ -90,10 +70,11 @@ public class SharepointSession extends AbstractSharepointSession {
             return false;
         }
 
-        if(!SharepointListService.DRIVES_ID.equals(containerPath.getParent().attributes().getVersionId())) {
-            return false;
+        if(containerPath.isChild(SharepointListService.GROUPS_NAME)) {
+            return !SharepointListService.GROUPS_ID.equals(containerPath.getParent().attributes().getVersionId())
+                && (container || !containerPath.equals(file));
         }
-
-        return container || !containerPath.equals(file);
+        return SharepointListService.DRIVES_ID.equals(containerPath.getParent().attributes().getVersionId())
+            && (container || !containerPath.equals(file));
     }
 }

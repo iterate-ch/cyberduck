@@ -72,7 +72,16 @@ public class SharepointSiteSession extends AbstractSharepointSession {
 
     @Override
     public boolean isAccessible(final Path file, final boolean container) {
+        if(file.isRoot()) {
+            return false;
+        }
 
-        return super.isAccessible(file, container);
+        final Path containerPath = getContainer(file);
+        if(containerPath.isRoot()) {
+            return false;
+        }
+
+        return SharepointListService.DRIVES_ID.equals(containerPath.getParent().attributes().getVersionId())
+            && (container || !containerPath.equals(file));
     }
 }
