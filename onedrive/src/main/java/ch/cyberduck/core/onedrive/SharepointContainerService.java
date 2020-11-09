@@ -41,13 +41,22 @@ public class SharepointContainerService extends PathContainerService {
             next = !next.isRoot() ? next.getParent() : null;
 
             final String versionId = current.attributes().getVersionId();
-            if(SharepointListService.DRIVES_ID.equals(versionId)) {
+
+            // TODO: Don't hardcode?
+            if(next != null && SharepointListService.GROUPS_ID.equals(next.attributes().getVersionId())) {
+                // /Groups/Group Name/Drive
+                container = previous;
+            }
+            else if(SharepointListService.DRIVES_ID.equals(versionId)) {
+                // Drives/Drive Name
                 container = previous;
             }
             else if(SharepointListService.GROUPS_ID.equals(versionId)) {
+                // /Groups/Group Name
                 container = previous;
             }
             else if(SharepointListService.SITES_ID.equals(versionId)) {
+                // Sites/Site-Name
                 container = previous;
             }
         }
