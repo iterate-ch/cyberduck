@@ -93,8 +93,9 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
     }
 
     @Override
-    public void reload() {
+    public CredentialsConfigurator reload() {
         configuration.refresh();
+        return this;
     }
 
     @Override

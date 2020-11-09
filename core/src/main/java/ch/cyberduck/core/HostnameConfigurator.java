@@ -34,5 +34,5 @@ public interface HostnameConfigurator {
      */
     int getPort(String alias);
 
-    void reload();
+    HostnameConfigurator reload();
 }

@@ -23,7 +23,7 @@ public final class DisabledCredentialsConfigurator implements CredentialsConfigu
     }
 
     @Override
-    public void reload() {
-        //
+    public CredentialsConfigurator reload() {
+        return this;
     }
 }
