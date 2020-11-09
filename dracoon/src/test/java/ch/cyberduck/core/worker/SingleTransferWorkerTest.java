@@ -18,7 +18,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
@@ -36,6 +36,7 @@ import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.sds.SDSSession;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
+import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -128,39 +129,39 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
         final SDSSession conn = new SDSSession(session.getHost().withCredentials(
             new Credentials(System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key"))
         ), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
-            final SDSMultipartWriteFeature write = new SDSMultipartWriteFeature(this, fileid) {
-                @Override
-                public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                    final HttpResponseOutputStream<VersionId> proxy = super.write(file, status, callback);
-                    if(failed.get()) {
-                        // Second attempt successful
-                        return proxy;
-                    }
-                    return new HttpResponseOutputStream<VersionId>(new CountingOutputStream(proxy) {
-                        @Override
-                        protected void afterWrite(final int n) throws IOException {
-                            super.afterWrite(n);
-                            if(this.getByteCount() >= 42768L) {
-                                // Buffer size
-                                assertEquals(32768L, status.getOffset());
-                                failed.set(true);
-                                throw new SocketTimeoutException();
-                            }
-                        }
-                    }) {
-                        @Override
-                        public VersionId getStatus() throws BackgroundException {
-                            return proxy.getStatus();
-                        }
-                    };
-                }
-            };
-
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                if(type == Write.class) {
-                    return (T) write;
+                if(type == Upload.class) {
+                    return (T) new DefaultUploadFeature(
+                        new SDSMultipartWriteFeature(this, fileid) {
+                            @Override
+                            public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                                final HttpResponseOutputStream<VersionId> proxy = super.write(file, status, callback);
+                                if(failed.get()) {
+                                    // Second attempt successful
+                                    return proxy;
+                                }
+                                return new HttpResponseOutputStream<VersionId>(new CountingOutputStream(proxy) {
+                                    @Override
+                                    protected void afterWrite(final int n) throws IOException {
+                                        super.afterWrite(n);
+                                        if(this.getByteCount() >= 42768L) {
+                                            // Buffer size
+                                            assertEquals(32768L, status.getOffset());
+                                            failed.set(true);
+                                            throw new SocketTimeoutException();
+                                        }
+                                    }
+                                }) {
+                                    @Override
+                                    public VersionId getStatus() throws BackgroundException {
+                                        return proxy.getStatus();
+                                    }
+                                };
+                            }
+                        }
+                    );
                 }
                 return super._getFeature(type);
             }
@@ -202,37 +203,37 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
-            final SDSMultipartWriteFeature write = new SDSMultipartWriteFeature(this, fileid) {
-                @Override
-                public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                    final HttpResponseOutputStream<VersionId> proxy = super.write(file, status, callback);
-                    if(failed.get()) {
-                        // Second attempt successful
-                        return proxy;
-                    }
-                    return new HttpResponseOutputStream<VersionId>(new CountingOutputStream(proxy) {
-                        @Override
-                        public void close() throws IOException {
-                            if(!failed.get()) {
-                                failed.set(true);
-                                throw new SocketTimeoutException();
-                            }
-                            super.close();
-                        }
-                    }) {
-                        @Override
-                        public VersionId getStatus() throws BackgroundException {
-                            return proxy.getStatus();
-                        }
-                    };
-                }
-            };
-
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                if(type == Write.class) {
-                    return (T) write;
+                if(type == Upload.class) {
+                    return (T) new DefaultUploadFeature(
+                        new SDSMultipartWriteFeature(this, fileid) {
+                            @Override
+                            public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                                final HttpResponseOutputStream<VersionId> proxy = super.write(file, status, callback);
+                                if(failed.get()) {
+                                    // Second attempt successful
+                                    return proxy;
+                                }
+                                return new HttpResponseOutputStream<VersionId>(new CountingOutputStream(proxy) {
+                                    @Override
+                                    public void close() throws IOException {
+                                        if(!failed.get()) {
+                                            failed.set(true);
+                                            throw new SocketTimeoutException();
+                                        }
+                                        super.close();
+                                    }
+                                }) {
+                                    @Override
+                                    public VersionId getStatus() throws BackgroundException {
+                                        return proxy.getStatus();
+                                    }
+                                };
+                            }
+                        }
+                    );
                 }
                 return super._getFeature(type);
             }
