@@ -126,7 +126,7 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
         out.close();
         final AtomicBoolean failed = new AtomicBoolean();
         final SDSSession conn = new SDSSession(session.getHost().withCredentials(
-            new Credentials(System.getProperties().getProperty("sds.crypto.user"), System.getProperties().getProperty("sds.crypto.key"))
+            new Credentials(System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key"))
         ), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             final SDSMultipartWriteFeature write = new SDSMultipartWriteFeature(this, fileid) {
                 @Override
@@ -199,7 +199,7 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
         out.close();
         final AtomicBoolean failed = new AtomicBoolean();
         final Host host = new Host(new SDSProtocol(), session.getHost().getHostname(), new Credentials(
-            System.getProperties().getProperty("sds.crypto.user"), System.getProperties().getProperty("sds.crypto.key")
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             final SDSMultipartWriteFeature write = new SDSMultipartWriteFeature(this, fileid) {
