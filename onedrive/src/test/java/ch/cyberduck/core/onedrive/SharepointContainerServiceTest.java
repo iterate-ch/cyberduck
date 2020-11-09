@@ -124,8 +124,8 @@ public class SharepointContainerServiceTest {
         final Path root = new Path("/", EnumSet.of(Type.directory));
         final Path groups = new Path(root, "Groups", EnumSet.of(Type.directory)).withAttributes(new PathAttributes(SharepointListService.GROUPS_NAME.attributes()));
         final Path group = new Path(groups, "Group", EnumSet.of(Type.directory)).withAttributes(new PathAttributes().withVersionId("GROUP-NAME"));
-        final Path drives = new Path(group, "Drives", EnumSet.of(Type.directory)).withAttributes(new PathAttributes(SharepointListService.DRIVES_NAME.attributes()));
-        final Path container = containerService.getContainer(drives);
-        assertEquals(group, container);
+        final Path drive = new Path(group, "Documents", EnumSet.of(Type.directory)).withAttributes(new PathAttributes().withVersionId("Documents"));
+        final Path container = containerService.getContainer(drive);
+        assertEquals(drive, container);
     }
 }
