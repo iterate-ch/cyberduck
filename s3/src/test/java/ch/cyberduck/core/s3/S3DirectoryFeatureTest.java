@@ -128,6 +128,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
         assertTrue(new S3ObjectListService(session).list(test, new DisabledListProgressListener()).isEmpty());
+        assertTrue(new S3VersionedObjectListService(session).list(test, new DisabledListProgressListener()).isEmpty());
         assertTrue(new DefaultFindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Arrays.asList(test, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

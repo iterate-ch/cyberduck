@@ -82,7 +82,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
             // element in the CommonPrefixes collection. These rolled-up keys are
             // not returned elsewhere in the response.
             final Path bucket = containerService.getContainer(directory);
-            final AttributedList<Path> children = new AttributedList<Path>();
+            final AttributedList<Path> children = new AttributedList<>();
             // Null if listing is complete
             String priorLastKey = null;
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
@@ -152,7 +152,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 // Handle missing prefix for directory placeholders in Minio
                 final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
                     PathNormalizer.name(URIEncoder.encode(bucket.getName())), String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()), delimiter, 1, null);
-                if(Arrays.stream(chunk.getCommonPrefixes()).map(URIEncoder::decode).noneMatch(common -> common.equals(prefix))) {
+                if(Arrays.stream(chunk.getObjects()).map((StorageObject input) -> URIEncoder.decode(input.getKey())).noneMatch(common -> common.equals(prefix))) {
                     throw new NotfoundException(directory.getAbsolute());
                 }
             }
