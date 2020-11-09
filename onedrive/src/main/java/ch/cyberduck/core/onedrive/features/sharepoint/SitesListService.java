@@ -73,7 +73,7 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
         attributes.setLink(new DescriptiveUrl(URI.create(metadata.webUrl)));
 
         return new Path(directory, metadata.getName(),
-            EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+            EnumSet.of(Path.Type.volume, Path.Type.directory, Path.Type.placeholder), attributes);
     }
 
     @Override

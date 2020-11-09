@@ -47,7 +47,7 @@ public class GroupListService extends AbstractListService<GroupItem.Metadata> {
     protected Path toPath(final GroupItem.Metadata metadata, final Path directory) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setVersionId(metadata.getId());
-        return new Path(directory, metadata.getDisplayName(), EnumSet.of(Path.Type.directory, Path.Type.placeholder),
+        return new Path(directory, metadata.getDisplayName(), EnumSet.of(Path.Type.volume, Path.Type.directory, Path.Type.placeholder),
                 attributes);
     }
 }
