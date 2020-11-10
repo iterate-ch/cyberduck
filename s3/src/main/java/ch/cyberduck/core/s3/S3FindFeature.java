@@ -52,7 +52,7 @@ public class S3FindFeature implements Find {
             else {
                 // Check for common prefix
                 try {
-                    new S3ObjectListService(session).list(file, new DisabledListProgressListener(), containerService.getKey(file));
+                    new S3ObjectListService(session).list(file, new DisabledListProgressListener(), containerService.getKey(file), 1);
                     return true;
                 }
                 catch(NotfoundException e) {
