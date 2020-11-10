@@ -155,6 +155,7 @@ public class STSCredentialsConfigurator {
                     // Starts a new session by sending a request to the AWS Security Token Service (STS) to assume a
                     // Role using the long lived AWS credentials
                     final AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest()
+                        .withExternalId(basicProfile.getRoleExternalId())
                         .withRoleArn(basicProfile.getRoleArn())
                         // Specify this value if the IAM user has a policy that requires MFA authentication
                         .withSerialNumber(basicProfile.getProperties().getOrDefault("mfa_serial", null))
