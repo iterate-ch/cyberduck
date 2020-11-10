@@ -1,6 +1,7 @@
 package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -187,5 +188,32 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         new S3TouchFeature(session).touch(file, new TransferStatus());
         new S3AttributesFinderFeature(session).find(file);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testFindCommonPrefix() throws Exception {
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertTrue(new S3FindFeature(session).find(container));
+        final String prefix = new AlphanumericRandomStringService().random();
+        final Path test = new S3TouchFeature(session).touch(
+            new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
+                new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(new S3AttributesFinderFeature(session).find(test));
+        assertNotNull(new S3AttributesFinderFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        try {
+            new S3AttributesFinderFeature(session).find(test);
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        try {
+            new S3AttributesFinderFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory)));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
     }
 }
