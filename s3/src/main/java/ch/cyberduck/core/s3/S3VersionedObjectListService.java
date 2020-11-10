@@ -42,6 +42,7 @@ import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 import org.jets3t.service.model.S3Version;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -190,7 +191,16 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
             }
             listener.chunk(directory, children);
             if(!hasDirectoryPlaceholder && children.isEmpty()) {
-                throw new NotfoundException(directory.getAbsolute());
+                // Only for AWS
+                if(S3Session.isAwsHostname(session.getHost().getHostname())) {
+                    throw new NotfoundException(directory.getAbsolute());
+                }
+                // Handle missing prefix for directory placeholders in Minio
+                final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
+                    PathNormalizer.name(URIEncoder.encode(bucket.getName())), String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()), String.valueOf(Path.DELIMITER), 1, null, null, false);
+                if(Arrays.stream(chunk.getItems()).map((BaseVersionOrDeleteMarker input) -> URIEncoder.decode(input.getKey())).noneMatch(common -> common.equals(prefix))) {
+                    throw new NotfoundException(directory.getAbsolute());
+                }
             }
             return children;
         }

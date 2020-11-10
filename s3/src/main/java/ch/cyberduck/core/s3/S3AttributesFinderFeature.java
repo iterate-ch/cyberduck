@@ -84,85 +84,82 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             attributes.setRegion(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(file).getIdentifier());
             return attributes;
         }
-        if(file.isFile() || file.isPlaceholder()) {
+        try {
+            PathAttributes attr;
             try {
-                PathAttributes attr;
-                try {
-                    attr = this.toAttributes(session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
-                        containerService.getContainer(file).getName(), containerService.getKey(file)));
-                }
-                catch(ServiceException e) {
-                    if(null != e.getResponseHeaders()) {
-                        if(e.getResponseHeaders().containsKey(AMZ_DELETE_MARKER)) {
-                            // Attempting to retrieve object with delete marker and no version id in request
-                            attr = new PathAttributes().withVersionId(e.getResponseHeaders().get(AMZ_VERSION_ID));
-                            attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-                            attr.setDuplicate(true);
-                            return attr;
-                        }
-                        else {
-                            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-                        }
+                attr = this.toAttributes(session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
+                    containerService.getContainer(file).getName(), containerService.getKey(file)));
+            }
+            catch(ServiceException e) {
+                if(null != e.getResponseHeaders()) {
+                    if(e.getResponseHeaders().containsKey(AMZ_DELETE_MARKER)) {
+                        // Attempting to retrieve object with delete marker and no version id in request
+                        attr = new PathAttributes().withVersionId(e.getResponseHeaders().get(AMZ_VERSION_ID));
+                        attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                        attr.setDuplicate(true);
+                        return attr;
                     }
                     else {
                         throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
                     }
                 }
-                if(StringUtils.isNotBlank(attr.getVersionId())) {
-                    if(references) {
-                        try {
-                            // Add references to previous versions
-                            final AttributedList<Path> list = new S3VersionedObjectListService(session, true).list(file, new DisabledListProgressListener());
-                            final Path versioned = list.find(new DefaultPathPredicate(file));
-                            if(null != versioned) {
-                                attr.setDuplicate(versioned.attributes().isDuplicate());
-                                attr.setVersions(versioned.attributes().getVersions());
-                                return attr;
-                            }
-                        }
-                        catch(InteroperabilityException | AccessDeniedException e) {
-                            log.warn(String.format("Ignore failure %s reading object versions for %s", e, file));
-                        }
-                    }
-                    else {
-                        // Determine if latest version
-                        try {
-                            // Duplicate if not latest version
-                            final String latest = this.toAttributes(session.getClient().getObjectDetails(
-                                containerService.getContainer(file).getName(), containerService.getKey(file))).getVersionId();
-                            attr.setDuplicate(!latest.equals(attr.getVersionId()));
-                        }
-                        catch(ServiceException e) {
-                            final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-                            if(failure instanceof NotfoundException) {
-                                // The latest version is a delete marker
-                                attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-                                attr.setDuplicate(true);
-                            }
-                            else {
-                                throw failure;
-                            }
-                        }
-                    }
+                else {
+                    throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
                 }
-                return attr;
             }
-            catch(NotfoundException e) {
-                if(file.isPlaceholder()) {
-                    // File may be marked as placeholder but not placeholder file exists. Check for common prefix returned.
+            if(StringUtils.isNotBlank(attr.getVersionId())) {
+                if(references) {
                     try {
-                        new S3ObjectListService(session).list(file, new DisabledListProgressListener(), containerService.getKey(file));
+                        // Add references to previous versions
+                        final AttributedList<Path> list = new S3VersionedObjectListService(session, true).list(file, new DisabledListProgressListener());
+                        final Path versioned = list.find(new DefaultPathPredicate(file));
+                        if(null != versioned) {
+                            attr.setDuplicate(versioned.attributes().isDuplicate());
+                            attr.setVersions(versioned.attributes().getVersions());
+                            return attr;
+                        }
                     }
-                    catch(NotfoundException n) {
-                        throw e;
+                    catch(InteroperabilityException | AccessDeniedException e) {
+                        log.warn(String.format("Ignore failure %s reading object versions for %s", e, file));
                     }
-                    // Common prefix only
-                    return PathAttributes.EMPTY;
                 }
-                throw e;
+                else {
+                    // Determine if latest version
+                    try {
+                        // Duplicate if not latest version
+                        final String latest = this.toAttributes(session.getClient().getObjectDetails(
+                            containerService.getContainer(file).getName(), containerService.getKey(file))).getVersionId();
+                        attr.setDuplicate(!latest.equals(attr.getVersionId()));
+                    }
+                    catch(ServiceException e) {
+                        final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                        if(failure instanceof NotfoundException) {
+                            // The latest version is a delete marker
+                            attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                            attr.setDuplicate(true);
+                        }
+                        else {
+                            throw failure;
+                        }
+                    }
+                }
             }
+            return attr;
         }
-        return PathAttributes.EMPTY;
+        catch(NotfoundException e) {
+            if(file.isDirectory()) {
+                // File may be marked as placeholder but not placeholder file exists. Check for common prefix returned.
+                try {
+                    new S3ObjectListService(session).list(file, new DisabledListProgressListener(), containerService.getKey(file), 1);
+                }
+                catch(NotfoundException n) {
+                    throw e;
+                }
+                // Common prefix only
+                return PathAttributes.EMPTY;
+            }
+            throw e;
+        }
     }
 
     public PathAttributes toAttributes(final StorageObject object) {
