@@ -1,5 +1,7 @@
 package ch.cyberduck.core.openstack;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -79,5 +81,33 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
             // Expected
         }
         new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testFindCommonPrefix() throws Exception {
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
+        assertTrue(new SwiftFindFeature(session).find(container));
+        final String prefix = new AlphanumericRandomStringService().random();
+        final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
+            new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
+                new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(new SwiftAttributesFinderFeature(session).find(test));
+        assertNotNull(new SwiftAttributesFinderFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        try {
+            new SwiftAttributesFinderFeature(session).find(test);
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        try {
+            new SwiftAttributesFinderFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory)));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
     }
 }
