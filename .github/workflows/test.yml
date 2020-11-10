@@ -11,9 +11,10 @@ on:
             - master
 jobs:
     build:
-        runs-on:
-            - macos-latest
-            - ubuntu-latest
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ macos-latest, ubuntu-latest ]
         steps:
             -   uses: actions/checkout@v2
             -   name: Set up JDK 1.8
