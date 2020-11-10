@@ -26,6 +26,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
+import org.jets3t.service.ServiceException;
+
 public class S3FindFeature implements Find {
 
     private final PathContainerService containerService
@@ -45,6 +47,14 @@ public class S3FindFeature implements Find {
             return true;
         }
         try {
+            if(containerService.isContainer(file)) {
+                try {
+                    return session.getClient().isBucketAccessible(containerService.getContainer(file).getName());
+                }
+                catch(ServiceException e) {
+                    throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                }
+            }
             if(file.isFile() || file.isPlaceholder()) {
                 attributes.find(file);
                 return true;
