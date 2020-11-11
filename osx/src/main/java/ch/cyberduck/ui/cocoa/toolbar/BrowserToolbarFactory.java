@@ -33,6 +33,7 @@ import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.DefaultCharsetProvider;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
@@ -456,8 +457,11 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
         if(!toolbarItems.containsKey(identifier)) {
             switch(BrowserToolbarItem.valueOf(identifier)) {
                 case search:
-                    toolbarItems.put(identifier, NSSearchToolbarItem.itemWithIdentifier(identifier));
-                    break;
+                    if(!Factory.Platform.osversion.matches("10\\.(9|10|11|12|13|14|15).*")) {
+                        toolbarItems.put(identifier, NSSearchToolbarItem.itemWithIdentifier(identifier));
+                        break;
+                    }
+                    // Break through
                 default:
                     toolbarItems.put(identifier, CDToolbarItem.itemWithIdentifier(identifier));
             }
