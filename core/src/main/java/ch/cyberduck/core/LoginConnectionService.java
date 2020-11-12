@@ -133,8 +133,8 @@ public class LoginConnectionService implements ConnectionService {
         final String hostname = configurator.getHostname(bookmark.getHostname());
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Resolving {0}", "Status"),
             hostname));
-        final Proxy proxy = this.proxy.find(bookmark);
-        if(proxy == Proxy.DIRECT) {
+        final Proxy proxyhost = proxy.find(bookmark);
+        if(proxyhost == Proxy.DIRECT) {
             // Only try to resolve target hostname if direct connection
             try {
                 resolver.resolve(hostname, callback);
@@ -147,7 +147,7 @@ public class LoginConnectionService implements ConnectionService {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Opening {0} connection to {1}", "Status"),
             bookmark.getProtocol().getName(), hostname));
         // The IP address could successfully be determined
-        session.open(proxy, key, prompt);
+        session.open(proxyhost, key, prompt);
         listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
             bookmark.getProtocol().getName()));
         // Update last accessed timestamp
@@ -166,7 +166,7 @@ public class LoginConnectionService implements ConnectionService {
         }
         // Login
         try {
-            this.authenticate(proxy, session, callback);
+            this.authenticate(proxyhost, session, callback);
         }
         catch(BackgroundException e) {
             this.close(session);
