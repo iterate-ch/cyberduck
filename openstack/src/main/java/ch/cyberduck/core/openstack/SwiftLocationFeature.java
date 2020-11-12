@@ -51,7 +51,7 @@ public class SwiftLocationFeature implements Location {
     private final PathContainerService containerService
         = new PathContainerService();
 
-    private final Map<Path, Name> cache = new HashMap<Path, Name>();
+    private final Map<Path, Name> cache = new HashMap<>();
 
     public SwiftLocationFeature(final SwiftSession session) {
         this.session = session;
@@ -59,12 +59,12 @@ public class SwiftLocationFeature implements Location {
 
     @Override
     public Set<Name> getLocations() {
-        final Set<Name> locations = new LinkedHashSet<Name>();
+        final Set<Name> locations = new LinkedHashSet<>();
         if(StringUtils.isNotBlank(session.getHost().getRegion())) {
             locations.add(new SwiftRegion(session.getHost().getRegion()));
         }
         else {
-            final List<Region> regions = new ArrayList<Region>(session.getClient().getRegions());
+            final List<Region> regions = new ArrayList<>(session.getClient().getRegions());
             regions.sort(new Comparator<Region>() {
                 @Override
                 public int compare(final Region r1, final Region r2) {

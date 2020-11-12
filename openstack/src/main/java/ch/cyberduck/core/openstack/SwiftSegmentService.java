@@ -17,7 +17,6 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -93,7 +92,7 @@ public class SwiftSegmentService {
                 // Not a large object
                 return Collections.emptyList();
             }
-            final List<Path> objects = new ArrayList<Path>();
+            final List<Path> objects = new ArrayList<>();
             for(final String containerName : segments.keySet()) {
                 final Path containerPath = new Path(containerName, container.getType(), container.attributes());
                 for(StorageObject s : segments.get(containerName)) {

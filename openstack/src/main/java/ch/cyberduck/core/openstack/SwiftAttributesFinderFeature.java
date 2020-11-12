@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -158,7 +159,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
             log.warn(String.format("%s is not RFC 1123 format %s", lastModified, e.getMessage()));
         }
         if(StringUtils.isNotBlank(metadata.getETag())) {
-            final String etag = StringUtils.removePattern(metadata.getETag(), "\"");
+            final String etag = RegExUtils.removePattern(metadata.getETag(), "\"");
             attributes.setETag(etag);
             if(metadata.getMetaData().containsKey(Constants.X_STATIC_LARGE_OBJECT)) {
                 // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of

@@ -69,7 +69,7 @@ public class SwiftObjectListService implements ListService {
 
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String prefix) throws BackgroundException {
         try {
-            final AttributedList<Path> children = new AttributedList<Path>();
+            final AttributedList<Path> children = new AttributedList<>();
             final int limit = PreferencesFactory.get().getInteger("openstack.list.object.limit");
             String marker = null;
             List<StorageObject> list;

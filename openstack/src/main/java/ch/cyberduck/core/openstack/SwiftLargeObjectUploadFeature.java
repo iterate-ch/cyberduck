@@ -100,7 +100,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                                 final TransferStatus status,
                                 final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
-        final List<Path> existingSegments = new ArrayList<Path>();
+        final List<Path> existingSegments = new ArrayList<>();
         if(status.isAppend()) {
             // Get a lexicographically ordered list of the existing file segments
             try {
@@ -113,13 +113,13 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         // Get the results of the uploads in the order they were submitted
         // this is important for building the manifest, and is not a problem in terms of performance
         // because we should only continue when all segments have uploaded successfully
-        final List<StorageObject> completed = new ArrayList<StorageObject>();
+        final List<StorageObject> completed = new ArrayList<>();
         // Submit file segments for concurrent upload
-        final List<Future<StorageObject>> segments = new ArrayList<Future<StorageObject>>();
+        final List<Future<StorageObject>> segments = new ArrayList<>();
         long remaining = status.getLength();
         long offset = 0;
         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
-            final Long length = Math.min(segmentSize, remaining);
+            final long length = Math.min(segmentSize, remaining);
             // Segment name with left padded segment number
             final Path segment = segmentService.getSegment(file, status.getOffset() + status.getLength(), segmentNumber);
             if(existingSegments.contains(segment)) {
@@ -201,7 +201,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private Future<StorageObject> submit(final ThreadPool pool, final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final Long offset, final Long length, final ConnectionCallback callback) {
-        return pool.execute(new DefaultRetryCallable<StorageObject>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
+        return pool.execute(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
                 overall.validate();
