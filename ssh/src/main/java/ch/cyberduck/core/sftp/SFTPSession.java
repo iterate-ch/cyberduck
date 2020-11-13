@@ -40,6 +40,7 @@ import ch.cyberduck.core.sftp.auth.SFTPPasswordAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPPublicKeyAuthentication;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
+import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHJumpHostConfigurator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -144,12 +145,13 @@ public class SFTPSession extends Session<SSHClient> {
                 proxy.setCredentials(new OpenSSHCredentialsConfigurator().configure(proxy));
                 // Authenticate with jump host
                 this.authenticate(hop, proxy, prompt, new DisabledCancelCallback());
-                final DirectConnection tunnel = hop.newDirectConnection(host.getHostname(), host.getPort());
+                final DirectConnection tunnel = hop.newDirectConnection(
+                    new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort());
                 // Connect to internal host
                 connection.connectVia(tunnel);
             }
             else {
-                connection.connect(HostnameConfiguratorFactory.get(host.getProtocol()).getHostname(host.getHostname()), host.getPort());
+                connection.connect(new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort());
             }
             final KeepAlive keepalive = connection.getConnection().getKeepAlive();
             keepalive.setKeepAliveInterval(preferences.getInteger("ssh.heartbeat.seconds"));
