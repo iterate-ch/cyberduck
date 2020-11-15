@@ -235,6 +235,13 @@ public class SFTPSession extends Session<SSHClient> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         this.authenticate(client, host, prompt, cancel);
+        try {
+            sftp = new LoggingSFTPEngine(client, this).init();
+            sftp.setTimeoutMs(preferences.getInteger("connection.timeout.seconds") * 1000);
+        }
+        catch(IOException e) {
+            throw new SFTPExceptionMappingService().map(e);
+        }
     }
 
     private void authenticate(final SSHClient client, final Host host, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
@@ -338,13 +345,6 @@ public class SFTPSession extends Session<SSHClient> {
         final String banner = client.getUserAuth().getBanner();
         if(StringUtils.isNotBlank(banner)) {
             this.log(Type.response, banner);
-        }
-        try {
-            sftp = new LoggingSFTPEngine(client, this).init();
-            sftp.setTimeoutMs(preferences.getInteger("connection.timeout.seconds") * 1000);
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map(e);
         }
     }
 
