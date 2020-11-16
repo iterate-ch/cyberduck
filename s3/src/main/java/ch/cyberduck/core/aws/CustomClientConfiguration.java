@@ -31,6 +31,7 @@ import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.protocol.HttpContext;
@@ -63,6 +64,7 @@ public class CustomClientConfiguration extends ClientConfiguration {
         this.setSocketTimeout(timeout);
         final UseragentProvider ua = new PreferencesUseragentProvider();
         this.setUserAgentPrefix(ua.get());
+        this.setUserAgentSuffix(StringUtils.EMPTY);
         this.setMaxErrorRetry(0);
         this.setMaxConnections(1);
         this.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
