@@ -14,16 +14,17 @@ package ch.cyberduck.core.restore;/*
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
+import ch.cyberduck.core.aws.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Restore;
-import ch.cyberduck.core.iam.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Session;
@@ -36,6 +37,7 @@ import org.apache.log4j.Logger;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -50,14 +52,13 @@ public class Glacier implements Restore {
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private final Host bookmark;
     private final S3Session session;
     private final ClientConfiguration configuration;
     private final Location locationFeature;
 
     public Glacier(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
         this.session = session;
-        this.bookmark = session.getHost();
+        final Host bookmark = session.getHost();
         this.configuration = new CustomClientConfiguration(bookmark,
             new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key);
         this.locationFeature = session.getFeature(Location.class);
@@ -113,11 +114,17 @@ public class Glacier implements Restore {
             .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials()))
             .withClientConfiguration(configuration);
         final Location.Name region = this.getRegion(container);
-        if(Location.unknown.equals(region)) {
-            builder.withRegion(Regions.DEFAULT_REGION);
+        if(S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
+            if(Location.unknown.equals(region)) {
+                builder.withRegion(Regions.DEFAULT_REGION);
+            }
+            else {
+                builder.withRegion(region.getIdentifier());
+            }
         }
         else {
-            builder.withRegion(region.getIdentifier());
+            builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(
+                new HostUrlProvider(false).get(session.getHost()), region.getIdentifier()));
         }
         return builder.build();
     }

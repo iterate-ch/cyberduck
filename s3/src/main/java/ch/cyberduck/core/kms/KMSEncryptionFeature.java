@@ -16,15 +16,16 @@ package ch.cyberduck.core.kms;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
+import ch.cyberduck.core.aws.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.iam.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
@@ -43,6 +44,7 @@ import java.util.Set;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.kms.AWSKMS;
 import com.amazonaws.services.kms.AWSKMSClientBuilder;
@@ -53,21 +55,18 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     private static final Logger log = Logger.getLogger(KMSEncryptionFeature.class);
 
     private final S3Session session;
-    private final Host bookmark;
-
     private final Preferences preferences = PreferencesFactory.get();
 
     private final PathContainerService containerService
         = new S3PathContainerService();
 
     private final ClientConfiguration configuration;
-
     private final Location locationFeature;
 
     public KMSEncryptionFeature(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
         super(session);
         this.session = session;
-        this.bookmark = session.getHost();
+        final Host bookmark = session.getHost();
         this.configuration = new CustomClientConfiguration(bookmark,
             new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key);
         this.locationFeature = session.getFeature(Location.class);
@@ -108,9 +107,9 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
             return keys;
         }
         try {
-            final AWSKMS client = client(container);
+            final AWSKMS client = this.client(container);
             try {
-                final Map<String, String> aliases = new HashMap<String, String>();
+                final Map<String, String> aliases = new HashMap<>();
                 for(AliasListEntry entry : client.listAliases().getAliases()) {
                     aliases.put(entry.getTargetKeyId(), entry.getAliasName());
                 }
@@ -137,11 +136,17 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
             .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials()))
             .withClientConfiguration(configuration);
         final Location.Name region = locationFeature.getLocation(container);
-        if(Location.unknown.equals(region)) {
-            builder.withRegion(Regions.DEFAULT_REGION);
+        if(S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
+            if(Location.unknown.equals(region)) {
+                builder.withRegion(Regions.DEFAULT_REGION);
+            }
+            else {
+                builder.withRegion(region.getIdentifier());
+            }
         }
         else {
-            builder.withRegion(region.getIdentifier());
+            builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(
+                new HostUrlProvider(false).get(session.getHost()), region.getIdentifier()));
         }
         return builder.build();
     }
