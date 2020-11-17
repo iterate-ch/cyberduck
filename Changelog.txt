@@ -1,6 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
+7.7.1
+- [Bugfix] Workaround for crash on macOS 11 for some users (#11231)
+- [Bugfix] Failure connecting through jump server with alias in configuration for target host (#11227)
+- [Bugfix] Missing search field on macOS prior version 10.15 (#11234)
+
 7.7.0
 - [Feature] Connect via SSH tunnel through bastion host with JumpHost configuration directive (SFTP) (#2865)
 - [Feature] Bookmark toggle control and search field moved to toolbar (macOS)
