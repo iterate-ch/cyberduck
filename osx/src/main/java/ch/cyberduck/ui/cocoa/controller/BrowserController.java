@@ -3190,7 +3190,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     public void init() {
                         super.init();
                         if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
-                            window.setTitle(BookmarkNameProvider.toProtocol(bookmark));
+                            window.setTitle(BookmarkNameProvider.toString(bookmark, false));
                             window.setSubtitle(BookmarkNameProvider.toHostname(bookmark, true));
                         }
                         else {
