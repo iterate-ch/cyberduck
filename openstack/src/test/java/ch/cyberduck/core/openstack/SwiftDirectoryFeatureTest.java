@@ -30,9 +30,9 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -53,13 +53,14 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
     @Test
     public void testCreatePlaceholder() throws Exception {
         final AtomicBoolean put = new AtomicBoolean();
-        final String name = UUID.randomUUID().toString();
+        final String parentname = new AlphanumericRandomStringService().random();
+        final String name = new AlphanumericRandomStringService().random();
         session.withListener(new TranscriptListener() {
             @Override
             public void log(final Type request, final String message) {
                 switch(request) {
                     case request:
-                        if(("PUT /v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/" + name + " HTTP/1.1").equals(message)) {
+                        if(("PUT /v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/" + parentname + "/" + name + " HTTP/1.1").equals(message)) {
                             put.set(true);
                         }
                 }
@@ -68,13 +69,15 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("IAD");
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
-        final Path placeholder = feature.mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path parent = feature.mkdir(new Path(container, parentname, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path placeholder = feature.mkdir(new Path(parent, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(put.get());
         assertTrue(new SwiftFindFeature(session).find(placeholder));
         assertTrue(new DefaultFindFeature(session).find(placeholder));
         assertEquals(placeholder.attributes().getChecksum(), new SwiftAttributesFinderFeature(session).find(placeholder).getChecksum());
         assertTrue(new SwiftObjectListService(session, new SwiftRegionService(session)).list(placeholder, new DisabledListProgressListener()).isEmpty());
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(1, new SwiftObjectListService(session, new SwiftRegionService(session)).list(parent, new DisabledListProgressListener()).size());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session).find(placeholder));
     }
 }
