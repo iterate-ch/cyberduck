@@ -514,7 +514,17 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(type == Upload.class) {
             if(PreferencesFactory.get().getBoolean("sds.upload.s3.enable")) {
                 if(configuration.stream().anyMatch(entry -> "use_s3_storage".equals(entry.getKey()) && String.valueOf(true).equals(entry.getValue()))) {
-                    return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this));
+                    try {
+                        final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
+                        if(matcher.matches()) {
+                            if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.22))) >= 0) {
+                                return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this));
+                            }
+                        }
+                    }
+                    catch(BackgroundException e) {
+                        log.warn(String.format("Failure readig software version. %s", e.getMessage()));
+                    }
                 }
             }
             return (T) new DefaultUploadFeature(new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid)));
