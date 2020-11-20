@@ -338,50 +338,78 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         return UserKeyPair.Version.RSA2048;
     }
 
-    protected void unlockTripleCryptKeyPair(final LoginCallback prompt) throws ApiException, CryptoException, BackgroundException {
+    private boolean isNewCryptoAvailable() throws BackgroundException {
         final Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
+        if(matcher.matches()) {
+            return new Version(matcher.group(1)).compareTo(new Version("4.24.0")) >= 0;
+        }
+        return false;
+    }
+
+    protected void unlockTripleCryptKeyPair(final LoginCallback prompt) throws ApiException, CryptoException, BackgroundException {
         try {
-            if(matcher.matches()) {
-                if(new Version(matcher.group(1)).compareTo(new Version("4.24.0")) >= 0) {
-                    final List<UserKeyPairContainer> pairs = new UserApi(client).requestUserKeyPairs(StringUtils.EMPTY, null);
-                    if(pairs.size() == 0) {
-                        return;
+            Credentials deprecatedCredentials = null;
+            if(this.isNewCryptoAvailable()) {
+                final List<UserKeyPairContainer> pairs = new UserApi(client).requestUserKeyPairs(StringUtils.EMPTY, null);
+                if(pairs.size() == 0) {
+                    return;
+                }
+                boolean migrated = false;
+                for(UserKeyPairContainer pair : pairs) {
+                    if(requiredKeyPairVersion == TripleCryptConverter.toCryptoUserKeyPair(pair).getUserPublicKey().getVersion()) {
+                        migrated = true;
+                        break;
                     }
-                    boolean migrated = false;
-                    for(UserKeyPairContainer pair : pairs) {
-                        if(requiredKeyPairVersion == TripleCryptConverter.toCryptoUserKeyPair(pair).getUserPublicKey().getVersion()) {
-                            migrated = true;
-                            break;
-                        }
+                }
+                if(migrated && pairs.size() == 2) {
+                    final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null);
+                    final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(deprecated);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Attempt to unlock deprecated private key %s", keypair.getUserPrivateKey()));
                     }
-                    if(!migrated) {
-                        final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null);
-                        final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(deprecated);
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Attempt to unlock and migrate private key %s", keypair.getUserPrivateKey()));
-                        }
-                        final Credentials credentials = new TripleCryptKeyPair().unlock(prompt, host, keypair);
-                        final UserKeyPair newPair = Crypto.generateUserKeyPair(requiredKeyPairVersion, credentials.getPassword());
-                        final CreateKeyPairRequest request = new CreateKeyPairRequest();
-                        request.setPreviousPrivateKey(deprecated.getPrivateKeyContainer());
-                        final UserKeyPairContainer userKeyPairContainer = TripleCryptConverter.toSwaggerUserKeyPairContainer(newPair);
-                        request.setPrivateKeyContainer(userKeyPairContainer.getPrivateKeyContainer());
-                        request.setPublicKeyContainer(userKeyPairContainer.getPublicKeyContainer());
-                        if(log.isDebugEnabled()) {
-                            log.debug("Create new key pair");
-                        }
-                        new UserApi(client).createAndPreserveUserKeyPair(request, null);
-                        keyPairDeprecated.set(deprecated);
+                    deprecatedCredentials = new TripleCryptKeyPair().unlock(prompt, host, keypair);
+                    keyPairDeprecated.set(deprecated);
+                }
+                if(!migrated) {
+                    final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null);
+                    final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(deprecated);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Attempt to unlock and migrate deprecated private key %s", keypair.getUserPrivateKey()));
                     }
+                    deprecatedCredentials = new TripleCryptKeyPair().unlock(prompt, host, keypair);
+                    final UserKeyPair newPair = Crypto.generateUserKeyPair(requiredKeyPairVersion, deprecatedCredentials.getPassword());
+                    final CreateKeyPairRequest request = new CreateKeyPairRequest();
+                    request.setPreviousPrivateKey(deprecated.getPrivateKeyContainer());
+                    final UserKeyPairContainer userKeyPairContainer = TripleCryptConverter.toSwaggerUserKeyPairContainer(newPair);
+                    request.setPrivateKeyContainer(userKeyPairContainer.getPrivateKeyContainer());
+                    request.setPublicKeyContainer(userKeyPairContainer.getPublicKeyContainer());
+                    if(log.isDebugEnabled()) {
+                        log.debug("Create new key pair");
+                    }
+                    new UserApi(client).createAndPreserveUserKeyPair(request, null);
+                    keyPairDeprecated.set(deprecated);
                 }
             }
             final UserKeyPairContainer container = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, requiredKeyPairVersion.getValue(), null);
             keyPair.set(container);
             final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(keyPair.get());
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Attempt to unlock private key %s", keypair.getUserPrivateKey()));
+            if(deprecatedCredentials != null) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Attempt to unlock private key with passphrase from deprecated private key %s", keypair.getUserPrivateKey()));
+                }
+                if(Crypto.checkUserKeyPair(keypair, deprecatedCredentials.getPassword())) {
+                    new TripleCryptKeyPair().unlock(prompt, host, keypair, deprecatedCredentials.getPassword());
+                }
+                else {
+                    new TripleCryptKeyPair().unlock(prompt, host, keypair);
+                }
             }
-            new TripleCryptKeyPair().unlock(prompt, host, keypair);
+            else {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Attempt to unlock private key %s", keypair.getUserPrivateKey()));
+                }
+                new TripleCryptKeyPair().unlock(prompt, host, keypair);
+            }
         }
         catch(LoginCanceledException e) {
             log.warn("Ignore cancel unlocking triple crypt private key pair");
