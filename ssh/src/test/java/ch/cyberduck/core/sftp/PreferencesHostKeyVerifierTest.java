@@ -35,9 +35,9 @@ public class PreferencesHostKeyVerifierTest {
         v.allow(new Host(new SFTPProtocol(), "ahostname", 22), key, false);
         assertNull(PreferencesFactory.get().getProperty("ssh.hostkey.ssh-rsa.ahostname"));
         v.allow(new Host(new SFTPProtocol(), "ahostname", 22), key, true);
-        assertNotNull(PreferencesFactory.get().getProperty("ssh.hostkey.ssh-rsa.ahostname"));
+        assertNotNull(PreferencesFactory.get().getProperty("ssh.hostkey.ssh-rsa.ahostname:22"));
         assertEquals("MIIBIDANBgkqhkiG9w0BAQEFAAOCAQ0AMIIBCAKCAQEAoZ9l6Tkm2aL1tSBy2yw4xU5s8BE9MfqS/4J7DzvsYJxF6oQmTIjmStuhH/CT7UjuDtKXdXZUsIhKtafiizxGO8kHSzKDeitpth2RSr8ddMzZKyD6RNs7MfsgjA3UTtrrSrCXEY6O43S2cnuJrWzkPxtwxaQ3zOvDbS2tiulzyq0VzYmuhA/a4CyuQtJBuu+P2oqmu6pU/VB6IzONpvBvYbNPsH1WDmP7zko5wHPihXPCliztspKxS4DRtOZ7BGXyvg44UmIy0Kf4jOkaBV/eCCA4qH7ZHz71/5ceMOpszPcNOEmLGGYhwI+P3OuGMpkrSAv1f8IY6R8spZNncP6UaQIBIw==",
-            PreferencesFactory.get().getProperty("ssh.hostkey.ssh-rsa.ahostname"));
+            PreferencesFactory.get().getProperty("ssh.hostkey.ssh-rsa.ahostname:22"));
     }
 
     @Test
