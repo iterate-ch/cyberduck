@@ -170,6 +170,7 @@ public class S3UrlProvider implements UrlProvider {
             }
         }
         return new DescriptiveUrl(URI.create(new S3PresignedUrlProvider().create(
+            session.getSignatureVersion(),
             session.getHost().getHostname(),
             session.getHost().getCredentials().getUsername(), secret,
             containerService.getContainer(file).getName(), region, containerService.getKey(file),
