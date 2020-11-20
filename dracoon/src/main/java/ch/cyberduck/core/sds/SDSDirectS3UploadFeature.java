@@ -21,7 +21,6 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Version;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -49,7 +48,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.GeneratePresignedUrlsReques
 import ch.cyberduck.core.sds.io.swagger.client.model.PresignedUrl;
 import ch.cyberduck.core.sds.io.swagger.client.model.S3FileUploadPart;
 import ch.cyberduck.core.sds.io.swagger.client.model.S3FileUploadStatus;
-import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptOutputStream;
@@ -78,8 +76,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.error.CryptoSystemException;
@@ -124,18 +120,10 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
         try {
             final CreateFileUploadRequest createFileUploadRequest = new CreateFileUploadRequest()
                 .directS3Upload(true)
+                .timestampModification(status.getTimestamp() == null ? null : new DateTime(status.getTimestamp()))
                 .size(-1 == status.getLength() ? null : status.getLength())
                 .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName());
-            if(status.getTimestamp() != null) {
-                final SoftwareVersionData version = session.softwareVersion();
-                final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
-                if(matcher.matches()) {
-                    if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.22))) >= 0) {
-                        createFileUploadRequest.timestampModification(new DateTime(status.getTimestamp()));
-                    }
-                }
-            }
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
                 .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
             if(log.isDebugEnabled()) {
