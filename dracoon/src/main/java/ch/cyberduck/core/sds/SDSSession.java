@@ -309,9 +309,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             requiredKeyPairVersion = this.getRequiredKeyPairVersion();
             this.unlockTripleCryptKeyPair(prompt, userAccount.get(), requiredKeyPairVersion);
         }
-        catch(CryptoException e) {
-            throw new TripleCryptExceptionMappingService().map(e);
-        }
         catch(ApiException e) {
             log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService().map(e)));
         }
@@ -347,7 +344,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     protected void unlockTripleCryptKeyPair(final LoginCallback prompt, final UserAccountWrapper user,
-                                            final UserKeyPair.Version requiredKeyPairVersion) throws ApiException, CryptoException, BackgroundException {
+                                            final UserKeyPair.Version requiredKeyPairVersion) throws BackgroundException {
         try {
             Credentials deprecatedCredentials = null;
             if(this.isNewCryptoAvailable()) {
@@ -414,6 +411,12 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 }
                 new TripleCryptKeyPair().unlock(prompt, host, keypair);
             }
+        }
+        catch(CryptoException e) {
+            throw new TripleCryptExceptionMappingService().map(e);
+        }
+        catch(ApiException e) {
+            log.warn(String.format("Ignore failure unlocking user key pair. %s", new SDSExceptionMappingService().map(e)));
         }
         catch(LoginCanceledException e) {
             log.warn("Ignore cancel unlocking triple crypt private key pair");
