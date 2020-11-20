@@ -153,7 +153,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("eth[oh8uv4Eesij");
             }
-        });
+        }, session.userAccount(), UserKeyPair.Version.RSA4096);
         keyPairs = userApi.requestUserKeyPairs(null, null);
         assertEquals(2, keyPairs.size());
         final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(Long.parseLong(version.id), null, null);
