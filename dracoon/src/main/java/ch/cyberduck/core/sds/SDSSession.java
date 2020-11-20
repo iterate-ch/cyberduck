@@ -352,6 +352,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             if(this.isNewCryptoAvailable()) {
                 final List<UserKeyPairContainer> pairs = new UserApi(client).requestUserKeyPairs(StringUtils.EMPTY, null);
                 if(pairs.size() == 0) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("No keypair found for user %s", userAccount.get()));
+                    }
                     return;
                 }
                 boolean migrated = false;
