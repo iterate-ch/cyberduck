@@ -60,6 +60,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -119,6 +120,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
         try {
             final CreateFileUploadRequest createFileUploadRequest = new CreateFileUploadRequest()
                 .directS3Upload(true)
+                .timestampModification(status.getTimestamp() == null ? null : new DateTime(status.getTimestamp()))
                 .size(-1 == status.getLength() ? null : status.getLength())
                 .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName());
