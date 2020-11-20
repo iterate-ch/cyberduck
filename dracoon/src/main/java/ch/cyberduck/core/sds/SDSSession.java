@@ -307,7 +307,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             userAccount.set(new UserAccountWrapper(account));
             requiredKeyPairVersion = this.getRequiredKeyPairVersion();
-            this.unlockTripleCryptKeyPair(prompt);
+            this.unlockTripleCryptKeyPair(prompt, userAccount.get(), requiredKeyPairVersion);
         }
         catch(CryptoException e) {
             throw new TripleCryptExceptionMappingService().map(e);
@@ -346,14 +346,15 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         return false;
     }
 
-    protected void unlockTripleCryptKeyPair(final LoginCallback prompt) throws ApiException, CryptoException, BackgroundException {
+    protected void unlockTripleCryptKeyPair(final LoginCallback prompt, final UserAccountWrapper user,
+                                            final UserKeyPair.Version requiredKeyPairVersion) throws ApiException, CryptoException, BackgroundException {
         try {
             Credentials deprecatedCredentials = null;
             if(this.isNewCryptoAvailable()) {
                 final List<UserKeyPairContainer> pairs = new UserApi(client).requestUserKeyPairs(StringUtils.EMPTY, null);
                 if(pairs.size() == 0) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("No keypair found for user %s", userAccount.get()));
+                        log.debug(String.format("No keypair found for user %s", user));
                     }
                     return;
                 }
