@@ -32,7 +32,6 @@
 	static NSMutableParagraphStyle *PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL = nil;
 	if(nil == PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL) {
         PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL = [[NSMutableParagraphStyle alloc] init];
-        [PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL setParagraphStyle:[NSParagraphStyle defaultParagraphStyle]];
         [PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL setAlignment:NSLeftTextAlignment];
         [PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL setLineBreakMode:NSLineBreakByTruncatingTail];
     }

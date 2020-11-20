@@ -28,7 +28,7 @@ public final class DisabledHostnameConfigurator implements HostnameConfigurator 
     }
 
     @Override
-    public void reload() {
-        //
+    public HostnameConfigurator reload() {
+        return this;
     }
 }

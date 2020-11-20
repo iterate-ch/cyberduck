@@ -19,10 +19,8 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RootListService;
@@ -63,7 +61,7 @@ public class SwiftContainerListService implements RootListService {
             log.debug(String.format("List containers for %s", session));
         }
         try {
-            final AttributedList<Path> containers = new AttributedList<Path>();
+            final AttributedList<Path> containers = new AttributedList<>();
             final int limit = preferences.getInteger("openstack.list.container.limit");
             final Client client = session.getClient();
             for(final Region r : client.getRegions()) {

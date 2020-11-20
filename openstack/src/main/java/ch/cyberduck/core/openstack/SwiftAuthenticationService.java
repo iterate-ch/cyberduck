@@ -91,7 +91,7 @@ public class SwiftAuthenticationService {
                 // Save tenant in username
                 bookmark.getCredentials().setUsername(String.format("%s:%s", tenant, bookmark.getCredentials().getUsername()));
             }
-            final Set<AuthenticationRequest> requests = new LinkedHashSet<AuthenticationRequest>();
+            final Set<AuthenticationRequest> requests = new LinkedHashSet<>();
             requests.add(new Authentication20UsernamePasswordRequest(
                     URI.create(url.toString()),
                 user, bookmark.getCredentials().getPassword(), tenant)
@@ -149,7 +149,7 @@ public class SwiftAuthenticationService {
                 // Save project name and domain in username
                 bookmark.getCredentials().setUsername(String.format("%s:%s:%s", project, domain, bookmark.getCredentials().getUsername()));
             }
-            final Set<AuthenticationRequest> requests = new LinkedHashSet<AuthenticationRequest>();
+            final Set<AuthenticationRequest> requests = new LinkedHashSet<>();
             requests.add(new Authentication3UsernamePasswordProjectRequest(
                     URI.create(url.toString()),
                 user, bookmark.getCredentials().getPassword(), project, domain)

@@ -1,6 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
+7.7.1
+- [Bugfix] Workaround for crash on macOS 11 for some users (#11231)
+- [Bugfix] Failure connecting through jump server with alias in configuration for target host (#11227)
+- [Bugfix] Missing search field on macOS prior version 10.15 (#11234)
+
 7.7.0
 - [Feature] Connect via SSH tunnel through bastion host with JumpHost configuration directive (SFTP) (#2865)
 - [Feature] Bookmark toggle control and search field moved to toolbar (macOS)
@@ -11,6 +16,7 @@ https://cyberduck.io/
 - [Bugfix] Failure saving credentials (CLI, Windows) (#11098)
 - [Bugfix] Unable to connect to cn-north-1 (S3) (#11197)
 - [Bugfix] Access shared files (OneDrive Business) (#11102)
+- [Bugfix] Read external_id from AssumeRole configuration in ~/.aws/credentials (S3) (#11229)
 
 7.6.2
 - [Feature] Allow to set password for shared link of file (Dropbox, Nextcloud, DRACOON)

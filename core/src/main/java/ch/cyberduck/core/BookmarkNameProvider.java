@@ -46,17 +46,6 @@ public final class BookmarkNameProvider {
         return bookmark.getNickname();
     }
 
-    public static String toProtocol(final Host bookmark) {
-        if(StringUtils.isEmpty(bookmark.getNickname())) {
-            if(StringUtils.isNotBlank(bookmark.getProtocol().getDefaultNickname())) {
-                return bookmark.getProtocol().getDefaultNickname();
-            }
-            return bookmark.getProtocol().getName();
-        }
-        // Return custom bookmark name set
-        return bookmark.getNickname();
-    }
-
     public static String toHostname(final Host bookmark) {
         return toHostname(bookmark, false);
     }

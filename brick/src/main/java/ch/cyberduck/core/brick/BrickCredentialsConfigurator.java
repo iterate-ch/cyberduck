@@ -38,7 +38,7 @@ public class BrickCredentialsConfigurator implements CredentialsConfigurator {
     }
 
     @Override
-    public void reload() {
-        //
+    public CredentialsConfigurator reload() {
+        return this;
     }
 }

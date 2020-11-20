@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -29,6 +30,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
@@ -43,6 +45,14 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class S3LocationFeatureTest extends AbstractS3Test {
+
+    @Test(expected = NotfoundException.class)
+    public void testNotfound() throws Exception {
+        final S3LocationFeature feature = new S3LocationFeature(session);
+        feature.getLocation(
+            new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory))
+        );
+    }
 
     @Test
     public void testGetLocation() throws Exception {

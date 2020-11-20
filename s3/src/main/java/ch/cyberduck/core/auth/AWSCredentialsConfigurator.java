@@ -64,10 +64,11 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
     }
 
     @Override
-    public void reload() {
+    public CredentialsConfigurator reload() {
         for(AWSCredentialsProvider provider : providers) {
             provider.refresh();
         }
+        return this;
     }
 
     public static AWSCredentialsProvider toAWSCredentialsProvider(final ProviderCredentials credentials) {

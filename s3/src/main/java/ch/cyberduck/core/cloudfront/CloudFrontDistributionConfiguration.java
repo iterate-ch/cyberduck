@@ -23,6 +23,7 @@ import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
+import ch.cyberduck.core.aws.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -42,7 +44,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.iam.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
@@ -68,6 +69,7 @@ import java.util.Optional;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cloudfront.AmazonCloudFront;
 import com.amazonaws.services.cloudfront.AmazonCloudFrontClientBuilder;
@@ -154,7 +156,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             if(log.isDebugEnabled()) {
                 log.debug(String.format("List %s distributions", method));
             }
-            final AmazonCloudFront client = client(container);
+            final AmazonCloudFront client = this.client(container);
             if(method.equals(Distribution.STREAMING)) {
                 for(StreamingDistributionSummary d : client.listStreamingDistributions(
                     new ListStreamingDistributionsRequest()).getStreamingDistributionList().getItems()) {
@@ -302,7 +304,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 log.warn("No keys selected for invalidation");
             }
             else {
-                final AmazonCloudFront client = client(container);
+                final AmazonCloudFront client = this.client(container);
                 client.createInvalidation(new CreateInvalidationRequest(d.getId(),
                     new InvalidationBatch(new Paths().withItems(keys).withQuantity(keys.size()), new AlphanumericRandomStringService().random())
                 ));
@@ -364,7 +366,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create new %s distribution", distribution.getMethod().toString()));
         }
-        final AmazonCloudFront client = client(container);
+        final AmazonCloudFront client = this.client(container);
         final URI origin = this.getOrigin(container, distribution.getMethod());
         final String originId = String.format("%s-%s", preferences.getProperty("application.name"), new AlphanumericRandomStringService().random());
         final StreamingDistributionConfig config = new StreamingDistributionConfig(new AlphanumericRandomStringService().random(),
@@ -391,7 +393,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create new %s distribution", distribution.getMethod().toString()));
         }
-        final AmazonCloudFront client = client(container);
+        final AmazonCloudFront client = this.client(container);
         final URI origin = this.getOrigin(container, distribution.getMethod());
         final String originId = String.format("%s-%s", preferences.getProperty("application.name"), new AlphanumericRandomStringService().random());
         final DistributionConfig config = new DistributionConfig(new AlphanumericRandomStringService().random(), distribution.isEnabled())
@@ -432,7 +434,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     protected com.amazonaws.services.cloudfront.model.Distribution createCustomDistribution(final Path container, final Distribution distribution)
         throws BackgroundException {
-        final AmazonCloudFront client = client(container);
+        final AmazonCloudFront client = this.client(container);
         int httpPort = 80;
         int httpsPort = 443;
         final URI origin = this.getOrigin(container, distribution.getMethod());
@@ -495,7 +497,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
         }
-        final AmazonCloudFront client = client(container);
+        final AmazonCloudFront client = this.client(container);
         final GetDistributionConfigResult response = client.getDistributionConfig(new GetDistributionConfigRequest(distribution.getId()));
         final DistributionConfig config = response.getDistributionConfig()
             .withEnabled(distribution.isEnabled())
@@ -524,7 +526,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
         }
-        final AmazonCloudFront client = client(container);
+        final AmazonCloudFront client = this.client(container);
         final GetStreamingDistributionConfigResult response = client.getStreamingDistributionConfig(new GetStreamingDistributionConfigRequest(distribution.getId()));
         final StreamingDistributionConfig config = response.getStreamingDistributionConfig()
             .withEnabled(distribution.isEnabled())
@@ -552,7 +554,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
         }
-        final AmazonCloudFront client = client(container);
+        final AmazonCloudFront client = this.client(container);
         final GetDistributionConfigResult response = client.getDistributionConfig(new GetDistributionConfigRequest(distribution.getId()));
         final DistributionConfig config = response.getDistributionConfig()
             .withEnabled(distribution.isEnabled())
@@ -579,7 +581,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
         }
-        final AmazonCloudFront client = client(container);
+        final AmazonCloudFront client = this.client(container);
         client.deleteDistribution(new DeleteDistributionRequest(distribution.getId(), distribution.getEtag()));
     }
 
@@ -589,7 +591,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
         }
-        final AmazonCloudFront client = client(container);
+        final AmazonCloudFront client = this.client(container);
         client.deleteStreamingDistribution(new DeleteStreamingDistributionRequest(distribution.getId(), distribution.getEtag()));
     }
 
@@ -684,11 +686,17 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials()))
             .withClientConfiguration(configuration);
         final Location.Name region = this.getRegion(container);
-        if(Location.unknown.equals(region)) {
-            builder.withRegion(Regions.DEFAULT_REGION);
+        if(S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
+            if(Location.unknown.equals(region)) {
+                builder.withRegion(Regions.DEFAULT_REGION);
+            }
+            else {
+                builder.withRegion(region.getIdentifier());
+            }
         }
         else {
-            builder.withRegion(region.getIdentifier());
+            builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(
+                new HostUrlProvider(false).get(session.getHost()), region.getIdentifier()));
         }
         return builder.build();
     }

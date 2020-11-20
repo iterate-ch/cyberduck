@@ -119,7 +119,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
     }
 
     private final class LargeUploadOutputStream extends OutputStream {
-        private final List<StorageObject> completed = new ArrayList<StorageObject>();
+        private final List<StorageObject> completed = new ArrayList<>();
         private final Path file;
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
@@ -138,7 +138,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
             try {
-                completed.add(new DefaultRetryCallable<StorageObject>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
+                completed.add(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
                     @Override
                     public StorageObject call() throws BackgroundException {
                         final TransferStatus status = new TransferStatus().length(len);

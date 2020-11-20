@@ -66,7 +66,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
             new SwiftDeleteFeature(session, regionService).delete(files, prompt, callback);
         }
         else {
-            final Map<Path, List<String>> containers = new HashMap<Path, List<String>>();
+            final Map<Path, List<String>> containers = new HashMap<>();
             for(Path file : files.keySet()) {
                 if(containerService.isContainer(file)) {
                     continue;
@@ -77,7 +77,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
                     containers.get(container).add(containerService.getKey(file));
                 }
                 else {
-                    final List<String> keys = new ArrayList<String>();
+                    final List<String> keys = new ArrayList<>();
                     keys.add(containerService.getKey(file));
                     // Collect a list of existing segments. Must do this before deleting the manifest file.
                     for(Path segment : segmentService.list(file)) {
@@ -90,7 +90,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
                 for(Map.Entry<Path, List<String>> container : containers.entrySet()) {
                     final Region region = regionService.lookup(container.getKey());
                     final List<String> keys = container.getValue();
-                    for(List<String> partition : new Partition<String>(keys, PreferencesFactory.get().getInteger("openstack.delete.multiple.partition"))) {
+                    for(List<String> partition : new Partition<>(keys, PreferencesFactory.get().getInteger("openstack.delete.multiple.partition"))) {
                         session.getClient().deleteObjects(region, container.getKey().getName(), partition);
                     }
                 }

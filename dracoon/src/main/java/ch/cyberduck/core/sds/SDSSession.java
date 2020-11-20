@@ -237,7 +237,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     @Override
-    public void login(final Proxy proxy, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final SoftwareVersionData version = this.softwareVersion();
         final Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(version.getRestApiVersion());
         if(matcher.matches()) {
@@ -263,10 +263,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         log.warn(String.format("Failure to parse software version %s", version));
                     }
                 }
-                authorizationService.setTokens(authorizationService.authorize(host, controller, cancel));
+                authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
                 break;
             case radius:
-                final Credentials additional = controller.prompt(host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                final Credentials additional = prompt.prompt(host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                     LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
                     new LoginOptions()
                         .icon(host.getProtocol().disk())
@@ -274,7 +274,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         .keychain(false)
                 );
                 // Save tokens for 401 error response when expired
-                retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
+                retryHandler.setTokens(login, password, this.login(prompt, new LoginRequest()
                     .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
                     .login(login)
                     .password(additional.getPassword())
@@ -282,7 +282,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 break;
             default:
                 // Save tokens for 401 error response when expired
-                retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
+                retryHandler.setTokens(login, password, this.login(prompt, new LoginRequest()
                     .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
                     .login(login)
                     .password(password)
@@ -307,7 +307,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             userAccount.set(new UserAccountWrapper(account));
             requiredKeyPairVersion = this.getRequiredKeyPairVersion();
-            this.unlockTripleCryptKeyPair(controller);
+            this.unlockTripleCryptKeyPair(prompt);
         }
         catch(CryptoException e) {
             throw new TripleCryptExceptionMappingService().map(e);
@@ -338,7 +338,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         return UserKeyPair.Version.RSA2048;
     }
 
-    private void unlockTripleCryptKeyPair(final LoginCallback controller) throws ApiException, CryptoException, BackgroundException {
+    protected void unlockTripleCryptKeyPair(final LoginCallback prompt) throws ApiException, CryptoException, BackgroundException {
         final Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
         try {
             if(matcher.matches()) {
@@ -360,7 +360,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Attempt to unlock and migrate private key %s", keypair.getUserPrivateKey()));
                         }
-                        final Credentials credentials = new TripleCryptKeyPair().unlock(controller, host, keypair);
+                        final Credentials credentials = new TripleCryptKeyPair().unlock(prompt, host, keypair);
                         final UserKeyPair newPair = Crypto.generateUserKeyPair(requiredKeyPairVersion, credentials.getPassword());
                         final CreateKeyPairRequest request = new CreateKeyPairRequest();
                         request.setPreviousPrivateKey(deprecated.getPrivateKeyContainer());
@@ -381,7 +381,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt to unlock private key %s", keypair.getUserPrivateKey()));
             }
-            new TripleCryptKeyPair().unlock(controller, host, keypair);
+            new TripleCryptKeyPair().unlock(prompt, host, keypair);
         }
         catch(LoginCanceledException e) {
             log.warn("Ignore cancel unlocking triple crypt private key pair");
@@ -514,7 +514,17 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(type == Upload.class) {
             if(PreferencesFactory.get().getBoolean("sds.upload.s3.enable")) {
                 if(configuration.stream().anyMatch(entry -> "use_s3_storage".equals(entry.getKey()) && String.valueOf(true).equals(entry.getValue()))) {
-                    return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this));
+                    try {
+                        final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
+                        if(matcher.matches()) {
+                            if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.22))) >= 0) {
+                                return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this));
+                            }
+                        }
+                    }
+                    catch(BackgroundException e) {
+                        log.warn(String.format("Failure readig software version. %s", e.getMessage()));
+                    }
                 }
             }
             return (T) new DefaultUploadFeature(new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid)));

@@ -27,5 +27,5 @@ public interface CredentialsConfigurator {
      */
     Credentials configure(Host host);
 
-    void reload();
+    CredentialsConfigurator reload();
 }
