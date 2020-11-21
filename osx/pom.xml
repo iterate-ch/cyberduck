@@ -112,7 +112,7 @@
                                 <configuration>
                                     <artifactItems>
                                         <artifactItem>
-                                            <groupId>ch.iterate.sparkle-project</groupId>
+                                            <groupId>org.sparkle-project</groupId>
                                             <artifactId>sparkle</artifactId>
                                             <type>zip</type>
                                             <version>1.24.0</version>
