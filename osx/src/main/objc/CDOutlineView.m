@@ -196,7 +196,7 @@ static NSTableColumn *localSelectionColumn;
 		if([[path string] isEqualToString:[url lastPathComponent]]) {
 			frame           = [self rectOfRow:row];
 			frame.origin    = [self convertPoint:frame.origin toView:nil];
-			frame.origin    = [[self window] convertPointToScreen:frame.origin];
+			frame.origin    = [[self window] convertBaseToScreen:frame.origin];
 			frame.origin.y -= frame.size.height;
 			break;
 		}
