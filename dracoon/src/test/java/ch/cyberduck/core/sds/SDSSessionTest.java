@@ -233,7 +233,7 @@ public class SDSSessionTest extends AbstractSDSTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("eth[oh8uv4Eesij");
             }
-        });
+        }, session.userAccount(), UserKeyPair.Version.RSA4096);
         keyPairs = userApi.requestUserKeyPairs(null, null);
         assertEquals(2, keyPairs.size());
         assertEquals(UserKeyPair.Version.RSA4096.getValue(), session.keyPair().getPublicKeyContainer().getVersion());

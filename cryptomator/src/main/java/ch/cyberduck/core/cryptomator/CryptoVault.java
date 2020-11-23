@@ -301,34 +301,35 @@ public class CryptoVault implements Vault {
         return keyFile;
     }
 
-    private void open(final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
+    protected void open(final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
+        switch(keyFile.getVersion()) {
+            case VAULT_VERSION_DEPRECATED:
+                this.open(keyFile, passphrase, new CryptoFilenameV6Provider(vault), new CryptoDirectoryV6Provider(vault, this));
+                break;
+            default:
+                this.open(keyFile, passphrase, new CryptoFilenameV7Provider(), new CryptoDirectoryV7Provider(vault, this));
+                break;
+        }
+    }
+
+    protected void open(final KeyFile keyFile, final CharSequence passphrase,
+                        final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws VaultException, CryptoAuthenticationException {
+        this.vaultVersion = keyFile.getVersion();
         final CryptorProvider provider = Cryptors.version1(FastSecureRandomProvider.get().provide());
-        vaultVersion = keyFile.getVersion();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
         }
         try {
-            cryptor = provider.createFromKeyFile(keyFile, new NFCNormalizer().normalize(passphrase), pepper, keyFile.getVersion());
-            fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor());
+            this.cryptor = provider.createFromKeyFile(keyFile, new NFCNormalizer().normalize(passphrase), pepper, keyFile.getVersion());
+            this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor());
+            this.filenameProvider = filenameProvider;
+            this.directoryProvider = directoryProvider;
         }
         catch(IllegalArgumentException e) {
             throw new VaultException("Failure reading key file", e);
         }
         catch(InvalidPassphraseException e) {
             throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
-        }
-        this.initProviders();
-    }
-
-    private void initProviders() {
-        switch(vaultVersion) {
-            case VAULT_VERSION_DEPRECATED:
-                this.filenameProvider = new CryptoFilenameV6Provider(vault);
-                this.directoryProvider = new CryptoDirectoryV6Provider(vault, this);
-                break;
-            default:
-                this.filenameProvider = new CryptoFilenameV7Provider();
-                this.directoryProvider = new CryptoDirectoryV7Provider(vault, this);
         }
     }
 

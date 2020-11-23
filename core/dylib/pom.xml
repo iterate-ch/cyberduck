@@ -56,7 +56,7 @@
                                             <groupId>ch.iterate</groupId>
                                             <artifactId>JavaNativeFoundation</artifactId>
                                             <type>zip</type>
-                                            <version>80</version>
+                                            <version>81</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
