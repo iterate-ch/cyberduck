@@ -57,7 +57,7 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
 
     @Override
     protected boolean isFiltering(final Path directory) {
-        return directory.getParent().isRoot();
+        return !session.isSingleSite() && directory.getParent().isRoot();
     }
 
     @Override
