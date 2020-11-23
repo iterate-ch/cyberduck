@@ -42,16 +42,21 @@ public class CryptoFilenameV6Provider implements CryptoFilename {
     private static final BaseEncoding BASE32 = BaseEncoding.base32();
     private static final String LONG_NAME_FILE_EXT = ".lng";
     private static final String METADATA_DIR_NAME = "m";
-
     private static final int NAME_SHORTENING_THRESHOLD = 130;
 
+    private final int shorteningThreshold;
     private final Path metadataRoot;
 
     private final LRUCache<String, String> cache = LRUCache.build(
         PreferencesFactory.get().getLong("browser.cache.size"));
 
     public CryptoFilenameV6Provider(final Path vault) {
+        this(vault, NAME_SHORTENING_THRESHOLD);
+    }
+
+    public CryptoFilenameV6Provider(final Path vault, final int shorteningThreshold) {
         this.metadataRoot = new Path(vault, METADATA_DIR_NAME, vault.getType());
+        this.shorteningThreshold = shorteningThreshold;
     }
 
     @Override
@@ -71,7 +76,7 @@ public class CryptoFilenameV6Provider implements CryptoFilename {
 
     @Override
     public String deflate(final Session<?> session, final String filename) throws BackgroundException {
-        if(filename.length() < NAME_SHORTENING_THRESHOLD) {
+        if(filename.length() < shorteningThreshold) {
             return filename;
         }
         if(cache.contains(filename)) {
