@@ -117,7 +117,7 @@ public class CryptoVault implements Vault {
         final EnumSet<Path.Type> type = EnumSet.copyOf(home.getType());
         type.add(Path.Type.vault);
         if(home.isRoot()) {
-            vault = new Path(home.getAbsolute(), type, new PathAttributes(home.attributes()));
+            this.vault = new Path(home.getAbsolute(), type, new PathAttributes(home.attributes()));
         }
         else {
             this.vault = new Path(home.getParent(), home.getName(), type, new PathAttributes(home.attributes()));
