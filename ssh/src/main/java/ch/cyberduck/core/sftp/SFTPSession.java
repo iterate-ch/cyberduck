@@ -42,6 +42,7 @@ import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHJumpHostConfigurator;
+import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -269,6 +270,13 @@ public class SFTPSession extends Session<SSHClient> {
         methods.add(new SFTPPublicKeyAuthentication(client));
         methods.add(new SFTPChallengeResponseAuthentication(client));
         methods.add(new SFTPPasswordAuthentication(client));
+        final String[] preferred = new OpenSSHPreferredAuthenticationsConfigurator().getPreferred(host.getHostname());
+        if(preferred != null) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Fitler authentication methods with %s", Arrays.toString(preferred)));
+            }
+            methods.removeIf(provider -> !Arrays.asList(preferred).contains(provider.getMethod()));
+        }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt login with %d authentication methods %s", methods.size(), Arrays.toString(methods.toArray())));
         }
