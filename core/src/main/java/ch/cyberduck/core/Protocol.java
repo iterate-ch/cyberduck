@@ -35,9 +35,20 @@ public interface Protocol extends Comparable<Protocol> {
      */
     boolean validate(Credentials credentials, LoginOptions options);
 
+    /**
+     * @return Configurator for resolving credentials for bookmark
+     */
     CredentialsConfigurator getCredentialsFinder();
 
+    /**
+     * @return Configurator for resolving hostname from alias
+     */
     HostnameConfigurator getHostnameFinder();
+
+    /**
+     * @return Configurator for resolving jump host configuration for bookmark
+     */
+    JumphostConfigurator getJumpHostFinder();
 
     /**
      * @return Case sensitivity of system

@@ -35,4 +35,21 @@ public interface HostnameConfigurator {
     int getPort(String alias);
 
     HostnameConfigurator reload();
+
+    HostnameConfigurator DISABLED = new HostnameConfigurator() {
+        @Override
+        public String getHostname(String alias) {
+            return alias;
+        }
+
+        @Override
+        public int getPort(final String alias) {
+            return -1;
+        }
+
+        @Override
+        public HostnameConfigurator reload() {
+            return this;
+        }
+    };
 }

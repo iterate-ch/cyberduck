@@ -18,25 +18,20 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-public interface CredentialsConfigurator {
+public interface JumphostConfigurator {
 
-    /**
-     * Configure default credentials from system settings.
-     *
-     * @param host Hostname
-     */
-    Credentials configure(Host host);
+    Host getJumphost(String alias);
 
-    CredentialsConfigurator reload();
+    JumphostConfigurator reload();
 
-    CredentialsConfigurator DISABLED = new CredentialsConfigurator() {
+    JumphostConfigurator DISABLED = new JumphostConfigurator() {
         @Override
-        public Credentials configure(final Host host) {
-            return host.getCredentials();
+        public Host getJumphost(final String alias) {
+            return null;
         }
 
         @Override
-        public CredentialsConfigurator reload() {
+        public JumphostConfigurator reload() {
             return this;
         }
     };

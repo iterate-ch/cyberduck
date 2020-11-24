@@ -15,6 +15,7 @@ package ch.cyberduck.core.sftp.openssh;/*
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.JumphostConfigurator;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.HostParserException;
@@ -26,7 +27,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Collections;
 
-public class OpenSSHJumpHostConfigurator {
+public class OpenSSHJumpHostConfigurator implements JumphostConfigurator {
     private static final Logger log = Logger.getLogger(OpenSSHJumpHostConfigurator.class);
 
     private final OpenSshConfig configuration;
@@ -43,6 +44,7 @@ public class OpenSSHJumpHostConfigurator {
         this.credentials = new OpenSSHCredentialsConfigurator(configuration);
     }
 
+    @Override
     public Host getJumphost(final String alias) {
         if(StringUtils.isBlank(alias)) {
             return null;
@@ -67,5 +69,12 @@ public class OpenSSHJumpHostConfigurator {
             log.warn(String.format("Failure parsing JumpHost directive %s", proxyJump));
             return null;
         }
+    }
+
+    @Override
+    public JumphostConfigurator reload() {
+        hostname.reload();
+        credentials.reload();
+        return this;
     }
 }
