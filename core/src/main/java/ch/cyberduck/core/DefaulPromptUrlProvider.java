@@ -16,7 +16,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
 public class DefaulPromptUrlProvider implements PromptUrlProvider {
@@ -42,6 +41,6 @@ public class DefaulPromptUrlProvider implements PromptUrlProvider {
 
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
-        throw new UnsupportedException();
+        return DescriptiveUrl.EMPTY;
     }
 }

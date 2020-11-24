@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
 import org.apache.log4j.Logger;
@@ -84,7 +83,7 @@ public class DropboxPasswordShareUrlProvider implements PromptUrlProvider<Void, 
 
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
-        throw new UnsupportedException();
+        return DescriptiveUrl.EMPTY;
     }
 
     @Override

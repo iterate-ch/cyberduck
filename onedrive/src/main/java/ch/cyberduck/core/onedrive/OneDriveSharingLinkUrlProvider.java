@@ -22,7 +22,6 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
 import org.apache.log4j.Logger;
@@ -76,6 +75,6 @@ public class OneDriveSharingLinkUrlProvider implements PromptUrlProvider {
 
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Object o, final PasswordCallback callback) throws BackgroundException {
-        throw new UnsupportedException();
+        return DescriptiveUrl.EMPTY;
     }
 }

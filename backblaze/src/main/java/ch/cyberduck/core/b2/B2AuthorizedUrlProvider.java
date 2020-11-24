@@ -25,7 +25,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
@@ -93,6 +92,6 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
 
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Void none, final PasswordCallback callback) throws BackgroundException {
-        throw new UnsupportedException();
+        return DescriptiveUrl.EMPTY;
     }
 }
