@@ -43,6 +43,7 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -105,8 +106,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                 }
                 final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
                     null, null, null, fileId, null, null, null);
-                final Map<Long, UserUserPublicKey> publicKeys =
-                    missingKeys.getUsers().stream().collect(Collectors.toMap(UserUserPublicKey::getId, Function.identity()));
+                final Map<Long, UserUserPublicKey> publicKeys = this.distinctPublicKeys(missingKeys.getUsers());
                 final Map<Long, FileFileKeys> files =
                     missingKeys.getFiles().stream().collect(Collectors.toMap(FileFileKeys::getId, Function.identity()));
                 request = new UserFileKeySetBatchRequest();
@@ -155,6 +155,19 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
         catch(CryptoException e) {
             throw new TripleCryptExceptionMappingService().map(e);
         }
+    }
+
+    private Map<Long, UserUserPublicKey> distinctPublicKeys(final List<UserUserPublicKey> keys) {
+        final Map<Long, UserUserPublicKey> map = new HashMap<>();
+        for(UserUserPublicKey key : keys) {
+            if(map.containsKey(key.getId())) {
+                if(!map.get(key.getId()).getPublicKeyContainer().getVersion().equals(UserKeyPair.Version.RSA2048.getValue())) {
+                    continue;
+                }
+            }
+            map.put(key.getId(), key);
+        }
+        return map;
     }
 
     private void deleteDeprecatedKeyPair(SDSSession session) throws ApiException, BackgroundException {
