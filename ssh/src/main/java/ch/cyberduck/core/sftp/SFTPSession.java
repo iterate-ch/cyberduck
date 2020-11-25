@@ -273,7 +273,7 @@ public class SFTPSession extends Session<SSHClient> {
         final String[] preferred = new OpenSSHPreferredAuthenticationsConfigurator().getPreferred(host.getHostname());
         if(preferred != null) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Fitler authentication methods with %s", Arrays.toString(preferred)));
+                log.debug(String.format("Filter authentication methods with %s", Arrays.toString(preferred)));
             }
             methods.removeIf(provider -> !Arrays.asList(preferred).contains(provider.getMethod()));
         }
