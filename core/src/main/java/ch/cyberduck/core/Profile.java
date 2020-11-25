@@ -290,6 +290,11 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public JumphostConfigurator getJumpHostFinder() {
+        return parent.getJumpHostFinder();
+    }
+
+    @Override
     public Case getCaseSensitivity() {
         return parent.getCaseSensitivity();
     }
