@@ -59,8 +59,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -222,18 +220,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                             for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
                                 final Local segmentFile = LocalFactory.get(
                                     segmentsFolder, String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
-                                try {
-                                    // Test path length
-                                    Paths.get(segmentFile.getAbsolute()).toRealPath();
-                                }
-                                catch(NoSuchFileException e) {
-                                    // Continue
-                                }
-                                catch(InvalidPathException | IOException e) {
-                                    log.error(String.format("Failure to create path for segment %s. %s", segmentFile, e.getMessage()));
-                                    segments.clear();
-                                    break;
-                                }
                                 // Last part can be less than 5 MB. Adjust part size.
                                 long length = Math.min(partsize, remaining);
                                 final TransferStatus segmentStatus = new TransferStatus()
