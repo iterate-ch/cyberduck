@@ -22,6 +22,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.Lock;
+import ch.cyberduck.core.onedrive.features.GraphLockFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -81,6 +83,14 @@ public abstract class AbstractSharepointSession extends GraphSession {
             }
         }
         throw new NotfoundException(file.getAbsolute());
+    }
+
+    @Override
+    public <T> T _getFeature(final Class<T> type) {
+        if (type == Lock.class) {
+            return (T)new GraphLockFeature(this);
+        }
+        return super._getFeature(type);
     }
 
     @Override
