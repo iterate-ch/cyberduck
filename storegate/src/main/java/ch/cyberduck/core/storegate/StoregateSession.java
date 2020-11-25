@@ -123,8 +123,6 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         configuration.addInterceptorLast(authorizationService);
         final CloseableHttpClient apache = configuration.build();
         final StoregateApiClient client = new StoregateApiClient(apache);
-        final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
-        client.setConnectTimeout(timeout);
         client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
             null, host.getHostname(), host.getProtocol().getContext()));
         client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
@@ -133,6 +131,9 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             .register(new JSON())
             .register(JacksonFeature.class)
             .connectorProvider(new HttpComponentsProvider(apache))));
+        final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
+        client.setConnectTimeout(timeout);
+        client.setReadTimeout(timeout);
         client.setUserAgent(new PreferencesUseragentProvider().get());
         return client;
     }
