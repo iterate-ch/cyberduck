@@ -14,6 +14,7 @@ package ch.cyberduck.core.onedrive.features;/*
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -27,7 +28,7 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 
 import java.io.IOException;
 
-public class GraphLockFeature implements Lock {
+public class GraphLockFeature implements Lock<String> {
     private final GraphSession session;
 
     public GraphLockFeature(final GraphSession session) {
@@ -35,7 +36,7 @@ public class GraphLockFeature implements Lock {
     }
 
     @Override
-    public Object lock(final Path file) throws BackgroundException {
+    public String lock(final Path file) throws BackgroundException {
         try {
             Files.checkout(session.toItem(file));
         }
@@ -45,11 +46,11 @@ public class GraphLockFeature implements Lock {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);
         }
-        return null;
+        return new AsciiRandomStringService().random();
     }
 
     @Override
-    public void unlock(final Path file, final Object token) throws BackgroundException {
+    public void unlock(final Path file, final String token) throws BackgroundException {
         try {
             Files.checkin(session.toItem(file), String.format("%s-%s",
                 PreferencesFactory.get().getProperty("application.name"),

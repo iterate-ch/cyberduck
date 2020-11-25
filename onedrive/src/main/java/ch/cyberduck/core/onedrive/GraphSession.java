@@ -49,7 +49,7 @@ import java.io.IOException;
 import java.util.Set;
 
 public abstract class GraphSession extends HttpSession<OneDriveAPI> {
-    final static String apiVersion = "v1.0";
+    private final static String API_VERSION = "v1.0";
 
     private static final Logger log = Logger.getLogger(GraphSession.class);
 
@@ -131,17 +131,13 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
                 return false;
             }
 
-            final static String GlobalEndpoint = "graph.microsoft.com";
-            final static String DeutschlandEndpoint = "graph.microsoft.de";
-            final static String ChinaEndpoint = "microsoftgraph.chinacloudapi.cn";
-
             @Override
             public boolean isGraphConnection() {
                 final String hostname = host.getProtocol().getDefaultHostname();
                 switch(hostname.toLowerCase()) {
-                    case GlobalEndpoint:
-                    case DeutschlandEndpoint:
-                    case ChinaEndpoint:
+                    case "graph.microsoft.com":
+                    case "graph.microsoft.de":
+                    case "microsoftgraph.chinacloudapi.cn":
                         return true;
                 }
                 return false;
@@ -149,7 +145,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
             @Override
             public String getBaseURL() {
-                return String.format("%s://%s/%s", host.getProtocol().getScheme(), host.getProtocol().getDefaultHostname(), apiVersion);
+                return String.format("%s://%s/%s", host.getProtocol().getScheme(), host.getProtocol().getDefaultHostname(), API_VERSION);
             }
 
             @Override

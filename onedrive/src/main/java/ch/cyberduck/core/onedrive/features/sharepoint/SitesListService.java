@@ -104,7 +104,7 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
                 final Path file = list.get(i);
 
                 final URI webLink = URI.create(file.attributes().getLink().getUrl());
-                final String[] path = webLink.getPath().split("/");
+                final String[] path = webLink.getPath().split(String.valueOf(Path.DELIMITER));
                 final String suffix = path[path.length - 2];
 
                 final Path rename = new Path(file.getParent(), String.format("%s (%s)", file.getName(), suffix), file.getType(), file.attributes());

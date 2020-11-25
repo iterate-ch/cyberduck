@@ -61,7 +61,7 @@ public class SharepointListService extends AbstractSharepointListService {
         try {
             final Site site = Site.byId(session.getClient(), "root");
             final Site.Metadata metadata = site.getMetadata();
-            final EnumSet<Path.Type> type = DEFAULT_NAME.getType().clone();
+            final EnumSet<Path.Type> type = EnumSet.copyOf(DEFAULT_NAME.getType());
             type.add(Path.Type.symboliclink);
             final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new PathAttributes(DEFAULT_NAME.attributes()));
             path.setSymlinkTarget(
@@ -108,28 +108,28 @@ public class SharepointListService extends AbstractSharepointListService {
     }
 
     @Override
-    boolean processList(Path directory, final ListProgressListener listener, final ProcessListResult result) throws BackgroundException {
+    AttributedList<Path> processList(Path directory, final ListProgressListener listener) throws BackgroundException {
         // check whether this has been passed by bookmark defaultpath
-        directory = findDefaultPath(directory);
+        final Path resolved = findDefaultPath(directory);
 
-        final String versionId = getIdProvider().getFileid(directory, new DisabledListProgressListener());
+        final String versionId = getIdProvider().getFileid(resolved, new DisabledListProgressListener());
         if(DEFAULT_ID.equals(versionId)) {
-            final Path symlinkTarget = getDefaultSymlinkTarget(directory);
-            return result.withChildren(list(symlinkTarget, listener)).success();
+            final Path symlinkTarget = getDefaultSymlinkTarget(resolved);
+            return list(symlinkTarget, listener);
         }
         else if(GROUPS_ID.equals(versionId)) {
-            return result.withChildren(new GroupListService(session).list(directory, listener)).success();
+            return new GroupListService(session).list(resolved, listener);
         }
         else {
-            final Path parent = directory.getParent();
+            final Path parent = resolved.getParent();
             if(!parent.isRoot()) {
                 final String parentId = getIdProvider().getFileid(parent, new DisabledListProgressListener());
                 if(GROUPS_ID.equals(parentId)) {
-                    return result.withChildren(new GroupDrivesListService(session).list(directory, listener)).success();
+                    return new GroupDrivesListService(session).list(resolved, listener);
                 }
             }
         }
 
-        return false;
+        return AttributedList.emptyList();
     }
 }

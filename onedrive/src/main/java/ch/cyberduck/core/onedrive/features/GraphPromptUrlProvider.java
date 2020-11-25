@@ -58,7 +58,7 @@ public class GraphPromptUrlProvider implements PromptUrlProvider {
             webUrl = URI.create(downloadLink.getLink().getWebUrl());
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Failed creating download url", e, file);
+            throw new DefaultIOExceptionMappingService().map(e, file);
         }
         catch(IllegalArgumentException e) {
             throw new DefaultExceptionMappingService().map("Failed creating download url", e);
@@ -68,7 +68,7 @@ public class GraphPromptUrlProvider implements PromptUrlProvider {
 
     @Override
     public DescriptiveUrl toUploadUrl(Path file, Object options, PasswordCallback callback) throws BackgroundException {
-        return null;
+        return DescriptiveUrl.EMPTY;
     }
 
 }

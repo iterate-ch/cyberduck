@@ -42,8 +42,17 @@ public class SharepointContainerService extends PathContainerService {
 
             final String versionId = current.attributes().getVersionId();
 
-            // TODO: Don't hardcode?
             if(next != null && SharepointListService.GROUPS_ID.equals(next.attributes().getVersionId())) {
+                // All Placeholders/Containers use format /Site-ID/<Name>/Drives-ID/<Name>
+                // Groups however do not, they apply /Groups/<Group ID>/<Drive Name>
+                // There is no common prefix directory for drives in groups
+                // thus doing simple forward-check
+                // i.e.
+                // * current is /Groups/Group-Name
+                // * Previous is /Groups/Group-Name/Documents
+                // * next is /Groups
+                // this will trigger Container detection for /Groups/Group-Name/Documents.
+
                 // /Groups/Group Name/Drive
                 container = previous;
             }

@@ -51,9 +51,9 @@ public abstract class AbstractSharepointListService implements ListService {
             return getRoot(directory, listener);
         }
 
-        final ProcessListResult result = new ProcessListResult();
-        if(processList(directory, listener, result)) {
-            return result.children;
+        final AttributedList<Path> result = processList(directory, listener);
+        if(result != AttributedList.<Path>emptyList()) {
+            return result;
         }
 
         if(SITES_ID.equals(directory.attributes().getVersionId())) {
@@ -85,20 +85,7 @@ public abstract class AbstractSharepointListService implements ListService {
 
     abstract AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException;
 
-    boolean processList(final Path directory, final ListProgressListener listener, final ProcessListResult result) throws BackgroundException {
-        return false;
-    }
-
-    public static class ProcessListResult {
-        private AttributedList<Path> children;
-
-        public ProcessListResult withChildren(final AttributedList<Path> value) {
-            this.children = value;
-            return this;
-        }
-
-        public boolean success() {
-            return true;
-        }
+    AttributedList<Path> processList(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        return AttributedList.emptyList();
     }
 }

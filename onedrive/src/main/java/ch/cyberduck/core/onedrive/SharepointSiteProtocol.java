@@ -28,7 +28,7 @@ public class SharepointSiteProtocol extends GraphProtocol {
 
     @Override
     public String getName() {
-        return "Sharepoint-site";
+        return "Sharepoint Site";
     }
 
     @Override
