@@ -152,6 +152,13 @@ public class STSCredentialsConfigurator {
                     else {
                         tokenCode = null;
                     }
+                    final Integer durationSeconds;
+                    if(basicProfile.getProperties().containsKey("duration_seconds")) {
+                        durationSeconds = Integer.valueOf(basicProfile.getPropertyValue("duration_seconds"));
+                    }
+                    else {
+                        durationSeconds = null;
+                    }
                     // Starts a new session by sending a request to the AWS Security Token Service (STS) to assume a
                     // Role using the long lived AWS credentials
                     final AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest()
@@ -166,7 +173,12 @@ public class STSCredentialsConfigurator {
                             // The value is either the serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
                             // a virtual device (such as arn:aws:iam::123456789012:mfa/user).
                         )
-                        .withRoleSessionName(new AsciiRandomStringService().random());
+                        .withRoleSessionName(new AsciiRandomStringService().random())
+                        .withDurationSeconds(durationSeconds
+                            // duration_seconds - Specifies the maximum duration of the role session, in seconds. The value can range from 900 seconds
+                            // (15 minutes) up to the maximum session duration setting for the role (which can be a maximum of 43200). This is an
+                            // optional parameter and by default, the value is set to 3600 seconds.
+                        );
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Request %s from %s", assumeRoleRequest, service));
                     }
