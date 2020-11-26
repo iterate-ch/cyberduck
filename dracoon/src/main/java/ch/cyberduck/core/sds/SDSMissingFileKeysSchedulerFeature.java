@@ -133,7 +133,6 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             if(((SDSSession) session).keyPairDeprecated() != null) {
                 this.deleteDeprecatedKeyPair((SDSSession) session);
             }
-            this.deleteDeprecatedKeyPair((SDSSession) session);
             return processed;
         }
         catch(ApiException e) {
