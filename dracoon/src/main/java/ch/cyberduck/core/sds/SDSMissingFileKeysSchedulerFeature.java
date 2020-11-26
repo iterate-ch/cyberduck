@@ -72,24 +72,26 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
     }
 
     @Override
-    public List<UserFileKeySetRequest> operate(final Session<SDSApiClient> session, final PasswordCallback callback, final Path file) throws BackgroundException {
+    public List<UserFileKeySetRequest> operate(final Session<SDSApiClient> client, final PasswordCallback callback, final Path file) throws BackgroundException {
         try {
-            final UserAccountWrapper account = ((SDSSession) session).userAccount();
+            final SDSSession session = (SDSSession) client;
+            final UserAccountWrapper account = session.userAccount();
             if(!account.isEncryptionEnabled()) {
                 log.warn(String.format("No key pair found in user account %s", account));
                 return Collections.emptyList();
             }
             final List<UserFileKeySetRequest> processed = new ArrayList<>();
-            final UserKeyPairContainer kp = ((SDSSession) session).keyPair();
-
-            final UserKeyPair keyPair = TripleCryptConverter.toCryptoUserKeyPair(kp);
-            final Credentials credentials = new TripleCryptKeyPair().unlock(callback, session.getHost(), keyPair);
-            final UserKeyPairContainer kpDeprecated = ((SDSSession) session).keyPairDeprecated();
-            Credentials credentialsDeprecated = credentials;
-            if(kpDeprecated != null) {
-                credentialsDeprecated = new TripleCryptKeyPair().unlock(callback, session.getHost(), TripleCryptConverter.toCryptoUserKeyPair(kpDeprecated));
+            final UserKeyPairContainer userKeyPairContainer = session.keyPair();
+            final UserKeyPair keyPair = TripleCryptConverter.toCryptoUserKeyPair(userKeyPairContainer);
+            final TripleCryptKeyPair triplecrypt = new TripleCryptKeyPair();
+            final Credentials passphrase = triplecrypt.unlock(callback, session.getHost(), keyPair);
+            final UserKeyPairContainer userKeyPairContainerDeprecated = session.keyPairDeprecated();
+            Credentials passphraseDeprecated = passphrase;
+            if(userKeyPairContainerDeprecated != null) {
+                passphraseDeprecated = triplecrypt.unlock(callback, session.getHost(), TripleCryptConverter.toCryptoUserKeyPair(userKeyPairContainerDeprecated));
             }
             final IdProvider node = session.getFeature(IdProvider.class);
+            // Null when operating from scheduler. File reference is set for post upload.
             final Long fileId = file != null ? Long.parseLong(node.getFileid(file, new DisabledListProgressListener())) : null;
             UserFileKeySetBatchRequest request;
             do {
@@ -99,17 +101,17 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                 request = new UserFileKeySetBatchRequest();
                 final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
                     null, null, null, fileId, null, null, null);
-                final Map<Long, List<UserUserPublicKey>> publicKeys = missingKeys.getUsers().stream().collect(groupingBy(UserUserPublicKey::getId));
+                final Map<Long, List<UserUserPublicKey>> userPublicKeys = missingKeys.getUsers().stream().collect(groupingBy(UserUserPublicKey::getId));
                 final Map<Long, List<FileFileKeys>> files = missingKeys.getFiles().stream().collect(groupingBy(FileFileKeys::getId));
                 for(UserIdFileIdItem item : missingKeys.getItems()) {
                     for(FileFileKeys fileKey : files.get(item.getFileId())) {
                         final EncryptedFileKey encryptedFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(fileKey.getFileKeyContainer());
-                        final UserKeyPairContainer keyPairForDecryption = ((SDSSession) session).getKeyPairForFileKey(encryptedFileKey.getVersion());
-                        for(UserUserPublicKey pubkey : publicKeys.get(item.getUserId())) {
+                        final UserKeyPairContainer keyPairForDecryption = session.getKeyPairForFileKey(encryptedFileKey.getVersion());
+                        for(UserUserPublicKey userPublicKey : userPublicKeys.get(item.getUserId())) {
                             final EncryptedFileKey fk = this.encryptFileKey(
                                 TripleCryptConverter.toCryptoUserPrivateKey(keyPairForDecryption.getPrivateKeyContainer()),
-                                encryptedFileKey.getVersion() == EncryptedFileKey.Version.RSA2048_AES256GCM ? credentialsDeprecated : credentials,
-                                pubkey, fileKey);
+                                encryptedFileKey.getVersion() == EncryptedFileKey.Version.RSA2048_AES256GCM ? passphraseDeprecated : passphrase,
+                                userPublicKey, fileKey);
                             final UserFileKeySetRequest keySetRequest = new UserFileKeySetRequest()
                                 .fileId(item.getFileId())
                                 .userId(item.getUserId())
@@ -130,8 +132,8 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                 }
             }
             while(!request.getItems().isEmpty());
-            if(((SDSSession) session).keyPairDeprecated() != null) {
-                this.deleteDeprecatedKeyPair((SDSSession) session);
+            if(session.keyPairDeprecated() != null) {
+                this.deleteDeprecatedKeyPair(session);
             }
             return processed;
         }
@@ -143,7 +145,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
         }
     }
 
-    private void deleteDeprecatedKeyPair(final SDSSession session) throws ApiException, BackgroundException, UnknownVersionException {
+    private void deleteDeprecatedKeyPair(final SDSSession session) throws ApiException, BackgroundException {
         final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
             null, 1, null, null, session.userAccount().getId(), "previous_user_key", null);
         if(missingKeys.getItems().isEmpty()) {
