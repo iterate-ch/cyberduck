@@ -65,7 +65,7 @@ public final class FileWatcher {
 
         @Override
         public boolean accept(final Local f) {
-            return StringUtils.equals(file.getName(), file.getName());
+            return StringUtils.equals(file.getName(), f.getName());
         }
 
         @Override
