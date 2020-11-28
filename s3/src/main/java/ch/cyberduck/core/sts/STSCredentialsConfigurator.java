@@ -95,7 +95,7 @@ public class STSCredentialsConfigurator {
             return credentials;
         }
         // Convert the loaded property map to credential objects
-        final Map<String, BasicProfile> profilesByName = new LinkedHashMap<String, BasicProfile>();
+        final Map<String, BasicProfile> profilesByName = new LinkedHashMap<>();
         for(Map.Entry<String, Map<String, String>> entry : allProfileProperties.entrySet()) {
             String profileName = entry.getKey();
             Map<String, String> properties = entry.getValue();
@@ -142,7 +142,7 @@ public class STSCredentialsConfigurator {
                         tokenCode = prompt.prompt(
                             host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                             String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                                basicProfile.getProperties().get("mfa_serial")),
+                                basicProfile.getPropertyValue("mfa_serial")),
                             new LoginOptions(host.getProtocol())
                                 .password(true)
                                 .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
@@ -165,7 +165,7 @@ public class STSCredentialsConfigurator {
                         .withExternalId(basicProfile.getRoleExternalId())
                         .withRoleArn(basicProfile.getRoleArn())
                         // Specify this value if the IAM user has a policy that requires MFA authentication
-                        .withSerialNumber(basicProfile.getProperties().getOrDefault("mfa_serial", null))
+                        .withSerialNumber(basicProfile.getPropertyValue("mfa_serial"))
                         // The value provided by the MFA device, if MFA is required
                         .withTokenCode(tokenCode
                             // mfa_serial - The identification number of the MFA device to use when assuming a role. This is an optional parameter.
@@ -291,7 +291,7 @@ public class STSCredentialsConfigurator {
         /**
          * Map from the parsed profile name to the map of all the property values included the specific profile
          */
-        protected final Map<String, Map<String, String>> allProfileProperties = new LinkedHashMap<String, Map<String, String>>();
+        protected final Map<String, Map<String, String>> allProfileProperties = new LinkedHashMap<>();
 
         /**
          * Parses the input and returns a map of all the profile properties.
@@ -299,7 +299,7 @@ public class STSCredentialsConfigurator {
         public Map<String, Map<String, String>> parseProfileProperties(Scanner scanner) {
             allProfileProperties.clear();
             run(scanner);
-            return new LinkedHashMap<String, Map<String, String>>(allProfileProperties);
+            return new LinkedHashMap<>(allProfileProperties);
         }
 
         @Override
@@ -311,7 +311,7 @@ public class STSCredentialsConfigurator {
         protected void onProfileStartingLine(String newProfileName, String line) {
             // If the same profile name has already been declared, clobber the
             // previous one
-            allProfileProperties.put(newProfileName, new HashMap<String, String>());
+            allProfileProperties.put(newProfileName, new HashMap<>());
         }
 
         @Override
