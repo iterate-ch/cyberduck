@@ -80,7 +80,13 @@ public class DefaultEditorListener implements FileWatcherListener {
         );
     }
 
+    /**
+     * Listener receiving notifications after saving changes from the editor
+     */
     public interface Listener {
+        /**
+         * Callback after edited file was uploaded to server
+         */
         void saved();
     }
 }
