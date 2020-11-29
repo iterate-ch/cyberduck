@@ -465,7 +465,6 @@ public class BookmarkTableDataSource extends ListDataSource {
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
             controller.deleteBookmarkButtonClicked(null);
         }
-        NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes_owner(null, null);
         pasteboard.clear();
     }
 
