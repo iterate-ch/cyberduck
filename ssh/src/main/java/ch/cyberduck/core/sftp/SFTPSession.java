@@ -60,7 +60,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.schmizz.concurrent.Promise;
 import net.schmizz.keepalive.KeepAlive;
@@ -269,27 +271,36 @@ public class SFTPSession extends Session<SSHClient> {
             // Expected. The main purpose of sending this request is to get the list of supported methods from the server
         }
         // Ordered list of preferred authentication methods
-        final List<AuthenticationProvider<Boolean>> methods = new ArrayList<>();
+        final List<AuthenticationProvider<Boolean>> defaultMethods = new ArrayList<>();
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
             switch(Factory.Platform.getDefault()) {
                 case windows:
-                    methods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
+                    defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
                     break;
                 default:
-                    methods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator()));
+                    defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator()));
                     break;
             }
         }
-        methods.add(new SFTPPublicKeyAuthentication(client));
-        methods.add(new SFTPChallengeResponseAuthentication(client));
-        methods.add(new SFTPPasswordAuthentication(client));
+        defaultMethods.add(new SFTPPublicKeyAuthentication(client));
+        defaultMethods.add(new SFTPChallengeResponseAuthentication(client));
+        defaultMethods.add(new SFTPPasswordAuthentication(client));
+        final LinkedHashMap<String, AuthenticationProvider<Boolean>> methodsMap = defaultMethods.stream()
+            .collect(LinkedHashMap::new, (map, item) -> map.put(item.getMethod(), item), Map::putAll);
+        final List<AuthenticationProvider<Boolean>> methods = new ArrayList<>();
         final String[] preferred = new OpenSSHPreferredAuthenticationsConfigurator().getPreferred(host.getHostname());
         if(preferred != null) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Filter authentication methods with %s", Arrays.toString(preferred)));
             }
-            methods.removeIf(provider -> !Arrays.asList(preferred).contains(provider.getMethod()));
+            for(String p : preferred) {
+                final AuthenticationProvider<Boolean> provider = methodsMap.remove(p);
+                if(provider != null) {
+                    methods.add(provider);
+                }
+            }
         }
+        methods.addAll(methodsMap.values());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt login with %d authentication methods %s", methods.size(), Arrays.toString(methods.toArray())));
         }
@@ -298,7 +309,7 @@ public class SFTPSession extends Session<SSHClient> {
             cancel.verify();
             try {
                 // Obtain latest list of allowed methods
-                final Collection allowed = client.getUserAuth().getAllowedMethods();
+                final Collection<String> allowed = client.getUserAuth().getAllowedMethods();
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Remaining authentication methods %s", Arrays.toString(allowed.toArray())));
                 }
