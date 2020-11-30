@@ -132,9 +132,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                 }
             }
             while(!request.getItems().isEmpty());
-            if(session.keyPairDeprecated() != null) {
-                this.deleteDeprecatedKeyPair(session);
-            }
+            this.deleteDeprecatedKeyPair(session);
             return processed;
         }
         catch(ApiException e) {
@@ -146,12 +144,16 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
     }
 
     private void deleteDeprecatedKeyPair(final SDSSession session) throws ApiException, BackgroundException {
-        final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
-            null, 1, null, null, session.userAccount().getId(), "previous_user_key", null);
-        if(missingKeys.getItems().isEmpty()) {
-            log.debug("No more deprecated fileKeys to migrate - deleting deprecated key pair");
-            new UserApi(session.getClient()).removeUserKeyPair(session.keyPairDeprecated().getPublicKeyContainer().getVersion(), null);
-            session.resetUserKeyPairs();
+        if(PreferencesFactory.get().getBoolean("sds.encryption.missingkeys.delete.deprecated")) {
+            if(session.keyPairDeprecated() != null && !session.keyPairDeprecated().equals(session.keyPair())) {
+                final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
+                    null, 1, null, null, session.userAccount().getId(), "previous_user_key", null);
+                if(missingKeys.getItems().isEmpty()) {
+                    log.debug("No more deprecated fileKeys to migrate - deleting deprecated key pair");
+                    new UserApi(session.getClient()).removeUserKeyPair(session.keyPairDeprecated().getPublicKeyContainer().getVersion(), null);
+                    session.resetUserKeyPairs();
+                }
+            }
         }
     }
 
