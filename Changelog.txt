@@ -1,6 +1,14 @@
 Cyberduck
 https://cyberduck.io/
 
+7.7.2
+- [Feature] Allow custom session duration for STS (S3) (#11265)
+- [Feature] Support for PreferredAuthentications in OpenSSH configuration (SFTP) (#9964)
+- [Bugfix] Exception reordering of bookmarks with drag and drop (macOS) (#11242)
+- [Bugfix] Crash opening QuickLook panel (macOS) (#11212)
+- [Bugfix] Temporary local file deleted after editing in external editor (#11086)
+- [Bugfix] Include port number when saving host key fingerprint (SFTP, Windows) (#11255)
+
 7.7.1
 - [Bugfix] Workaround for crash on macOS 11 for some users (#11231)
 - [Bugfix] Failure connecting through jump server with alias in configuration for target host (#11227)
