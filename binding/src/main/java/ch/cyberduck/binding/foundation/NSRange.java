@@ -25,15 +25,18 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 public class NSRange extends CFRange {
 
+    public NSRange() {
+    }
+
+    public NSRange(final CFIndex location, final CFIndex length) {
+        super(location, length);
+    }
+
     public static NSRange NSMakeRange(NSUInteger loc, NSUInteger len) {
         CFIndex cfLocation = new CFIndex();
         cfLocation.setValue(loc.longValue());
         CFIndex cfLength = new CFIndex();
         cfLength.setValue(len.longValue());
         return new NSRange(cfLocation, cfLength);
-    }
-
-    public NSRange(final CFIndex location, final CFIndex length) {
-        super(location, length);
     }
 }
