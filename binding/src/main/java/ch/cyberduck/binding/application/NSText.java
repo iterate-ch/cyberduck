@@ -20,10 +20,10 @@ package ch.cyberduck.binding.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSRange;
 
 import org.rococoa.ID;
+import org.rococoa.cocoa.foundation.NSSize;
 
 // BridgeSupport v 0.017
 public abstract class NSText extends NSView {
@@ -165,7 +165,7 @@ public abstract class NSText extends NSView {
      * Original signature : <code>id delegate()</code><br>
      * <i>native declaration : /Users/dkocher/null:83</i>
      */
-    public abstract NSObject delegate();
+    public abstract org.rococoa.ID delegate();
 
     /**
      * Original signature : <code>void setDelegate(id)</code><br>
@@ -282,11 +282,12 @@ public abstract class NSText extends NSView {
      * Original signature : <code>selectedRange()</code><br>
      * <i>native declaration : /Users/dkocher/null:105</i>
      */
-    public abstract NSObject selectedRange();
+    public abstract NSRange selectedRange();
+
     /**
      * <i>native declaration : /Users/dkocher/null:106</i><br>
-     * Conversion Error : /// Original signature : <code>void setSelectedRange(null)</code><br>
-     * - (void)setSelectedRange:(null)range; (Argument range cannot be converted)
+     * Conversion Error : /// Original signature : <code>void setSelectedRange(null)</code><br> -
+     * (void)setSelectedRange:(null)range; (Argument range cannot be converted)
      */
     public abstract void setSelectedRange(NSRange range);
     /**
@@ -357,7 +358,7 @@ public abstract class NSText extends NSView {
      * Original signature : <code>maxSize()</code><br>
      * <i>native declaration : /Users/dkocher/null:124</i>
      */
-    public abstract NSObject maxSize();
+    public abstract NSSize maxSize();
     /**
      * <i>native declaration : /Users/dkocher/null:125</i><br>
      * Conversion Error : /// Original signature : <code>void setMaxSize(null)</code><br>
@@ -367,7 +368,7 @@ public abstract class NSText extends NSView {
      * Original signature : <code>minSize()</code><br>
      * <i>native declaration : /Users/dkocher/null:126</i>
      */
-    public abstract NSObject minSize();
+    public abstract NSSize minSize();
     /**
      * <i>native declaration : /Users/dkocher/null:127</i><br>
      * Conversion Error : /// Original signature : <code>void setMinSize(null)</code><br>

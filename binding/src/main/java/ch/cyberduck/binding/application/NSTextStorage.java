@@ -21,7 +21,6 @@ package ch.cyberduck.binding.application;
 
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSMutableAttributedString;
-import ch.cyberduck.binding.foundation.NSObject;
 
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -97,7 +96,7 @@ public abstract class NSTextStorage extends NSMutableAttributedString {
      * Original signature : <code>id delegate()</code><br>
      * <i>native declaration : :76</i>
      */
-    public abstract NSObject delegate();
+    public abstract org.rococoa.ID delegate();
     /// <i>native declaration : :30</i>
 }
 
