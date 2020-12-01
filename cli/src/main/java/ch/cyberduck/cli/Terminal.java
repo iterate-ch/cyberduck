@@ -28,7 +28,6 @@ import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.googledrive.DriveProtocol;
@@ -268,7 +267,7 @@ public class Terminal {
                 VaultRegistryFactory.create(new TerminalPasswordCallback()));
             final Path remote;
             if(StringUtils.startsWith(new CommandLinePathParser(input).parse(uri).getAbsolute(), TildePathExpander.PREFIX)) {
-                final Path home = this.execute(new TerminalBackgroundAction<Path>(controller, source, new HomeFinderWorker()));
+                final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
                 remote = new TildePathExpander(home).expand(new CommandLinePathParser(input).parse(uri));
             }
             else {
@@ -287,7 +286,7 @@ public class Terminal {
             if(input.hasOption(TerminalOptionsBuilder.Params.vault.name())) {
                 final Path vault;
                 if(StringUtils.startsWith(input.getOptionValue(action.name()), TildePathExpander.PREFIX)) {
-                    final Path home = this.execute(new TerminalBackgroundAction<Path>(controller, source, new HomeFinderWorker()));
+                    final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
                     vault = new TildePathExpander(home).expand(new Path(input.getOptionValue(action.name()), EnumSet.of(Path.Type.directory, Path.Type.vault)));
                 }
                 else {
@@ -299,7 +298,7 @@ public class Terminal {
                 final LoadVaultWorker worker = new LoadVaultWorker(new LoadingVaultLookupListener(source.getVault(),
                     PasswordStoreFactory.get(), new TerminalPasswordCallback()), vault);
                 try {
-                    this.execute(new TerminalBackgroundAction<Vault>(controller, source, worker));
+                    this.execute(new TerminalBackgroundAction<>(controller, source, worker));
                 }
                 catch(TerminalBackgroundException e) {
                     return Exit.failure;
@@ -321,7 +320,7 @@ public class Terminal {
                 case upload:
                 case synchronize:
                     return this.transfer(new TerminalTransferFactory().create(input, host, remote,
-                        new ArrayList<TransferItem>(new SingleTransferItemFinder().find(input, action, remote))),
+                        new ArrayList<>(new SingleTransferItemFinder().find(input, action, remote))),
                         source, SessionPool.DISCONNECTED);
                 case copy:
                     final Host target = new CommandLineUriParser(input).parse(input.getOptionValues(action.name())[1]);
@@ -433,7 +432,7 @@ public class Terminal {
     protected Exit list(final SessionPool session, final Path remote, final boolean verbose) {
         final SessionListWorker worker = new SessionListWorker(cache, remote,
             new TerminalListProgressListener(verbose, new TerminalProgressListener()));
-        final SessionBackgroundAction<AttributedList<Path>> action = new TerminalBackgroundAction<AttributedList<Path>>(
+        final SessionBackgroundAction<AttributedList<Path>> action = new TerminalBackgroundAction<>(
             controller,
             session, worker);
         try {
@@ -446,7 +445,7 @@ public class Terminal {
     }
 
     protected Exit delete(final SessionPool session, final Path remote) {
-        final List<Path> files = new ArrayList<Path>();
+        final List<Path> files = new ArrayList<>();
         for(TransferItem i : new DeletePathFinder().find(input, TerminalAction.delete, remote)) {
             files.add(i.remote);
         }
@@ -457,7 +456,7 @@ public class Terminal {
         else {
             worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, progress);
         }
-        final SessionBackgroundAction<List<Path>> action = new TerminalBackgroundAction<List<Path>>(controller, session, worker);
+        final SessionBackgroundAction<List<Path>> action = new TerminalBackgroundAction<>(controller, session, worker);
         try {
             this.execute(action);
         }
@@ -469,7 +468,7 @@ public class Terminal {
 
     protected Exit mkdir(final SessionPool session, final Path remote, final String region) {
         final CreateDirectoryWorker worker = new CreateDirectoryWorker(remote, region);
-        final SessionBackgroundAction<Path> action = new TerminalBackgroundAction<Path>(controller, session, worker);
+        final SessionBackgroundAction<Path> action = new TerminalBackgroundAction<>(controller, session, worker);
         try {
             this.execute(action);
         }
@@ -510,7 +509,7 @@ public class Terminal {
                 //
             }
         }));
-        final SessionBackgroundAction<Transfer> action = new TerminalBackgroundAction<Transfer>(controller, session, worker);
+        final SessionBackgroundAction<Transfer> action = new TerminalBackgroundAction<>(controller, session, worker);
         try {
             this.execute(action);
         }
