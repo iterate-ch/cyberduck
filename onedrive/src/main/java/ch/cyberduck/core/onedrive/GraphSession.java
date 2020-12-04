@@ -18,9 +18,11 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
@@ -54,6 +56,7 @@ import ch.cyberduck.core.onedrive.features.GraphTimestampFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -127,8 +130,8 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     }
 
     @Override
-    protected OneDriveAPI connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
-        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+    protected OneDriveAPI connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws HostParserException {
+        final HttpClientBuilder configuration = builder.build(ProxyFactory.get().find(HostParser.parse(host.getProtocol().getOAuthAuthorizationUrl())), this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol()) {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
@@ -137,7 +140,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
                 }
             }
         }.withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
-        .withParameter("prompt", "select_account");
+            .withParameter("prompt", "select_account");
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         final RequestExecutor executor = new GraphCommonsHttpRequestExecutor(configuration.build()) {
