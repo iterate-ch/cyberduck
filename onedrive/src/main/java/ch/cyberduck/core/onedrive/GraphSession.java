@@ -44,9 +44,12 @@ import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveEmailAccount;
+import org.nuxeo.onedrive.client.OneDriveExpand;
 import org.nuxeo.onedrive.client.RequestExecutor;
 import org.nuxeo.onedrive.client.RequestHeader;
+import org.nuxeo.onedrive.client.Users;
 import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.User;
 
 import java.io.IOException;
 import java.util.Set;
@@ -57,6 +60,12 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     private static final Logger log = Logger.getLogger(GraphSession.class);
 
     private OAuth2RequestInterceptor authorizationService;
+
+    private  User.Metadata user;
+
+    public User.Metadata getUser() {
+        return user;
+    }
 
     protected final GraphFileIdProvider fileIdProvider = new GraphFileIdProvider(this);
 
@@ -162,7 +171,8 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
         try {
-            final String account = OneDriveEmailAccount.getCurrentUserEmailAccount(client);
+            user = Users.get(User.getCurrent(client), User.Select.CreationType, User.Select.UserPrincipalName);
+            final String account = user.getUserPrincipalName();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated as user %s", account));
             }

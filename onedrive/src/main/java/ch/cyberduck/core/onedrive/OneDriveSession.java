@@ -23,7 +23,9 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.onedrive.features.GraphLockFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -98,6 +100,15 @@ public class OneDriveSession extends GraphSession {
         }
         if(type == Home.class) {
             return (T) new OneDriveHomeFinderService(this);
+        }
+        if(null != getUser()) {
+            //noinspection OptionalAssignedToNull
+            if(type == Lock.class && null != getUser().getCreationType()) {
+                // this is a hack. Graph creationType can be present, but `null`, which is totally valid.
+                // in order to determine whether this is a Microsoft or AAD account, we need to check for
+                // a null-optional, not for non-present optional.
+                return (T) new GraphLockFeature(this);
+            }
         }
         return super._getFeature(type);
     }

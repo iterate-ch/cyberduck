@@ -87,8 +87,8 @@ public abstract class AbstractSharepointSession extends GraphSession {
 
     @Override
     public <T> T _getFeature(final Class<T> type) {
-        if (type == Lock.class) {
-            return (T)new GraphLockFeature(this);
+        if(type == Lock.class) {
+            return (T) new GraphLockFeature(this);
         }
         return super._getFeature(type);
     }
