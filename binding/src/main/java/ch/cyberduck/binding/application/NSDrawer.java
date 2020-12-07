@@ -79,7 +79,7 @@ public abstract class NSDrawer extends NSObject {
      * Original signature : <code>id delegate()</code><br>
      * <i>native declaration : :66</i>
      */
-    public abstract NSObject delegate();
+    public abstract org.rococoa.ID delegate();
 
     /**
      * Original signature : <code>void open()</code><br>

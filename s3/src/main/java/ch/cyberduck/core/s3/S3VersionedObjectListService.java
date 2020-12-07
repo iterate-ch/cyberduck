@@ -198,7 +198,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 // Handle missing prefix for directory placeholders in Minio
                 final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
                     PathNormalizer.name(URIEncoder.encode(bucket.getName())), String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()), String.valueOf(Path.DELIMITER), 1, null, null, false);
-                if(Arrays.stream(chunk.getItems()).map((BaseVersionOrDeleteMarker input) -> URIEncoder.decode(input.getKey())).noneMatch(common -> common.equals(prefix))) {
+                if(Arrays.stream(chunk.getCommonPrefixes()).map(URIEncoder::decode).noneMatch(common -> common.equals(prefix))) {
                     throw new NotfoundException(directory.getAbsolute());
                 }
             }

@@ -22,13 +22,14 @@ import ch.cyberduck.core.sds.io.swagger.client.Pair;
 import org.apache.http.impl.client.CloseableHttpClient;
 
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.core.GenericType;
 import java.util.List;
 import java.util.Map;
 
 public class SDSApiClient extends ApiClient {
 
-    private CloseableHttpClient client;
+    private final CloseableHttpClient client;
 
     public SDSApiClient(final CloseableHttpClient client) {
         this.client = client;
@@ -36,6 +37,12 @@ public class SDSApiClient extends ApiClient {
 
     public CloseableHttpClient getClient() {
         return client;
+    }
+
+    @Override
+    protected Client buildHttpClient(final boolean debugging) {
+        // No need to build default client
+        return null;
     }
 
     @Override

@@ -42,7 +42,8 @@ public class CryptoFilenameV6Provider implements CryptoFilename {
     private static final BaseEncoding BASE32 = BaseEncoding.base32();
     private static final String LONG_NAME_FILE_EXT = ".lng";
     private static final String METADATA_DIR_NAME = "m";
-    private static final int NAME_SHORTENING_THRESHOLD = 130;
+
+    public static final int DEFAULT_NAME_SHORTENING_THRESHOLD = 130;
 
     private final int shorteningThreshold;
     private final Path metadataRoot;
@@ -51,7 +52,7 @@ public class CryptoFilenameV6Provider implements CryptoFilename {
         PreferencesFactory.get().getLong("browser.cache.size"));
 
     public CryptoFilenameV6Provider(final Path vault) {
-        this(vault, NAME_SHORTENING_THRESHOLD);
+        this(vault, DEFAULT_NAME_SHORTENING_THRESHOLD);
     }
 
     public CryptoFilenameV6Provider(final Path vault, final int shorteningThreshold) {

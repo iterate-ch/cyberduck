@@ -332,12 +332,17 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public CredentialsConfigurator getCredentialsFinder() {
-        return new DisabledCredentialsConfigurator();
+        return CredentialsConfigurator.DISABLED;
     }
 
     @Override
     public HostnameConfigurator getHostnameFinder() {
-        return new DisabledHostnameConfigurator();
+        return HostnameConfigurator.DISABLED;
+    }
+
+    @Override
+    public JumphostConfigurator getJumpHostFinder() {
+        return JumphostConfigurator.DISABLED;
     }
 
     @Override

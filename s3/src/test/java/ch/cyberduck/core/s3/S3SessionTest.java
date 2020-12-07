@@ -323,4 +323,17 @@ public class S3SessionTest extends AbstractS3Test {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
     }
+
+    @Test
+    public void testAwsHostnames() {
+        assertFalse(S3Session.isAwsHostname("play.minio.io"));
+        assertTrue(S3Session.isAwsHostname("test-eu-west-3-cyberduck.s3.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("s3.dualstack.eu-west-3.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("test-eu-west-3-cyberduck.s3.dualstack.eu-west-3.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("s3.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("s3.amazonaws.com.cn"));
+        assertFalse(S3Session.isAwsHostname("s3.amazonaws.com.cn", false));
+        assertTrue(S3Session.isAwsHostname("s3.cn-north-1.amazonaws.com.cn"));
+        assertFalse(S3Session.isAwsHostname("s3.cn-north-1.amazonaws.com.cn", false));
+    }
 }

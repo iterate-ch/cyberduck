@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>7.7.2-SNAPSHOT</version>
+        <version>7.7.3-SNAPSHOT</version>
     </parent>
     <artifactId>dracoon</artifactId>
 
@@ -111,7 +111,7 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>2.1.5</version>
+            <version>2.1.6</version>
         </dependency>
     </dependencies>
 

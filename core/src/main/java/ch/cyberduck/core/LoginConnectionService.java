@@ -129,25 +129,26 @@ public class LoginConnectionService implements ConnectionService {
         }
         final Host bookmark = session.getHost();
         // Try to resolve the hostname first
-        final HostnameConfigurator configurator = HostnameConfiguratorFactory.get(bookmark.getProtocol());
-        final String hostname = configurator.getHostname(bookmark.getHostname());
-        listener.message(MessageFormat.format(LocaleFactory.localizedString("Resolving {0}", "Status"),
-            hostname));
-        final Proxy proxyhost = proxy.find(bookmark);
-        if(proxyhost == Proxy.DIRECT) {
+        final String hostname = HostnameConfiguratorFactory.get(bookmark.getProtocol()).getHostname(bookmark.getHostname());
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Resolving {0}", "Status"), hostname));
+        final Proxy proxy = this.proxy.find(bookmark);
+        if(proxy == Proxy.DIRECT) {
             // Only try to resolve target hostname if direct connection
-            try {
-                resolver.resolve(hostname, callback);
-            }
-            catch(ResolveFailedException e) {
-                log.warn(String.format("DNS resolver failed for %s", hostname));
-                throw e;
+            if(null == JumpHostConfiguratorFactory.get(bookmark.getProtocol()).getJumphost(bookmark.getHostname())) {
+                // Do not attempt to resolve hostname that may only be reachable in internal network from jump host
+                try {
+                    resolver.resolve(hostname, callback);
+                }
+                catch(ResolveFailedException e) {
+                    log.warn(String.format("DNS resolver failed for %s", hostname));
+                    throw e;
+                }
             }
         }
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Opening {0} connection to {1}", "Status"),
             bookmark.getProtocol().getName(), hostname));
         // The IP address could successfully be determined
-        session.open(proxyhost, key, prompt);
+        session.open(proxy, key, prompt);
         listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
             bookmark.getProtocol().getName()));
         // Update last accessed timestamp
@@ -166,7 +167,7 @@ public class LoginConnectionService implements ConnectionService {
         }
         // Login
         try {
-            this.authenticate(proxyhost, session, callback);
+            this.authenticate(proxy, session, callback);
         }
         catch(BackgroundException e) {
             this.close(session);

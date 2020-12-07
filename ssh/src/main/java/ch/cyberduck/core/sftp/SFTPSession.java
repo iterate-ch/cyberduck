@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
@@ -42,6 +43,7 @@ import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHJumpHostConfigurator;
+import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -58,7 +60,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.schmizz.concurrent.Promise;
 import net.schmizz.keepalive.KeepAlive;
@@ -145,6 +149,18 @@ public class SFTPSession extends Session<SSHClient> {
                 proxy.setCredentials(new OpenSSHCredentialsConfigurator().configure(proxy));
                 // Authenticate with jump host
                 this.authenticate(hop, proxy, prompt, new DisabledCancelCallback());
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Authenticated with jump host %s", proxy));
+                }
+                if(proxy.getCredentials().isSaved()) {
+                    // Write credentials to keychain
+                    try {
+                        PasswordStoreFactory.get().save(proxy);
+                    }
+                    catch(LocalAccessDeniedException e) {
+                        log.error(String.format("Failure saving credentials for %s in keychain. %s", proxy, e));
+                    }
+                }
                 final DirectConnection tunnel = hop.newDirectConnection(
                     new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort());
                 // Connect to internal host
@@ -255,20 +271,36 @@ public class SFTPSession extends Session<SSHClient> {
             // Expected. The main purpose of sending this request is to get the list of supported methods from the server
         }
         // Ordered list of preferred authentication methods
-        final List<AuthenticationProvider<Boolean>> methods = new ArrayList<>();
+        final List<AuthenticationProvider<Boolean>> defaultMethods = new ArrayList<>();
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
             switch(Factory.Platform.getDefault()) {
                 case windows:
-                    methods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
+                    defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
                     break;
                 default:
-                    methods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator()));
+                    defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator()));
                     break;
             }
         }
-        methods.add(new SFTPPublicKeyAuthentication(client));
-        methods.add(new SFTPChallengeResponseAuthentication(client));
-        methods.add(new SFTPPasswordAuthentication(client));
+        defaultMethods.add(new SFTPPublicKeyAuthentication(client));
+        defaultMethods.add(new SFTPChallengeResponseAuthentication(client));
+        defaultMethods.add(new SFTPPasswordAuthentication(client));
+        final LinkedHashMap<String, AuthenticationProvider<Boolean>> methodsMap = defaultMethods.stream()
+            .collect(LinkedHashMap::new, (map, item) -> map.put(item.getMethod(), item), Map::putAll);
+        final List<AuthenticationProvider<Boolean>> methods = new ArrayList<>();
+        final String[] preferred = new OpenSSHPreferredAuthenticationsConfigurator().getPreferred(host.getHostname());
+        if(preferred != null) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Filter authentication methods with %s", Arrays.toString(preferred)));
+            }
+            for(String p : preferred) {
+                final AuthenticationProvider<Boolean> provider = methodsMap.remove(p);
+                if(provider != null) {
+                    methods.add(provider);
+                }
+            }
+        }
+        methods.addAll(methodsMap.values());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt login with %d authentication methods %s", methods.size(), Arrays.toString(methods.toArray())));
         }
@@ -277,7 +309,7 @@ public class SFTPSession extends Session<SSHClient> {
             cancel.verify();
             try {
                 // Obtain latest list of allowed methods
-                final Collection allowed = client.getUserAuth().getAllowedMethods();
+                final Collection<String> allowed = client.getUserAuth().getAllowedMethods();
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Remaining authentication methods %s", Arrays.toString(allowed.toArray())));
                 }

@@ -15,8 +15,11 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractHostCollection;
+import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
@@ -51,11 +54,19 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                     // Pairing token no longer valid
                     try {
                         // Reset credentials to force repairing
-                        final Credentials credentials = session.getHost().getCredentials();
+                        final Host bookmark = session.getHost();
+                        final Credentials credentials = bookmark.getCredentials();
                         credentials.reset();
-                        session.login(ProxyFactory.get().find(session.getHost()), prompt, new DisabledCancelCallback());
+                        session.login(ProxyFactory.get().find(bookmark), prompt, new DisabledCancelCallback());
                         if(credentials.isSaved()) {
-                            store.save(session.getHost());
+                            store.save(bookmark);
+                        }
+                        // Notify changed bookmark
+                        final AbstractHostCollection bookmarks = BookmarkCollection.defaultCollection();
+                        if(bookmarks.isLoaded()) {
+                            if(bookmarks.contains(bookmark)) {
+                                bookmarks.collectionItemChanged(bookmark);
+                            }
                         }
                         credentials.reset();
                         return true;

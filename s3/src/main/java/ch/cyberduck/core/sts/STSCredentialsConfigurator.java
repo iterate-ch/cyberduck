@@ -95,7 +95,7 @@ public class STSCredentialsConfigurator {
             return credentials;
         }
         // Convert the loaded property map to credential objects
-        final Map<String, BasicProfile> profilesByName = new LinkedHashMap<String, BasicProfile>();
+        final Map<String, BasicProfile> profilesByName = new LinkedHashMap<>();
         for(Map.Entry<String, Map<String, String>> entry : allProfileProperties.entrySet()) {
             String profileName = entry.getKey();
             Map<String, String> properties = entry.getValue();
@@ -142,7 +142,7 @@ public class STSCredentialsConfigurator {
                         tokenCode = prompt.prompt(
                             host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                             String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                                basicProfile.getProperties().get("mfa_serial")),
+                                basicProfile.getPropertyValue("mfa_serial")),
                             new LoginOptions(host.getProtocol())
                                 .password(true)
                                 .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
@@ -152,13 +152,20 @@ public class STSCredentialsConfigurator {
                     else {
                         tokenCode = null;
                     }
+                    final Integer durationSeconds;
+                    if(basicProfile.getProperties().containsKey("duration_seconds")) {
+                        durationSeconds = Integer.valueOf(basicProfile.getPropertyValue("duration_seconds"));
+                    }
+                    else {
+                        durationSeconds = null;
+                    }
                     // Starts a new session by sending a request to the AWS Security Token Service (STS) to assume a
                     // Role using the long lived AWS credentials
                     final AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest()
                         .withExternalId(basicProfile.getRoleExternalId())
                         .withRoleArn(basicProfile.getRoleArn())
                         // Specify this value if the IAM user has a policy that requires MFA authentication
-                        .withSerialNumber(basicProfile.getProperties().getOrDefault("mfa_serial", null))
+                        .withSerialNumber(basicProfile.getPropertyValue("mfa_serial"))
                         // The value provided by the MFA device, if MFA is required
                         .withTokenCode(tokenCode
                             // mfa_serial - The identification number of the MFA device to use when assuming a role. This is an optional parameter.
@@ -166,7 +173,12 @@ public class STSCredentialsConfigurator {
                             // The value is either the serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
                             // a virtual device (such as arn:aws:iam::123456789012:mfa/user).
                         )
-                        .withRoleSessionName(new AsciiRandomStringService().random());
+                        .withRoleSessionName(new AsciiRandomStringService().random())
+                        .withDurationSeconds(durationSeconds
+                            // duration_seconds - Specifies the maximum duration of the role session, in seconds. The value can range from 900 seconds
+                            // (15 minutes) up to the maximum session duration setting for the role (which can be a maximum of 43200). This is an
+                            // optional parameter and by default, the value is set to 3600 seconds.
+                        );
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Request %s from %s", assumeRoleRequest, service));
                     }
@@ -279,7 +291,7 @@ public class STSCredentialsConfigurator {
         /**
          * Map from the parsed profile name to the map of all the property values included the specific profile
          */
-        protected final Map<String, Map<String, String>> allProfileProperties = new LinkedHashMap<String, Map<String, String>>();
+        protected final Map<String, Map<String, String>> allProfileProperties = new LinkedHashMap<>();
 
         /**
          * Parses the input and returns a map of all the profile properties.
@@ -287,7 +299,7 @@ public class STSCredentialsConfigurator {
         public Map<String, Map<String, String>> parseProfileProperties(Scanner scanner) {
             allProfileProperties.clear();
             run(scanner);
-            return new LinkedHashMap<String, Map<String, String>>(allProfileProperties);
+            return new LinkedHashMap<>(allProfileProperties);
         }
 
         @Override
@@ -299,7 +311,7 @@ public class STSCredentialsConfigurator {
         protected void onProfileStartingLine(String newProfileName, String line) {
             // If the same profile name has already been declared, clobber the
             // previous one
-            allProfileProperties.put(newProfileName, new HashMap<String, String>());
+            allProfileProperties.put(newProfileName, new HashMap<>());
         }
 
         @Override

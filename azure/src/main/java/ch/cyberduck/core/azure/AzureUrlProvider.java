@@ -27,7 +27,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -72,7 +71,7 @@ public class AzureUrlProvider implements PromptUrlProvider<Void, Void> {
 
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
-        throw new UnsupportedException();
+        return DescriptiveUrl.EMPTY;
     }
 
     private DescriptiveUrl createSignedUrl(final Path file, int seconds) throws BackgroundException {

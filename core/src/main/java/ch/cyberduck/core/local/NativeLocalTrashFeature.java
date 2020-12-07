@@ -26,14 +26,13 @@ import java.io.IOException;
 
 import com.sun.jna.platform.FileUtils;
 
-
 public class NativeLocalTrashFeature implements Trash {
     private static final Logger log = Logger.getLogger(NativeLocalTrashFeature.class);
 
     @Override
     public void trash(final Local file) throws LocalAccessDeniedException {
         try {
-            FileUtils.getInstance().moveToTrash(new File[]{new File(file.getAbsolute())});
+            FileUtils.getInstance().moveToTrash(new File(file.getAbsolute()));
         }
         catch(IOException e) {
             log.warn(String.format("Failed to move %s to Trash", file.getName()));

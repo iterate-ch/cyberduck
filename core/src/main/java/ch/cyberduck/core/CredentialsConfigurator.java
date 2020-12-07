@@ -28,4 +28,16 @@ public interface CredentialsConfigurator {
     Credentials configure(Host host);
 
     CredentialsConfigurator reload();
+
+    CredentialsConfigurator DISABLED = new CredentialsConfigurator() {
+        @Override
+        public Credentials configure(final Host host) {
+            return host.getCredentials();
+        }
+
+        @Override
+        public CredentialsConfigurator reload() {
+            return this;
+        }
+    };
 }
