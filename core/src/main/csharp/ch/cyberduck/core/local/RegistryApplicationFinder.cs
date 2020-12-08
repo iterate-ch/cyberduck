@@ -52,6 +52,10 @@ namespace Ch.Cyberduck.Core.Local
         //vormals GetApplicationNameForExe
         public Application getDescription(string application)
         {
+            if (Utils.IsBlank(application))
+            {
+                return Application.notfound;
+            }
             if (!applicationNameCache.ContainsKey(application))
             {
                 string path = WindowsApplicationLauncher.GetExecutableCommand(application);
