@@ -1,7 +1,5 @@
-package ch.cyberduck.core.keychain;
-
-/*
- * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+package ch.cyberduck.core.keychain;/*
+ * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,12 +16,12 @@ package ch.cyberduck.core.keychain;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.mac.CoreFoundation;
 
-public class SecIdentityRef extends CoreFoundation.CFTypeRef {
+public class SecKeychainItemRef extends CoreFoundation.CFTypeRef {
 
-    public SecIdentityRef() {
+    public SecKeychainItemRef() {
     }
 
-    public SecIdentityRef(final Pointer p) {
+    public SecKeychainItemRef(final Pointer p) {
         super(p);
     }
 }

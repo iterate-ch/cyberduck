@@ -28,7 +28,7 @@ import java.util.Collections;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
-import com.sun.jna.PointerType;
+import com.sun.jna.platform.mac.CoreFoundation;
 
 public interface FoundationKitFunctions extends Library {
     FoundationKitFunctions library = Native.load(
@@ -295,6 +295,14 @@ public interface FoundationKitFunctions extends Library {
 
     CFStringRef CFStringCreateWithCharacters(CFAllocatorRef allocator, char[] chars, CFIndex index);
 
-    void CFRelease(PointerType ref);
+    /**
+     * Releases a Core Foundation object. If the retain count of cf becomes zero the memory allocated to the object is
+     * deallocated and the object is destroyed. If you create, copy, or explicitly retain (see the CFRetain function) a
+     * Core Foundation object, you are responsible for releasing it when you no longer need it (see Memory Management
+     * Programming Guide for Core Foundation).
+     *
+     * @param ref A CFType object to release. This value must not be NULL.
+     */
+    void CFRelease(CoreFoundation.CFTypeRef ref);
 }
 

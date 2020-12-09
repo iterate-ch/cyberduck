@@ -28,7 +28,7 @@ public interface PasswordStore {
      * @param accountName Account
      * @return Password if found or null otherwise
      */
-    String getPassword(String serviceName, String accountName);
+    String getPassword(String serviceName, String accountName) throws LocalAccessDeniedException;
 
     /**
      * Add generic password for application
@@ -48,7 +48,7 @@ public interface PasswordStore {
      * @param hostname Hostname
      * @param user     Credentials  @return Password if found or null otherwise
      */
-    String getPassword(Scheme scheme, int port, String hostname, String user);
+    String getPassword(Scheme scheme, int port, String hostname, String user) throws LocalAccessDeniedException;
 
     /**
      * Save internet password
