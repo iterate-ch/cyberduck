@@ -182,7 +182,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
             }
         }, null);
         assertTrue(empty.isEmpty());
-        assertEquals(1, userApi.requestUserKeyPairs(null, null).size());
+        assertEquals(2, userApi.requestUserKeyPairs(null, null).size());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
