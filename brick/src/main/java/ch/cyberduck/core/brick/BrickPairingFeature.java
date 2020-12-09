@@ -17,6 +17,7 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Pairing;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -64,6 +65,9 @@ public class BrickPairingFeature implements Pairing {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
+        }
+        finally {
+            PasswordStoreFactory.get().delete(session.getHost());
         }
     }
 }
