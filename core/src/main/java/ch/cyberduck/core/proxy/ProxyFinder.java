@@ -19,8 +19,6 @@ package ch.cyberduck.core.proxy;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-
 public interface ProxyFinder {
-    Proxy find(Host target);
+    Proxy find(String target);
 }

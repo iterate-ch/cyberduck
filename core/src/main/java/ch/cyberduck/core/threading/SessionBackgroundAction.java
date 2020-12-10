@@ -35,6 +35,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -170,7 +171,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                     log.debug(String.format("Re-authenticate with credentials %s", bookmark.getCredentials()));
                 }
                 // Try to authenticate again
-                service.authenticate(ProxyFactory.get().find(bookmark), session, progress, login, new CancelCallback() {
+                service.authenticate(ProxyFactory.get().find(new ProxyHostUrlProvider().get(bookmark)), session, progress, login, new CancelCallback() {
                     @Override
                     public void verify() throws ConnectionCanceledException {
                         if(SessionBackgroundAction.this.isCanceled()) {

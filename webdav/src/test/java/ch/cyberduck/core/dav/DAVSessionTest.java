@@ -260,7 +260,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             new DisabledProgressListener(),
             new ProxyFinder() {
                 @Override
-                public Proxy find(final Host target) {
+                public Proxy find(final String target) {
                     return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
                 }
             }
@@ -288,7 +288,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             new DisabledProgressListener(),
             new ProxyFinder() {
                 @Override
-                public Proxy find(final Host target) {
+                public Proxy find(final String target) {
                     return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
                 }
             }
@@ -324,7 +324,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             new DisabledProgressListener(),
             new ProxyFinder() {
                 @Override
-                public Proxy find(final Host target) {
+                public Proxy find(final String target) {
                     return new Proxy(Proxy.Type.HTTP, "localhost", 8080);
                 }
             }
@@ -374,7 +374,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             new DisabledProgressListener(),
             new ProxyFinder() {
                 @Override
-                public Proxy find(final Host target) {
+                public Proxy find(final String target) {
                     return new Proxy(Proxy.Type.HTTPS, "localhost", 8080);
                 }
             }

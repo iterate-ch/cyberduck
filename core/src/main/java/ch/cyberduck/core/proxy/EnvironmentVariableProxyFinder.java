@@ -1,6 +1,6 @@
 package ch.cyberduck.core.proxy;
 
-import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -17,11 +17,11 @@ public class EnvironmentVariableProxyFinder implements ProxyFinder {
             = PreferencesFactory.get();
 
     @Override
-    public Proxy find(final Host target) {
+    public Proxy find(final String target) {
         if(!preferences.getBoolean("connection.proxy.enable")) {
             return Proxy.DIRECT;
         }
-        switch(target.getProtocol().getScheme()) {
+        switch(Scheme.valueOf(URI.create(target).getScheme())) {
             case ftp:
             case ftps:
             case sftp:

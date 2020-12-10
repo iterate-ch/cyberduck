@@ -19,7 +19,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -69,7 +68,7 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     protected Drive connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) throws HostParserException {
-        final HttpClientBuilder configuration = builder.build(ProxyFactory.get().find(HostParser.parse(host.getProtocol().getOAuthAuthorizationUrl())), this, prompt);
+        final HttpClientBuilder configuration = builder.build(ProxyFactory.get().find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol())
             .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);

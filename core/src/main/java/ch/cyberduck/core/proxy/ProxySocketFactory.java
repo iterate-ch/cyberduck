@@ -85,7 +85,7 @@ public class ProxySocketFactory extends SocketFactory {
      * direct connection socket factory.
      */
     protected SocketFactory factory(final String target) {
-        final Proxy proxy = proxyFinder.find(host);
+        final Proxy proxy = proxyFinder.find(target);
         if(!types.contains(proxy.getType())) {
             log.warn(String.format("Use of %s proxy is disabled for socket factory %s", proxy.getType(), this));
             return new DefaultSocketFactory();

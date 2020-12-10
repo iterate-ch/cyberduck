@@ -18,8 +18,6 @@ package ch.cyberduck.core.proxy;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -37,18 +35,15 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
         Native.load("core");
     }
 
-    private final HostUrlProvider provider
-        = new ProxyHostUrlProvider();
-
     private final Preferences preferences
         = PreferencesFactory.get();
 
     @Override
-    public Proxy find(final Host target) {
+    public Proxy find(final String target) {
         if(!preferences.getBoolean("connection.proxy.enable")) {
             return Proxy.DIRECT;
         }
-        final String route = this.findNative(provider.get(target));
+        final String route = this.findNative(target);
         if(null == route) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("No proxy configuration found for target %s", target));

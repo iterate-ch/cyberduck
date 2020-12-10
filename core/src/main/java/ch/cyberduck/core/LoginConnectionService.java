@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -131,7 +132,7 @@ public class LoginConnectionService implements ConnectionService {
         // Try to resolve the hostname first
         final String hostname = HostnameConfiguratorFactory.get(bookmark.getProtocol()).getHostname(bookmark.getHostname());
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Resolving {0}", "Status"), hostname));
-        final Proxy proxy = this.proxy.find(bookmark);
+        final Proxy proxy = this.proxy.find(new ProxyHostUrlProvider().get(bookmark));
         if(proxy == Proxy.DIRECT) {
             // Only try to resolve target hostname if direct connection
             if(null == JumpHostConfiguratorFactory.get(bookmark.getProtocol()).getJumphost(bookmark.getHostname())) {

@@ -62,7 +62,7 @@ public class FTPSessionTest extends AbstractFTPTest {
             new DisabledProgressListener(),
             new ProxyFinder() {
                 @Override
-                public Proxy find(final Host target) {
+                public Proxy find(final String target) {
                     return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
                 }
             });

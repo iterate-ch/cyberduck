@@ -160,7 +160,7 @@ public class SDSSessionTest extends AbstractSDSTest {
             new DisabledProgressListener(),
             new ProxyFinder() {
                 @Override
-                public Proxy find(final Host target) {
+                public Proxy find(final String target) {
                     return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
                 }
             }
@@ -189,7 +189,7 @@ public class SDSSessionTest extends AbstractSDSTest {
             new DisabledProgressListener(),
             new ProxyFinder() {
                 @Override
-                public Proxy find(final Host target) {
+                public Proxy find(final String target) {
                     return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
                 }
             }
