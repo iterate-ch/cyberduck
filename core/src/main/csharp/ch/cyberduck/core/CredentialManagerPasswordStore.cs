@@ -66,13 +66,13 @@ namespace Ch.Cyberduck.Core
 
         public override void deletePassword(String serviceName, String user)
         {
-            return WinCredentialManager.RemoveCredentials($"{serviceName} - {user}");
+            WinCredentialManager.RemoveCredentials($"{serviceName} - {user}");
         }
 
         public override void deletePassword(Scheme scheme, int port, string hostName, string user)
         {
             var hostUrl = hostUrlProvider.get(scheme, port, user, hostName, string.Empty);
-            return WinCredentialManager.RemoveCredentials(hostUrl);
+            WinCredentialManager.RemoveCredentials(hostUrl);
         }
     }
 }
