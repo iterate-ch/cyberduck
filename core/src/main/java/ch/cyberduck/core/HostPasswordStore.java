@@ -26,5 +26,20 @@ public interface HostPasswordStore extends PasswordStore {
 
     OAuthTokens findOAuthTokens(Host bookmark);
 
+    /**
+     * Adds the password to the login keychain
+     *
+     * @param bookmark Hostname
+     * @throws LocalAccessDeniedException Failure accessing store
+     * @see ch.cyberduck.core.Host#getCredentials()
+     */
     void save(Host bookmark) throws LocalAccessDeniedException;
+
+    /**
+     * Delete password in login keychain if any
+     *
+     * @param bookmark Hostname
+     * @throws LocalAccessDeniedException Failure accessing store
+     */
+    void delete(Host bookmark) throws LocalAccessDeniedException;
 }

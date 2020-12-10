@@ -29,6 +29,7 @@ import java.util.Collections;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
 public interface SecurityFunctions extends Library {
@@ -232,4 +233,306 @@ public interface SecurityFunctions extends Library {
      * @return A result code. See Security Framework Result Codes.
      */
     int SecTrustSetAnchorCertificatesOnly(SecTrustRef trust, boolean anchorCertificatesOnly);
+
+    /**
+     * @param keychain          A reference to the keychain in which to store a generic password. Pass NULL to specify
+     *                          the default keychain.
+     * @param serviceNameLength The length of the serviceName character string.
+     * @param serviceName       A UTF-8 encoded character string representing the service name.
+     * @param accountNameLength The length of the accountName character string.
+     * @param accountName       A UTF-8 encoded character string representing the account name.
+     * @param passwordLength    On return, the length of the buffer pointed to by passwordData.
+     * @param passwordData      On return, a pointer to a buffer that holds the password data. Pass NULL if you want to
+     *                          obtain the item object but not the password data. In this case, you must also pass NULL
+     *                          in the passwordLength parameter. You should use the SecKeychainItemFreeContent function
+     *                          to free the memory pointed to by this parameter.
+     * @param itemRef           On return, a pointer to a reference to the new keychain item. Pass NULL if you don’t
+     *                          want to obtain this object. You must allocate the memory for this pointer. You must call
+     *                          the CFRelease function to release this object when you are finished using it.
+     * @return A result code. See Security Framework Result Codes.
+     */
+    int SecKeychainAddGenericPassword(
+        SecKeychainItemRef keychain,
+        int serviceNameLength,
+        byte[] serviceName,
+        int accountNameLength,
+        byte[] accountName,
+        int passwordLength,
+        byte[] passwordData,
+        PointerByReference itemRef
+    );
+
+    /**
+     * Adds a new Internet password to a keychain. This function adds a new Internet server password to the specified
+     * keychain. Required parameters to identify the password are serverName and accountName (you cannot pass NULL for
+     * both parameters). In addition, some protocols may require an optional securityDomain when authentication is
+     * requested. This function optionally returns a reference to the newly added item.
+     * <p>
+     * This function sets the initial access rights for the new keychain item so that the application creating the item
+     * is given trusted access.
+     * <p>
+     * This function automatically calls the function SecKeychainUnlock to display the Unlock Keychain dialog box if the
+     * keychain is currently locked.
+     *
+     * @param keychain           A reference to an array of keychains to search, a single keychain or NULL to search the
+     *                           user’s default keychain search list.
+     * @param serviceNameLength  The length of the serviceName character string.
+     * @param serviceName        A UTF-8 encoded character string representing the service name.
+     * @param accountNameLength  The length of the accountName character string.
+     * @param accountName        A UTF-8 encoded character string representing the account name.
+     * @param pathLength         The length of the path character string.
+     * @param path               A UTF-8 encoded character string representing the path.
+     * @param port               The TCP/IP port number. If no specific port number is associated with this password,
+     *                           pass 0.
+     * @param protocolType       The protocol associated with this password. See SecProtocolType for a description of
+     *                           possible values.
+     * @param authenticationType The authentication scheme used. See SecAuthenticationType for a description of possible
+     *                           values. Pass the constant kSecAuthenticationTypeDefault, to specify the default
+     *                           authentication scheme.
+     * @param passwordLength     On return, the length of the buffer pointed to by passwordData.
+     * @param passwordData       On return, a pointer to a buffer that holds the password data. Pass NULL if you want to
+     *                           obtain the item object but not the password data. In this case, you must also pass NULL
+     *                           in the passwordLength parameter. You should use the SecKeychainItemFreeContent function
+     *                           to free the memory pointed to by this parameter.
+     * @param itemRef            A result code. See Security Framework Result Codes.
+     * @return A result code. See Security Framework Result Codes. The result code errSecNoDefaultKeychain indicates
+     * that no default keychain could be found. The result code errSecDuplicateItem indicates that you tried to add a
+     * password that already exists in the keychain. The result code errSecDataTooLarge indicates that you tried to add
+     * more data than is allowed for a structure of this type.
+     */
+    int SecKeychainAddInternetPassword(
+        SecKeychainItemRef keychain,
+        int serviceNameLength,
+        byte[] serviceName,
+        int securityDomainLength,
+        byte[] securityDomain,
+        int accountNameLength,
+        byte[] accountName,
+        int pathLength,
+        byte[] path,
+        int port,
+        int protocolType,
+        int authenticationType,
+        int passwordLength,
+        byte[] passwordData,
+        PointerByReference itemRef
+    );
+
+
+    /**
+     * Updates an existing keychain item after changing its attributes and/or data. If the keychain item has not
+     * previously been added to a keychain, a call to this function does nothing and returns noErr.
+     * <p>
+     * Note that when you use this function to modify a keychain item, Keychain Services updates the modification date
+     * of the item. Therefore, you cannot use this function to modify the modification date, as the value you specify
+     * will be overwritten with the current time. If you want to change the modification date to something other than
+     * the current time, use a CSSM function to do so.
+     * <p>
+     * You should pair the SecKeychainItemModifyContent function with the SecKeychainItemCopyContent function when
+     * dealing with older Keychain Manager functions. The SecKeychainItemCopyAttributesAndData and
+     * SecKeychainItemModifyAttributesAndData functions handle more attributes than are support by the old Keychain
+     * Manager; however, passing them into older calls yields an invalid attribute error.
+     *
+     * @param itemRef        A reference to the keychain item to modify.
+     * @param attrList       A pointer to the list of attributes to set and their new values. Pass NULL if you have no
+     *                       need to modify attributes.
+     * @param passwordLength The length of the buffer pointed to by the data parameter. Pass 0 if you pass NULL in the
+     *                       data parameter.
+     * @param passwordData   A pointer to a buffer containing the data to store. Pass NULL if you do not need to modify
+     *                       the data.
+     * @return A result code. See Security Framework Result Codes.
+     */
+    int SecKeychainItemModifyContent(
+        SecKeychainItemRef itemRef,
+        Pointer/*SecKeychainAttributeList**/ attrList,
+        int passwordLength,
+        byte[] passwordData
+    );
+
+    /**
+     * Finds the first generic password based on the attributes passed. This function finds the first generic password
+     * item that matches the attributes you provide. Most attributes are optional; you should pass only as many as you
+     * need to narrow the search sufficiently for your application’s intended use. This function optionally returns a
+     * reference to the found item.
+     * <p>
+     * This function decrypts the password before returning it to you. If the calling application is not in the list of
+     * trusted applications, the user is prompted before access is allowed. If the access controls for this item do not
+     * allow decryption, the function returns the errSecAuthFailed result code.
+     * <p>
+     * This function automatically calls the function SecKeychainUnlock to display the Unlock Keychain dialog box if the
+     * keychain is currently locked.
+     *
+     * @param keychainOrArray   A reference to an array of keychains to search, a single keychain or NULL to search the
+     *                          user’s default keychain search list.
+     * @param serviceNameLength The length of the serviceName character string.
+     * @param serviceName       A UTF-8 encoded character string representing the service name.
+     * @param accountNameLength The length of the accountName character string.
+     * @param accountName       A UTF-8 encoded character string representing the account name.
+     * @param passwordLength    On return, the length of the buffer pointed to by passwordData.
+     * @param passwordData      On return, a pointer to a buffer that holds the password data. Pass NULL if you want to
+     *                          obtain the item object but not the password data. In this case, you must also pass NULL
+     *                          in the passwordLength parameter. You should use the SecKeychainItemFreeContent function
+     *                          to free the memory pointed to by this parameter.
+     * @param itemRef           A result code. See Security Framework Result Codes.
+     * @return A result code. See Security Framework Result Codes.
+     */
+    int SecKeychainFindGenericPassword(
+        SecKeychainItemRef keychainOrArray,
+        int serviceNameLength,
+        byte[] serviceName,
+        int accountNameLength,
+        byte[] accountName,
+        IntByReference passwordLength,
+        PointerByReference passwordData,
+        PointerByReference itemRef
+    );
+
+    /**
+     * Finds the first Internet password based on the attributes passed. This function finds the first Internet password
+     * item that matches the attributes you provide. This function optionally returns a reference to the found item.
+     * <p>
+     * This function decrypts the password before returning it to you. If the calling application is not in the list of
+     * trusted applications, the user is prompted before access is allowed. If the access controls for this item do not
+     * allow decryption, the function returns the errSecAuthFailed result code.
+     * <p>
+     * This function automatically calls the function SecKeychainUnlock to display the Unlock Keychain dialog box if the
+     * keychain is currently locked.
+     *
+     * @param keychainOrArray      A reference to an array of keychains to search, a single keychain or NULL to search
+     *                             the user’s default keychain search list.
+     * @param serverNameLength     The length of the serverName character string.
+     * @param serverName           A UTF-8 encoded character string representing the server name.
+     * @param securityDomainLength The length of the securityDomain character string.
+     * @param securityDomain       A UTF-8 encoded character string representing the security domain. This parameter is
+     *                             optional, as not all protocols require it. Pass NULL if it is not required.
+     * @param accountNameLength    The length of the accountName character string.
+     * @param accountName          A UTF-8 encoded character string representing the account name.
+     * @param pathLength           The length of the path character string.
+     * @param path                 A UTF-8 encoded character string representing the path.
+     * @param port                 The TCP/IP port number. Pass 0 to ignore the port number.
+     * @param protocolType         The protocol associated with this password. See SecProtocolType for a description of
+     *                             possible values.
+     * @param authenticationType   The authentication scheme used. See SecAuthenticationType for a description of
+     *                             possible values. Pass the constant kSecAuthenticationTypeDefault, to specify the
+     *                             default authentication scheme.
+     * @param passwordData         On return, a pointer to a buffer containing the password data. Pass NULL if you want
+     *                             to obtain the item object but not the password data. In this case, you must also pass
+     *                             NULL in the passwordLength parameter. You should use the SecKeychainItemFreeContent
+     *                             function to free the memory pointed to by this parameter.
+     * @param passwordLength       On return, the length of the buffer pointed to by passwordData.
+     * @param itemRef              On return, a pointer to the item object of the Internet password. You are responsible
+     *                             for releasing your reference to this object. Pass NULL if you don’t want to obtain
+     *                             this object.
+     * @return A result code. See Security Framework Result Codes.
+     */
+    int SecKeychainFindInternetPassword(
+        SecKeychainItemRef keychainOrArray,
+        int serverNameLength,
+        byte[] serverName,
+        int securityDomainLength,
+        byte[] securityDomain,
+        int accountNameLength,
+        byte[] accountName,
+        int pathLength,
+        byte[] path,
+        int port,
+        int protocolType,
+        int authenticationType,
+        IntByReference passwordLength,
+        PointerByReference passwordData,
+        PointerByReference itemRef
+    );
+
+    /**
+     * Deletes a keychain item from the default keychain’s permanent data store.
+     *
+     * @param itemRef A keychain item object of the item to delete. You must call the CFRelease function to release this
+     *                object when you are finished using it.
+     * @return A result code. See Security Framework Result Codes.
+     */
+    int SecKeychainItemDelete(Pointer itemRef);
+
+    /**
+     * Releases the memory used by the keychain attribute list and the keychain data retrieved in a call to the
+     * SecKeychainItemCopyContent function.
+     *
+     * @param attrList A pointer to the attribute list to release. Pass NULL if there is no attribute list to release.
+     * @param data     A pointer to the data buffer to release. Pass NULL if there is no data to release.
+     * @return A result code. See Security Framework Result Codes.
+     */
+    int SecKeychainItemFreeContent(Pointer attrList, Pointer data);
+
+    int kSecProtocolTypeFTP = 0x66747020;
+    int kSecProtocolTypeFTPAccount = 0x66747061;
+    int kSecProtocolTypeHTTP = 0x68747470;
+    int kSecProtocolTypeIRC = 0x69726320;
+    int kSecProtocolTypeNNTP = 0x6E6E7470;
+    int kSecProtocolTypePOP3 = 0x706F7033;
+    int kSecProtocolTypeSMTP = 0x736D7470;
+    int kSecProtocolTypeSOCKS = 0x736F7820;
+    int kSecProtocolTypeIMAP = 0x696D6170;
+    int kSecProtocolTypeLDAP = 0x6C646170;
+    int kSecProtocolTypeAppleTalk = 0x61746C6B;
+    int kSecProtocolTypeAFP = 0x61667020;
+    int kSecProtocolTypeTelnet = 0x74656C6E;
+    int kSecProtocolTypeSSH = 0x73736820;
+    int kSecProtocolTypeFTPS = 0x66747073;
+    int kSecProtocolTypeHTTPS = 0x68747073;
+    int kSecProtocolTypeHTTPProxy = 0x68747078;
+    int kSecProtocolTypeHTTPSProxy = 0x68747378;
+    int kSecProtocolTypeFTPProxy = 0x66747078;
+    int kSecProtocolTypeCIFS = 0x63696673;
+    int kSecProtocolTypeSMB = 0x736D6220;
+    int kSecProtocolTypeRTSP = 0x72747370;
+    int kSecProtocolTypeRTSPProxy = 0x72747378;
+    int kSecProtocolTypeDAAP = 0x64616170;
+    int kSecProtocolTypeEPPC = 0x65707063;
+    int kSecProtocolTypeIPP = 0x69707020;
+    int kSecProtocolTypeNNTPS = 0x6E747073;
+    int kSecProtocolTypeLDAPS = 0x6C647073;
+    int kSecProtocolTypeTelnetS = 0x74656C73;
+    int kSecProtocolTypeIMAPS = 0x696D7073;
+    int kSecProtocolTypeIRCS = 0x69726373;
+    int kSecProtocolTypePOP3S = 0x706F7073;
+    int kSecProtocolTypeCVSpserver = 0x63767370;
+    int kSecProtocolTypeSVN = 0x73766E20;
+    int kSecProtocolTypeAny = 0x00000000;
+
+    int kSecAuthenticationTypeNTLM = 0x6D6C746E;
+    int kSecAuthenticationTypeMSN = 0x616E736D;
+    int kSecAuthenticationTypeDPA = 0x61617064;
+    int kSecAuthenticationTypeRPA = 0x61617072;
+    int kSecAuthenticationTypeHTTPBasic = 0x70747468;
+    int kSecAuthenticationTypeHTTPDigest = 0x64747468;
+    int kSecAuthenticationTypeHTMLForm = 0x6D726F66;
+    int kSecAuthenticationTypeDefault = 0x746C6664;
+    int kSecAuthenticationTypeAny = 0x00000000;
+
+    /**
+     * The item cannot be found.
+     */
+    int errSecItemNotFound = -25300;
+
+    /**
+     * The system considers an item to be a duplicate for a given keychain when that keychain already has an item of the
+     * same class with the same set of composite primary keys. Each class of keychain item has a different set of
+     * primary keys, although a few attributes are used in common across all classes. In particular, where applicable,
+     * kSecAttrSynchronizable and kSecAttrAccessGroup are part of the set of primary keys. The additional per-class
+     * primary keys are listed below:
+     * <p>
+     * For generic passwords, the primary keys include kSecAttrAccount and kSecAttrService.
+     * <p>
+     * For internet passwords, the primary keys include kSecAttrAccount, kSecAttrSecurityDomain, kSecAttrServer,
+     * kSecAttrProtocol, kSecAttrAuthenticationType, kSecAttrPort, and kSecAttrPath.
+     * <p>
+     * For certificates, the primary keys include kSecAttrCertificateType, kSecAttrIssuer, and kSecAttrSerialNumber.
+     * <p>
+     * For key items, the primary keys include kSecAttrKeyClass, kSecAttrKeyType, kSecAttrApplicationLabel,
+     * kSecAttrApplicationTag, kSecAttrKeySizeInBits, and kSecAttrEffectiveKeySize.
+     * <p>
+     * For identity items, which are a certificate and a private key bundled together, the primary keys are the same as
+     * for a certificate. Because a private key may be certified more than once, the uniqueness of the certificate
+     * determines that of the identity.
+     */
+    int errSecDuplicateItem = -25299;
 }

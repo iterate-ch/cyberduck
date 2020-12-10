@@ -16,9 +16,9 @@ package ch.cyberduck.core.keychain;
  */
 
 import com.sun.jna.Pointer;
-import com.sun.jna.PointerType;
+import com.sun.jna.platform.mac.CoreFoundation;
 
-public class SecCertificateRef extends PointerType {
+public class SecCertificateRef extends CoreFoundation.CFTypeRef {
 
     public SecCertificateRef() {
     }

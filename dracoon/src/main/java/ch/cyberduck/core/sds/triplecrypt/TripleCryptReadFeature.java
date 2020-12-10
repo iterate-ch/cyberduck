@@ -89,7 +89,7 @@ public class TripleCryptReadFeature implements Read {
         }
     }
 
-    private Credentials unlock(final ConnectionCallback callback, final UserKeyPair userKeyPair) throws CryptoException, AccessDeniedException {
+    private Credentials unlock(final ConnectionCallback callback, final UserKeyPair userKeyPair) throws CryptoException, BackgroundException {
         final Credentials passphrase;
         try {
             passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);

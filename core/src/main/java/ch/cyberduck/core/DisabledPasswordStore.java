@@ -17,6 +17,8 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
+
 public class DisabledPasswordStore extends DefaultHostPasswordStore {
 
     @Override
@@ -37,5 +39,15 @@ public class DisabledPasswordStore extends DefaultHostPasswordStore {
     @Override
     public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
         //
+    }
+
+    @Override
+    public void deletePassword(final String serviceName, final String user) throws LocalAccessDeniedException {
+
+    }
+
+    @Override
+    public void deletePassword(final Scheme scheme, final int port, final String hostname, final String user) throws LocalAccessDeniedException {
+
     }
 }

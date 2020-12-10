@@ -38,6 +38,7 @@ import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.HostParserException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -428,14 +429,19 @@ public class BookmarkController extends SheetController implements CollectionLis
                     if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
                         return;
                     }
-                    final String password = keychain.getPassword(bookmark.getProtocol().getScheme(),
-                        bookmark.getPort(),
-                        bookmark.getHostname(),
-                        bookmark.getCredentials().getUsername());
-                    if(StringUtils.isNotBlank(password)) {
-                        updateField(passwordField, password);
-                        // Make sure password fetched from keychain and set in field is set in model
-                        bookmark.getCredentials().setPassword(password);
+                    try {
+                        final String password = keychain.getPassword(bookmark.getProtocol().getScheme(),
+                            bookmark.getPort(),
+                            bookmark.getHostname(),
+                            bookmark.getCredentials().getUsername());
+                        if(StringUtils.isNotBlank(password)) {
+                            updateField(passwordField, password);
+                            // Make sure password fetched from keychain and set in field is set in model
+                            bookmark.getCredentials().setPassword(password);
+                        }
+                    }
+                    catch(LocalAccessDeniedException e) {
+                        // Ignore
                     }
                 }
             }

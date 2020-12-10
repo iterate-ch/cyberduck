@@ -6,6 +6,7 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import org.junit.Test;
 
@@ -48,6 +49,16 @@ public class FilezillaBookmarkCollectionTest {
             public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
                 assertEquals("test", password);
                 saved.set(true);
+            }
+
+            @Override
+            public void deletePassword(final String serviceName, final String user) throws LocalAccessDeniedException {
+
+            }
+
+            @Override
+            public void deletePassword(final Scheme scheme, final int port, final String hostname, final String user) throws LocalAccessDeniedException {
+
             }
         });
         assertEquals(0, c.size());
