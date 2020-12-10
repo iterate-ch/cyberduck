@@ -102,12 +102,12 @@ public class OneDriveSession extends GraphSession {
         if(type == Home.class) {
             return (T) new OneDriveHomeFinderService(this);
         }
-        if(null != getUser()) {
+        if(type == Lock.class) {
+            // this is a hack. Graph creationType can be present, but `null`, which is totally valid.
+            // in order to determine whether this is a Microsoft or AAD account, we need to check for
+            // a null-optional, not for non-present optional.
             //noinspection OptionalAssignedToNull
-            if(type == Lock.class && null != getUser().getCreationType()) {
-                // this is a hack. Graph creationType can be present, but `null`, which is totally valid.
-                // in order to determine whether this is a Microsoft or AAD account, we need to check for
-                // a null-optional, not for non-present optional.
+            if(null != getUser() && null != getUser().getCreationType()) {
                 return (T) new GraphLockFeature(this);
             }
         }
