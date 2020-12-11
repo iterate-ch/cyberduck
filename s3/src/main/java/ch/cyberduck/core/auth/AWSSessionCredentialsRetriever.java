@@ -71,7 +71,7 @@ public class AWSSessionCredentialsRetriever {
         final Path access = new Path(PathNormalizer.normalize(address.getDefaultPath()), EnumSet.of(Path.Type.file));
         address.setDefaultPath(String.valueOf(Path.DELIMITER));
         final DAVSession connection = new DAVSession(address, trust, key);
-        connection.withListener(transcript).open(ProxyFactory.get().find(address), new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        connection.withListener(transcript).open(ProxyFactory.get().find(url), new DisabledHostKeyCallback(), new DisabledLoginCallback());
         final InputStream in = new DAVReadFeature(connection).read(access, new TransferStatus(), new DisabledConnectionCallback());
         try {
             final Credentials credentials = this.parse(in);

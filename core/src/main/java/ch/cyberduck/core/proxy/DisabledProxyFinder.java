@@ -18,11 +18,9 @@ package ch.cyberduck.core.proxy;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Host;
-
 public class DisabledProxyFinder implements ProxyFinder {
     @Override
-    public Proxy find(final Host target) {
+    public Proxy find(final String target) {
         return Proxy.DIRECT;
     }
 }

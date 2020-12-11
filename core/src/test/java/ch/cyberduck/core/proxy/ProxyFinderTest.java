@@ -19,8 +19,6 @@ package ch.cyberduck.core.proxy;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -32,7 +30,7 @@ public class ProxyFinderTest {
     public void testWildcard() {
         AbstractProxyFinder p = new AbstractProxyFinder() {
             @Override
-            public Proxy find(final Host target) {
+            public Proxy find(final String target) {
                 throw new UnsupportedOperationException();
             }
         };

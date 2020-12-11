@@ -26,6 +26,7 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -57,7 +58,7 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                         final Host bookmark = session.getHost();
                         final Credentials credentials = bookmark.getCredentials();
                         credentials.reset();
-                        session.login(ProxyFactory.get().find(bookmark), prompt, new DisabledCancelCallback());
+                        session.login(ProxyFactory.get().find(new ProxyHostUrlProvider().get(bookmark)), prompt, new DisabledCancelCallback());
                         if(credentials.isSaved()) {
                             store.save(bookmark);
                         }

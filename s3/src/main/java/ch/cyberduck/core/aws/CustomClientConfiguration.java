@@ -26,6 +26,7 @@ import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -68,7 +69,7 @@ public class CustomClientConfiguration extends ClientConfiguration {
         this.setMaxErrorRetry(0);
         this.setMaxConnections(1);
         this.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
-        final Proxy proxy = ProxyFactory.get().find(host);
+        final Proxy proxy = ProxyFactory.get().find(new ProxyHostUrlProvider().get(host));
         switch(proxy.getType()) {
             case HTTP:
             case HTTPS:

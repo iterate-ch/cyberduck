@@ -17,8 +17,6 @@ package ch.cyberduck.core.proxy;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -29,20 +27,17 @@ import java.net.URI;
 public class DefaultProxyFinder implements ProxyFinder {
 
     private final ProxySelector selector
-            = ProxySelector.getDefault();
+        = ProxySelector.getDefault();
 
     private final Preferences preferences
-            = PreferencesFactory.get();
-
-    private final HostUrlProvider provider
-            = new ProxyHostUrlProvider();
+        = PreferencesFactory.get();
 
     @Override
-    public Proxy find(final Host target) {
+    public Proxy find(final String target) {
         if(!preferences.getBoolean("connection.proxy.enable")) {
             return Proxy.DIRECT;
         }
-        for(java.net.Proxy proxy : selector.select(URI.create(provider.get(target)))) {
+        for(java.net.Proxy proxy : selector.select(URI.create(target))) {
             switch(proxy.type()) {
                 case DIRECT: {
                     return Proxy.DIRECT;

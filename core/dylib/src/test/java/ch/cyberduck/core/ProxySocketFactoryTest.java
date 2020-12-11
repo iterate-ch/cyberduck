@@ -55,7 +55,7 @@ public class ProxySocketFactoryTest {
         final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost"), new DefaultSocketConfigurator(),
                 new ProxyFinder() {
                     @Override
-                    public Proxy find(final Host target) {
+                    public Proxy find(final String target) {
                         return new Proxy(Proxy.Type.SOCKS, "localhost", 7000);
                     }
                 }).createSocket();

@@ -1,27 +1,25 @@
 package ch.cyberduck.core.proxy;
 
 /*
- * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class DefaultProxyFinderTest {
+public class EnvironmentVariableProxyFinderTest {
 
     @Test
     public void testFind() {
@@ -30,19 +28,5 @@ public class DefaultProxyFinderTest {
         assertEquals(Proxy.Type.DIRECT, proxy.find("sftp://cyberduck.io").getType());
         assertEquals(Proxy.Type.DIRECT, proxy.find("ftp://cyberduck.io").getType());
         assertEquals(Proxy.Type.DIRECT, proxy.find("ftps://cyberduck.io").getType());
-    }
-
-    @Test
-    public void testExcludedLocalHost() {
-        final DefaultProxyFinder proxy = new DefaultProxyFinder();
-        assertEquals(Proxy.Type.DIRECT, proxy.find("http://cyberduck.local").getType());
-        assertEquals(Proxy.Type.DIRECT, proxy.find("sftp://cyberduck.local").getType());
-    }
-
-    @Test
-    public void testSimpleExcluded() {
-        final DefaultProxyFinder proxy = new DefaultProxyFinder();
-        assertEquals(Proxy.Type.DIRECT, proxy.find("http://simple").getType());
-        assertEquals(Proxy.Type.DIRECT, proxy.find("sftp://simple").getType());
     }
 }

@@ -30,7 +30,7 @@ public class LoginConnectionServiceTest {
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(),
             new DisabledProxyFinder() {
                 @Override
-                public Proxy find(final Host target) {
+                public Proxy find(final String target) {
                     return new Proxy(Proxy.Type.HTTP, "proxy.local", 6666);
                 }
             });
