@@ -23,10 +23,11 @@ import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveItem;
-import org.nuxeo.onedrive.client.OneDrivePatchOperation;
-import org.nuxeo.onedrive.client.facets.FileSystemInfoFacet;
+import org.nuxeo.onedrive.client.PatchOperation;
+import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.FileSystemInfo;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -41,13 +42,13 @@ public class GraphTimestampFeature extends DefaultTimestampFeature {
 
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
-        final OneDrivePatchOperation patchOperation = new OneDrivePatchOperation();
-        final FileSystemInfoFacet info = new FileSystemInfoFacet();
+        final PatchOperation patchOperation = new PatchOperation();
+        final FileSystemInfo info = new FileSystemInfo();
         info.setLastModifiedDateTime(Instant.ofEpochMilli(status.getTimestamp()).atOffset(ZoneOffset.UTC));
         patchOperation.facet("fileSystemInfo", info);
-        final OneDriveItem item = session.toItem(file);
+        final DriveItem item = session.toItem(file);
         try {
-            item.patch(patchOperation);
+            Files.patch(item, patchOperation);
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Failure to write attributes of {0}", e, file);

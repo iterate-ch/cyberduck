@@ -18,25 +18,23 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>onedrive</string>
+        <string>sharepoint</string>
         <key>Vendor</key>
-        <string>office365-de-sharepoint</string>
+        <string>microsoft365-cn-sharepoint</string>
         <key>Description</key>
-        <string>Microsoft Office 365 Deutschland Sharepoint</string>
+        <string>Microsoft 365 China Sharepoint</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>
-        <string>graph.microsoft.de</string>
+        <string>microsoftgraph.chinacloudapi.cn</string>
         <key>Hostname Configurable</key>
         <false/>
         <key>Default Port</key>
         <string>443</string>
         <key>Port Configurable</key>
         <false/>
-        <key>Context</key>
-        <string>/v1.0</string>
         <key>OAuth Authorization Url</key>
-        <string>https://login.microsoftonline.de/common/oauth2/authorize?resource=https://graph.microsoft.de/</string>
+        <string>https://login.microsoftonline.de/common/oauth2/authorize</string>
         <key>OAuth Token Url</key>
         <string>https://login.microsoftonline.de/common/oauth2/token</string>
         <key>OAuth Client ID</key>

@@ -22,6 +22,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.onedrive.features.onedrive.SharedWithMeListService;
 
 import java.util.EnumSet;
 
@@ -46,7 +47,7 @@ public class OneDriveListService implements ListService {
             return list;
         }
         else if(SHARED_NAME.equals(directory)) {
-            return new OneDriveSharedWithMeListService(session).list(directory, listener);
+            return new SharedWithMeListService(session).list(directory, listener);
         }
         else {
             return new GraphItemListService(session).list(directory, listener);

@@ -15,13 +15,11 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 
 import org.apache.log4j.Logger;
-import org.nuxeo.onedrive.client.OneDriveDrive;
-import org.nuxeo.onedrive.client.OneDriveDrivesIterator;
+import org.nuxeo.onedrive.client.Drives;
+import org.nuxeo.onedrive.client.types.Drive;
 
 import java.util.Iterator;
 
@@ -38,10 +36,10 @@ public class GraphDrivesListService extends AbstractDriveListService {
     }
 
     @Override
-    protected Iterator<OneDriveDrive.Metadata> getIterator(final Path directory) {
+    protected Iterator<Drive.Metadata> getIterator(final Path directory) {
         // In most cases, OneDrive and OneDrive for Business users will only have a single
         // drive available, the default drive. When using OneDrive API with a SharePoint team site,
         // this API returns the collection of document libraries created in the site.
-        return new OneDriveDrivesIterator(session.getClient());
+        return Drives.getDrives(session.getClient());
     }
 }

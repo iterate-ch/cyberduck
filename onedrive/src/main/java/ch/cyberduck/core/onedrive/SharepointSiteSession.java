@@ -1,7 +1,7 @@
 package ch.cyberduck.core.onedrive;
 
 /*
- * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,37 +24,48 @@ import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.types.GroupItem;
 import org.nuxeo.onedrive.client.types.Site;
 
-public class SharepointSession extends AbstractSharepointSession {
-    private static final Logger log = Logger.getLogger(SharepointSession.class);
+import java.util.Objects;
 
-    public SharepointSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+public class SharepointSiteSession extends AbstractSharepointSession {
+    public SharepointSiteSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
 
     @Override
     public boolean isSingleSite() {
-        return false;
+        return true;
     }
 
     @Override
     public Site getSite(final Path file) throws BackgroundException {
+        final Path parent = file.getParent();
+        if (parent.isRoot()) {
+            String path = host.getDefaultPath();
+            if (StringUtils.isBlank(path) || "/".equals(path)) {
+                return Site.byId(getClient(), "root");
+            }
+            if (!path.startsWith("/")) {
+                path = "/" + path;
+            }
+            return Site.byPath(Site.byHostname(getClient(), host.getHostname()), path);
+        }
         return Site.byId(getClient(), fileIdProvider.getFileid(file, new DisabledListProgressListener()));
     }
 
     @Override
     public GroupItem getGroup(final Path file) throws BackgroundException {
-        return new GroupItem(getClient(), fileIdProvider.getFileid(file, new DisabledListProgressListener()));
+        return null;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new SharepointListService(this, this.getFeature(IdProvider.class));
+            return (T) new SharepointSiteListService(this, this.getFeature(IdProvider.class));
         }
         return super._getFeature(type);
     }
@@ -70,10 +81,6 @@ public class SharepointSession extends AbstractSharepointSession {
             return false;
         }
 
-        if(containerPath.isChild(SharepointListService.GROUPS_NAME)) {
-            return !SharepointListService.GROUPS_ID.equals(containerPath.getParent().attributes().getVersionId())
-                && (container || !containerPath.equals(file));
-        }
         return SharepointListService.DRIVES_ID.equals(containerPath.getParent().attributes().getVersionId())
             && (container || !containerPath.equals(file));
     }

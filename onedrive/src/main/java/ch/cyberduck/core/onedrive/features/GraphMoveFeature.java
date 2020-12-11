@@ -26,11 +26,11 @@ import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
+import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveFolder;
-import org.nuxeo.onedrive.client.OneDriveItem;
-import org.nuxeo.onedrive.client.OneDrivePatchOperation;
-import org.nuxeo.onedrive.client.facets.FileSystemInfoFacet;
+import org.nuxeo.onedrive.client.PatchOperation;
+import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.FileSystemInfo;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -54,21 +54,21 @@ public class GraphMoveFeature implements Move {
             // Reset version ID for non existing file
             renamed.attributes().setVersionId(null);
         }
-        final OneDrivePatchOperation patchOperation = new OneDrivePatchOperation();
+        final PatchOperation patchOperation = new PatchOperation();
         if(!StringUtils.equals(file.getName(), renamed.getName())) {
             patchOperation.rename(renamed.getName());
         }
         if(!file.getParent().equals(renamed.getParent())) {
-            final OneDriveFolder moveTarget = session.toFolder(renamed.getParent());
+            final DriveItem moveTarget = session.toFolder(renamed.getParent());
             patchOperation.move(moveTarget);
         }
         // Keep current timestamp set
-        final FileSystemInfoFacet info = new FileSystemInfoFacet();
+        final FileSystemInfo info = new FileSystemInfo();
         info.setLastModifiedDateTime(Instant.ofEpochMilli(file.attributes().getModificationDate()).atOffset(ZoneOffset.UTC));
         patchOperation.facet("fileSystemInfo", info);
-        final OneDriveItem item = session.toItem(file);
+        final DriveItem item = session.toItem(file);
         try {
-            item.patch(patchOperation);
+            Files.patch(item, patchOperation);
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Cannot rename {0}", e, file);

@@ -157,7 +157,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ProtocolFactory.get().register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
-                new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(),
+                new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(), new SharepointSiteProtocol(),
                 new MantaProtocol(), new SDSProtocol(), new StoregateProtocol(), new BrickProtocol(), new NextcloudProtocol());
             ProtocolFactory.get().loadDefaultProfiles();
         }

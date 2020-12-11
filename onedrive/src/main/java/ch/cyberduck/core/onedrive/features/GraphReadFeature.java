@@ -31,8 +31,9 @@ import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.log4j.Logger;
+import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveFile;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,7 +61,7 @@ public class GraphReadFeature implements Read {
                 return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
             }
             else {
-                final OneDriveFile target = session.toFile(file);
+                final DriveItem target = session.toFile(file);
                 if(status.isAppend()) {
                     final HttpRange range = HttpRange.withStatus(status);
                     final String header;
@@ -73,9 +74,9 @@ public class GraphReadFeature implements Read {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Add range header %s for file %s", header, file));
                     }
-                    return target.download(header);
+                    return Files.download(target, header);
                 }
-                return target.download();
+                return Files.download(target);
             }
         }
         catch(OneDriveAPIException e) {

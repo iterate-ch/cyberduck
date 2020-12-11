@@ -26,8 +26,9 @@ import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
+import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
 import java.util.Map;
@@ -46,8 +47,8 @@ public class GraphDeleteFeature implements Delete {
         for(Path file : files.keySet()) {
             callback.delete(file);
             try {
-                final OneDriveItem item = session.toItem(file);
-                item.delete();
+                final DriveItem item = session.toItem(file);
+                Files.delete(item);
             }
             catch(NotfoundException e) {
                 logger.warn(String.format("Cannot delete %s. Not found.", file));

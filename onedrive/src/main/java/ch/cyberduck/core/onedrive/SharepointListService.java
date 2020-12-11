@@ -16,58 +16,120 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CaseInsensitivePathPredicate;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.onedrive.features.sharepoint.GroupDrivesListService;
+import ch.cyberduck.core.onedrive.features.sharepoint.GroupListService;
 
+import org.apache.log4j.Logger;
+import org.nuxeo.onedrive.client.types.Site;
+
+import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Optional;
+import java.util.function.Predicate;
 
-public class SharepointListService implements ListService {
+public class SharepointListService extends AbstractSharepointListService {
+    static final Logger log = Logger.getLogger(SharepointListService.class);
 
-    private static final String DEFAULT_ID = "DEFAULT_NAME";
-    private static final String GROUPS_ID = "GROUPS_NAME";
+    public static final String DEFAULT_ID = "DEFAULT_NAME";
+    public static final String DRIVES_ID = "DRIVES_NAME";
+    public static final String GROUPS_ID = "GROUPS_NAME";
+    public static final String SITES_ID = "SITES_NAME";
 
     public static final Path DEFAULT_NAME = new Path("/Default", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DEFAULT_ID));
-    public static final Path GROUPS_NAME = new Path("/Groups", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(GROUPS_ID));
+    public static final Path DRIVES_NAME = new Path("/Drives", EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DRIVES_ID));
+    public static final Path GROUPS_NAME = new Path("/Groups", EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(GROUPS_ID));
+    public static final Path SITES_NAME = new Path("/Sites", EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(SITES_ID));
+
+    public static final Predicate<Path> DEFAULT_PREDICATE = new CaseInsensitivePathPredicate(DEFAULT_NAME);
 
     private final SharepointSession session;
-    private final IdProvider idProvider;
 
     public SharepointListService(final SharepointSession session, final IdProvider idProvider) {
+        super(session, idProvider);
         this.session = session;
-        this.idProvider = idProvider;
+    }
+
+    private Optional<Path> getDefault(final Path directory) {
+        try {
+            final Site site = Site.byId(session.getClient(), "root");
+            final Site.Metadata metadata = site.getMetadata();
+            final EnumSet<Path.Type> type = EnumSet.copyOf(DEFAULT_NAME.getType());
+            type.add(Path.Type.symboliclink);
+            final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new PathAttributes(DEFAULT_NAME.attributes()));
+            path.setSymlinkTarget(
+                new Path(SITES_NAME, metadata.getSiteCollection().getHostname(), SITES_NAME.getType(),
+                    new PathAttributes().withVersionId(metadata.getId())));
+            return Optional.of(path);
+        }
+        catch(IOException ex) {
+            log.error("Cannot get default site. Skipping.", ex);
+        }
+        return Optional.empty();
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(directory.isRoot()) {
-            final AttributedList<Path> list = new AttributedList<>();
-            list.add(DEFAULT_NAME);
-            list.add(GROUPS_NAME);
-            listener.chunk(directory, list);
-            return list;
+    AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        final AttributedList<Path> list = new AttributedList<>();
+        getDefault(directory).ifPresent(list::add);
+        addDefaultItems(list);
+        listener.chunk(directory, list);
+        return list;
+    }
+
+    static void addDefaultItems(final AttributedList<Path> list) throws BackgroundException {
+        list.add(GROUPS_NAME);
+        list.add(SITES_NAME);
+    }
+
+    static boolean isDefaultPath(final Path directory) {
+        return DEFAULT_PREDICATE.test(directory);
+    }
+
+    Path findDefaultPath(final Path directory) throws BackgroundException {
+        if(isDefaultPath(directory)) {
+            return getDefault(directory.getParent()).orElseThrow(() -> new NotfoundException(String.format("%s not found.", directory.getAbsolute())));
+        }
+        return directory;
+    }
+
+    Path getDefaultSymlinkTarget(final Path directory) throws BackgroundException {
+        if(directory.getSymlinkTarget() != null) {
+            return directory.getSymlinkTarget();
+        }
+        return getDefault(directory.getParent()).orElseThrow(() -> new NotfoundException(String.format("%s not found.", directory.getAbsolute()))).getSymlinkTarget();
+    }
+
+    @Override
+    AttributedList<Path> processList(Path directory, final ListProgressListener listener) throws BackgroundException {
+        // check whether this has been passed by bookmark defaultpath
+        final Path resolved = findDefaultPath(directory);
+
+        final String versionId = getIdProvider().getFileid(resolved, new DisabledListProgressListener());
+        if(DEFAULT_ID.equals(versionId)) {
+            final Path symlinkTarget = getDefaultSymlinkTarget(resolved);
+            return list(symlinkTarget, listener);
+        }
+        else if(GROUPS_ID.equals(versionId)) {
+            return new GroupListService(session).list(resolved, listener);
         }
         else {
-            if(DEFAULT_NAME.equals(directory)) {
-                return new GraphDrivesListService(session).list(directory, listener);
+            final Path parent = resolved.getParent();
+            if(!parent.isRoot()) {
+                final String parentId = getIdProvider().getFileid(parent, new DisabledListProgressListener());
+                if(GROUPS_ID.equals(parentId)) {
+                    return new GroupDrivesListService(session).list(resolved, listener);
+                }
             }
-            else if(GROUPS_NAME.equals(directory)) {
-                return new SharepointGroupListService(session).list(directory, listener);
-            }
-            else if(GROUPS_NAME.equals(directory.getParent())) {
-                return new SharepointGroupDrivesListService(session, idProvider).list(directory, listener);
-            }
-            return new GraphItemListService(session).list(directory, listener);
         }
-    }
 
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        idProvider.withCache(cache);
-        return this;
+        return AttributedList.emptyList();
     }
 }

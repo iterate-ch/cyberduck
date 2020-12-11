@@ -24,13 +24,11 @@ import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.webloc.UrlFileWriter;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
-import org.nuxeo.onedrive.client.OneDriveItem;
-import org.nuxeo.onedrive.client.OneDrivePackageItem;
-import org.nuxeo.onedrive.client.OneDriveRemoteItem;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.util.EnumSet;
 
-public abstract class AbstractItemListService extends AbstractListService<OneDriveItem.Metadata> {
+public abstract class AbstractItemListService extends AbstractListService<DriveItem.Metadata> {
     private final GraphAttributesFinderFeature attributes;
     private final UrlFileWriter urlFileWriter = UrlFileWriterFactory.get();
 
@@ -39,11 +37,11 @@ public abstract class AbstractItemListService extends AbstractListService<OneDri
     }
 
     @Override
-    protected Path toPath(final OneDriveItem.Metadata metadata, final Path directory) {
+    protected Path toPath(final DriveItem.Metadata metadata, final Path directory) {
         final PathAttributes attr = attributes.toAttributes(metadata);
 
         final String fileName;
-        if(metadata instanceof OneDrivePackageItem.Metadata) {
+        if(metadata.isPackage()) {
             fileName = String.format("%s.%s", PathNormalizer.name(metadata.getName()), urlFileWriter.getExtension());
         }
         else {
@@ -59,12 +57,12 @@ public abstract class AbstractItemListService extends AbstractListService<OneDri
         return this;
     }
 
-    private EnumSet<Path.Type> resolveType(final OneDriveItem.Metadata metadata) {
-        if(metadata instanceof OneDrivePackageItem.Metadata) {
+    private EnumSet<Path.Type> resolveType(final DriveItem.Metadata metadata) {
+        if(metadata.isPackage()) {
             return EnumSet.of(Path.Type.file, Path.Type.placeholder);
         }
-        else if(metadata instanceof OneDriveRemoteItem.Metadata) {
-            final EnumSet<Path.Type> types = this.resolveType(((OneDriveRemoteItem.Metadata) metadata).getRemoteItem());
+        else if(metadata.getRemoteItem() != null) {
+            final EnumSet<Path.Type> types = this.resolveType(metadata.getRemoteItem());
             types.add(Path.Type.shared);
             return types;
         }

@@ -23,16 +23,16 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.onedrive.features.GraphLockFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.nuxeo.onedrive.client.OneDriveDrive;
-import org.nuxeo.onedrive.client.OneDriveFile;
-import org.nuxeo.onedrive.client.OneDriveFolder;
-import org.nuxeo.onedrive.client.OneDriveItem;
-import org.nuxeo.onedrive.client.OneDrivePackageItem;
+import org.nuxeo.onedrive.client.types.Drive;
+import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.User;
 
 import java.util.EnumSet;
 
@@ -46,9 +46,9 @@ public class OneDriveSession extends GraphSession {
      * Resolves given path to OneDriveItem
      */
     @Override
-    public OneDriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
+    public DriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
         if(file.equals(OneDriveListService.MYFILES_NAME)) {
-            return OneDriveDrive.getDefaultDrive(getClient()).getRoot();
+            return new Drive(getUser().asDirectoryObject()).getRoot();
         }
         final String versionId = fileIdProvider.getFileid(file, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
@@ -68,17 +68,8 @@ public class OneDriveSession extends GraphSession {
         else {
             throw new NotfoundException(file.getAbsolute());
         }
-        final OneDriveDrive drive = new OneDriveDrive(getClient(), driveId);
-        if(file.getType().contains(Path.Type.file)) {
-            return new OneDriveFile(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
-        }
-        else if(file.getType().contains(Path.Type.directory)) {
-            return new OneDriveFolder(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
-        }
-        else if(file.getType().contains(Path.Type.placeholder)) {
-            return new OneDrivePackageItem(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
-        }
-        throw new NotfoundException(file.getAbsolute());
+        final Drive drive = new Drive(getClient(), driveId);
+        return new DriveItem(drive, itemId);
     }
 
     @Override
@@ -110,6 +101,15 @@ public class OneDriveSession extends GraphSession {
         }
         if(type == Home.class) {
             return (T) new OneDriveHomeFinderService(this);
+        }
+        if(type == Lock.class) {
+            // this is a hack. Graph creationType can be present, but `null`, which is totally valid.
+            // in order to determine whether this is a Microsoft or AAD account, we need to check for
+            // a null-optional, not for non-present optional.
+            //noinspection OptionalAssignedToNull
+            if(null != getUser() && null != getUser().getCreationType()) {
+                return (T) new GraphLockFeature(this);
+            }
         }
         return super._getFeature(type);
     }
