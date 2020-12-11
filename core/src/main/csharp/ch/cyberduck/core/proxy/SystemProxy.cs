@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2020 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,18 +13,19 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
+// feedback@cyberduck.io
+// 
+
+// Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
 
 using System;
-using System.Net;
-using ch.cyberduck.core;
-using ch.cyberduck.core.proxy;
-using ch.cyberduck.core.preferences;
-
-using InetSocketAddress = java.net.InetSocketAddress;
-using System.Threading;
 using System.Globalization;
+using System.Net;
+using System.Threading;
+using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.proxy;
 
 namespace Ch.Cyberduck.Core.Proxy
 {
@@ -32,30 +33,34 @@ namespace Ch.Cyberduck.Core.Proxy
     {
         private readonly IWebProxy _system = WebRequest.GetSystemWebProxy();
 
-        public override ch.cyberduck.core.proxy.Proxy find(Host host)
+        public override ch.cyberduck.core.proxy.Proxy find(string host)
         {
             if (!PreferencesFactory.get().getBoolean("connection.proxy.enable"))
             {
                 return ch.cyberduck.core.proxy.Proxy.DIRECT;
             }
+
             Uri target;
             try
             {
-                target = new Uri(new ProxyHostUrlProvider().get(host));
+                target = new Uri(host);
             }
             catch (UriFormatException)
             {
                 return ch.cyberduck.core.proxy.Proxy.DIRECT;
             }
+
             if (_system.IsBypassed(target))
             {
                 return ch.cyberduck.core.proxy.Proxy.DIRECT;
             }
+
             // Hack to make Secur32/IWA work. With a non-us locale we get an invalid codepage (1) exception when using the native library.
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 
             Uri proxy = _system.GetProxy(target);
-            return new ch.cyberduck.core.proxy.Proxy(ch.cyberduck.core.proxy.Proxy.Type.valueOf(proxy.Scheme.ToUpper()), proxy.Host, proxy.Port, proxy.UserInfo);
+            return new ch.cyberduck.core.proxy.Proxy(ch.cyberduck.core.proxy.Proxy.Type.valueOf(proxy.Scheme.ToUpper()),
+                proxy.Host, proxy.Port, proxy.UserInfo);
         }
     }
 }
