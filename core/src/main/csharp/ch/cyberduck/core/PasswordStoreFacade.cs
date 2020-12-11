@@ -77,5 +77,15 @@ namespace Ch.Cyberduck.Core
             }
             return password;
         }
+
+        public override void deletePassword(String serviceName, String user)
+        {
+            credentialManagerPasswordStore.deletePassword(serviceName, user);
+        }
+
+        public override void deletePassword(Scheme scheme, int port, string hostName, string user)
+        {
+            credentialManagerPasswordStore.deletePassword(scheme, port, hostName, user);
+        }
     }
 }

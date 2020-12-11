@@ -70,7 +70,7 @@ namespace Ch.Cyberduck.Core
 
         public override void deletePassword(Scheme scheme, int port, string hostName, string user)
         {
-            string url = new HostUrlProvider().withPath(false).get(scheme, port, user, hostname, null);
+            string url = new HostUrlProvider().withPath(false).get(scheme, port, user, hostName, null);
             PreferencesFactory.get().deleteProperty(url);
         }
     }
