@@ -229,38 +229,39 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
 
     @Override
     public void delete(final Host bookmark) throws LocalAccessDeniedException {
-        final Credentials credentials = bookmark.getCredentials();
         if(log.isInfoEnabled()) {
             log.info(String.format("Delete password for bookmark %s", bookmark));
         }
-        if(credentials.isPublicKeyAuthentication()) {
+        final Credentials credentials = bookmark.getCredentials();
+        final Protocol protocol = bookmark.getProtocol();
+        if(protocol.isPrivateKeyConfigurable()) {
             this.deletePassword(bookmark.getHostname(), credentials.getIdentity().getAbbreviatedPath());
         }
-        if(credentials.isPasswordAuthentication()) {
+        if(protocol.isPasswordConfigurable()) {
             if(StringUtils.isEmpty(credentials.getUsername())) {
                 log.warn(String.format("No username in credentials for bookmark %s", bookmark.getHostname()));
                 return;
             }
-            this.deletePassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), bookmark.getHostname(),
+            this.deletePassword(protocol.getScheme(), bookmark.getPort(), bookmark.getHostname(),
                 credentials.getUsername());
         }
-        if(credentials.isTokenAuthentication()) {
-            this.deletePassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), bookmark.getHostname(),
-                bookmark.getProtocol().getTokenPlaceholder());
+        if(protocol.isTokenConfigurable()) {
+            this.deletePassword(protocol.getScheme(), bookmark.getPort(), bookmark.getHostname(),
+                protocol.getTokenPlaceholder());
         }
-        if(credentials.isOAuthAuthentication()) {
+        if(protocol.isOAuthConfigurable()) {
             final String prefix = this.getOAuthPrefix(bookmark);
             if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
-                this.deletePassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
+                this.deletePassword(protocol.getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
                     String.format("%s OAuth2 Access Token", prefix));
             }
             if(StringUtils.isNotBlank(credentials.getOauth().getRefreshToken())) {
-                this.deletePassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
+                this.deletePassword(protocol.getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
                     String.format("%s OAuth2 Refresh Token", prefix));
             }
             // Save expiry
             if(credentials.getOauth().getExpiryInMilliseconds() != null) {
-                preferences.setProperty(String.format("%s.oauth.expiry", bookmark.getProtocol().getIdentifier()), credentials.getOauth().getExpiryInMilliseconds());
+                preferences.setProperty(String.format("%s.oauth.expiry", protocol.getIdentifier()), credentials.getOauth().getExpiryInMilliseconds());
             }
         }
     }
