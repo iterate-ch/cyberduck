@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphPromptUrlProvider;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -35,13 +36,13 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertNotEquals;
 
 @Category(IntegrationTest.class)
-public class OneDriveSharingLinkUrlProviderTest extends AbstractOneDriveTest {
+public class GraphPromptUrlProviderTest extends AbstractOneDriveTest {
 
     @Test
     public void toUrl() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
-        assertNotEquals(DescriptiveUrl.EMPTY, new OneDriveSharingLinkUrlProvider(session).toDownloadUrl(file, null, new DisabledPasswordCallback()));
+        assertNotEquals(DescriptiveUrl.EMPTY, new GraphPromptUrlProvider(session).toDownloadUrl(file, null, new DisabledPasswordCallback()));
         new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
