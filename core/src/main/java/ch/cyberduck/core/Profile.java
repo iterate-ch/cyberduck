@@ -47,8 +47,9 @@ public class Profile implements Protocol, Serializable {
      * The actual protocol implementation registered
      */
     private final Protocol parent;
-    private final Local disk;
-    private final Local icon;
+
+    private Local disk;
+    private Local icon;
 
     public Profile(final Protocol parent, final Deserializer<String> dict) {
         this.parent = parent;
@@ -228,6 +229,9 @@ public class Profile implements Protocol, Serializable {
         if(null == disk) {
             return parent.disk();
         }
+        if(!disk.exists()) {
+            this.disk = this.write(this.value("Disk"));
+        }
         // Temporary file
         return disk.getAbsolute();
     }
@@ -238,7 +242,10 @@ public class Profile implements Protocol, Serializable {
             if(null == disk) {
                 return parent.icon();
             }
-            return disk.getAbsolute();
+            return this.disk();
+        }
+        if(!icon.exists()) {
+            this.icon = this.write(this.value("Icon"));
         }
         // Temporary file
         return icon.getAbsolute();
