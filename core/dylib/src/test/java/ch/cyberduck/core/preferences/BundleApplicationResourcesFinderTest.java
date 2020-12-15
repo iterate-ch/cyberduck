@@ -18,21 +18,25 @@ import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.NotfoundException;
 
-import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class BundleApplicationResourcesFinderTest {
 
     @Test
     public void testBundle() {
-        Assert.assertNotNull(new BundleApplicationResourcesFinder().bundle());
+        assertNotNull(new BundleApplicationResourcesFinder().bundle());
     }
 
     @Test
+    @Ignore
     public void testSymbolicLink() {
         final NSBundle bundle = new BundleApplicationResourcesFinder().bundle(NSBundle.bundleWithPath("."), new Local("/usr/bin/java"));
-        Assert.assertNotNull(bundle);
-        Assert.assertEquals(NSBundle.bundleWithPath("/System/Library/Frameworks/JavaVM.framework/Versions/A"), bundle);
+        assertNotNull(bundle);
+        assertEquals(NSBundle.bundleWithPath("/System/Library/Frameworks/JavaVM.framework/Versions/A"), bundle);
     }
 
     @Test
@@ -43,7 +47,7 @@ public class BundleApplicationResourcesFinderTest {
                 throw new NotfoundException("f");
             }
         });
-        Assert.assertNotNull(bundle);
-        Assert.assertEquals(NSBundle.bundleWithPath("."), bundle);
+        assertNotNull(bundle);
+        assertEquals(NSBundle.bundleWithPath("."), bundle);
     }
 }
