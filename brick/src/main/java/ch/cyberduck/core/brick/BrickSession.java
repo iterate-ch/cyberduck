@@ -62,7 +62,7 @@ public class BrickSession extends DAVSession {
     }
 
     @Override
-    public DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+    public DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
         configuration.setServiceUnavailableRetryStrategy(new BrickUnauthorizedRetryStrategy(this, prompt));
@@ -152,7 +152,7 @@ public class BrickSession extends DAVSession {
             return (T) new BrickUrlProvider(host);
         }
         if(type == Pairing.class) {
-            return (T) new BrickPairingFeature(this);
+            return (T) new BrickPairingFeature(this, builder);
         }
         return super._getFeature(type);
     }
