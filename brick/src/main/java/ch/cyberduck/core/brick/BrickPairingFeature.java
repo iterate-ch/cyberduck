@@ -16,19 +16,27 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Pairing;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
+import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthSchemeProvider;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -37,14 +45,20 @@ public class BrickPairingFeature implements Pairing {
     private static final Logger log = Logger.getLogger(BrickPairingFeature.class);
 
     private final BrickSession session;
+    private final HttpConnectionPoolBuilder builder;
 
-    public BrickPairingFeature(final BrickSession session) {
+    public BrickPairingFeature(final BrickSession session, final HttpConnectionPoolBuilder builder) {
         this.session = session;
+        this.builder = builder;
     }
 
     @Override
     public void delete(final String token) throws BackgroundException {
         try {
+            final HttpClientBuilder configuration = builder.build(ProxyFactory.get().find(
+                new ProxyHostUrlProvider().get(session.getHost())), session, new DisabledLoginCallback());
+            configuration.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create().build());
+            final CloseableHttpClient client = configuration.build();
             final HttpRequestBase resource = new HttpDelete(
                 String.format("%s/api/rest/v1/api_key", new HostUrlProvider().withUsername(false).withPath(false).get(session.getHost())));
             resource.setHeader("X-FilesAPI-Key", token);
@@ -53,12 +67,13 @@ public class BrickPairingFeature implements Pairing {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Delete paring key %s", token));
             }
-            session.getClient().execute(resource, new ResponseHandler<Void>() {
+            client.execute(resource, new ResponseHandler<Void>() {
                 @Override
                 public Void handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
                     return null;
                 }
             });
+            client.close();
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);
