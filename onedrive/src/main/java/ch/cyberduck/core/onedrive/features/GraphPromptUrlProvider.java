@@ -17,6 +17,7 @@ package ch.cyberduck.core.onedrive.features;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -27,10 +28,10 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveSharingLink;
 import org.nuxeo.onedrive.client.types.DriveItem;
-import org.nuxeo.onedrive.client.types.Permission;
 
 import java.io.IOException;
 import java.net.URI;
+import java.text.MessageFormat;
 
 public class GraphPromptUrlProvider implements PromptUrlProvider {
     private final GraphSession session;
@@ -41,21 +42,19 @@ public class GraphPromptUrlProvider implements PromptUrlProvider {
 
     @Override
     public boolean isSupported(Path file, Type type) {
-        if(Type.download != type) {
-            return false;
+        if(Type.download == type) {
+            return session.isAccessible(file, true);
         }
-        return session.isAccessible(file, true);
+        return false;
     }
 
     @Override
     public DescriptiveUrl toDownloadUrl(Path file, Object options, PasswordCallback callback)
         throws BackgroundException {
         final DriveItem item = session.toItem(file);
-        final Permission downloadLink;
-        final URI webUrl;
         try {
-            downloadLink = Files.createSharedLink(item, OneDriveSharingLink.Type.VIEW);
-            webUrl = URI.create(downloadLink.getLink().getWebUrl());
+            return new DescriptiveUrl(URI.create(Files.createSharedLink(item, OneDriveSharingLink.Type.VIEW).getLink().getWebUrl()),
+                DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);
@@ -63,12 +62,10 @@ public class GraphPromptUrlProvider implements PromptUrlProvider {
         catch(IllegalArgumentException e) {
             throw new DefaultExceptionMappingService().map("Failed creating download url", e);
         }
-        return new DescriptiveUrl(webUrl);
     }
 
     @Override
     public DescriptiveUrl toUploadUrl(Path file, Object options, PasswordCallback callback) throws BackgroundException {
         return DescriptiveUrl.EMPTY;
     }
-
 }

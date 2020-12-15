@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
-import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.onedrive.features.GraphLockFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -32,7 +31,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.DriveItem;
-import org.nuxeo.onedrive.client.types.User;
 
 import java.util.EnumSet;
 
@@ -95,9 +93,6 @@ public class OneDriveSession extends GraphSession {
         }
         if(type == UrlProvider.class) {
             return (T) new OneDriveUrlProvider();
-        }
-        if(type == PromptUrlProvider.class) {
-            return (T) new OneDriveSharingLinkUrlProvider(this);
         }
         if(type == Home.class) {
             return (T) new OneDriveHomeFinderService(this);
