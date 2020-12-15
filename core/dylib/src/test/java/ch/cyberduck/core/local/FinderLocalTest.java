@@ -164,12 +164,6 @@ public class FinderLocalTest {
     }
 
     @Test
-    public void testGetSymlinkTargetAbsolute() throws Exception {
-        assertEquals(new FinderLocal("/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/java"),
-            new FinderLocal("/usr/bin/java").getSymlinkTarget());
-    }
-
-    @Test
     public void testSkipSecurityScopeBookmarkInTemporary() throws Exception {
         final FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver()) {
             @Override
