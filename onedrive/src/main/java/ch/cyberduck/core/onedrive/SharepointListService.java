@@ -43,10 +43,14 @@ public class SharepointListService extends AbstractSharepointListService {
     public static final String GROUPS_ID = "GROUPS_NAME";
     public static final String SITES_ID = "SITES_NAME";
 
+    public static final String DRIVES_CONTAINER = "Drives";
+    public static final String GROUPS_CONTAINER = "Groups";
+    public static final String SITES_CONTAINER = "Sites";
+
     public static final Path DEFAULT_NAME = new Path("/Default", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DEFAULT_ID));
-    public static final Path DRIVES_NAME = new Path("/Drives", EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DRIVES_ID));
-    public static final Path GROUPS_NAME = new Path("/Groups", EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(GROUPS_ID));
-    public static final Path SITES_NAME = new Path("/Sites", EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(SITES_ID));
+    public static final Path DRIVES_NAME = new Path("/" + DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DRIVES_ID));
+    public static final Path GROUPS_NAME = new Path("/" + GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(GROUPS_ID));
+    public static final Path SITES_NAME = new Path("/" + SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(SITES_ID));
 
     public static final Predicate<Path> DEFAULT_PREDICATE = new CaseInsensitivePathPredicate(DEFAULT_NAME);
 
