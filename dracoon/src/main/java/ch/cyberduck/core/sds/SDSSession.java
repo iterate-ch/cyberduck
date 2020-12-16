@@ -181,16 +181,24 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
                     @Override
                     public void process(final HttpRequest request, final HttpContext context) {
-                        if(StringUtils.equals(((HttpRequestWrapper) request).getTarget().getHostName(), host.getHostname())) {
-                            request.addHeader(HttpHeaders.AUTHORIZATION,
-                                String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
+                        final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
+                        if(null != wrapper.getTarget()) {
+                            if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
+                                request.addHeader(HttpHeaders.AUTHORIZATION,
+                                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
+                            }
                         }
                     }
                 }).build(), host) {
                     @Override
                     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-                        if(StringUtils.equals(((HttpRequestWrapper) request).getTarget().getHostName(), host.getHostname())) {
-                            super.process(request, context);
+                        if(request instanceof HttpRequestWrapper) {
+                            final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
+                            if(null != wrapper.getTarget()) {
+                                if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
+                                    super.process(request, context);
+                                }
+                            }
                         }
                     }
                 }
