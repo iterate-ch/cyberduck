@@ -70,11 +70,15 @@ public class SharepointSession extends AbstractSharepointSession {
             return false;
         }
 
-        if(containerPath.isChild(SharepointListService.GROUPS_NAME)) {
-            return !SharepointListService.GROUPS_ID.equals(containerPath.getParent().attributes().getVersionId())
-                && (container || !containerPath.equals(file));
+        final Path parent = containerPath.getParent();
+        if(parent.isRoot()) {
+            return false;
         }
-        return SharepointListService.DRIVES_ID.equals(containerPath.getParent().attributes().getVersionId())
+
+        if(SharepointListService.GROUPS_CONTAINER.equals(parent.getParent().getName())) {
+            return container || !containerPath.equals(file);
+        }
+        return SharepointListService.DRIVES_CONTAINER.equals(containerPath.getParent().getName())
             && (container || !containerPath.equals(file));
     }
 }
