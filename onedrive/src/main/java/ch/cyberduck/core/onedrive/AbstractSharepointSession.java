@@ -17,11 +17,9 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.onedrive.features.GraphLockFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
