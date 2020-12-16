@@ -44,14 +44,15 @@ public class SharepointSiteSession extends AbstractSharepointSession {
     public Site getSite(final Path file) throws BackgroundException {
         final Path parent = file.getParent();
         if (parent.isRoot()) {
+            final Site hostSite = Site.byHostname(getClient(), host.getHostname());
             String path = host.getDefaultPath();
             if (StringUtils.isBlank(path) || "/".equals(path)) {
-                return Site.byId(getClient(), "root");
+                return hostSite;
             }
             if (!path.startsWith("/")) {
                 path = "/" + path;
             }
-            return Site.byPath(Site.byHostname(getClient(), host.getHostname()), path);
+            return Site.byPath(hostSite, path);
         }
         return Site.byId(getClient(), fileIdProvider.getFileid(file, new DisabledListProgressListener()));
     }

@@ -18,13 +18,16 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 
+import java.util.AbstractMap;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Map;
 import java.util.Optional;
 
 public class SharepointContainerService extends PathContainerService {
-
     @Override
     public boolean isContainer(final Path file) {
-        return super.isContainer(file) || file.getType().contains(Path.Type.volume);
+        return file.equals(getContainer(file));
     }
 
     @Override
@@ -32,43 +35,50 @@ public class SharepointContainerService extends PathContainerService {
         if(file.isRoot()) {
             return file;
         }
-        Path container = null;
+        final Deque<Map.Entry<String, Path>> tree = new ArrayDeque<>();
         Path next = file;
         Path current = null, previous;
-        while(null == container && null != next) {
+        while(current != next) {
             previous = current;
             current = next;
-            next = !next.isRoot() ? next.getParent() : null;
+            next = next.getParent();
 
-            final String versionId = current.attributes().getVersionId();
-
-            if(next != null && SharepointListService.GROUPS_ID.equals(next.attributes().getVersionId())) {
-                // All Placeholders/Containers use format /Site-ID/<Name>/Drives-ID/<Name>
-                // Groups however do not, they apply /Groups/<Group ID>/<Drive Name>
-                // There is no common prefix directory for drives in groups
-                // thus doing simple forward-check
-                // i.e.
-                // * current is /Groups/Group-Name
-                // * Previous is /Groups/Group-Name/Documents
-                // * next is /Groups
-                // this will trigger Container detection for /Groups/Group-Name/Documents.
-
-                // /Groups/Group Name/Drive
-                container = previous;
-            }
-            else if(SharepointListService.DRIVES_ID.equals(versionId)) {
-                // Drives/Drive Name
-                container = previous;
-            }
-            else if(SharepointListService.GROUPS_ID.equals(versionId)) {
-                // /Groups/Group Name
-                container = previous;
-            }
-            else if(SharepointListService.SITES_ID.equals(versionId)) {
-                // Sites/Site-Name
-                container = previous;
+            if(previous != null) {
+                if(SharepointListService.GROUPS_CONTAINER.equals(next.getName())) {
+                    // All Placeholders/Containers use format /Site-ID/<Name>/Drives-ID/<Name>
+                    // Groups however do not, they apply /Groups/<Group ID>/<Drive Name>
+                    // There is no common prefix directory for drives in groups
+                    // thus doing simple forward-check
+                    // i.e.
+                    // * current is /Groups/Group-Name
+                    // * Previous is /Groups/Group-Name/Documents
+                    // * next is /Groups
+                    // this will trigger Container detection for /Groups/Group-Name/Documents
+                    // using DRIVES_CONTAINER as placeholder here. Will trigger early exit later.
+                    tree.push(new AbstractMap.SimpleEntry<>(SharepointListService.DRIVES_CONTAINER, previous));
+                }
+                else {
+                    switch(current.getName()) {
+                        case SharepointListService.SITES_CONTAINER:
+                        case SharepointListService.GROUPS_CONTAINER:
+                        case SharepointListService.DRIVES_CONTAINER:
+                            tree.push(new AbstractMap.SimpleEntry<>(current.getName(), previous));
+                            break;
+                    }
+                }
             }
         }
+
+        // walk tree, in order to find first matching Drives/Drive-Name/ or /Groups/Name/Drive-Name
+        Path container = null;
+        while(tree.size() > 0) {
+            final Map.Entry<String, Path> element = tree.pop();
+            container = element.getValue();
+            if(SharepointListService.DRIVES_CONTAINER.equals(element.getKey())) {
+                break;
+            }
+        }
+
         return Optional.ofNullable(container).orElse(current);
     }
 }

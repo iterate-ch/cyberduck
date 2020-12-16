@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -42,44 +43,23 @@ public class SharepointSessionTest extends AbstractSharepointTest {
         @Test
         public void isAccessible() {
             assertFalse(session.isAccessible(new Path("/", EnumSet.of(Path.Type.directory))));
-            assertFalse(session.isAccessible(SharepointListService.DEFAULT_NAME));
-            assertFalse(session.isAccessible(SharepointListService.DEFAULT_NAME, false));
+            assertFalse(session.isAccessible(SharepointListService.SITES_NAME));
+            assertFalse(session.isAccessible(SharepointListService.SITES_NAME, false));
             assertFalse(session.isAccessible(SharepointListService.GROUPS_NAME));
             assertFalse(session.isAccessible(SharepointListService.GROUPS_NAME, false));
-            assertTrue(session.isAccessible(new Path(SharepointListService.DEFAULT_NAME, "Drive-Id", EnumSet.of(Path.Type.directory))));
-            assertFalse(session.isAccessible(new Path(SharepointListService.DEFAULT_NAME, "Drive-Id", EnumSet.of(Path.Type.directory)), false));
+            final Path siteDrive =
+                new Path(
+                    new Path(
+                        new Path(SharepointListService.SITES_NAME, "Site", EnumSet.of(AbstractPath.Type.directory)),
+                        "Drives", EnumSet.of(AbstractPath.Type.directory)),
+                    "Drive-Id", EnumSet.of(Path.Type.directory));
+            assertTrue(session.isAccessible(siteDrive));
+            assertFalse(session.isAccessible(siteDrive, false));
             final Path group = new Path(SharepointListService.GROUPS_NAME, "Group Name", EnumSet.of(Path.Type.directory));
             assertFalse(session.isAccessible(group));
             assertFalse(session.isAccessible(group, false));
             assertTrue(session.isAccessible(new Path(group, "Drive-Id", EnumSet.of(Path.Type.directory))));
             assertFalse(session.isAccessible(new Path(group, "Drive-Id", EnumSet.of(Path.Type.directory)), false));
-        }
-
-        @Test
-        public void getContainerDefaultName() {
-            final Path container = new Path(SharepointListService.DEFAULT_NAME, "Drive-ID", EnumSet.of(Path.Type.directory));
-            Path test;
-            test = new Path(SharepointListService.DEFAULT_NAME);
-            assertEquals(test, session.getContainer(test));
-            test = container;
-            assertEquals(container, session.getContainer(test));
-            test = new Path(container, "Child", EnumSet.of(Path.Type.directory));
-            assertEquals(container, session.getContainer(test));
-        }
-
-        @Test
-        public void getContainerGroupsName() {
-            final Path group = new Path(SharepointListService.GROUPS_NAME, "Group", EnumSet.of(Path.Type.directory));
-            final Path container = new Path(group, "Drive-ID", EnumSet.of(Path.Type.directory));
-            Path test;
-            test = new Path(SharepointListService.GROUPS_NAME);
-            assertEquals(test, session.getContainer(test));
-            test = group;
-            assertEquals(group, session.getContainer(test));
-            test = container;
-            assertEquals(container, session.getContainer(test));
-            test = new Path(container, "Child", EnumSet.of(Path.Type.directory));
-            assertEquals(container, session.getContainer(test));
         }
     }
 }
