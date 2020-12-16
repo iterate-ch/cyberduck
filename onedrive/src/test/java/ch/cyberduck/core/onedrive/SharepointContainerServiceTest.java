@@ -24,7 +24,7 @@ import org.junit.experimental.categories.Category;
 import java.util.EnumSet;
 
 import static ch.cyberduck.core.Path.Type;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SharepointContainerServiceTest {
@@ -126,6 +126,18 @@ public class SharepointContainerServiceTest {
         final Path group = new Path(groups, "Group", EnumSet.of(Type.directory)).withAttributes(new PathAttributes().withVersionId("GROUP-NAME"));
         final Path drive = new Path(group, "Documents", EnumSet.of(Type.directory)).withAttributes(new PathAttributes().withVersionId("Documents"));
         final Path container = containerService.getContainer(drive);
+        assertEquals(drive, container);
+    }
+
+    @Test
+    public void testGroupsWithoutVersionId() {
+        final Path drive = new Path("/Groups/Group/Documents", EnumSet.of(Type.directory));
+        final Path groupsFolder = new Path(drive, "Groups", EnumSet.of(Type.directory));
+        final Path groupFolder = new Path(groupsFolder, "Group", EnumSet.of(Type.directory));
+        final Path testFolder = new Path(groupFolder, "testFolder", EnumSet.of(Type.directory));
+        final Path test = new Path(testFolder, "Ensure-PreviousIsSet", EnumSet.of(Type.directory));
+        assertFalse(containerService.isContainer(test));
+        final Path container = containerService.getContainer(test);
         assertEquals(drive, container);
     }
 }
