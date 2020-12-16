@@ -95,10 +95,12 @@ public class SDSErrorResponseInterceptor extends DisabledServiceUnavailableRetry
     public void process(final HttpRequest request, final HttpContext context) {
         if(StringUtils.isNotBlank(token)) {
             request.removeHeaders(SDSSession.SDS_AUTH_TOKEN_HEADER);
-            final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
-            if(null != wrapper.getTarget()) {
-                if(StringUtils.equals(wrapper.getTarget().getHostName(), session.getHost().getHostname())) {
-                    request.addHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, token);
+            if(request instanceof HttpRequestWrapper) {
+                final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
+                if(null != wrapper.getTarget()) {
+                    if(StringUtils.equals(wrapper.getTarget().getHostName(), session.getHost().getHostname())) {
+                        request.addHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, token);
+                    }
                 }
             }
         }
