@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
+import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
@@ -33,6 +34,8 @@ import org.nuxeo.onedrive.client.types.ItemReference;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.util.Optional;
 
 public class GraphAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(GraphAttributesFinderFeature.class);
@@ -64,7 +67,11 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
     public PathAttributes toAttributes(final DriveItem.Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setETag(metadata.getETag());
-        if(null != metadata.getSize()) {
+        Optional<DescriptiveUrl> webUrl = getWebUrl(metadata);
+        if(metadata.isPackage()) {
+            webUrl.ifPresent(url -> attributes.setSize(UrlFileWriterFactory.get().write(url).getBytes(Charset.defaultCharset()).length));
+        }
+        else if(null != metadata.getSize()) {
             attributes.setSize(metadata.getSize());
         }
         final ItemReference parent = metadata.getParentReference();
@@ -84,12 +91,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         else {
             attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER), parent.getDriveId(), metadata.getId()));
         }
-        try {
-            attributes.setLink(new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http));
-        }
-        catch(URISyntaxException e) {
-            log.warn(String.format("Cannot set link. Web URL returned %s", metadata.getWebUrl()), e);
-        }
+        webUrl.ifPresent(attributes::setLink);
         final FileSystemInfo info = metadata.getFacet(FileSystemInfo.class);
         if(null != info) {
             if(-1L == info.getLastModifiedDateTime().toInstant().toEpochMilli()) {
@@ -110,5 +112,16 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
             attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
         }
         return attributes;
+    }
+
+    static Optional<DescriptiveUrl> getWebUrl(final DriveItem.Metadata metadata) {
+        DescriptiveUrl url = null;
+        try {
+            url = new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http);
+        }
+        catch(URISyntaxException e) {
+            log.warn(String.format("Cannot create URI of WebURL: %s", metadata.getWebUrl()), e);
+        }
+        return Optional.ofNullable(url);
     }
 }
