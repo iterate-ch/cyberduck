@@ -21,7 +21,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.webloc.UrlFileWriter;
@@ -41,7 +40,8 @@ public abstract class AbstractDriveListService implements ListService {
 
     protected static final String GOOGLE_APPS_PREFIX = "application/vnd.google-apps";
     protected static final String DRIVE_FOLDER = String.format("%s.folder", GOOGLE_APPS_PREFIX);
-    protected static final String DEFAULT_FIELDS = "files(createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink),nextPageToken";
+    protected static final String DRIVE_SHORTCUT = String.format("%s.shortcut", GOOGLE_APPS_PREFIX);
+    protected static final String DEFAULT_FIELDS = "files(createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails),nextPageToken";
 
     private final DriveSession session;
     private final int pagesize;
@@ -90,8 +90,8 @@ public abstract class AbstractDriveListService implements ListService {
                 for(File f : list.getFiles()) {
                     final PathAttributes properties = attributes.toAttributes(f);
                     final String filename;
-                    if(!DRIVE_FOLDER.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
-                        filename = String.format("%s.%s", PathNormalizer.name(f.getName()), urlFileWriter.getExtension());
+                    if(!DRIVE_FOLDER.equals(f.getMimeType()) && !DRIVE_SHORTCUT.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
+                        filename = String.format("%s.%s", f.getName(), urlFileWriter.getExtension());
                     }
                     else {
                         filename = f.getName();
@@ -101,7 +101,6 @@ public abstract class AbstractDriveListService implements ListService {
                     }
                     // Use placeholder type to mark Google Apps document to download as web link file
                     final EnumSet<Path.Type> type = this.toType(f);
-
                     final Path child = new Path(directory, filename, type, properties);
                     if(children.find(new DriveFileidProvider.IgnoreTrashedPathPredicate(child)) != null) {
                         properties.setDuplicate(true);
@@ -124,9 +123,18 @@ public abstract class AbstractDriveListService implements ListService {
 
     protected EnumSet<Path.Type> toType(final File f) {
         final EnumSet<Path.Type> type;
-        type = DRIVE_FOLDER.equals(f.getMimeType()) ? EnumSet.of(Path.Type.directory) :
-            StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)
-                ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
+        if(DRIVE_SHORTCUT.equals(f.getMimeType())) {
+            // Shortcut file details. Only populated for shortcut files, which have the mimeType field set to application/vnd.google-apps.shortcut
+            final File.ShortcutDetails shortcutDetails = f.getShortcutDetails();
+            type = DRIVE_FOLDER.equals(shortcutDetails.getTargetMimeType()) ? EnumSet.of(Path.Type.directory) :
+                StringUtils.startsWith(shortcutDetails.getTargetMimeType(), GOOGLE_APPS_PREFIX)
+                    ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
+        }
+        else {
+            type = DRIVE_FOLDER.equals(f.getMimeType()) ? EnumSet.of(Path.Type.directory) :
+                StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)
+                    ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
+        }
         return type;
     }
 
