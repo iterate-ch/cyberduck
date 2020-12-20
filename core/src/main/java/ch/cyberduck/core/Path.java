@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.Serializer;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.EnumSet;
 import java.util.Objects;
 
@@ -202,16 +204,17 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     }
 
     /**
-     * @return the path relative to its parent directory
+     * @return The path relative to its parent directory
      */
     @Override
     public String getName() {
         if(this.isRoot()) {
             return String.valueOf(DELIMITER);
         }
-        final String abs = this.getAbsolute();
-        int index = abs.lastIndexOf(DELIMITER);
-        return abs.substring(index + 1);
+        if(parent.isRoot()) {
+            return StringUtils.substringAfter(path, parent.getAbsolute());
+        }
+        return StringUtils.substringAfter(path, parent.getAbsolute() + Path.DELIMITER);
     }
 
     /**
