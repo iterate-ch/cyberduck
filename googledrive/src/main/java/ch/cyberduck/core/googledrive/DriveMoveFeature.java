@@ -51,12 +51,13 @@ public class DriveMoveFeature implements Move {
                 delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
             final String id = fileid.getFileid(file, new DisabledListProgressListener());
+            File result = null;
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 // Rename title
                 final File properties = new File();
                 properties.setName(renamed.getName());
                 properties.setMimeType(status.getMime());
-                session.getClient().files().update(id, properties).
+                result = session.getClient().files().update(id, properties).
                     setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
             }
             if(!file.getParent().equals(renamed.getParent())) {
@@ -70,7 +71,7 @@ public class DriveMoveFeature implements Move {
                     previousParents.append(parent).append(',');
                 }
                 // Move the file to the new folder
-                session.getClient().files().update(id, null)
+                result = session.getClient().files().update(id, null)
                     .setAddParents(fileid.getFileid(renamed.getParent(), new DisabledListProgressListener()))
                     .setRemoveParents(previousParents.toString())
                     .setFields("id,parents")
@@ -78,7 +79,7 @@ public class DriveMoveFeature implements Move {
                     .execute();
             }
             return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-                new DriveAttributesFinderFeature(session, fileid).find(renamed));
+                new DriveAttributesFinderFeature(session, fileid).toAttributes(result));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot rename {0}", e, file);

@@ -18,7 +18,6 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -47,7 +46,7 @@ public class DriveCopyFeature implements Copy {
                 .setName(target.getName()))
                 .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
             return new Path(target.getParent(), target.getName(), target.getType(),
-                    new PathAttributes(target.attributes()).withVersionId(copy.getId()));
+                new DriveAttributesFinderFeature(session, fileid).toAttributes(copy));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot copy {0}", e, source);
