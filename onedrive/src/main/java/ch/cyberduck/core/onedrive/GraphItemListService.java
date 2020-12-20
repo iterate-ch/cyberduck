@@ -21,8 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.webloc.UrlFileWriter;
-import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
@@ -35,7 +33,6 @@ public class GraphItemListService extends AbstractItemListService {
 
     private final GraphSession session;
     private final GraphAttributesFinderFeature attributes;
-    private final UrlFileWriter urlFileWriter = UrlFileWriterFactory.get();
 
     public GraphItemListService(final GraphSession session) {
         super(new GraphAttributesFinderFeature(session));
