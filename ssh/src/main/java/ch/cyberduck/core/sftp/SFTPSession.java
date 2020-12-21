@@ -379,14 +379,6 @@ public class SFTPSession extends Session<SSHClient> {
         }
     }
 
-    private LinkedHashMap<String, List<AuthenticationProvider<Boolean>>> convertMethodsToMap(final List<AuthenticationProvider<Boolean>> methods) {
-        final LinkedHashMap<String, List<AuthenticationProvider<Boolean>>> result = new LinkedHashMap<>();
-        methods.forEach(m ->
-            result.computeIfAbsent(
-                m.getMethod(), k -> new ArrayList<>()).add(m));
-        return result;
-    }
-
     public SFTPEngine sftp() throws LoginCanceledException {
         if(null == sftp) {
             throw new LoginCanceledException();
