@@ -21,7 +21,10 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.log4j.Logger;
+
 public final class IOKitSleepPreventer implements SleepPreventer {
+    private static final Logger log = Logger.getLogger(IOKitSleepPreventer.class);
 
     static {
         Native.load("core");
@@ -35,7 +38,11 @@ public final class IOKitSleepPreventer implements SleepPreventer {
     @Override
     public String lock() {
         synchronized(lock) {
-            return this.createAssertion(reason);
+            final String assertion = this.createAssertion(reason);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Created sleep assertion %s", assertion));
+            }
+            return assertion;
         }
     }
 
@@ -44,6 +51,9 @@ public final class IOKitSleepPreventer implements SleepPreventer {
     @Override
     public void release(final String id) {
         synchronized(lock) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Release sleep assertion %s", id));
+            }
             this.releaseAssertion(id);
         }
     }
