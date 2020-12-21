@@ -62,7 +62,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.schmizz.concurrent.Promise;
 import net.schmizz.keepalive.KeepAlive;
@@ -285,8 +284,8 @@ public class SFTPSession extends Session<SSHClient> {
         defaultMethods.add(new SFTPPublicKeyAuthentication(client));
         defaultMethods.add(new SFTPChallengeResponseAuthentication(client));
         defaultMethods.add(new SFTPPasswordAuthentication(client));
-        final LinkedHashMap<String, AuthenticationProvider<Boolean>> methodsMap = defaultMethods.stream()
-            .collect(LinkedHashMap::new, (map, item) -> map.put(item.getMethod(), item), Map::putAll);
+        final LinkedHashMap<String, List<AuthenticationProvider<Boolean>>> methodsMap = new LinkedHashMap<>();
+        defaultMethods.forEach(m -> methodsMap.computeIfAbsent(m.getMethod(), k -> new ArrayList<>()).add(m));
         final List<AuthenticationProvider<Boolean>> methods = new ArrayList<>();
         final String[] preferred = new OpenSSHPreferredAuthenticationsConfigurator().getPreferred(host.getHostname());
         if(preferred != null) {
@@ -294,13 +293,13 @@ public class SFTPSession extends Session<SSHClient> {
                 log.debug(String.format("Filter authentication methods with %s", Arrays.toString(preferred)));
             }
             for(String p : preferred) {
-                final AuthenticationProvider<Boolean> provider = methodsMap.remove(p);
-                if(provider != null) {
-                    methods.add(provider);
+                final List<AuthenticationProvider<Boolean>> providers = methodsMap.remove(p);
+                if(providers != null) {
+                    methods.addAll(providers);
                 }
             }
         }
-        methods.addAll(methodsMap.values());
+        methodsMap.values().forEach(methods::addAll);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt login with %d authentication methods %s", methods.size(), Arrays.toString(methods.toArray())));
         }
