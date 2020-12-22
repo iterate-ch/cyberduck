@@ -40,6 +40,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -51,6 +52,7 @@ import org.apache.log4j.Logger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
@@ -121,7 +123,9 @@ public class BrickSession extends DAVSession {
                     throw new ConnectionCanceledException(e);
                 }
                 // Wait for status response from pairing scheduler
-                Uninterruptibles.awaitUninterruptibly(lock);
+                while(!Uninterruptibles.awaitUninterruptibly(lock, PreferencesFactory.get().getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS)) {
+                    cancel.verify();
+                }
             }
         };
         scheduler.repeat(lock);
