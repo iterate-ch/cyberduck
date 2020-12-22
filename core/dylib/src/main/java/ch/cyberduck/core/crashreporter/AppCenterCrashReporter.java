@@ -14,11 +14,16 @@ package ch.cyberduck.core.crashreporter;/*
  */
 
 import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.core.library.Native;
 
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 
 public class AppCenterCrashReporter implements CrashReporter {
+
+    static {
+        Native.load("core");
+    }
 
     public void check(final String identifier) {
         MSAppCenter.start_withServices(identifier, NSArray.arrayWithObject(
