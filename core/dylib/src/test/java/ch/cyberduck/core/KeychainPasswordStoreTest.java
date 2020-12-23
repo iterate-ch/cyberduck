@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNull;
 
 public class KeychainPasswordStoreTest {
 
-    @Test(expected = LocalAccessDeniedException.class)
+    @Test
     public void testFindGenericPassword() throws LocalAccessDeniedException {
         final KeychainPasswordStore k = new KeychainPasswordStore();
         k.deletePassword("cyberduck.ch", "u");
@@ -23,7 +23,7 @@ public class KeychainPasswordStoreTest {
         assertNull(k.getPassword("cyberduck.ch", "u"));
     }
 
-    @Test(expected = LocalAccessDeniedException.class)
+    @Test
     public void testFindInternetPassword() throws LocalAccessDeniedException {
         final KeychainPasswordStore k = new KeychainPasswordStore();
         k.deletePassword(Scheme.http, 80, "cyberduck.ch", "u");
