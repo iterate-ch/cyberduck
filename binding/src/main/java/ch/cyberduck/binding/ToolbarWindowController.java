@@ -15,7 +15,6 @@ package ch.cyberduck.binding;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSTabView;
 import ch.cyberduck.binding.application.NSTabViewItem;
 import ch.cyberduck.binding.application.NSToolbar;
@@ -30,7 +29,6 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -196,7 +194,6 @@ public abstract class ToolbarWindowController extends WindowController implement
         toolbarItem.setLabel(tab.label());
         toolbarItem.setPaletteLabel(tab.label());
         toolbarItem.setToolTip(tab.label());
-        toolbarItem.setImage(IconCacheFactory.<NSImage>get().iconNamed(String.format("%s.tiff", itemIdentifier), 32));
         toolbarItem.setTarget(this.id());
         toolbarItem.setAction(Foundation.selector("toolbarItemSelected:"));
         return toolbarItem;
