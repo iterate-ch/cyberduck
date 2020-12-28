@@ -157,9 +157,7 @@ public class PreferencesController extends ToolbarWindowController {
     @Override
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(final NSToolbar toolbar, final String itemIdentifier, final boolean flag) {
         final NSToolbarItem item = super.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(toolbar, itemIdentifier, flag);
-        if(itemIdentifier.equals("sftp")) {
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("ftp"));
-        }
+        item.setImage(IconCacheFactory.<NSImage>get().iconNamed(String.format("preferences-%s.pdf", itemIdentifier)));
         return item;
     }
 
