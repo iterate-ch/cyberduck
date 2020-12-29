@@ -5,6 +5,9 @@ https://cyberduck.io/
 - [Feature] Connecting to different libraries (SharePoint) (#11043)
 - [Feature] Default connection profile (Microsoft SharePoint Site) to connect so specific site (Sharepoint)  (#10115, #11375)
 - [Feature] Create shared link for file (OneDrive, SharePoint) (#11373)
+- [Feature] Updated toolbar icons in Preferencs window (macOS)
+- [Bugfix] No attempt to authenticate using SSH agent (SFTP)
+- [Bugfix] Allow browsing filenames containing forward slash (Google Drive)
 
 7.7.2
 - [Feature] Allow custom session duration for STS (S3) (#11265)
