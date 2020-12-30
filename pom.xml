@@ -27,6 +27,7 @@
         <module>importer</module>
         <module>importer/dll</module>
         <!-- Protocols -->
+        <module>jersey</module>
         <module>oauth</module>
         <module>udt</module>
         <module>irods</module>
