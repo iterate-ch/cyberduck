@@ -1,5 +1,6 @@
-package ch.cyberduck.core.jersey;/*
+package ch.cyberduck.core.jersey;
 
+/*
  * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -21,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CustomContextResolver implements ContextResolver<ObjectMapper> {
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     public CustomContextResolver() {
         mapper = new CustomJacksonObjectMapper();
