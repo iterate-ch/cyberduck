@@ -2,11 +2,13 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+@Ignore
 public class KeychainPasswordStoreTest {
 
     @Test
