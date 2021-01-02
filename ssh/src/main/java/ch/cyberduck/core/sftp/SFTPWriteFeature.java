@@ -27,6 +27,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.output.ChunkedOutputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -88,7 +89,7 @@ public class SFTPWriteFeature extends AppendWriteFeature<Void> {
                 log.info(String.format("Skipping %d bytes", status.getOffset()));
             }
             // Open stream at offset
-            return new VoidStatusOutputStream(handle.new RemoteFileOutputStream(status.getOffset(), maxUnconfirmedWrites) {
+            return new VoidStatusOutputStream(new ChunkedOutputStream(handle.new RemoteFileOutputStream(status.getOffset(), maxUnconfirmedWrites) {
                 private final AtomicBoolean close = new AtomicBoolean();
 
                 @Override
@@ -105,7 +106,7 @@ public class SFTPWriteFeature extends AppendWriteFeature<Void> {
                         close.set(true);
                     }
                 }
-            });
+            }, preferences.getInteger("sftp.write.chunksize")));
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Upload {0} failed", e, file);
