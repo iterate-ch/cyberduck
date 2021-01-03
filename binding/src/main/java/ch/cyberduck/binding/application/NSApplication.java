@@ -25,6 +25,7 @@ import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 
+import org.apache.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
@@ -35,24 +36,207 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public abstract class NSApplication extends NSObject {
     private static final _Class CLASS = Rococoa.createClass("NSApplication", _Class.class); //$NON-NLS-1$
 
+    private static final Logger log = Logger.getLogger(NSApplication.class);
+
     public interface Delegate {
+        /**
+         * Tells the delegate to open a single file.
+         * <p>
+         * Sent directly by theApplication to the delegate. The method should open the file filename, returning YES if
+         * the file is successfully opened, and NO otherwise. If the user started up the application by double-clicking
+         * a file, the delegate receives the application:openFile: message before receiving
+         * applicationDidFinishLaunching:. (applicationWillFinishLaunching: is sent before application:openFile:.)
+         *
+         * @param app      The application object associated with the delegate.
+         * @param filename The name of the file to open.
+         * @return YES if the file was successfully opened or NO if it was not.
+         */
         boolean application_openFile(NSApplication app, String filename);
 
+        /**
+         * Tells the delegate to open a temporary file.
+         * <p>
+         * <p>
+         * Sent directly by theApplication to the delegate. The method should attempt to open the file filename,
+         * returning YES if the file is successfully opened, and NO otherwise.
+         * <p>
+         * By design, a file opened through this method is assumed to be temporary—it’s the application’s responsibility
+         * to remove the file at the appropriate time.
+         *
+         * @param app      The application object associated with the delegate.
+         * @param filename The name of the temporary file to open.
+         * @return YES if the file was successfully opened or NO if it was not.
+         */
         boolean application_openTempFile(NSApplication app, String filename);
 
+        /**
+         * Invoked immediately before opening an untitled file.
+         * <p>
+         * Use this method to decide whether the application should open a new, untitled file. Note that
+         * applicationOpenUntitledFile: is invoked if this method returns YES.
+         *
+         * @param sender The application object associated with the delegate.
+         * @return YES if the application should open a new untitled file or NO if it should not.
+         */
         boolean applicationShouldOpenUntitledFile(NSApplication sender);
 
-        boolean applicationOpenUntitledFile(NSApplication app);
+        /**
+         * Tells the delegate to open an untitled file.
+         * <p>
+         * Sent directly by theApplication to the delegate to request that a new, untitled file be opened.
+         *
+         * @param sender The application object associated with the delegate.
+         * @return YES if the file was successfully opened or NO if it was not.
+         */
+        boolean applicationOpenUntitledFile(NSApplication sender);
 
+        /**
+         * Sent by the application to the delegate prior to default behavior to reopen (rapp) AppleEvents.
+         * <p>
+         * These events are sent whenever the Finder reactivates an already running application because someone
+         * double-clicked it again or used the dock to activate it.
+         * <p>
+         * By default the Application Kit will handle this event by checking whether there are any visible NSWindow (not
+         * NSPanel) objects, and, if there are none, it goes through the standard untitled document creation (the same
+         * as it does if theApplication is launched without any document to open). For most document-based applications,
+         * an untitled document will be created.
+         * <p>
+         * The application delegate will also get a chance to respond to the normal untitled document delegate methods.
+         * If you implement this method in your application delegate, it will be called before any of the default
+         * behavior happens. If you return YES, then NSApplication will proceed as normal. If you return NO, then
+         * NSApplication will do nothing. So, you can either implement this method with a version that does nothing, and
+         * return NO if you do not want anything to happen at all (not recommended), or you can implement this method,
+         * handle the event yourself in some custom way, and return NO.
+         * <p>
+         * Miniaturized windows, windows in the Dock, are considered visible by this method, and cause flag to return
+         * YES, despite the fact that miniaturized windows return NO when sent an visible message.
+         *
+         * @param app                 The application object.
+         * @param visibleWindowsFound Indicates whether the NSApplication object found any visible windows in your
+         *                            application. You can use this value as an indication of whether the application
+         *                            would do anything if you return YES.
+         * @return YES if you want the application to perform its normal tasks or NO if you want the application to do
+         * nothing.
+         */
         boolean applicationShouldHandleReopen_hasVisibleWindows(NSApplication app, boolean visibleWindowsFound);
 
-        void applicationDidFinishLaunching(NSNotification notification);
+        /**
+         * Sent by the default notification center immediately before the application object is initialized.
+         *
+         * @param notification A notification named NSApplicationWillFinishLaunchingNotification. Calling the object
+         *                     method of this notification returns the NSApplication object itself.
+         */
+        default void applicationWillFinishLaunching(final NSNotification notification) {
+            if(log.isDebugEnabled()) {
+                log.debug(notification);
+            }
+        }
 
+        /**
+         * Sent by the default notification center after the application has been launched and initialized but before it
+         * has received its first event.
+         * <p>
+         * Delegates can implement this method to perform further initialization. This method is called after the
+         * application’s main run loop has been started but before it has processed any events. If the application was
+         * launched by the user opening a file, the delegate’s application:openFile: method is called before this
+         * method. If you want to perform initialization before any files are opened, implement the
+         * applicationWillFinishLaunching: method in your delegate, which is called before application:openFile:.)
+         *
+         * @param notification A notification named NSApplicationDidFinishLaunchingNotification. Calling the object
+         *                     method of this notification returns the NSApplication object itself.
+         */
+        default void applicationDidFinishLaunching(final NSNotification notification) {
+            if(log.isDebugEnabled()) {
+                log.debug(notification);
+            }
+        }
+
+        /**
+         * Sent to notify the delegate that the application is about to terminate.
+         * <p>
+         * This method is called after the application’s Quit menu item has been selected, or after the terminate:
+         * method has been called. Generally, you should return NSTerminateNow to allow the termination to complete, but
+         * you can cancel the termination process or delay it somewhat as needed. For example, you might delay
+         * termination to finish processing some critical data but then terminate the application as soon as you are
+         * done by calling the replyToApplicationShouldTerminate: method.
+         *
+         * @param app The application object that is about to be terminated.
+         * @return One of the values defined in NSApplicationTerminateReply constants indicating whether the application
+         * should terminate. For compatibility reasons, a return value of NO is equivalent to NSTerminateCancel, and a
+         * return value of YES is equivalent to NSTerminateNow.
+         */
         NSUInteger applicationShouldTerminate(NSApplication app);
 
-        void applicationWillTerminate(NSNotification notification);
+        default void applicationWillTerminate(final NSNotification notification) {
+            if(log.isDebugEnabled()) {
+                log.debug(notification);
+            }
+        }
 
+        /**
+         * Invoked when the user closes the last window the application has open.
+         * <p>
+         * The application sends this message to your delegate when the application’s last window is closed. It sends
+         * this message regardless of whether there are still panels open. (A panel in this case is defined as being an
+         * instance of NSPanel or one of its subclasses.)
+         * <p>
+         * If your implementation returns NO, control returns to the main event loop and the application is not
+         * terminated. If you return YES, your delegate’s applicationShouldTerminate: method is subsequently invoked to
+         * confirm that the application should be terminated.
+         *
+         * @param app The application object whose last window was closed.
+         * @return NO if the application should not be terminated when its last window is closed; otherwise, YES to
+         * terminate the application.
+         */
         boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app);
+
+        /**
+         * Sent by the default notification center immediately before the application becomes active.
+         *
+         * @param notification A notification named NSApplicationWillBecomeActiveNotification. Calling the object method
+         *                     of this notification returns the NSApplication object itself.
+         */
+        default void applicationWillBecomeActive(final NSNotification notification) {
+            if(log.isDebugEnabled()) {
+                log.debug(notification);
+            }
+        }
+
+        /**
+         * Sent by the default notification center immediately after the application becomes active.
+         *
+         * @param notification A notification named NSApplicationDidBecomeActiveNotification. Calling the object method
+         *                     of this notification returns the NSApplication object itself.
+         */
+        default void applicationDidBecomeActive(final NSNotification notification) {
+            if(log.isDebugEnabled()) {
+                log.debug(notification);
+            }
+        }
+
+        /**
+         * Sent by the default notification center immediately before the application is deactivated.
+         *
+         * @param notification A notification named NSApplicationWillResignActiveNotification. Calling the object method
+         *                     of this notification returns the NSApplication object itself.
+         */
+        default void applicationWillResignActive(final NSNotification notification) {
+            if(log.isDebugEnabled()) {
+                log.debug(notification);
+            }
+        }
+
+        /**
+         * Sent by the default notification center immediately after the application is deactivated.
+         *
+         * @param notification A notification named NSApplicationDidResignActiveNotification. Calling the object method
+         *                     of this notification returns the NSApplication object itself.
+         */
+        default void applicationDidResignActive(final NSNotification notification) {
+            if(log.isDebugEnabled()) {
+                log.debug(notification);
+            }
+        }
     }
 
     public static final NSUInteger NSTerminateCancel = new NSUInteger(0);
@@ -61,10 +245,12 @@ public abstract class NSApplication extends NSObject {
 
     public interface _Class extends ObjCClass {
         /**
-         * This method also makes a connection to the window server and completes other initialization.
-         * Your program should invoke this method as one of the first statements in main();
+         * Returns the application instance, creating it if it doesn’t exist yet.
+         * <p>
+         * This method also makes a connection to the window server and completes other initialization. Your program
+         * should invoke this method as one of the first statements in main();
          *
-         * @return
+         * @return The shared application object.
          */
         NSApplication sharedApplication();
     }
@@ -244,15 +430,20 @@ public abstract class NSApplication extends NSObject {
     public abstract void terminate(ID sender);
 
     /**
-     * A key value coding compliant get-accessor for the orderedDocuments to-many-relationship declared in Cocoa's definition of the Standard Suite.  Return an array of currently open scriptable documents, in a predictable order that will be meaningful to script writers.  NSApplication's implementation of this method returns pointers to all NSDocuments in the front-to-back order of each document's frontmost window.  NSDocuments that have no associated windows are at the end of the array.<br>
-     * Original signature : <code>NSArray* orderedDocuments()</code><br>
+     * A key value coding compliant get-accessor for the orderedDocuments to-many-relationship declared in Cocoa's
+     * definition of the Standard Suite.  Return an array of currently open scriptable documents, in a predictable order
+     * that will be meaningful to script writers.  NSApplication's implementation of this method returns pointers to all
+     * NSDocuments in the front-to-back order of each document's frontmost window.  NSDocuments that have no associated
+     * windows are at the end of the array.<br> Original signature : <code>NSArray* orderedDocuments()</code><br>
      * <i>from NSScripting native declaration : :14</i>
      */
     public abstract NSArray orderedDocuments();
 
     /**
-     * A key value coding compliant get-accessor for the orderedWindows to-many-relationship declared in Cocoa's definition of the Standard Suite.  Return an array of currently open scriptable windows, including hidden windows, but typically not includings things like panels.<br>
-     * Original signature : <code>NSArray* orderedWindows()</code><br>
+     * A key value coding compliant get-accessor for the orderedWindows to-many-relationship declared in Cocoa's
+     * definition of the Standard Suite.  Return an array of currently open scriptable windows, including hidden
+     * windows, but typically not includings things like panels.<br> Original signature : <code>NSArray*
+     * orderedWindows()</code><br>
      * <i>from NSScripting native declaration : :17</i>
      */
     public abstract NSArray orderedWindows();
@@ -272,16 +463,14 @@ public abstract class NSApplication extends NSObject {
 
     /**
      * <i>native declaration : :149</i><br>
-     * Conversion Error : /**<br>
-     * * *  Present a sheet on the given window.  When the modal session is ended,<br>
-     * * * the didEndSelector will be invoked in the modalDelegate.  The didEndSelector<br>
-     * * * should have the following signature, and will be invoked when the modal session ends.<br>
-     * * * This method should dimiss the sheet using orderOut:<br>
-     * * * - (void)sheetDidEnd:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo;<br>
-     * * *<br>
-     * * Original signature : <code>void beginSheet(NSWindow*, NSWindow*, id, null, void*)</code><br>
-     * * /<br>
-     * - (void)beginSheet:(NSWindow*)sheet modalForWindow:(NSWindow*)docWindow modalDelegate:(id)modalDelegate didEndSelector:(null)didEndSelector contextInfo:(void*)contextInfo; (Argument didEndSelector cannot be converted)
+     * Conversion Error : /**<br> * *  Present a sheet on the given window.  When the modal session is ended,<br> * *
+     * the didEndSelector will be invoked in the modalDelegate.  The didEndSelector<br> * * should have the following
+     * signature, and will be invoked when the modal session ends.<br> * * This method should dimiss the sheet using
+     * orderOut:<br> * * - (void)sheetDidEnd:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void
+     * *)contextInfo;<br> * *<br> * Original signature : <code>void beginSheet(NSWindow*, NSWindow*, id, null,
+     * void*)</code><br> * /<br> - (void)beginSheet:(NSWindow*)sheet modalForWindow:(NSWindow*)docWindow
+     * modalDelegate:(id)modalDelegate didEndSelector:(null)didEndSelector contextInfo:(void*)contextInfo; (Argument
+     * didEndSelector cannot be converted)
      */
     public abstract void beginSheet_modalForWindow_modalDelegate_didEndSelector_contextInfo(NSWindow sheet, NSWindow docWindow, ID modalDelegate, Selector didEndSelector, ID contextInfo);
 
@@ -306,17 +495,16 @@ public abstract class NSApplication extends NSObject {
     }
 
     /**
-     * * runModalForWindow:relativeToWindow: is deprecated.  <br>
-     * * Please use beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:<br>
+     * * runModalForWindow:relativeToWindow: is deprecated.  <br> * Please use beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:<br>
      * Original signature : <code>NSInteger runModalForWindow(NSWindow*, NSWindow*)</code><br>
      * <i>native declaration : :157</i>
      */
     public abstract NSInteger runModalForWindow_relativeToWindow(NSWindow theWindow, NSWindow docWindow);
 
     /**
-     * * beginModalSessionForWindow:relativeToWindow: is deprecated.<br>
-     * * Please use beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:<br>
-     * Original signature : <code>NSModalSession beginModalSessionForWindow(NSWindow*, NSWindow*)</code><br>
+     * * beginModalSessionForWindow:relativeToWindow: is deprecated.<br> * Please use
+     * beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:<br> Original signature : <code>NSModalSession
+     * beginModalSessionForWindow(NSWindow*, NSWindow*)</code><br>
      * <i>native declaration : :163</i>
      */
     public abstract com.sun.jna.Pointer beginModalSessionForWindow_relativeToWindow(NSWindow theWindow, NSWindow docWindow);
@@ -436,8 +624,9 @@ public abstract class NSApplication extends NSObject {
     public abstract void reportException(com.sun.jna.Pointer theException);
 
     /**
-     * If an application delegate returns NSTerminateLater from -applicationShouldTerminate:, -replyToApplicationShouldTerminate: must be called with YES or NO once the application decides if it can terminate<br>
-     * Original signature : <code>void replyToApplicationShouldTerminate(BOOL)</code><br>
+     * If an application delegate returns NSTerminateLater from -applicationShouldTerminate:,
+     * -replyToApplicationShouldTerminate: must be called with YES or NO once the application decides if it can
+     * terminate<br> Original signature : <code>void replyToApplicationShouldTerminate(BOOL)</code><br>
      * <i>native declaration : :196</i>
      */
     public abstract void replyToApplicationShouldTerminate(boolean shouldTerminate);
@@ -451,8 +640,7 @@ public abstract class NSApplication extends NSObject {
      * - (void)replyToOpenOrPrint:(null)reply; (Argument reply cannot be converted)
      */
     /**
-     * Opens the character palette<br>
-     * Original signature : <code>void orderFrontCharacterPalette(id)</code><br>
+     * Opens the character palette<br> Original signature : <code>void orderFrontCharacterPalette(id)</code><br>
      * <i>native declaration : :204</i>
      */
     public abstract void orderFrontCharacterPalette(final ID sender);
