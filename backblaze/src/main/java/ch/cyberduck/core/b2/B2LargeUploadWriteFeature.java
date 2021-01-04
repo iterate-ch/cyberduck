@@ -149,6 +149,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                         log.debug(String.format("Upload finished for %s with response %s", file, response));
                     }
                     overall.setVersion(new VersionId(response.getFileId()));
+                    close.set(true);
                 }
                 else {
                     if(0 == partNumber) {
