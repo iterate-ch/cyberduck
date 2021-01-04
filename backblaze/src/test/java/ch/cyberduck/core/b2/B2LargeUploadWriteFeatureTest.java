@@ -28,14 +28,12 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -55,7 +53,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         status.setTimestamp(1503654614004L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = feature.write(file, status, new DisabledConnectionCallback());
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(6 * 1024 * 1024).getBytes(StandardCharsets.UTF_8);
+        final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copy(in, out));
         in.close();
@@ -79,7 +77,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = feature.write(file, status, new DisabledConnectionCallback());
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(2 * 1024 * 1024).getBytes(StandardCharsets.UTF_8);
+        final byte[] content = RandomUtils.nextBytes(2 * 1024 * 1024);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copy(in, out));
         in.close();
