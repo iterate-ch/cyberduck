@@ -1050,6 +1050,7 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("sftp.read.maxunconfirmed", String.valueOf(64));
         this.setDefault("sftp.write.maxunconfirmed", String.valueOf(64));
+        this.setDefault("sftp.write.chunksize", String.valueOf(32768));
 
         this.setDefault("archive.default", "tar.gz");
 

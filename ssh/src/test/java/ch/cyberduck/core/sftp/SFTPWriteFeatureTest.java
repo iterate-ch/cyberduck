@@ -71,6 +71,39 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
     }
 
     @Test
+    public void testWrite() throws Exception {
+        final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new SFTPTouchFeature(session).touch(test, new TransferStatus());
+        final TransferStatus status = new TransferStatus();
+        final int length = 1048576;
+        final byte[] content = RandomUtils.nextBytes(length);
+        status.setLength(content.length);
+        status.setExists(true);
+        final OutputStream out = new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        out.write(content);
+        out.close();
+        assertTrue(new SFTPFindFeature(session).find(test));
+        assertEquals(content.length, new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new SFTPWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        {
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            new StreamCopier(status, status).transfer(in, buffer);
+            assertArrayEquals(content, buffer.toByteArray());
+        }
+        {
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 1);
+            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().append(true).skip(1L), new DisabledConnectionCallback());
+            new StreamCopier(status, status).transfer(in, buffer);
+            final byte[] reference = new byte[content.length - 1];
+            System.arraycopy(content, 1, reference, 0, content.length - 1);
+            assertArrayEquals(reference, buffer.toByteArray());
+        }
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testWriteSymlink() throws Exception {
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
