@@ -32,7 +32,7 @@
     <property name="app.runtime.system.min" value="10.9"/>
 
     <property name="build.xcodeoptions.default"
-              value="JAVA_HOME=${env.JAVA_HOME} SYMROOT=${build} SDKROOT=macosx ARCHS=${app.runtime.archs} MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
+              value="JAVA_HOME=${java.home} SYMROOT=${build} SDKROOT=macosx ARCHS=${app.runtime.archs} MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 
     <condition property="build.xcodeoptions"
                value="${build.xcodeoptions.default} SPARKLEFEED='https://version.cyberduck.io/${sparkle.feed}/changelog.rss' INFOPLIST_PREPROCESSOR_DEFINITIONS=SPARKLE_BUILD"
