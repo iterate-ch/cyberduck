@@ -56,6 +56,19 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
         new SwiftDeleteFeature(session).delete(Arrays.asList(f1, f2, placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
+    @Test
+    public void testListDotInKey() throws Exception {
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
+        final Path placeholder = new SwiftDirectoryFeature(session).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
+            new Path(placeholder, new AlphanumericRandomStringService().random() + "..", EnumSet.of(Path.Type.file)), new TransferStatus());
+        final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener());
+        assertEquals(1, list.size());
+        assertTrue(list.contains(test));
+        new SwiftDeleteFeature(session).delete(Arrays.asList(test, placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolder() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
