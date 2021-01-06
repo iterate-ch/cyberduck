@@ -32,6 +32,9 @@ import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.GroupItem;
 import org.nuxeo.onedrive.client.types.Site;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 public abstract class AbstractSharepointSession extends GraphSession {
     private static final Logger log = Logger.getLogger(SharepointSession.class);
 
@@ -93,11 +96,24 @@ public abstract class AbstractSharepointSession extends GraphSession {
 
     @Override
     public boolean isAccessible(final Path file, final boolean container) {
-        return !file.isRoot();
+        if(file.isRoot()) {
+            return false;
+        }
+
+        final ContainerItem containerItem = getContainer(file);
+        if(!containerItem.isDefined()) {
+            return false;
+        }
+        return containerItem.isDrive() && (container || !containerItem.getContainerPath().map(file::equals).orElse(false));
     }
 
-    @Override
-    public Path getContainer(final Path file) {
-        return new SharepointContainerService().getContainer(file);
+    protected Deque<Path> decompose(final Path file) {
+        final Deque<Path> walk = new ArrayDeque<>();
+        Path next = file;
+        while(!next.isRoot()) {
+            walk.push(next);
+            next = next.getParent();
+        }
+        return walk;
     }
 }
