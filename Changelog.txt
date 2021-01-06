@@ -8,6 +8,7 @@ https://cyberduck.io/
 - [Feature] Updated toolbar icons in Preferencs window (macOS)
 - [Bugfix] No attempt to authenticate using SSH agent (SFTP)
 - [Bugfix] Allow browsing filenames containing forward slash (Google Drive)
+- [Bugfix] Allow accessing shortcuts for files and folders (Google Drive)
 
 7.7.2
 - [Feature] Allow custom session duration for STS (S3) (#11265)
