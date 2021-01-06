@@ -235,6 +235,8 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             "end tell");
         this.setDefault("terminal.command.default", "do script \"{0}\"");
 
+        // Workaround for #11508
+        this.deleteProperty("__NSDisableSharingTextTabInstance");
     }
 
     @Override
