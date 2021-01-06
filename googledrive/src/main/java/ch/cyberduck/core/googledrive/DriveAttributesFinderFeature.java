@@ -38,8 +38,7 @@ import java.text.MessageFormat;
 
 import com.google.api.services.drive.model.File;
 
-import static ch.cyberduck.core.googledrive.AbstractDriveListService.DRIVE_FOLDER;
-import static ch.cyberduck.core.googledrive.AbstractDriveListService.GOOGLE_APPS_PREFIX;
+import static ch.cyberduck.core.googledrive.AbstractDriveListService.*;
 
 public class DriveAttributesFinderFeature implements AttributesFinder {
 
@@ -89,7 +88,13 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
                 attributes.setSize(f.getSize());
             }
         }
-        attributes.setVersionId(f.getId());
+        if(DRIVE_SHORTCUT.equals(f.getMimeType())) {
+            final File.ShortcutDetails shortcutDetails = f.getShortcutDetails();
+            attributes.setVersionId(shortcutDetails.getTargetId());
+        }
+        else {
+            attributes.setVersionId(f.getId());
+        }
         if(f.getModifiedTime() != null) {
             attributes.setModificationDate(f.getModifiedTime().getValue());
         }
