@@ -81,7 +81,6 @@ public class OneDriveSession extends GraphSession {
     @Override
     public ContainerItem getContainer(final Path file) {
         return ContainerItem.EMPTY;
-        //return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
     }
 
     @Override
