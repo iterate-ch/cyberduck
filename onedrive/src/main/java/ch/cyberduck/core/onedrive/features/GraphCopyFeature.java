@@ -87,9 +87,6 @@ public class GraphCopyFeature implements Copy {
         if(!session.getContainer(source).equals(session.getContainer(target))) {
             return false;
         }
-        if(source.getType().contains(Path.Type.shared)) {
-            return false;
-        }
-        return true;
+        return !source.getType().contains(Path.Type.shared);
     }
 }

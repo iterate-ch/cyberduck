@@ -94,7 +94,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         if(!(item instanceof DriveItem)) {
             throw new NotfoundException(String.format("%s is not a file.", file.getAbsolute()));
         }
-        return (DriveItem) item;
+        return item;
     }
 
     public DriveItem toFolder(final Path file) throws BackgroundException {
@@ -106,7 +106,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         if(!(item instanceof DriveItem)) {
             throw new NotfoundException(String.format("%s is not a folder.", file.getAbsolute()));
         }
-        return (DriveItem) item;
+        return item;
     }
 
     @Override
