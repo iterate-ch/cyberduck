@@ -28,7 +28,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.types.GroupItem;
 import org.nuxeo.onedrive.client.types.Site;
 
-import java.util.Objects;
+import java.util.Deque;
+
+import static ch.cyberduck.core.onedrive.SharepointListService.DRIVES_CONTAINER;
+import static ch.cyberduck.core.onedrive.SharepointListService.SITES_CONTAINER;
 
 public class SharepointSiteSession extends AbstractSharepointSession {
     public SharepointSiteSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -43,13 +46,13 @@ public class SharepointSiteSession extends AbstractSharepointSession {
     @Override
     public Site getSite(final Path file) throws BackgroundException {
         final Path parent = file.getParent();
-        if (parent.isRoot()) {
+        if(parent.isRoot()) {
             final Site hostSite = Site.byHostname(getClient(), host.getHostname());
             String path = host.getDefaultPath();
-            if (StringUtils.isBlank(path) || "/".equals(path)) {
+            if(StringUtils.isBlank(path) || "/".equals(path)) {
                 return hostSite;
             }
-            if (!path.startsWith("/")) {
+            if(!path.startsWith("/")) {
                 path = "/" + path;
             }
             return Site.byPath(hostSite, path);
@@ -72,17 +75,29 @@ public class SharepointSiteSession extends AbstractSharepointSession {
     }
 
     @Override
-    public boolean isAccessible(final Path file, final boolean container) {
-        if(file.isRoot()) {
-            return false;
+    public ContainerItem getContainer(final Path file) {
+        Deque<Path> pathDeque = decompose(file);
+
+        Path lastContainer = null;
+        Path lastCollection = null;
+        boolean exit = false, nextExit = false;
+
+        while(!exit && pathDeque.size() > 0) {
+            final Path current = pathDeque.pop();
+            exit = nextExit;
+
+            switch(current.getName()) {
+                case DRIVES_CONTAINER:
+                    nextExit = true;
+                case SITES_CONTAINER:
+                    lastCollection = current;
+                    break;
+
+                default:
+                    lastContainer = current;
+            }
         }
 
-        final Path containerPath = getContainer(file);
-        if(containerPath.isRoot()) {
-            return false;
-        }
-
-        return SharepointListService.DRIVES_ID.equals(containerPath.getParent().attributes().getVersionId())
-            && (container || !containerPath.equals(file));
+        return new ContainerItem(lastContainer, lastCollection, exit);
     }
 }

@@ -42,8 +42,6 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveEmailAccount;
-import org.nuxeo.onedrive.client.OneDriveExpand;
 import org.nuxeo.onedrive.client.RequestExecutor;
 import org.nuxeo.onedrive.client.RequestHeader;
 import org.nuxeo.onedrive.client.Users;
@@ -51,6 +49,7 @@ import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.User;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Set;
 
 public abstract class GraphSession extends HttpSession<OneDriveAPI> {
@@ -60,7 +59,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     private OAuth2RequestInterceptor authorizationService;
 
-    private  User.Metadata user;
+    private User.Metadata user;
 
     public User.Metadata getUser() {
         return user;
@@ -84,7 +83,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     public abstract boolean isAccessible(Path file, boolean container);
 
-    public abstract Path getContainer(Path file);
+    public abstract ContainerItem getContainer(Path file);
 
     public DriveItem toFile(final Path file) throws BackgroundException {
         return this.toFile(file, true);
@@ -95,7 +94,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         if(!(item instanceof DriveItem)) {
             throw new NotfoundException(String.format("%s is not a file.", file.getAbsolute()));
         }
-        return (DriveItem) item;
+        return item;
     }
 
     public DriveItem toFolder(final Path file) throws BackgroundException {
@@ -107,7 +106,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         if(!(item instanceof DriveItem)) {
             throw new NotfoundException(String.format("%s is not a folder.", file.getAbsolute()));
         }
-        return (DriveItem) item;
+        return item;
     }
 
     @Override
@@ -244,5 +243,51 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) new GraphPromptUrlProvider(this);
         }
         return super._getFeature(type);
+    }
+
+    public static final class ContainerItem {
+        public static final ContainerItem EMPTY = new ContainerItem(null, null, false);
+
+        private final Path collectionPath;
+        private final Path containerPath;
+        private final boolean isDrive;
+
+        public boolean isDrive() {
+            return isDrive;
+        }
+
+        public Optional<Path> getCollectionPath() {
+            return Optional.ofNullable(collectionPath);
+        }
+
+        public Optional<Path> getContainerPath() {
+            return Optional.ofNullable(containerPath);
+        }
+
+        public boolean isDefined() {
+            return collectionPath != null && containerPath != null;
+        }
+
+        public boolean isContainerInCollection() {
+            if(!isDefined()) {
+                return false;
+            }
+
+            return containerPath.isChild(collectionPath);
+        }
+
+        public boolean isCollectionInContainer() {
+            if(!isDefined()) {
+                return false;
+            }
+
+            return collectionPath.isChild(containerPath);
+        }
+
+        public ContainerItem(final Path containerPath, final Path collectionPath, final boolean isDrive) {
+            this.containerPath = containerPath;
+            this.collectionPath = collectionPath;
+            this.isDrive = isDrive;
+        }
     }
 }

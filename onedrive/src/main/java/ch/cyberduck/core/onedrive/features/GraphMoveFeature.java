@@ -40,7 +40,7 @@ import java.util.Collections;
 public class GraphMoveFeature implements Move {
 
     private final GraphSession session;
-    private Delete delete;
+    private final Delete delete;
 
     public GraphMoveFeature(final GraphSession session) {
         this.session = session;
@@ -93,10 +93,7 @@ public class GraphMoveFeature implements Move {
         if(!session.getContainer(source).equals(session.getContainer(target))) {
             return false;
         }
-        if(source.getType().contains(Path.Type.shared)) {
-            return false;
-        }
-        return true;
+        return !source.getType().contains(Path.Type.shared);
     }
 
 }

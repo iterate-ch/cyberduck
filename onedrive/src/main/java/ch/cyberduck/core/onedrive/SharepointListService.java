@@ -17,7 +17,6 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -38,19 +37,17 @@ import java.util.function.Predicate;
 public class SharepointListService extends AbstractSharepointListService {
     static final Logger log = Logger.getLogger(SharepointListService.class);
 
-    public static final String DEFAULT_ID = "DEFAULT_NAME";
-    public static final String DRIVES_ID = "DRIVES_NAME";
-    public static final String GROUPS_ID = "GROUPS_NAME";
-    public static final String SITES_ID = "SITES_NAME";
+    public static final String DEFAULT_ID = "root";
 
+    public static final String DEFAULT_SITE = "Default";
     public static final String DRIVES_CONTAINER = "Drives";
     public static final String GROUPS_CONTAINER = "Groups";
     public static final String SITES_CONTAINER = "Sites";
 
-    public static final Path DEFAULT_NAME = new Path("/Default", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DEFAULT_ID));
-    public static final Path DRIVES_NAME = new Path("/" + DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DRIVES_ID));
-    public static final Path GROUPS_NAME = new Path("/" + GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(GROUPS_ID));
-    public static final Path SITES_NAME = new Path("/" + SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(SITES_ID));
+    public static final Path DEFAULT_NAME = new Path("/" + DEFAULT_SITE, EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DEFAULT_ID));
+    public static final Path DRIVES_NAME = new Path("/" + DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
+    public static final Path GROUPS_NAME = new Path("/" + GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
+    public static final Path SITES_NAME = new Path("/" + SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
 
     public static final Predicate<Path> DEFAULT_PREDICATE = new CaseInsensitivePathPredicate(DEFAULT_NAME);
 
@@ -113,27 +110,23 @@ public class SharepointListService extends AbstractSharepointListService {
 
     @Override
     AttributedList<Path> processList(Path directory, final ListProgressListener listener) throws BackgroundException {
-        // check whether this has been passed by bookmark defaultpath
-        final Path resolved = findDefaultPath(directory);
+        final GraphSession.ContainerItem container = session.getContainer(directory);
+        if(container.isDrive()) {
+            return AttributedList.emptyList();
+        }
 
-        final String versionId = getIdProvider().getFileid(resolved, new DisabledListProgressListener());
-        if(DEFAULT_ID.equals(versionId)) {
-            final Path symlinkTarget = getDefaultSymlinkTarget(resolved);
-            return list(symlinkTarget, listener);
+        // Default?
+        if(!container.isDefined() && container.getContainerPath().map(p -> DEFAULT_SITE.equals(p.getName())).orElse(false)) {
+            return addSiteItems(directory, listener);
         }
-        else if(GROUPS_ID.equals(versionId)) {
-            return new GroupListService(session).list(resolved, listener);
-        }
-        else {
-            final Path parent = resolved.getParent();
-            if(!parent.isRoot()) {
-                final String parentId = getIdProvider().getFileid(parent, new DisabledListProgressListener());
-                if(GROUPS_ID.equals(parentId)) {
-                    return new GroupDrivesListService(session).list(resolved, listener);
-                }
+        if(container.getCollectionPath().map(p -> GROUPS_CONTAINER.equals(p.getName())).orElse(false)) {
+            if(!container.isDefined()) {
+                return new GroupListService(session).list(directory, listener);
+            }
+            else {
+                return new GroupDrivesListService(session).list(directory, listener);
             }
         }
-
         return AttributedList.emptyList();
     }
 }

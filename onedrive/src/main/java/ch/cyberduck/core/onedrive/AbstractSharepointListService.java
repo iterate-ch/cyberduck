@@ -25,6 +25,8 @@ import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.features.sharepoint.SiteDrivesListService;
 import ch.cyberduck.core.onedrive.features.sharepoint.SitesListService;
 
+import java.util.Optional;
+
 import static ch.cyberduck.core.onedrive.SharepointListService.*;
 
 public abstract class AbstractSharepointListService implements ListService {
@@ -56,14 +58,22 @@ public abstract class AbstractSharepointListService implements ListService {
             return result;
         }
 
-        if(SITES_ID.equals(directory.attributes().getVersionId())) {
-            return new SitesListService(session).list(directory, listener);
-        }
-        else if(DRIVES_ID.equals(directory.attributes().getVersionId())) {
-            return new SiteDrivesListService(session).list(directory, listener);
-        }
-        else if(SITES_ID.equals(directory.getParent().attributes().getVersionId())) {
+        final GraphSession.ContainerItem container = session.getContainer(directory);
+        if(container.getCollectionPath().map(p -> container.isContainerInCollection() && SITES_CONTAINER.equals(p.getName())).orElse(false)) {
             return addSiteItems(directory, listener);
+        }
+
+        final Optional<ListService> collectionListService = container.getCollectionPath().map(p -> {
+            if(SITES_CONTAINER.equals(p.getName())) {
+                return new SitesListService(session);
+            }
+            else if(DRIVES_CONTAINER.equals(p.getName())) {
+                return new SiteDrivesListService(session);
+            }
+            return null;
+        });
+        if(collectionListService.isPresent() && (!container.isDefined() || container.isCollectionInContainer())) {
+            return collectionListService.get().list(directory, listener);
         }
 
         return new GraphItemListService(session).list(directory, listener);

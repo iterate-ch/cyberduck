@@ -28,7 +28,8 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class SharepointSessionTest extends AbstractSharepointTest {
@@ -43,6 +44,16 @@ public class SharepointSessionTest extends AbstractSharepointTest {
         @Test
         public void isAccessible() {
             assertFalse(session.isAccessible(new Path("/", EnumSet.of(Path.Type.directory))));
+            assertFalse(session.isAccessible(SharepointListService.DEFAULT_NAME));
+            assertFalse(session.isAccessible(SharepointListService.DEFAULT_NAME, false));
+            final Path defaultSiteDrive =
+                new Path(
+                    new Path(
+                        SharepointListService.DEFAULT_NAME, "Drives", EnumSet.of(AbstractPath.Type.directory)),
+                    "Drive-Id", EnumSet.of(Path.Type.directory));
+            assertTrue(session.isAccessible(defaultSiteDrive));
+            assertFalse(session.isAccessible(defaultSiteDrive, false));
+
             assertFalse(session.isAccessible(SharepointListService.SITES_NAME));
             assertFalse(session.isAccessible(SharepointListService.SITES_NAME, false));
             assertFalse(session.isAccessible(SharepointListService.GROUPS_NAME));

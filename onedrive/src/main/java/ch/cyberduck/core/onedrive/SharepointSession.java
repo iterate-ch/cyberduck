@@ -28,6 +28,10 @@ import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.types.GroupItem;
 import org.nuxeo.onedrive.client.types.Site;
 
+import java.util.Deque;
+
+import static ch.cyberduck.core.onedrive.SharepointListService.*;
+
 public class SharepointSession extends AbstractSharepointSession {
     private static final Logger log = Logger.getLogger(SharepointSession.class);
 
@@ -60,25 +64,35 @@ public class SharepointSession extends AbstractSharepointSession {
     }
 
     @Override
-    public boolean isAccessible(final Path file, final boolean container) {
-        if(file.isRoot()) {
-            return false;
+    public ContainerItem getContainer(final Path file) {
+        Deque<Path> pathDeque = decompose(file);
+
+        Path lastContainer = null;
+        Path lastCollection = null;
+        boolean exit = false, nextExit = false, exitEarly = false;
+
+        while(!exit && pathDeque.size() > 0) {
+            final Path current = pathDeque.pop();
+            exit = nextExit;
+            nextExit = exitEarly;
+
+            switch(current.getName()) {
+                case DRIVES_CONTAINER:
+                    nextExit = true;
+                case SITES_CONTAINER:
+                    lastCollection = current;
+                    break;
+
+                case GROUPS_CONTAINER:
+                    lastCollection = current;
+                    exitEarly = true;
+                    break;
+
+                default:
+                    lastContainer = current;
+            }
         }
 
-        final Path containerPath = getContainer(file);
-        if(containerPath.isRoot()) {
-            return false;
-        }
-
-        final Path parent = containerPath.getParent();
-        if(parent.isRoot()) {
-            return false;
-        }
-
-        if(SharepointListService.GROUPS_CONTAINER.equals(parent.getParent().getName())) {
-            return container || !containerPath.equals(file);
-        }
-        return SharepointListService.DRIVES_CONTAINER.equals(containerPath.getParent().getName())
-            && (container || !containerPath.equals(file));
+        return new ContainerItem(lastContainer, lastCollection, exit);
     }
 }

@@ -169,7 +169,7 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
     }
 
     private final class CommonsHttpResponse extends Response {
-        private HttpResponse response;
+        private final HttpResponse response;
 
         public CommonsHttpResponse(final HttpResponse response) throws IOException {
             super(null == response.getEntity() ? new NullInputStream(0L) :

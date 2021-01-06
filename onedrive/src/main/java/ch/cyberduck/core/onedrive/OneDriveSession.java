@@ -32,8 +32,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
-import java.util.EnumSet;
-
 public class OneDriveSession extends GraphSession {
 
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -81,8 +79,8 @@ public class OneDriveSession extends GraphSession {
     }
 
     @Override
-    public Path getContainer(final Path file) {
-        return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+    public ContainerItem getContainer(final Path file) {
+        return ContainerItem.EMPTY;
     }
 
     @Override
