@@ -23,8 +23,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using ch.cyberduck.core.cache;
 using ch.cyberduck.core.local;
-using Ch.Cyberduck.Core.Collections;
 using java.util;
 using Microsoft.Win32;
 using org.apache.commons.io;
@@ -37,14 +37,9 @@ namespace Ch.Cyberduck.Core.Local
         private static readonly Guid CLSID_QueryAssociations = new Guid("a07034fd-6caa-4954-ac3f-97a27216f98a");
         private static readonly Logger Log = Logger.getLogger(typeof(RegistryApplicationFinder).Name);
 
-        private static readonly ch.cyberduck.core.cache.LRUCache applicationNameCache =
-            ch.cyberduck.core.cache.LRUCache.build(100);
-
-        private static readonly ch.cyberduck.core.cache.LRUCache defaultApplicationCache =
-            ch.cyberduck.core.cache.LRUCache.build(100);
-
-        private static readonly ch.cyberduck.core.cache.LRUCache defaultApplicationListCache =
-            ch.cyberduck.core.cache.LRUCache.build(100);
+        private static readonly LRUCache applicationNameCache = LRUCache.build(100);
+        private static readonly LRUCache defaultApplicationCache = LRUCache.build(100);
+        private static readonly LRUCache defaultApplicationListCache = LRUCache.build(100);
 
         private static Guid IID_IQueryAssociations = new Guid("c46ca590-3c3f-11d2-bee6-0000f805ca57");
 
