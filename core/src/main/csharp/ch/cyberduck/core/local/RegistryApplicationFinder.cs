@@ -37,14 +37,14 @@ namespace Ch.Cyberduck.Core.Local
         private static readonly Guid CLSID_QueryAssociations = new Guid("a07034fd-6caa-4954-ac3f-97a27216f98a");
         private static readonly Logger Log = Logger.getLogger(typeof(RegistryApplicationFinder).Name);
 
-        private static readonly LRUCache<string, Application> applicationNameCache =
-            new LRUCache<string, Application>(100);
+        private static readonly ch.cyberduck.core.cache.LRUCache applicationNameCache =
+            ch.cyberduck.core.cache.LRUCache.build(100);
 
-        private static readonly LRUCache<string, Application> defaultApplicationCache =
-            new LRUCache<string, Application>(100);
+        private static readonly ch.cyberduck.core.cache.LRUCache defaultApplicationCache =
+            ch.cyberduck.core.cache.LRUCache.build(100);
 
-        private static readonly LRUCache<string, IList<Application>> defaultApplicationListCache =
-            new LRUCache<string, IList<Application>>(100);
+        private static readonly ch.cyberduck.core.cache.LRUCache defaultApplicationListCache =
+            ch.cyberduck.core.cache.LRUCache.build(100);
 
         private static Guid IID_IQueryAssociations = new Guid("c46ca590-3c3f-11d2-bee6-0000f805ca57");
 
@@ -56,7 +56,7 @@ namespace Ch.Cyberduck.Core.Local
             {
                 return Application.notfound;
             }
-            if (!applicationNameCache.ContainsKey(application))
+            if (!applicationNameCache.contains(application))
             {
                 string path = WindowsApplicationLauncher.GetExecutableCommand(application);
                 if (File.Exists(path))
@@ -65,30 +65,25 @@ namespace Ch.Cyberduck.Core.Local
                     if (Utils.IsBlank(info.FileDescription))
                     {
                         // Does not contain version information
-                        applicationNameCache.Add(new KeyValuePair<string, Application>(application,
-                            new Application(
+                        applicationNameCache.put(application, new Application(
                                 application.ToLower(),
-                                FilenameUtils.getName(application))));
+                                FilenameUtils.getName(application)));
                     }
                     else
                     {
-                        applicationNameCache.Add(new KeyValuePair<string, Application>(application,
-                            new Application(
+                        applicationNameCache.put(application, new Application(
                                 application.ToLower(),
-                                info.FileDescription)));
+                                info.FileDescription));
                     }
                 }
                 else
                 {
-                    applicationNameCache.Add(new KeyValuePair<string, Application>(application,
-                        new Application(
+                    applicationNameCache.put(application, new Application(
                             application.ToLower(),
-                            FilenameUtils.getName(application))));
+                            FilenameUtils.getName(application)));
                 }
             }
-            Application result;
-            applicationNameCache.TryGetValue(application, out result);
-            return result;
+            return applicationNameCache.get(application) as Application;
         }
 
         public Application find(String filename)
@@ -98,9 +93,10 @@ namespace Ch.Cyberduck.Core.Local
             {
                 return Application.notfound;
             }
-            Application app;
+            Application app = defaultApplicationCache.get(extension) as Application;
             Log.debug(string.Format("GetRegisteredDefaultApplication for filename {0}", filename));
-            if (defaultApplicationCache.TryGetValue(extension, out app))
+            
+            if (app != null)
             {
                 Log.debug(string.Format("Return cached default application {0} for extension {1}", app, extension));
                 return app;
@@ -109,7 +105,7 @@ namespace Ch.Cyberduck.Core.Local
             String exe = GetExplorerRegisteredApplication(extension, "edit");
             if (null != exe)
             {
-                defaultApplicationCache.Add(extension, getDescription(exe));
+                defaultApplicationCache.put(extension, getDescription(exe));
             }
             // Step 2 / Check registry 
             if (null == exe)
@@ -142,7 +138,7 @@ namespace Ch.Cyberduck.Core.Local
                         }
                         if (null != exe)
                         {
-                            defaultApplicationCache.Add(extension, getDescription(exe));
+                            defaultApplicationCache.put(extension, getDescription(exe));
                         }
                     }
                 }
@@ -157,15 +153,11 @@ namespace Ch.Cyberduck.Core.Local
                 exe = GetExplorerRegisteredApplication(extension, "open");
                 if (null != exe)
                 {
-                    defaultApplicationCache.Add(extension, getDescription(exe));
+                    defaultApplicationCache.put(extension, getDescription(exe));
                 }
             }
-            defaultApplicationCache.TryGetValue(extension, out app);
-            if (null == app)
-            {
-                return Application.notfound;
-            }
-            return app;
+            app = defaultApplicationCache.get(extension) as Application;
+            return app ?? Application.notfound;
         }
 
         public List findAll(String filename)
@@ -177,7 +169,7 @@ namespace Ch.Cyberduck.Core.Local
             {
                 return Utils.ConvertToJavaList(map);
             }
-            if (!defaultApplicationListCache.ContainsKey(extension))
+            if (!defaultApplicationListCache.contains(extension))
             {
                 using (RegistryKey clsExt = Registry.ClassesRoot.OpenSubKey(extension))
                 {
@@ -216,9 +208,9 @@ namespace Ch.Cyberduck.Core.Local
                     {
                         return app1.getIdentifier().CompareTo(app2.getIdentifier());
                     });
-                defaultApplicationListCache.Add(extension, map);
+                defaultApplicationListCache.put(extension, map);
             }
-            return Utils.ConvertToJavaList(defaultApplicationListCache[extension]);
+            return Utils.ConvertToJavaList(defaultApplicationListCache.get(extension) as IList<Application>);
         }
 
         public bool isInstalled(Application application)
