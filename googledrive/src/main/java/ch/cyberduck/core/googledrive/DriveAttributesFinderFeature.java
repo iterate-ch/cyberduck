@@ -83,8 +83,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
             }
         }
         if(null != f.getSize()) {
-            if(!DRIVE_FOLDER.equals(f.getMimeType())
-                && !StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
+            if(!DRIVE_FOLDER.equals(f.getMimeType()) && !DRIVE_SHORTCUT.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
                 attributes.setSize(f.getSize());
             }
         }
@@ -106,7 +105,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
             attributes.setLink(new DescriptiveUrl(URI.create(f.getWebViewLink()),
                 DescriptiveUrl.Type.http,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
-            if(!DRIVE_FOLDER.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
+            if(!DRIVE_FOLDER.equals(f.getMimeType()) && !DRIVE_SHORTCUT.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
                 attributes.setSize(UrlFileWriterFactory.get().write(new DescriptiveUrl(URI.create(f.getWebViewLink())))
                     .getBytes(Charset.defaultCharset()).length);
             }
