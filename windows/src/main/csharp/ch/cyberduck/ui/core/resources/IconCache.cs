@@ -15,17 +15,17 @@ using org.apache.log4j;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using ch.cyberduck.core.cache;
 
 namespace Ch.Cyberduck.Ui.Core.Resources
 {
     using ch.cyberduck.core.preferences;
     using Ch.Cyberduck.Core;
-    using Ch.Cyberduck.Core.Collections;
 
     public partial class IconCache
     {
-        private static readonly LRUCache<string, Icon> iconCache = new LRUCache<string, Icon>(IconCacheSize);
-        private static readonly LRUCache<string, Image> imageCache = new LRUCache<string, Image>(IconCacheSize);
+        private static readonly LRUCache iconCache = LRUCache.build(IconCacheSize);
+        private static readonly LRUCache imageCache = LRUCache.build(IconCacheSize);
 
         private static readonly Logger Log = Logger.getLogger(typeof(IconCache).FullName);
 
@@ -50,7 +50,7 @@ namespace Ch.Cyberduck.Ui.Core.Resources
         public static Image GetAppImage(string path, IconSize size)
         {
             var key = path + "." + size.Size();
-            if (imageCache.TryGetValue(key, out var image))
+            if (imageCache.get(key) is Image image)
             {
                 return image;
             }
@@ -63,7 +63,7 @@ namespace Ch.Cyberduck.Ui.Core.Resources
         public static Image GetDefaultBrowserIcon()
         {
             var key = "defaultbrowser.32";
-            if (imageCache.TryGetValue(key, out var image))
+            if (imageCache.get(key) is Image image)
             {
                 return image;
             }
@@ -122,7 +122,8 @@ namespace Ch.Cyberduck.Ui.Core.Resources
         public static Image IconForFilename(string file, IconSize size)
         {
             var key = file + "." + size.Size();
-            if (imageCache.TryGetValue(key, out var image))
+            var image = imageCache.get(key) as Image;
+            if (!(image is null))
             {
                 return image;
             }
@@ -132,7 +133,7 @@ namespace Ch.Cyberduck.Ui.Core.Resources
             {
                 image = icon.ToBitmap();
 
-                imageCache.Add(key, image);
+                imageCache.put(key, image);
             }
             if (image is null)
             {
@@ -245,7 +246,7 @@ namespace Ch.Cyberduck.Ui.Core.Resources
 
         private static Image GetCachedIconImage(string key, Func<Icon> iconGetter, Func<Image> defaultHandler)
         {
-            if (!iconCache.TryGetValue(key, out var icon))
+            if (!(iconCache.get(key) is Icon icon))
             {
                 icon = iconGetter();
 
@@ -255,11 +256,10 @@ namespace Ch.Cyberduck.Ui.Core.Resources
                     return defaultHandler();
                 }
 
-                iconCache.Add(key, icon);
+                iconCache.put(key, icon);
             }
-
             var image = icon.ToBitmap();
-            imageCache.Add(key, image);
+            imageCache.put(key, image);
             return image;
         }
     }

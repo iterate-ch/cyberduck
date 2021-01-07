@@ -47,7 +47,7 @@ namespace Ch.Cyberduck.Ui.Core.Resources
                 key += "-overlay";
             key += "." + size.Size();
 
-            if (iconCache.TryGetValue(key, out var icon))
+            if (iconCache.get(key) is Icon icon)
             {
                 return icon;
             }
@@ -57,8 +57,7 @@ namespace Ch.Cyberduck.Ui.Core.Resources
                 return null;
             }
 
-            iconCache.Add(key, icon);
-
+            iconCache.put(key, icon);
             return icon;
         }
 
@@ -66,7 +65,7 @@ namespace Ch.Cyberduck.Ui.Core.Resources
         {
             var key = "folder." + size.Size();
 
-            if(imageCache.TryGetValue(key, out var image))
+            if(imageCache.get(key) is Image image)
             {
                 return image;
             }
@@ -84,7 +83,8 @@ namespace Ch.Cyberduck.Ui.Core.Resources
             }
 
             var key = name + "." + size;
-            if (imageCache.TryGetValue(key, out var image))
+            var image = imageCache.get(key) as Image;
+            if (image != null)
             {
                 return image;
             }
@@ -156,7 +156,7 @@ namespace Ch.Cyberduck.Ui.Core.Resources
             {
                 rescaleImage.SetResolution(96, 96);
             }
-            imageCache.Add(key, image);
+            imageCache.put(key, image);
             return image;
         }
 
