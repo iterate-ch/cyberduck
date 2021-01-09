@@ -40,7 +40,8 @@
     <property name="www.update" value="${www}/update"/>
     <property name="www.help" value="${www}/help"/>
     <property name="setup" value="${home}/setup"/>
-    <property name="copyright" value="Copyright (c) 2001-2020 David Kocher. Copyright (c) 2011-2020 Yves Langisch"/>
+    <property name="copyright"
+              value="Copyright (c) 2001-${year.current} David Kocher. Copyright (c) 2011-${year.current} Yves Langisch"/>
 
     <property name="bundle.contents" value="Contents"/>
     <property name="bundle.home" value="${bundle.contents}/Home"/>
