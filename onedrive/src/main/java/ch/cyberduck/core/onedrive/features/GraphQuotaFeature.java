@@ -22,7 +22,6 @@ import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.Drive;
@@ -65,11 +64,11 @@ public class GraphQuotaFeature implements Quota {
             Long used = quota.getUsed();
             if(used != null) {
                 Long remaining = quota.getRemaining();
-                if(remaining != null) {
+                if(remaining != null && (used != 0 || remaining != 0)) {
                     return new Space(used, remaining);
                 }
                 Long total = quota.getTotal();
-                if(total != null) {
+                if(total != null && (used != 0 || total != 0)) {
                     return new Space(used, total - used);
                 }
             }
