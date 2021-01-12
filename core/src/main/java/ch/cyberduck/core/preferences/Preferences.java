@@ -992,6 +992,10 @@ public abstract class Preferences implements Locales {
         this.setDefault("connection.ssl.securerandom.algorithm", "NativePRNG");
         this.setDefault("connection.ssl.securerandom.provider", "SUN");
 
+        // If true, the client will send a session ticket extension in the ClientHello for TLS 1.2 and earlier.
+        // Set to false as statless session resumption breaks session reuse in FTPS
+        System.setProperty("jdk.tls.client.enableSessionTicketExtension", String.valueOf(false));
+
         /*
           Transfer read buffer size
          */
