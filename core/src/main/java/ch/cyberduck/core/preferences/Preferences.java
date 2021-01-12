@@ -966,10 +966,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("connection.ssl.provider.bouncycastle.position", String.valueOf(1));
         // Failure loading default key store with bouncycastle provider
         System.setProperty("javax.net.ssl.trustStoreType", "JKS");
-        if(System.getProperty("java.version").matches("13\\..*")) {
-            // Workaround for https://github.com/bcgit/bc-java/issues/589
-            System.setProperty("jdk.tls.namedGroups", "secp256r1, secp384r1, ffdhe2048, ffdhe3072");
-        }
+        // Allow parsing of malformed ASN.1 integers in a similar fashion to what BC 1.56 did
+        System.setProperty("org.bouncycastle.asn1.allow_unsafe_integer", String.valueOf(true));
         // Register bouncy castle as preferred provider. Used in Cyptomator, SSL and SSH
         final int position = this.getInteger("connection.ssl.provider.bouncycastle.position");
         final BouncyCastleProvider provider = new BouncyCastleProvider();
@@ -991,6 +989,11 @@ public abstract class Preferences implements Locales {
         // Default secure random strong algorithm
         this.setDefault("connection.ssl.securerandom.algorithm", "NativePRNG");
         this.setDefault("connection.ssl.securerandom.provider", "SUN");
+
+        System.setProperty("jdk.tls.useExtendedMasterSecret", String.valueOf(false));
+        // If true, the client will send a session ticket extension in the ClientHello for TLS 1.2 and earlier.
+        // Set to false as statless session resumption breaks session reuse in FTPS
+        System.setProperty("jdk.tls.client.enableSessionTicketExtension", String.valueOf(false));
 
         /*
           Transfer read buffer size
