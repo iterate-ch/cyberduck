@@ -970,6 +970,8 @@ public abstract class Preferences implements Locales {
             // Workaround for https://github.com/bcgit/bc-java/issues/589
             System.setProperty("jdk.tls.namedGroups", "secp256r1, secp384r1, ffdhe2048, ffdhe3072");
         }
+        // Allow parsing of malformed ASN.1 integers in a similar fashion to what BC 1.56 did
+        System.setProperty("org.bouncycastle.asn1.allow_unsafe_integer", String.valueOf(true));
         // Register bouncy castle as preferred provider. Used in Cyptomator, SSL and SSH
         final int position = this.getInteger("connection.ssl.provider.bouncycastle.position");
         final BouncyCastleProvider provider = new BouncyCastleProvider();
