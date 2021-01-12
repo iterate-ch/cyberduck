@@ -14,82 +14,96 @@
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   -->
-<project name="Cyberduck CLI Linux" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
+<project name="Cyberduck CLI Linux" basedir=".">
 
     <import file="../../build.xml"/>
 
     <property name="app.name" value="duck"/>
     <property name="app.icon" value="${home}/cyberduck-application.png"/>
     <property name="rpm.spec" value="${build.bundles}/package/linux"/>
-    <property name="deb.control" value="${build.bundles}/package/linux/control"/>
-    <property name="deb.postinstall" value="${build.bundles}/package/linux/postinst"/>
-    <property name="deb.postrm" value="${build.bundles}/package/linux/postrm"/>
+    <property name="license" value="${home}/LICENSE.txt"/>
+
+    <property name="build.input" value="${build}/package"/>
+    <property name="build.resources" value="${build}/resources"/>
 
     <target name="build" depends="version">
-        <copy file="${setup}/rpm/duck.spec" todir="${rpm.spec}"/>
-        <copy file="${setup}/deb/duck.control" tofile="${deb.control}"/>
-        <copy file="${setup}/deb/duck.postinstall" tofile="${deb.postinstall}"/>
-        <copy file="${setup}/deb/duck.postrm" tofile="${deb.postrm}"/>
-        <replace file="${rpm.spec}/duck.spec" summary="true" encoding="UTF-8">
+        <mkdir dir="${build.input}"/>
+        <mkdir dir="${build.resources}"/>
+        <mkdir dir="${build.resources}/images/duck"/>
+        <copy todir="${build.input}">
+            <fileset dir="${build}">
+                <include name="*.jar"/>
+                <include name="*.so"/>
+                <include name="profiles/*.cyberduckprofile"/>
+            </fileset>
+        </copy>
+        <copy file="${setup}/rpm/duck.spec" tofile="${build.resources}/duck.spec"/>
+        <replace file="${build.resources}/duck.spec" summary="true" encoding="UTF-8">
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
+            <replacefilter token="${LICENSEFILE}" value="${license}"/>
         </replace>
-        <path id="javafx.classpath">
-            <!-- Includes linuxrpmbuilder for given architecture -->
-            <pathelement path="${lib.ext}/ant-javafx.${sun.arch.data.model}.jar"/>
-            <pathelement path="${build.bundles}"/>
-        </path>
-        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
-                 uri="javafx:com.sun.javafx.tools.ant">
-            <classpath refid="javafx.classpath"/>
-        </taskdef>
-        <echo message="Create native bundles with classpath ${toString:javafx.classpath}"/>
-        <fx:deploy nativeBundles="all"
-                   outdir="${build.deploy}"
-                   outfile="${app.name}-${version}"
-                   offlineAllowed="true"
-                   verbose="true">
-            <fx:preferences shortcut="false" menu="false"
-                            install="true"/>
-            <fx:platform basedir="${java.home}">
-                <fx:jvmarg value="-Djna.nounpack=true"/>
-                <fx:jvmarg value="-Djna.noclasspath=true"/>
-                <fx:jvmarg value="-Djna.nosys=false"/>
-                <fx:jvmarg value="-Djava.awt.headless=true"/>
-                <fx:jvmarg value="-Dsun.jnu.encoding=utf-8"/>
-                <fx:jvmarg value="-Dfile.encoding=utf-8"/>
-                <fx:jvmarg value="-Djava.security.egd=file:/dev/./urandom"/>
-                <fx:jvmarg value="-Djava.net.useSystemProxies=true"/>
-            </fx:platform>
-            <fx:application
-                    name="duck" version="${version}.${revision}"
-                    mainClass="ch.cyberduck.cli.Terminal"/>
-            <fx:info title="${app.name}" license="GPL" copyright="${copyright}"
-                     description="${app.name}"
-                     vendor="iterate GmbH">
-                <fx:icon href="${app.icon}"/>
-            </fx:info>
-            <fx:resources>
-                <fx:fileset dir="${build}" type="jar">
-                    <include name="*.jar"/>
-                </fx:fileset>
-                <fx:fileset dir="${build}" type="data">
-                    <include name="*.so"/>
-                    <include name="*.dylib"/>
-                    <include name="*.dll"/>
-                </fx:fileset>
-                <fx:fileset dir="${home}" type="icon">
-                    <include name="*.ico"/>
-                </fx:fileset>
-                <fx:fileset type="license" file="${home}/LICENSE.txt"/>
-                <fx:fileset dir="${build}" type="data">
-                    <include name="profiles/*.cyberduckprofile"/>
-                </fx:fileset>
-                <!-- Localizations -->
-                <fx:fileset dir="${home}" type="data">
-                    <include name="*.lproj/*.strings"/>
-                </fx:fileset>
-            </fx:resources>
-        </fx:deploy>
+        <copy file="${app.icon}" tofile="${build.resources}/duck.png"/>
+        <copy file="${setup}/deb/duck.postinstall" tofile="${build.resources}/postinst"/>
+        <copy file="${setup}/deb/duck.control" tofile="${build.resources}/control"/>
+        <copy file="${setup}/deb/duck.postrm" tofile="${build.resources}/postrm"/>
+        <copy file="${license}" tofile="${build.resources}/copyright"/>
+        <antcall target="jpackage">
+            <param name="type" value="rpm"/>
+        </antcall>
+        <antcall target="jpackage">
+            <param name="type" value="deb"/>
+        </antcall>
+    </target>
+
+    <target name="jpackage">
+        <echo message="Create native ${type} bundle"/>
+        <exec executable="${java.home}/bin/jpackage">
+            <arg value="--name"/>
+            <arg value="${app.name}"/>
+            <arg value="--input"/>
+            <arg value="${build.input}"/>
+            <arg value="--dest"/>
+            <arg value="${build.deploy}"/>
+            <arg value="--app-version"/>
+            <arg value="${version}.${revision}"/>
+            <arg value="--java-options"/>
+            <arg value="-Djna.nounpack=true"/>
+            <arg value="--java-options"/>
+            <arg value="-Djna.nounpack=true"/>
+            <arg value="--java-options"/>
+            <arg value="-Djna.noclasspath=true"/>
+            <arg value="--java-options"/>
+            <arg value="-Djava.awt.headless=true"/>
+            <arg value="--java-options"/>
+            <arg value="-Dsun.jnu.encoding=utf-8"/>
+            <arg value="--java-options"/>
+            <arg value="-Dfile.encoding=utf-8"/>
+            <arg value="--java-options"/>
+            <arg value="-Djava.security.egd=file:/dev/./urandom"/>
+            <arg value="--java-options"/>
+            <arg value="-Djava.net.useSystemProxies=true"/>
+            <arg value="--main-jar"/>
+            <arg value="cli-${fullversion}.jar"/>
+            <arg value="--main-class"/>
+            <arg value="ch.cyberduck.cli.Terminal"/>
+            <arg value="--resource-dir"/>
+            <arg value="${build.resources}"/>
+            <arg value="--copyright"/>
+            <arg value="${copyright}"/>
+            <arg value="--description"/>
+            <arg value="${app.name}"/>
+            <arg value="--vendor"/>
+            <arg value="cyberduck.io"/>
+            <arg value="--license-file"/>
+            <arg value="${license}"/>
+            <arg value="--linux-deb-maintainer"/>
+            <arg value="&lt;feedback@cyberduck.io&gt;"/>
+            <arg value="--linux-rpm-license-type"/>
+            <arg value="GPL"/>
+            <arg value="--type"/>
+            <arg value="${type}"/>
+            <arg value="--verbose"/>
+        </exec>
     </target>
 </project>
