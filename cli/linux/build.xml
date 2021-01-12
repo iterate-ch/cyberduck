@@ -54,7 +54,7 @@
         <antcall target="jpackage">
             <param name="type" value="deb"/>
         </antcall>
-        <move file="${build.deploy}/duck_${version}-${revision}-1_${os.arch}.deb"
+        <move file="${build.deploy}/duck_${version}.${revision}-1_${os.arch}.deb"
               tofile="${build.deploy}/duck-${version}-${revision}.deb"/>
     </target>
 
