@@ -22,7 +22,6 @@ import ch.cyberduck.core.local.DefaultSymlinkFeature;
 import ch.cyberduck.core.local.DesktopBrowserLauncher;
 import ch.cyberduck.core.local.ExecApplicationLauncher;
 import ch.cyberduck.core.preferences.MemoryPreferences;
-import ch.cyberduck.core.preferences.StaticApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.UserHomeSupportDirectoryFinder;
 import ch.cyberduck.core.proxy.EnvironmentVariableProxyFinder;
 
@@ -71,7 +70,7 @@ public class LinuxTerminalPreferences extends TerminalPreferences {
         }
         this.setDefault("factory.supportdirectoryfinder.class", UserHomeSupportDirectoryFinder.class.getName());
         this.setDefault("factory.localsupportdirectoryfinder.class", UserHomeSupportDirectoryFinder.class.getName());
-        this.setDefault("factory.applicationresourcesfinder.class", StaticApplicationResourcesFinder.class.getName());
+        this.setDefault("factory.applicationresourcesfinder.class", ClasspathResourcesFinder.class.getName());
         this.setDefault("factory.locale.class", RegexLocale.class.getName());
         this.setDefault("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
         this.setDefault("factory.editorfactory.class", DefaultEditorFactory.class.getName());
