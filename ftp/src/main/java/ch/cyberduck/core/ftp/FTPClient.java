@@ -65,7 +65,7 @@ public class FTPClient extends FTPSClient {
     private Map<String, Set<String>> features;
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     public FTPClient(final Protocol protocol, final SSLSocketFactory f, final SSLContext c) {
         super(false, c);
@@ -99,12 +99,12 @@ public class FTPClient extends FTPSClient {
                         final Field sessionHostPortCache = context.getClass().getDeclaredField("sessionHostPortCache");
                         sessionHostPortCache.setAccessible(true);
                         final Object cache = sessionHostPortCache.get(context);
-                        final Method method = cache.getClass().getDeclaredMethod("put", Object.class, Object.class);
-                        method.setAccessible(true);
-                        method.invoke(cache, String.format("%s:%s", socket.getInetAddress().getHostName(),
-                                String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT), session);
-                        method.invoke(cache, String.format("%s:%s", socket.getInetAddress().getHostAddress(),
-                                String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT), session);
+                        final Method putMethod = cache.getClass().getDeclaredMethod("put", Object.class, Object.class);
+                        putMethod.setAccessible(true);
+                        final Method getHostMethod = socket.getClass().getMethod("getPeerHost");
+                        getHostMethod.setAccessible(true);
+                        Object peerHost = getHostMethod.invoke(socket);
+                        putMethod.invoke(cache, String.format("%s:%s", peerHost, socket.getPort()).toLowerCase(Locale.ROOT), session);
                     }
                     catch(NoSuchFieldException e) {
                         // Not running in expected JRE
@@ -157,15 +157,15 @@ public class FTPClient extends FTPSClient {
     protected void sslNegotiation() throws IOException {
         if(protocol.isSecure()) {
             final SSLSocket socket = (SSLSocket) sslSocketFactory.createSocket(_socket_,
-                    _socket_.getInetAddress().getHostName(), _socket_.getPort(), false);
+                _socket_.getInetAddress().getHostName(), _socket_.getPort(), false);
             socket.setEnableSessionCreation(true);
             socket.setUseClientMode(true);
             socket.startHandshake();
             _socket_ = socket;
             _controlInput_ = new BufferedReader(new InputStreamReader(
-                    socket.getInputStream(), getControlEncoding()));
+                socket.getInputStream(), getControlEncoding()));
             _controlOutput_ = new BufferedWriter(new OutputStreamWriter(
-                    socket.getOutputStream(), getControlEncoding()));
+                socket.getOutputStream(), getControlEncoding()));
         }
     }
 
@@ -179,7 +179,7 @@ public class FTPClient extends FTPSClient {
         Socket socket = _openDataConnection_(command, pathname);
 
         BufferedReader reader = new BufferedReader(
-                new InputStreamReader(socket.getInputStream(), getControlEncoding()));
+            new InputStreamReader(socket.getInputStream(), getControlEncoding()));
         ArrayList<String> results = new ArrayList<String>();
         String line;
         while((line = reader.readLine()) != null) {
@@ -197,12 +197,11 @@ public class FTPClient extends FTPSClient {
     }
 
     /**
-     * Query the server for a supported feature, and returns its values (if any).
-     * Caches the parsed response to avoid resending the command repeatedly.
+     * Query the server for a supported feature, and returns its values (if any). Caches the parsed response to avoid
+     * resending the command repeatedly.
      *
-     * @return if the feature is present, returns the feature values (empty array if none)
-     * Returns {@code null} if the feature is not found or the command failed.
-     * Check {@link #getReplyCode()} or {@link #getReplyString()} if so.
+     * @return if the feature is present, returns the feature values (empty array if none) Returns {@code null} if the
+     * feature is not found or the command failed. Check {@link #getReplyCode()} or {@link #getReplyString()} if so.
      * @throws IOException
      * @since 3.0
      */
@@ -218,13 +217,12 @@ public class FTPClient extends FTPSClient {
     }
 
     /**
-     * Query the server for a supported feature, and returns the its value (if any).
-     * Caches the parsed response to avoid resending the command repeatedly.
+     * Query the server for a supported feature, and returns the its value (if any). Caches the parsed response to avoid
+     * resending the command repeatedly.
      *
-     * @return if the feature is present, returns the feature value or the empty string
-     * if the feature exists but has no value.
-     * Returns {@code null} if the feature is not found or the command failed.
-     * Check {@link #getReplyCode()} or {@link #getReplyString()} if so.
+     * @return if the feature is present, returns the feature value or the empty string if the feature exists but has no
+     * value. Returns {@code null} if the feature is not found or the command failed. Check {@link #getReplyCode()} or
+     * {@link #getReplyString()} if so.
      * @throws IOException
      * @since 3.0
      */
@@ -237,13 +235,12 @@ public class FTPClient extends FTPSClient {
     }
 
     /**
-     * Query the server for a supported feature.
-     * Caches the parsed response to avoid resending the command repeatedly.
+     * Query the server for a supported feature. Caches the parsed response to avoid resending the command repeatedly.
      *
      * @param feature the name of the feature; it is converted to upper case.
-     * @return {@code true} if the feature is present, {@code false} if the feature is not present
-     * or the {@link #feat()} command failed. Check {@link #getReplyCode()} or {@link #getReplyString()}
-     * if it is necessary to distinguish these cases.
+     * @return {@code true} if the feature is present, {@code false} if the feature is not present or the {@link
+     * #feat()} command failed. Check {@link #getReplyCode()} or {@link #getReplyString()} if it is necessary to
+     * distinguish these cases.
      * @throws IOException
      * @since 3.0
      */
@@ -255,15 +252,14 @@ public class FTPClient extends FTPSClient {
     }
 
     /**
-     * Query the server for a supported feature with particular value,
-     * for example "AUTH SSL" or "AUTH TLS".
-     * Caches the parsed response to avoid resending the command repeatedly.
+     * Query the server for a supported feature with particular value, for example "AUTH SSL" or "AUTH TLS". Caches the
+     * parsed response to avoid resending the command repeatedly.
      *
      * @param feature the name of the feature; it is converted to upper case.
      * @param value   the value to find.
-     * @return {@code true} if the feature is present, {@code false} if the feature is not present
-     * or the {@link #feat()} command failed. Check {@link #getReplyCode()} or {@link #getReplyString()}
-     * if it is necessary to distinguish these cases.
+     * @return {@code true} if the feature is present, {@code false} if the feature is not present or the {@link
+     * #feat()} command failed. Check {@link #getReplyCode()} or {@link #getReplyString()} if it is necessary to
+     * distinguish these cases.
      * @throws IOException
      * @since 3.0
      */
