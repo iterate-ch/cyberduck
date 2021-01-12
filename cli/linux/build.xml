@@ -19,6 +19,7 @@
     <import file="../../build.xml"/>
 
     <property name="app.name" value="duck"/>
+    <property name="app.icon" value="${home}/cyberduck-application.png"/>
     <property name="rpm.spec" value="${build.bundles}/package/linux"/>
     <property name="license" value="${home}/LICENSE.txt"/>
 
@@ -42,8 +43,10 @@
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${LICENSEFILE}" value="${license}"/>
         </replace>
+        <copy file="${app.icon}" tofile="${build.resources}/duck.png"/>
         <copy file="${setup}/deb/duck.postinstall" tofile="${build.resources}/postinst"/>
         <copy file="${setup}/deb/duck.control" tofile="${build.resources}/control"/>
+        <copy file="${setup}/deb/duck.prerm" tofile="${build.resources}/prerm"/>
         <copy file="${setup}/deb/duck.postrm" tofile="${build.resources}/postrm"/>
         <copy file="${license}" tofile="${build.resources}/copyright"/>
         <antcall target="jpackage">
