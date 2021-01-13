@@ -3,7 +3,7 @@ Name: duck
 Version: ${VERSION}.${REVISION}
 Release: 1
 License: GPL
-Vendor: cyberduck.io
+Vendor: duck.sh
 Prefix: /opt
 Provides: duck
 Requires: glibc
