@@ -95,6 +95,7 @@
     </target>
 
     <target name="version" depends="init">
+        <property name="fullversion" value="${version}"/>
         <propertyregex property="version"
                        override="true"
                        input="${version}"
