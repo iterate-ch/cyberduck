@@ -70,9 +70,9 @@
     </scm>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <argLine />
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <argLine/>
         <jna-version>5.6.0</jna-version>
         <jersey-version>2.33</jersey-version>
         <jackson-version>2.12.1</jackson-version>
@@ -377,6 +377,7 @@
                         <compilerArgument>-Xlint:unchecked</compilerArgument>
                         <source>${maven.compiler.source}</source>
                         <target>${maven.compiler.target}</target>
+                        <release>${maven.compiler.target}</release>
                     </configuration>
                 </plugin>
                 <plugin>
