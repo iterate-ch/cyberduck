@@ -25,8 +25,6 @@
 		4705E0081C037AB5002466FA /* LaunchServicesFileDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFEE1C037AB5002466FA /* LaunchServicesFileDescriptor.m */; };
 		4705E0091C037AB5002466FA /* LaunchServicesQuarantineService.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFEF1C037AB5002466FA /* LaunchServicesQuarantineService.h */; };
 		4705E00A1C037AB5002466FA /* LaunchServicesQuarantineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFF01C037AB5002466FA /* LaunchServicesQuarantineService.m */; };
-		4705E00B1C037AB5002466FA /* LaunchServicesSchemeHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFF11C037AB5002466FA /* LaunchServicesSchemeHandler.h */; };
-		4705E00C1C037AB5002466FA /* LaunchServicesSchemeHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFF21C037AB5002466FA /* LaunchServicesSchemeHandler.m */; };
 		4705E00D1C037AB5002466FA /* SystemConfigurationProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFF31C037AB5002466FA /* SystemConfigurationProxy.h */; };
 		4705E00E1C037AB5002466FA /* SystemConfigurationProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFF41C037AB5002466FA /* SystemConfigurationProxy.m */; };
 		470912ED0C36FCE00049FBCE /* Prompt.xib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.xib */; };
@@ -381,8 +379,6 @@
 		4705DFEE1C037AB5002466FA /* LaunchServicesFileDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LaunchServicesFileDescriptor.m; path = core/src/main/objc/LaunchServicesFileDescriptor.m; sourceTree = SOURCE_ROOT; };
 		4705DFEF1C037AB5002466FA /* LaunchServicesQuarantineService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LaunchServicesQuarantineService.h; path = core/src/main/objc/LaunchServicesQuarantineService.h; sourceTree = SOURCE_ROOT; };
 		4705DFF01C037AB5002466FA /* LaunchServicesQuarantineService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LaunchServicesQuarantineService.m; path = core/src/main/objc/LaunchServicesQuarantineService.m; sourceTree = SOURCE_ROOT; };
-		4705DFF11C037AB5002466FA /* LaunchServicesSchemeHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LaunchServicesSchemeHandler.h; path = core/src/main/objc/LaunchServicesSchemeHandler.h; sourceTree = SOURCE_ROOT; };
-		4705DFF21C037AB5002466FA /* LaunchServicesSchemeHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LaunchServicesSchemeHandler.m; path = core/src/main/objc/LaunchServicesSchemeHandler.m; sourceTree = SOURCE_ROOT; };
 		4705DFF31C037AB5002466FA /* SystemConfigurationProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemConfigurationProxy.h; path = core/src/main/objc/SystemConfigurationProxy.h; sourceTree = SOURCE_ROOT; };
 		4705DFF41C037AB5002466FA /* SystemConfigurationProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SystemConfigurationProxy.m; path = core/src/main/objc/SystemConfigurationProxy.m; sourceTree = SOURCE_ROOT; };
 		470912EC0C36FCE00049FBCE /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = en; path = i18n/src/main/resources/en.lproj/Prompt.xib; sourceTree = "<group>"; };
@@ -1831,20 +1827,18 @@
 				47F85C161C0F101F00FDA856 /* UKCrashReporter.m */,
 				47F85C171C0F101F00FDA856 /* UKSystemInfo.h */,
 				47F85C181C0F101F00FDA856 /* UKSystemInfo.m */,
-				4705DFDD1C037AB5002466FA /* FinderSidebarService.m */,
 				4705DFDE1C037AB5002466FA /* FinderSidebarService.h */,
+				4705DFDD1C037AB5002466FA /* FinderSidebarService.m */,
+				4705DFEC1C037AB5002466FA /* LaunchServicesApplicationFinder.h */,
 				4705DFDF1C037AB5002466FA /* LaunchServicesApplicationFinder.m */,
 				4705DFE41C037AB5002466FA /* FinderLocal.h */,
 				4705DFE51C037AB5002466FA /* FinderLocal.m */,
 				4705DFE81C037AB5002466FA /* IOKitSleepPreventer.h */,
 				4705DFE91C037AB5002466FA /* IOKitSleepPreventer.m */,
-				4705DFEC1C037AB5002466FA /* LaunchServicesApplicationFinder.h */,
 				4705DFED1C037AB5002466FA /* LaunchServicesFileDescriptor.h */,
 				4705DFEE1C037AB5002466FA /* LaunchServicesFileDescriptor.m */,
 				4705DFEF1C037AB5002466FA /* LaunchServicesQuarantineService.h */,
 				4705DFF01C037AB5002466FA /* LaunchServicesQuarantineService.m */,
-				4705DFF11C037AB5002466FA /* LaunchServicesSchemeHandler.h */,
-				4705DFF21C037AB5002466FA /* LaunchServicesSchemeHandler.m */,
 				4705DFF31C037AB5002466FA /* SystemConfigurationProxy.h */,
 				4705DFF41C037AB5002466FA /* SystemConfigurationProxy.m */,
 				47820E3820B58426006D0501 /* CDReachabilityMonitor.h */,
@@ -2098,7 +2092,6 @@
 				4705E0091C037AB5002466FA /* LaunchServicesQuarantineService.h in Headers */,
 				47820E3A20B58426006D0501 /* CDReachabilityMonitor.h in Headers */,
 				4705E0071C037AB5002466FA /* LaunchServicesFileDescriptor.h in Headers */,
-				4705E00B1C037AB5002466FA /* LaunchServicesSchemeHandler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2508,7 +2501,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4705E0081C037AB5002466FA /* LaunchServicesFileDescriptor.m in Sources */,
-				4705E00C1C037AB5002466FA /* LaunchServicesSchemeHandler.m in Sources */,
 				4705E00A1C037AB5002466FA /* LaunchServicesQuarantineService.m in Sources */,
 				47F85C1C1C0F101F00FDA856 /* UKSystemInfo.m in Sources */,
 				47F85C1A1C0F101F00FDA856 /* UKCrashReporter.m in Sources */,
