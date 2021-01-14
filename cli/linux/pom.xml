@@ -106,14 +106,14 @@
             <id>x86_64</id>
             <activation>
                 <os>
-                    <arch>aarch64</arch>
+                    <arch>amd64</arch>
                 </os>
             </activation>
             <dependencies>
                 <dependency>
                     <groupId>net.java.dev.jna</groupId>
                     <artifactId>libjnidispatch</artifactId>
-                    <classifier>${os.arch}</classifier>
+                    <classifier>x86_64</classifier>
                     <type>so</type>
                     <version>${jna-version}</version>
                     <scope>runtime</scope>
