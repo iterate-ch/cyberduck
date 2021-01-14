@@ -14,7 +14,8 @@
   ~ GNU General Public License for more details.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ch.cyberduck</groupId>
@@ -65,6 +66,60 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>arm64</id>
+            <activation>
+                <os>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>net.java.dev.jna</groupId>
+                    <artifactId>libjnidispatch</artifactId>
+                    <classifier>${os.arch}</classifier>
+                    <type>so</type>
+                    <version>${jna-version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>arm32</id>
+            <activation>
+                <os>
+                    <arch>arm</arch>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>net.java.dev.jna</groupId>
+                    <artifactId>libjnidispatch</artifactId>
+                    <classifier>${os.arch}</classifier>
+                    <type>so</type>
+                    <version>${jna-version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>x86_64</id>
+            <activation>
+                <os>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>net.java.dev.jna</groupId>
+                    <artifactId>libjnidispatch</artifactId>
+                    <classifier>x86_64</classifier>
+                    <type>so</type>
+                    <version>${jna-version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 
     <dependencies>
@@ -72,22 +127,6 @@
             <groupId>ch.cyberduck</groupId>
             <artifactId>cli</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>libjnidispatch</artifactId>
-            <classifier>x86_32</classifier>
-            <type>so</type>
-            <version>${jna-version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>libjnidispatch</artifactId>
-            <classifier>x86_64</classifier>
-            <type>so</type>
-            <version>${jna-version}</version>
-            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>
