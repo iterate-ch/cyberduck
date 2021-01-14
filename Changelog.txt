@@ -1,6 +1,12 @@
 Cyberduck
 https://cyberduck.io/
 
+7.8.1
+- [Feature] Provide armhf/aarch64 RPM and DEB packages (CLI, Rasperry Pi, Linux) (#10447)
+- [Bugfix] Missing folers in directory listing (OneDrive, Sharepoint)
+- [Bugfix] Interoperability with Tencent Cloud Object Storage (S3)
+- [Bugfix] No file size displayed for files (Google Drive)
+
 7.8.0
 - [Feature] Connecting to different libraries (SharePoint) (#11043)
 - [Feature] Default connection profile (Microsoft SharePoint Site) to connect so specific site (Sharepoint)  (#10115, #11375)
