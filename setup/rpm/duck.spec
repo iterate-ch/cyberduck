@@ -10,9 +10,6 @@ Requires: glibc
 Autoprov: 0
 Autoreq: 0
 
-#avoid ARCH subfolder
-%define _rpmfilename %%{NAME}-${VERSION}.${REVISION}.%%{ARCH}.rpm
-
 %define package_filelist %{_tmppath}/%{name}.files
 %define app_filelist %{_tmppath}/%{name}.app.files
 %define filesystem_filelist %{_tmppath}/%{name}.filesystem.files
