@@ -79,7 +79,7 @@
         <slf4j-version>1.7.30</slf4j-version>
         <bouncycastle-version>1.68</bouncycastle-version>
         <httpclient-version>4.5.13</httpclient-version>
-        <google-http-client.version>1.38.0</google-http-client.version>
+        <google-http-client.version>1.38.1</google-http-client.version>
     </properties>
 
     <dependencyManagement>
