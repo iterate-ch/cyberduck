@@ -75,6 +75,7 @@ public class SpectraObjectListService extends S3AbstractListService {
             long revision = 0L;
             String marker = null;
             String lastKey = null;
+            boolean truncated;
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             do {
                 final GetBucketResponse response = client.getBucket(new GetBucketRequest(bucket.getName())
@@ -139,8 +140,9 @@ public class SpectraObjectListService extends S3AbstractListService {
                 }
                 marker = response.getListBucketResult().getNextMarker();
                 listener.chunk(directory, objects);
+                truncated = response.getListBucketResult().getTruncated();
             }
-            while(marker != null);
+            while(truncated);
             if(!hasDirectoryPlaceholder && objects.isEmpty()) {
                 throw new NotfoundException(directory.getAbsolute());
             }
