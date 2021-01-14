@@ -16,10 +16,8 @@ package ch.cyberduck.core.spectra;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -83,7 +81,7 @@ public class SpectraObjectListService extends S3AbstractListService {
                     .withVersions(true)
                     .withDelimiter(String.valueOf(Path.DELIMITER))
                     .withMarker(marker)
-                    .withPrefix(prefix)
+                    .withPrefix(StringUtils.isBlank(prefix) ? StringUtils.EMPTY : prefix)
                     .withMaxKeys(chunksize));
                 for(final Contents object : response.getListBucketResult().getObjects()) {
                     final String key = PathNormalizer.normalize(object.getKey());
