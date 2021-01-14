@@ -15,11 +15,13 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.freedesktop.secret.simple.SimpleCollection;
 
 import java.io.IOException;
+import java.security.AccessControlException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +36,7 @@ public class LinuxPasswordStore extends DefaultHostPasswordStore {
             keyring = new SimpleCollection();
         }
         catch(IOException e) {
-            throw new FactoryException("Accessing secret-service DBus API failed");
+            throw new FactoryException(e.getMessage(), e);
         }
     }
 
@@ -79,24 +81,33 @@ public class LinuxPasswordStore extends DefaultHostPasswordStore {
                 String.format("%s://%s@%s:%d", scheme, user, hostname, port)
             ));
         }
-
     }
 
     @Override
-    public void deletePassword(final String serviceName, final String accountName) {
+    public void deletePassword(final String serviceName, final String accountName) throws LocalAccessDeniedException {
         final List<String> list = keyring.getItems(this.createAttributes(String.format("%s@%s", accountName, serviceName)));
         if(list != null) {
-            keyring.deleteItems(list);
+            try {
+                keyring.deleteItems(list);
+            }
+            catch(AccessControlException e) {
+                throw new LocalAccessDeniedException(e.getMessage(), e);
+            }
         }
     }
 
     @Override
-    public void deletePassword(final Scheme scheme, final int port, final String hostname, final String user) {
+    public void deletePassword(final Scheme scheme, final int port, final String hostname, final String user) throws LocalAccessDeniedException {
         final List<String> list = keyring.getItems(this.createAttributes(
             String.format("%s://%s@%s:%d", scheme, user, hostname, port)
         ));
         if(list != null) {
-            keyring.deleteItems(list);
+            try {
+                keyring.deleteItems(list);
+            }
+            catch(AccessControlException e) {
+                throw new LocalAccessDeniedException(e.getMessage(), e);
+            }
         }
     }
 
