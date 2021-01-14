@@ -41,7 +41,7 @@ public abstract class AbstractDriveListService implements ListService {
     protected static final String GOOGLE_APPS_PREFIX = "application/vnd.google-apps";
     protected static final String DRIVE_FOLDER = String.format("%s.folder", GOOGLE_APPS_PREFIX);
     protected static final String DRIVE_SHORTCUT = String.format("%s.shortcut", GOOGLE_APPS_PREFIX);
-    protected static final String DEFAULT_FIELDS = "files(createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails),nextPageToken";
+    protected static final String DEFAULT_FIELDS = String.format("files(%s),nextPageToken", DriveAttributesFinderFeature.DEFAULT_FIELDS);
 
     private final DriveSession session;
     private final int pagesize;
