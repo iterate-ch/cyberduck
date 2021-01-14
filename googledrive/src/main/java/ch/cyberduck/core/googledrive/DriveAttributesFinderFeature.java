@@ -32,6 +32,7 @@ import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
@@ -74,7 +75,11 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
 
     }
 
-    protected PathAttributes toAttributes(final File f) {
+    protected PathAttributes toAttributes(final File f) throws IOException {
+        if(DRIVE_SHORTCUT.equals(f.getMimeType())) {
+            final File.ShortcutDetails shortcutDetails = f.getShortcutDetails();
+            return this.toAttributes(session.getClient().files().get(shortcutDetails.getTargetId()).execute());
+        }
         final PathAttributes attributes = new PathAttributes();
         if(null != f.getExplicitlyTrashed()) {
             if(f.getExplicitlyTrashed()) {
@@ -83,17 +88,11 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
             }
         }
         if(null != f.getSize()) {
-            if(!DRIVE_FOLDER.equals(f.getMimeType()) && !DRIVE_SHORTCUT.equals(f.getMimeType()) && !StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
+            if(!DRIVE_FOLDER.equals(f.getMimeType()) && !StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
                 attributes.setSize(f.getSize());
             }
         }
-        if(DRIVE_SHORTCUT.equals(f.getMimeType())) {
-            final File.ShortcutDetails shortcutDetails = f.getShortcutDetails();
-            attributes.setVersionId(shortcutDetails.getTargetId());
-        }
-        else {
-            attributes.setVersionId(f.getId());
-        }
+        attributes.setVersionId(f.getId());
         if(f.getModifiedTime() != null) {
             attributes.setModificationDate(f.getModifiedTime().getValue());
         }
