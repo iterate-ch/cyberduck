@@ -43,6 +43,8 @@ import static ch.cyberduck.core.googledrive.AbstractDriveListService.*;
 
 public class DriveAttributesFinderFeature implements AttributesFinder {
 
+    protected static final String DEFAULT_FIELDS = "createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails";
+
     private final DriveSession session;
     private final DriveFileidProvider fileid;
 
@@ -78,7 +80,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
     protected PathAttributes toAttributes(final File f) throws IOException {
         if(DRIVE_SHORTCUT.equals(f.getMimeType())) {
             final File.ShortcutDetails shortcutDetails = f.getShortcutDetails();
-            return this.toAttributes(session.getClient().files().get(shortcutDetails.getTargetId()).execute());
+            return this.toAttributes(session.getClient().files().get(shortcutDetails.getTargetId()).setFields(DEFAULT_FIELDS).execute());
         }
         final PathAttributes attributes = new PathAttributes();
         if(null != f.getExplicitlyTrashed()) {
