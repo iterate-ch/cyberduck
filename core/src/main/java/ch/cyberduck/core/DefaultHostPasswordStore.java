@@ -146,6 +146,9 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
 
     @Override
     public OAuthTokens findOAuthTokens(final Host bookmark) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Fetching OAuth tokens from keychain for %s", bookmark));
+        }
         final long expiry = preferences.getLong(String.format("%s.oauth.expiry", bookmark.getProtocol().getIdentifier()));
         final String prefix = this.getOAuthPrefix(bookmark);
         final String hostname = getOAuthHostname(bookmark);
