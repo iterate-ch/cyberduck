@@ -83,7 +83,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
             }
         }
         if(null != f.getSize()) {
-            if(!DRIVE_FOLDER.equals(f.getMimeType()) && !DRIVE_SHORTCUT.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
+            if(!DRIVE_FOLDER.equals(f.getMimeType()) && !DRIVE_SHORTCUT.equals(f.getMimeType()) && !StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
                 attributes.setSize(f.getSize());
             }
         }
