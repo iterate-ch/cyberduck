@@ -19,11 +19,13 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assume.assumeTrue;
 
 public class LinuxPasswordStoreTest {
 
     @Test
     public void testFindGenericPassword() throws Exception {
+        assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.linux));
         final LinuxPasswordStore k = new LinuxPasswordStore();
         k.deletePassword("cyberduck.ch", "u");
         assertNull(k.getPassword("cyberduck.ch", "u"));
@@ -38,6 +40,7 @@ public class LinuxPasswordStoreTest {
 
     @Test
     public void testFindInternetPassword() throws Exception {
+        assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.linux));
         final LinuxPasswordStore k = new LinuxPasswordStore();
         k.deletePassword(Scheme.http, 80, "cyberduck.ch", "u");
         assertNull(k.getPassword(Scheme.http, 80, "cyberduck.ch", "u"));
