@@ -80,11 +80,10 @@ public class ProxySocketFactory extends SocketFactory {
     }
 
     /**
-     * @param target Hostname
      * @return Socket factory configured with SOCKS proxy if route is determined to be proxied. Otherwise
      * direct connection socket factory.
      */
-    protected SocketFactory factory(final String target) {
+    protected SocketFactory factory() {
         final Proxy proxy = proxyFinder.find(new ProxyHostUrlProvider().get(host));
         if(!types.contains(proxy.getType())) {
             log.warn(String.format("Use of %s proxy is disabled for socket factory %s", proxy.getType(), this));
@@ -113,7 +112,7 @@ public class ProxySocketFactory extends SocketFactory {
     @Override
     public Socket createSocket() throws IOException {
         try {
-            final Socket socket = this.factory(host.getHostname()).createSocket();
+            final Socket socket = this.factory().createSocket();
             configurator.configure(socket);
             return socket;
         }
@@ -129,7 +128,7 @@ public class ProxySocketFactory extends SocketFactory {
     @Override
     public Socket createSocket(final String hostname, final int port) throws IOException {
         try {
-            final Socket socket = this.factory(hostname).createSocket(hostname, port);
+            final Socket socket = this.factory().createSocket(hostname, port);
             configurator.configure(socket);
             return socket;
         }
@@ -142,7 +141,7 @@ public class ProxySocketFactory extends SocketFactory {
     public Socket createSocket(final String hostname, final int port,
                                final InetAddress localHost, final int localPort) throws IOException {
         try {
-            final Socket socket = this.factory(hostname).createSocket(hostname, port, localHost, localPort);
+            final Socket socket = this.factory().createSocket(hostname, port, localHost, localPort);
             configurator.configure(socket);
             return socket;
         }
@@ -154,7 +153,7 @@ public class ProxySocketFactory extends SocketFactory {
     @Override
     public Socket createSocket(final InetAddress inetAddress, final int port) throws IOException {
         try {
-            final Socket socket = this.factory(inetAddress.getHostName()).createSocket(inetAddress, port);
+            final Socket socket = this.factory().createSocket(inetAddress, port);
             configurator.configure(socket);
             return socket;
         }
@@ -167,7 +166,7 @@ public class ProxySocketFactory extends SocketFactory {
     public Socket createSocket(final InetAddress inetAddress, final int port,
                                final InetAddress localHost, final int localPort) throws IOException {
         try {
-            final Socket socket = this.factory(inetAddress.getHostName()).createSocket(inetAddress, port, localHost, localPort);
+            final Socket socket = this.factory().createSocket(inetAddress, port, localHost, localPort);
             configurator.configure(socket);
             return socket;
         }
