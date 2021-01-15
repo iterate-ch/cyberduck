@@ -20,5 +20,11 @@ package ch.cyberduck.core.proxy;
  */
 
 public interface ProxyFinder {
+    /**
+     * Find proxy for a given target host
+     *
+     * @param target Target host containing scheme, e.g. https://mytarget.com
+     * @return Proxy to use
+     */
     Proxy find(String target);
 }
