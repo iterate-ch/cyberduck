@@ -65,7 +65,7 @@ public class ProxySocketFactoryTest {
 
     @Test
     public void testCreateSocketIPv6Localhost() throws Exception {
-        final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).withBlacklistedNetworkInterfaces(Collections.singletonList("awdl0")).createSocket("::1", 22);
+        final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).createSocket("::1", 22);
         assertNotNull(socket);
         assertTrue(socket.getInetAddress() instanceof Inet6Address);
     }
@@ -75,7 +75,7 @@ public class ProxySocketFactoryTest {
     @Ignore
     public void testConnectIPv6LocalAddress() throws Exception {
         for(String address : Collections.singletonList("fe80::c62c:3ff:fe0b:8670")) {
-            final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).withBlacklistedNetworkInterfaces(Collections.singletonList("awdl0")).createSocket(address, 22);
+            final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).createSocket(address, 22);
             assertNotNull(socket);
             assertTrue(socket.getInetAddress() instanceof Inet6Address);
         }
@@ -84,7 +84,7 @@ public class ProxySocketFactoryTest {
     @Test(expected = SocketException.class)
     public void testCreateSocketIPv6LocalAddressConnectionRefused() throws Exception {
         for(String address : Collections.singletonList("fe80::9272:40ff:fe02:c363")) {
-            final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).withBlacklistedNetworkInterfaces(Collections.singletonList("awdl0")).createSocket(address, 22);
+            final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).createSocket(address, 22);
         }
     }
 
@@ -106,9 +106,9 @@ public class ProxySocketFactoryTest {
                 public void configure(final Socket socket) throws IOException {
                     assertTrue(socket.getInetAddress() instanceof Inet6Address);
                     assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
-                            ((Inet6Address) InetAddress.getByName("::1%en0")).getScopedInterface().getIndex());
+                        ((Inet6Address) InetAddress.getByName("::1%en0")).getScopedInterface().getIndex());
                 }
-            }).withBlacklistedNetworkInterfaces(Collections.singletonList("awdl0")).createSocket(address, 21);
+            }).createSocket(address, 21);
             assertNotNull(socket);
             assertTrue(socket.getInetAddress() instanceof Inet6Address);
         }
@@ -125,7 +125,7 @@ public class ProxySocketFactoryTest {
                     // Not yet connected
                     assertNull(socket.getInetAddress());
                 }
-            }).withBlacklistedNetworkInterfaces(Collections.singletonList("awdl0")).createSocket();
+            }).createSocket();
             assertNotNull(socket);
             assertNull(socket.getInetAddress());
             socket.connect(new InetSocketAddress(address, 21), 0);
@@ -158,7 +158,7 @@ public class ProxySocketFactoryTest {
 
     @Test(expected = ConnectException.class)
     public void testFixDefaultNetworkInterface() throws Exception {
-        final ProxySocketFactory factory = new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).withBlacklistedNetworkInterfaces(Collections.singletonList("awdl0"));
+        final ProxySocketFactory factory = new ProxySocketFactory(new Host(new TestProtocol(), "localhost"));
         assertEquals(
                 ((Inet6Address) factory.createSocket("::1%en0", 80).getInetAddress()).getScopeId(),
                 ((Inet6Address) factory.createSocket("::1", 80).getInetAddress()).getScopeId()
