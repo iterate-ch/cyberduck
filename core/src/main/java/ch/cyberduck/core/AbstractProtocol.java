@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -358,6 +359,11 @@ public abstract class AbstractProtocol implements Protocol {
     @Override
     public Comparator<String> getListComparator() {
         return new NullComparator<>();
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        return Collections.emptyMap();
     }
 
     @Override
