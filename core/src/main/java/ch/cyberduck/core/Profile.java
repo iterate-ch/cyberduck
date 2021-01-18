@@ -37,7 +37,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Profile implements Protocol, Serializable {
     private static final Logger log = Logger.getLogger(Profile.class);
@@ -500,6 +502,17 @@ public class Profile implements Protocol, Serializable {
             return parent.getOAuthClientSecret();
         }
         return v;
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        final List<String> properties = this.list("Properties");
+        if(properties.isEmpty()) {
+            return parent.getProperties();
+        }
+        return properties.stream().collect(Collectors.toMap(
+            property -> 2 == StringUtils.split(property, '=').length ? StringUtils.split(property, '=')[0] : property,
+            property -> 2 == StringUtils.split(property, '=').length ? StringUtils.split(property, '=')[1] : StringUtils.EMPTY));
     }
 
     @Override

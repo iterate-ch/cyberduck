@@ -229,5 +229,6 @@ public class ProfilePlistReaderTest {
         assertEquals(new TestProtocol().getDefaultHostname(), profile.getDefaultHostname());
         assertEquals(profile.disk(), new TestProtocol().disk());
         assertNotNull(profile.getProvider());
+        assertEquals(Collections.singletonMap("s3service.disable-dns-buckets", "true"), profile.getProperties());
     }
 }

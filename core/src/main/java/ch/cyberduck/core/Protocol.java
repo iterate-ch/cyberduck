@@ -22,6 +22,7 @@ import ch.cyberduck.core.features.Location;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface Protocol extends Comparable<Protocol> {
@@ -268,6 +269,11 @@ public interface Protocol extends Comparable<Protocol> {
      * @return Default OAuth 2.0 client secret
      */
     String getOAuthClientSecret();
+
+    /**
+     * @return Custom connection protocol properties
+     */
+    Map<String, String> getProperties();
 
     enum Type {
         ftp,
