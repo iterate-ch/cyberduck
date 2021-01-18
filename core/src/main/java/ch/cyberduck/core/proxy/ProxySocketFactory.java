@@ -46,12 +46,6 @@ public class ProxySocketFactory extends SocketFactory {
     private final List<Proxy.Type> types = new ArrayList<Proxy.Type>(
         Arrays.asList(Proxy.Type.DIRECT, Proxy.Type.SOCKS, Proxy.Type.HTTP, Proxy.Type.HTTPS));
 
-    /**
-     * List of ignored network interface names
-     */
-    private List<String> blacklisted
-        = PreferencesFactory.get().getList("network.interface.blacklist");
-
     public ProxySocketFactory(final Host host) {
         this(host, new DefaultSocketConfigurator());
     }
@@ -72,11 +66,6 @@ public class ProxySocketFactory extends SocketFactory {
         this.host = host;
         this.configurator = configurator;
         this.proxyFinder = proxyFinder;
-    }
-
-    public ProxySocketFactory withBlacklistedNetworkInterfaces(final List<String> names) {
-        this.blacklisted = names;
-        return this;
     }
 
     /**
