@@ -137,5 +137,10 @@
             <artifactId>nextcloud</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>box</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
