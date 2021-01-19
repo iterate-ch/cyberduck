@@ -60,8 +60,8 @@ public class S3ReadFeature implements Read {
             }
             final HttpRange range = HttpRange.withStatus(status);
             final RequestEntityRestStorageService client = session.getClient();
-            Map<String, Object> requestHeaders = new HashMap<String, Object>();
-            Map<String, String> requestParameters = new HashMap<String, String>();
+            final Map<String, Object> requestHeaders = new HashMap<>();
+            final Map<String, String> requestParameters = new HashMap<>();
             if(file.attributes().getVersionId() != null) {
                 requestParameters.put("versionId", file.attributes().getVersionId());
             }
