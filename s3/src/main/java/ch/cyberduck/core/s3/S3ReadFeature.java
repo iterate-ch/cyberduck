@@ -19,19 +19,26 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
-import org.jets3t.service.model.S3Object;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class S3ReadFeature implements Read {
     private static final Logger log = Logger.getLogger(S3ReadFeature.class);
@@ -53,23 +60,33 @@ public class S3ReadFeature implements Read {
             }
             final HttpRange range = HttpRange.withStatus(status);
             final RequestEntityRestStorageService client = session.getClient();
-            final S3Object object = client.getVersionedObject(
-                file.attributes().getVersionId(),
-                containerService.getContainer(file).getName(),
-                containerService.getKey(file),
-                null, // ifModifiedSince
-                null, // ifUnmodifiedSince
-                null, // ifMatch
-                null, // ifNoneMatch
-                status.isAppend() ? range.getStart() : null,
-                status.isAppend() ? (range.getEnd() == -1 ? null : range.getEnd()) : null);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Reading stream with content length %d", object.getContentLength()));
+            Map<String, Object> requestHeaders = new HashMap<String, Object>();
+            Map<String, String> requestParameters = new HashMap<String, String>();
+            if(file.attributes().getVersionId() != null) {
+                requestParameters.put("versionId", file.attributes().getVersionId());
             }
-            return object.getDataInputStream();
+            if(status.isAppend()) {
+                final String header;
+                if(-1 == range.getEnd()) {
+                    header = String.format("bytes=%d-", range.getStart());
+                }
+                else {
+                    header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
+                }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Add range header %s for file %s", header, file));
+                }
+                requestHeaders.put(HttpHeaders.RANGE, header);
+            }
+            final HttpResponse response = client.performRestGet(containerService.getContainer(file).getName(),
+                containerService.getKey(file), requestParameters, requestHeaders, new int[]{HttpStatus.SC_PARTIAL_CONTENT, HttpStatus.SC_OK});
+            return new HttpMethodReleaseInputStream(response);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Download {0} failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 

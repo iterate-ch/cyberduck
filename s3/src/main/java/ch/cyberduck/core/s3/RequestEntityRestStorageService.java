@@ -319,6 +319,13 @@ public class RequestEntityRestStorageService extends RestS3Service {
     }
 
     @Override
+    public HttpResponse performRestGet(final String bucketName, final String objectKey,
+                                       final Map<String, String> requestParameters, final Map<String, Object> requestHeaders,
+                                       final int[] expectedStatusCodes) throws ServiceException {
+        return super.performRestGet(bucketName, objectKey, requestParameters, requestHeaders, expectedStatusCodes);
+    }
+
+    @Override
     protected boolean isXmlContentType(final String contentType) {
         if(null == contentType) {
             return false;
