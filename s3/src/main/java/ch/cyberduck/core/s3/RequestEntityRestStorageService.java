@@ -107,6 +107,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
         properties.setProperty("storage-service.request-signature-version", signatureVersion.toString());
         properties.setProperty("storage-service.disable-live-md5", String.valueOf(true));
         properties.setProperty("storage-service.default-region", bookmark.getRegion());
+        properties.setProperty("xmlparser.sanitize-listings", String.valueOf(false));
         for(Map.Entry<String, String> property : bookmark.getProtocol().getProperties().entrySet()) {
             properties.setProperty(property.getKey(), property.getValue());
         }
