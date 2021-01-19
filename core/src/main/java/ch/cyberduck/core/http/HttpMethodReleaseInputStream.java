@@ -30,8 +30,7 @@ public class HttpMethodReleaseInputStream extends CountingInputStream {
     private static final Logger log = LoggerFactory.getLogger(HttpMethodReleaseInputStream.class);
 
     private final AtomicBoolean close = new AtomicBoolean();
-
-    private HttpResponse response;
+    private final HttpResponse response;
 
     /**
      * Create a HTTP method release input Stream

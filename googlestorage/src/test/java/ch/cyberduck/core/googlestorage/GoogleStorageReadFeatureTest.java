@@ -64,7 +64,6 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final OutputStream out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
         status.setAppend(true);
         status.setOffset(100L);
         status.setLength(-1L);
@@ -89,7 +88,6 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new GoogleStorageWriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
         final InputStream in = new GoogleStorageReadFeature(session).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
         new StreamCopier(status, status).transfer(in, new NullOutputStream());
@@ -109,7 +107,6 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new GoogleStorageWriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
         final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session).read(file, status, new DisabledConnectionCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
@@ -126,7 +123,6 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new GoogleStorageWriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
         assertEquals(length, new GoogleStorageAttributesFinderFeature(session).find(file).getSize());
         final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session).read(file, new TransferStatus(), new DisabledConnectionCallback()));
         in.close();
@@ -145,7 +141,6 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new GoogleStorageWriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
         assertEquals(length, new GoogleStorageAttributesFinderFeature(session).find(file).getSize());
         final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session).read(file, new TransferStatus(), new DisabledConnectionCallback()));
         in.close();
