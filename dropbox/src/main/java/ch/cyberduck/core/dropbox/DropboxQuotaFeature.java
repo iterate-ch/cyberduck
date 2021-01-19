@@ -40,10 +40,12 @@ public class DropboxQuotaFeature implements Quota {
             final SpaceUsage usage = new DbxUserUsersRequests(session.getClient()).getSpaceUsage();
             final SpaceAllocation allocation = usage.getAllocation();
             if(allocation.isIndividual()) {
-                return new Space(usage.getUsed(), allocation.getIndividualValue().getAllocated());
+                long remaining = allocation.getIndividualValue().getAllocated() - usage.getUsed();
+                return new Space(usage.getUsed(), remaining);
             }
             else if(allocation.isTeam()) {
-                return new Space(usage.getUsed(), allocation.getTeamValue().getAllocated());
+                long remaining = allocation.getTeamValue().getAllocated() - usage.getUsed();
+                return new Space(usage.getUsed(), remaining);
             }
             return new Space(0L, Long.MAX_VALUE);
         }
