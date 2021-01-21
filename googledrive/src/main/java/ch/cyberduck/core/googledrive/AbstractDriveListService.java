@@ -27,11 +27,13 @@ import ch.cyberduck.core.webloc.UrlFileWriter;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
 
+import com.google.api.client.http.HttpStatusCodes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
@@ -88,7 +90,18 @@ public abstract class AbstractDriveListService implements ListService {
                     log.debug(String.format("Chunk of %d retrieved", list.getFiles().size()));
                 }
                 for(File f : list.getFiles()) {
-                    final PathAttributes properties = attributes.toAttributes(f);
+                    final PathAttributes properties;
+
+                    try {
+                        properties = attributes.toAttributes(f);
+                    }
+                    catch(HttpResponseException httpResponseException) {
+                        if(DRIVE_SHORTCUT.equals(f.getMimeType()) && httpResponseException.getStatusCode() == HttpStatusCodes.STATUS_CODE_NOT_FOUND) {
+                            log.warn(String.format("Failure getting Drive Shortcut metadata %s/%s", directory.getAbsolute(), f.getName()), httpResponseException);
+                            continue;
+                        }
+                        throw httpResponseException;
+                    }
                     final String filename;
                     if(!DRIVE_FOLDER.equals(f.getMimeType()) && !DRIVE_SHORTCUT.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
                         filename = String.format("%s.%s", f.getName(), urlFileWriter.getExtension());
