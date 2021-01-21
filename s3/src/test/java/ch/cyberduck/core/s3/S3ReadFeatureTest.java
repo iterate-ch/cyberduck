@@ -48,7 +48,6 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         final OutputStream out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
         status.setAppend(true);
         status.setOffset(100L);
         final InputStream in = new S3ReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
@@ -73,7 +72,6 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         final OutputStream out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
         status.setAppend(true);
         status.setOffset(100L);
         status.setLength(-1L);
@@ -98,7 +96,6 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new S3WriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
         final InputStream in = new S3ReadFeature(session).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
         new StreamCopier(status, status).transfer(in, new NullOutputStream());
@@ -118,7 +115,6 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new S3WriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
         final CountingInputStream in = new CountingInputStream(new S3ReadFeature(session).read(file, status, new DisabledConnectionCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
