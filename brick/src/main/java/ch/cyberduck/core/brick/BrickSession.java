@@ -34,7 +34,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.Pairing;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -154,9 +153,6 @@ public class BrickSession extends DAVSession {
         }
         if(type == UrlProvider.class) {
             return (T) new BrickUrlProvider(host);
-        }
-        if(type == Pairing.class) {
-            return (T) new BrickPairingFeature(this, builder);
         }
         return super._getFeature(type);
     }

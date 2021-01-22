@@ -20,6 +20,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.features.Pairing;
 
 public class BrickProtocol extends AbstractProtocol {
 
@@ -52,5 +53,13 @@ public class BrickProtocol extends AbstractProtocol {
     public boolean validate(final Credentials credentials, final LoginOptions options) {
         // Will get new pairing key if missing credentials
         return true;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == Pairing.class) {
+            return (T) new BrickPairingFeature();
+        }
+        return super.getFeature(type);
     }
 }

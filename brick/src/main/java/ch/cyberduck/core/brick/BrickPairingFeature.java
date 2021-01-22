@@ -15,8 +15,14 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.CertificateStoreFactory;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledCertificateIdentityCallback;
+import ch.cyberduck.core.DisabledCertificateTrustCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -25,7 +31,14 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthSchemeProvider;
@@ -44,36 +57,40 @@ import java.io.IOException;
 public class BrickPairingFeature implements Pairing {
     private static final Logger log = Logger.getLogger(BrickPairingFeature.class);
 
-    private final BrickSession session;
-    private final HttpConnectionPoolBuilder builder;
-
-    public BrickPairingFeature(final BrickSession session, final HttpConnectionPoolBuilder builder) {
-        this.session = session;
-        this.builder = builder;
-    }
+    private final HostPasswordStore store = PasswordStoreFactory.get();
 
     @Override
-    public void delete(final String token) throws BackgroundException {
+    public void delete(final Host bookmark) throws BackgroundException {
         try {
-            final HttpClientBuilder configuration = builder.build(ProxyFactory.get().find(
-                new ProxyHostUrlProvider().get(session.getHost())), session, new DisabledLoginCallback());
-            configuration.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create().build());
-            final CloseableHttpClient client = configuration.build();
-            final HttpRequestBase resource = new HttpDelete(
-                String.format("%s/api/rest/v1/api_key", new HostUrlProvider().withUsername(false).withPath(false).get(session.getHost())));
-            resource.setHeader("X-FilesAPI-Key", token);
-            resource.setHeader(HttpHeaders.ACCEPT, "application/json");
-            resource.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Delete paring key %s", token));
-            }
-            client.execute(resource, new ResponseHandler<Void>() {
-                @Override
-                public Void handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
-                    return null;
+            final String token = store.findLoginPassword(bookmark);
+            if(StringUtils.isNotBlank(token)) {
+                log.warn(String.format("Delete pairing for %s", bookmark));
+                final X509TrustManager trust = new KeychainX509TrustManager(new DisabledCertificateTrustCallback(),
+                    new DefaultTrustManagerHostnameCallback(bookmark), CertificateStoreFactory.get());
+                final X509KeyManager key = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
+                    CertificateStoreFactory.get());
+                final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(bookmark,
+                    new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key, ProxyFactory.get());
+                final HttpClientBuilder configuration = builder.build(ProxyFactory.get().find(
+                    new ProxyHostUrlProvider().get(bookmark)), new DisabledTranscriptListener(), new DisabledLoginCallback());
+                configuration.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create().build());
+                final CloseableHttpClient client = configuration.build();
+                final HttpRequestBase resource = new HttpDelete(
+                    String.format("%s/api/rest/v1/api_key", new HostUrlProvider().withUsername(false).withPath(false).get(bookmark)));
+                resource.setHeader("X-FilesAPI-Key", token);
+                resource.setHeader(HttpHeaders.ACCEPT, "application/json");
+                resource.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Delete paring key %s", token));
                 }
-            });
-            client.close();
+                client.execute(resource, new ResponseHandler<Void>() {
+                    @Override
+                    public Void handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
+                        return null;
+                    }
+                });
+                client.close();
+            }
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);
@@ -82,7 +99,7 @@ public class BrickPairingFeature implements Pairing {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            PasswordStoreFactory.get().delete(session.getHost());
+            store.delete(bookmark);
         }
     }
 }
