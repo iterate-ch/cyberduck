@@ -70,9 +70,10 @@ public class SessionPoolFactory {
                                      final ProgressListener listener, final TranscriptListener transcript,
                                      final Usage... usage) {
         final LoginConnectionService connect = new LoginConnectionService(login, key, keychain, listener);
+        final CertificateStore certificates = CertificateStoreFactory.get();
         return create(connect, transcript, bookmark,
-            new KeychainX509TrustManager(CertificateTrustCallbackFactory.get(controller), new DefaultTrustManagerHostnameCallback(bookmark), CertificateStoreFactory.get()),
-            new KeychainX509KeyManager(CertificateIdentityCallbackFactory.get(controller), bookmark, CertificateStoreFactory.get()),
+            new KeychainX509TrustManager(CertificateTrustCallbackFactory.get(controller), new DefaultTrustManagerHostnameCallback(bookmark), certificates),
+            new KeychainX509KeyManager(CertificateIdentityCallbackFactory.get(controller), bookmark, certificates),
             VaultRegistryFactory.create(keychain, login), usage);
     }
 
