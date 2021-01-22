@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.security.AWSCredentials;
 
@@ -50,6 +51,11 @@ public class S3PresignedUrlProvider {
             @Override
             public String getEndpoint() {
                 return endpoint;
+            }
+
+            @Override
+            protected void initializeProxy(final HttpClientBuilder httpClientBuilder) {
+                //
             }
         }.createSignedUrlUsingSignatureVersion(
             signature.toString(),
