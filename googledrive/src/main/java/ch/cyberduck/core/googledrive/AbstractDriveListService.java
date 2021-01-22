@@ -89,6 +89,10 @@ public abstract class AbstractDriveListService implements ListService {
                 }
                 for(File f : list.getFiles()) {
                     final PathAttributes properties = attributes.toAttributes(f);
+                    if(PathAttributes.EMPTY == properties) {
+                        log.warn(String.format("Ignore file %s with unknown attributes", f));
+                        continue;
+                    }
                     final String filename;
                     if(!DRIVE_FOLDER.equals(f.getMimeType()) && !DRIVE_SHORTCUT.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
                         filename = String.format("%s.%s", f.getName(), urlFileWriter.getExtension());

@@ -16,11 +16,15 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -30,6 +34,8 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
+
+import com.google.api.services.drive.model.File;
 
 import static org.junit.Assert.*;
 
@@ -67,7 +73,6 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         session.close();
     }
 
-
     @Test
     public void testFindDirectory() throws Exception {
         final Path file = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -80,5 +85,36 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getVersionId());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMissingShortcutTarget() throws Exception {
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
+        final PathAttributes attributes = f.find(test);
+        final File shortcut = session.getClient().files().create(new File()
+            .setName(new AlphanumericRandomStringService().random())
+            .setMimeType("application/vnd.google-apps.shortcut")
+            .setShortcutDetails(new File.ShortcutDetails()
+                .setTargetMimeType("text/plain")
+                .setTargetId(fileid.getFileid(test, new DisabledListProgressListener()))
+            )
+        ).execute();
+        assertEquals(attributes, f.find(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, shortcut.getName(), EnumSet.of(Path.Type.file))));
+        session.getClient().files().delete(fileid.getFileid(test, new DisabledListProgressListener()))
+            .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+        try {
+            f.find(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, shortcut.getName(), EnumSet.of(Path.Type.file)));
+        }
+        catch(NotfoundException e) {
+            // Expected. Can no longer resolve shortcut
+        }
+        final AttributedList<Path> list = new DriveListService(session, fileid).list(DriveHomeFinderService.MYDRIVE_FOLDER, new DisabledListProgressListener());
+        assertFalse(list.contains(test));
+        assertNull(list.find(new SimplePathPredicate(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, shortcut.getName(), EnumSet.of(Path.Type.file)))));
+        session.getClient().files().delete(shortcut.getId())
+            .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
     }
 }

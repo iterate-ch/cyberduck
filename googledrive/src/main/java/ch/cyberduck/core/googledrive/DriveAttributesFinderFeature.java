@@ -31,6 +31,7 @@ import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
@@ -42,6 +43,7 @@ import com.google.api.services.drive.model.File;
 import static ch.cyberduck.core.googledrive.AbstractDriveListService.*;
 
 public class DriveAttributesFinderFeature implements AttributesFinder {
+    private static final Logger log = Logger.getLogger(DriveAttributesFinderFeature.class);
 
     protected static final String DEFAULT_FIELDS = "createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails";
 
@@ -80,7 +82,13 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
     protected PathAttributes toAttributes(final File f) throws IOException {
         if(DRIVE_SHORTCUT.equals(f.getMimeType())) {
             final File.ShortcutDetails shortcutDetails = f.getShortcutDetails();
-            return this.toAttributes(session.getClient().files().get(shortcutDetails.getTargetId()).setFields(DEFAULT_FIELDS).execute());
+            try {
+                return this.toAttributes(session.getClient().files().get(shortcutDetails.getTargetId()).setFields(DEFAULT_FIELDS).execute());
+            }
+            catch(IOException e) {
+                log.warn(String.format("Failure %s resolving shortcut for %s", e, e));
+                return PathAttributes.EMPTY;
+            }
         }
         final PathAttributes attributes = new PathAttributes();
         if(null != f.getExplicitlyTrashed()) {
