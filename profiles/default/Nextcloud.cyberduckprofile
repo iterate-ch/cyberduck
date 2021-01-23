@@ -30,7 +30,7 @@
         <key>Default Path</key>
         <string>/remote.php/webdav/</string>
         <key>Path Configurable</key>
-        <false/>
+        <true/>
         <key>Hostname Configurable</key>
         <true/>
         <key>Username Configurable</key>
