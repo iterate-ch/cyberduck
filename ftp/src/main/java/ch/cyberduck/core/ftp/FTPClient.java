@@ -101,7 +101,14 @@ public class FTPClient extends FTPSClient {
                         final Object cache = sessionHostPortCache.get(context);
                         final Method putMethod = cache.getClass().getDeclaredMethod("put", Object.class, Object.class);
                         putMethod.setAccessible(true);
-                        final Method getHostMethod = socket.getClass().getMethod("getPeerHost");
+                        Method getHostMethod;
+                        try {
+                            getHostMethod = socket.getClass().getMethod("getPeerHost");
+                        }
+                        catch(NoSuchMethodException e) {
+                            // Running in IKVM
+                            getHostMethod = socket.getClass().getDeclaredMethod("getHost");
+                        }
                         getHostMethod.setAccessible(true);
                         Object peerHost = getHostMethod.invoke(socket);
                         putMethod.invoke(cache, String.format("%s:%s", peerHost, socket.getPort()).toLowerCase(Locale.ROOT), session);
