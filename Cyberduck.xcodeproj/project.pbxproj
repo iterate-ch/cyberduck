@@ -78,6 +78,7 @@
 		474D863E1DEF6017002D101F /* Cryptomator.strings in Resources */ = {isa = PBXBuildFile; fileRef = 474D86191DEF6017002D101F /* Cryptomator.strings */; };
 		4751799E097943FA008F671F /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
 		475390151E698AAB00CE1F01 /* Donate.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47538FF21E698A9900CE1F01 /* Donate.strings */; };
+		475B22EF25B0DB17005D7887 /* cyberduck-application-rect.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475B22EE25B0DB17005D7887 /* cyberduck-application-rect.icns */; };
 		475C6D5A170C9214006535BB /* googlestorage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 475C6D59170C9214006535BB /* googlestorage.tiff */; };
 		475D17B90805D54C00166B8A /* download5.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17AF0805D54C00166B8A /* download5.icns */; };
 		475D17BA0805D54C00166B8A /* download7.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B00805D54C00166B8A /* download7.icns */; };
@@ -926,6 +927,7 @@
 		4757EB1021D4F1FA00BCF05A /* et */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = et; path = i18n/src/main/resources/et.lproj/Mosso.strings; sourceTree = "<group>"; };
 		4759423A19C9EB89002A68F5 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = i18n/src/main/resources/cs.lproj/Support.strings; sourceTree = "<group>"; };
 		4759423C19C9EB92002A68F5 /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = da; path = i18n/src/main/resources/da.lproj/Support.strings; sourceTree = "<group>"; };
+		475B22EE25B0DB17005D7887 /* cyberduck-application-rect.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "cyberduck-application-rect.icns"; sourceTree = "<group>"; };
 		475C6D59170C9214006535BB /* googlestorage.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = googlestorage.tiff; sourceTree = "<group>"; };
 		475D17AF0805D54C00166B8A /* download5.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download5.icns; sourceTree = "<group>"; };
 		475D17B00805D54C00166B8A /* download7.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download7.icns; sourceTree = "<group>"; };
@@ -1855,6 +1857,7 @@
 		4741639206C4F58D00AC0BD2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				475B22EE25B0DB17005D7887 /* cyberduck-application-rect.icns */,
 				47A082B0167A169D004458C7 /* cyberduck-application.icns */,
 				471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */,
 				47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */,
@@ -2433,6 +2436,7 @@
 				475C6D5A170C9214006535BB /* googlestorage.tiff in Resources */,
 				47CE3BFA1799309F0031DB9F /* transfer-copy.tiff in Resources */,
 				47DE47982598F2D400B18BCB /* preferences-pencil.pdf in Resources */,
+				475B22EF25B0DB17005D7887 /* cyberduck-application-rect.icns in Resources */,
 				47F9380F1D7F63CE00108AB5 /* dropbox.tiff in Resources */,
 				47CE3BFB1799309F0031DB9F /* transfer-move.tiff in Resources */,
 				47CE3BFC1799309F0031DB9F /* transfer-sync.tiff in Resources */,
