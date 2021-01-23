@@ -84,7 +84,7 @@ public final class MainApplication {
             PreferencesFactory.set(preferences);
 
             if(!Factory.Platform.osversion.matches("10\\.(9|10|11|12|13|14|15).*")) {
-                app.setApplicationIconImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document-rect.icns"));
+                app.setApplicationIconImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-application-rect.icns"));
             }
 
             final ProtocolFactory protocols = ProtocolFactory.get();
