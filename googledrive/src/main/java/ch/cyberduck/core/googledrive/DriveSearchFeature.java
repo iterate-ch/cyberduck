@@ -25,7 +25,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Search;
 
 public class DriveSearchFeature implements Search {
-    private DriveSession session;
+
+    private final DriveSession session;
     private final DriveFileidProvider fileid;
 
     public DriveSearchFeature(final DriveSession session, final DriveFileidProvider fileid) {
