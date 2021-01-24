@@ -30,7 +30,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Set;
 
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
@@ -105,11 +107,13 @@ public abstract class AbstractDriveListService implements ListService {
                     }
                     // Use placeholder type to mark Google Apps document to download as web link file
                     final EnumSet<Path.Type> type = this.toType(f);
-                    final Path child = new Path(directory, filename, type, properties);
-                    if(children.find(new DriveFileidProvider.IgnoreTrashedPathPredicate(child)) != null) {
-                        properties.setDuplicate(true);
+                    for(Path parent : this.parents(directory, f)) {
+                        final Path child = new Path(parent, filename, type, properties);
+                        if(children.find(new DriveFileidProvider.IgnoreTrashedPathPredicate(child)) != null) {
+                            properties.setDuplicate(true);
+                        }
+                        children.add(child);
                     }
-                    children.add(child);
                 }
                 listener.chunk(directory, children);
                 page = list.getNextPageToken();
@@ -123,6 +127,10 @@ public abstract class AbstractDriveListService implements ListService {
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Listing directory failed", e, directory);
         }
+    }
+
+    protected Set<Path> parents(final Path directory, final File f) throws BackgroundException {
+        return Collections.singleton(directory);
     }
 
     protected EnumSet<Path.Type> toType(final File f) {
