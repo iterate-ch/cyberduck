@@ -22,8 +22,10 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +36,7 @@ import com.google.api.services.drive.model.File;
 
 import static org.junit.Assert.assertEquals;
 
+@Category(IntegrationTest.class)
 public class DriveSearchListServiceTest extends AbstractDriveTest {
 
     @Test
