@@ -20,7 +20,10 @@ import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 
+import org.apache.log4j.Logger;
+
 public class RecursiveSearchFilter extends NullFilter<Path> {
+    private static final Logger log = Logger.getLogger(RecursiveSearchFilter.class);
 
     /**
      * List of accepted files
@@ -40,6 +43,9 @@ public class RecursiveSearchFilter extends NullFilter<Path> {
             if(f.isChild(file)) {
                 return true;
             }
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Filter %s", file));
         }
         return false;
     }
