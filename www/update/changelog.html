@@ -58,12 +58,45 @@
 </p>
 
 <p>
+    <a target="_blank" href="https://trac.cyberduck.io/milestone/7.8.2"><strong>Version 7.8.2</strong></a>
+</p>
+<ul>
+    <li><span class="label label-success">Feature</span> Updated application when running on macOS Big Sur</li>
+    <li><span class="label label-warning">Bugfix</span> Failure uploading large files with S3 compatible API (Backblaze
+        B2) (<a target="_blank" href="https://trac.cyberduck.io/ticket/11233">#11233</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Failure uploading large using legacy S3 compatible API (Google
+        Cloud Storage) (<a target="_blank" href="https://trac.cyberduck.io/ticket/11547">#11547</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> MD5 mismatch error for uploads to Oracle Object Storage
+        replacing object (<a target="_blank" href="https://trac.cyberduck.io/ticket/11548">#11548</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Missing empty prefix parameter leads to permission error with
+        IAM policy containing restriction on prefix (<a target="_blank" href="https://trac.cyberduck.io/ticket/11549">#11549</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Interoperability with Oracle Object Storage using path style
+        requests (<a target="_blank" href="https://trac.cyberduck.io/ticket/10956">#10956</a>, <a target="_blank"
+                                                                                                  href="https://trac.cyberduck.io/ticket/11548">#11548</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Failure listing files with shortcut pointing to deleted file
+        (Google Drive)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Allow configuration of path for Nextcloud & ownCloud connections
+        (<a target="_blank" href="https://trac.cyberduck.io/ticket/11540">#11540</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Failure unlocking vaults on Google Storage (Cryptomator) (<a
+        target="_blank" href="https://trac.cyberduck.io/ticket/11528">#11528</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Fix SSL session reuse on data channel (FTP, Windows)</li>
+    <li><span class="label label-warning">Bugfix</span> Failure running application (CLI, Linux)</li>
+</ul>
+
+<p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/7.8.1"><strong>Version 7.8.1</strong></a>
 </p>
 <ul>
     <li><span class="label label-success">Feature</span> Provide armhf/aarch64 RPM and DEB packages (CLI, Rasperry Pi,
-        Linux) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/10447">#10447</a>)
+        Linux) (<a target="_blank" href="https://trac.cyberduck.io/ticket/10447">#10447</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Missing folers in directory listing (OneDrive, Sharepoint)</li>
     <li><span class="label label-warning">Bugfix</span> Interoperability with Tencent Cloud Object Storage (S3)</li>

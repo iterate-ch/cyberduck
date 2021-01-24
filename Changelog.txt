@@ -1,6 +1,19 @@
 Cyberduck
 https://cyberduck.io/
 
+7.8.2
+- [Feature] Updated application when running on macOS Big Sur
+- [Bugfix] Failure uploading large files with S3 compatible API (Backblaze B2) (#11233)
+- [Bugfix] Failure uploading large using legacy S3 compatible API (Google Cloud Storage) (#11547)
+- [Bugfix] MD5 mismatch error for uploads to Oracle Object Storage replacing object (#11548)
+- [Bugfix] Missing empty prefix parameter leads to permission error with IAM policy containing restriction on prefix (#11549)
+- [Bugfix] Interoperability with Oracle Object Storage using path style requests (#10956, #11548)
+- [Bugfix] Failure listing files with shortcut pointing to deleted file (Google Drive)
+- [Bugfix] Allow configuration of path for Nextcloud & ownCloud connections (#11540)
+- [Bugfix] Failure unlocking vaults on Google Storage (Cryptomator) (#11528)
+- [Bugfix] Fix SSL session reuse on data channel (FTP, Windows)
+- [Bugfix] Failure running application (CLI, Linux)
+
 7.8.1
 - [Feature] Provide armhf/aarch64 RPM and DEB packages (CLI, Rasperry Pi, Linux) (#10447)
 - [Bugfix] Missing folers in directory listing (OneDrive, Sharepoint)
