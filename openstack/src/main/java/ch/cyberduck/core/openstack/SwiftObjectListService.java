@@ -78,17 +78,19 @@ public class SwiftObjectListService implements ListService {
                     prefix, null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {
                     final PathAttributes attr = attributes.toAttributes(object);
-                    if(StringUtils.endsWith(object.getName(), String.valueOf(Path.DELIMITER))) {
-                        if(children.contains(new Path(directory, StringUtils.removeStart(object.getName(), prefix), EnumSet.of(Path.Type.directory), attr))) {
-                            // There is already a real placeholder file with application/directory MIME type. Only
-                            // add virtual directory if the placeholder object is missing
+                    String name = StringUtils.removeStart(object.getName(), prefix);
+                    if(StringUtils.endsWith(name, String.valueOf(Path.DELIMITER))) {
+                        // Must remove trailing delimiter
+                        name = StringUtils.removeEnd(name, String.valueOf(Path.DELIMITER));
+                        if(children.contains(new Path(directory, name, EnumSet.of(Path.Type.directory), attr))) {
+                            // There is already a real placeholder file with application/directory MIME type. Only add virtual directory if the placeholder object is missing
                             continue;
                         }
                     }
                     final EnumSet<Path.Type> types = "application/directory".equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     attr.setOwner(container.attributes().getOwner());
                     attr.setRegion(container.attributes().getRegion());
-                    children.add(new Path(directory, StringUtils.removeStart(object.getName(), prefix), types, attr));
+                    children.add(new Path(directory, name, types, attr));
                     marker = object.getName();
                 }
                 listener.chunk(directory, children);

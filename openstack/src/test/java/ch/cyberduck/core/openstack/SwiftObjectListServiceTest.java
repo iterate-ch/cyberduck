@@ -49,11 +49,17 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
             new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path f2 = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
             new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path d1 = new SwiftDirectoryFeature(session, new SwiftRegionService(session)).mkdir(
+            new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        // Must add file in directory for virtual prefix to be returned in directory listing
+        final Path d1f1 = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
+            new Path(d1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener());
-        assertEquals(2, list.size());
+        assertEquals(3, list.size());
         assertTrue(list.contains(f1));
         assertTrue(list.contains(f2));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(f1, f2, placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(list.contains(d1));
+        new SwiftDeleteFeature(session).delete(Arrays.asList(f1, f2, d1f1, d1, placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
