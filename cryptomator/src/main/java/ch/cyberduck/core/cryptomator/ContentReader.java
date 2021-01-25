@@ -39,7 +39,7 @@ public class ContentReader {
 
     public String read(final Path file) throws BackgroundException {
         final Read read = session._getFeature(Read.class);
-        try (final InputStream in = read.read(file, new TransferStatus(), new DisabledConnectionCallback())) {
+        try (final InputStream in = read.read(file, new TransferStatus().length(file.attributes().getSize()), new DisabledConnectionCallback())) {
             return IOUtils.toString(in, StandardCharsets.UTF_8);
         }
         catch(IOException e) {
