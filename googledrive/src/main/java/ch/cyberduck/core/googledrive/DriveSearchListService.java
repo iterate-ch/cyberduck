@@ -15,21 +15,80 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
+import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.google.api.services.drive.model.File;
 
 public class DriveSearchListService extends AbstractDriveListService {
 
+    private static final String DEFAULT_FIELDS = String.format("files(%s,parents),nextPageToken", DriveAttributesFinderFeature.DEFAULT_FIELDS);
+
+    private final DriveSession session;
+    private final DriveFileidProvider fileid;
+    private final DriveAttributesFinderFeature attributes;
     private final String query;
 
     public DriveSearchListService(final DriveSession session, final DriveFileidProvider fileid, final String query) {
-        super(session, fileid);
+        super(session, fileid, PreferencesFactory.get().getInteger("googledrive.list.limit"), DEFAULT_FIELDS);
+        this.session = session;
+        this.fileid = fileid;
+        this.attributes = new DriveAttributesFinderFeature(session, fileid);
         this.query = query;
     }
 
     @Override
-    protected String query(final Path directory, final ListProgressListener listener) {
+    protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
         // The contains operator only performs prefix matching for a name.
         return String.format("name contains '%s'", query);
+    }
+
+    @Override
+    protected Set<Path> parents(final Path directory, final File f) throws BackgroundException {
+        try {
+            // Parent may not be current working directory when searching recursively
+            final Set<Path> tree = new HashSet<>();
+            final String workdirId = session.getClient().files().get(fileid.getFileid(directory, new DisabledListProgressListener())).execute().getId();
+            for(String parentid : f.getParents()) {
+                tree.addAll(this.parents(directory, workdirId, parentid, new ArrayDeque<>()));
+            }
+            return tree;
+        }
+        catch(IOException e) {
+            throw new DriveExceptionMappingService().map("Listing directory failed", e, directory);
+        }
+    }
+
+    private Set<Path> parents(final Path directory, final String workdirId, String id, final Deque<File> dequeue) throws IOException {
+        final Set<Path> tree = new HashSet<>();
+        while(!workdirId.equals(id)) {
+            final File f = session.getClient().files().get(id).setFields(String.format("parents,%s", DriveAttributesFinderFeature.DEFAULT_FIELDS)).execute();
+            dequeue.push(f);
+            if(null == f.getParents()) {
+                break;
+            }
+            for(String parentid : f.getParents()) {
+                tree.addAll(this.parents(directory, workdirId, parentid, new ArrayDeque<>(dequeue)));
+                id = parentid;
+            }
+        }
+        Path parent = directory;
+        while(dequeue.size() > 0) {
+            final File p = dequeue.pop();
+            parent = new Path(parent, p.getName(), EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId(p.getId()));
+        }
+        tree.add(parent);
+        return tree;
     }
 }

@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -51,7 +50,7 @@ public class DriveSearchFeatureTest extends AbstractDriveTest {
         assertTrue(feature.search(workdir, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).contains(file));
         final Path subdir = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertFalse(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -69,6 +68,17 @@ public class DriveSearchFeatureTest extends AbstractDriveTest {
         assertEquals(workdir, result.get(result.indexOf(file)).getParent());
         final Path subdir = new DriveDirectoryFeature(session, fileid).mkdir(new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertFalse(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
-        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, subdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, subdir, workdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSearchFolderRecursively() throws Exception {
+        final String name = new AlphanumericRandomStringService().random();
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final Path workdir = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path file = new DriveTouchFeature(session, fileid).touch(new Path(workdir, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final DriveSearchFeature feature = new DriveSearchFeature(session, fileid);
+        assertTrue(feature.search(DriveHomeFinderService.MYDRIVE_FOLDER, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, workdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
