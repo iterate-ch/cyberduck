@@ -21,20 +21,37 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
+import java.io.IOException;
+
+import com.google.api.services.drive.model.File;
 
 public class DriveFindFeature implements Find {
 
+    private final DriveSession session;
     private final DriveFileidProvider fileid;
 
     public DriveFindFeature(final DriveSession session, final DriveFileidProvider fileid) {
+        this.session = session;
         this.fileid = fileid;
     }
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
         try {
-            fileid.getFileid(file, new DisabledListProgressListener());
-            return true;
+            try {
+                final File f = session.getClient().files().get(fileid.getFileid(file, new DisabledListProgressListener()))
+                    .setFields("explicitlyTrashed")
+                    .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                if(f.getExplicitlyTrashed()) {
+                    return false;
+                }
+                return true;
+            }
+            catch(IOException e) {
+                throw new DriveExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            }
         }
         catch(NotfoundException e) {
             return false;
