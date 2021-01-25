@@ -14,24 +14,82 @@
   ~ GNU General Public License for more details.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
         <version>7.8.2-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>box</artifactId>
-    <properties>
-        <box-java-sdk-version>2.50.1</box-java-sdk-version>
-    </properties>
+
     <dependencies>
         <dependency>
-            <groupId>com.box</groupId>
-            <artifactId>box-java-sdk</artifactId>
-            <version>${box-java-sdk-version}</version>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>jersey</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>test</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArguments combine.self="override" />
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>codegen</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.swagger.codegen.v3</groupId>
+                        <artifactId>swagger-codegen-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <inputSpec>https://raw.githubusercontent.com/box/box-openapi/en/openapi.json</inputSpec>
+                                    <language>java</language>
+                                    <output>${project.basedir}</output>
+                                    <modelPackage>ch.cyberduck.core.box.io.swagger.client.model</modelPackage>
+                                    <apiPackage>ch.cyberduck.core.box.io.swagger.client.api</apiPackage>
+                                    <configOptions>
+                                        <sourceFolder>src/main/java</sourceFolder>
+                                        <library>jersey2</library>
+                                        <dateLibrary>joda</dateLibrary>
+                                        <java8>true</java8>
+                                    </configOptions>
+                                    <environmentVariables>
+                                        <apiTests>false</apiTests>
+                                    </environmentVariables>
+                                    <importMappings>
+                                        <importMapping>File=ch.cyberduck.core.box.io.swagger.client.model.File</importMapping>
+                                    </importMappings>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
