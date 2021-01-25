@@ -59,7 +59,8 @@ public class DriveSearchListService extends AbstractDriveListService {
         try {
             // Parent may not be current working directory when searching recursively
             final Set<Path> tree = new HashSet<>();
-            final String workdirId = session.getClient().files().get(fileid.getFileid(directory, new DisabledListProgressListener())).execute().getId();
+            final String workdirId = session.getClient().files().get(fileid.getFileid(directory, new DisabledListProgressListener()))
+                .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute().getId();
             for(String parentid : f.getParents()) {
                 tree.addAll(this.parents(directory, workdirId, parentid, new ArrayDeque<>()));
             }
