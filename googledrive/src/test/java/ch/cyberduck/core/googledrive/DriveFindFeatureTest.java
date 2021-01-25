@@ -48,6 +48,7 @@ public class DriveFindFeatureTest extends AbstractDriveTest {
         new DriveTouchFeature(session, fileid).touch(file, new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(file));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new DriveFindFeature(session, fileid).find(file));
+        assertTrue(new DriveFindFeature(session, fileid).find(file));
+        assertTrue(new DriveAttributesFinderFeature(session, fileid).find(file).isDuplicate());
     }
 }
