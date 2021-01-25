@@ -13,6 +13,7 @@ https://cyberduck.io/
 - [Bugfix] Failure unlocking vaults on Google Storage (Cryptomator) (#11528)
 - [Bugfix] Fix SSL session reuse on data channel (FTP, Windows)
 - [Bugfix] Failure running application (CLI, Linux)
+- [Bugfix] Recursive search yields no results (Google Drive) (#11424)
 
 7.8.1
 - [Feature] Provide armhf/aarch64 RPM and DEB packages (CLI, Rasperry Pi, Linux) (#10447)
