@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Move;
@@ -238,6 +239,9 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         }
         if(type == Delete.class) {
             return (T) new StoregateDeleteFeature(this, fileid);
+        }
+        if(type == Find.class) {
+            return (T) new StoregateFindFeature(this, fileid);
         }
         if(type == AttributesFinder.class) {
             return (T) new StoregateAttributesFinderFeature(this, fileid);
