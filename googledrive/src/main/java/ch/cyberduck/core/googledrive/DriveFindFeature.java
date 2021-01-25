@@ -42,11 +42,7 @@ public class DriveFindFeature implements Find {
         try {
             try {
                 final File f = session.getClient().files().get(fileid.getFileid(file, new DisabledListProgressListener()))
-                    .setFields("explicitlyTrashed")
                     .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
-                if(f.getExplicitlyTrashed()) {
-                    return false;
-                }
                 return true;
             }
             catch(IOException e) {
