@@ -32,17 +32,17 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
         final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager(), Collections.emptyMap()
         );
         assertTrue(configuration.getMethods(
-            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.DOWNLOAD));
+            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.DOWNLOAD));
         assertTrue(configuration.getMethods(
-            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.STREAMING));
+            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.STREAMING));
         assertFalse(configuration.getMethods(
-            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.CUSTOM));
+            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.CUSTOM));
         assertTrue(configuration.getMethods(
-            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE_CDN));
+            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE_CDN));
         assertTrue(configuration.getMethods(
-            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE));
+            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE));
         assertFalse(configuration.getMethods(
-            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb_b", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE));
+            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "bbb_b", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE));
     }
 
     @Test
@@ -51,17 +51,17 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
         final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager(), Collections.emptyMap()
         );
         assertFalse(configuration.getMethods(
-            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.DOWNLOAD));
+            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.DOWNLOAD));
         assertFalse(configuration.getMethods(
-            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.STREAMING));
+            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.STREAMING));
         assertFalse(configuration.getMethods(
-            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.CUSTOM));
+            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.CUSTOM));
         assertFalse(configuration.getMethods(
-            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE_CDN));
+            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE_CDN));
         assertTrue(configuration.getMethods(
-            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE));
+            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE));
         assertFalse(configuration.getMethods(
-            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb_b", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE));
+            new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "bbb_b", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE));
     }
 
     @Test
