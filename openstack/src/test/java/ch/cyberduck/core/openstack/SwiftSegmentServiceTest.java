@@ -67,9 +67,9 @@ public class SwiftSegmentServiceTest extends AbstractSwiftTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString();
         final String key = UUID.randomUUID().toString() + "/" + name;
-        assertEquals("/test.cyberduck.ch/.prefix/" + name + "/3", service.getSegmentsDirectory(new Path(container, key, EnumSet.of(Path.Type.file)), 3L).getAbsolute());
+        assertEquals("/test.cyberduck.ch/.prefix/" + key + "/3", service.getSegmentsDirectory(new Path(container, key, EnumSet.of(Path.Type.file)), 3L).getAbsolute());
         final Path directory = new Path(container, "dir", EnumSet.of(Path.Type.directory));
-        assertEquals("/test.cyberduck.ch/dir/.prefix/" + name + "/3", service.getSegmentsDirectory(new Path(directory, key, EnumSet.of(Path.Type.file)), 3L).getAbsolute());
+        assertEquals("/test.cyberduck.ch/dir/.prefix/" + key + "/3", service.getSegmentsDirectory(new Path(directory, key, EnumSet.of(Path.Type.file)), 3L).getAbsolute());
     }
 
     @Test
@@ -79,6 +79,6 @@ public class SwiftSegmentServiceTest extends AbstractSwiftTest {
         final Path directory = new Path(container, "dir", EnumSet.of(Path.Type.directory));
         final String name = "name";
         final String key = "sub/" + name;
-        assertEquals("/test.cyberduck.ch/dir/.prefix/name/1/00000001", service.getSegment(new Path(directory, key, EnumSet.of(Path.Type.file)), 1L, 1).getAbsolute());
+        assertEquals("/test.cyberduck.ch/dir/.prefix/sub/name/1/00000001", service.getSegment(new Path(directory, key, EnumSet.of(Path.Type.file)), 1L, 1).getAbsolute());
     }
 }
