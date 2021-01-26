@@ -74,7 +74,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <argLine />
         <jna-version>5.6.0</jna-version>
-        <jersey-version>2.33</jersey-version>
+        <jersey-version>3.0.0</jersey-version>
         <jackson-version>2.12.1</jackson-version>
         <slf4j-version>1.7.30</slf4j-version>
         <bouncycastle-version>1.68</bouncycastle-version>
