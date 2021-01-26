@@ -34,6 +34,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -104,21 +105,24 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
 
     @Test
     public void testFileIdCollision() throws Exception {
-        final Path path2R = new Path("/2R", EnumSet.of(Path.Type.directory));
-        final Path path33 = new Path("/33", EnumSet.of(Path.Type.directory));
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
+            new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
 
-        final DriveFileidProvider idProvider = new DriveFileidProvider(session).withCache(cache);
-        final Directory directoryFeature = new DriveDirectoryFeature(session, idProvider);
+        final Path path2R = new Path(directory, "2R", EnumSet.of(Path.Type.directory));
+        final Path path33 = new Path(directory, "33", EnumSet.of(Path.Type.directory));
+
+        final Directory directoryFeature = new DriveDirectoryFeature(session, fileid);
         final Path path2RWithId = directoryFeature.mkdir(path2R, null, new TransferStatus());
         assertNotNull(path2RWithId.attributes().getVersionId());
         final Path path33WithId = directoryFeature.mkdir(path33, null, new TransferStatus());
         assertNotNull(path33WithId.attributes().getVersionId());
         assertNotEquals(path2RWithId.attributes().getVersionId(), path33WithId.attributes().getVersionId());
 
-        final String fileId = idProvider.getFileid(path33, new DisabledListProgressListener());
+        final String fileId = fileid.getFileid(path33, new DisabledListProgressListener());
 
         assertEquals(fileId, path33WithId.attributes().getVersionId());
         assertNotEquals(fileId, path2RWithId.attributes().getVersionId());
-        new DriveDeleteFeature(session, idProvider).delete(Arrays.asList(path2RWithId, path33WithId), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(path2RWithId, path33WithId, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
