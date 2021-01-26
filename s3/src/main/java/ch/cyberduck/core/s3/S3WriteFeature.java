@@ -35,7 +35,6 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -193,12 +192,6 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        if(status.getLength() >= preferences.getLong("s3.upload.multipart.threshold")) {
-            if(preferences.getBoolean("s3.upload.multipart")) {
-                // Do not calculate checksum for multipart upload
-                return new DisabledChecksumCompute();
-            }
-        }
         return ChecksumComputeFactory.get(HashAlgorithm.sha256);
     }
 }

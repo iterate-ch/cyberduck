@@ -28,10 +28,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -83,36 +79,11 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
             }
             catch(NotfoundException | InteroperabilityException e) {
                 log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));
+                status.append(false);
             }
         }
-        status.append(false);
         // Use single upload service
-        return new S3SingleUploadService(session, new Write<StorageObject>() {
-            @Override
-            public StatusOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                return writer.write(file, status, callback);
-            }
-
-            @Override
-            public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-                return writer.append(file, length, cache);
-            }
-
-            @Override
-            public boolean temporary() {
-                return writer.temporary();
-            }
-
-            @Override
-            public boolean random() {
-                return writer.random();
-            }
-
-            @Override
-            public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-                return ChecksumComputeFactory.get(HashAlgorithm.sha256);
-            }
-        }).upload(file, local, throttle, listener, status, prompt);
+        return new S3SingleUploadService(session, writer).upload(file, local, throttle, listener, status, prompt);
     }
 
     @Override
