@@ -29,6 +29,7 @@ import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -76,6 +77,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         new S3ObjectListService(session).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
+    @Ignore
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolderMinio() throws Exception {
         final Host host = new Host(new S3Protocol(), "play.minio.io", 9000, new Credentials(
