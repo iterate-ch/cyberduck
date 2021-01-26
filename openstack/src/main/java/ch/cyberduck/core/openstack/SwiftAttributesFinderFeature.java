@@ -76,49 +76,55 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
         }
         final Region region = regionService.lookup(file);
         try {
+            if(containerService.isContainer(file)) {
+                final ContainerInfo info = session.getClient().getContainerInfo(region,
+                    containerService.getContainer(file).getName());
+                final PathAttributes attributes = new PathAttributes();
+                attributes.setSize(info.getTotalSize());
+                attributes.setRegion(info.getRegion().getRegionId());
+                return attributes;
+            }
+            final ObjectMetadata metadata;
             try {
-                if(containerService.isContainer(file)) {
-                    final ContainerInfo info = session.getClient().getContainerInfo(region,
-                        containerService.getContainer(file).getName());
-                    final PathAttributes attributes = new PathAttributes();
-                    attributes.setSize(info.getTotalSize());
-                    attributes.setRegion(info.getRegion().getRegionId());
-                    return attributes;
-                }
-                final ObjectMetadata metadata = session.getClient().getObjectMetaData(region,
-                    containerService.getContainer(file).getName(), containerService.getKey(file));
-                if(file.isDirectory()) {
-                    if(!StringUtils.equals("application/directory", metadata.getMimeType())) {
-                        throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
-                    }
-                }
-                if(file.isFile()) {
-                    if(StringUtils.equals("application/directory", metadata.getMimeType())) {
-                        throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
-                    }
-                }
-                return this.toAttributes(metadata);
-            }
-            catch(GenericException e) {
-                throw new SwiftExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-            }
-        }
-        catch(NotfoundException e) {
-            if(file.isDirectory()) {
-                // Directory placeholder file may be missing. Still return empty attributes when we find children
                 try {
-                    new SwiftObjectListService(session).list(file, new DisabledListProgressListener(), containerService.getKey(file));
+                    metadata = session.getClient().getObjectMetaData(region,
+                        containerService.getContainer(file).getName(), containerService.getKey(file));
                 }
-                catch(NotfoundException n) {
-                    throw e;
+                catch(GenericException e) {
+                    throw new SwiftExceptionMappingService().map("Failure to read attributes of {0}", e, file);
                 }
-                // Common prefix only
-                return PathAttributes.EMPTY;
             }
-            throw e;
+            catch(NotfoundException e) {
+                if(file.isDirectory()) {
+                    // Directory placeholder file may be missing. Still return empty attributes when we find children
+                    try {
+                        new SwiftObjectListService(session).list(file, new DisabledListProgressListener(), containerService.getKey(file));
+                    }
+                    catch(NotfoundException n) {
+                        throw e;
+                    }
+                    // Common prefix only
+                    return PathAttributes.EMPTY;
+                }
+                throw e;
+            }
+            if(file.isDirectory()) {
+                if(!StringUtils.equals("application/directory", metadata.getMimeType())) {
+                    throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
+                }
+            }
+            if(file.isFile()) {
+                if(StringUtils.equals("application/directory", metadata.getMimeType())) {
+                    throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
+                }
+            }
+            return this.toAttributes(metadata);
+        }
+        catch(GenericException e) {
+            throw new SwiftExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 
