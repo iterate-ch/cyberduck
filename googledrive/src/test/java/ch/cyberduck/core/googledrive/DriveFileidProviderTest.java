@@ -35,8 +35,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import com.google.api.services.drive.model.File;
-
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -91,16 +89,15 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
     @Test
     public void testGetFileidSameName() throws Exception {
         final String filename = new AlphanumericRandomStringService().random();
-        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));
+        final Path test1 = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
-        final Path p1 = new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
-        assertEquals(p1.attributes().getVersionId(), fileid.getFileid(test, new DisabledListProgressListener()));
-        final File body = new File();
-        body.set("trashed", true);
-        session.getClient().files().update(p1.attributes().getVersionId(), body).execute();
+        final Path p1 = new DriveTouchFeature(session, fileid).touch(test1, new TransferStatus());
+        assertEquals(p1.attributes().getVersionId(), fileid.getFileid(test1, new DisabledListProgressListener()));
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test1), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         cache.remove(p1);
-        final Path p2 = new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
-        assertEquals(p2.attributes().getVersionId(), fileid.getFileid(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        final Path test2 = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));
+        final Path p2 = new DriveTouchFeature(session, fileid).touch(test2, new TransferStatus());
+        assertEquals(p2.attributes().getVersionId(), fileid.getFileid(test2, new DisabledListProgressListener()));
         session.getClient().files().delete(p1.attributes().getVersionId());
         session.getClient().files().delete(p2.attributes().getVersionId());
     }
@@ -110,7 +107,7 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
         final Path path2R = new Path("/2R", EnumSet.of(Path.Type.directory));
         final Path path33 = new Path("/33", EnumSet.of(Path.Type.directory));
 
-        final DriveFileidProvider idProvider = new DriveFileidProvider(session);
+        final DriveFileidProvider idProvider = new DriveFileidProvider(session).withCache(cache);
         final Directory directoryFeature = new DriveDirectoryFeature(session, idProvider);
         final Path path2RWithId = directoryFeature.mkdir(path2R, null, new TransferStatus());
         assertNotNull(path2RWithId.attributes().getVersionId());
