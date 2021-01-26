@@ -30,7 +30,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class DriveDirectoryFeatureTest extends AbstractDriveTest {
@@ -43,11 +44,10 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(),
-                new Delete.DisabledCallback());
+            new Delete.DisabledCallback());
         // Trashed
-        test.attributes().setVersionId(null);
-        assertFalse(new DriveFindFeature(session, fileid).find(test));
-        assertFalse(new DefaultFindFeature(session).find(test));
+        assertTrue(new DriveFindFeature(session, fileid).find(test));
+        assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultAttributesFinderFeature(session).find(test).isDuplicate());
     }
 }
