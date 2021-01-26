@@ -29,6 +29,8 @@ import ch.cyberduck.core.features.IdProvider;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Comparator;
+
 public class DriveFileidProvider implements IdProvider {
 
     private final DriveSession session;
@@ -52,7 +54,7 @@ public class DriveFileidProvider implements IdProvider {
         }
         if(cache.isCached(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.find(new SimplePathPredicate(file));
+            final Path found = list.filter(new IgnoreTrashedComparator()).find(new SimplePathPredicate(file));
             if(null != found) {
                 if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
                     return this.set(file, found.attributes().getVersionId());
@@ -76,7 +78,7 @@ public class DriveFileidProvider implements IdProvider {
             query = file;
         }
         final AttributedList<Path> list = new FileidDriveListService(session, this, query).list(file.getParent(), new DisabledListProgressListener());
-        final Path found = list.find(new SimplePathPredicate(file));
+        final Path found = list.filter(new IgnoreTrashedComparator()).find(new SimplePathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
@@ -106,6 +108,13 @@ public class DriveFileidProvider implements IdProvider {
                 return false;
             }
             return super.test(test);
+        }
+    }
+
+    private static final class IgnoreTrashedComparator implements Comparator<Path> {
+        @Override
+        public int compare(final Path o1, final Path o2) {
+            return Boolean.compare(o1.attributes().isDuplicate(), o2.attributes().isDuplicate());
         }
     }
 }
