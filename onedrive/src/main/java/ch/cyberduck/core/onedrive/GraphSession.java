@@ -49,6 +49,7 @@ import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.User;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -289,6 +290,24 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             this.containerPath = containerPath;
             this.collectionPath = collectionPath;
             this.isDrive = isDrive;
+        }
+
+        public boolean equals(final ContainerItem other) {
+            if(other == null) {
+                return false;
+            }
+            if(isDrive != other.isDrive) {
+                return false;
+            }
+            if(!Objects.equals(collectionPath, other.collectionPath)) {
+                return false;
+            }
+            return Objects.equals(containerPath, other.containerPath);
+        }
+
+        @Override
+        public boolean equals(final Object other) {
+            return other instanceof ContainerItem && equals((ContainerItem) other);
         }
     }
 }
