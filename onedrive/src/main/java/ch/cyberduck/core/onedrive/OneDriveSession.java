@@ -32,7 +32,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
+import javax.swing.text.html.Option;
+import java.util.Collections;
+
 public class OneDriveSession extends GraphSession {
+
+    public final static ContainerItem MYFILES = new ContainerItem(OneDriveListService.MYFILES_NAME, null, true);
+    public final static ContainerItem SHAREDFILES = new ContainerItem(null, OneDriveListService.SHARED_NAME, false);
 
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -73,13 +79,21 @@ public class OneDriveSession extends GraphSession {
         if(file.isRoot()) {
             return false;
         }
-        else {
-            return !OneDriveListService.SHARED_NAME.equals(file);
-        }
+
+        final ContainerItem containerItem = getContainer(file);
+        // Rename not possible in /Shared, items inside subfolder can be renamed
+        return containerItem.isDrive() && (container || !containerItem.getContainerPath().map(file::equals).orElse(false)) ||
+            !containerItem.isDrive() && !containerItem.getCollectionPath().map(o -> file.equals(o) || file.getParent().equals(o)).orElse(false);
     }
 
     @Override
     public ContainerItem getContainer(final Path file) {
+        if(OneDriveListService.MYFILES_PREDICATE.test(file) || file.isChild(OneDriveListService.MYFILES_NAME)) {
+            return MYFILES;
+        }
+        if(OneDriveListService.SHARED_PREDICATE.test(file) || file.isChild(OneDriveListService.SHARED_NAME)) {
+            return SHAREDFILES;
+        }
         return ContainerItem.EMPTY;
     }
 

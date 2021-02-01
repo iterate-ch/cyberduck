@@ -31,46 +31,43 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
-public class SharepointSessionTest extends AbstractSharepointTest {
-    public static class OfflineTests {
-        private SharepointSession session;
+public class SharepointSessionTest {
+    private SharepointSession session;
 
-        @Before
-        public void setup() {
-            session = new SharepointSession(new Host(new SharepointProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        }
+    @Before
+    public void setup() {
+        session = new SharepointSession(new Host(new SharepointProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+    }
 
-        @Test
-        public void isAccessible() {
-            assertFalse(session.isAccessible(new Path("/", EnumSet.of(Path.Type.directory))));
-            assertFalse(session.isAccessible(SharepointListService.DEFAULT_NAME));
-            assertFalse(session.isAccessible(SharepointListService.DEFAULT_NAME, false));
-            final Path defaultSiteDrive =
+    @Test
+    public void isAccessible() {
+        assertFalse(session.isAccessible(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertFalse(session.isAccessible(SharepointListService.DEFAULT_NAME));
+        assertFalse(session.isAccessible(SharepointListService.DEFAULT_NAME, false));
+        final Path defaultSiteDrive =
+            new Path(
                 new Path(
-                    new Path(
-                        SharepointListService.DEFAULT_NAME, "Drives", EnumSet.of(AbstractPath.Type.directory)),
-                    "Drive-Id", EnumSet.of(Path.Type.directory));
-            assertTrue(session.isAccessible(defaultSiteDrive));
-            assertFalse(session.isAccessible(defaultSiteDrive, false));
+                    SharepointListService.DEFAULT_NAME, "Drives", EnumSet.of(AbstractPath.Type.directory)),
+                "Drive-Id", EnumSet.of(Path.Type.directory));
+        assertTrue(session.isAccessible(defaultSiteDrive));
+        assertFalse(session.isAccessible(defaultSiteDrive, false));
 
-            assertFalse(session.isAccessible(SharepointListService.SITES_NAME));
-            assertFalse(session.isAccessible(SharepointListService.SITES_NAME, false));
-            assertFalse(session.isAccessible(SharepointListService.GROUPS_NAME));
-            assertFalse(session.isAccessible(SharepointListService.GROUPS_NAME, false));
-            final Path siteDrive =
+        assertFalse(session.isAccessible(SharepointListService.SITES_NAME));
+        assertFalse(session.isAccessible(SharepointListService.SITES_NAME, false));
+        assertFalse(session.isAccessible(SharepointListService.GROUPS_NAME));
+        assertFalse(session.isAccessible(SharepointListService.GROUPS_NAME, false));
+        final Path siteDrive =
+            new Path(
                 new Path(
-                    new Path(
-                        new Path(SharepointListService.SITES_NAME, "Site", EnumSet.of(AbstractPath.Type.directory)),
-                        "Drives", EnumSet.of(AbstractPath.Type.directory)),
-                    "Drive-Id", EnumSet.of(Path.Type.directory));
-            assertTrue(session.isAccessible(siteDrive));
-            assertFalse(session.isAccessible(siteDrive, false));
-            final Path group = new Path(SharepointListService.GROUPS_NAME, "Group Name", EnumSet.of(Path.Type.directory));
-            assertFalse(session.isAccessible(group));
-            assertFalse(session.isAccessible(group, false));
-            assertTrue(session.isAccessible(new Path(group, "Drive-Id", EnumSet.of(Path.Type.directory))));
-            assertFalse(session.isAccessible(new Path(group, "Drive-Id", EnumSet.of(Path.Type.directory)), false));
-        }
+                    new Path(SharepointListService.SITES_NAME, "Site", EnumSet.of(AbstractPath.Type.directory)),
+                    "Drives", EnumSet.of(AbstractPath.Type.directory)),
+                "Drive-Id", EnumSet.of(Path.Type.directory));
+        assertTrue(session.isAccessible(siteDrive));
+        assertFalse(session.isAccessible(siteDrive, false));
+        final Path group = new Path(SharepointListService.GROUPS_NAME, "Group Name", EnumSet.of(Path.Type.directory));
+        assertFalse(session.isAccessible(group));
+        assertFalse(session.isAccessible(group, false));
+        assertTrue(session.isAccessible(new Path(group, "Drive-Id", EnumSet.of(Path.Type.directory))));
+        assertFalse(session.isAccessible(new Path(group, "Drive-Id", EnumSet.of(Path.Type.directory)), false));
     }
 }
