@@ -31,7 +31,6 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
 public class SharepointSessionTest extends AbstractSharepointTest {
     public static class OfflineTests {
         private SharepointSession session;
