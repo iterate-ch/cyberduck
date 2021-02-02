@@ -104,9 +104,8 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
                 try {
                     return client.execute(request);
                 }
-                catch(Exception e) {
+                finally {
                     entry.countDown();
-                    throw e;
                 }
             }
         });

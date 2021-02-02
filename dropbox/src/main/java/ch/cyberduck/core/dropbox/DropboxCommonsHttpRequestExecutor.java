@@ -118,9 +118,8 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
                 try {
                     return client.execute(request);
                 }
-                catch(Exception e) {
+                finally {
                     entry.countDown();
-                    throw e;
                 }
             }
         });
