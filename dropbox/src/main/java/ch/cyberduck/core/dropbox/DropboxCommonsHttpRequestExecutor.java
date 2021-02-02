@@ -115,7 +115,12 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
         final Future<CloseableHttpResponse> future = executor.execute(new Callable<CloseableHttpResponse>() {
             @Override
             public CloseableHttpResponse call() throws Exception {
-                return client.execute(request);
+                try {
+                    return client.execute(request);
+                }
+                finally {
+                    entry.countDown();
+                }
             }
         });
         return new Uploader() {
