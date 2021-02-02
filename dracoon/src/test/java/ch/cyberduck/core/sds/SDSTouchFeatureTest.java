@@ -66,7 +66,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
             new SDSTouchFeature(session, nodeid).touch(new Path(room, "CON", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
-            assertEquals("Error -40755. Not allowed file name='CON'. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Error -40755. Illegal file name='CON'. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
         finally {
@@ -83,7 +83,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
             new SDSTouchFeature(session, nodeid).touch(new Path(room, "?", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
-            assertEquals("Error -40755. Not allowed file name='?'. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Error -40755. Illegal file name='?'. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
         finally {
