@@ -132,6 +132,22 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
         assertEquals(modified.getTime(), attrs.getModificationDate());
     }
 
+    @Test
+    public void testCustomModified_Epoch() {
+        final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(null);
+        final DavResource mock = mock(DavResource.class);
+
+        Map<QName, String> map = new HashMap<>();
+        map.put(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE, "Thu, 01 Jan 1970 00:00:00 UTC");
+        map.put(DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE, "Thu, 02 Nov 2018 15:31:57 UTC");
+        final Date modified = new DateTime("2018-11-02T15:31:57Z").toDate();
+        when(mock.getModified()).thenReturn(modified);
+        when(mock.getCustomPropsNS()).thenReturn(map);
+
+        final PathAttributes attrs = f.toAttributes(mock);
+        assertEquals(modified.getTime(), attrs.getModificationDate());
+    }
+
     @Test(expected = InteroperabilityException.class)
     public void testFindLock() throws Exception {
         final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
