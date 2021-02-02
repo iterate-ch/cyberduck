@@ -10,12 +10,12 @@ Libre file transfer client for macOS and Windows. Command line interface (CLI) f
 
 ## Prerequisites
 
-- Oracle Java 1.8.0 SDK or later
+- Java 11 SDK or later
 - Apache Ant 1.10.1 or later
 - Apache Maven 3.5 or later
 
 ### macOS
-- [Xcode 9](https://developer.apple.com/xcode/download/) or later
+- [Xcode 12](https://developer.apple.com/xcode/download/) or later
 
 ### Windows
 
@@ -27,7 +27,7 @@ Libre file transfer client for macOS and Windows. Command line interface (CLI) f
 
 #### Chocolatey
 ```
-choco install adoptopenjdk8 maven bonjour -y
+choco install adoptopenjdk15 maven bonjour -y
 choco install visualstudio2019buildtools -y
 choco install wixtoolset -y
 choco install visualstudio2019-workload-manageddesktopbuildtools --params "--add Microsoft.Net.Component.4.7.TargetingPack" -y
