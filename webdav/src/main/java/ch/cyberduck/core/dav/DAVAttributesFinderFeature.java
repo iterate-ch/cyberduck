@@ -179,6 +179,15 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                     attributes.setModificationDate(resource.getModified().getTime());
                 }
             }
+            // Validate value with fallback to server side modified date
+            if(attributes.getModificationDate() == 0) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Invalid value for property %s", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE));
+                }
+                if(resource.getModified() != null) {
+                    attributes.setModificationDate(resource.getModified().getTime());
+                }
+            }
         }
         else if(resource.getModified() != null) {
             attributes.setModificationDate(resource.getModified().getTime());
