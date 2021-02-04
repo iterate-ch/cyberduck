@@ -27,9 +27,12 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.GraphSession;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GraphFileIdProvider implements IdProvider {
+
+    public static final String KEY_ITEM_ID = "item_id";
 
     private final GraphSession session;
     private Cache<Path> cache = PathCache.empty();
@@ -40,15 +43,15 @@ public class GraphFileIdProvider implements IdProvider {
 
     @Override
     public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            return file.attributes().getVersionId();
+        if(file.attributes().getCustom().containsKey(KEY_ITEM_ID)) {
+            return file.attributes().getCustom().get(KEY_ITEM_ID);
         }
         if(cache.isCached(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
             final Path found = list.find(new SimplePathPredicate(file));
             if(null != found) {
-                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    return this.set(file, found.attributes().getVersionId());
+                if(found.attributes().getCustom().containsKey(KEY_ITEM_ID)) {
+                    return this.set(file, file.attributes().getCustom().get(KEY_ITEM_ID));
                 }
             }
         }
@@ -57,11 +60,13 @@ public class GraphFileIdProvider implements IdProvider {
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
-        return this.set(file, found.attributes().getVersionId());
+        return this.set(file, found.attributes().getCustom().get(KEY_ITEM_ID));
     }
 
     protected String set(final Path file, final String id) {
-        file.attributes().setVersionId(id);
+        final Map<String, String> custom = new HashMap<>(file.attributes().getCustom());
+        custom.put(KEY_ITEM_ID, id);
+        file.attributes().setCustom(custom);
         return id;
     }
 
