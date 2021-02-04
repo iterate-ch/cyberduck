@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
@@ -57,7 +56,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final String versionId = new GraphTouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId();
+        new GraphTouchFeature(session).touch(file, new TransferStatus());
         final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final byte[] buffer = new byte[32 * 1024];
@@ -71,7 +70,6 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        assertNotEquals(versionId, new GraphAttributesFinderFeature(session).find(file).getVersionId());
         // Overwrite
         final HttpResponseOutputStream<Void> overwrite = feature.write(file, status.exists(true), new DisabledConnectionCallback());
         assertNotNull(overwrite);
