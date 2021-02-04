@@ -35,7 +35,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+
+import static ch.cyberduck.core.onedrive.features.GraphFileIdProvider.KEY_ITEM_ID;
 
 public class GraphAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(GraphAttributesFinderFeature.class);
@@ -79,17 +83,17 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
             final DriveItem.Metadata remoteMetadata = metadata.getRemoteItem();
             final ItemReference remoteParent = remoteMetadata.getParentReference();
             if(parent == null) {
-                attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER),
+                setId(attributes, String.join(String.valueOf(Path.DELIMITER),
                     remoteParent.getDriveId(), remoteParent.getId()));
             }
             else {
-                attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER),
+                setId(attributes, String.join(String.valueOf(Path.DELIMITER),
                     parent.getDriveId(), metadata.getId(),
                     remoteParent.getDriveId(), remoteMetadata.getId()));
             }
         }
         else {
-            attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER), parent.getDriveId(), metadata.getId()));
+            setId(attributes, String.join(String.valueOf(Path.DELIMITER), parent.getDriveId(), metadata.getId()));
         }
         webUrl.ifPresent(attributes::setLink);
         final FileSystemInfo info = metadata.getFacet(FileSystemInfo.class);
@@ -112,6 +116,12 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
             attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
         }
         return attributes;
+    }
+
+    private void setId(final PathAttributes attributes, final String id) {
+        final Map<String, String> custom = new HashMap<>(attributes.getCustom());
+        custom.put(KEY_ITEM_ID, id);
+        attributes.setCustom(custom);
     }
 
     static Optional<DescriptiveUrl> getWebUrl(final DriveItem.Metadata metadata) {
