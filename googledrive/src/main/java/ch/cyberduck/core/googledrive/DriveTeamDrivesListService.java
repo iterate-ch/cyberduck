@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -30,6 +29,8 @@ import java.util.EnumSet;
 
 import com.google.api.services.drive.model.TeamDrive;
 import com.google.api.services.drive.model.TeamDriveList;
+
+import static ch.cyberduck.core.googledrive.DriveFileidProvider.KEY_FILE_ID;
 
 public class DriveTeamDrivesListService implements ListService {
     private static final Logger log = Logger.getLogger(DriveTeamDrivesListService.class);
@@ -58,7 +59,7 @@ public class DriveTeamDrivesListService implements ListService {
                     .execute();
                 for(TeamDrive f : list.getTeamDrives()) {
                     final Path child = new Path(directory, f.getName(), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                        new PathAttributes().withVersionId(f.getId()));
+                        new PathAttributes().withCustom(KEY_FILE_ID, f.getId()));
                     children.add(child);
                 }
                 listener.chunk(directory, children);

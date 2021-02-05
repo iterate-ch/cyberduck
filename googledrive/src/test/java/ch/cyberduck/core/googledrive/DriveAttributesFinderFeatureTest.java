@@ -37,6 +37,7 @@ import java.util.UUID;
 
 import com.google.api.services.drive.model.File;
 
+import static ch.cyberduck.core.googledrive.DriveFileidProvider.KEY_FILE_ID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -68,7 +69,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
-        assertNotNull(attributes.getVersionId());
+        assertNotNull(attributes.getCustom().get(KEY_FILE_ID));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -83,7 +84,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         assertEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
-        assertNotNull(attributes.getVersionId());
+        assertNotNull(attributes.getCustom().get(KEY_FILE_ID));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

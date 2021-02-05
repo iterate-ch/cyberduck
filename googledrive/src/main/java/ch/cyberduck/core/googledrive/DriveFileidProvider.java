@@ -27,11 +27,14 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DriveFileidProvider implements IdProvider {
+
+    public static final String KEY_FILE_ID = "file_id";
 
     private final DriveSession session;
 
@@ -43,8 +46,8 @@ public class DriveFileidProvider implements IdProvider {
 
     @Override
     public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            return file.attributes().getVersionId();
+        if(file.attributes().getCustom().containsKey(KEY_FILE_ID)) {
+            return file.attributes().getCustom().get(KEY_FILE_ID);
         }
         if(file.isRoot()
             || file.equals(DriveHomeFinderService.MYDRIVE_FOLDER)
@@ -56,8 +59,8 @@ public class DriveFileidProvider implements IdProvider {
             final AttributedList<Path> list = cache.get(file.getParent());
             final Path found = list.filter(new IgnoreTrashedComparator()).find(new SimplePathPredicate(file));
             if(null != found) {
-                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    return this.set(file, found.attributes().getVersionId());
+                if(found.attributes().getCustom().containsKey(KEY_FILE_ID)) {
+                    return this.set(file, found.attributes().getCustom().get(KEY_FILE_ID));
                 }
             }
         }
@@ -68,7 +71,7 @@ public class DriveFileidProvider implements IdProvider {
             if(null == found) {
                 throw new NotfoundException(file.getAbsolute());
             }
-            return this.set(file, found.attributes().getVersionId());
+            return this.set(file, found.attributes().getCustom().get(KEY_FILE_ID));
         }
         final Path query;
         if(file.getType().contains(Path.Type.placeholder)) {
@@ -82,11 +85,13 @@ public class DriveFileidProvider implements IdProvider {
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
-        return this.set(file, found.attributes().getVersionId());
+        return this.set(file, found.attributes().getCustom().get(KEY_FILE_ID));
     }
 
     protected String set(final Path file, final String id) {
-        file.attributes().setVersionId(id);
+        final Map<String, String> custom = new HashMap<>(file.attributes().getCustom());
+        custom.put(KEY_FILE_ID, id);
+        file.attributes().setCustom(custom);
         return id;
     }
 

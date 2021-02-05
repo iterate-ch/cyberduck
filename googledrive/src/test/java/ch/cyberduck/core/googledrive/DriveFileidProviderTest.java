@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import static ch.cyberduck.core.googledrive.DriveFileidProvider.KEY_FILE_ID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -93,7 +94,7 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
         final Path test1 = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         final Path p1 = new DriveTouchFeature(session, fileid).touch(test1, new TransferStatus());
-        assertEquals(p1.attributes().getVersionId(), fileid.getFileid(test1, new DisabledListProgressListener()));
+        assertEquals(p1.attributes().getCustom().get(KEY_FILE_ID), fileid.getFileid(test1, new DisabledListProgressListener()));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test1), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         cache.remove(p1);
         final Path test2 = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));
@@ -114,10 +115,10 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
 
         final Directory directoryFeature = new DriveDirectoryFeature(session, fileid);
         final Path path2RWithId = directoryFeature.mkdir(path2R, null, new TransferStatus());
-        assertNotNull(path2RWithId.attributes().getVersionId());
+        assertNotNull(path2RWithId.attributes().getCustom().get(KEY_FILE_ID));
         final Path path33WithId = directoryFeature.mkdir(path33, null, new TransferStatus());
-        assertNotNull(path33WithId.attributes().getVersionId());
-        assertNotEquals(path2RWithId.attributes().getVersionId(), path33WithId.attributes().getVersionId());
+        assertNotNull(path33WithId.attributes().getCustom().get(KEY_FILE_ID));
+        assertNotEquals(path2RWithId.attributes().getCustom().get(KEY_FILE_ID), path33WithId.attributes().getCustom().get(KEY_FILE_ID));
 
         final String fileId = fileid.getFileid(path33, new DisabledListProgressListener());
 

@@ -68,6 +68,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.googledrive.DriveFileidProvider.KEY_FILE_ID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -132,7 +133,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         out.close();
         assertTrue(new CryptoFindFeature(session, new DriveFindFeature(session, fileid), cryptomator).find(test));
         final Path found = new CryptoListService(session, new DriveListService(session, fileid), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
-        final String versionId = found.attributes().getVersionId();
+        final String versionId = found.attributes().getCustom().get(KEY_FILE_ID);
         assertNotNull(versionId);
         final Cache<Path> cache = new PathCache(1);
         final AttributedList<Path> list = new AttributedList<>();

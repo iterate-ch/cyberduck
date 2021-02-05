@@ -38,15 +38,18 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.api.services.drive.model.File;
 
 import static ch.cyberduck.core.googledrive.AbstractDriveListService.*;
+import static ch.cyberduck.core.googledrive.DriveFileidProvider.KEY_FILE_ID;
 
 public class DriveAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(DriveAttributesFinderFeature.class);
 
-    protected static final String DEFAULT_FIELDS = "createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails";
+    protected static final String DEFAULT_FIELDS = "createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails,version";
 
     private final DriveSession session;
     private final DriveFileidProvider fileid;
@@ -95,7 +98,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
         if(null != f.getExplicitlyTrashed()) {
             if(f.getExplicitlyTrashed()) {
                 // Mark as hidden
-                attributes.setDuplicate(true);
+                attributes.setHidden(true);
             }
         }
         if(null != f.getSize()) {
@@ -103,7 +106,9 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
                 attributes.setSize(f.getSize());
             }
         }
-        attributes.setVersionId(f.getId());
+        if(f.getVersion() != null) {
+            attributes.setVersionId(String.valueOf(f.getVersion()));
+        }
         if(f.getModifiedTime() != null) {
             attributes.setModificationDate(f.getModifiedTime().getValue());
         }
@@ -120,6 +125,10 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
                     .getBytes(Charset.defaultCharset()).length);
             }
         }
+        final Map<String, String> custom = new HashMap<>();
+        custom.put(KEY_FILE_ID, f.getId());
+        attributes.setCustom(custom);
+
         return attributes;
     }
 

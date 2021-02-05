@@ -31,6 +31,8 @@ import java.util.Set;
 
 import com.google.api.services.drive.model.File;
 
+import static ch.cyberduck.core.googledrive.DriveFileidProvider.KEY_FILE_ID;
+
 public class DriveSearchListService extends AbstractDriveListService {
 
     private static final String DEFAULT_FIELDS = String.format("files(%s,parents),nextPageToken", DriveAttributesFinderFeature.DEFAULT_FIELDS);
@@ -87,7 +89,7 @@ public class DriveSearchListService extends AbstractDriveListService {
         Path parent = directory;
         while(dequeue.size() > 0) {
             final File p = dequeue.pop();
-            parent = new Path(parent, p.getName(), EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId(p.getId()));
+            parent = new Path(parent, p.getName(), EnumSet.of(Path.Type.directory), new PathAttributes().withCustom(KEY_FILE_ID, p.getId()));
         }
         tree.add(parent);
         return tree;

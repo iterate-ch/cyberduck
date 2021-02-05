@@ -57,6 +57,7 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.googledrive.DriveFileidProvider.KEY_FILE_ID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -109,10 +110,10 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         final Path test = cryptomator.getFeature(session, Directory.class, new DriveDirectoryFeature(session, fileid)).mkdir(
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        final String versionId = test.attributes().getVersionId();
+        final String versionId = test.attributes().getCustom().get(KEY_FILE_ID);
         assertNotNull(versionId);
         final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test);
-        assertEquals(versionId, attributes.getVersionId());
+        assertEquals(versionId, attributes.getCustom().get(KEY_FILE_ID));
         assertNotEquals(versionId, cryptomator.encrypt(session, test, true).attributes().getVersionId());
         cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -153,17 +154,18 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         assertNotEquals(new CryptoIdProvider(session, fileid, cryptomator).getFileid(vault, new DisabledListProgressListener()), fileid.getFileid(vault, new DisabledListProgressListener()));
         final Path test = cryptomator.getFeature(session, Directory.class, new DriveDirectoryFeature(session, fileid)).mkdir(
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        final String versionId = test.attributes().getVersionId();
+        final String versionId = test.attributes().getCustom().get(KEY_FILE_ID);
+        ;
         assertNotNull(versionId);
         final Path found = new CryptoListService(session, new DriveListService(session, fileid), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
-        assertNull(found.attributes().getVersionId());
+        assertNull(found.attributes().getCustom().get(KEY_FILE_ID));
         assertEquals(versionId, new CryptoIdProvider(session, fileid, cryptomator).getFileid(found, new DisabledListProgressListener()));
         final Cache<Path> cache = new PathCache(1);
         final AttributedList<Path> list = new AttributedList<>();
         list.add(found);
         cache.put(vault, list);
         final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).withCache(cache).find(test);
-        assertEquals(versionId, attributes.getVersionId());
+        assertEquals(versionId, attributes.getCustom().get(KEY_FILE_ID));
         cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
