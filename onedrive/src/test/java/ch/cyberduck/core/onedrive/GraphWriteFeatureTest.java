@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -25,6 +26,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
@@ -43,6 +45,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.onedrive.features.GraphFileIdProvider.KEY_ITEM_ID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -56,7 +59,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session).touch(file, new TransferStatus());
+        final String id = new GraphTouchFeature(session).touch(file, new TransferStatus()).attributes().getCustom().get(KEY_ITEM_ID);
         final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final byte[] buffer = new byte[32 * 1024];
@@ -70,6 +73,9 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
+        final Path copy = new Path(file);
+        copy.attributes().setCustom(Collections.emptyMap());
+        assertEquals(id, new GraphFileIdProvider(session).getFileid(copy, new DisabledListProgressListener()));
         // Overwrite
         final HttpResponseOutputStream<Void> overwrite = feature.write(file, status.exists(true), new DisabledConnectionCallback());
         assertNotNull(overwrite);
