@@ -247,6 +247,9 @@ public class PathAttributes extends Attributes implements Serializable {
                 dict.setObjectForKey(vault, "Vault");
             }
         }
+        if(!custom.isEmpty()) {
+            dict.setMapForKey(custom, "Custom");
+        }
         return dict.getSerialized();
     }
 

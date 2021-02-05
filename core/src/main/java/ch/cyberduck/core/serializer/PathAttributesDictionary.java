@@ -110,6 +110,10 @@ public class PathAttributesDictionary {
         if(vaultObj != null) {
             attributes.setVault(new PathDictionary(factory).deserialize(vaultObj));
         }
+        final Map<String, String> customObj = dict.mapForKey("Custom");
+        if(customObj != null) {
+            attributes.setCustom(customObj);
+        }
         return attributes;
     }
 }

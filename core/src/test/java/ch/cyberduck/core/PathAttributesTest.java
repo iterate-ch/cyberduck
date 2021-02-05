@@ -7,6 +7,9 @@ import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.*;
 
 public class PathAttributesTest {
@@ -55,7 +58,9 @@ public class PathAttributesTest {
         attributes.setDuplicate(true);
         attributes.setRegion("region");
         attributes.setStorageClass("storageClass");
-
+        final Map<String, String> custom = new HashMap<>(attributes.getCustom());
+        custom.put("key", "value");
+        attributes.setCustom(custom);
         final PathAttributes deserialized = new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get()));
         assertEquals(attributes.getSize(), deserialized.getSize());
         assertEquals(attributes.getModificationDate(), deserialized.getModificationDate());
@@ -66,5 +71,6 @@ public class PathAttributesTest {
         assertEquals(attributes.isDuplicate(), deserialized.isDuplicate());
         assertEquals(attributes.getRegion(), deserialized.getRegion());
         assertEquals(attributes.getStorageClass(), deserialized.getStorageClass());
+        assertEquals(attributes.getCustom(), deserialized.getCustom());
     }
 }
