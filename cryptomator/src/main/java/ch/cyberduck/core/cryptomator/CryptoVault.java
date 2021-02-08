@@ -447,6 +447,7 @@ public class CryptoVault implements Vault {
                     // Reset size for folders
                     attributes.setSize(-1L);
                     attributes.setVersionId(null);
+                    attributes.setFileId(null);
                 }
                 else {
                     // Translate file size

@@ -174,6 +174,7 @@ public class PathAttributes extends Attributes implements Serializable {
         etag = copy.etag;
         storageClass = copy.storageClass;
         encryption = copy.encryption;
+        fileId = copy.fileId;
         versionId = copy.versionId;
         versions = copy.versions;
         lockId = copy.lockId;
