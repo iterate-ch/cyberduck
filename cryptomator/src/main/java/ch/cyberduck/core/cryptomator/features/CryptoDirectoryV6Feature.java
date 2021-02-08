@@ -72,6 +72,7 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
         target.attributes().setDecrypted(encrypt.attributes().getDecrypted());
         // Make reference of encrypted path in attributes of decrypted file point to metadata file
         final Path decrypt = vault.decrypt(session, vault.encrypt(session, target, true));
+        decrypt.attributes().setFileId(target.attributes().getFileId());
         decrypt.attributes().setVersionId(target.attributes().getVersionId());
         return decrypt;
     }

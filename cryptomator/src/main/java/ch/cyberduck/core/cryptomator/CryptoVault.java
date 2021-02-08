@@ -387,6 +387,7 @@ public class CryptoVault implements Vault {
             if(metadata) {
                 // The directory is different from the metadata file used to resolve the actual folder
                 attributes.setVersionId(null);
+                attributes.setFileId(null);
             }
             // Translate file size
             attributes.setSize(this.toCiphertextSize(file.attributes().getSize()));
