@@ -154,7 +154,6 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final Path test = cryptomator.getFeature(session, Directory.class, new DriveDirectoryFeature(session, idProvider)).mkdir(
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final String fileId = test.attributes().getFileId();
-        ;
         assertNotNull(fileId);
         final Path found = new CryptoListService(session, new DriveListService(session, idProvider), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
         assertNull(found.attributes().getFileId());
