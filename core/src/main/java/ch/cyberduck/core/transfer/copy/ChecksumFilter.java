@@ -57,23 +57,25 @@ public class ChecksumFilter extends AbstractCopyFilter {
                 final PathAttributes attributes = sourceSession.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(sourceSession))
                     .withCache(sourceCache).find(source);
                 final Write.Append append = upload.append(target, attributes.getSize(), destinationCache);
-                // Compare source with target attributes
-                if(append.size == attributes.getSize()) {
-                    if(Checksum.NONE != append.checksum) {
-                        if(Objects.equals(attributes.getChecksum(), append.checksum)) {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Skip file %s with checksum %s", source, append.checksum));
+                if(append.override || append.append) {
+                    // Compare source with target attributes
+                    if(append.size == attributes.getSize()) {
+                        if(Checksum.NONE != append.checksum) {
+                            if(Objects.equals(attributes.getChecksum(), append.checksum)) {
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Skip file %s with checksum %s", source, append.checksum));
+                                }
+                                return false;
                             }
+                            log.warn(String.format("Checksum mismatch for %s and %s", source, target));
+                        }
+                        else {
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Skip file %s with remote size %d", source, append.size));
+                            }
+                            // No need to resume completed transfers
                             return false;
                         }
-                        log.warn(String.format("Checksum mismatch for %s and %s", source, target));
-                    }
-                    else {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Skip file %s with remote size %d", source, append.size));
-                        }
-                        // No need to resume completed transfers
-                        return false;
                     }
                 }
             }

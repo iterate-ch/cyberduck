@@ -68,23 +68,25 @@ public class ResumeFilter extends AbstractUploadFilter {
             if(local.isFile()) {
                 if(parent.isExists()) {
                     final Write.Append append = upload.append(file, local.attributes().getSize(), cache);
-                    if(append.size == local.attributes().getSize()) {
-                        if(Checksum.NONE != append.checksum) {
-                            final ChecksumCompute compute = ChecksumComputeFactory.get(append.checksum.algorithm);
-                            if(compute.compute(local.getInputStream(), parent).equals(append.checksum)) {
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Skip file %s with checksum %s", file, local.attributes().getChecksum()));
+                    if(append.override || append.append) {
+                        if(append.size == local.attributes().getSize()) {
+                            if(Checksum.NONE != append.checksum) {
+                                final ChecksumCompute compute = ChecksumComputeFactory.get(append.checksum.algorithm);
+                                if(compute.compute(local.getInputStream(), parent).equals(append.checksum)) {
+                                    if(log.isInfoEnabled()) {
+                                        log.info(String.format("Skip file %s with checksum %s", file, local.attributes().getChecksum()));
+                                    }
+                                    return false;
                                 }
+                                log.warn(String.format("Checksum mismatch for %s and %s", file, local));
+                            }
+                            else {
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Skip file %s with remote size %d", file, append.size));
+                                }
+                                // No need to resume completed transfers
                                 return false;
                             }
-                            log.warn(String.format("Checksum mismatch for %s and %s", file, local));
-                        }
-                        else {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Skip file %s with remote size %d", file, append.size));
-                            }
-                            // No need to resume completed transfers
-                            return false;
                         }
                     }
                 }
