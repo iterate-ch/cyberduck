@@ -51,7 +51,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     /**
      * Contains the transcript of the session while this action was running
      */
-    private StringBuffer transcript
+    private final StringBuffer transcript
         = new StringBuffer();
 
     private static final String LINE_SEPARATOR
