@@ -56,10 +56,6 @@ public class TransferItem implements Referenceable, Serializable {
         this.lockId = lockId;
     }
 
-    public TransferItem getParent() {
-        return new TransferItem(remote.getParent(), null == local ? null : local.getParent());
-    }
-
     @Override
     public <T> T serialize(final Serializer dict) {
         dict.setObjectForKey(remote, "Remote");
