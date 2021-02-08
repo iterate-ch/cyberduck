@@ -43,7 +43,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.storegate.StoregateIdProvider.KEY_NODE_ID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -72,7 +71,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         PathAttributes attributes = new StoregateAttributesFinderFeature(session, nodeid).find(test);
         final String versionId = attributes.getVersionId();
         assertNull(versionId);
-        final String nodeId = attributes.getCustom().get(KEY_NODE_ID);
+        final String nodeId = attributes.getFileId();
         assertNotNull(nodeId);
         final byte[] compare = new byte[content.length];
         final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());

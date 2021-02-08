@@ -55,6 +55,7 @@ public class PathAttributesTest {
         attributes.setAcl(acl);
         attributes.setChecksum(new Checksum(HashAlgorithm.crc32, "abcdefab"));
         attributes.setVersionId("v-1");
+        attributes.setFileId("f-1");
         attributes.setDuplicate(true);
         attributes.setRegion("region");
         attributes.setStorageClass("storageClass");
@@ -68,6 +69,7 @@ public class PathAttributesTest {
         assertTrue(CollectionUtils.isEqualCollection(acl.asList(), deserialized.getAcl().asList()));
         assertEquals(attributes.getChecksum(), deserialized.getChecksum());
         assertEquals(attributes.getVersionId(), deserialized.getVersionId());
+        assertEquals(attributes.getFileId(), deserialized.getFileId());
         assertEquals(attributes.isDuplicate(), deserialized.isDuplicate());
         assertEquals(attributes.getRegion(), deserialized.getRegion());
         assertEquals(attributes.getStorageClass(), deserialized.getStorageClass());

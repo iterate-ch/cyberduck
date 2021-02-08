@@ -27,12 +27,9 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.GraphSession;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 public class GraphFileIdProvider implements IdProvider {
-
-    public static final String KEY_ITEM_ID = "item_id";
 
     private final GraphSession session;
     private Cache<Path> cache = PathCache.empty();
@@ -43,15 +40,15 @@ public class GraphFileIdProvider implements IdProvider {
 
     @Override
     public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(file.attributes().getCustom().containsKey(KEY_ITEM_ID)) {
-            return file.attributes().getCustom().get(KEY_ITEM_ID);
+        if(StringUtils.isNotBlank(file.attributes().getFileId())) {
+            return file.attributes().getFileId();
         }
         if(cache.isCached(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
             final Path found = list.find(new SimplePathPredicate(file));
             if(null != found) {
-                if(found.attributes().getCustom().containsKey(KEY_ITEM_ID)) {
-                    return this.set(file, file.attributes().getCustom().get(KEY_ITEM_ID));
+                if(StringUtils.isNotBlank(file.attributes().getFileId())) {
+                    return this.set(file, file.attributes().getFileId());
                 }
             }
         }
@@ -60,13 +57,11 @@ public class GraphFileIdProvider implements IdProvider {
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
-        return this.set(file, found.attributes().getCustom().get(KEY_ITEM_ID));
+        return this.set(file, found.attributes().getFileId());
     }
 
     protected String set(final Path file, final String id) {
-        final Map<String, String> custom = new HashMap<>(file.attributes().getCustom());
-        custom.put(KEY_ITEM_ID, id);
-        file.attributes().setCustom(custom);
+        file.attributes().setFileId(id);
         return id;
     }
 

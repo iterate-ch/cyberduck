@@ -54,7 +54,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.googledrive.DriveFileidProvider.KEY_FILE_ID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -72,7 +71,7 @@ public class DriveListServiceTest extends AbstractDriveTest {
         assertTrue(new CryptoListService(session, new DriveDefaultListService(session, fileid), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         final Path testFile = new CryptoTouchFeature<VersionId>(session, new DefaultTouchFeature<>(new DriveUploadFeature(new DriveWriteFeature(session, fileid)), new DriveAttributesFinderFeature(session, fileid)), new DriveWriteFeature(session, fileid), cryptomator).touch(
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotNull(testFile.attributes().getCustom().get(KEY_FILE_ID));
+        assertNotNull(testFile.attributes().getFileId());
         assertEquals(testFile, new CryptoListService(session, new DriveDefaultListService(session, fileid), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
         cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Collections.singletonList(testFile), new DisabledLoginCallback(), new Delete.DisabledCallback());
         final Path testDir = cryptomator.getFeature(session, Directory.class, new DriveDirectoryFeature(session, fileid)).mkdir(

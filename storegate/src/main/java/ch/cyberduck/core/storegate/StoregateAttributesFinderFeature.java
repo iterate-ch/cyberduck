@@ -25,11 +25,6 @@ import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static ch.cyberduck.core.storegate.StoregateIdProvider.KEY_NODE_ID;
-
 public class StoregateAttributesFinderFeature implements AttributesFinder {
 
     private final StoregateSession session;
@@ -92,9 +87,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
             permission.setUser(permission.getUser().or(Permission.Action.execute));
         }
         attrs.setPermission(permission);
-        final Map<String, String> custom = new HashMap<>();
-        custom.put(KEY_NODE_ID, f.getId());
-        attrs.setCustom(custom);
+        attrs.setFileId(f.getId());
 
         return attrs;
     }

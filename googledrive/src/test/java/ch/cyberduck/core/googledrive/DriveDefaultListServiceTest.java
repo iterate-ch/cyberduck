@@ -36,7 +36,6 @@ import java.util.EnumSet;
 
 import com.google.api.services.drive.model.File;
 
-import static ch.cyberduck.core.googledrive.DriveFileidProvider.KEY_FILE_ID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -49,7 +48,7 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
         for(Path f : list) {
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
             if(!f.isVolume()) {
-                assertNotNull(f.attributes().getCustom().get(KEY_FILE_ID));
+                assertNotNull(f.attributes().getFileId());
             }
         }
     }

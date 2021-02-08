@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static ch.cyberduck.core.googledrive.DriveFileidProvider.KEY_FILE_ID;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -42,7 +41,7 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache).withCache(cache);
         final Path test = new DriveDirectoryFeature(session, fileid).mkdir(
             new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        assertNotNull(test.attributes().getCustom().get(KEY_FILE_ID));
+        assertNotNull(test.attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(),
             new Delete.DisabledCallback());

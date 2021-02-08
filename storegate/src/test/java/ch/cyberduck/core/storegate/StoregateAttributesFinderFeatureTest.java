@@ -30,7 +30,6 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.storegate.StoregateIdProvider.KEY_NODE_ID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -50,7 +49,7 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
         assertEquals(Checksum.NONE, attr.getChecksum());
         assertNull(attr.getETag());
         assertNull(attr.getVersionId());
-        assertNotNull(attr.getCustom().get(KEY_NODE_ID));
+        assertNotNull(attr.getFileId());
         assertFalse(attr.getPermission().isExecutable());
         assertTrue(attr.getPermission().isReadable());
         assertTrue(attr.getPermission().isWritable());

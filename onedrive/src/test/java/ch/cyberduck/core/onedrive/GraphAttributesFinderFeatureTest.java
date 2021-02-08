@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static ch.cyberduck.core.onedrive.features.GraphFileIdProvider.KEY_ITEM_ID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -58,7 +57,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotNull(attributes.getETag());
         assertNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
-        assertNotNull(attributes.getCustom().get(KEY_ITEM_ID));
+        assertNotNull(attributes.getFileId());
         new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -74,7 +73,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotNull(attributes.getETag());
         assertNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
-        assertNotNull(attributes.getCustom().get(KEY_ITEM_ID));
+        assertNotNull(attributes.getFileId());
         new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

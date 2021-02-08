@@ -43,7 +43,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.googledrive.DriveFileidProvider.KEY_FILE_ID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -66,7 +65,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             assertTrue(new DefaultFindFeature(session).find(test));
             test.attributes().setCustom(Collections.emptyMap());
             final PathAttributes attributes = new DriveListService(session, idProvider).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
-            assertEquals(fileid, attributes.getCustom().get(KEY_FILE_ID));
+            assertEquals(fileid, attributes.getFileId());
             assertEquals(content.length, attributes.getSize());
             final Write.Append append = new DriveWriteFeature(session, idProvider).append(test, status.getLength(), PathCache.empty());
             assertTrue(append.override);
@@ -76,7 +75,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             IOUtils.readFully(in, buffer);
             in.close();
             assertArrayEquals(content, buffer);
-            assertEquals("x-application/cyberduck", session.getClient().files().get(test.attributes().getCustom().get(KEY_FILE_ID)).execute().getMimeType());
+            assertEquals("x-application/cyberduck", session.getClient().files().get(test.attributes().getFileId()).execute().getMimeType());
         }
         {
             // overwrite
@@ -90,7 +89,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             assertEquals(fileid, out.getStatus().id);
             final PathAttributes attributes = new DriveListService(session, idProvider).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
             assertEquals(content.length, attributes.getSize());
-            assertEquals("x-application/cyberduck", session.getClient().files().get(test.attributes().getCustom().get(KEY_FILE_ID)).execute().getMimeType());
+            assertEquals("x-application/cyberduck", session.getClient().files().get(test.attributes().getFileId()).execute().getMimeType());
         }
         new DriveDeleteFeature(session, idProvider).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

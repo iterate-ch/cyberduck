@@ -51,7 +51,6 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.googledrive.DriveFileidProvider.KEY_FILE_ID;
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
 
@@ -71,7 +70,7 @@ public class DriveTouchFeatureTest extends AbstractDriveTest {
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).withCache(cache).find(test));
         final Path found = new CryptoListService(session, new DriveListService(session, fileid), cryptomator).withCache(cache).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
-        final String versionId = found.attributes().getCustom().get(KEY_FILE_ID);
+        final String versionId = found.attributes().getFileId();
         assertNotNull(versionId);
         assertEquals(test.attributes(), found.attributes());
         cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -90,7 +89,7 @@ public class DriveTouchFeatureTest extends AbstractDriveTest {
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).withCache(cache).find(test));
         final Path found = new CryptoListService(session, new DriveListService(session, fileid), cryptomator).withCache(cache).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
-        final String versionId = found.attributes().getCustom().get(KEY_FILE_ID);
+        final String versionId = found.attributes().getFileId();
         assertNotNull(versionId);
         cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -108,7 +107,7 @@ public class DriveTouchFeatureTest extends AbstractDriveTest {
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).withCache(cache).find(test));
         final Path found = new CryptoListService(session, new DriveListService(session, fileid), cryptomator).withCache(cache).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
-        final String versionId = found.attributes().getCustom().get(KEY_FILE_ID);
+        final String versionId = found.attributes().getFileId();
         assertNotNull(versionId);
         cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

@@ -68,7 +68,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.googledrive.DriveFileidProvider.KEY_FILE_ID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -133,7 +132,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         out.close();
         assertTrue(new CryptoFindFeature(session, new DriveFindFeature(session, fileid), cryptomator).find(test));
         final Path found = new CryptoListService(session, new DriveListService(session, fileid), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
-        final String versionId = found.attributes().getCustom().get(KEY_FILE_ID);
+        final String versionId = found.attributes().getFileId();
         assertNotNull(versionId);
         final Cache<Path> cache = new PathCache(1);
         final AttributedList<Path> list = new AttributedList<>();
@@ -145,17 +144,17 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         {
             final PathAttributes attributes = new CryptoAttributesFeature(session, new DriveAttributesFinderFeature(session, fileid), cryptomator).find(test);
             assertEquals(content.length, attributes.getSize());
-            assertEquals(versionId, found.attributes().getVersionId());
+            assertEquals(versionId, found.attributes().getFileId());
         }
         {
             final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test);
             assertEquals(content.length, attributes.getSize());
-            assertEquals(versionId, found.attributes().getVersionId());
+            assertEquals(versionId, found.attributes().getFileId());
         }
         {
             final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).withCache(cache).find(test);
             assertEquals(content.length, attributes.getSize());
-            assertEquals(versionId, found.attributes().getVersionId());
+            assertEquals(versionId, found.attributes().getFileId());
         }
         assertEquals(content.length, cache.get(vault).get(0).attributes().getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

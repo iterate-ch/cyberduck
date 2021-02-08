@@ -45,7 +45,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.onedrive.features.GraphFileIdProvider.KEY_ITEM_ID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -59,7 +58,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final String id = new GraphTouchFeature(session).touch(file, new TransferStatus()).attributes().getCustom().get(KEY_ITEM_ID);
+        final String id = new GraphTouchFeature(session).touch(file, new TransferStatus()).attributes().getFileId();
         final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final byte[] buffer = new byte[32 * 1024];

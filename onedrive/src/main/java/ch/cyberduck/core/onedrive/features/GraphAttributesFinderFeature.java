@@ -35,11 +35,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-
-import static ch.cyberduck.core.onedrive.features.GraphFileIdProvider.KEY_ITEM_ID;
 
 public class GraphAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(GraphAttributesFinderFeature.class);
@@ -119,9 +115,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
     }
 
     private void setId(final PathAttributes attributes, final String id) {
-        final Map<String, String> custom = new HashMap<>(attributes.getCustom());
-        custom.put(KEY_ITEM_ID, id);
-        attributes.setCustom(custom);
+        attributes.setFileId(id);
     }
 
     static Optional<DescriptiveUrl> getWebUrl(final DriveItem.Metadata metadata) {
