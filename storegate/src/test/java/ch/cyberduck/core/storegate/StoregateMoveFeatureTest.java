@@ -48,7 +48,6 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertEquals(new StoregateAttributesFinderFeature(session, nodeid).find(test).getVersionId(),
             new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()).attributes().getVersionId());
-        test.attributes().setVersionId(null);
         assertFalse(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
@@ -66,7 +65,6 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertEquals(new StoregateAttributesFinderFeature(session, nodeid).find(test).getVersionId(),
             new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus().withLockId(lockId), new Delete.DisabledCallback(), new DisabledConnectionCallback()).attributes().getVersionId());
-        test.attributes().setVersionId(null);
         assertFalse(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
@@ -86,7 +84,6 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
         new StoregateTouchFeature(session, nodeid).touch(test, new TransferStatus());
         final Path target = new Path(folder2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        test.attributes().setVersionId(null);
         assertFalse(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
