@@ -59,7 +59,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         if(value.equalsIgnoreCase(String.valueOf(1))) {
             return true;
         }
-        return Boolean.valueOf(value);
+        return Boolean.parseBoolean(value);
     }
 
     @Override

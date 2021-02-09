@@ -97,11 +97,11 @@ public class PathAttributesDictionary {
         attributes.setLockId(dict.stringForKey("Lock Id"));
         final String duplicateObj = dict.stringForKey("Duplicate");
         if(duplicateObj != null) {
-            attributes.setDuplicate(Boolean.valueOf(duplicateObj));
+            attributes.setDuplicate(Boolean.parseBoolean(duplicateObj));
         }
         final String hiddenObj = dict.stringForKey("Hidden");
         if(hiddenObj != null) {
-            attributes.setHidden(Boolean.valueOf(hiddenObj));
+            attributes.setHidden(Boolean.parseBoolean(hiddenObj));
         }
         attributes.setMetadata(Collections.emptyMap());
         attributes.setRegion(dict.stringForKey("Region"));

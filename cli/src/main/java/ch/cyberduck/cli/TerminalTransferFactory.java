@@ -54,7 +54,7 @@ public final class TerminalTransferFactory {
                 }
                 if(input.hasOption(TerminalOptionsBuilder.Params.nochecksum.name())) {
                     final DownloadFilterOptions options = new DownloadFilterOptions();
-                    options.checksum = Boolean.valueOf(input.getOptionValue(TerminalOptionsBuilder.Params.nochecksum.name()));
+                    options.checksum = Boolean.parseBoolean(input.getOptionValue(TerminalOptionsBuilder.Params.nochecksum.name()));
                     ((DownloadTransfer) transfer).withOptions(options);
                 }
                 break;
@@ -62,7 +62,7 @@ public final class TerminalTransferFactory {
                 transfer = new UploadTransfer(host, items);
                 if(input.hasOption(TerminalOptionsBuilder.Params.nochecksum.name())) {
                     final UploadFilterOptions options = new UploadFilterOptions();
-                    options.checksum = Boolean.valueOf(input.getOptionValue(TerminalOptionsBuilder.Params.nochecksum.name()));
+                    options.checksum = Boolean.parseBoolean(input.getOptionValue(TerminalOptionsBuilder.Params.nochecksum.name()));
                     ((UploadTransfer) transfer).withOptions(options);
                 }
                 break;
@@ -75,7 +75,7 @@ public final class TerminalTransferFactory {
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.throttle.name())) {
             try {
-                transfer.setBandwidth(Float.valueOf(input.getOptionValue(TerminalOptionsBuilder.Params.throttle.name())));
+                transfer.setBandwidth(Float.parseFloat(input.getOptionValue(TerminalOptionsBuilder.Params.throttle.name())));
             }
             catch(NumberFormatException ignore) {
                 //
