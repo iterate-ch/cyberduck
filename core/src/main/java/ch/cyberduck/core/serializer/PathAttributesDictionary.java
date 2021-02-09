@@ -94,7 +94,7 @@ public class PathAttributesDictionary {
             attributes.setChecksum(Checksum.parse(dict.stringForKey("Checksum")));
         }
         attributes.setVersionId(dict.stringForKey("Version"));
-        attributes.setFileId(dict.stringForKey("File id"));
+        attributes.setFileId(dict.stringForKey("File Id"));
         attributes.setLockId(dict.stringForKey("Lock Id"));
         final String duplicateObj = dict.stringForKey("Duplicate");
         if(duplicateObj != null) {
