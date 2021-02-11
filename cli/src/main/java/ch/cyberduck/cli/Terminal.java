@@ -28,6 +28,7 @@ import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.googledrive.DriveProtocol;
@@ -275,15 +276,22 @@ public class Terminal {
             else {
                 remote = new CommandLinePathParser(input).parse(uri);
             }
-            switch(action) {
-                case edit:
-                case download:
-                case copy:
-                case synchronize:
-                case delete:
-                    // Set remote file attributes
-                    remote.withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source, new AttributesWorker(remote))));
-                    break;
+            try {
+                // Set remote file attributes of existing file on server
+                remote.withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source, new AttributesWorker(remote))));
+            }
+            catch(TerminalBackgroundException e) {
+                if(e.getCause() instanceof NotfoundException) {
+                    switch(action) {
+                        case edit:
+                        case download:
+                        case copy:
+                        case synchronize:
+                        case delete:
+                            // We expect file on server to exist
+                            throw e;
+                    }
+                }
             }
             if(input.hasOption(TerminalOptionsBuilder.Params.vault.name())) {
                 final Path vault;
@@ -547,12 +555,15 @@ public class Terminal {
             }
             return result;
         }
-        catch(InterruptedException | ExecutionException e) {
+        catch(InterruptedException e) {
             throw new TerminalBackgroundException(e);
+        }
+        catch(ExecutionException e) {
+            throw new TerminalBackgroundException(e.getCause());
         }
     }
 
-    private final class TerminalBackgroundException extends BackgroundException {
+    private static final class TerminalBackgroundException extends BackgroundException {
         public TerminalBackgroundException() {
         }
 
