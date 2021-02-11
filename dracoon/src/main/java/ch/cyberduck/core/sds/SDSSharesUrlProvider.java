@@ -35,7 +35,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateUploadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.DownloadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
-import ch.cyberduck.core.sds.io.swagger.client.model.KeyValueEntry;
 import ch.cyberduck.core.sds.io.swagger.client.model.UploadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
@@ -47,7 +46,6 @@ import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.text.MessageFormat;
-import java.util.List;
 
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.error.CryptoException;
@@ -74,13 +72,8 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
         if(file.isRoot()) {
             return false;
         }
-        final List<KeyValueEntry> configuration = session.configuration();
         switch(type) {
             case download: {
-                if(configuration.stream().anyMatch(entry -> "manageDownloadShare".equals(entry.getKey()) && String.valueOf(false).equals(entry.getValue()))) {
-                    log.warn(String.format("Not supported for file %s with manageDownloadShare=false", file));
-                    return false;
-                }
                 if(file.isDirectory()) {
                     if(nodeid.isEncrypted(containerService.getContainer(file))) {
                         log.warn(String.format("Not supported for file %s in encrypted room", file));
@@ -99,10 +92,6 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 // An upload account can be created for directories and rooms only
                 if(!file.isDirectory()) {
                     log.warn(String.format("Not supported for file %s", file));
-                    return false;
-                }
-                if(configuration.stream().anyMatch(entry -> "manageUploadShare".equals(entry.getKey()) && String.valueOf(false).equals(entry.getValue()))) {
-                    log.warn(String.format("Not supported for file %s with manageUploadShare=false", file));
                     return false;
                 }
                 final Acl.Role role = SDSPermissionsFeature.UPLOAD_SHARE_ROLE;
