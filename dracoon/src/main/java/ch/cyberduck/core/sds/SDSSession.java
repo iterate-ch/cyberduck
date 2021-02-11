@@ -36,7 +36,7 @@ import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.AlgorithmVersionInfo;
 import ch.cyberduck.core.sds.io.swagger.client.model.AlgorithmVersionInfoList;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateKeyPairRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.KeyValueEntry;
+import ch.cyberduck.core.sds.io.swagger.client.model.GeneralSettingsInfo;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
@@ -71,7 +71,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -112,11 +111,14 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPairDeprecated
         = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
 
+    private final ExpiringObjectHolder<GeneralSettingsInfo> generalSettingsInfo
+        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.useracount.ttl"));
+
     private final ExpiringObjectHolder<SoftwareVersionData> softwareVersion
         = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.useracount.ttl"));
 
     private UserKeyPair.Version requiredKeyPairVersion;
-    private final List<KeyValueEntry> configuration = new ArrayList<>();
+
     private final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(this);
 
     public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -299,13 +301,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     .password(password)
                 ));
                 break;
-        }
-        try {
-            configuration.addAll(new ConfigApi(client).requestSystemSettings(StringUtils.EMPTY).getItems());
-        }
-        catch(ApiException e) {
-            // Precondition: Right "Config Read" required.
-            log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e)));
         }
         try {
             final UserAccount account = new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null);
@@ -528,15 +523,25 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 softwareVersion.set(new PublicApi(client).requestSoftwareVersion(null));
             }
             catch(ApiException e) {
-                log.warn(String.format("Failure updating software version. %s", e.getMessage()));
+                log.warn(String.format("Failure %s updating software version", e.getMessage()));
                 throw new SDSExceptionMappingService().map(e);
             }
         }
         return softwareVersion.get();
     }
 
-    public List<KeyValueEntry> configuration() {
-        return configuration;
+    public GeneralSettingsInfo generalSettingsInfo() throws BackgroundException {
+        if(generalSettingsInfo.get() == null) {
+            try {
+                generalSettingsInfo.set(new ConfigApi(client).requestGeneralSettingsInfo(StringUtils.EMPTY));
+            }
+            catch(ApiException e) {
+                // Precondition: Right "Config Read" required.
+                log.warn(String.format("Failure %s reading configuration", e.getMessage()));
+                throw new SDSExceptionMappingService().map(e);
+            }
+        }
+        return generalSettingsInfo.get();
     }
 
     public UserKeyPair.Version requiredKeyPairVersion() {
@@ -559,8 +564,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Upload.class) {
             if(PreferencesFactory.get().getBoolean("sds.upload.s3.enable")) {
-                if(configuration.stream().anyMatch(entry -> "use_s3_storage".equals(entry.getKey()) && String.valueOf(true).equals(entry.getValue()))) {
-                    try {
+                try {
+                    if(this.generalSettingsInfo().isUseS3Storage()) {
                         final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
                         if(matcher.matches()) {
                             if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.22))) >= 0) {
@@ -568,9 +573,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                             }
                         }
                     }
-                    catch(BackgroundException e) {
-                        log.warn(String.format("Failure readig software version. %s", e.getMessage()));
-                    }
+                }
+                catch(BackgroundException e) {
+                    log.warn(String.format("Failure readig software version. %s", e.getMessage()));
                 }
             }
             return (T) new DefaultUploadFeature(new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid)));
