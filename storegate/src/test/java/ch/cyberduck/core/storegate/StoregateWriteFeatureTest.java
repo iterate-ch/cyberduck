@@ -17,9 +17,11 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LockedException;
@@ -66,8 +68,11 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         }
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));
-        final String versionId = new StoregateAttributesFinderFeature(session, nodeid).find(test).getVersionId();
+        PathAttributes attributes = new StoregateAttributesFinderFeature(session, nodeid).find(test);
+        final String versionId = attributes.getVersionId();
         assertNull(versionId);
+        final String nodeId = attributes.getFileId();
+        assertNotNull(nodeId);
         final byte[] compare = new byte[content.length];
         final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -83,7 +88,10 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
         }
-        assertNull(new StoregateAttributesFinderFeature(session, nodeid).find(test).getVersionId());
+        test.attributes().setCustom(Collections.emptyMap());
+        attributes = new StoregateAttributesFinderFeature(session, nodeid).find(test);
+        assertNull(attributes.getVersionId());
+        assertEquals(nodeId, new StoregateIdProvider(session).getFileid(test, new DisabledListProgressListener()));
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

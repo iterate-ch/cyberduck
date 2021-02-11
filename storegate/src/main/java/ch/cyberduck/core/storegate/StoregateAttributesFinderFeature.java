@@ -87,6 +87,8 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
             permission.setUser(permission.getUser().or(Permission.Action.execute));
         }
         attrs.setPermission(permission);
+        attrs.setFileId(f.getId());
+
         return attrs;
     }
 }

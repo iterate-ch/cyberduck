@@ -80,7 +80,6 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {
         final Path test = new Path(String.format("/My files/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
-        test.attributes().setVersionId("n");
         new StoregateDeleteFeature(session, new StoregateIdProvider(session).withCache(cache)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

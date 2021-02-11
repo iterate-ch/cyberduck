@@ -7,6 +7,9 @@ import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.*;
 
 public class PathAttributesTest {
@@ -52,10 +55,13 @@ public class PathAttributesTest {
         attributes.setAcl(acl);
         attributes.setChecksum(new Checksum(HashAlgorithm.crc32, "abcdefab"));
         attributes.setVersionId("v-1");
+        attributes.setFileId("f-1");
         attributes.setDuplicate(true);
         attributes.setRegion("region");
         attributes.setStorageClass("storageClass");
-
+        final Map<String, String> custom = new HashMap<>(attributes.getCustom());
+        custom.put("key", "value");
+        attributes.setCustom(custom);
         final PathAttributes deserialized = new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get()));
         assertEquals(attributes.getSize(), deserialized.getSize());
         assertEquals(attributes.getModificationDate(), deserialized.getModificationDate());
@@ -63,8 +69,10 @@ public class PathAttributesTest {
         assertTrue(CollectionUtils.isEqualCollection(acl.asList(), deserialized.getAcl().asList()));
         assertEquals(attributes.getChecksum(), deserialized.getChecksum());
         assertEquals(attributes.getVersionId(), deserialized.getVersionId());
+        assertEquals(attributes.getFileId(), deserialized.getFileId());
         assertEquals(attributes.isDuplicate(), deserialized.isDuplicate());
         assertEquals(attributes.getRegion(), deserialized.getRegion());
         assertEquals(attributes.getStorageClass(), deserialized.getStorageClass());
+        assertEquals(attributes.getCustom(), deserialized.getCustom());
     }
 }

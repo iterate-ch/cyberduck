@@ -73,7 +73,7 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         final Move move = cryptomator.getFeature(session, Move.class, new DriveMoveFeature(session, fileid));
         // rename file
         final Path fileRenamed = move.move(file, new Path(folder, "f1", EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertEquals(file.attributes().getVersionId(), fileRenamed.attributes().getVersionId());
+        assertEquals(file.attributes().getFileId(), fileRenamed.attributes().getFileId());
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamed));
         assertEquals(fileRenamed.attributes().getVersionId(), new CryptoAttributesFeature(session, new DriveAttributesFinderFeature(session, fileid), cryptomator).find(fileRenamed).getVersionId());

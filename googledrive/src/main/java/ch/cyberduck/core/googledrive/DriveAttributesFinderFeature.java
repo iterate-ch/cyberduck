@@ -46,7 +46,7 @@ import static ch.cyberduck.core.googledrive.AbstractDriveListService.*;
 public class DriveAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(DriveAttributesFinderFeature.class);
 
-    protected static final String DEFAULT_FIELDS = "createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails";
+    protected static final String DEFAULT_FIELDS = "createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails,version";
 
     private final DriveSession session;
     private final DriveFileidProvider fileid;
@@ -92,10 +92,11 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
             }
         }
         final PathAttributes attributes = new PathAttributes();
+        attributes.setFileId(f.getId());
         if(null != f.getExplicitlyTrashed()) {
             if(f.getExplicitlyTrashed()) {
                 // Mark as hidden
-                attributes.setDuplicate(true);
+                attributes.setHidden(true);
             }
         }
         if(null != f.getSize()) {
@@ -103,7 +104,9 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
                 attributes.setSize(f.getSize());
             }
         }
-        attributes.setVersionId(f.getId());
+        if(f.getVersion() != null) {
+            attributes.setVersionId(String.valueOf(f.getVersion()));
+        }
         if(f.getModifiedTime() != null) {
             attributes.setModificationDate(f.getModifiedTime().getValue());
         }

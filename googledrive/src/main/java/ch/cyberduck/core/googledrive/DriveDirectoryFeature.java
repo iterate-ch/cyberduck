@@ -51,7 +51,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
                     new UUIDRandomStringService().random(), new TeamDrive().setName(folder.getName())
                 ).execute();
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                    new PathAttributes(folder.attributes()).withVersionId(execute.getId()));
+                    new PathAttributes(folder.attributes()).withFileId(execute.getId()));
             }
             else {
                 // Identified by the special folder MIME type application/vnd.google-apps.folder

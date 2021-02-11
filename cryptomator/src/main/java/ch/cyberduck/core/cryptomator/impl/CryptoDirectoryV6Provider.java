@@ -79,6 +79,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
             if(new SimplePathPredicate(directory).test(home)) {
                 // The root of the vault is a different target directory
                 attributes.withVersionId(null);
+                attributes.withFileId(null);
             }
             // Remember random directory id for use in vault
             final String id = this.toDirectoryId(session, directory, directoryId);

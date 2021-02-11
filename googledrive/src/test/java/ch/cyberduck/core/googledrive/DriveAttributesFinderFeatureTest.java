@@ -68,7 +68,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
-        assertNotNull(attributes.getVersionId());
+        assertNotNull(attributes.getFileId());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -83,7 +83,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         assertEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
-        assertNotNull(attributes.getVersionId());
+        assertNotNull(attributes.getFileId());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

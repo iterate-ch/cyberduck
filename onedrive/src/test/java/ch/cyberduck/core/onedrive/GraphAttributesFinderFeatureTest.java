@@ -35,8 +35,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
@@ -56,8 +55,9 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
-        assertNotNull(attributes.getVersionId());
+        assertNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
+        assertNotNull(attributes.getFileId());
         new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -71,8 +71,9 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
-        assertNotNull(attributes.getVersionId());
+        assertNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
+        assertNotNull(attributes.getFileId());
         new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

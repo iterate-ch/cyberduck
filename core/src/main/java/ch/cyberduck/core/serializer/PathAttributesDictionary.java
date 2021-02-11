@@ -94,6 +94,7 @@ public class PathAttributesDictionary {
             attributes.setChecksum(Checksum.parse(dict.stringForKey("Checksum")));
         }
         attributes.setVersionId(dict.stringForKey("Version"));
+        attributes.setFileId(dict.stringForKey("File Id"));
         attributes.setLockId(dict.stringForKey("Lock Id"));
         final String duplicateObj = dict.stringForKey("Duplicate");
         if(duplicateObj != null) {
@@ -109,6 +110,10 @@ public class PathAttributesDictionary {
         final Object vaultObj = dict.objectForKey("Vault");
         if(vaultObj != null) {
             attributes.setVault(new PathDictionary(factory).deserialize(vaultObj));
+        }
+        final Map<String, String> customObj = dict.mapForKey("Custom");
+        if(customObj != null) {
+            attributes.setCustom(customObj);
         }
         return attributes;
     }

@@ -43,8 +43,8 @@ public class DriveFileidProvider implements IdProvider {
 
     @Override
     public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            return file.attributes().getVersionId();
+        if(StringUtils.isNotBlank(file.attributes().getFileId())) {
+            return file.attributes().getFileId();
         }
         if(file.isRoot()
             || file.equals(DriveHomeFinderService.MYDRIVE_FOLDER)
@@ -56,8 +56,8 @@ public class DriveFileidProvider implements IdProvider {
             final AttributedList<Path> list = cache.get(file.getParent());
             final Path found = list.filter(new IgnoreTrashedComparator()).find(new SimplePathPredicate(file));
             if(null != found) {
-                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    return this.set(file, found.attributes().getVersionId());
+                if(StringUtils.isNotBlank(file.attributes().getFileId())) {
+                    return this.set(file, found.attributes().getFileId());
                 }
             }
         }
@@ -68,7 +68,7 @@ public class DriveFileidProvider implements IdProvider {
             if(null == found) {
                 throw new NotfoundException(file.getAbsolute());
             }
-            return this.set(file, found.attributes().getVersionId());
+            return this.set(file, found.attributes().getFileId());
         }
         final Path query;
         if(file.getType().contains(Path.Type.placeholder)) {
@@ -82,11 +82,11 @@ public class DriveFileidProvider implements IdProvider {
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
-        return this.set(file, found.attributes().getVersionId());
+        return this.set(file, found.attributes().getFileId());
     }
 
     protected String set(final Path file, final String id) {
-        file.attributes().setVersionId(id);
+        file.attributes().setFileId(id);
         return id;
     }
 

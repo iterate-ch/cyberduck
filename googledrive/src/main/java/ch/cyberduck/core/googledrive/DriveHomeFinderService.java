@@ -29,7 +29,7 @@ public class DriveHomeFinderService extends DefaultHomeFinderService {
 
     public static final Path MYDRIVE_FOLDER
         = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("My Drive", "Google Drive")),
-        EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume), new PathAttributes().withVersionId(ROOT_FOLDER_ID));
+        EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume), new PathAttributes().withFileId(ROOT_FOLDER_ID));
 
     public static final Path SHARED_FOLDER_NAME
         = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Shared with me", "Google Drive")),

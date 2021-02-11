@@ -89,6 +89,11 @@ public class PathAttributes extends Attributes implements Serializable {
     private Encryption.Algorithm encryption = Encryption.Algorithm.NONE;
 
     /**
+     * Unique identifier for a given file. Must remain constant even after updating the file.
+     */
+    private String fileId;
+
+    /**
      * Unique identifier for a given version of a file
      */
     private String versionId;
@@ -169,6 +174,7 @@ public class PathAttributes extends Attributes implements Serializable {
         etag = copy.etag;
         storageClass = copy.storageClass;
         encryption = copy.encryption;
+        fileId = copy.fileId;
         versionId = copy.versionId;
         versions = copy.versions;
         lockId = copy.lockId;
@@ -224,6 +230,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(StringUtils.isNotBlank(versionId)) {
             dict.setStringForKey(versionId, "Version");
         }
+        if(StringUtils.isNotBlank(fileId)) {
+            dict.setStringForKey(fileId, "File Id");
+        }
         if(StringUtils.isNotBlank(lockId)) {
             dict.setStringForKey(lockId, "Lock Id");
         }
@@ -246,6 +255,9 @@ public class PathAttributes extends Attributes implements Serializable {
             else {
                 dict.setObjectForKey(vault, "Vault");
             }
+        }
+        if(!custom.isEmpty()) {
+            dict.setMapForKey(custom, "Custom");
         }
         return dict.getSerialized();
     }
@@ -400,6 +412,25 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public PathAttributes withVersionId(final String versionId) {
         this.setVersionId(versionId);
+        return this;
+    }
+
+    /**
+     * A unique identifier for a file with the same path. Remains constant over its lifetime.
+     *
+     * @return Identifier or null if there is no such concept
+     */
+    public String getFileId() {
+        return fileId;
+    }
+
+    public PathAttributes setFileId(final String fileId) {
+        this.fileId = fileId;
+        return this;
+    }
+
+    public PathAttributes withFileId(final String fileId) {
+        this.setFileId(fileId);
         return this;
     }
 
@@ -574,6 +605,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(!Objects.equals(versionId, that.versionId)) {
             return false;
         }
+        if(!Objects.equals(fileId, that.fileId)) {
+            return false;
+        }
         if(!Objects.equals(revision, that.revision)) {
             return false;
         }
@@ -581,6 +615,9 @@ public class PathAttributes extends Attributes implements Serializable {
             return false;
         }
         if(!Objects.equals(region, that.region)) {
+            return false;
+        }
+        if(!Objects.equals(custom, that.custom)) {
             return false;
         }
         return true;
@@ -594,9 +631,11 @@ public class PathAttributes extends Attributes implements Serializable {
         result = 31 * result + (acl != null ? acl.hashCode() : 0);
         result = 31 * result + (checksum != null ? checksum.hashCode() : 0);
         result = 31 * result + (versionId != null ? versionId.hashCode() : 0);
+        result = 31 * result + (fileId != null ? fileId.hashCode() : 0);
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
         result = 31 * result + (versions != null ? versions.hashCode() : 0);
         result = 31 * result + (region != null ? region.hashCode() : 0);
+        result = 31 * result + (custom != null ? custom.hashCode() : 0);
         return result;
     }
 
@@ -616,13 +655,15 @@ public class PathAttributes extends Attributes implements Serializable {
         sb.append(", storageClass='").append(storageClass).append('\'');
         sb.append(", encryption='").append(encryption).append('\'');
         sb.append(", versionId='").append(versionId).append('\'');
+        sb.append(", fileId='").append(fileId).append('\'');
         sb.append(", lockId='").append(lockId).append('\'');
         sb.append(", duplicate=").append(duplicate);
         sb.append(", hidden=").append(hidden);
         sb.append(", revision=").append(revision);
         sb.append(", versions=").append(versions);
         sb.append(", region='").append(region).append('\'');
-        sb.append(", metadata=").append(metadata);
+        sb.append(", metadata=").append(metadata).append('\'');
+        sb.append(", custom=").append(custom).append('\'');
         sb.append('}');
         return sb.toString();
     }

@@ -48,7 +48,7 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
         for(Path f : list) {
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
             if(!f.isVolume()) {
-                assertNotNull(f.attributes().getVersionId());
+                assertNotNull(f.attributes().getFileId());
             }
         }
     }

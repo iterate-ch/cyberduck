@@ -87,7 +87,7 @@ public class DriveSearchListService extends AbstractDriveListService {
         Path parent = directory;
         while(dequeue.size() > 0) {
             final File p = dequeue.pop();
-            parent = new Path(parent, p.getName(), EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId(p.getId()));
+            parent = new Path(parent, p.getName(), EnumSet.of(Path.Type.directory), new PathAttributes().withFileId(p.getId()));
         }
         tree.add(parent);
         return tree;

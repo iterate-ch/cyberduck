@@ -51,6 +51,7 @@ public class PathAttributesDictionaryTest {
         attributes.setPermission(new Permission(644));
         attributes.setDuplicate(true);
         attributes.setVersionId("v-1");
+        attributes.setFileId("myUniqueId");
         attributes.setModificationDate(System.currentTimeMillis());
         assertEquals(attributes, new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())));
         assertEquals(attributes.hashCode(), new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())).hashCode());
