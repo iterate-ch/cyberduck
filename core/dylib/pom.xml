@@ -125,9 +125,8 @@
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>libjnidispatch</artifactId>
-            <classifier>universal</classifier>
             <type>dylib</type>
-            <version>5.7.0-SNAPSHOT</version>
+            <version>${jna-version}</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
