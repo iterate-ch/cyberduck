@@ -89,7 +89,10 @@
                                         <java8>true</java8>
                                     </configOptions>
                                     <environmentVariables>
-                                        <apiTests>false</apiTests>
+                                        <generateApiTests>false</generateApiTests>
+                                        <generateModelTests>false</generateModelTests>
+                                        <generateApiDocumentation>false</generateApiDocumentation>
+                                        <generateSupportingFiles>false</generateSupportingFiles>
                                     </environmentVariables>
                                 </configuration>
                             </execution>
