@@ -30,7 +30,7 @@ public abstract class AbstractDriveListService extends AbstractListService<Drive
     @Override
     protected Path toPath(final Drive.Metadata metadata, final Path directory) {
         final PathAttributes attributes = new PathAttributes();
-        attributes.setVersionId(metadata.getId());
+        attributes.setFileId(metadata.getId());
         attributes.setSize(metadata.getQuota().getTotal());
         String name = metadata.getName();
         if(StringUtils.isBlank(metadata.getName())) {

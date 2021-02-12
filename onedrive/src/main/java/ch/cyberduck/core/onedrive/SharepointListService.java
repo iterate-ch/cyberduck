@@ -44,7 +44,7 @@ public class SharepointListService extends AbstractSharepointListService {
     public static final String GROUPS_CONTAINER = "Groups";
     public static final String SITES_CONTAINER = "Sites";
 
-    public static final Path DEFAULT_NAME = new Path("/" + DEFAULT_SITE, EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DEFAULT_ID));
+    public static final Path DEFAULT_NAME = new Path("/" + DEFAULT_SITE, EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withFileId(DEFAULT_ID));
     public static final Path DRIVES_NAME = new Path("/" + DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
     public static final Path GROUPS_NAME = new Path("/" + GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
     public static final Path SITES_NAME = new Path("/" + SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
@@ -67,7 +67,7 @@ public class SharepointListService extends AbstractSharepointListService {
             final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new PathAttributes(DEFAULT_NAME.attributes()));
             path.setSymlinkTarget(
                 new Path(SITES_NAME, metadata.getSiteCollection().getHostname(), SITES_NAME.getType(),
-                    new PathAttributes().withVersionId(metadata.getId())));
+                    new PathAttributes().withFileId(metadata.getId())));
             return Optional.of(path);
         }
         catch(IOException ex) {
