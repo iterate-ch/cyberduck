@@ -53,7 +53,7 @@ public class StoregateListService implements ListService {
                 switch(root.getRootFolderType()) {
                     case 0: // My Files
                     case 1: // Common
-                        final PathAttributes attr = new PathAttributes().withVersionId(root.getId());
+                        final PathAttributes attr = new PathAttributes().withFileId(root.getId());
                         attr.setModificationDate(root.getModified().getMillis());
                         attr.setCreationDate(root.getCreated().getMillis());
                         list.add(new Path(PathNormalizer.normalize(root.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume), attr));
