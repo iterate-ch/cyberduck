@@ -48,7 +48,7 @@ public class DropboxRootListService implements ListService {
                 switch(account.getAccountType()) {
                     case BUSINESS:
                         return new DropboxListService(session).list(
-                            directory.withAttributes(new PathAttributes().withVersionId(account.getRootInfo().getRootNamespaceId())),
+                            directory.withAttributes(new PathAttributes().withFileId(account.getRootInfo().getRootNamespaceId())),
                             new HomeNamespaceListProgressListener(listener, account));
                 }
             }
@@ -76,10 +76,10 @@ public class DropboxRootListService implements ListService {
 
         @Override
         public void visit(final AttributedList<Path> list, final int index, final Path file) {
-            if(StringUtils.isBlank(file.attributes().getVersionId())) {
+            if(StringUtils.isBlank(file.attributes().getFileId())) {
                 if(file.isVolume()) {
                     // User home folder does not have a id set
-                    file.attributes().setVersionId(account.getRootInfo().getHomeNamespaceId());
+                    file.attributes().setFileId(account.getRootInfo().getHomeNamespaceId());
                 }
             }
         }

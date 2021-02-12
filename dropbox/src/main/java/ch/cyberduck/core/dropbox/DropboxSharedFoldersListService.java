@@ -63,7 +63,7 @@ public class DropboxSharedFoldersListService implements ListService {
         for(SharedFolderMetadata metadata : result.getEntries()) {
             final Path f = this.parse(directory, metadata);
             // Reference team folder
-            f.attributes().withVersionId(metadata.getSharedFolderId());
+            f.attributes().withFileId(metadata.getSharedFolderId());
             children.add(f);
             listener.chunk(directory, children);
         }
