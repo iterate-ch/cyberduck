@@ -54,17 +54,17 @@ public class B2FileidProvider implements IdProvider {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
         }
-        try {
-            if(cache.isCached(file.getParent())) {
-                final AttributedList<Path> list = cache.get(file.getParent());
-                final Path found = list.find(new SimplePathPredicate(file));
-                if(null != found) {
-                    if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                        // Cache in file attributes
-                        return set(file, found.attributes().getVersionId());
-                    }
+        if(cache.isCached(file.getParent())) {
+            final AttributedList<Path> list = cache.get(file.getParent());
+            final Path found = list.find(new SimplePathPredicate(file));
+            if(null != found) {
+                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
+                    // Cache in file attributes
+                    return set(file, found.attributes().getVersionId());
                 }
             }
+        }
+        try {
             if(containerService.isContainer(file)) {
                 final B2BucketResponse info = session.getClient().listBucket(file.getName());
                 // Cache in file attributes
