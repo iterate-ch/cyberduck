@@ -42,7 +42,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.io.IOException;
 
 import com.google.api.client.http.apache.v2.ApacheHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.storage.Storage;
 
 public class GoogleStorageSession extends HttpSession<Storage> {
@@ -63,7 +63,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         this.transport = new ApacheHttpTransport(configuration.build());
         final UseragentProvider ua = new PreferencesUseragentProvider();
-        return new Storage.Builder(transport, new JacksonFactory(), new UserAgentHttpRequestInitializer(ua))
+        return new Storage.Builder(transport, new GsonFactory(), new UserAgentHttpRequestInitializer(ua))
             .setApplicationName(ua.get())
             .build();
     }

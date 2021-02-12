@@ -62,7 +62,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class OAuth2AuthorizationService {
@@ -72,7 +72,7 @@ public class OAuth2AuthorizationService {
     public static final String CYBERDUCK_REDIRECT_URI = String.format("%s:oauth", PreferencesFactory.get().getProperty("oauth.handler.scheme"));
 
     private final JsonFactory json
-        = new JacksonFactory();
+        = new GsonFactory();
 
     private final String tokenServerUrl;
     private final String authorizationServerUrl;
