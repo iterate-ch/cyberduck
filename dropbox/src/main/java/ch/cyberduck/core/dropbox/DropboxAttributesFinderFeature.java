@@ -62,7 +62,7 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
         if(metadata instanceof FolderMetadata) {
             final FolderMetadata folder = (FolderMetadata) metadata;
             // All shared folders have a shared_folder_id. This value is identical to the namespace ID for that shared folder
-            attributes.setVersionId(folder.getSharedFolderId());
+            attributes.setFileId(folder.getSharedFolderId());
         }
         return attributes;
     }

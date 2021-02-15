@@ -16,7 +16,6 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -29,10 +28,10 @@ import java.util.EnumSet;
 
 public class OneDriveListService implements ListService {
     private static final String MYFILES_ID = "MYFILES_NAME";
-    public static final Path MYFILES_NAME = new Path("/My Files", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(MYFILES_ID));
+    public static final Path MYFILES_NAME = new Path("/My Files", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withFileId(MYFILES_ID));
     public static final SimplePathPredicate MYFILES_PREDICATE = new SimplePathPredicate(MYFILES_NAME);
     private static final String SHARED_ID = "SHARED_NAME";
-    public static final Path SHARED_NAME = new Path("/Shared", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(SHARED_ID));
+    public static final Path SHARED_NAME = new Path("/Shared", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withFileId(SHARED_ID));
     public static final SimplePathPredicate SHARED_PREDICATE = new SimplePathPredicate(SHARED_NAME);
     private final GraphSession session;
 

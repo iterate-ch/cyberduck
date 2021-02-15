@@ -2,31 +2,12 @@ package ch.cyberduck.core.onedrive.features.sharepoint;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DescriptiveUrl;
-
-/*
- * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
-
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.AbstractListService;
 import ch.cyberduck.core.onedrive.AbstractSharepointSession;
-import ch.cyberduck.core.onedrive.SharepointSession;
 
 import org.nuxeo.onedrive.client.Sites;
 import org.nuxeo.onedrive.client.types.Site;
@@ -68,7 +49,7 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
     @Override
     protected Path toPath(final Site.Metadata metadata, final Path directory) {
         final PathAttributes attributes = new PathAttributes();
-        attributes.setVersionId(metadata.getId());
+        attributes.setFileId(metadata.getId());
         attributes.setDisplayname(metadata.getDisplayName());
         attributes.setLink(new DescriptiveUrl(URI.create(metadata.webUrl)));
 

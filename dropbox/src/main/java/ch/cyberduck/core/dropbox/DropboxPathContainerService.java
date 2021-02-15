@@ -54,7 +54,7 @@ public class DropboxPathContainerService extends PathContainerService {
     public String getKey(final Path file) {
         if(PreferencesFactory.get().getBoolean("dropbox.business.enable")) {
             final Path container = this.getContainer(file);
-            final String namespace = container.attributes().getVersionId();
+            final String namespace = container.attributes().getFileId();
             if(StringUtils.isNotBlank(namespace)) {
                 if(file.isRoot()) {
                     // Root
@@ -77,9 +77,9 @@ public class DropboxPathContainerService extends PathContainerService {
     protected PathRoot getNamespace(final Path file) {
         if(PreferencesFactory.get().getBoolean("dropbox.business.enable")) {
             final Path container = this.getContainer(file);
-            if(StringUtils.isNotBlank(container.attributes().getVersionId())) {
+            if(StringUtils.isNotBlank(container.attributes().getFileId())) {
                 // List relative to the namespace id
-                return PathRoot.namespaceId(container.attributes().getVersionId());
+                return PathRoot.namespaceId(container.attributes().getFileId());
             }
         }
         return PathRoot.HOME;

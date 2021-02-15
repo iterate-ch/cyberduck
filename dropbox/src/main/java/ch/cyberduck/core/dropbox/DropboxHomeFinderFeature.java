@@ -48,7 +48,7 @@ public class DropboxHomeFinderFeature extends DefaultHomeFinderService {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Set root namespace %s", account.getRootInfo().getRootNamespaceId()));
                         }
-                        return directory.withAttributes(new PathAttributes().withVersionId(account.getRootInfo().getRootNamespaceId()));
+                        return directory.withAttributes(new PathAttributes().withFileId(account.getRootInfo().getRootNamespaceId()));
                 }
             }
             catch(DbxException e) {
