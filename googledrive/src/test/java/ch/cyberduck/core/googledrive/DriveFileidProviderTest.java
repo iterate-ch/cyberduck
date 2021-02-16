@@ -99,8 +99,8 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
         final Path test2 = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));
         final Path p2 = new DriveTouchFeature(session, fileid).touch(test2, new TransferStatus());
         assertEquals(p2.attributes().getFileId(), fileid.getFileid(test2, new DisabledListProgressListener()));
-        session.getClient().files().delete(p1.attributes().getVersionId());
-        session.getClient().files().delete(p2.attributes().getVersionId());
+        session.getClient().files().delete(p1.attributes().getFileId());
+        session.getClient().files().delete(p2.attributes().getFileId());
     }
 
     @Test
