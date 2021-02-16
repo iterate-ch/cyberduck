@@ -137,11 +137,15 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         // Legacy
         attributes.setModificationDate(node.getUpdatedAt() != null ? node.getUpdatedAt().getMillis() : -1L);
         // Override for >4.22
-        attributes.setModificationDate(node.getTimestampModification() != null ? node.getTimestampModification().getMillis() : -1L);
+        if(node.getTimestampModification() != null) {
+            attributes.setModificationDate(node.getTimestampModification().getMillis());
+        }
         // Legacy
         attributes.setCreationDate(node.getCreatedAt() != null ? node.getCreatedAt().getMillis() : -1L);
         // Override for >4.22
-        attributes.setCreationDate(node.getTimestampCreation() != null ? node.getTimestampCreation().getMillis() : -1L);
+        if(node.getTimestampCreation() != null) {
+            attributes.setCreationDate(node.getTimestampCreation().getMillis());
+        }
         attributes.setSize(node.getSize());
         attributes.setQuota(node.getQuota());
         attributes.setPermission(this.toPermission(node));
