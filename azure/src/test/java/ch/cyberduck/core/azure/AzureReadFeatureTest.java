@@ -31,18 +31,18 @@ public class AzureReadFeatureTest extends AbstractAzureTest {
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
-        new AzureReadFeature(session, null).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new AzureReadFeature(session).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
     public void testReadZeroLength() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session, null).touch(test, new TransferStatus());
-        final InputStream in = new AzureReadFeature(session, null).read(test, new TransferStatus().withLength(0L), new DisabledConnectionCallback());
+        new AzureTouchFeature(session).touch(test, new TransferStatus());
+        final InputStream in = new AzureReadFeature(session).read(test, new TransferStatus().length(0L), new DisabledConnectionCallback());
         assertNotNull(in);
         in.close();
-        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -50,16 +50,16 @@ public class AzureReadFeatureTest extends AbstractAzureTest {
     public void testReadRange() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session, null).touch(test, new TransferStatus());
+        new AzureTouchFeature(session).touch(test, new TransferStatus());
         final byte[] content = new RandomStringGenerator.Builder().build().generate((1000)).getBytes();
-        final OutputStream out = new AzureWriteFeature(session, null).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out = new AzureWriteFeature(session).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new AzureReadFeature(session, null).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new AzureReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -69,7 +69,7 @@ public class AzureReadFeatureTest extends AbstractAzureTest {
         in.close();
         // Test double close
         in.close();
-        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

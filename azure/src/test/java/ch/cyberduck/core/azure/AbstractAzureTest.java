@@ -1,6 +1,4 @@
-package ch.cyberduck.core.azure;
-
-/*
+package ch.cyberduck.core.azure;/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -23,28 +21,13 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.cryptomator.CryptoVault;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.runners.Parameterized;
-
-import static org.junit.Assert.fail;
 
 public class AbstractAzureTest {
 
     protected AzureSession session;
-
-    @Parameterized.Parameters(name = "vaultVersion = {0}")
-    public static Object[] data() {
-        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, 7};
-    }
-
-    @Parameterized.Parameter
-    public int vaultVersion;
 
     @After
     public void disconnect() throws Exception {
@@ -56,15 +39,8 @@ public class AbstractAzureTest {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
             System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
-        session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
-                fail(reason);
-                return null;
-            }
-        }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
-        login.check(session, new DisabledCancelCallback());
+        session = new AzureSession(host);
+        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
     }
 }

@@ -17,6 +17,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -100,7 +101,7 @@ public class AzureSessionTest extends AbstractAzureTest {
                     throw new LoginCanceledException();
                 }
                 try {
-                    return new Credentials(null, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2030-05-20T04:29:30Z&st=2018-05-09T20:29:30Z&spr=https&sig=bMKAZ3tXmX%2B56%2Bb5JhHAeWnMOpMp%2BoYlHDIAZVAjHzE%3D");
+                    return new Credentials(StringUtils.EMPTY, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2030-05-20T04:29:30Z&st=2018-05-09T20:29:30Z&spr=https&sig=bMKAZ3tXmX%2B56%2Bb5JhHAeWnMOpMp%2BoYlHDIAZVAjHzE%3D");
                 }
                 finally {
                     prompt.set(true);
@@ -124,8 +125,6 @@ public class AzureSessionTest extends AbstractAzureTest {
             @Override
             public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals("Login kahy9boj3eib.blob.core.windows.net", title);
-                assertEquals("Login failed. Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature. Please contact your web hosting service provider for assistance.",
-                    reason);
                 return super.prompt(bookmark, username, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
@@ -142,8 +141,6 @@ public class AzureSessionTest extends AbstractAzureTest {
             @Override
             public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals("Login kahy9boj3eib.blob.core.windows.net", title);
-                assertEquals("Login failed. Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature. Please contact your web hosting service provider for assistance.",
-                    reason);
                 return super.prompt(bookmark, username, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),

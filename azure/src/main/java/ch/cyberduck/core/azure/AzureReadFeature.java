@@ -19,89 +19,50 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
-import org.apache.commons.io.input.NullInputStream;
-import org.apache.commons.io.input.ProxyInputStream;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 
-import com.microsoft.azure.storage.AccessCondition;
-import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.blob.BlobInputStream;
-import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.CloudBlob;
-import com.microsoft.azure.storage.core.SR;
+import com.azure.core.exception.HttpResponseException;
+import com.azure.storage.blob.models.BlobRange;
+import com.azure.storage.blob.models.BlobRequestConditions;
 
 public class AzureReadFeature implements Read {
     private static final Logger log = Logger.getLogger(AzureReadFeature.class);
 
     private final AzureSession session;
-
-    private final OperationContext context;
-
     private final PathContainerService containerService
-        = new DirectoryDelimiterPathContainerService();
+        = new AzurePathContainerService();
 
-    public AzureReadFeature(final AzureSession session, final OperationContext context) {
+    public AzureReadFeature(final AzureSession session) {
         this.session = session;
-        this.context = context;
+    }
+
+    @Override
+    public boolean offset(final Path file) {
+        return true;
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getBlobReferenceFromServer(containerService.getKey(file));
-            if(0L == blob.getProperties().getLength()) {
-                return new NullInputStream(0L);
-            }
-            final BlobRequestOptions options = new BlobRequestOptions();
-            options.setConcurrentRequestCount(1);
-            final BlobInputStream in = blob.openInputStream(AccessCondition.generateEmptyCondition(), options, context);
             if(status.isAppend()) {
-                try {
-                    return StreamCopier.skip(in, status.getOffset());
-                }
-                catch(IndexOutOfBoundsException e) {
-                    // If offset is invalid
-                    throw new DefaultExceptionMappingService().map(e);
-                }
+                return session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                    .getBlobClient(containerService.getKey(file)).openInputStream(new BlobRange(status.getOffset()), new BlobRequestConditions());
             }
-            return new ProxyInputStream(in) {
-                @Override
-                protected void handleIOException(final IOException e) throws IOException {
-                    if(StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {
-                        log.warn(String.format("Ignore failure %s", e));
-                        return;
-                    }
-                    final Throwable cause = ExceptionUtils.getRootCause(e);
-                    if(cause instanceof StorageException) {
-                        throw new IOException(e.getMessage(), new AzureExceptionMappingService().map((StorageException) cause));
-                    }
-                    throw e;
-                }
-            };
+            else {
+                return session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                    .getBlobClient(containerService.getKey(file)).openInputStream();
+            }
         }
-        catch(StorageException e) {
+        catch(HttpResponseException e) {
             throw new AzureExceptionMappingService().map("Download {0} failed", e, file);
-        }
-        catch(URISyntaxException e) {
-            throw new NotfoundException(e.getMessage(), e);
         }
     }
 }

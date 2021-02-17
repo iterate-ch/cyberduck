@@ -44,6 +44,11 @@
             <version>${azure-storage-version}</version>
         </dependency>
         <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>cryptomator</artifactId>
             <version>${project.version}</version>

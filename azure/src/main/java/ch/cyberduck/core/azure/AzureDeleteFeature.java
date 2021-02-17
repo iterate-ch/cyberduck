@@ -18,43 +18,32 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.microsoft.azure.storage.AccessCondition;
-import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.DeleteSnapshotsOption;
+import com.azure.core.exception.HttpResponseException;
 
 public class AzureDeleteFeature implements Delete {
 
     private final AzureSession session;
-
-    private final OperationContext context;
-
     private final PathContainerService containerService
-        = new DirectoryDelimiterPathContainerService();
+        = new AzurePathContainerService();
 
-    public AzureDeleteFeature(final AzureSession session, final OperationContext context) {
+    public AzureDeleteFeature(final AzureSession session) {
         this.session = session;
-        this.context = context;
     }
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        final List<Path> containers = new ArrayList<Path>();
+        final List<Path> containers = new ArrayList<>();
         for(Path file : files.keySet()) {
             if(containerService.isContainer(file)) {
                 containers.add(file);
@@ -62,31 +51,21 @@ public class AzureDeleteFeature implements Delete {
             else {
                 callback.delete(file);
                 try {
-                    final BlobRequestOptions options = new BlobRequestOptions();
-                    session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                            .getBlockBlobReference(containerService.getKey(file)).delete(
-                            DeleteSnapshotsOption.INCLUDE_SNAPSHOTS, AccessCondition.generateEmptyCondition(), options, context);
+                    session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                        .getBlobClient(containerService.getKey(file)).delete();
                 }
-                catch(StorageException e) {
+                catch(HttpResponseException e) {
                     throw new AzureExceptionMappingService().map("Cannot delete {0}", e, file);
-                }
-                catch(URISyntaxException e) {
-                    throw new NotfoundException(e.getMessage(), e);
                 }
             }
         }
         for(Path file : containers) {
             callback.delete(file);
             try {
-                final BlobRequestOptions options = new BlobRequestOptions();
-                session.getClient().getContainerReference(containerService.getContainer(file).getName()).delete(
-                        AccessCondition.generateEmptyCondition(), options, context);
+                session.getClient().getBlobContainerClient(containerService.getContainer(file).getName()).delete();
             }
-            catch(StorageException e) {
+            catch(HttpResponseException e) {
                 throw new AzureExceptionMappingService().map("Cannot delete {0}", e, file);
-            }
-            catch(URISyntaxException e) {
-                throw new NotfoundException(e.getMessage(), e);
             }
         }
     }

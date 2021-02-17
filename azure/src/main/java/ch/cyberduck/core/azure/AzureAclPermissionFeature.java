@@ -19,38 +19,34 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.jets3t.service.acl.Permission;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.blob.BlobContainerPermissions;
-import com.microsoft.azure.storage.blob.BlobContainerPublicAccessType;
-import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.azure.core.exception.HttpResponseException;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.models.BlobContainerAccessPolicies;
+import com.azure.storage.blob.models.PublicAccessType;
 
 /**
- * By default, a container and any blobs within it may be accessed only by the owner of the storage account.
- * If you want to give anonymous users read permissions to a container and its blobs, you can set the container
- * permissions to allow public access. Anonymous users can read blobs within a publicly accessible container without authenticating the request.
- * Containers provide the following options for managing container access:
+ * By default, a container and any blobs within it may be accessed only by the owner of the storage account. If you want
+ * to give anonymous users read permissions to a container and its blobs, you can set the container permissions to allow
+ * public access. Anonymous users can read blobs within a publicly accessible container without authenticating the
+ * request. Containers provide the following options for managing container access:
  * <p/>
- * Full public read access: Container and blob data can be read via anonymous request. Clients can enumerate
- * blobs within the container via anonymous request, but cannot enumerate containers within the storage account.
+ * Full public read access: Container and blob data can be read via anonymous request. Clients can enumerate blobs
+ * within the container via anonymous request, but cannot enumerate containers within the storage account.
  * <p/>
- * Public read access for blobs only: Blob data within this container can be read via anonymous request, but
- * container data is not available. Clients cannot enumerate blobs within the container via anonymous request.
+ * Public read access for blobs only: Blob data within this container can be read via anonymous request, but container
+ * data is not available. Clients cannot enumerate blobs within the container via anonymous request.
  * <p/>
  * No public read access: Container and blob data can be read by the account owner only.
  */
@@ -58,26 +54,23 @@ public class AzureAclPermissionFeature extends DefaultAclFeature implements AclP
 
     private final AzureSession session;
 
-    private final OperationContext context;
-
     private final PathContainerService containerService
-        = new DirectoryDelimiterPathContainerService();
+        = new AzurePathContainerService();
 
-    public AzureAclPermissionFeature(final AzureSession session, final OperationContext context) {
+    public AzureAclPermissionFeature(final AzureSession session) {
         this.session = session;
-        this.context = context;
     }
 
     @Override
     public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
         return Collections.singletonList(
-                new Acl.Role(Permission.PERMISSION_READ.toString()));
+            new Acl.Role(Permission.PERMISSION_READ.toString()));
     }
 
     @Override
     public List<Acl.User> getAvailableAclUsers() {
         return new ArrayList<Acl.User>(Collections.singletonList(
-                new Acl.GroupUser(Acl.GroupUser.EVERYONE, false))
+            new Acl.GroupUser(Acl.GroupUser.EVERYONE, false))
         );
     }
 
@@ -85,22 +78,19 @@ public class AzureAclPermissionFeature extends DefaultAclFeature implements AclP
     public Acl getPermission(final Path file) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
-                final CloudBlobContainer container = session.getClient()
-                        .getContainerReference(containerService.getContainer(file).getName());
-                final BlobContainerPermissions permissions = container.downloadPermissions(null, null, context);
+                final BlobContainerClient client = session.getClient()
+                    .getBlobContainerClient(containerService.getContainer(file).getName());
+                final BlobContainerAccessPolicies accessPolicy = client.getAccessPolicy();
                 final Acl acl = new Acl();
-                if(permissions.getPublicAccess().equals(BlobContainerPublicAccessType.BLOB)
-                        || permissions.getPublicAccess().equals(BlobContainerPublicAccessType.CONTAINER)) {
+                if(accessPolicy.getBlobAccessType().equals(PublicAccessType.BLOB)
+                    || accessPolicy.getBlobAccessType().equals(PublicAccessType.CONTAINER)) {
                     acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ));
                 }
                 return acl;
             }
             return Acl.EMPTY;
         }
-        catch(URISyntaxException e) {
-            throw new NotfoundException(e.getMessage(), e);
-        }
-        catch(StorageException e) {
+        catch(HttpResponseException e) {
             throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
@@ -109,23 +99,18 @@ public class AzureAclPermissionFeature extends DefaultAclFeature implements AclP
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
-                final CloudBlobContainer container = session.getClient()
-                        .getContainerReference(containerService.getContainer(file).getName());
-                final BlobContainerPermissions permissions = container.downloadPermissions(null, null, context);
+                final BlobContainerClient client = session.getClient()
+                    .getBlobContainerClient(containerService.getContainer(file).getName());
                 for(Acl.UserAndRole userAndRole : acl.asList()) {
                     if(userAndRole.getUser() instanceof Acl.GroupUser) {
                         if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
-                            permissions.setPublicAccess(BlobContainerPublicAccessType.BLOB);
+                            client.setAccessPolicy(PublicAccessType.BLOB, Collections.emptyList());
                         }
                     }
                 }
-                container.uploadPermissions(permissions, null, null, context);
             }
         }
-        catch(URISyntaxException e) {
-            throw new NotfoundException(e.getMessage(), e);
-        }
-        catch(StorageException e) {
+        catch(HttpResponseException e) {
             throw new AzureExceptionMappingService().map("Cannot change permissions of {0}", e, file);
         }
     }

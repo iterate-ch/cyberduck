@@ -19,65 +19,52 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.time.Duration;
 
-import com.microsoft.azure.storage.AccessCondition;
-import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.CloudBlob;
+import com.azure.core.exception.HttpResponseException;
+import com.azure.core.util.polling.SyncPoller;
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.models.BlobCopyInfo;
+import com.azure.storage.blob.options.BlobBeginCopyOptions;
 
 public class AzureCopyFeature implements Copy {
     private static final Logger log = Logger.getLogger(AzureCopyFeature.class);
 
     private final AzureSession session;
 
-    private final OperationContext context;
-
     private final PathContainerService containerService
-        = new DirectoryDelimiterPathContainerService();
+        = new AzurePathContainerService();
 
-    public AzureCopyFeature(final AzureSession session, final OperationContext context) {
+    public AzureCopyFeature(final AzureSession session) {
         this.session = session;
-        this.context = context;
     }
 
     @Override
     public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final CloudBlob target = session.getClient().getContainerReference(containerService.getContainer(copy).getName())
-                .getAppendBlobReference(containerService.getKey(copy));
-            final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(source).getName())
-                .getBlobReferenceFromServer(containerService.getKey(source));
-            final BlobRequestOptions options = new BlobRequestOptions();
-            options.setStoreBlobContentMD5(new HostPreferences(session.getHost()).getBoolean("azure.upload.md5"));
-            final URI s = session.getHost().getCredentials().isTokenAuthentication() ?
-                URI.create(blob.getUri().toString() + session.getHost().getCredentials().getToken()) : blob.getUri();
-            final String id = target.startCopy(s,
-                AccessCondition.generateEmptyCondition(), AccessCondition.generateEmptyCondition(), options, context);
+            final BlobClient client = session.getClient().getBlobContainerClient(containerService.getContainer(copy).getName())
+                .getBlobClient(containerService.getKey(copy));
+            final SyncPoller<BlobCopyInfo, Void> poller = client.beginCopy(
+                new BlobBeginCopyOptions(session.getClient().getBlobContainerClient(containerService.getContainer(source).getName())
+                    .getBlobClient(containerService.getKey(source)).getBlobUrl()).setPollInterval(Duration.ofSeconds(1)));
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Started copy for %s with copy operation ID %s", copy, id));
+                log.debug(String.format("Started copy for %s", copy));
             }
+            poller.waitForCompletion();
             // Copy original file attributes
-            return copy.withAttributes(source.attributes());
+            return new Path(copy.getParent(), copy.getName(), copy.getType(), new PathAttributes(source.attributes()));
         }
-        catch(StorageException e) {
+        catch(HttpResponseException e) {
             throw new AzureExceptionMappingService().map("Cannot copy {0}", e, source);
-        }
-        catch(URISyntaxException e) {
-            throw new NotfoundException(e.getMessage(), e);
         }
     }
 

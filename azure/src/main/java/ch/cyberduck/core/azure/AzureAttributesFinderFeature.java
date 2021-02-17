@@ -18,86 +18,85 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
 
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.microsoft.azure.storage.AccessCondition;
-import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.blob.BlobContainerProperties;
-import com.microsoft.azure.storage.blob.BlobProperties;
-import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.CloudBlob;
-import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.azure.core.exception.HttpResponseException;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.models.BlobContainerProperties;
+import com.azure.storage.blob.models.BlobItemProperties;
+import com.azure.storage.blob.models.BlobProperties;
 
 public class AzureAttributesFinderFeature implements AttributesFinder {
 
     private final AzureSession session;
-    private final OperationContext context;
+
     private final PathContainerService containerService
-        = new DirectoryDelimiterPathContainerService();
+        = new AzurePathContainerService();
 
     public static final String KEY_BLOB_TYPE = "blob_type";
 
-    public AzureAttributesFinderFeature(final AzureSession session, final OperationContext context) {
+    public AzureAttributesFinderFeature(final AzureSession session) {
         this.session = session;
-        this.context = context;
     }
 
     @Override
-    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public PathAttributes find(final Path file) throws BackgroundException {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
         try {
             if(containerService.isContainer(file)) {
                 final PathAttributes attributes = new PathAttributes();
-                final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
-                container.downloadAttributes(null, null, context);
-                final BlobContainerProperties properties = container.getProperties();
-                attributes.setETag(properties.getEtag());
-                attributes.setModificationDate(properties.getLastModified().getTime());
+                final BlobContainerClient client = session.getClient().getBlobContainerClient(containerService.getContainer(file).getName());
+                final BlobContainerProperties properties = client.getProperties();
+                attributes.setETag(properties.getETag());
+                attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
                 return attributes;
             }
             else {
-                final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlobReferenceFromServer(containerService.getKey(file));
-                final BlobRequestOptions options = new BlobRequestOptions();
-                blob.downloadAttributes(AccessCondition.generateEmptyCondition(), options, context);
-                final BlobProperties properties = blob.getProperties();
-                final PathAttributes attributes = new PathAttributes();
-                attributes.setSize(properties.getLength());
-                attributes.setModificationDate(properties.getLastModified().getTime());
-                if(StringUtils.isNotBlank(properties.getContentMD5())) {
-                    attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(properties.getContentMD5()))));
-                }
-                attributes.setETag(properties.getEtag());
-                final Map<String, String> custom = new HashMap<>();
-                custom.put(AzureAttributesFinderFeature.KEY_BLOB_TYPE, properties.getBlobType().name());
-                attributes.setCustom(custom);
-                return attributes;
+                final BlobProperties properties = session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                    .getBlobClient(containerService.getKey(file)).getBlockBlobClient().getProperties();
+                return this.toAttributes(properties);
             }
         }
-        catch(StorageException e) {
+        catch(HttpResponseException e) {
             throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
-        catch(URISyntaxException e) {
-            throw new NotfoundException(e.getMessage(), e);
+    }
+
+    protected PathAttributes toAttributes(final BlobProperties properties) {
+        final PathAttributes attributes = new PathAttributes();
+        attributes.setSize(properties.getBlobSize());
+        attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
+        if(properties.getContentMd5() != null) {
+            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(properties.getContentMd5()))));
         }
+        attributes.setETag(properties.getETag());
+        final Map<String, String> custom = new HashMap<>();
+        custom.put(AzureAttributesFinderFeature.KEY_BLOB_TYPE, properties.getBlobType().name());
+        attributes.setCustom(custom);
+        return attributes;
+    }
+
+    protected PathAttributes toAttributes(final BlobItemProperties properties) {
+        final PathAttributes attributes = new PathAttributes();
+        attributes.setSize(properties.getContentLength());
+        attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
+        attributes.setETag(properties.getETag());
+        if(properties.getContentMd5() != null) {
+            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(properties.getContentMd5()))));
+        }
+        return attributes;
     }
 }

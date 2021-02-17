@@ -18,67 +18,60 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
-import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.net.URISyntaxException;
 import java.util.EnumSet;
 
-import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.azure.core.exception.HttpResponseException;
 
 public class AzureDirectoryFeature implements Directory<Void> {
 
     private final PathContainerService containerService
-        = new DirectoryDelimiterPathContainerService();
+        = new AzurePathContainerService();
 
     private final AzureSession session;
-    private final OperationContext context;
 
     private Write<Void> writer;
 
-    public AzureDirectoryFeature(final AzureSession session, final OperationContext context) {
+    public AzureDirectoryFeature(final AzureSession session) {
         this.session = session;
-        this.context = context;
-        this.writer = new AzureWriteFeature(session, context);
+        this.writer = new AzureWriteFeature(session);
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            final BlobRequestOptions options = new BlobRequestOptions();
             if(containerService.isContainer(folder)) {
                 // Container name must be lower case.
-                final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(folder).getName());
-                container.create(options, context);
-                return folder.withAttributes(new AzureAttributesFinderFeature(session, context).find(folder));
+                session.getClient().getBlobContainerClient(containerService.getContainer(folder).getName()).create();
+                return new Path(folder.getParent(), folder.getName(), folder.getType(), new AzureAttributesFinderFeature(session).find(folder));
             }
             else {
                 status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status));
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
-                new DefaultStreamCloser().close(writer.write(folder.withType(type), status, new DisabledConnectionCallback()));
-                return folder.withAttributes(new AzureAttributesFinderFeature(session, context).find(folder));
+                final Path placeholder = new Path(folder.getParent(), folder.getName(), type,
+                    new PathAttributes(folder.attributes()));
+                new DefaultStreamCloser().close(writer.write(placeholder, status, new DisabledConnectionCallback()));
+                return new Path(placeholder.getParent(), placeholder.getName(), placeholder.getType(), new AzureAttributesFinderFeature(session).find(placeholder));
             }
         }
-        catch(URISyntaxException e) {
-            throw new NotfoundException(e.getMessage(), e);
+        catch(IllegalArgumentException e) {
+            throw new InteroperabilityException();
         }
-        catch(StorageException e) {
+        catch(HttpResponseException e) {
             throw new AzureExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
     }
@@ -96,7 +89,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 if(StringUtils.length(name) < 3) {
                     return false;
                 }
-                return StringUtils.isAlphanumeric(RegExUtils.removeAll(name, "-"));
+                return StringUtils.isAlphanumeric(StringUtils.removeAll(name, "-"));
             }
         }
         return true;

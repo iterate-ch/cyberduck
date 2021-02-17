@@ -18,73 +18,60 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.azure.apache.ApacheHttpClient;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ListCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Logging;
-import ch.cyberduck.core.features.Metadata;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.PromptUrlProvider;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
+import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
-import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.HttpsURLConnection;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.List;
 
-import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.RetryNoRetry;
-import com.microsoft.azure.storage.SendingRequestEvent;
-import com.microsoft.azure.storage.StorageCredentials;
-import com.microsoft.azure.storage.StorageCredentialsAccountAndKey;
-import com.microsoft.azure.storage.StorageCredentialsSharedAccessSignature;
-import com.microsoft.azure.storage.StorageEvent;
-import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.CloudBlobClient;
+import com.azure.core.credential.AzureSasCredential;
+import com.azure.core.exception.HttpResponseException;
+import com.azure.core.http.HttpPipelineBuilder;
+import com.azure.core.http.HttpPipelineCallContext;
+import com.azure.core.http.HttpPipelineNextPolicy;
+import com.azure.core.http.HttpResponse;
+import com.azure.core.http.policy.AddDatePolicy;
+import com.azure.core.http.policy.AddHeadersPolicy;
+import com.azure.core.http.policy.AzureSasCredentialPolicy;
+import com.azure.core.http.policy.HttpPipelinePolicy;
+import com.azure.core.http.policy.RequestIdPolicy;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.blob.models.AccountKind;
+import com.azure.storage.common.StorageSharedKeyCredential;
+import com.azure.storage.common.implementation.Constants;
+import com.azure.storage.common.policy.MetadataValidationPolicy;
+import com.azure.storage.common.policy.RequestRetryOptions;
+import com.azure.storage.common.policy.RequestRetryPolicy;
+import com.azure.storage.common.policy.ResponseValidationPolicyBuilder;
+import com.azure.storage.common.policy.StorageSharedKeyCredentialPolicy;
+import reactor.core.publisher.Mono;
 
-public class AzureSession extends SSLSession<CloudBlobClient> {
+public class AzureSession extends HttpSession<BlobServiceClient> {
     private static final Logger log = Logger.getLogger(AzureSession.class);
 
-    private final OperationContext context
-        = new OperationContext();
-
-    private StorageEvent<SendingRequestEvent> listener;
+    private final CredentialsHttpPipelinePolicy authenticator = new CredentialsHttpPipelinePolicy();
 
     public AzureSession(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -94,150 +81,122 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         super(h, trust, key);
     }
 
-    static {
-        HttpsURLConnection.setDefaultSSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(new DisabledX509TrustManager(), new DefaultX509KeyManager()));
-        HttpsURLConnection.setDefaultHostnameVerifier(new DisabledX509HostnameVerifier());
-        HttpsURLConnection.setFollowRedirects(true);
+    @Override
+    public BlobServiceClient connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) throws BackgroundException {
+        final HttpClientBuilder pool = builder.build(proxy, this, prompt);
+        final BlobServiceClientBuilder builder = new BlobServiceClientBuilder();
+        // Pseudo credentials to pass internal validation
+        builder.credential(new StorageSharedKeyCredential(StringUtils.EMPTY, StringUtils.EMPTY));
+        final List<HttpPipelinePolicy> policies = new ArrayList<>();
+        policies.add(new RequestIdPolicy());
+        policies.add(new RequestRetryPolicy(new RequestRetryOptions()));
+        policies.add(new AddDatePolicy());
+        policies.add(new AddHeadersPolicy(new com.azure.core.http.HttpHeaders(
+            Collections.singletonMap(HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
+        ));
+        policies.add(new MetadataValidationPolicy());
+        policies.add(authenticator);
+        policies.add(new ResponseValidationPolicyBuilder()
+            .addOptionalEcho(Constants.HeaderConstants.CLIENT_REQUEST_ID)
+            .addOptionalEcho(Constants.HeaderConstants.ENCRYPTION_KEY_SHA256)
+            .build());
+        builder.pipeline(new HttpPipelineBuilder()
+            .httpClient(new ApacheHttpClient(pool))
+            .policies(policies.toArray(new HttpPipelinePolicy[0]))
+            .build());
+        builder.endpoint(String.format("%s://%s", Scheme.https, host.getHostname()));
+        return builder.buildClient();
     }
 
-    @Override
-    protected CloudBlobClient connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        try {
-            final StorageCredentials credentials;
-            if(host.getCredentials().isTokenAuthentication()) {
-                credentials = new StorageCredentialsSharedAccessSignature(host.getCredentials().getToken());
+    private static final class CredentialsHttpPipelinePolicy implements HttpPipelinePolicy {
+        private Credentials credentials = new Credentials();
+
+        public void setCredentials(final Credentials credentials) {
+            this.credentials = credentials;
+        }
+
+        @Override
+        public Mono<HttpResponse> process(final HttpPipelineCallContext context, final HttpPipelineNextPolicy next) {
+            if(credentials.isTokenAuthentication()) {
+                return new AzureSasCredentialPolicy(new AzureSasCredential(
+                    credentials.getToken())).process(context, next);
             }
             else {
-                credentials = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null");
+                return new StorageSharedKeyCredentialPolicy(new StorageSharedKeyCredential(
+                    credentials.getUsername(), credentials.getPassword())).process(context, next);
             }
-            // Client configured with no credentials
-            final URI uri = new URI(String.format("%s://%s", Scheme.https, host.getHostname()));
-            final CloudBlobClient client = new CloudBlobClient(uri, credentials);
-            client.setDirectoryDelimiter(String.valueOf(Path.DELIMITER));
-            final BlobRequestOptions options = new BlobRequestOptions();
-            options.setRetryPolicyFactory(new RetryNoRetry());
-            context.setLoggingEnabled(true);
-            context.setLogger(LoggerFactory.getLogger(log.getName()));
-            context.setUserHeaders(new HashMap<String, String>(Collections.singletonMap(
-                HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
-            );
-            context.getSendingRequestEventHandler().addListener(listener = new StorageEvent<SendingRequestEvent>() {
-                @Override
-                public void eventOccurred(final SendingRequestEvent event) {
-                    if(event.getConnectionObject() instanceof HttpsURLConnection) {
-                        final HttpsURLConnection connection = (HttpsURLConnection) event.getConnectionObject();
-                        connection.setSSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(trust, key));
-                        connection.setHostnameVerifier(new DisabledX509HostnameVerifier());
-                    }
-                }
-            });
-            switch(proxy.getType()) {
-                case SOCKS: {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Configured to use SOCKS proxy %s", proxy));
-                    }
-                    final java.net.Proxy socksProxy = new java.net.Proxy(
-                        java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
-                    context.setProxy(socksProxy);
-                    break;
-                }
-                case HTTP:
-                case HTTPS: {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Configured to use HTTP proxy %s", proxy));
-                    }
-                    final java.net.Proxy httpProxy = new java.net.Proxy(
-                        java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
-                    context.setProxy(httpProxy);
-                    break;
-                }
-            }
-            return client;
-        }
-        catch(URISyntaxException e) {
-            throw new LoginFailureException(e.getMessage(), e);
         }
     }
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final StorageCredentials credentials = client.getCredentials();
-        if(host.getCredentials().isPasswordAuthentication()) {
-            // Update credentials
-            ((StorageCredentialsAccountAndKey) credentials).updateKey(host.getCredentials().getPassword());
-        }
-        else if(host.getCredentials().isTokenAuthentication()) {
-            if(!StringUtils.equals(host.getCredentials().getToken(), ((StorageCredentialsSharedAccessSignature) credentials).getToken())) {
-                this.interrupt();
-                this.open(proxy, new DisabledHostKeyCallback(), prompt, cancel);
+        // Keep copy of credentials
+        authenticator.setCredentials(new Credentials(host.getCredentials()));
+        try {
+            final AccountKind kind = client.getAccountInfo().getAccountKind();
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Connected to account of kind %s", kind));
             }
         }
-        // Fetch reference for directory to check login credentials
-        try {
-            this.getFeature(ListService.class).list(new DefaultHomeFinderService(this).find(), new DisabledListProgressListener() {
-                @Override
-                public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
-                    throw new ListCanceledException(list);
-                }
-            });
-        }
-        catch(ListCanceledException e) {
-            // Success
+        catch(HttpResponseException e) {
+            throw new AzureExceptionMappingService().map(e);
         }
     }
 
     @Override
     protected void logout() {
-        context.getSendingRequestEventHandler().removeListener(listener);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new AzureListService(this, context);
+            return (T) new AzureListService(this);
         }
         if(type == Read.class) {
-            return (T) new AzureReadFeature(this, context);
+            return (T) new AzureReadFeature(this);
         }
         if(type == Write.class) {
-            return (T) new AzureWriteFeature(this, context);
+            return (T) new AzureWriteFeature(this);
         }
         if(type == Directory.class) {
-            return (T) new AzureDirectoryFeature(this, context);
+            return (T) new AzureDirectoryFeature(this);
         }
         if(type == Delete.class) {
-            return (T) new AzureDeleteFeature(this, context);
+            return (T) new AzureDeleteFeature(this);
         }
         if(type == Headers.class) {
-            return (T) new AzureMetadataFeature(this, context);
+            return (T) new AzureMetadataFeature(this);
         }
         if(type == Metadata.class) {
-            return (T) new AzureMetadataFeature(this, context);
+            return (T) new AzureMetadataFeature(this);
         }
         if(type == Find.class) {
-            return (T) new AzureFindFeature(this, context);
+            return (T) new AzureFindFeature(this);
         }
         if(type == AttributesFinder.class) {
-            return (T) new AzureAttributesFinderFeature(this, context);
+            return (T) new AzureAttributesFinderFeature(this);
         }
         if(type == Logging.class) {
-            return (T) new AzureLoggingFeature(this, context);
+            return (T) new AzureLoggingFeature(this);
+        }
+        if(type == Home.class) {
+            return (T) new AzureHomeFinderService(this);
         }
         if(type == Move.class) {
-            return (T) new AzureMoveFeature(this, context);
+            return (T) new AzureMoveFeature(this);
         }
         if(type == Copy.class) {
-            return (T) new AzureCopyFeature(this, context);
+            return (T) new AzureCopyFeature(this);
         }
         if(type == Touch.class) {
-            return (T) new AzureTouchFeature(this, context);
+            return (T) new AzureTouchFeature(this);
         }
         if(type == PromptUrlProvider.class) {
             return (T) new AzureUrlProvider(this);
         }
         if(type == AclPermission.class) {
-            return (T) new AzureAclPermissionFeature(this, context);
+            return (T) new AzureAclPermissionFeature(this);
         }
         return super._getFeature(type);
     }

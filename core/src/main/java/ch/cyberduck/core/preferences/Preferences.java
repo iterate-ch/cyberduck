@@ -784,9 +784,9 @@ public abstract class Preferences implements Locales, PreferencesReader {
 
         this.setDefault("azure.metadata.default", StringUtils.EMPTY);
         this.setDefault("azure.listing.chunksize", String.valueOf(1000));
-        this.setDefault("azure.upload.md5", String.valueOf(false));
         this.setDefault("azure.upload.snapshot", String.valueOf(false));
-        this.setDefault("azure.upload.blobtype", "APPEND_BLOB");
+//        this.setDefault("azure.upload.blobtype", "APPEND_BLOB");
+        this.setDefault("azure.upload.blobtype", "BLOCK_BLOB");
 
         // Legacy authentication
 //        this.setDefault("openstack.authentication.context", "/v1.0");

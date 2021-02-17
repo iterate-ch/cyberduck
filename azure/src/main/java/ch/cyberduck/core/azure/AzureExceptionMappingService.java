@@ -30,22 +30,27 @@ import ch.cyberduck.core.ssl.SSLExceptionMappingService;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.net.ssl.SSLException;
-import java.net.UnknownHostException;
+import java.util.Map;
 
-import com.microsoft.azure.storage.StorageException;
+import com.azure.core.exception.HttpResponseException;
 
-public class AzureExceptionMappingService extends AbstractExceptionMappingService<StorageException> {
+public class AzureExceptionMappingService extends AbstractExceptionMappingService<HttpResponseException> {
 
     @Override
-    public BackgroundException map(final StorageException failure) {
+    public BackgroundException map(final HttpResponseException failure) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, failure.getMessage());
-        if(ExceptionUtils.getRootCause(failure) instanceof UnknownHostException) {
-            return new NotfoundException(buffer.toString(), failure);
-        }
-        switch(failure.getHttpStatusCode()) {
+        switch(failure.getResponse().getStatusCode()) {
             case 403:
+                if(failure.getValue() instanceof Map) {
+                    final Map messages = (Map) failure.getValue();
+                    if(messages.containsKey("Message")) {
+                        this.append(buffer, messages.get("Message").toString());
+                    }
+                }
                 return new LoginFailureException(buffer.toString(), failure);
+        }
+        this.append(buffer, failure.getMessage());
+        switch(failure.getResponse().getStatusCode()) {
             case 404:
                 return new NotfoundException(buffer.toString(), failure);
             case 304:

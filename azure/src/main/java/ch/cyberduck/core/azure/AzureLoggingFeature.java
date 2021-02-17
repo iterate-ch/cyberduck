@@ -26,39 +26,34 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import com.microsoft.azure.storage.LoggingOperations;
-import com.microsoft.azure.storage.LoggingProperties;
-import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.ServiceProperties;
-import com.microsoft.azure.storage.StorageException;
+import com.azure.core.exception.HttpResponseException;
+import com.azure.storage.blob.models.BlobAnalyticsLogging;
+import com.azure.storage.blob.models.BlobServiceProperties;
 
 public class AzureLoggingFeature implements Logging {
 
     private final AzureSession session;
 
-    private final OperationContext context;
-
-    public AzureLoggingFeature(final AzureSession session, final OperationContext context) {
+    public AzureLoggingFeature(final AzureSession session) {
         this.session = session;
-        this.context = context;
     }
 
     @Override
     public LoggingConfiguration getConfiguration(final Path container) throws BackgroundException {
         try {
-            final ServiceProperties properties = session.getClient().downloadServiceProperties(null, context);
+            final BlobServiceProperties properties = session.getClient().getProperties();
             final LoggingConfiguration configuration = new LoggingConfiguration(
-                    !properties.getLogging().getLogOperationTypes().isEmpty(),
-                    "$logs"
+                properties.getLogging().isRead() || properties.getLogging().isWrite() || properties.getLogging().isDelete(),
+                "$logs"
             );
             // When you have configured Storage Logging to log request data from your storage account, it saves the log data
             // to blobs in a container named $logs in your storage account.
             configuration.setContainers(Collections.singletonList(
-                    new Path("/$logs", EnumSet.of(Path.Type.volume, Path.Type.directory)))
+                new Path("/$logs", EnumSet.of(Path.Type.volume, Path.Type.directory)))
             );
             return configuration;
         }
-        catch(StorageException e) {
+        catch(HttpResponseException e) {
             throw new AzureExceptionMappingService().map("Cannot read container configuration", e);
         }
     }
@@ -66,18 +61,15 @@ public class AzureLoggingFeature implements Logging {
     @Override
     public void setConfiguration(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
         try {
-            final ServiceProperties properties = session.getClient().downloadServiceProperties(null, context);
-            final LoggingProperties l = new LoggingProperties();
-            if(configuration.isEnabled()) {
-                l.setLogOperationTypes(EnumSet.allOf(LoggingOperations.class));
-            }
-            else {
-                l.setLogOperationTypes(EnumSet.noneOf(LoggingOperations.class));
-            }
-            properties.setLogging(l);
-            session.getClient().uploadServiceProperties(properties, null, context);
+            final BlobServiceProperties properties = session.getClient().getProperties();
+            properties.setLogging(new BlobAnalyticsLogging()
+                .setDelete(configuration.isEnabled())
+                .setRead(configuration.isEnabled())
+                .setWrite(configuration.isEnabled())
+            );
+            session.getClient().setProperties(properties);
         }
-        catch(StorageException e) {
+        catch(HttpResponseException e) {
             throw new AzureExceptionMappingService().map("Failure to write attributes of {0}", e, container);
         }
     }

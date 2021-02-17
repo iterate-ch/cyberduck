@@ -28,19 +28,14 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 
-import com.microsoft.azure.storage.OperationContext;
-
 public class AzureTouchFeature implements Touch<Void> {
 
     private final AzureSession session;
-    private final OperationContext context;
-
     private Write<Void> writer;
 
-    public AzureTouchFeature(final AzureSession session, final OperationContext context) {
+    public AzureTouchFeature(final AzureSession session) {
         this.session = session;
-        this.context = context;
-        this.writer = new AzureWriteFeature(session, context);
+        this.writer = new AzureWriteFeature(session);
     }
 
     @Override
@@ -52,7 +47,7 @@ public class AzureTouchFeature implements Touch<Void> {
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         status.setChecksum(writer.checksum(file, status).compute(new NullInputStream(0L), status));
         new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
-        return file.withAttributes(new AzureAttributesFinderFeature(session, context).find(file));
+        return new Path(file.getParent(), file.getName(), file.getType(), new AzureAttributesFinderFeature(session).find(file));
     }
 
     @Override

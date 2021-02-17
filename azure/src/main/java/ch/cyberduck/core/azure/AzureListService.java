@@ -16,31 +16,26 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import com.microsoft.azure.storage.OperationContext;
-
 public class AzureListService implements ListService {
 
     private final AzureSession session;
-    private final OperationContext context;
 
-    public AzureListService(final AzureSession session, final OperationContext context) {
+    public AzureListService(final AzureSession session) {
         this.session = session;
-        this.context = context;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            return new AzureContainerListService(session, context).list(directory, listener);
+            return new AzureContainerListService(session).list(directory, listener);
         }
         else {
-            return new AzureObjectListService(session, context).list(directory, listener);
+            return new AzureObjectListService(session).list(directory, listener);
         }
     }
 }

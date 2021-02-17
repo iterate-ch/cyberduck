@@ -1,5 +1,6 @@
 package ch.cyberduck.core.azure;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -26,11 +27,12 @@ public class AzureUrlProviderTest extends AbstractAzureTest {
     @Test
     public void testGet() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
-        final Path test = new Path(container, "f g", EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session, null).touch(test, new TransferStatus());
-        assertNotNull("https://kahy9boj3eib.blob.core.windows.net/cyberduck/f%20g?sp=r&sr=b&sv=2012-02-12&se=2014-01-29T14%3A48%3A26Z&sig=HlAF9RjXNic2%2BJa2ghOgs8MTgJva4bZqNZrb7BIv2mI%3D",
+        final String name = new AlphanumericRandomStringService().random();
+        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
+        new AzureTouchFeature(session).touch(test, new TransferStatus());
+        assertNotNull(String.format("https://kahy9boj3eib.blob.core.windows.net/cyberduck/%s?sp=r&sr=b&sv=2012-02-12&se=2014-01-29T14%%3A48%%3A26Z&sig=HlAF9RjXNic2%%2BJa2ghOgs8MTgJva4bZqNZrb7BIv2mI%%3D", name),
             new AzureUrlProvider(session).toDownloadUrl(test, null, new DisabledPasswordCallback()).getUrl());
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
