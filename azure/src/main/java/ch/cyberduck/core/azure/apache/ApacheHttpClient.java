@@ -15,15 +15,18 @@ package ch.cyberduck.core.azure.apache;
  * GNU General Public License for more details.
  */
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HTTP;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
 import com.azure.core.http.HttpClient;
+import com.azure.core.http.HttpHeader;
 import com.azure.core.http.HttpHeaders;
 import com.azure.core.http.HttpMethod;
 import com.azure.core.http.HttpRequest;
@@ -68,12 +71,18 @@ public class ApacheHttpClient implements HttpClient {
         private ApacheHttpRequest(HttpMethod method, URL url, HttpHeaders headers) throws URISyntaxException {
             this.method = method.name();
             setURI(url.toURI());
-            headers.stream().forEach(header -> addHeader(header.getName(), header.getValue()));
+            headers.stream().forEach(this::accept);
         }
 
         @Override
         public String getMethod() {
             return method;
+        }
+
+        private void accept(final HttpHeader header) {
+            if(!StringUtils.equalsIgnoreCase(header.getName(), HTTP.CONTENT_LEN)) {
+                this.addHeader(header.getName(), header.getValue());
+            }
         }
     }
 }
