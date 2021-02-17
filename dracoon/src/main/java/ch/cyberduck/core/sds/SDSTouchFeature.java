@@ -69,8 +69,10 @@ public class SDSTouchFeature implements Touch<VersionId> {
             log.warn(String.format("Validation failed for target name %s", filename));
             return false;
         }
-        // for existing files the delete role is also needed but at this point we don't know if it exists or not
-        return new SDSPermissionsFeature(session, nodeid).containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE);
+        final SDSPermissionsFeature permissions = new SDSPermissionsFeature(session, nodeid);
+        return permissions.containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE)
+            // For existing files the delete role is also required to overwrite
+            && permissions.containsRole(workdir, SDSPermissionsFeature.DELETE_ROLE);
     }
 
     /**
