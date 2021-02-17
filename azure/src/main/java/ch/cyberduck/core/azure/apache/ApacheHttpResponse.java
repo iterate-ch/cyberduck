@@ -60,6 +60,9 @@ final class ApacheHttpResponse extends HttpResponse {
     }
 
     public Mono<byte[]> getBodyAsByteArray() {
+        if(null == entity) {
+            return Mono.empty();
+        }
         try {
             return Mono.just(EntityUtils.toByteArray(entity));
         }
