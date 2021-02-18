@@ -212,7 +212,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
             case FOLDER:
                 permission.setUser(permission.getUser().or(Permission.Action.execute));
         }
-        if(node.getPermissions().isChange()) {
+        if(node.getPermissions().isChange() && node.getPermissions().isDelete()) {
             permission.setUser(permission.getUser().or(Permission.Action.write));
         }
         return permission;
