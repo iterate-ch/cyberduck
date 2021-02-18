@@ -44,7 +44,7 @@
             <string>sites.readwrite.all</string>
             <string>files.readwrite.all</string>
             <string>user.read</string>
-            <string>group.read.all</string>
+            <string>groupmember.read.all</string>
             <string>offline_access</string>
         </array>
         <key>OAuth Client ID</key>
