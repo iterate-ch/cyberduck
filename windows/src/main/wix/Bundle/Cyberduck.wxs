@@ -380,6 +380,9 @@
       <Component Id="file.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/File.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="files.cyberduckprofile">
+        <File Source="$(var.cyberduck.TargetDir)/profiles/Files.com.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
       <Component Id="ftp.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/FTP.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
@@ -392,11 +395,17 @@
       <Component Id="googledrive.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Google Drive.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="nextcloud.cyberduckprofile">
+        <File Source="$(var.cyberduck.TargetDir)/profiles/Nextcloud.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
       <Component Id="onedrive.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Microsoft OneDrive.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="sharepoint.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Microsoft SharePoint.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="sharepointsite.cyberduckprofile">
+        <File Source="$(var.cyberduck.TargetDir)/profiles/Microsoft SharePoint Site.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="rackspace.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Rackspace US.cyberduckprofile" KeyPath="yes" Checksum="yes" />
