@@ -381,7 +381,7 @@
         <File Source="$(var.cyberduck.TargetDir)/profiles/File.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="files.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Files.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.cyberduck.TargetDir)/profiles/Files.com.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="ftp.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/FTP.cyberduckprofile" KeyPath="yes" Checksum="yes" />
