@@ -1,6 +1,12 @@
 Cyberduck
 https://cyberduck.io/
 
+7.8.3
+- [Bugfix] Failure renaming files (OneDrive, Sharepoint)
+- [Bugfix] Missing default connection profile (Nextcloud & ownCloud)
+- [Bugfix] Missing default connection profile (Microsoft SharePoint Site)
+- [Bugfix] Missing default connection profile (Files.com)
+
 7.8.2
 - [Feature] Updated application when running on macOS Big Sur
 - [Bugfix] Failure uploading large files with S3 compatible API (Backblaze B2) (#11233)
