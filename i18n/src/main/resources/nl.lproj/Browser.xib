@@ -283,7 +283,7 @@
         </window>
         <menu title="Menu" id="65">
             <items>
-                <menuItem title="Herlaad" keyEquivalent="r" id="66">
+                <menuItem title="Laad opnieuw" keyEquivalent="r" id="66">
                     <connections>
                         <action selector="reloadButtonClicked:" target="-1" id="167"/>
                     </connections>
@@ -291,12 +291,12 @@
                 <menuItem isSeparatorItem="YES" id="67">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Nieuwe map" keyEquivalent="N" id="81">
+                <menuItem title="Nieuwe map..." keyEquivalent="N" id="81">
                     <connections>
                         <action selector="createFolderButtonClicked:" target="-1" id="166"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Nieuw versleutelde safe…" keyEquivalent="N" id="6n9-Af-09P">
+                <menuItem title="Nieuwe versleutelde kluis..." keyEquivalent="N" id="6n9-Af-09P">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                     <connections>
                         <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
@@ -319,7 +319,7 @@
                         <action selector="infoButtonClicked:" target="-1" id="163"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Voorvertoning" image="NSQuickLookTemplate" id="69">
+                <menuItem title="Snelle weergave" image="NSQuickLookTemplate" id="69">
                     <attributedString key="attributedTitle"/>
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
@@ -335,7 +335,7 @@
                         <action selector="renameFileButtonClicked:" target="-1" id="176"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Bestand dupliceren…" keyEquivalent="d" id="73">
+                <menuItem title="Dupliceer..." keyEquivalent="d" id="73">
                     <connections>
                         <action selector="duplicateFileButtonClicked:" target="-1" id="175"/>
                     </connections>
@@ -418,9 +418,9 @@ CA
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Kopieer URL" id="93"/>
                 </menuItem>
-                <menuItem title="Open web URL" id="94">
+                <menuItem title="Open URL" id="94">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Open web URL" id="95"/>
+                    <menu key="submenu" title="Open URL" id="95"/>
                 </menuItem>
                 <menuItem title="Deel…" id="NBw-Mh-zlT">
                     <connections>
@@ -479,17 +479,17 @@ DQ
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="106"/>
-                <menuItem title="Sort By" id="107">
+                <menuItem title="Sorteren op" id="107">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Sort By" id="108">
+                    <menu key="submenu" title="Sorteren op" id="108">
                         <items>
-                            <menuItem title="Nickname" keyEquivalent="1" id="109">
+                            <menuItem title="Schermnaam" keyEquivalent="1" id="109">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByNickame:" target="-1" id="186"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Hostname" keyEquivalent="2" id="110">
+                            <menuItem title="Hostnaam" keyEquivalent="2" id="110">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByHostname:" target="-1" id="187"/>

@@ -153,7 +153,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="21">
                     <rect key="frame" x="17" y="111" width="124" height="28"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="UNIX bevoegdheden" id="22">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="UNIX-bevoegdheden" id="22">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -183,7 +183,7 @@
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="28">
                     <rect key="frame" x="309" y="51" width="80" height="18"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <buttonCell key="cell" type="check" title="Uitvoeren" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="29">
+                    <buttonCell key="cell" type="check" title="Voer uit" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="29">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="message" size="11"/>
                     </buttonCell>
@@ -191,7 +191,7 @@
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="30">
                     <rect key="frame" x="309" y="69" width="80" height="18"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <buttonCell key="cell" type="check" title="Uitvoeren" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="31">
+                    <buttonCell key="cell" type="check" title="Voer uit" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="31">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="message" size="11"/>
                     </buttonCell>
@@ -199,7 +199,7 @@
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="32">
                     <rect key="frame" x="309" y="87" width="80" height="18"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <buttonCell key="cell" type="check" title="Uitvoeren" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="33">
+                    <buttonCell key="cell" type="check" title="Voer uit" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="33">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="message" size="11"/>
                     </buttonCell>
@@ -316,7 +316,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="66">
                     <rect key="frame" x="18" y="109" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Standaard root-bestand" id="67">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Indexbestand" id="67">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -388,7 +388,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="84">
                     <rect key="frame" x="140" y="252" width="244" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Write access logs to selected container." id="85">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Schrijf toegangslogs naar gekozen container." id="85">
                         <font key="font" metaFont="message" size="11"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -397,7 +397,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="86">
                     <rect key="frame" x="140" y="46" width="244" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Verwijder geselecteerde bestanden uit distributie cache" id="87">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Verwijder gekozen bestanden uit distributiecache" id="87">
                         <font key="font" metaFont="message" size="11"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -491,7 +491,7 @@
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="109">
                     <rect key="frame" x="140" y="286" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Toegangslog inschakelen" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="110">
+                    <buttonCell key="cell" type="check" title="Schakel toegangslog in" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="110">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="message" size="11"/>
                     </buttonCell>
@@ -506,7 +506,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="120">
                     <rect key="frame" x="18" y="352" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Encryption" id="121">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Versleuteling" id="121">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -569,7 +569,7 @@
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LxZ-su-Bo8">
                     <rect key="frame" x="140" y="327" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Overdracht versnelling " bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="Hhf-CN-RAy">
+                    <buttonCell key="cell" type="check" title="Versnelling overdracht" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="Hhf-CN-RAy">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="message" size="11"/>
                     </buttonCell>
@@ -590,7 +590,7 @@
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="128">
                     <rect key="frame" x="140" y="148" width="243" height="19"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Multi-Factor Authenticatie (MFA) wissen" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="129">
+                    <buttonCell key="cell" type="check" title="Wis multi-factorauthenticatie (MFA)" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="129">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="message" size="11"/>
                     </buttonCell>
@@ -598,7 +598,7 @@
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="130">
                     <rect key="frame" x="140" y="222" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Bucket Versies" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="131">
+                    <buttonCell key="cell" type="check" title="Bucketversies" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="131">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="message" size="11"/>
                     </buttonCell>
@@ -633,7 +633,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="149">
                     <rect key="frame" x="18" y="124" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Lifecycle" id="150">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Levenscyclus" id="150">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -642,7 +642,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="151">
                     <rect key="frame" x="18" y="224" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Versioning" id="152">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Versies" id="152">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -660,7 +660,7 @@
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="160">
                     <rect key="frame" x="140" y="75" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Delete files" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="161">
+                    <buttonCell key="cell" type="check" title="Wis bestanden" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="161">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="message" size="11"/>
                     </buttonCell>
@@ -668,7 +668,7 @@
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="162">
                     <rect key="frame" x="140" y="122" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Transition to Glacier" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="163">
+                    <buttonCell key="cell" type="check" title="Overgang naar Glacier" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="163">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="message" size="11"/>
                     </buttonCell>
@@ -676,7 +676,7 @@
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="166">
                     <rect key="frame" x="140" y="306" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Bucket Toegangslog" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="167">
+                    <buttonCell key="cell" type="check" title="Toegangslog bucket" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="167">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="message" size="11"/>
                     </buttonCell>
@@ -684,7 +684,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="168">
                     <rect key="frame" x="140" y="272" width="243" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Write access logs to selected container." id="169">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Schrijf toegangslog naar gekozen container." id="169">
                         <font key="font" metaFont="message" size="11"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -722,7 +722,7 @@
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="178">
                     <rect key="frame" x="57" y="206" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Web URL" id="179">
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Web-URL" id="179">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -833,7 +833,7 @@
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="203">
                     <rect key="frame" x="57" y="52" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Checksum" id="204">
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Controlegetal" id="204">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -842,7 +842,7 @@
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="205">
                     <rect key="frame" x="57" y="96" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Gemaakt" id="206">
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Aanmaakdatum" id="206">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -860,7 +860,7 @@
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="209">
                     <rect key="frame" x="57" y="74" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Aangepast" id="210">
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Bewerkingsdatum" id="210">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1128,7 +1128,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="269">
                     <rect key="frame" x="17" y="160" width="342" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Toegangscontrole Lijst (ACL)" id="270">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Toegangscontrolelijst (ACL)" id="270">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
