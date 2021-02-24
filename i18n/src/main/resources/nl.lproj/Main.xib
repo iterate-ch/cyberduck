@@ -25,7 +25,7 @@
                 <outlet property="menu" destination="225" id="365"/>
             </connections>
         </customObject>
-        <menu title="Hoofdmenu" systemMenu="main" id="225">
+        <menu title="MainMenu" systemMenu="main" id="225">
             <items>
                 <menuItem title="Cyberduck" id="226">
                     <menu key="submenu" title="Cyberduck" systemMenu="apple" id="227">
@@ -94,7 +94,7 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="File" id="243">
+                <menuItem title="Bestand" id="243">
                     <attributedString key="attributedTitle">
                         <fragment content="File">
                             <attributes>
@@ -129,7 +129,7 @@
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Nieuw versleutelde safe…" keyEquivalent="N" id="XIo-o9-At2">
+                            <menuItem title="Nieuwe versleutelde kluis…" keyEquivalent="N" id="XIo-o9-At2">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
@@ -237,7 +237,7 @@ CA
                             <menuItem title="Maak archief" id="272">
                                 <menu key="submenu" title="Maak archief" id="273"/>
                             </menuItem>
-                            <menuItem title="Archief uitpakken" id="274">
+                            <menuItem title="Pak archief uit" id="274">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="unarchiveButtonClicked:" target="-1" id="391"/>
@@ -255,7 +255,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="275"/>
-                            <menuItem title="Afdrukken…" keyEquivalent="p" id="276">
+                            <menuItem title="Druk af..." keyEquivalent="p" id="276">
                                 <connections>
                                     <action selector="printDocument:" target="-1" id="392"/>
                                 </connections>
@@ -379,7 +379,7 @@ CA
                                     <action selector="forwardButtonClicked:" target="-1" id="409"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Bovenliggend" keyEquivalent="" id="313">
+                            <menuItem title="Bovenliggende map" keyEquivalent="" id="313">
                                 <connections>
                                     <action selector="upButtonClicked:" target="-1" id="410"/>
                                 </connections>
@@ -395,7 +395,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="316"/>
-                            <menuItem title="Voer commando uit…" keyEquivalent="c" id="317">
+                            <menuItem title="Voer opdracht uit…" keyEquivalent="c" id="317">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="sendCustomCommandClicked:" target="-1" id="413"/>
@@ -429,17 +429,17 @@ CA
                                     <action selector="bookmarkSwitchMenuClicked:" target="-1" id="417"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Sort By" id="325">
+                            <menuItem title="Sorteren op" id="325">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Sort By" id="326">
+                                <menu key="submenu" title="Sorteren op" id="326">
                                     <items>
-                                        <menuItem title="Nickname" keyEquivalent="1" id="327">
+                                        <menuItem title="Schermnaam" keyEquivalent="1" id="327">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByNickame:" target="-1" id="418"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Hostname" keyEquivalent="2" id="328">
+                                        <menuItem title="Hostnaam" keyEquivalent="2" id="328">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByHostname:" target="-1" id="419"/>
@@ -513,7 +513,7 @@ CA
                 <menuItem title="Help" id="344">
                     <menu key="submenu" title="Help" id="345">
                         <items>
-                            <menuItem title="Cyberduck Help" keyEquivalent="?" id="346">
+                            <menuItem title="Cyberduck-help" keyEquivalent="?" id="346">
                                 <connections>
                                     <action selector="helpMenuClicked:" target="-2" id="429"/>
                                 </connections>
