@@ -20,6 +20,7 @@ import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -131,9 +132,14 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        assertFalse(new SDSTouchFeature(session, nodeid).isSupported(room.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room)), StringUtils.EMPTY));
-        assertEquals(1L, room.attributes().getQuota());
-        assertEquals(2L, room.attributes().getSize());
+        PathAttributes attr;
+        do {
+            attr = new SDSAttributesFinderFeature(session, nodeid).find(room);
+        }
+        while(attr.getSize() != 2L);
+        assertFalse(new SDSTouchFeature(session, nodeid).isSupported(room.withAttributes(attr), StringUtils.EMPTY));
+        assertEquals(1L, attr.getQuota());
+        assertEquals(2L, attr.getSize());
         new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
