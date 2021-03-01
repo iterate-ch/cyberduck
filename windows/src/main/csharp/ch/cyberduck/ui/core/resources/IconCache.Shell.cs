@@ -9,14 +9,14 @@
 // General Public License for more details.
 //
 // Bug fixes, suggestions and comments should be sent to: feedback@cyberduck.io
-using System;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using System.Drawing;
-using System.Runtime.InteropServices;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.FILE_FLAGS_AND_ATTRIBUTES;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.SHGFI_FLAGS;
 
 namespace Ch.Cyberduck.Ui.Core.Resources
 {
-    using Ch.Cyberduck.Core;
-
     partial class IconCache
     {
         /// <summary>
@@ -35,22 +35,70 @@ namespace Ch.Cyberduck.Ui.Core.Resources
             Closed = 1
         }
 
-        private static Icon CloneIcon(Shell32.SHFILEINFO fileInfo)
+        private static Icon CloneIcon(in HICON fileInfo)
         {
-            Icon icon = default;
-            try
+            using var temp = Icon.FromHandle(fileInfo.Value);
+            return (Icon)temp.Clone();
+        }
+
+        private static Icon GetFileIconFromExecutable(string filename, IconSize size)
+        {
+            SHFILEINFOW shfi = new SHFILEINFOW();
+            SHGFI_FLAGS flags = SHGFI_ICON | SHGFI_USEFILEATTRIBUTES;
+            if (IconSize.Small == size)
             {
-                using (var temp = Icon.FromHandle(fileInfo.hIcon))
-                {
-                    icon = (Icon)temp.Clone();
-                }
+                flags |= SHGFI_SMALLICON;
             }
-            catch { }
-            finally
+            else
             {
-                User32.DestroyIcon(fileInfo.hIcon);
+                flags |= SHGFI_LARGEICON;
             }
-            return icon;
+
+            using var hIcon = new HICONHandle().With(shfi.hIcon);
+            if (SHGetFileInfo(filename, FILE_ATTRIBUTE_NORMAL, shfi, flags) == 0)
+            {
+                return null;
+            }
+
+            return CloneIcon(hIcon.Value);
+        }
+
+        private static Icon GetFileIconFromName(string filename, bool isFolder, IconSize size, bool linkOverlay)
+        {
+            SHFILEINFOW shfi = new SHFILEINFOW();
+            SHGFI_FLAGS flags = SHGFI_ICON | SHGFI_USEFILEATTRIBUTES;
+
+            if (linkOverlay)
+            {
+                flags |= SHGFI_LINKOVERLAY;
+            }
+
+            if (IconSize.Small == size)
+            {
+                flags |= SHGFI_SMALLICON;
+            }
+            else
+            {
+                flags |= SHGFI_LARGEICON;
+            }
+
+            FILE_FLAGS_AND_ATTRIBUTES fileAttributes;
+            if (isFolder)
+            {
+                fileAttributes = FILE_ATTRIBUTE_DIRECTORY;
+            }
+            else
+            {
+                fileAttributes = FILE_ATTRIBUTE_NORMAL;
+            }
+
+            using var hIcon = new HICONHandle().With(shfi.hIcon);
+            if (SHGetFileInfo(filename, fileAttributes, shfi, flags) == 0)
+            {
+                return null;
+            }
+
+            return CloneIcon(hIcon.Value);
         }
 
         /// <summary>
@@ -61,96 +109,34 @@ namespace Ch.Cyberduck.Ui.Core.Resources
         /// <returns>System.Drawing.Icon</returns>
         private static Icon GetFolderIcon(IconSize size, FolderType folderType)
         {
+            SHFILEINFOW shfi = new SHFILEINFOW();
             // Need to add size check, although errors generated at present!
-            uint flags = Shell32.SHGFI_ICON | Shell32.SHGFI_USEFILEATTRIBUTES;
+            SHGFI_FLAGS flags = SHGFI_ICON | SHGFI_USEFILEATTRIBUTES;
 
             if (FolderType.Open == folderType)
             {
-                flags |= Shell32.SHGFI_OPENICON;
+                flags |= SHGFI_OPENICON;
             }
 
             if (IconSize.Small == size)
             {
-                flags |= Shell32.SHGFI_SMALLICON;
+                flags |= SHGFI_SMALLICON;
             }
             else
             {
-                flags |= Shell32.SHGFI_LARGEICON;
+                flags |= SHGFI_LARGEICON;
             }
 
             // Get the folder icon
-            Shell32.SHFILEINFO shfi = new Shell32.SHFILEINFO();
-            IntPtr hSuccess = Shell32.SHGetFileInfo("_unknown", Shell32.FILE_ATTRIBUTE_DIRECTORY, ref shfi,
-                (uint)Marshal.SizeOf(shfi), flags);
-            if (hSuccess == IntPtr.Zero)
+
+            using var hIcon = new HICONHandle().With(shfi.hIcon);
+            nuint hSuccess = SHGetFileInfo("_unknown", FILE_ATTRIBUTE_DIRECTORY, shfi, flags);
+            if (hSuccess == 0)
             {
                 return null;
             }
 
-            return CloneIcon(shfi);
-        }
-
-        private static Icon GetFileIconFromName(string filename, bool isFolder, IconSize size, bool linkOverlay)
-        {
-            Shell32.SHFILEINFO shfi = new Shell32.SHFILEINFO();
-            uint flags = Shell32.SHGFI_ICON | Shell32.SHGFI_USEFILEATTRIBUTES;
-
-            if (linkOverlay)
-            {
-                flags |= Shell32.SHGFI_LINKOVERLAY;
-            }
-
-            if (IconSize.Small == size)
-            {
-                flags |= Shell32.SHGFI_SMALLICON;
-            }
-            else
-            {
-                flags |= Shell32.SHGFI_LARGEICON;
-            }
-
-            uint fileAttributes;
-            if (isFolder)
-            {
-                fileAttributes = Shell32.FILE_ATTRIBUTE_DIRECTORY;
-            }
-            else
-            {
-                fileAttributes = Shell32.FILE_ATTRIBUTE_NORMAL;
-            }
-
-            IntPtr hSuccess = Shell32.SHGetFileInfo(
-                filename, fileAttributes,
-                ref shfi, (uint)Marshal.SizeOf(shfi),
-                flags);
-            if (hSuccess == IntPtr.Zero)
-            {
-                return null;
-            }
-
-            return CloneIcon(shfi);
-        }
-
-        private static Icon GetFileIconFromExecutable(string filename, IconSize size)
-        {
-            Shell32.SHFILEINFO shfi = new Shell32.SHFILEINFO();
-            uint flags = Shell32.SHGFI_ICON | Shell32.SHGFI_USEFILEATTRIBUTES;
-            if (IconSize.Small == size)
-            {
-                flags += Shell32.SHGFI_SMALLICON;
-            }
-            else
-            {
-                flags += Shell32.SHGFI_LARGEICON;
-            }
-            IntPtr hSuccess = Shell32.SHGetFileInfo(filename, Shell32.FILE_ATTRIBUTE_NORMAL, ref shfi,
-                (uint)Marshal.SizeOf(shfi), flags);
-            if (hSuccess == IntPtr.Zero)
-            {
-                return null;
-            }
-
-            return CloneIcon(shfi);
+            return CloneIcon(hIcon.Value);
         }
     }
 }

@@ -10,12 +10,11 @@
 //
 // Bug fixes, suggestions and comments should be sent to: feedback@cyberduck.io
 
-using System;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
 
 namespace Ch.Cyberduck.Ui.Core.Resources
 {
@@ -65,7 +64,7 @@ namespace Ch.Cyberduck.Ui.Core.Resources
         {
             var key = "folder." + size.Size();
 
-            if(imageCache.get(key) is Image image)
+            if (imageCache.get(key) is Image image)
             {
                 return image;
             }
@@ -96,16 +95,12 @@ namespace Ch.Cyberduck.Ui.Core.Resources
                 {
                     // Always dispose loaded image when working with icons
                     using (fileBitmap)
+                    using (var hIcon = new HICON(fileBitmap.GetHicon()))
+                    using (var icon = Icon.FromHandle(hIcon.Value))
+                    using (var nested = new Icon(icon, size, size))
                     {
-                        var hIcon = fileBitmap.GetHicon();
-                        // dispose everything. ToBitmap creates a memcopy.
-                        using (var icon = Icon.FromHandle(hIcon))
-                        using (var nested = new Icon(icon, size, size))
-                        {
-                            image = nested.ToBitmap();
-                        }
+                        image = nested.ToBitmap();
                         // hIcon must be destroyed independently from Icon.FromHandle
-                        User32.DestroyIcon(hIcon);
                     }
                 }
             }
