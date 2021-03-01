@@ -1,28 +1,29 @@
-﻿// 
+﻿//
 // Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
+//
 
+using ch.cyberduck.core;
+using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Controls;
+using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -53,7 +54,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             passphraseTextBox.UseSystemPasswordChar = true;
             passphraseTextBox.TabIndex = 4;
             passphraseTextBox.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
-            passphraseTextBox.TextChanged += delegate(object sender, EventArgs args)
+            passphraseTextBox.TextChanged += delegate (object sender, EventArgs args)
             {
                 PasswordStrengthValidator.Strength strength = strengthValidator.getScore(passphraseTextBox.Text);
                 strengthIndicator.Minimum = PasswordStrengthValidator.Strength.veryweak.getScore();
@@ -64,8 +65,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             tableLayoutPanel.RowStyles.Insert(2 + offset, new RowStyle(SizeType.AutoSize));
             tableLayoutPanel.Controls.Add(passphraseTextBox, 1, 2 + offset);
             tableLayoutPanel.SetColumnSpan(passphraseTextBox, 3);
-            NativeMethods.SendMessage(passphraseTextBox.Handle, NativeConstants.EM_SETCUEBANNER, 0,
-                LocaleFactory.localizedString("Passphrase", "Cryptomator"));
+            Edit_SetCueBannerText((HWND)passphraseTextBox.Handle, LocaleFactory.localizedString("Passphrase", "Cryptomator"));
 
             strengthIndicator = new PasswordStrengthIndicator();
             strengthIndicator.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
@@ -88,8 +88,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             tableLayoutPanel.SetColumnSpan(passphraseConfirmTextBox, 3);
             tableLayoutPanel.SetRow(okButton, 5 + offset);
             tableLayoutPanel.SetRow(cancelButton, 5 + offset);
-            NativeMethods.SendMessage(passphraseConfirmTextBox.Handle, NativeConstants.EM_SETCUEBANNER, 0,
-                LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
+            Edit_SetCueBannerText((HWND)passphraseConfirmTextBox.Handle, LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
         }
     }
 }

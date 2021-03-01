@@ -22,6 +22,7 @@ using System.Security.Cryptography.X509Certificates;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using Ch.Cyberduck.Core.Ssl;
 using Ch.Cyberduck.Core.TaskDialog;
 using java.io;
@@ -145,7 +146,7 @@ namespace Ch.Cyberduck.Core
                             LocaleFactory.localizedString("Show Certificate", "Keychain")
                         },
                         mainIcon: TaskDialogIcon.Warning, footerIcon: TaskDialogIcon.Information,
-                        callback: (dialog, args, data) =>
+                        callback: (args, data) =>
                         {
                             switch (args.Notification)
                             {

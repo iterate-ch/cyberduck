@@ -34,6 +34,7 @@ using Ch.Cyberduck.Ui.Controller.Threading;
 using java.text;
 using org.apache.log4j;
 using StructureMap;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

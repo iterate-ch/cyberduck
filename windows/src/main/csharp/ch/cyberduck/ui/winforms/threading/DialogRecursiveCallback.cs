@@ -20,6 +20,7 @@ using System;
 using ch.cyberduck.core;
 using ch.cyberduck.core.worker;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 

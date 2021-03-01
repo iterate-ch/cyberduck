@@ -30,6 +30,10 @@ using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using Microsoft.WindowsAPICodePack.Taskbar;
+using Utils = Ch.Cyberduck.Core.Utils;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Constants;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -389,7 +393,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public static void ScrollToBottom(RichTextBox richTextBox)
         {
-            NativeMethods.SendMessage(richTextBox.Handle, NativeConstants.WM_VSCROLL, NativeConstants.SB_BOTTOM, 0);
+            SendMessage(richTextBox.Handle, WM_VSCROLL, SB_BOTTOM, 0);
         }
 
         private void ConfigureToolbarMenu(ToolStripMenuItem menuItem, ToolStripButton button, String property)

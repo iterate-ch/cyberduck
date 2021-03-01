@@ -20,6 +20,11 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Constants;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
+using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.PInvoke;
+
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -30,9 +35,9 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             ReadOnly = true;
             //set the BackColor back to White since ReadOnly=true makes the background grey
             BackColor = Color.White;
-            NativeMethods.SendMessage(Handle, NativeConstants.EM_SETTYPOGRAPHYOPTIONS,
-                                      NativeConstants.TO_ADVANCEDTYPOGRAPHY,
-                                      NativeConstants.TO_ADVANCEDTYPOGRAPHY);
+            SendMessage((HWND)Handle, EM_SETTYPOGRAPHYOPTIONS,
+                                      TO_ADVANCEDTYPOGRAPHY,
+                                      TO_ADVANCEDTYPOGRAPHY);
         }
 
         protected override CreateParams CreateParams
@@ -54,7 +59,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         protected override void WndProc(ref Message m)
         {
             base.WndProc(ref m);
-            NativeMethods.HideCaret(Handle);
+            HideCaret(Handle);
         }
     }
 }

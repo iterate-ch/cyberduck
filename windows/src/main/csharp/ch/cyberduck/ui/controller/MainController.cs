@@ -79,6 +79,7 @@ using Application = ch.cyberduck.core.local.Application;
 using ArrayList = System.Collections.ArrayList;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 using ch.cyberduck.core.oauth;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

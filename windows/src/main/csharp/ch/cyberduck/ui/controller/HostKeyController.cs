@@ -21,6 +21,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using Ch.Cyberduck.Core.TaskDialog;
 using java.security;
 using net.schmizz.sshj.common;

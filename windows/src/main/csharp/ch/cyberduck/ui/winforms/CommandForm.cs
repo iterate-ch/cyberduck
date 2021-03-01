@@ -1,26 +1,27 @@
-﻿// 
+﻿//
 // Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
+//
 
-using System;
-using System.Drawing;
-using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core.Resources;
+using System;
+using System.Drawing;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
+using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Constants;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -37,9 +38,11 @@ namespace Ch.Cyberduck.Ui.Winforms
                     Environment.ExpandEnvironmentVariables(@"%windir%\system32\cmd.exe"), IconCache.IconSize.Large);
         }
 
+        public event VoidHandler SendEvent = delegate { };
+
         public override string[] BundleNames
         {
-            get { return new[] {"Command", "Localizable"}; }
+            get { return new[] { "Command", "Localizable" }; }
         }
 
         public string Command
@@ -53,7 +56,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             transcriptBox.SelectionColor = Color.Black;
             transcriptBox.SelectedText = message + Environment.NewLine;
             transcriptBox.Select(transcriptBox.TextLength, transcriptBox.TextLength);
-            NativeMethods.SendMessage(transcriptBox.Handle, NativeConstants.WM_VSCROLL, NativeConstants.SB_BOTTOM, 0);
+            SendMessage(transcriptBox.Handle, WM_VSCROLL, SB_BOTTOM, 0);
         }
 
         public void StartActivityAnimation()
@@ -65,8 +68,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             animation.Visible = false;
         }
-
-        public event VoidHandler SendEvent = delegate { };
 
         private void button1_Click(object sender, EventArgs e)
         {

@@ -24,6 +24,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;

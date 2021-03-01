@@ -19,6 +19,7 @@
 using System.Windows.Forms;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using Ch.Cyberduck.Core.TaskDialog;
 
 namespace Ch.Cyberduck.Ui.Controller

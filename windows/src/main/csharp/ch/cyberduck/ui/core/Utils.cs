@@ -20,6 +20,7 @@ using System;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 
@@ -43,7 +44,7 @@ namespace Ch.Cyberduck.Ui.Core
                 commonButtons: showCancelButton ? TaskDialogCommonButtons.Cancel : TaskDialogCommonButtons.None,
                 mainIcon: mainIcon,
                 footerIcon: footerIcon,
-                callback: (dialog, args, callbackData) =>
+                callback: (args, callbackData) =>
                 {
                     switch (args.Notification)
                     {
@@ -93,7 +94,7 @@ namespace Ch.Cyberduck.Ui.Core
                 verificationText: verificationText,
                 commonButtons: TaskDialogCommonButtons.OK,
                 mainIcon: TaskDialogIcon.Information,
-                callback: (dialog, args, callbackData) =>
+                callback: (args, callbackData) =>
                 {
                     switch (args.Notification)
                     {

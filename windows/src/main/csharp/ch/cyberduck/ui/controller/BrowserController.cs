@@ -16,12 +16,6 @@
 // feedback@cyberduck.io
 // 
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Drawing;
-using System.IO;
-using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using ch.cyberduck.core.bonjour;
@@ -43,15 +37,22 @@ using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Local;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Core.Resources;
+using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk;
 using Ch.Cyberduck.Ui.Winforms;
 using java.lang;
 using java.text;
 using java.util;
 using org.apache.log4j;
 using StructureMap;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.IO;
+using System.Windows.Forms;
 using Application = ch.cyberduck.core.local.Application;
 using Directory = ch.cyberduck.core.features.Directory;
 using Exception = System.Exception;
