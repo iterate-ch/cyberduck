@@ -1,0 +1,43 @@
+﻿// Constants
+APPMODEL_ERROR_NO_PACKAGE
+ASSOCF_INIT_DEFAULTTOSTAR
+ASSOCF_NOTRUNCATE
+ASSOCSTR_COMMAND
+GWL_EXSTYLE
+GWL_STYLE
+HWND_TOPMOST
+SWP_FRAMECHANGED
+SWP_NOMOVE
+SWP_NOSIZE
+SWP_NOZORDER
+TOKEN_ELEVATION_TYPE
+WM_APP
+WM_SETICON
+WM_USER
+WS_EX_DLGMODALFRAME
+WS_SYSMENU
+
+// Types
+HINSTANCE
+IQueryAssociations
+PFTASKDIALOGCALLBACK
+TASKDIALOG_BUTTON
+
+// Methods
+AssocCreate
+CoTaskMemFree
+CredDelete
+CredFree
+CredRead
+CredWrite
+DefWindowProc
+GetCurrentPackageFullName
+GetTokenInformation
+GetWindowLong
+SendMessage
+SetWindowLong
+SetWindowPos
+SetWindowText
+SHGetFileInfo
+SHOpenFolderAndSelectItems
+SHParseDisplayName
