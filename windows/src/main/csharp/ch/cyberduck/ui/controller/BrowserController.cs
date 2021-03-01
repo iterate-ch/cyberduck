@@ -889,7 +889,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         if (args.DropTargetLocation == DropTargetLocation.Item)
                         {
                             Host destination = (Host) args.DropTargetItem.RowObject;
-                            (args.DataObject as DataObject).SetDropDescription((DropImageType) args.Effect,
+                            DropTargetHelper.SetDropDescription(dataObject, (DROPIMAGETYPE)args.Effect,
                                 "Upload to %1", BookmarkNameProvider.toString(destination));
                         }
                         args.DropTargetLocation = DropTargetLocation.Item;
@@ -2217,7 +2217,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Log.trace("Entering View_BrowserCanDrop with " + args.Effect);
             if (IsMounted() && !(args.DataObject is OLVDataObject))
             {
-                if (args.DataObject is DataObject && ((DataObject) args.DataObject).ContainsFileDropList())
+                if (args.DataObject is DataObject dataObject && dataObject.ContainsFileDropList())
                 {
                     Path destination;
                     switch (args.DropTargetLocation)
@@ -2256,8 +2256,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         args.DropTargetItem = args.ListView.ModelToItem(destination);
                     }
-                    (args.DataObject as DataObject).SetDropDescription((DropImageType) args.Effect, "Copy to %1",
-                        destination.getName());
+                    DropTargetHelper.SetDropDescription(dataObject, (DROPIMAGETYPE)args.Effect,
+                        "Copy to %1", destination.getName());
                 }
             }
         }
