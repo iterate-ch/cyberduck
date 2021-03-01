@@ -23,12 +23,14 @@ using System.Net;
 using System.Text;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using Ch.Cyberduck.Core.TaskDialog;
 using ExceptionReporting.Core;
-using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core
 {
+    using System.IO;
+
     public class CrashReporter
     {
         private static readonly CrashReporter instance = new CrashReporter();
