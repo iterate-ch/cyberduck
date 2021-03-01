@@ -20,16 +20,20 @@ using System;
 using System.Runtime.InteropServices;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
-using org.apache.commons.io;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using System.Runtime.CompilerServices;
 
 namespace Ch.Cyberduck.Core.Local
 {
+    using static PInvoke;
+    using static SHGFI_FLAGS;
+
     public sealed class Win32FileDescriptor : AbstractFileDescriptor
     {
         public override string getKind(string filename)
         {
-            String extension = Path.getExtension(filename);
-            String kind = null;
+            var extension = AbstractPath.getExtension(filename);
+            string kind = null;
             if (Utils.IsBlank(extension))
             {
                 kind = this.kind(filename);
@@ -39,7 +43,7 @@ namespace Ch.Cyberduck.Core.Local
                 }
                 return kind;
             }
-            kind = this.kind(Path.getExtension(filename));
+            kind = this.kind(AbstractPath.getExtension(filename));
             if (Utils.IsBlank(kind))
             {
                 return LocaleFactory.localizedString("Unknown");
@@ -47,14 +51,12 @@ namespace Ch.Cyberduck.Core.Local
             return kind;
         }
 
-        private string kind(string extension)
+        private unsafe string kind(string extension)
         {
-            Shell32.SHFILEINFO shinfo = new Shell32.SHFILEINFO();
-            IntPtr hSuccess = Shell32.SHGetFileInfo(extension, 0, ref shinfo, (uint) Marshal.SizeOf(shinfo),
-                                                    Shell32.SHGFI_TYPENAME | Shell32.SHGFI_USEFILEATTRIBUTES);
-            if (hSuccess != IntPtr.Zero)
+            var fileInfo = new SHFILEINFOW();
+            if (SHGetFileInfo(extension, 0, fileInfo, SHGFI_TYPENAME | SHGFI_USEFILEATTRIBUTES) != 0)
             {
-                return Convert.ToString(shinfo.szTypeName.Trim());
+                return new string((char*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(fileInfo.szTypeName)));
             }
             return null;
         }
