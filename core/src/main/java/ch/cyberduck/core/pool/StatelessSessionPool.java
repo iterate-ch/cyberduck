@@ -20,9 +20,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.BackgroundActionState;
-import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.threading.BackgroundActionStateCancelCallback;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.vault.VaultRegistry;
@@ -56,14 +55,7 @@ public class StatelessSessionPool implements SessionPool {
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
         lock.lock();
         try {
-            connect.check(session.withListener(transcript), new CancelCallback() {
-                @Override
-                public void verify() throws ConnectionCanceledException {
-                    if(callback.isCanceled()) {
-                        throw new ConnectionCanceledException();
-                    }
-                }
-            });
+            connect.check(session.withListener(transcript), new BackgroundActionStateCancelCallback(callback));
             return session;
         }
         finally {

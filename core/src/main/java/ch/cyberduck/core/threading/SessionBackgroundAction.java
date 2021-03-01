@@ -171,14 +171,8 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                     log.debug(String.format("Re-authenticate with credentials %s", bookmark.getCredentials()));
                 }
                 // Try to authenticate again
-                service.authenticate(ProxyFactory.get().find(new ProxyHostUrlProvider().get(bookmark)), session, progress, login, new CancelCallback() {
-                    @Override
-                    public void verify() throws ConnectionCanceledException {
-                        if(SessionBackgroundAction.this.isCanceled()) {
-                            throw new ConnectionCanceledException();
-                        }
-                    }
-                });
+                service.authenticate(ProxyFactory.get().find(new ProxyHostUrlProvider().get(bookmark)), session, progress, login,
+                    new BackgroundActionStateCancelCallback(this));
                 // Run action again after login
                 return true;
             }
@@ -223,4 +217,5 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         sb.append('}');
         return sb.toString();
     }
+
 }
