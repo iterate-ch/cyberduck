@@ -19,56 +19,36 @@ using ch.cyberduck.core.local;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
 
 namespace Ch.Cyberduck.Core.Local
 {
-    public sealed class ExplorerRevealService : RevealService
+    public unsafe sealed class ExplorerRevealService : RevealService
     {
         public bool reveal(ch.cyberduck.core.Local l)
         {
-            IntPtr nativeFolder = IntPtr.Zero;
-            try
+            uint psfgaoOut;
+            using PIDLIST_ABSOLUTEHandle nativeFolder = new PIDLIST_ABSOLUTEHandle();
+            SHParseDisplayName(l.getParent().getAbbreviatedPath(), null, out nativeFolder.Put(), 0, &psfgaoOut);
+
+            if (!nativeFolder)
             {
-                uint psfgaoOut;
-                NativeMethods.SHParseDisplayName(l.getParent().getAbsolute(), IntPtr.Zero, out nativeFolder, 0, out psfgaoOut);
-
-                if (nativeFolder == IntPtr.Zero)
-                {
-                    return false;
-                }
-
-                IntPtr nativeFile = IntPtr.Zero;
-                try
-                {
-                    NativeMethods.SHParseDisplayName(l.getAbsolute(), IntPtr.Zero, out nativeFile, 0, out psfgaoOut);
-
-                    IntPtr[] fileArray;
-                    if (nativeFile != IntPtr.Zero)
-                    {
-                        fileArray = new IntPtr[] { nativeFile };
-                    }
-                    else
-                    {
-                        fileArray = new IntPtr[] { };
-                    }
-
-                    NativeMethods.SHOpenFolderAndSelectItems(nativeFolder, (uint)fileArray.Length, fileArray, 0);
-                }
-                finally
-                {
-                    if (nativeFile != IntPtr.Zero)
-                    {
-                        Marshal.FreeCoTaskMem(nativeFile);
-                    }
-                }
+                return false;
             }
-            finally
+
+            using PIDLIST_ABSOLUTEHandle nativeFile = new PIDLIST_ABSOLUTEHandle();
+            SHParseDisplayName(l.getAbsolute(), null, out nativeFile.Put(), 0, &psfgaoOut);
+
+            uint count = 0;
+            ITEMIDLIST* target = default;
+            if (nativeFile)
             {
-                if (nativeFolder != IntPtr.Zero)
-                {
-                    Marshal.FreeCoTaskMem(nativeFolder);
-                }
+                count = 1;
+                target = nativeFile.Pointer;
             }
+
+            SHOpenFolderAndSelectItems(nativeFolder.Value, count, &target, 0);
             return true;
         }
     }
