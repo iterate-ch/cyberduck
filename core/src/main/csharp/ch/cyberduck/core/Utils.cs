@@ -34,6 +34,8 @@ using org.apache.commons.io;
 using org.apache.log4j;
 using Collection = java.util.Collection;
 using Path = ch.cyberduck.core.Path;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Constants;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
 
 namespace Ch.Cyberduck.Core
 {
@@ -42,9 +44,6 @@ namespace Ch.Cyberduck.Core
         public delegate object ApplyPerItemForwardDelegate<T>(T item);
 
         public delegate T ApplyPerItemReverseDelegate<T>(object item);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        static extern int GetCurrentPackageFullName(ref int packageFullNameLength, ref StringBuilder packageFullName);
 
         private static readonly List<String> ExtendedCharsets = new List<string>
         {
@@ -91,10 +90,10 @@ namespace Ch.Cyberduck.Core
                     return false;
                 try
                 {
-                    StringBuilder sb = new StringBuilder(1024);
-                    int length = 0;
-                    int result = GetCurrentPackageFullName(ref length, ref sb);
-                    return result != 15700;
+                    string target = string.Empty;
+                    uint length = 0;
+                    int result = GetCurrentPackageFullName(ref length, target);
+                    return result != APPMODEL_ERROR_NO_PACKAGE;
                 }
                 catch (EntryPointNotFoundException entryPointNotFoundException) // Fix for MD-3274
                 {
@@ -104,7 +103,7 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        private static readonly Logger Log = Logger.getLogger(typeof (Utils).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof(Utils).FullName);
 
         public static bool IsBlank(string value)
         {
@@ -217,8 +216,8 @@ namespace Ch.Cyberduck.Core
             Iterator iterator = javaMap.entrySet().iterator();
             while (iterator.hasNext())
             {
-                Map.Entry entry = (Map.Entry) iterator.next();
-                result.Add((K) entry.getKey(), (V) entry.getValue());
+                Map.Entry entry = (Map.Entry)iterator.next();
+                result.Add((K)entry.getKey(), (V)entry.getValue());
             }
             return result;
         }
@@ -263,7 +262,7 @@ namespace Ch.Cyberduck.Core
                     result.Add(applyPerItem(next));
                     continue;
                 }
-                result.Add((T) next);
+                result.Add((T)next);
             }
             return result;
         }
@@ -310,7 +309,7 @@ namespace Ch.Cyberduck.Core
                 }
             }
             map.Sort(
-                delegate(KeyValuePair<string, string> pair1, KeyValuePair<string, string> pair2)
+                delegate (KeyValuePair<string, string> pair1, KeyValuePair<string, string> pair2)
                 {
                     return pair1.Key.CompareTo(pair2.Key);
                 });
@@ -325,7 +324,7 @@ namespace Ch.Cyberduck.Core
             if (null != rootKey)
             {
                 //PerceivedType
-                String perceivedType = (String) rootKey.GetValue("PerceivedType");
+                String perceivedType = (String)rootKey.GetValue("PerceivedType");
                 if (null != perceivedType)
                 {
                     using (
@@ -485,7 +484,7 @@ namespace Ch.Cyberduck.Core
                 {
                     if (null != editSk)
                     {
-                        String cmd = (String) editSk.GetValue(String.Empty);
+                        String cmd = (String)editSk.GetValue(String.Empty);
                         return ExtractApplicationPath(cmd);
                     }
                 }
@@ -510,7 +509,7 @@ namespace Ch.Cyberduck.Core
                 {
                     if (null != uc)
                     {
-                        string progid = (string) uc.GetValue("Progid");
+                        string progid = (string)uc.GetValue("Progid");
                         if (null != progid)
                         {
                             string exe = GetExeFromOpenCommand(Registry.ClassesRoot);
@@ -525,7 +524,7 @@ namespace Ch.Cyberduck.Core
                 //set the registry key we want to open
                 using (var regKey = Registry.ClassesRoot.OpenSubKey("HTTP\\shell\\open\\command", false))
                 {
-                    return ExtractExeFromCommand((string) regKey.GetValue(null));
+                    return ExtractExeFromCommand((string)regKey.GetValue(null));
                 }
             }
             catch (Exception)
