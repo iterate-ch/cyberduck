@@ -39,7 +39,7 @@ public class LocalFindFeatureTest {
     @Test
     public void testFindNotFound() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertFalse(new LocalFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
         session.close();
@@ -49,7 +49,7 @@ public class LocalFindFeatureTest {
     public void testFindSymlink() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         assumeTrue(session.isPosixFilesystem());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new LocalHomeFinderFeature(session).find();
         final Path file = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.symboliclink));
@@ -62,7 +62,7 @@ public class LocalFindFeatureTest {
     @Test
     public void testFindCaseSensitive() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new LocalHomeFinderFeature(session).find();
         final Path file = new LocalTouchFeature(session).touch(new Path(home, StringUtils.lowerCase(new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -74,7 +74,7 @@ public class LocalFindFeatureTest {
     @Test
     public void testFindDirectory() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new LocalHomeFinderFeature(session).find();
         assertTrue(new LocalFindFeature(session).find(home));
@@ -84,7 +84,7 @@ public class LocalFindFeatureTest {
     @Test
     public void testFindRoot() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(new LocalFindFeature(session).find(new Path("/", EnumSet.of(Path.Type.directory))));
     }

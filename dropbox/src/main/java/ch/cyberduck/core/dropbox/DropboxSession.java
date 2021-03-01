@@ -67,7 +67,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     }
 
     @Override
-    protected CustomDbxRawClientV2 connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) {
+    protected CustomDbxRawClientV2 connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol())
             .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());

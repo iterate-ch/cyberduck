@@ -83,7 +83,7 @@ public class SwiftSessionTest extends AbstractSwiftTest {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
             "a", "s"
         ));
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -101,7 +101,7 @@ public class SwiftSessionTest extends AbstractSwiftTest {
             System.getProperties().getProperty("oraclecloud.key"), System.getProperties().getProperty("oraclecloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());

@@ -66,7 +66,7 @@ public class AzureMoveFeatureTest extends AbstractAzureTest {
             System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final CryptoVault cryptomator = new CryptoVault(

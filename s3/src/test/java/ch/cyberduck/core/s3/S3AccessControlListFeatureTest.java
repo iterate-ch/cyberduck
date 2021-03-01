@@ -110,7 +110,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         ));
         final S3Session session = new S3Session(
             host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(String.format("cd-%s", new AlphanumericRandomStringService().random().toLowerCase(Locale.getDefault())), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3BucketCreateService(session).create(container, null);

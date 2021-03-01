@@ -81,7 +81,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDAVTest {
     public void testFindNoWebDAV() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "update.cyberduck.io");
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session);
         final Path file = new Path("/robots.txt", EnumSet.of(Path.Type.file));

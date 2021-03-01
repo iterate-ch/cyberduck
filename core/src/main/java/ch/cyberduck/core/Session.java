@@ -147,17 +147,18 @@ public abstract class Session<C> implements TranscriptListener {
     /**
      * Connect to host
      *
-     * @param key   Host identity verification callback
-     * @param login Prompt for proxy credentials
+     * @param key    Host identity verification callback
+     * @param login  Prompt for proxy credentials
+     * @param cancel
      * @return Client
      */
-    public C open(final Proxy proxy, final HostKeyCallback key, final LoginCallback login) throws BackgroundException {
+    public C open(final Proxy proxy, final HostKeyCallback key, final LoginCallback login, final CancelCallback cancel) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will open to %s", host));
         }
         // Update status flag
         state = State.opening;
-        client = this.connect(proxy, key, login);
+        client = this.connect(proxy, key, login, cancel);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection did open to %s", host));
         }
@@ -166,7 +167,7 @@ public abstract class Session<C> implements TranscriptListener {
         return client;
     }
 
-    protected abstract C connect(Proxy proxy, HostKeyCallback key, LoginCallback prompt) throws BackgroundException;
+    protected abstract C connect(Proxy proxy, HostKeyCallback key, LoginCallback prompt, CancelCallback cancel) throws BackgroundException;
 
     /**
      * Send the authentication credentials to the server. The connection must be opened first.

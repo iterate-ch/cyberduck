@@ -87,7 +87,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     }
 
     @Override
-    public CloudBlobClient connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) throws BackgroundException {
+    public CloudBlobClient connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final StorageCredentials credentials;
             if(host.getCredentials().isTokenAuthentication()) {
@@ -155,7 +155,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         else if(host.getCredentials().isTokenAuthentication()) {
             if(!StringUtils.equals(host.getCredentials().getToken(), ((StorageCredentialsSharedAccessSignature) credentials).getToken())) {
                 this.interrupt();
-                this.open(proxy, new DisabledHostKeyCallback(), prompt);
+                this.open(proxy, new DisabledHostKeyCallback(), prompt, cancel);
             }
         }
         // Fetch reference for directory to check login credentials

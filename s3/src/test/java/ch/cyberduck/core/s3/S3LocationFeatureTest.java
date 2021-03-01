@@ -33,6 +33,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -111,13 +112,13 @@ public class S3LocationFeatureTest extends AbstractS3Test {
             }
 
             @Override
-            public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt) {
-                final RequestEntityRestStorageService client = super.connect(proxy, hostkey, prompt);
+            public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
+                final RequestEntityRestStorageService client = super.connect(proxy, hostkey, prompt, cancel);
                 client.getConfiguration().setProperty("s3service.disable-dns-buckets", String.valueOf(true));
                 return client;
             }
         };
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session).getLocation(
             new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))

@@ -108,7 +108,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         // read with Cyberduck and compare
         final Host host = new Host(new SFTPProtocol(), "localhost", PORT_NUMBER, new Credentials("empty", "empty"));
         final SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
@@ -143,7 +143,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         // read with Cyberduck and compare
         final Host host = new Host(new SFTPProtocol(), "localhost", PORT_NUMBER, new Credentials("empty", "empty"));
         final SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));

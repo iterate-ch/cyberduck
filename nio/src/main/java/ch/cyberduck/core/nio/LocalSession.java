@@ -102,7 +102,7 @@ public class LocalSession extends Session<FileSystem> {
     }
 
     @Override
-    protected FileSystem connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
+    protected FileSystem connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         return FileSystems.getDefault();
     }
 

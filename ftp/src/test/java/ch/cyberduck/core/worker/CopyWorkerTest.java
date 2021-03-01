@@ -56,7 +56,7 @@ public class CopyWorkerTest extends AbstractFTPTest {
         new FTPTouchFeature(session).touch(source, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(source));
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).withCredentials(new Credentials("test", "test")));
-        copySession.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        copySession.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         copySession.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
@@ -77,7 +77,7 @@ public class CopyWorkerTest extends AbstractFTPTest {
         assertTrue(new DefaultFindFeature(session).find(targetFolder));
         // copy file into vault
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).withCredentials(new Credentials("test", "test")));
-        copySession.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        copySession.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         copySession.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
@@ -99,7 +99,7 @@ public class CopyWorkerTest extends AbstractFTPTest {
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).withCredentials(new Credentials("test", "test")));
-        copySession.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        copySession.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         copySession.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);

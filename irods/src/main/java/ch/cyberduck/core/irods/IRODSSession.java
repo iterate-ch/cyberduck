@@ -76,7 +76,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     }
 
     @Override
-    protected IRODSFileSystemAO connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+    protected IRODSFileSystemAO connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final IRODSFileSystem fs = this.configure(IRODSFileSystem.instance());
             final IRODSAccessObjectFactory factory = fs.getIRODSAccessObjectFactory();
@@ -85,7 +85,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
             final Credentials credentials = host.getCredentials();
             try {
                 return factory.getIRODSFileSystemAO(new URIEncodingIRODSAccount(credentials.getUsername(), credentials.getPassword(),
-                        new IRODSHomeFinderService(IRODSSession.this).find().getAbsolute(), region, resource));
+                    new IRODSHomeFinderService(IRODSSession.this).find().getAbsolute(), region, resource));
             }
             catch(IllegalArgumentException e) {
                 throw new LoginFailureException(e.getMessage(), e);

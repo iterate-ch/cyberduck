@@ -55,7 +55,7 @@ public class B2SessionTest {
             System.getProperties().getProperty("b2.user"), "s"
         ));
         final B2Session session = new B2Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 }

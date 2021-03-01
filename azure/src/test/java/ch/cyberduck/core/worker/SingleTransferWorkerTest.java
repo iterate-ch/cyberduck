@@ -85,7 +85,7 @@ public class SingleTransferWorkerTest {
     private void download(final Host host) throws ch.cyberduck.core.exception.BackgroundException, java.io.IOException {
         final OperationContext context = new OperationContext();
         final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

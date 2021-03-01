@@ -144,7 +144,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     @Override
-    protected SDSApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+    protected SDSApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         if(PreferencesFactory.get().getBoolean("sds.oauth.migrate.enable")) {
             if(host.getProtocol().isDeprecated()) {

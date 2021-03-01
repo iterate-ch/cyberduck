@@ -42,7 +42,7 @@ public class LocalMoveFeatureTest {
     @Test
     public void testMoveFile() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -57,7 +57,7 @@ public class LocalMoveFeatureTest {
     @Test
     public void testMoveDirectory() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -72,7 +72,7 @@ public class LocalMoveFeatureTest {
     @Test
     public void testRenameCaseOnly() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir, StringUtils.lowerCase(new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file));
@@ -87,7 +87,7 @@ public class LocalMoveFeatureTest {
     @Test
     public void testMoveOverride() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -103,7 +103,7 @@ public class LocalMoveFeatureTest {
     @Test(expected = NotfoundException.class)
     public void testMoveNotFound() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

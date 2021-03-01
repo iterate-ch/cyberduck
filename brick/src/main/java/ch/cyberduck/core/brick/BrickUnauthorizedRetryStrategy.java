@@ -18,7 +18,6 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
@@ -27,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -41,10 +41,12 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
     private final HostPasswordStore store = PasswordStoreFactory.get();
     private final BrickSession session;
     private final LoginCallback prompt;
+    private final CancelCallback cancel;
 
-    public BrickUnauthorizedRetryStrategy(final BrickSession session, final LoginCallback prompt) {
+    public BrickUnauthorizedRetryStrategy(final BrickSession session, final LoginCallback prompt, final CancelCallback cancel) {
         this.session = session;
         this.prompt = prompt;
+        this.cancel = cancel;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                         final Host bookmark = session.getHost();
                         final Credentials credentials = bookmark.getCredentials();
                         credentials.reset();
-                        session.login(ProxyFactory.get().find(new ProxyHostUrlProvider().get(bookmark)), prompt, new DisabledCancelCallback());
+                        session.login(ProxyFactory.get().find(new ProxyHostUrlProvider().get(bookmark)), prompt, cancel);
                         if(credentials.isSaved()) {
                             store.save(bookmark);
                         }

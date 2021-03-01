@@ -112,7 +112,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                 assertEquals(new FTPTLSProtocol(), host.getProtocol());
             }
         };
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         assertEquals(new FTPProtocol(), host.getProtocol());
@@ -149,7 +149,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                 throw failure;
             }
         };
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(Session.State.open, session.getState());
         try {
             session.close();

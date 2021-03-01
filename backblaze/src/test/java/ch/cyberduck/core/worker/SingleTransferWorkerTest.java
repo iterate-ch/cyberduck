@@ -118,7 +118,7 @@ public class SingleTransferWorkerTest extends AbstractB2Test {
                 return super._getFeature(type);
             }
         };
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

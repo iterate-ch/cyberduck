@@ -102,7 +102,7 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
                     "key", "secret"
                 )));
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         new KMSEncryptionFeature(session, new DisabledX509TrustManager(), new DefaultX509KeyManager()).getKeys(new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback());
         session.close();
