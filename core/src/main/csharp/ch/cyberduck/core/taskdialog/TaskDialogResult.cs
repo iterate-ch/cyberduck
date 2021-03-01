@@ -59,6 +59,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
 		/// </summary>
 		Custom = 21
 	}
+
 	/// <summary>
 	/// Specifies data for the return values of a task dialog box.
 	/// </summary>
