@@ -38,6 +38,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -133,8 +134,12 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         PathAttributes attr;
+        final long timestamp = System.currentTimeMillis();
         do {
             attr = new SDSAttributesFinderFeature(session, nodeid).find(room);
+            if(System.currentTimeMillis() - timestamp > Duration.ofMinutes(1L).toMillis()) {
+                fail();
+            }
         }
         while(attr.getSize() != 2L);
         assertFalse(new SDSTouchFeature(session, nodeid).isSupported(room.withAttributes(attr), StringUtils.EMPTY));
