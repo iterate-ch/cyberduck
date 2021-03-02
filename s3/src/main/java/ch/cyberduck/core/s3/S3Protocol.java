@@ -100,6 +100,7 @@ public class S3Protocol extends AbstractProtocol {
             new S3LocationFeature.S3Region("ap-southeast-2"),
             new S3LocationFeature.S3Region("ap-northeast-1"),
             new S3LocationFeature.S3Region("ap-northeast-2"),
+            new S3LocationFeature.S3Region("ap-northeast-3"),
             new S3LocationFeature.S3Region("ap-south-1"),
             new S3LocationFeature.S3Region("ap-east-1"),
             new S3LocationFeature.S3Region("sa-east-1"),
