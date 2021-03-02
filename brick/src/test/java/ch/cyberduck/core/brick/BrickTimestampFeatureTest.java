@@ -40,7 +40,7 @@ public class BrickTimestampFeatureTest extends AbstractBrickTest {
 
     @Test
     public void testSetTimestamp() throws Exception {
-        final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(file, new TransferStatus());
         new BrickTimestampFeature(session).setTimestamp(file, 5000L);
         assertEquals(5000L, new DAVAttributesFinderFeature(session).find(file).getModificationDate());

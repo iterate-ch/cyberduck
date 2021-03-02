@@ -37,7 +37,7 @@ public class DAVQuotaFeature implements Quota {
 
     @Override
     public Space get() throws BackgroundException {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DefaultHomeFinderService(session.getHost()).find();
         try {
             final DavQuota quota = session.getClient().getQuota(new DAVPathEncoder().encode(home));
             return new Space(

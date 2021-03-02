@@ -20,8 +20,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 public class OneDriveHomeFinderService extends DefaultHomeFinderService {
+
     public OneDriveHomeFinderService(final OneDriveSession session) {
-        super(session);
+        super(session.getHost());
     }
 
     @Override

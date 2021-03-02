@@ -24,6 +24,6 @@ import ch.cyberduck.core.shared.PathContainerHomeFinderService;
 public class SwiftHomeFinderService extends PathContainerHomeFinderService {
 
     public SwiftHomeFinderService(final SwiftSession session) {
-        super(session, new PathContainerService());
+        super(session.getHost(), new PathContainerService());
     }
 }

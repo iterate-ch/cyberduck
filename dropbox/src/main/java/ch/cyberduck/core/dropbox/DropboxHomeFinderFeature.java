@@ -32,7 +32,7 @@ public class DropboxHomeFinderFeature extends DefaultHomeFinderService {
     private final DropboxSession session;
 
     public DropboxHomeFinderFeature(final DropboxSession session) {
-        super(session);
+        super(session.getHost());
         this.session = session;
     }
 

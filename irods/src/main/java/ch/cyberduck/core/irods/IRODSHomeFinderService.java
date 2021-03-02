@@ -29,7 +29,7 @@ public class IRODSHomeFinderService extends DefaultHomeFinderService {
     private final IRODSSession session;
 
     public IRODSHomeFinderService(final IRODSSession session) {
-        super(session);
+        super(session.getHost());
         this.session = session;
     }
 

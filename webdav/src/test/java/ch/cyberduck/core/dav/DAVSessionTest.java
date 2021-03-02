@@ -93,7 +93,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         try {
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-            new DAVListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
+            new DAVListService(session).list(new DefaultHomeFinderService(session.getHost()).find(), new DisabledListProgressListener());
         }
         catch(InteroperabilityException e) {
             assertEquals("Unexpected response (405 Method Not Allowed). Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -120,7 +120,7 @@ public class DAVSessionTest extends AbstractDAVTest {
 
     @Test
     public void testTouch() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

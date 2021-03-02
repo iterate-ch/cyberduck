@@ -59,7 +59,7 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testMove() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DefaultHomeFinderService(session.getHost()).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);

@@ -50,7 +50,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
-        new DefaultAttributesFinderFeature(session).find(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+        new DefaultAttributesFinderFeature(session).find(new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDAVTest {
         final PathCache cache = new PathCache(1);
         final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session).withCache(cache);
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file));
+        final Path file = new Path(new DefaultHomeFinderService(session.getHost()).find(), name, EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(file, new TransferStatus());
         final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
@@ -67,7 +67,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDAVTest {
         assertTrue(cache.containsKey(file.getParent()));
         // Test wrong type
         try {
-            f.find(new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.directory)));
+            f.find(new Path(new DefaultHomeFinderService(session.getHost()).find(), name, EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {

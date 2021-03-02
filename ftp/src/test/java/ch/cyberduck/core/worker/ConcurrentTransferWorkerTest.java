@@ -78,7 +78,7 @@ public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
         IOUtils.write(content, out);
         out.close();
         final AtomicBoolean failed = new AtomicBoolean();
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
         final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {

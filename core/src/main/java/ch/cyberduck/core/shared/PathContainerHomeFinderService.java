@@ -15,9 +15,9 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.EnumSet;
@@ -26,8 +26,8 @@ public class PathContainerHomeFinderService extends DefaultHomeFinderService {
 
     private final PathContainerService containerService;
 
-    public PathContainerHomeFinderService(final Session session, final PathContainerService containerService) {
-        super(session);
+    public PathContainerHomeFinderService(final Host host, final PathContainerService containerService) {
+        super(host);
         this.containerService = containerService;
     }
 

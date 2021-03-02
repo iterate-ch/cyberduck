@@ -40,6 +40,6 @@ public class DriveHomeFinderService extends DefaultHomeFinderService {
         EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
 
     public DriveHomeFinderService(final DriveSession session) {
-        super(session);
+        super(session.getHost());
     }
 }

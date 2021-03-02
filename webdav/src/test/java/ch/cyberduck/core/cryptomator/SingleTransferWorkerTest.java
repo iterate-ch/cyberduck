@@ -87,7 +87,7 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
 
     @Test
     public void testUpload() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DefaultHomeFinderService(session.getHost()).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path dir1 = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Local localDirectory1 = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
@@ -147,7 +147,7 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
     public void testDownload() throws Exception {
         PreferencesFactory.get().setProperty("factory.vault.class", CryptoVault.class.getName());
 
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DefaultHomeFinderService(session.getHost()).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);

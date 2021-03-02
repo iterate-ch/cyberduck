@@ -54,7 +54,7 @@ public class FTPTouchFeatureTest extends AbstractFTPTest {
 
     @Test
     public void testTouchEncrypted() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DefaultHomeFinderService(session.getHost()).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new RandomStringGenerator.Builder().build().generate(10), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -69,7 +69,7 @@ public class FTPTouchFeatureTest extends AbstractFTPTest {
     @Test
     public void testTouchLongFilenameEncrypted() throws Exception {
         assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DefaultHomeFinderService(session.getHost()).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -84,7 +84,7 @@ public class FTPTouchFeatureTest extends AbstractFTPTest {
     @Test
     public void testTouchLongFilenameEncryptedDefaultFeature() throws Exception {
         assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DefaultHomeFinderService(session.getHost()).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);

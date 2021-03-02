@@ -41,10 +41,10 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testMove() throws Exception {
-        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session.getHost()).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(0L, test.attributes().getSize());
         final Path target = new DAVMoveFeature(session).move(test,
-            new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+            new Path(new DefaultHomeFinderService(session.getHost()).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DAVFindFeature(session).find(test));
         assertTrue(new DAVFindFeature(session).find(target));
         assertEquals(test.attributes(), target.attributes());
@@ -53,11 +53,11 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testMoveWithLock() throws Exception {
-        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session.getHost()).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String lock = new DAVLockFeature(session).lock(test);
         assertEquals(0L, test.attributes().getSize());
         final Path target = new DAVMoveFeature(session).move(test,
-            new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLockId(lock), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+            new Path(new DefaultHomeFinderService(session.getHost()).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLockId(lock), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DAVFindFeature(session).find(test));
         assertTrue(new DAVFindFeature(session).find(target));
         assertEquals(test.attributes(), target.attributes());
@@ -66,9 +66,9 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testMoveDirectory() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(test, null, new TransferStatus());
-        final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path target = new Path(new DefaultHomeFinderService(session.getHost()).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DAVFindFeature(session).find(test));
         assertTrue(new DAVFindFeature(session).find(target));
@@ -77,9 +77,9 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testMoveOverride() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(test, new TransferStatus());
-        final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path target = new Path(new DefaultHomeFinderService(session.getHost()).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(target, new TransferStatus());
         new DAVMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DAVFindFeature(session).find(test));
@@ -89,7 +89,7 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test(expected = NotfoundException.class)
     public void testMoveNotFound() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DAVMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DAVMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session.getHost()).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
     }
 }

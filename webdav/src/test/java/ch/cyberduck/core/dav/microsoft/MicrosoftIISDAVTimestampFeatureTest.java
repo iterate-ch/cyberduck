@@ -56,7 +56,7 @@ public class MicrosoftIISDAVTimestampFeatureTest {
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(file, new TransferStatus());
         new MicrosoftIISDAVTimestampFeature(session).setTimestamp(file, 5000L);
         assertEquals(5000L, new MicrosoftIISDAVAttributesFinderFeature(session).find(file).getModificationDate());

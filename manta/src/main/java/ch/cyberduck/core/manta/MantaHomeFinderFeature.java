@@ -24,7 +24,7 @@ public class MantaHomeFinderFeature extends DefaultHomeFinderService {
     private final MantaSession session;
 
     public MantaHomeFinderFeature(final MantaSession session) {
-        super(session);
+        super(session.getHost());
         this.session = session;
     }
 

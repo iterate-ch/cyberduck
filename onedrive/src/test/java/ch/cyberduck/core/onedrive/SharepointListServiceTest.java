@@ -37,7 +37,7 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
-        final Path directory = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path directory = new Path(new DefaultHomeFinderService(session.getHost()).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new SharepointListService(session, new GraphFileIdProvider(session)).list(directory, new DisabledListProgressListener());
     }
 

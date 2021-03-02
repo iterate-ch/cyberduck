@@ -32,7 +32,7 @@ public class SDSHomeFinderService extends DefaultHomeFinderService {
     private final SDSNodeIdProvider nodeid;
 
     public SDSHomeFinderService(final SDSSession session, final SDSNodeIdProvider nodeid) {
-        super(session);
+        super(session.getHost());
         this.session = session;
         this.nodeid = nodeid;
     }

@@ -45,7 +45,7 @@ public class SDSQuotaFeature implements Quota {
     @Override
     public Space get() throws BackgroundException {
         try {
-            final Path home = new DefaultHomeFinderService(session).find();
+            final Path home = new DefaultHomeFinderService(session.getHost()).find();
             if(!home.isRoot()) {
                 final Node node = new NodesApi(session.getClient()).requestNode(
                     Long.parseLong(nodeid.getFileid(home, new DisabledListProgressListener())), StringUtils.EMPTY, null);

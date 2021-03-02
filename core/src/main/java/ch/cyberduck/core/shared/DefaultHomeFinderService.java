@@ -22,7 +22,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.SerializerFactory;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.serializer.PathDictionary;
@@ -36,15 +35,14 @@ public class DefaultHomeFinderService implements Home {
     protected final Path DEFAULT_HOME = new Path(String.valueOf(Path.DELIMITER),
         EnumSet.of(Path.Type.volume, Path.Type.directory));
 
-    private final Session<?> session;
+    private final Host host;
 
-    public DefaultHomeFinderService(final Session session) {
-        this.session = session;
+    public DefaultHomeFinderService(final Host host) {
+        this.host = host;
     }
 
     @Override
     public Path find() throws BackgroundException {
-        final Host host = session.getHost();
         if(host.getWorkdir() != null) {
             return new PathDictionary().deserialize(host.getWorkdir().serialize(SerializerFactory.get()));
         }

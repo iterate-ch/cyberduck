@@ -48,7 +48,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testFindFile() throws Exception {
-        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session.getHost()).find(),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
@@ -68,7 +68,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testFindDirectory() throws Exception {
-        final Path test = new DAVDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new DAVDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session.getHost()).find(),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
@@ -150,7 +150,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testFindLock() throws Exception {
-        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session.getHost()).find(),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         assertNull(f.find(test).getLockId());

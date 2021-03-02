@@ -21,6 +21,6 @@ import ch.cyberduck.core.shared.PathContainerHomeFinderService;
 public class GoogleStorageHomeFinderService extends PathContainerHomeFinderService {
 
     public GoogleStorageHomeFinderService(final Session session) {
-        super(session, new GoogleStoragePathContainerService());
+        super(session.getHost(), new GoogleStoragePathContainerService());
     }
 }

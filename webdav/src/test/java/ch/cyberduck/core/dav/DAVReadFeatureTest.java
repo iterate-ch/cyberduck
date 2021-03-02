@@ -49,7 +49,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         try {
-            new DAVReadFeature(session).read(new Path(new DefaultHomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+            new DAVReadFeature(session).read(new Path(new DefaultHomeFinderService(session.getHost()).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
         }
         catch(NotfoundException e) {
             assertEquals("Unexpected response (404 OK). Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -110,7 +110,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testReadRange() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
@@ -140,7 +140,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testReadRangeUnknownLength() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();

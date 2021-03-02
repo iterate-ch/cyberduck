@@ -28,7 +28,7 @@ public class FTPWorkdirService extends DefaultHomeFinderService {
     private final FTPSession session;
 
     public FTPWorkdirService(final FTPSession session) {
-        super(session);
+        super(session.getHost());
         this.session = session;
     }
 

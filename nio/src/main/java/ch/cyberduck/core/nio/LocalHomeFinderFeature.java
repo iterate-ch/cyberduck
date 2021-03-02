@@ -27,7 +27,7 @@ import java.util.EnumSet;
 public class LocalHomeFinderFeature extends DefaultHomeFinderService {
 
     public LocalHomeFinderFeature(final LocalSession session) {
-        super(session);
+        super(session.getHost());
     }
 
     @Override

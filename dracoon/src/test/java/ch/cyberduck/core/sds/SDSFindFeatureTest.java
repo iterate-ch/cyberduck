@@ -34,12 +34,12 @@ public class SDSFindFeatureTest extends AbstractSDSTest {
     @Test
     public void testFind() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        assertTrue(new SDSFindFeature(nodeid).find(new DefaultHomeFinderService(session).find()));
+        assertTrue(new SDSFindFeature(nodeid).find(new DefaultHomeFinderService(session.getHost()).find()));
         assertFalse(new SDSFindFeature(nodeid).find(
-            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
+            new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
         ));
         assertFalse(new SDSFindFeature(nodeid).find(
-            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
+            new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
         ));
     }
 

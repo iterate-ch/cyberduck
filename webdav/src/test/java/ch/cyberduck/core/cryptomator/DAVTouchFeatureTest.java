@@ -58,7 +58,7 @@ public class DAVTouchFeatureTest extends AbstractDAVTest {
     @Test
     public void testTouchLongFilenameEncrypted() throws Exception {
         assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DefaultHomeFinderService(session.getHost()).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
@@ -75,7 +75,7 @@ public class DAVTouchFeatureTest extends AbstractDAVTest {
     @Test
     public void testTouchLongFilenameEncryptedDefaultFeature() throws Exception {
         assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DefaultHomeFinderService(session.getHost()).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -91,7 +91,7 @@ public class DAVTouchFeatureTest extends AbstractDAVTest {
     @Test
     public void testTouchDeleteTouchLongFilename() throws Exception {
         assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DefaultHomeFinderService(session.getHost()).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);

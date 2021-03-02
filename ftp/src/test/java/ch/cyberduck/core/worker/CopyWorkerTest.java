@@ -50,7 +50,7 @@ public class CopyWorkerTest extends AbstractFTPTest {
 
     @Test
     public void testCopyFile() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DefaultHomeFinderService(session.getHost()).find();
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(source, new TransferStatus());
@@ -67,7 +67,7 @@ public class CopyWorkerTest extends AbstractFTPTest {
 
     @Test
     public void testCopyFileToDirectory() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DefaultHomeFinderService(session.getHost()).find();
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(sourceFile, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(sourceFile));
@@ -88,7 +88,7 @@ public class CopyWorkerTest extends AbstractFTPTest {
 
     @Test
     public void testCopyDirectory() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DefaultHomeFinderService(session.getHost()).find();
         final Path folder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new FTPDirectoryFeature(session).mkdir(folder, null, new TransferStatus());

@@ -34,7 +34,7 @@ public class LocalQuotaFeature implements Quota {
 
     @Override
     public Space get() throws BackgroundException {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DefaultHomeFinderService(session.getHost()).find();
         try {
             final FileStore store = Files.getFileStore(session.toPath(home));
             return new Space(store.getTotalSpace() - store.getUnallocatedSpace(), store.getUnallocatedSpace());

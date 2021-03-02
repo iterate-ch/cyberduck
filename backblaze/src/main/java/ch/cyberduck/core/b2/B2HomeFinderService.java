@@ -20,6 +20,6 @@ import ch.cyberduck.core.shared.PathContainerHomeFinderService;
 public class B2HomeFinderService extends PathContainerHomeFinderService {
 
     public B2HomeFinderService(final B2Session session) {
-        super(session, new B2PathContainerService());
+        super(session.getHost(), new B2PathContainerService());
     }
 }

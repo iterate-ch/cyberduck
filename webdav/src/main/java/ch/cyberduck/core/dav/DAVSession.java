@@ -184,7 +184,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             return;
         }
         try {
-            final Path home = new DefaultHomeFinderService(this).find();
+            final Path home = new DefaultHomeFinderService(host).find();
             try {
                 client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new ValidatingResponseHandler<Void>() {
                     @Override
@@ -259,7 +259,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     public boolean alert(final ConnectionCallback callback) throws BackgroundException {
         if(super.alert(callback)) {
             // Propose protocol change if HEAD request redirects to HTTPS
-            final Path home = new DefaultHomeFinderService(this).find();
+            final Path home = new DefaultHomeFinderService(host).find();
             try {
                 final RequestConfig context = client.context().getRequestConfig();
                 final HttpHead request = new HttpHead(new DAVPathEncoder().encode(home));

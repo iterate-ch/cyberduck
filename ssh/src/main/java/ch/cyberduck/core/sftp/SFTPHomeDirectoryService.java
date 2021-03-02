@@ -28,7 +28,7 @@ public class SFTPHomeDirectoryService extends DefaultHomeFinderService {
     private final SFTPSession session;
 
     public SFTPHomeDirectoryService(final SFTPSession session) {
-        super(session);
+        super(session.getHost());
         this.session = session;
     }
 

@@ -330,7 +330,7 @@ public abstract class Session<C> implements TranscriptListener {
             return (T) new DefaultAttributesFinderFeature(this);
         }
         if(type == Home.class) {
-            return (T) new DefaultHomeFinderService(this);
+            return (T) new DefaultHomeFinderService(host);
         }
         if(type == Search.class) {
             return (T) new DefaultSearchFeature(this);

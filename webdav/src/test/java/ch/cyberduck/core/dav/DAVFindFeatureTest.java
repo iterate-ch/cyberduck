@@ -27,12 +27,12 @@ public class DAVFindFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testFind() throws Exception {
-        assertTrue(new DAVFindFeature(session).find(new DefaultHomeFinderService(session).find()));
+        assertTrue(new DAVFindFeature(session).find(new DefaultHomeFinderService(session.getHost()).find()));
         assertFalse(new DAVFindFeature(session).find(
-            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
+            new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
         ));
         assertFalse(new DAVFindFeature(session).find(
-            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
+            new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
         ));
     }
 

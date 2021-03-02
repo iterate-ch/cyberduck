@@ -78,7 +78,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
     @Test
     @Ignore
     public void testSetMetadataFile() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         final String v = UUID.randomUUID().toString();
         new DAVMetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
@@ -93,7 +93,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
     @Test
     @Ignore
     public void testSetMetadataFolder() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         final String v = UUID.randomUUID().toString();
         new DAVMetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));

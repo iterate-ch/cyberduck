@@ -27,6 +27,6 @@ public class AzureHomeFinderService extends PathContainerHomeFinderService {
         = new AzurePathContainerService();
 
     public AzureHomeFinderService(final AzureSession session) {
-        super(session, new AzurePathContainerService());
+        super(session.getHost(), new AzurePathContainerService());
     }
 }

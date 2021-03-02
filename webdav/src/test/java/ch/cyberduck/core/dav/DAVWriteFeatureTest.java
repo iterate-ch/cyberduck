@@ -50,7 +50,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         IOUtils.write(content, out);
         out.close();
         status.setLength(content.length);
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature(new DAVWriteFeature(session));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledConnectionCallback());
@@ -206,7 +206,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     @Test(expected = AccessDeniedException.class)
     @Ignore
     public void testWriteZeroBytesAccessDenied() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final HttpResponseOutputStream<String> write = new DAVWriteFeature(session).write(test, new TransferStatus(), new DisabledConnectionCallback());
         try {
             write.close();
@@ -220,7 +220,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     @Test(expected = AccessDeniedException.class)
     @Ignore
     public void testWriteAccessDenied() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         // With Expect: Continue header
         final HttpResponseOutputStream<String> out = new DAVWriteFeature(session).write(test, new TransferStatus().length(0L), new DisabledConnectionCallback());
         out.close();
@@ -230,8 +230,8 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     public void testAppend() throws Exception {
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         assertFalse(feature.append(
-            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+            new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         assertTrue(feature.append(test, 0L, PathCache.empty()).append);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
