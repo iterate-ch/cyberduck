@@ -105,7 +105,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     }
 
     @Override
-    protected StoregateApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
+    protected StoregateApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
             @Override

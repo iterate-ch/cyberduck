@@ -52,7 +52,7 @@ public class SDSQuotaFeatureTest extends AbstractSDSTest {
         ));
         host.setDefaultPath(new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)).getAbsolute());
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Quota.Space quota = new SDSQuotaFeature(session, nodeid).get();

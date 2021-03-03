@@ -53,7 +53,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
             PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Map<String, String> metadata = new DAVMetadataFeature(session).getMetadata(new Path("/trunk", EnumSet.of(Path.Type.directory)));
         assertNotNull(metadata);
@@ -66,7 +66,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
             PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Map<String, String> metadata = new DAVMetadataFeature(session).getMetadata(new Path("/trunk/README.md", EnumSet.of(Path.Type.file)));
         assertFalse(metadata.isEmpty());

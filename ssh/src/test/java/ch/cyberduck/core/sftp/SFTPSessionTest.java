@@ -124,7 +124,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         new SFTPHomeDirectoryService(session).find();
     }
 
@@ -153,7 +153,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                     verify.set(true);
                     throw new ConnectionCanceledException();
                 }
-            }, new DisabledLoginCallback());
+            }, new DisabledLoginCallback(), new DisabledCancelCallback());
         }
         catch(Exception e) {
             assertTrue(verify.get());
@@ -258,7 +258,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                     fail();
                     return false;
                 }
-            }, new DisabledLoginCallback()));
+            }, new DisabledLoginCallback(), new DisabledCancelCallback()));
             session.close();
             assertNotNull(session.open(Proxy.DIRECT, new OpenSSHHostKeyVerifier(f) {
                 @Override
@@ -276,7 +276,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key) {
                     return false;
                 }
-            }, new DisabledLoginCallback()));
+            }, new DisabledLoginCallback(), new DisabledCancelCallback()));
             session.close();
         }
         finally {

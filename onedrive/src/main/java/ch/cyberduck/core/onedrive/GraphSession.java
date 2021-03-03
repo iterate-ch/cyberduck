@@ -111,7 +111,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     }
 
     @Override
-    protected OneDriveAPI connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws HostParserException {
+    protected OneDriveAPI connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws HostParserException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(
             builder.build(ProxyFactory.get().find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host.getProtocol()) {

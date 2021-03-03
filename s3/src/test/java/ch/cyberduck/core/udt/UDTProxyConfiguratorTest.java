@@ -110,7 +110,7 @@ public class UDTProxyConfiguratorTest {
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         try {
-            assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+            assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
             tunneled.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()
             );
         }
@@ -132,7 +132,7 @@ public class UDTProxyConfiguratorTest {
             new QloudsonicProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = ConnectionCanceledException.class)
@@ -164,7 +164,7 @@ public class UDTProxyConfiguratorTest {
         }, new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         tunneled.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()
         );
     }
@@ -190,7 +190,7 @@ public class UDTProxyConfiguratorTest {
         }, new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(tunneled.isConnected());
 
         final TransferStatus status = new TransferStatus();
@@ -225,7 +225,7 @@ public class UDTProxyConfiguratorTest {
             new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         tunneled.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()
         );
         tunneled.close();
@@ -243,7 +243,7 @@ public class UDTProxyConfiguratorTest {
             new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(tunneled.isConnected());
         tunneled.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()
         );
@@ -299,7 +299,7 @@ public class UDTProxyConfiguratorTest {
         }, new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(tunneled.isConnected());
         tunneled.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()
         );

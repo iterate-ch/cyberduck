@@ -64,7 +64,7 @@ public class MantaPublicKeyAuthenticationTest {
             final String hostname = new URL(System.getProperty("manta.url")).getHost();
             final Host host = new Host(new MantaProtocol(), hostname, credentials);
             final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             session.login(Proxy.DIRECT,
                 new DisabledLoginCallback() {
                     @Override
@@ -106,7 +106,7 @@ public class MantaPublicKeyAuthenticationTest {
             final String hostname = new URL(System.getProperty("manta.url")).getHost();
             final Host host = new Host(new MantaProtocol(), hostname, credentials);
             final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             session.login(Proxy.DIRECT,
                 new DisabledLoginCallback() {
                     @Override

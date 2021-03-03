@@ -75,7 +75,7 @@ public class MantaSession extends HttpSession<MantaClient> {
     }
 
     @Override
-    protected MantaClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
+    protected MantaClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         return new MantaClient(config, new MantaConnectionFactoryConfigurator(builder.build(proxy, this, prompt)));
     }
 

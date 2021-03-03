@@ -26,7 +26,7 @@ public class KeychainLoginServiceTest {
                 throw new LoginCanceledException();
             }
         };
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         LoginService l = new KeychainLoginService(new DisabledPasswordStore());
         l.authenticate(Proxy.DIRECT, session, new ProgressListener() {
             int i = 0;

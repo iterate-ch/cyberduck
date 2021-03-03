@@ -124,7 +124,7 @@ public class LoginConnectionService implements ConnectionService {
     }
 
     @Override
-    public void connect(final Session<?> session, final CancelCallback callback) throws BackgroundException {
+    public void connect(final Session<?> session, final CancelCallback cancel) throws BackgroundException {
         if(session.isConnected()) {
             this.close(session);
         }
@@ -138,7 +138,7 @@ public class LoginConnectionService implements ConnectionService {
             if(null == JumpHostConfiguratorFactory.get(bookmark.getProtocol()).getJumphost(bookmark.getHostname())) {
                 // Do not attempt to resolve hostname that may only be reachable in internal network from jump host
                 try {
-                    resolver.resolve(hostname, callback);
+                    resolver.resolve(hostname, cancel);
                 }
                 catch(ResolveFailedException e) {
                     log.warn(String.format("DNS resolver failed for %s", hostname));
@@ -149,7 +149,7 @@ public class LoginConnectionService implements ConnectionService {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Opening {0} connection to {1}", "Status"),
             bookmark.getProtocol().getName(), hostname));
         // The IP address could successfully be determined
-        session.open(proxy, key, prompt);
+        session.open(proxy, key, prompt, cancel);
         listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
             bookmark.getProtocol().getName()));
         // Update last accessed timestamp
@@ -168,7 +168,7 @@ public class LoginConnectionService implements ConnectionService {
         }
         // Login
         try {
-            this.authenticate(proxy, session, callback);
+            this.authenticate(proxy, session, cancel);
         }
         catch(BackgroundException e) {
             this.close(session);

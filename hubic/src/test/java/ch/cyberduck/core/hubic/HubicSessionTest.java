@@ -49,7 +49,7 @@ public class HubicSessionTest {
             new Local("../profiles/hubiC.cyberduckprofile"));
         final HubicSession session = new HubicSession(new Host(profile,
             new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")), new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         try {
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         }
@@ -67,7 +67,7 @@ public class HubicSessionTest {
             new Local("../profiles/hubiC.cyberduckprofile"));
         final HubicSession session = new HubicSession(new Host(profile,
             new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")), new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
     }

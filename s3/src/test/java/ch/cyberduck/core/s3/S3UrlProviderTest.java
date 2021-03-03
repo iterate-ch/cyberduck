@@ -2,6 +2,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -29,7 +30,7 @@ public class S3UrlProviderTest {
         }, new S3Protocol().getDefaultHostname())) {
             @Override
             public RequestEntityRestStorageService getClient() {
-                return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+                return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             }
         };
         Path p = new Path("/bucket/f/key f", EnumSet.of(Path.Type.file));
@@ -83,7 +84,7 @@ public class S3UrlProviderTest {
             new Credentials("anonymous", null))) {
             @Override
             public RequestEntityRestStorageService getClient() {
-                return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+                return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             }
         };
         assertEquals(DescriptiveUrl.EMPTY,
@@ -102,7 +103,7 @@ public class S3UrlProviderTest {
             new Credentials("k", "s"))) {
             @Override
             public RequestEntityRestStorageService getClient() {
-                return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+                return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             }
         };
         final S3UrlProvider provider = new S3UrlProvider(session, new DisabledPasswordStore() {
@@ -123,7 +124,7 @@ public class S3UrlProviderTest {
         ))) {
             @Override
             public RequestEntityRestStorageService getClient() {
-                return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+                return this.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             }
         };
         final S3UrlProvider provider = new S3UrlProvider(session, new DisabledPasswordStore() {

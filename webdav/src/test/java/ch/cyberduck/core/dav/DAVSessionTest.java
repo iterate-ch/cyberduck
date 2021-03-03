@@ -57,7 +57,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         final DAVSession session = new DAVSession(host,
             new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
             new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DefaultCertificateStore()));
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -77,7 +77,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
             new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DefaultCertificateStore()));
         try {
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         }
         catch(ConnectionRefusedException e) {
@@ -91,7 +91,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         final Host host = new Host(new DAVProtocol(), "cyberduck.ch");
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         try {
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
             new DAVListService(session).list(new DefaultHomeFinderService(session.getHost()).find(), new DisabledListProgressListener());
         }
@@ -113,7 +113,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         ));
         host.setDefaultPath("/WebDAV");
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
     }

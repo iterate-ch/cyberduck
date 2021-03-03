@@ -112,7 +112,7 @@ public class LoginConnectionServiceTest {
         }, new DisabledProgressListener());
         final Session session = new NullSession(new Host(new TestProtocol(), "localhost", new Credentials("user", ""))) {
             @Override
-            public Void connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
+            public Void connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
                 connected.set(true);
                 return null;
             }
