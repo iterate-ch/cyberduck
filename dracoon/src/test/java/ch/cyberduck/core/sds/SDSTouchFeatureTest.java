@@ -17,18 +17,29 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
+import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -102,5 +113,38 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         assertTrue(new SDSFindFeature(nodeid).find(test));
         assertEquals(test.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(test).getVersionId());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testQuota() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final UpdateRoomRequest updateRoomRequest = new UpdateRoomRequest();
+        updateRoomRequest.setQuota(1L);
+        assertEquals(1L, new NodesApi(session.getClient()).updateRoom(updateRoomRequest, Long.valueOf(room.attributes().getVersionId()), StringUtils.EMPTY, null).getQuota(), 0L);
+        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(room.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room)), StringUtils.EMPTY));
+        assertEquals(1L, room.attributes().getQuota());
+        final byte[] content = RandomUtils.nextBytes(2);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(2L);
+        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
+        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        PathAttributes attr;
+        final long timestamp = System.currentTimeMillis();
+        do {
+            attr = new SDSAttributesFinderFeature(session, nodeid).find(room);
+            if(System.currentTimeMillis() - timestamp > Duration.ofMinutes(1L).toMillis()) {
+                fail();
+            }
+        }
+        while(attr.getSize() != 2L);
+        assertFalse(new SDSTouchFeature(session, nodeid).isSupported(room.withAttributes(attr), StringUtils.EMPTY));
+        assertEquals(1L, attr.getQuota());
+        assertEquals(2L, attr.getSize());
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

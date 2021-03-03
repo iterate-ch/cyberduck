@@ -24,8 +24,8 @@ public interface Touch<Reply> {
     Path touch(Path file, TransferStatus status) throws BackgroundException;
 
     /**
-     * @param workdir Working directory
-     * @param filename
+     * @param workdir  Working directory
+     * @param filename Relative filename
      * @return True if creating an empty file is possible.
      */
     default boolean isSupported(final Path workdir, final String filename) {
