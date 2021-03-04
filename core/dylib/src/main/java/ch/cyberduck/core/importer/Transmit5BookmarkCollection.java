@@ -135,6 +135,15 @@ public class Transmit5BookmarkCollection extends ThirdpartyBookmarkCollection {
         final Host host = new Host(protocol, hostname, new Credentials(bookmark.stringForKey("com_panic_transmit_username")));
         host.setNickname(bookmark.stringForKey("com_panic_transmit_nickname"));
         host.setDefaultPath(bookmark.stringForKey("com_panic_transmit_remotePath"));
+        final String port = bookmark.stringForKey("com_panic_transmit_port");
+        if(StringUtils.isNotBlank(port)) {
+            try {
+                host.setPort(Integer.parseInt(port));
+            }
+            catch(NumberFormatException e) {
+                log.warn(String.format("Ignore invalid port number %s", port));
+            }
+        }
         this.add(host);
     }
 }
