@@ -96,6 +96,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
                     }
                     if(segmentFile.attributes().getSize() == segmentStatus.getLength()) {
                         segmentStatus.setComplete();
+                        status.setLength(status.getLength() - segmentStatus.getLength());
                         status.setOffset(status.getOffset() + segmentStatus.getLength());
                     }
                 }
