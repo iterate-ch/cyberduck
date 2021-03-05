@@ -24,6 +24,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -148,7 +149,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
             if(null == name) {
                 return this.iconNamed("notfound.tiff", width, height);
             }
-            else if(name.indexOf(Local.DELIMITER) != -1) {
+            else if(name.contains(PreferencesFactory.get().getProperty("local.delimiter"))) {
                 return this.cache(FilenameUtils.getName(name), this.convert(FilenameUtils.getName(name),
                     NSImage.imageWithContentsOfFile(name), width, height), width);
             }

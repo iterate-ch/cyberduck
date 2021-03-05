@@ -62,8 +62,6 @@ import java.util.Set;
 public class Local extends AbstractPath implements Referenceable, Serializable {
     private static final Logger log = Logger.getLogger(Local.class);
 
-    public static final char DELIMITER = CharUtils.toChar(PreferencesFactory.get().getProperty("local.delimiter"));
-
     /**
      * Absolute path in local file system
      */
@@ -202,7 +200,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     @Override
     public char getDelimiter() {
-        return DELIMITER;
+        return CharUtils.toChar(PreferencesFactory.get().getProperty("local.delimiter"));
     }
 
     public void mkdir() throws AccessDeniedException {

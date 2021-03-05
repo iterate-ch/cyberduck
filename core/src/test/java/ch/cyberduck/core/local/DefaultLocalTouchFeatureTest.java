@@ -4,6 +4,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
 
@@ -40,7 +41,7 @@ public class DefaultLocalTouchFeatureTest {
         }
         catch(AccessDeniedException e) {
             final String s = l.getName();
-            assertEquals("Cannot create " + Local.DELIMITER + s + ". Please verify disk permissions.", e.getDetail());
+            assertEquals("Cannot create " + PreferencesFactory.get().getProperty("local.delimiter") + s + ". Please verify disk permissions.", e.getDetail());
             assertEquals("Access denied", e.getMessage());
         }
     }
