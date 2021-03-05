@@ -79,7 +79,7 @@ public class LocalAttributes extends Attributes {
             Files.setLastModifiedTime(Paths.get(path), FileTime.fromMillis(timestamp));
         }
         catch(IOException e) {
-            throw new LocalAccessDeniedException(String.format("Cannot change timestamp of %s", path), e);
+            throw new LocalAccessDeniedException(String.format("Cannot change timestamp of %s to %d", path, timestamp), e);
         }
     }
 
@@ -114,7 +114,7 @@ public class LocalAttributes extends Attributes {
                 Files.setPosixFilePermissions(Paths.get(path), PosixFilePermissions.fromString(permission.getSymbol()));
             }
             catch(IllegalArgumentException | IOException e) {
-                throw new LocalAccessDeniedException(String.format("Cannot change permissions of %s", path), e);
+                throw new LocalAccessDeniedException(String.format("Cannot change permissions of %s to %s", path, permission.getSymbol()), e);
             }
         }
     }
