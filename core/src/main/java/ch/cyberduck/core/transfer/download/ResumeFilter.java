@@ -94,16 +94,10 @@ public class ResumeFilter extends AbstractDownloadFilter {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Determine if part %s can be skipped", segmentStatus));
                     }
-                    if(segmentFile.attributes().getSize() > 0) {
-                        segmentStatus.setAppend(true);
-                        segmentStatus.setLength(segmentStatus.getLength() - segmentFile.attributes().getSize());
-                        segmentStatus.setOffset(segmentStatus.getOffset() + segmentFile.attributes().getSize());
-                        if(segmentStatus.getLength() == 0L) {
-                            segmentStatus.setComplete();
-                        }
-                        // Recalculate transfer length
-                        status.setAppend(true);
-                        status.setLength(status.getLength() - segmentFile.attributes().getSize());
+                    if(segmentFile.attributes().getSize() == segmentStatus.getLength()) {
+                        segmentStatus.setComplete();
+                        status.setLength(status.getLength() - segmentStatus.getLength());
+                        status.setOffset(status.getOffset() + segmentStatus.getLength());
                     }
                 }
             }

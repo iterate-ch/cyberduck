@@ -36,7 +36,6 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
@@ -196,48 +195,42 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 catch(IOException e) {
                     log.warn(String.format("Failure to determine disk space for %s", file.getParent()));
                 }
+                long threshold = preferences.getLong("queue.download.segments.threshold");
                 if(status.getLength() * 2 > space) {
                     log.warn(String.format("Insufficient free disk space %d for segmented download of %s", space, file));
                 }
-                else {
-                    // Make segments
-                    if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
-                        && status.getLength() > preferences.getLong("queue.download.segments.size")) {
-                        final Download read = session.getFeature(Download.class);
-                        if(read.offset(file)) {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Split download %s into segments", local));
-                            }
-                            long remaining = status.getLength();
-                            long offset = 0;
-                            // Part size from default setting of size divided by maximum number of connections
-                            long partsize = Math.max(
-                                preferences.getLong("queue.download.segments.size"),
-                                status.getLength() / preferences.getInteger("queue.connections.limit"));
-                            // Sorted list
-                            final List<TransferStatus> segments = new ArrayList<TransferStatus>();
-                            final Local segmentsFolder = LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName()));
-                            for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
-                                final Local segmentFile = LocalFactory.get(
-                                    segmentsFolder, String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
-                                // Last part can be less than 5 MB. Adjust part size.
-                                long length = Math.min(partsize, remaining);
-                                final TransferStatus segmentStatus = new TransferStatus()
-                                    .segment(true) // Skip completion filter for single segment
-                                    .append(true) // Read with offset
-                                    .skip(offset)
-                                    .length(length)
-                                    .rename(segmentFile);
-                                if(log.isDebugEnabled()) {
-                                    log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
-                                }
-                                segments.add(segmentStatus);
-                                remaining -= length;
-                                offset += length;
-                            }
-                            status.withSegments(segments);
+                else if(status.getLength() > threshold) {
+                    // if file is smaller than threshold do not attempt to segment
+                    final long segmentSize = findSegmentSize(status.getLength(),
+                        preferences.getLong("queue.connections.limit"), threshold,
+                        preferences.getLong("queue.download.segments.size"),
+                        preferences.getLong("queue.download.segments.count"));
+
+                    // with default settings this can handle files up to 16 GiB, with 128 segments at 128 MiB.
+                    // this scales down to files of size 20MiB with 2 segments at 10 MiB
+                    long remaining = status.getLength(), offset = 0;
+                    // Sorted list
+                    final List<TransferStatus> segments = new ArrayList<TransferStatus>();
+                    final Local segmentsFolder = LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName()));
+                    for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
+                        final Local segmentFile = LocalFactory.get(
+                            segmentsFolder, String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
+                        // Last part can be less than 5 MB. Adjust part size.
+                        long length = Math.min(segmentSize, remaining);
+                        final TransferStatus segmentStatus = new TransferStatus()
+                            .segment(true) // Skip completion filter for single segment
+                            .append(true) // Read with offset
+                            .skip(offset)
+                            .length(length)
+                            .rename(segmentFile);
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
                         }
+                        segments.add(segmentStatus);
+                        remaining -= length;
+                        offset += length;
                     }
+                    status.withSegments(segments);
                 }
             }
         }
@@ -395,5 +388,35 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 }
             }
         }
+    }
+
+    static long findSegmentSize(final long length, final long initialSplit, final long segmentThreshold, final long segmentSizeMaximum, final long segmentCountLimit) {
+        // Make segments
+        long parts, segmentSize, nextParts = initialSplit;
+        // find segment size
+        // starting with part count of queue.connections.limit
+        // but not more than queue.download.segments.count
+        // or until smaller than queue.download.segments.threshold
+        do {
+            parts = nextParts;
+            nextParts = Math.min(nextParts * 2, segmentCountLimit);
+            // round up to next byte
+            segmentSize = (length + 1) / parts;
+        }
+        while(segmentSize > segmentThreshold && parts < segmentCountLimit);
+        // round to next divisible by 2
+        segmentSize = (segmentSize * 2 + 1) / 2;
+        // if larger than maximum segment size
+        if(segmentSize > segmentSizeMaximum) {
+            // double segment size until parts smaller than queue.download.segments.count
+            long nextSize = segmentSizeMaximum;
+            do {
+                segmentSize = nextSize;
+                nextSize *= 2;
+                parts = length / segmentSize;
+            }
+            while(parts > segmentCountLimit);
+        }
+        return segmentSize;
     }
 }
