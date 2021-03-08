@@ -481,7 +481,11 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserKeyPairContainer getKeyPairForFileKey(final EncryptedFileKey.Version version) throws BackgroundException {
         switch(version) {
             case RSA2048_AES256GCM:
-                return this.keyPairDeprecated();
+                final UserKeyPairContainer keyPairDeprecated = this.keyPairDeprecated();
+                if(null == keyPairDeprecated) {
+                    throw new InteroperabilityException(String.format("No keypair for version %s", version));
+                }
+                return keyPairDeprecated;
             case RSA4096_AES256GCM:
                 return this.keyPair();
             default:
@@ -512,10 +516,14 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             try {
                 keyPair.set(new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, requiredKeyPairVersion.getValue(), null));
             }
-            catch(ApiException api) {
-                log.warn(String.format("Failure updating user key pair for required algorithm. %s", api.getMessage()));
+            catch(ApiException e) {
+                log.warn(String.format("Failure updating user key pair for required algorithm. %s", e.getMessage()));
                 // fallback
-                keyPair.set(this.keyPairDeprecated());
+                final UserKeyPairContainer keyPairDeprecated = this.keyPairDeprecated();
+                if(null == keyPairDeprecated) {
+                    throw new SDSExceptionMappingService().map(e);
+                }
+                keyPair.set(keyPairDeprecated);
             }
         }
         return keyPair.get();
