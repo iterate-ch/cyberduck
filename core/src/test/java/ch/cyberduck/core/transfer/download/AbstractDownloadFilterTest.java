@@ -76,6 +76,7 @@ public class AbstractDownloadFilterTest {
             new SegmentSizePair(
                 4893263872L, 2,
                 convertSize(10, MiB), convertSize(128, MiB), 128)
+                .withExpected(38228624L)
         };
 
         for(final SegmentSizePair test : tests) {
