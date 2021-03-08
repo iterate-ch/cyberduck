@@ -77,7 +77,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     @Test
     public void testWriteContentRange() throws Exception {
         final DAVWriteFeature feature = new DAVWriteFeature(session);
-        final Path test = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(64000);
         {
             final TransferStatus status = new TransferStatus();
@@ -110,7 +110,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     @Ignore
     public void testWriteRangeEndFirst() throws Exception {
         final DAVWriteFeature feature = new DAVWriteFeature(session);
-        final Path test = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(2048);
         {
             // Write end of file first
@@ -150,7 +150,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     @Test
     public void testWriteContentRangeTwoBytes() throws Exception {
         final DAVWriteFeature feature = new DAVWriteFeature(session);
-        final Path test = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] source = RandomUtils.nextBytes(2);
         {
             final TransferStatus status = new TransferStatus();
@@ -178,7 +178,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     @Test
     public void testWriteContentRangeThreeBytes() throws Exception {
         final DAVWriteFeature feature = new DAVWriteFeature(session);
-        final Path test = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session.getHost()).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] source = RandomUtils.nextBytes(3);
         {
             final TransferStatus status = new TransferStatus();
