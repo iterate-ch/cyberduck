@@ -388,7 +388,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="84">
                     <rect key="frame" x="140" y="252" width="244" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Schrijf toegangslogs naar gekozen container." id="85">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Schrijf toegangslogboeken naar gekozen container." id="85">
                         <font key="font" metaFont="message" size="11"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
