@@ -134,7 +134,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
                 log.info(String.format("Retrieved chunk of %d items in %s", list.size(), directory));
             }
             if(worker.isCanceled()) {
-                throw new ConnectionCanceledException();
+                throw new ListCanceledException(list);
             }
             proxy.chunk(directory, list);
         }
