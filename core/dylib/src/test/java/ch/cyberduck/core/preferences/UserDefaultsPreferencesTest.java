@@ -17,13 +17,13 @@ package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class UserDefaultsPreferencesTest {
 
@@ -124,5 +124,14 @@ public class UserDefaultsPreferencesTest {
         assertEquals("test.value", p.getProperty(property));
         p.setProperty(property, "test.value2");
         assertEquals("test.value2", p.getProperty(property));
+    }
+
+    @Test
+    public void testTemporaryDirectory() throws Exception {
+        UserDefaultsPreferences p = new UserDefaultsPreferences();
+        p.load();
+        p.setDefaults();
+        assertTrue(StringUtils.startsWith(p.getProperty("tmp.dir"), System.getProperty("java.io.tmpdir")));
+        assertNotEquals(System.getProperty("java.io.tmpdir"), p.getProperty("tmp.dir"));
     }
 }
