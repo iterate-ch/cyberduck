@@ -26,7 +26,10 @@ import ch.cyberduck.binding.foundation.NSLocale;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.binding.foundation.NSUserDefaults;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.cache.LRUCache;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.sparkle.Sandbox;
 
@@ -162,7 +165,6 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         // Parent defaults
         super.setDefaults();
 
-        this.setDefault("tmp.dir", FoundationKitFunctions.library.NSTemporaryDirectory());
         if(Sandbox.get().isSandboxed()) {
             // Set actual home directory outside of sandbox
             this.setDefault("local.user.home", SystemB.INSTANCE.getpwuid(LibC.INSTANCE.getuid()).pw_dir);
@@ -176,7 +178,17 @@ public class UserDefaultsPreferences extends DefaultPreferences {
                 this.setDefault("application.copyright", bundle.objectForInfoDictionaryKey("NSHumanReadableCopyright").toString());
             }
             if(bundle.objectForInfoDictionaryKey("CFBundleIdentifier") != null) {
-                this.setDefault("application.identifier", bundle.objectForInfoDictionaryKey("CFBundleIdentifier").toString());
+                final String bundleIdentifier = bundle.objectForInfoDictionaryKey("CFBundleIdentifier").toString();
+                this.setDefault("application.identifier", bundleIdentifier);
+                // Append bundle identifier to tmp dir
+                final Local directory = LocalFactory.get(FoundationKitFunctions.library.NSTemporaryDirectory(), bundleIdentifier);
+                try {
+                    directory.mkdir();
+                    this.setDefault("tmp.dir", directory.getAbsolute());
+                }
+                catch(AccessDeniedException e) {
+                    log.warn(String.format("Failure creating temporary directory %s", directory));
+                }
             }
             if(bundle.objectForInfoDictionaryKey("CFBundleShortVersionString") != null) {
                 this.setDefault("application.version", bundle.objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
