@@ -28,6 +28,7 @@ public class PathAttributesTest {
         final PathAttributes clone = new PathAttributes(attributes);
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
+        assertEquals(clone, attributes);
     }
 
     @Test
@@ -81,5 +82,6 @@ public class PathAttributesTest {
         assertEquals(attributes.getRegion(), deserialized.getRegion());
         assertEquals(attributes.getStorageClass(), deserialized.getStorageClass());
         assertEquals(attributes.getCustom(), deserialized.getCustom());
+        assertEquals(attributes, deserialized);
     }
 }
