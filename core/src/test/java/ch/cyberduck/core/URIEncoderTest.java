@@ -13,6 +13,12 @@ public class URIEncoderTest {
     }
 
     @Test
+    public void testDecode() {
+        assertEquals("/p", URIEncoder.decode("/p"));
+        assertEquals("/%0", URIEncoder.decode("/%250"));
+    }
+
+    @Test
     public void testEncodeHash() {
         assertEquals("file%23", URIEncoder.encode("file#"));
     }
