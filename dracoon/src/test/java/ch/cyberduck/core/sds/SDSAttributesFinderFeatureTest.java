@@ -113,6 +113,22 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
     }
 
     @Test
+    public void testFindRoom() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(room);
+        assertNotEquals(PathAttributes.EMPTY, attributes);
+        assertEquals(0L, attributes.getSize());
+        assertNotEquals(-1L, attributes.getModificationDate());
+        assertNull(attributes.getChecksum().algorithm);
+        assertTrue(attributes.getPermission().isReadable());
+        assertTrue(attributes.getPermission().isWritable());
+        assertTrue(attributes.getPermission().isExecutable());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testVersioning() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
