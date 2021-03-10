@@ -84,7 +84,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="142" y="311" width="393" height="346"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="393" height="346"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -947,18 +947,18 @@
                     <rect key="frame" x="20" y="50" width="360" height="136"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <clipView key="contentView" id="GpH-MS-fG7">
-                        <rect key="frame" x="1" y="1" width="358" height="134"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <rect key="frame" x="1" y="0.0" width="358" height="135"/>
+                        <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" multipleSelection="NO" typeSelect="NO" autosaveName="Metadata" rowHeight="15" headerView="242" id="235">
-                                <rect key="frame" x="0.0" y="0.0" width="358" height="106"/>
+                                <rect key="frame" x="0.0" y="0.0" width="358" height="118"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 <tableColumns>
-                                    <tableColumn identifier="NAME" width="156" minWidth="40" maxWidth="300" id="236">
+                                    <tableColumn identifier="NAME" width="175" minWidth="40" maxWidth="300" id="236">
                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Naam">
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
@@ -970,7 +970,7 @@
                                         </textFieldCell>
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                     </tableColumn>
-                                    <tableColumn identifier="VALUE" width="158" minWidth="40" maxWidth="300" id="238">
+                                    <tableColumn identifier="VALUE" width="177" minWidth="40" maxWidth="300" id="238">
                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Waarde">
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
@@ -986,16 +986,16 @@
                             </tableView>
                         </subviews>
                     </clipView>
-                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="240">
+                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="240">
                         <rect key="frame" x="-100" y="-100" width="343" height="11"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
-                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="NO" id="241">
+                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" controlSize="small" horizontal="NO" id="241">
                         <rect key="frame" x="344" y="17" width="11" height="84"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
-                    <tableHeaderView key="headerView" wantsLayer="YES" id="242">
-                        <rect key="frame" x="0.0" y="0.0" width="358" height="28"/>
+                    <tableHeaderView key="headerView" id="242">
+                        <rect key="frame" x="0.0" y="0.0" width="358" height="25"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </tableHeaderView>
                 </scrollView>
@@ -1069,18 +1069,18 @@
                     <rect key="frame" x="20" y="50" width="360" height="102"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <clipView key="contentView" id="rMW-ks-ynj">
-                        <rect key="frame" x="1" y="1" width="358" height="100"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <rect key="frame" x="1" y="0.0" width="358" height="101"/>
+                        <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" multipleSelection="NO" typeSelect="NO" autosaveName="Metadata" rowHeight="15" headerView="267" id="260">
-                                <rect key="frame" x="0.0" y="0.0" width="358" height="72"/>
+                                <rect key="frame" x="0.0" y="0.0" width="358" height="84"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 <tableColumns>
-                                    <tableColumn identifier="GRANTEE" width="156" minWidth="40" maxWidth="300" id="261">
+                                    <tableColumn identifier="GRANTEE" width="175" minWidth="40" maxWidth="300" id="261">
                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Begunstigde">
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
@@ -1092,7 +1092,7 @@
                                         </textFieldCell>
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                     </tableColumn>
-                                    <tableColumn identifier="PERMISSION" width="158" minWidth="40" maxWidth="300" id="263">
+                                    <tableColumn identifier="PERMISSION" width="177" minWidth="40" maxWidth="300" id="263">
                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Bevoegdheid">
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
@@ -1108,16 +1108,16 @@
                             </tableView>
                         </subviews>
                     </clipView>
-                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="265">
+                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="265">
                         <rect key="frame" x="-100" y="-100" width="343" height="11"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
-                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="NO" id="266">
+                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" controlSize="small" horizontal="NO" id="266">
                         <rect key="frame" x="344" y="17" width="11" height="84"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
-                    <tableHeaderView key="headerView" wantsLayer="YES" id="267">
-                        <rect key="frame" x="0.0" y="0.0" width="358" height="28"/>
+                    <tableHeaderView key="headerView" id="267">
+                        <rect key="frame" x="0.0" y="0.0" width="358" height="25"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </tableHeaderView>
                 </scrollView>
@@ -1156,6 +1156,6 @@
         </customView>
     </objects>
     <resources>
-        <image name="NSRemoveTemplate" width="15" height="4"/>
+        <image name="NSRemoveTemplate" width="11" height="11"/>
     </resources>
 </document>
