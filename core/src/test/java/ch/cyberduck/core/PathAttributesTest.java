@@ -17,8 +17,15 @@ public class PathAttributesTest {
     @Test
     public void testCopy() {
         final PathAttributes attributes = new PathAttributes();
+        attributes.setSize(1L);
+        attributes.setQuota(10L);
+        attributes.setModificationDate(System.currentTimeMillis());
+        attributes.setRevision(2L);
+        attributes.setFileId(new AlphanumericRandomStringService().random());
+        attributes.setVersionId(new AlphanumericRandomStringService().random());
+        attributes.setDuplicate(true);
+        attributes.setLockId(new AlphanumericRandomStringService().random());
         final PathAttributes clone = new PathAttributes(attributes);
-
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
     }

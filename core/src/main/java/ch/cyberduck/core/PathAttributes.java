@@ -163,6 +163,7 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public PathAttributes(final PathAttributes copy) {
         size = copy.size;
+        quota = copy.quota;
         modified = copy.modified;
         accessed = copy.accessed;
         created = copy.created;
