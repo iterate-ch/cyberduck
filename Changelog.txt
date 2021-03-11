@@ -3,6 +3,8 @@ https://cyberduck.io/
 
 7.8.3
 - [Bugfix] Failure renaming files (OneDrive, Sharepoint)
+- [Bugfix] Optimize segmented downloads
+- [Bugfix] Allow resume of segmented downloads
 - [Bugfix] Missing default connection profile (Nextcloud & ownCloud)
 - [Bugfix] Missing default connection profile (Microsoft SharePoint Site)
 - [Bugfix] Missing default connection profile (Files.com)
