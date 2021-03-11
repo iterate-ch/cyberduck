@@ -129,7 +129,9 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                         // Duplicate if not latest version
                         final String latest = this.toAttributes(session.getClient().getObjectDetails(
                             containerService.getContainer(file).getName(), containerService.getKey(file))).getVersionId();
-                        attr.setDuplicate(!latest.equals(attr.getVersionId()));
+                        if(null != latest) {
+                            attr.setDuplicate(!latest.equals(attr.getVersionId()));
+                        }
                     }
                     catch(ServiceException e) {
                         final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
