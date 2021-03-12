@@ -10,8 +10,8 @@
 	<string>Internap XIPCloud Storage</string>
 	<key>Default Hostname</key>
 	<string>auth.storage.santa-clara.internapcloud.net</string>
-	<key>Default Port</key>
-	<string>443</string>
+    <key>Port Configurable</key>
+    <false/>
 	<key>Username Placeholder</key>
 	<string>Account</string>
 	<key>Password Placeholder</key>

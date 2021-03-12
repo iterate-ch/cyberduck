@@ -23,8 +23,6 @@
         <string>DRACOON (OAuth Password Flow)</string>
         <key>Scheme</key>
         <string>https</string>
-        <key>Default Port</key>
-        <string>443</string>
         <key>Username Placeholder</key>
         <string>Username</string>
         <key>Password Placeholder</key>

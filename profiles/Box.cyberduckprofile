@@ -10,6 +10,8 @@
 	<string>Box (WebDAV)</string>
 	<key>Default Hostname</key>
 	<string>dav.box.com</string>
+    <key>Port Configurable</key>
+    <false/>
 	<key>Username Placeholder</key>
 	<string>Email</string>
 </dict>

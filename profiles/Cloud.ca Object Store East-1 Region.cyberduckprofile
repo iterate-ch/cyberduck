@@ -10,8 +10,8 @@
 	<string>Cloud.ca Object Store East-1 Region</string>
 	<key>Default Hostname</key>
 	<string>objects.east-1.cloud.ca</string>
-	<key>Default Port</key>
-	<string>443</string>
+    <key>Port Configurable</key>
+    <false/>
 	<key>Username Placeholder</key>
 	<string>Account Name</string>
 	<key>Password Placeholder</key>

@@ -10,8 +10,8 @@
 	<string>Lunacloud Storage (S3 Compatible)</string>
 	<key>Default Hostname</key>
 	<string>lcs.lunacloud.io</string>
-	<key>Default Port</key>
-	<string>443</string>
+    <key>Port Configurable</key>
+    <false/>
 	<key>Authorization</key>
 	<string>AWS2</string>
 	<key>Icon</key>

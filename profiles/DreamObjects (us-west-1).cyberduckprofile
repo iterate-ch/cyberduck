@@ -10,8 +10,8 @@
 	<string>DreamObjects Cloud Storage (S3)</string>
 	<key>Default Hostname</key>
     <string>objects-us-east-1.dream.io</string>
-	<key>Default Port</key>
-	<string>443</string>
+    <key>Port Configurable</key>
+    <false/>
 	<key>Username Placeholder</key>
 	<string>Access Key</string>
 	<key>Password Placeholder</key>
