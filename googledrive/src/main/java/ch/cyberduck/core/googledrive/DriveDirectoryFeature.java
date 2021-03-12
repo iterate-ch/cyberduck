@@ -46,7 +46,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
     @Override
     public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(folder.getParent())) {
+            if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(folder.getParent())) {
                 final TeamDrive execute = session.getClient().teamdrives().create(
                     new UUIDRandomStringService().random(), new TeamDrive().setName(folder.getName())
                 ).execute();

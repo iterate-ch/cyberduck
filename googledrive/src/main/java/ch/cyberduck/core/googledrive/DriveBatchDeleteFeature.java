@@ -55,7 +55,7 @@ public class DriveBatchDeleteFeature implements Delete {
         final List<BackgroundException> failures = new ArrayList<>();
         for(Path file : files.keySet()) {
             try {
-                if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(file.getParent())) {
+                if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
                     session.getClient().teamdrives().delete(fileid.getFileid(file, new DisabledListProgressListener()))
                         .queue(batch, new DeleteBatchCallback<Void>(file, failures, callback));
                 }

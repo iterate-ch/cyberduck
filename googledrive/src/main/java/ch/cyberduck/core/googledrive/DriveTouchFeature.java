@@ -66,7 +66,7 @@ public class DriveTouchFeature implements Touch<VersionId> {
         if(workdir.isRoot()) {
             return false;
         }
-        else if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(workdir)) {
+        else if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(workdir)) {
             return false;
         }
         return true;

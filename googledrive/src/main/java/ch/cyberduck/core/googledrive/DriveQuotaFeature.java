@@ -34,8 +34,8 @@ public class DriveQuotaFeature implements Quota {
 
     @Override
     public Space get() throws BackgroundException {
-        // Team Drives should not have any Quota applied.
-        if (new DriveHomeFinderService(session).find().isChild(DriveHomeFinderService.TEAM_DRIVES_NAME)) {
+        // Shared Drives should not have any Quota applied.
+        if(new DriveHomeFinderService(session).find().isChild(DriveHomeFinderService.SHARED_DRIVES_NAME)) {
             return new Space(0L, Long.MAX_VALUE);
         }
 

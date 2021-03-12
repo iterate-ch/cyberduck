@@ -46,7 +46,7 @@ public class DriveDeleteFeature implements Delete {
             }
             callback.delete(file);
             try {
-                if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(file.getParent())) {
+                if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
                     session.getClient().teamdrives().delete(fileid.getFileid(file, new DisabledListProgressListener())).execute();
                 }
                 else {
