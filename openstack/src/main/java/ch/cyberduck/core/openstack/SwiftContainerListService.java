@@ -29,6 +29,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -71,21 +72,30 @@ public class SwiftContainerListService implements RootListService {
                         continue;
                     }
                 }
-                // List all containers
-                List<Container> chunk;
-                String marker = null;
-                do {
-                    chunk = client.listContainers(r, limit, marker);
-                    for(final Container f : chunk) {
-                        final PathAttributes attributes = new PathAttributes();
-                        attributes.setRegion(f.getRegion().getRegionId());
-                        containers.add(new Path(String.format("/%s", f.getName()),
+                try {
+                    // List all containers
+                    List<Container> chunk;
+                    String marker = null;
+                    do {
+                        chunk = client.listContainers(r, limit, marker);
+                        for(final Container f : chunk) {
+                            final PathAttributes attributes = new PathAttributes();
+                            attributes.setRegion(f.getRegion().getRegionId());
+                            containers.add(new Path(String.format("/%s", f.getName()),
                                 EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
-                        marker = f.getName();
+                            marker = f.getName();
+                        }
+                        listener.chunk(directory, containers);
                     }
-                    listener.chunk(directory, containers);
+                    while(!chunk.isEmpty());
                 }
-                while(!chunk.isEmpty());
+                catch(GenericException e) {
+                    if(e.getHttpStatusCode() == HttpStatus.SC_SERVICE_UNAVAILABLE) {
+                        log.warn(String.format("Ignore failure %s for region %s", e, region));
+                        continue;
+                    }
+                    throw e;
+                }
             }
             return containers;
         }
