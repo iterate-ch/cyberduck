@@ -121,9 +121,14 @@ public class BrickSession extends DAVSession {
                 catch(UnknownHostException e) {
                     throw new ConnectionCanceledException(e);
                 }
+                final long timeout = PreferencesFactory.get().getLong("brick.pairing.interrupt.ms");
+                final long start = System.currentTimeMillis();
                 // Wait for status response from pairing scheduler
                 while(!Uninterruptibles.awaitUninterruptibly(lock, PreferencesFactory.get().getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS)) {
                     cancel.verify();
+                    if(System.currentTimeMillis() - start > timeout) {
+                        throw new ConnectionCanceledException(String.format("Interrupt wait for pairing key after %d", timeout));
+                    }
                 }
             }
         };
