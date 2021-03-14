@@ -5,6 +5,7 @@ https://cyberduck.io/
 - [Bugfix] Failure renaming files (OneDrive, Sharepoint)
 - [Bugfix] Optimize segmented downloads
 - [Bugfix] Allow resume of segmented downloads
+- [Bugfix] Ignore unavailable regions when listing containers (OpenStack Swift)
 - [Bugfix] Missing default connection profile (Nextcloud & ownCloud)
 - [Bugfix] Missing default connection profile (Microsoft SharePoint Site)
 - [Bugfix] Missing default connection profile (Files.com)
