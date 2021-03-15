@@ -23,9 +23,13 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
+import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BackgroundActionRegistry;
+import ch.cyberduck.core.threading.BackgroundActionStateCancelCallback;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.HttpResponse;
@@ -60,7 +64,16 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                         final Host bookmark = session.getHost();
                         final Credentials credentials = bookmark.getCredentials();
                         credentials.reset();
-                        session.login(ProxyFactory.get().find(new ProxyHostUrlProvider().get(bookmark)), prompt, cancel);
+                        session.login(ProxyFactory.get().find(new ProxyHostUrlProvider().get(bookmark)), prompt, new CancelCallback() {
+                            @Override
+                            public void verify() throws ConnectionCanceledException {
+                                cancel.verify();
+                                for(BackgroundAction action : BackgroundActionRegistry.global()) {
+                                    // Fail if any current background action is canceled
+                                    new BackgroundActionStateCancelCallback(action).verify();
+                                }
+                            }
+                        });
                         if(credentials.isSaved()) {
                             store.save(bookmark);
                         }
