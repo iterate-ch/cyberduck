@@ -104,7 +104,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         ).execute();
         assertEquals(attributes, f.find(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, shortcut.getName(), EnumSet.of(Path.Type.file))));
         session.getClient().files().delete(fileid.getFileid(test, new DisabledListProgressListener()))
-            .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+            .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
         try {
             f.find(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, shortcut.getName(), EnumSet.of(Path.Type.file)));
         }
@@ -115,6 +115,6 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         assertFalse(list.contains(test));
         assertNull(list.find(new SimplePathPredicate(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, shortcut.getName(), EnumSet.of(Path.Type.file)))));
         session.getClient().files().delete(shortcut.getId())
-            .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+            .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
     }
 }

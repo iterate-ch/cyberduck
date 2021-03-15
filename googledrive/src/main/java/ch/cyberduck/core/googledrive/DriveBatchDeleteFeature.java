@@ -64,12 +64,12 @@ public class DriveBatchDeleteFeature implements Delete {
                         final File properties = new File();
                         properties.setTrashed(true);
                         session.getClient().files().update(fileid.getFileid(file, new DisabledListProgressListener()), properties)
-                            .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                            .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                             .queue(batch, new DeleteBatchCallback<File>(file, failures, callback));
                     }
                     else {
                         session.getClient().files().delete(fileid.getFileid(file, new DisabledListProgressListener()))
-                            .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                            .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                             .queue(batch, new DeleteBatchCallback<Void>(file, failures, callback));
                     }
                 }

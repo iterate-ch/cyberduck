@@ -60,7 +60,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
                     .setMimeType("application/vnd.google-apps.folder")
                     .setParents(Collections.singletonList(fileid.getFileid(folder.getParent(), new DisabledListProgressListener()))));
                 final File execute = insert
-                    .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                    .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),
                     new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));
             }

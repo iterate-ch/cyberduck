@@ -54,7 +54,7 @@ public class DriveSharingUrlProvider implements PromptUrlProvider {
         permission.setType("anyone");
         try {
             session.getClient().permissions().create(fileid.getFileid(file, new DisabledListProgressListener()), permission)
-                .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Failure to write attributes of {0}", e, file);

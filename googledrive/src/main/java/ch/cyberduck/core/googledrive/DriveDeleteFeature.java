@@ -54,11 +54,11 @@ public class DriveDeleteFeature implements Delete {
                         final File properties = new File();
                         properties.setTrashed(true);
                         session.getClient().files().update(fileid.getFileid(file, new DisabledListProgressListener()), properties)
-                            .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                            .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
                     }
                     else {
                         session.getClient().files().delete(fileid.getFileid(file, new DisabledListProgressListener()))
-                            .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                            .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
                     }
                 }
             }

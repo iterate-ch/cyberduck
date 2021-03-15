@@ -58,14 +58,14 @@ public class DriveMoveFeature implements Move {
                 properties.setName(renamed.getName());
                 properties.setMimeType(status.getMime());
                 result = session.getClient().files().update(id, properties).
-                    setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                    setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
             }
             if(!file.getParent().equals(renamed.getParent())) {
                 // Retrieve the existing parents to remove
                 final StringBuilder previousParents = new StringBuilder();
                 final File reference = session.getClient().files().get(id)
                     .setFields("parents")
-                    .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                    .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                     .execute();
                 for(String parent : reference.getParents()) {
                     previousParents.append(parent).append(',');
@@ -75,7 +75,7 @@ public class DriveMoveFeature implements Move {
                     .setAddParents(fileid.getFileid(renamed.getParent(), new DisabledListProgressListener()))
                     .setRemoveParents(previousParents.toString())
                     .setFields("id,parents")
-                    .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                    .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                     .execute();
             }
             return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
