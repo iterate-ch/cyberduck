@@ -38,7 +38,7 @@ public class DriveListService implements ListService {
             final AttributedList<Path> list = new AttributedList<>();
             list.add(DriveHomeFinderService.MYDRIVE_FOLDER);
             list.add(DriveHomeFinderService.SHARED_FOLDER_NAME);
-            list.add(DriveHomeFinderService.TEAM_DRIVES_NAME);
+            list.add(DriveHomeFinderService.SHARED_DRIVES_NAME);
             listener.chunk(directory, list);
             return list;
         }
@@ -46,7 +46,7 @@ public class DriveListService implements ListService {
             if(DriveHomeFinderService.SHARED_FOLDER_NAME.equals(directory)) {
                 return new DriveSharedFolderListService(session, fileid).list(directory, listener);
             }
-            if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(directory)) {
+            if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(directory)) {
                 return new DriveTeamDrivesListService(session).list(directory, listener);
             }
             return new DriveDefaultListService(session, fileid).list(directory, listener);

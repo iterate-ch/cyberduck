@@ -35,8 +35,8 @@ public class DriveHomeFinderService extends DefaultHomeFinderService {
         = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Shared with me", "Google Drive")),
         EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
 
-    public static final Path TEAM_DRIVES_NAME
-        = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Team Drives", "Google Drive")),
+    public static final Path SHARED_DRIVES_NAME
+        = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Shared Drives", "Google Drive")),
         EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
 
     public DriveHomeFinderService(final DriveSession session) {

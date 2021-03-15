@@ -106,7 +106,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                     final HttpEntityEnclosingRequestBase request;
                     if(status.isExists()) {
                         final String fileid = DriveWriteFeature.this.fileid.getFileid(file, new DisabledListProgressListener());
-                        request = new HttpPatch(String.format("%supload/drive/v3/files/%s?supportsTeamDrives=true",
+                        request = new HttpPatch(String.format("%supload/drive/v3/files/%s?supportsAllDrives=true",
                             session.getClient().getRootUrl(), fileid));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             request.setHeader(HttpHeaders.CONTENT_TYPE, status.getMime());
@@ -115,7 +115,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                         request.setEntity(entity);
                     }
                     else {
-                        request = new HttpPost(String.format("%supload/drive/v3/files?uploadType=resumable&supportsTeamDrives=%s",
+                        request = new HttpPost(String.format("%supload/drive/v3/files?uploadType=resumable&supportsAllDrives=%s",
                             session.getClient().getRootUrl(), PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
                         request.setEntity(new StringEntity("{\"name\": \""
                             + file.getName() + "\", \"parents\": [\""

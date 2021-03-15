@@ -55,7 +55,7 @@ public class DriveBatchDeleteFeature implements Delete {
         final List<BackgroundException> failures = new ArrayList<>();
         for(Path file : files.keySet()) {
             try {
-                if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(file.getParent())) {
+                if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
                     session.getClient().teamdrives().delete(fileid.getFileid(file, new DisabledListProgressListener()))
                         .queue(batch, new DeleteBatchCallback<Void>(file, failures, callback));
                 }
@@ -64,12 +64,12 @@ public class DriveBatchDeleteFeature implements Delete {
                         final File properties = new File();
                         properties.setTrashed(true);
                         session.getClient().files().update(fileid.getFileid(file, new DisabledListProgressListener()), properties)
-                            .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                            .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                             .queue(batch, new DeleteBatchCallback<File>(file, failures, callback));
                     }
                     else {
                         session.getClient().files().delete(fileid.getFileid(file, new DisabledListProgressListener()))
-                            .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                            .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                             .queue(batch, new DeleteBatchCallback<Void>(file, failures, callback));
                     }
                 }

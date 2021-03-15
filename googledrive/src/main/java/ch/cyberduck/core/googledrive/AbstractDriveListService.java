@@ -78,8 +78,8 @@ public abstract class AbstractDriveListService implements ListService {
                 final FileList list = session.getClient().files().list()
                     // Whether Team Drive items should be included in results
                     .setIncludeItemsFromAllDrives(true)
-                    // Whether the requesting application supports Team Drives
-                    .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                    // Whether the requesting application supports Shared Drives
+                    .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                     .setQ(query)
                     // Please note that there is a current limitation for users with approximately one million files in which the requested sort order is ignored
                     .setOrderBy("name")

@@ -46,7 +46,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
     @Override
     public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(folder.getParent())) {
+            if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(folder.getParent())) {
                 final TeamDrive execute = session.getClient().teamdrives().create(
                     new UUIDRandomStringService().random(), new TeamDrive().setName(folder.getName())
                 ).execute();
@@ -60,7 +60,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
                     .setMimeType("application/vnd.google-apps.folder")
                     .setParents(Collections.singletonList(fileid.getFileid(folder.getParent(), new DisabledListProgressListener()))));
                 final File execute = insert
-                    .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                    .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),
                     new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));
             }

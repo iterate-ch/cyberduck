@@ -49,7 +49,7 @@ public class DriveMetadataFeature implements Metadata {
         try {
             final String fileid = this.fileid.getFileid(file, new DisabledListProgressListener());
             final Map<String, String> properties = session.getClient().files().get(fileid).setFields("properties")
-                .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute().getProperties();
+                .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute().getProperties();
             if(null == properties) {
                 return Collections.emptyMap();
             }
@@ -67,7 +67,7 @@ public class DriveMetadataFeature implements Metadata {
             final File body = new File();
             body.setProperties(status.getMetadata());
             session.getClient().files().update(fileid, body).setFields("properties").
-                setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Failure to write attributes of {0}", e, file);
