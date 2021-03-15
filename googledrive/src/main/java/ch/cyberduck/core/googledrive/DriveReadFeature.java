@@ -80,7 +80,7 @@ public class DriveReadFeature implements Read {
         }
         else {
             try {
-                final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsTeamDrives=%s",
+                final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsAllDrives=%s",
                     session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
                     PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
                 return this.read(request, file, status);
@@ -98,7 +98,7 @@ public class DriveReadFeature implements Read {
                         String.format("connection.unsecure.download.%s", session.getHost().getHostname()));
                 }
                 // Continue with acknowledgeAbuse=true
-                final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsTeamDrives=%s&acknowledgeAbuse=true",
+                final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsAllDrives=%s&acknowledgeAbuse=true",
                     session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
                     PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
                 return this.read(request, file, status);
