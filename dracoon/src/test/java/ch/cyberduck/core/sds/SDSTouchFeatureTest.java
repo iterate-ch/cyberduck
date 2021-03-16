@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -121,10 +122,11 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final UpdateRoomRequest updateRoomRequest = new UpdateRoomRequest();
-        updateRoomRequest.setQuota(1L);
-        assertEquals(1L, new NodesApi(session.getClient()).updateRoom(updateRoomRequest, Long.valueOf(room.attributes().getVersionId()), StringUtils.EMPTY, null).getQuota(), 0L);
+        final long quota = 1L + PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize");
+        updateRoomRequest.setQuota(quota);
+        assertEquals(quota, new NodesApi(session.getClient()).updateRoom(updateRoomRequest, Long.valueOf(room.attributes().getVersionId()), StringUtils.EMPTY, null).getQuota(), 0L);
         assertTrue(new SDSTouchFeature(session, nodeid).isSupported(room.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room)), StringUtils.EMPTY));
-        assertEquals(1L, room.attributes().getQuota());
+        assertEquals(quota, room.attributes().getQuota());
         final byte[] content = RandomUtils.nextBytes(2);
         final TransferStatus status = new TransferStatus();
         status.setLength(2L);
@@ -143,7 +145,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         }
         while(attr.getSize() != 2L);
         assertFalse(new SDSTouchFeature(session, nodeid).isSupported(room.withAttributes(attr), StringUtils.EMPTY));
-        assertEquals(1L, attr.getQuota());
+        assertEquals(quota, attr.getQuota());
         assertEquals(2L, attr.getSize());
         new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
