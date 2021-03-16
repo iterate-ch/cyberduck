@@ -20,7 +20,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
@@ -57,7 +56,7 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId> {
+public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
     private static final Logger log = Logger.getLogger(StoregateMultipartWriteFeature.class);
 
     private final StoregateSession session;
@@ -96,14 +95,14 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
     }
 
     @Override
-    public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String location = new StoregateWriteFeature(session, fileid).start(file, status);
         final MultipartOutputStream proxy = new MultipartOutputStream(location, file, status);
-        return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
+        return new HttpResponseOutputStream<String>(new MemorySegementingOutputStream(proxy,
             PreferencesFactory.get().getInteger("storegate.upload.multipart.chunksize"))) {
             @Override
-            public VersionId getStatus() {
-                return proxy.getVersionId();
+            public String getStatus() {
+                return proxy.getId();
             }
         };
     }
@@ -161,9 +160,8 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
                                 switch(response.getStatusLine().getStatusCode()) {
                                     case HttpStatus.SC_OK:
                                     case HttpStatus.SC_CREATED:
-                                        final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
-                                            FileMetadata.class);
-                                        overall.setVersion(new VersionId(result.getId()));
+                                        final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8), FileMetadata.class);
+                                        overall.setId(result.getId());
                                     case HttpStatus.SC_NO_CONTENT:
                                         // Upload complete
                                         offset += content.length;
@@ -215,7 +213,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
                             case HttpStatus.SC_CREATED:
                                 final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
                                     FileMetadata.class);
-                                overall.setVersion(new VersionId(result.getId()));
+                                overall.setId(result.getId());
                             case HttpStatus.SC_NO_CONTENT:
                                 break;
                             default:
@@ -245,8 +243,8 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
             return sb.toString();
         }
 
-        public VersionId getVersionId() {
-            return overall.getVersion();
+        public String getId() {
+            return overall.getId();
         }
     }
 }

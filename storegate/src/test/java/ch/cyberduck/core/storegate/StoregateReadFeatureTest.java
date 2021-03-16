@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -76,7 +75,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<VersionId> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<String> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         // Unknown length in status
@@ -111,7 +110,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         out.close();
         final TransferStatus upload = new TransferStatus().length(content.length);
         upload.setExists(true);
-        new DefaultUploadFeature<VersionId>(new StoregateWriteFeature(session, nodeid)).upload(
+        new DefaultUploadFeature<>(new StoregateWriteFeature(session, nodeid)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
             new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
@@ -145,7 +144,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         out.close();
         final TransferStatus upload = new TransferStatus().length(content.length);
         upload.setExists(true);
-        new DefaultUploadFeature<VersionId>(new StoregateWriteFeature(session, nodeid)).upload(
+        new DefaultUploadFeature<>(new StoregateWriteFeature(session, nodeid)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
             new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
@@ -175,7 +174,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<VersionId> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<String> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         final CountingInputStream in = new CountingInputStream(new StoregateReadFeature(session, nodeid).read(test, status, new DisabledConnectionCallback()));

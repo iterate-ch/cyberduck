@@ -39,8 +39,9 @@ public class DriveTouchFeatureTest extends AbstractDriveTest {
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         final Path test = new DriveTouchFeature(session, fileid).touch(
             new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("x-application/cyberduck"));
-        assertNotNull(test.attributes().getVersionId());
-        assertEquals(test.attributes().getVersionId(), new DriveAttributesFinderFeature(session, fileid).find(test).getVersionId());
+        assertEquals("1", test.attributes().getVersionId());
+        assertNotNull(test.attributes().getFileId());
+        assertEquals(test.attributes().getFileId(), new DriveAttributesFinderFeature(session, fileid).find(test).getFileId());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.URIEncoder;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -63,7 +62,7 @@ import java.util.Collections;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
-public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
+public class StoregateWriteFeature extends AbstractHttpWriteFeature<String> {
     private static final Logger log = Logger.getLogger(StoregateWriteFeature.class);
 
     private final StoregateSession session;
@@ -103,10 +102,10 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
     }
 
     @Override
-    public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
+    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
             @Override
-            public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
+            public String call(final AbstractHttpEntity entity) throws BackgroundException {
                 // Initiate a resumable upload
                 String location;
                 try {
@@ -140,9 +139,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                             case HttpStatus.SC_CREATED:
                                 final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8),
                                     FileMetadata.class);
-                                final VersionId version = new VersionId(result.getId());
-                                status.setVersion(version);
-                                return version;
+                                return result.getId();
                             default:
                                 throw new StoregateExceptionMappingService().map(new ApiException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                     EntityUtils.toString(putResponse.getEntity())));

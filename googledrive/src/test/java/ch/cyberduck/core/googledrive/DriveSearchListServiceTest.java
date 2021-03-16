@@ -48,6 +48,7 @@ public class DriveSearchListServiceTest extends AbstractDriveTest {
             .setName(name)
             .setParents(Collections.singletonList(fileid.getFileid(directory, new DisabledListProgressListener()))));
         final File execute = insert.execute();
+        execute.setVersion(1L);
         final Path f1 = new Path(directory, name, EnumSet.of(Path.Type.file), new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));
         final AttributedList<Path> list = new DriveSearchListService(session, fileid, name).list(DriveHomeFinderService.MYDRIVE_FOLDER, new DisabledListProgressListener());
         assertEquals(1, list.size());

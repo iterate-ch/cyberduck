@@ -15,6 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -53,12 +54,13 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
         status.setLength(content.length);
-        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         final DriveUploadFeature upload = new DriveUploadFeature(new DriveWriteFeature(session, fileid));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
             status, new DisabledConnectionCallback());
-        test.attributes().setVersionId(fileid.getFileid(test, new DisabledListProgressListener()));
+        test.attributes().setFileId(fileid.getFileid(test, new DisabledListProgressListener()));
+        test.attributes().setVersionId("1");
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new DriveListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
         assertEquals(content.length, new DriveWriteFeature(session, fileid).append(test, status.getLength(), PathCache.empty()).size, 0L);
