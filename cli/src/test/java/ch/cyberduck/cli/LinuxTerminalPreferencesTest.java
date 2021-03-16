@@ -27,7 +27,7 @@ public class LinuxTerminalPreferencesTest {
     public void setDefaults() {
         final LinuxTerminalPreferences prefs = new LinuxTerminalPreferences();
         prefs.load();
-        prefs.setLogging();
+        prefs.setLogging("debug");
         prefs.setFactories();
         prefs.setDefaults();
         assertEquals("NativePRNGNonBlocking", prefs.getProperty("connection.ssl.securerandom.algorithm"));

@@ -56,13 +56,8 @@ public class TerminalPreferences extends Preferences {
     }
 
     @Override
-    protected void setLogging() {
-        this.setLogging("fatal");
-    }
-
-    @Override
-    public void setLogging(final String level) {
-        super.setLogging(level);
+    protected void configureLogging(final String level) {
+        super.configureLogging(level);
         // Send log output to system.log
         Logger root = Logger.getRootLogger();
         final Appender appender = new TerminalAppender();
@@ -73,6 +68,8 @@ public class TerminalPreferences extends Preferences {
     @Override
     protected void setDefaults() {
         super.setDefaults();
+
+        this.setDefault("logging", "fatal");
 
         this.setDefault("website.home", "http://duck.sh/");
         this.setDefault("website.help", "http://help.duck.sh/");
