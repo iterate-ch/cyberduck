@@ -61,6 +61,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
                     .setParents(Collections.singletonList(fileid.getFileid(folder.getParent(), new DisabledListProgressListener()))));
                 final File execute = insert
                     .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                execute.setVersion(1L);
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),
                     new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));
             }
