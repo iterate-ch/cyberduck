@@ -31,14 +31,13 @@ public class SFTPHomeDirectoryServiceTest extends AbstractSFTPTest {
     @Test
     public void testFind() throws Exception {
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), new SFTPHomeDirectoryService(session).find());
-
     }
 
     @Test
     public void testFindWithWorkdir() {
         assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
-            new SFTPHomeDirectoryService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox"));
+            new SFTPHomeDirectoryService(session).find(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox"));
         assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
-            new SFTPHomeDirectoryService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "/sandbox"));
+            new SFTPHomeDirectoryService(session).find(new Path("/", EnumSet.of(Path.Type.directory)), "/sandbox"));
     }
 }
