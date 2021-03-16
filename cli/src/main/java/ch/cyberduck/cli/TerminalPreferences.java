@@ -101,7 +101,6 @@ public class TerminalPreferences extends Preferences {
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.debug.name())) {
             this.setLogging("debug");
-
         }
         return this;
     }
