@@ -1111,7 +1111,6 @@ public abstract class Preferences implements Locales {
      * @param level Log level
      */
     public void setLogging(final String level) {
-        this.setProperty("logging", level);
         // Call only once during initialization time of your application
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
