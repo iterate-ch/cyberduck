@@ -181,10 +181,16 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private NonceGenerator nonces;
 
     private Object lockId;
+
     /**
      * Version after write
      */
     private VersionId version;
+
+    /**
+     * File Id assigned after write
+     */
+    private String fileid;
 
     public TransferStatus() {
         // Default
@@ -223,6 +229,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.nonces = copy.nonces;
         this.lockId = copy.lockId;
         this.version = copy.version;
+        this.fileid = copy.fileid;
     }
 
     /**
@@ -641,6 +648,19 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
+    public String getId() {
+        return fileid;
+    }
+
+    public void setId(final String fileid) {
+        this.fileid = fileid;
+    }
+
+    public TransferStatus withId(final String fileid) {
+        this.fileid = fileid;
+        return this;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if(this == o) {
@@ -690,6 +710,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         sb.append(", metadata=").append(metadata);
         sb.append(", lockId=").append(lockId);
         sb.append(", version=").append(version);
+        sb.append(", fileid=").append(fileid);
         sb.append('}');
         return sb.toString();
     }
