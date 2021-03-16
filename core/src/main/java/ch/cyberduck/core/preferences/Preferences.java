@@ -1101,8 +1101,14 @@ public abstract class Preferences implements Locales {
         this.setDefault("cryptomator.vault.autodetect", String.valueOf(true));
     }
 
-    protected void setLogging() {
-        this.setLogging(this.getProperty("logging"));
+    /**
+     * Set new log level and reconfigure logging configuration appropriately
+     *
+     * @param level Log level
+     */
+    public void setLogging(final String level) {
+        this.setProperty("logging", level);
+        this.configureLogging(level);
     }
 
     /**
@@ -1110,8 +1116,7 @@ public abstract class Preferences implements Locales {
      *
      * @param level Log level
      */
-    public void setLogging(final String level) {
-        this.setProperty("logging", level);
+    protected void configureLogging(final String level) {
         // Call only once during initialization time of your application
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();

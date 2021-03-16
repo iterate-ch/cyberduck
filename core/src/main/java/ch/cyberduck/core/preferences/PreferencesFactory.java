@@ -34,7 +34,7 @@ public final class PreferencesFactory {
         preferences.setDefaults();
         // Apply global configuration
         preferences.setDefaults(LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "default.properties"));
-        preferences.setLogging();
+        preferences.configureLogging(preferences.getProperty("logging"));
     }
 
     public static synchronized Preferences get() {
@@ -46,9 +46,9 @@ public final class PreferencesFactory {
 
     private static final class DefaultLoggingMemoryPreferenes extends MemoryPreferences {
         @Override
-        protected void setLogging() {
+        protected void configureLogging(final String level) {
             this.setDefault("logging.config", "log4j.xml");
-            super.setLogging();
+            super.configureLogging(level);
         }
     }
 }

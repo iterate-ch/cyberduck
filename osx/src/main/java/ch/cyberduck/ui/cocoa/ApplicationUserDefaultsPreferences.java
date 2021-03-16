@@ -104,8 +104,8 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
     }
 
     @Override
-    public void setLogging(final String level) {
-        super.setLogging(level);
+    protected void configureLogging(final String level) {
+        super.configureLogging(level);
         // Send log output to system.log
         Logger root = Logger.getRootLogger();
         final Appender appender;
