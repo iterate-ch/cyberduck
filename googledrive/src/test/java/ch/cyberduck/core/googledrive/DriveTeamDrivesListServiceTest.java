@@ -25,7 +25,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 @Category(IntegrationTest.class)
 public class DriveTeamDrivesListServiceTest extends AbstractDriveTest {
@@ -33,6 +33,6 @@ public class DriveTeamDrivesListServiceTest extends AbstractDriveTest {
     @Test
     public void list() throws Exception {
         final AttributedList<Path> list = new DriveTeamDrivesListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-        assertTrue(list.isEmpty());
+        assertFalse(list.isEmpty());
     }
 }
