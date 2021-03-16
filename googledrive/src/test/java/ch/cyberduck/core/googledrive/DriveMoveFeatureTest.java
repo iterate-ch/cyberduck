@@ -46,7 +46,7 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         final Path folder = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DriveDirectoryFeature(session, fileid).mkdir(folder, null, new TransferStatus());
         final Path target = new DriveMoveFeature(session, fileid).move(test, new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertEquals(test.attributes().getVersionId(), target.attributes().getVersionId());
+        assertEquals(test.attributes().getFileId(), target.attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
         assertFalse(find.find(test));
         assertTrue(find.find(target));
@@ -64,7 +64,9 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         final AttributedList<Path> files = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
         // Replaced file is trashed
         assertEquals(2, files.size());
+        test.attributes().withVersionId("2");
         assertTrue(files.get(test).attributes().isDuplicate());
+        target.attributes().withVersionId("2");
         assertFalse(files.get(target).attributes().isDuplicate());
         assertTrue(find.find(target));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());

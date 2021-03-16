@@ -27,7 +27,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
@@ -87,17 +86,16 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
-        final CryptoWriteFeature<VersionId> writer = new CryptoWriteFeature<VersionId>(session, new DriveWriteFeature(session, fileid), cryptomator);
+        final CryptoWriteFeature<String> writer = new CryptoWriteFeature<String>(session, new DriveWriteFeature(session, fileid), cryptomator);
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(content.length)));
         status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
-        final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<String> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertNotNull(out.getStatus());
-        assertNotNull(out.getStatus().id);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test).getSize());
         assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty()).size, 0L);
@@ -121,7 +119,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
-        final CryptoWriteFeature<VersionId> writer = new CryptoWriteFeature<>(session, new DriveWriteFeature(session, fileid), cryptomator);
+        final CryptoWriteFeature<String> writer = new CryptoWriteFeature<>(session, new DriveWriteFeature(session, fileid), cryptomator);
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
@@ -132,8 +130,8 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         out.close();
         assertTrue(new CryptoFindFeature(session, new DriveFindFeature(session, fileid), cryptomator).find(test));
         final Path found = new CryptoListService(session, new DriveListService(session, fileid), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
-        final String versionId = found.attributes().getFileId();
-        assertNotNull(versionId);
+        final String fileId = found.attributes().getFileId();
+        assertNotNull(fileId);
         final Cache<Path> cache = new PathCache(1);
         final AttributedList<Path> list = new AttributedList<>();
         list.add(found);
@@ -144,17 +142,17 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         {
             final PathAttributes attributes = new CryptoAttributesFeature(session, new DriveAttributesFinderFeature(session, fileid), cryptomator).find(test);
             assertEquals(content.length, attributes.getSize());
-            assertEquals(versionId, found.attributes().getFileId());
+            assertEquals(fileId, found.attributes().getFileId());
         }
         {
             final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test);
             assertEquals(content.length, attributes.getSize());
-            assertEquals(versionId, found.attributes().getFileId());
+            assertEquals(fileId, found.attributes().getFileId());
         }
         {
             final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).withCache(cache).find(test);
             assertEquals(content.length, attributes.getSize());
-            assertEquals(versionId, found.attributes().getFileId());
+            assertEquals(fileId, found.attributes().getFileId());
         }
         assertEquals(content.length, cache.get(vault).get(0).attributes().getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

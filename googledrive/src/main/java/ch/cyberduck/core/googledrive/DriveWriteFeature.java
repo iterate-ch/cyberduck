@@ -20,7 +20,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
@@ -58,7 +57,7 @@ import com.google.gson.stream.JsonReader;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
-public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> implements Write<VersionId> {
+public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implements Write<String> {
 
     private final DriveSession session;
     private final DriveFileidProvider fileid;
@@ -97,10 +96,10 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
     }
 
     @Override
-    public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
+    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
             @Override
-            public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
+            public String call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     // Initiate a resumable upload
                     final HttpEntityEnclosingRequestBase request;
@@ -159,9 +158,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                                                 final String value = reader.nextString();
                                                 switch(name) {
                                                     case "id":
-                                                        final VersionId version = new VersionId(value);
-                                                        status.setVersion(version);
-                                                        return version;
+                                                        return value;
                                                 }
                                             }
                                             reader.endObject();
@@ -181,7 +178,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                                 new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                         }
                     }
-                    return new VersionId(DriveWriteFeature.this.fileid.getFileid(file, new DisabledListProgressListener()));
+                    return fileid.getFileid(file, new DisabledListProgressListener());
                 }
                 catch(IOException e) {
                     throw new DriveExceptionMappingService().map("Upload failed", e, file);
