@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
 
+import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -40,22 +41,26 @@ public class SwiftQuotaFeature implements Quota {
     @Override
     public Space get() throws BackgroundException {
         long used = 0L;
-        try {
-            for(Region region : session.getClient().getRegions()) {
+        for(Region region : session.getClient().getRegions()) {
+            try {
                 final long bytes = session.getClient().getAccountInfo(region).getBytesUsed();
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Add %d used in region %s", bytes, region));
                 }
                 used += bytes;
             }
-        }
-        catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Failure to read attributes of {0}", e,
+            catch(GenericException e) {
+                if(e.getHttpStatusCode() == HttpStatus.SC_SERVICE_UNAVAILABLE) {
+                    log.warn(String.format("Ignore failure %s for region %s", e, region));
+                    continue;
+                }
+                throw new SwiftExceptionMappingService().map("Failure to read attributes of {0}", e,
                     new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e,
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e,
                     new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
+            }
         }
         return new Space(used, Long.MAX_VALUE);
     }

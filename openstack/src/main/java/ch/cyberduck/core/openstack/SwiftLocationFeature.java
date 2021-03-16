@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -41,6 +42,7 @@ import java.util.Set;
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.AuthorizationException;
 import ch.iterate.openstack.swift.exception.ContainerNotFoundException;
+import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.Region;
 
 public class SwiftLocationFeature implements Location {
@@ -103,12 +105,17 @@ public class SwiftLocationFeature implements Location {
                 final Client client = session.getClient();
                 for(Region r : client.getRegions()) {
                     try {
-                        cache.put(container, new SwiftRegion(
-                            client.getContainerInfo(r, container.getName()).getRegion().getRegionId())
-                        );
+                        cache.put(container, new SwiftRegion(client.getContainerInfo(r, container.getName()).getRegion().getRegionId()));
                     }
                     catch(ContainerNotFoundException | AuthorizationException e) {
                         log.warn(String.format("Failure finding container %s in region %s", container, r.getRegionId()));
+                    }
+                    catch(GenericException e) {
+                        if(e.getHttpStatusCode() == HttpStatus.SC_SERVICE_UNAVAILABLE) {
+                            log.warn(String.format("Ignore failure %s for region %s", e, region));
+                            continue;
+                        }
+                        throw new SwiftExceptionMappingService().map(e);
                     }
                     catch(IOException e) {
                         throw new DefaultIOExceptionMappingService().map(e);
