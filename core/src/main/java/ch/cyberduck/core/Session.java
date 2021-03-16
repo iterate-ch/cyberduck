@@ -78,7 +78,7 @@ public abstract class Session<C> implements TranscriptListener {
     protected C client;
     protected VaultRegistry registry = VaultRegistry.DISABLED;
 
-    private Set<TranscriptListener> listeners = Collections.newSetFromMap(new ConcurrentHashMap<TranscriptListener, Boolean>());
+    private final Set<TranscriptListener> listeners = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     /**
      * Connection attempt being made.
