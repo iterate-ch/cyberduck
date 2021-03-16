@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.OneTimeSchedulerFeature;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -47,9 +48,9 @@ public class SwiftAccountLoader extends OneTimeSchedulerFeature<Map<Region, Acco
 
     @Override
     protected Map<Region, AccountInfo> operate(final PasswordCallback callback, final Path file) throws BackgroundException {
-        try {
-            final Map<Region, AccountInfo> accounts = new ConcurrentHashMap<>();
-            for(Region region : session.getClient().getRegions()) {
+        final Map<Region, AccountInfo> accounts = new ConcurrentHashMap<>();
+        for(Region region : session.getClient().getRegions()) {
+            try {
                 final AccountInfo info = session.getClient().getAccountInfo(region);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Signing key is %s", info.getTempUrlKey()));
@@ -70,13 +71,17 @@ public class SwiftAccountLoader extends OneTimeSchedulerFeature<Map<Region, Acco
                 }
                 accounts.put(region, info);
             }
-            return accounts;
+            catch(GenericException e) {
+                if(e.getHttpStatusCode() == HttpStatus.SC_SERVICE_UNAVAILABLE) {
+                    log.warn(String.format("Ignore failure %s for region %s", e, region));
+                    continue;
+                }
+                throw new SwiftExceptionMappingService().map(e);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
         }
-        catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map(e);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
+        return accounts;
     }
 }
