@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.exception.TransferCanceledException;
@@ -56,12 +55,12 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        final VersionId version;
+        final String version;
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
-            final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<String> out = writer.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             version = out.getStatus();
@@ -84,7 +83,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(change.length);
             final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
-            final HttpResponseOutputStream<VersionId> out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
+            final HttpResponseOutputStream<String> out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
         }
@@ -106,7 +105,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<VersionId> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<String> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
@@ -135,14 +134,14 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         status.setLength(content.length);
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
         try {
-            final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<String> out = writer.write(test, status, new DisabledConnectionCallback());
             fail();
         }
         catch(LockedException e) {
             //
         }
         status.setLockId(lockId);
-        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<String> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -165,7 +164,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         new StoregateLockFeature(session, nodeid).unlock(test, lockId);
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
         status.setLockId(lockId);
-        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<String> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -192,7 +191,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         };
         status.setLength(content.length);
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<String> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertFalse(new DefaultFindFeature(session).find(test));
