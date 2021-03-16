@@ -24,6 +24,8 @@ import org.apache.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static ch.cyberduck.core.threading.ThreadPool.DEFAULT_THREAD_NAME_PREFIX;
 
@@ -39,16 +41,17 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
      * @param priority Thread priority
      * @param handler  Uncaught thread exception handler
      */
-    protected ThreadPool create(final String prefix, final Integer size, final ThreadPool.Priority priority, final Thread.UncaughtExceptionHandler handler) {
+    protected ThreadPool create(final String prefix, final Integer size, final ThreadPool.Priority priority,
+                                final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
         try {
             final Constructor<ThreadPool> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
-                prefix.getClass(), size.getClass(), priority.getClass(), handler.getClass());
+                prefix.getClass(), size.getClass(), priority.getClass(), queue.getClass(), handler.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", handler.getClass()));
                 // Call default constructor for disabled implementations
                 return clazz.newInstance();
             }
-            return constructor.newInstance(prefix, size, priority, handler);
+            return constructor.newInstance(prefix, size, priority, queue, handler);
         }
         catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
@@ -96,6 +99,10 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
     }
 
     public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final Thread.UncaughtExceptionHandler handler) {
-        return new ThreadPoolFactory().create(prefix, size, priority, handler);
+        return get(prefix, size, priority, new LinkedBlockingQueue<>(), handler);
+    }
+
+    public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
+        return new ThreadPoolFactory().create(prefix, size, priority, queue, handler);
     }
 }

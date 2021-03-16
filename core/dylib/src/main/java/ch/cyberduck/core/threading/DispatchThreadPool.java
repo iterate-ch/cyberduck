@@ -17,14 +17,16 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import java.util.concurrent.BlockingQueue;
+
 public class DispatchThreadPool extends ExecutorServiceThreadPool implements ThreadPool {
 
     public DispatchThreadPool() {
         super(new DispatchExecutorService());
     }
 
-    public DispatchThreadPool(final String prefix, final int size, final Priority priority, final Thread.UncaughtExceptionHandler handler) {
+    public DispatchThreadPool(final String prefix, final int size, final Priority priority, final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
         super(PreferencesFactory.get().getInteger("threading.pool.size.max") == size ? new DispatchExecutorService() :
-            DefaultThreadPool.createExecutor(prefix, size, priority, handler));
+            DefaultThreadPool.createExecutor(prefix, size, priority, queue, handler));
     }
 }
