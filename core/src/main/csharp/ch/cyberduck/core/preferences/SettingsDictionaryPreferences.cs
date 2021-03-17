@@ -134,9 +134,9 @@ namespace Ch.Cyberduck.Core.Preferences
             return getProperty("application.language");
         }
 
-        public override void setLogging(String level)
+        public override void configureLogging(String level)
         {
-            base.setLogging(level);
+            base.configureLogging(level);
 
             Logger root = Logger.getRootLogger();
             var fileName = Path.Combine(new RoamingSupportDirectoryFinder().find().getAbsolute(),
