@@ -134,7 +134,7 @@ namespace Ch.Cyberduck.Core.Preferences
             return getProperty("application.language");
         }
 
-        public override void configureLogging(String level)
+        protected override void configureLogging(String level)
         {
             base.configureLogging(level);
 
