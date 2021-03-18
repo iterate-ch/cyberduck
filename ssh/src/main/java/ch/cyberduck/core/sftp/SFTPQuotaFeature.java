@@ -57,7 +57,7 @@ public class SFTPQuotaFeature implements Quota {
                 log.info(String.format("Failure obtaining disk quota. %s", e));
             }
         }
-        return new Space(0L, Long.MAX_VALUE);
+        return unknown;
     }
 
     private boolean isSpaceAvailableExtensionAvailable() {

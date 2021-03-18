@@ -38,4 +38,6 @@ public interface Quota {
             return sb.toString();
         }
     }
+
+    Space unknown = new Space(0L, Long.MAX_VALUE);
 }
