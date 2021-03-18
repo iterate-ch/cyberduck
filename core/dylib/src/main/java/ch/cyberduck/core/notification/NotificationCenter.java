@@ -24,6 +24,7 @@ import ch.cyberduck.binding.foundation.NSUserNotification;
 import ch.cyberduck.binding.foundation.NSUserNotificationCenter;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -101,8 +102,10 @@ public class NotificationCenter extends ProxyController implements NotificationS
             if(notification.respondsToSelector(Foundation.selector("setIdentifier:"))) {
                 notification.setIdentifier(identifier);
             }
-            if(StringUtils.isNotBlank(Path.getExtension(identifier))) {
-                notification.setContentImage(IconCacheFactory.<NSImage>get().documentIcon(Path.getExtension(identifier), 32));
+            if(!Scheme.isURL(identifier)) {
+                if(StringUtils.isNotBlank(Path.getExtension(identifier))) {
+                    notification.setContentImage(IconCacheFactory.<NSImage>get().documentIcon(Path.getExtension(identifier), 32));
+                }
             }
         }
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
