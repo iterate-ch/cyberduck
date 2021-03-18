@@ -62,6 +62,7 @@
         <module>cli/linux</module>
         <module>cli/windows</module>
         <module>cli/osx</module>
+        <module>gmxcloud</module>
     </modules>
 
     <scm>
