@@ -22,6 +22,10 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface AlertCallback {
+    
+    default boolean alert(final Host host, final BackgroundException failure) {
+        return this.alert(host, failure, new StringBuilder());
+    }
 
     /**
      * @return True if action should be repeated
