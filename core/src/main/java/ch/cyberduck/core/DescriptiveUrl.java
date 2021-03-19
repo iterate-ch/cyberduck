@@ -26,10 +26,8 @@ public class DescriptiveUrl {
     public static final DescriptiveUrl EMPTY = new DescriptiveUrl(null);
 
     private final URI url;
-
     private final Type type;
-
-    private String help;
+    private final String help;
 
     public enum Type {
         /**
