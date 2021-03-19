@@ -18,8 +18,9 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.features.Quota;
 
 public class DisabledQuotaFeature implements Quota {
+
     @Override
     public Space get() {
-        return new Space(0L, Long.MAX_VALUE);
+        return unknown;
     }
 }

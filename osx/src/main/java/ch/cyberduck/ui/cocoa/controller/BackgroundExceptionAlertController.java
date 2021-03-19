@@ -52,8 +52,14 @@ public class BackgroundExceptionAlertController extends AlertController {
         alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
         alert.addButtonWithTitle(defaultButton);
         alert.addButtonWithTitle(cancelButton);
-        if(new DefaultFailureDiagnostics().determine(failure) == FailureDiagnostics.Type.network) {
-            alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
+        final FailureDiagnostics.Type type = new DefaultFailureDiagnostics().determine(failure);
+        switch(type) {
+            case network:
+                alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
+                break;
+            case quota:
+                alert.addButtonWithTitle(LocaleFactory.localizedString("Help", "Main"));
+                break;
         }
         this.loadBundle(alert);
     }

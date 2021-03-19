@@ -275,6 +275,11 @@ public interface Protocol extends Comparable<Protocol> {
      */
     Map<String, String> getProperties();
 
+    /**
+     * @return Provider specific help URL
+     */
+    String getHelp();
+
     enum Type {
         ftp,
         sftp,
@@ -293,7 +298,8 @@ public interface Protocol extends Comparable<Protocol> {
         storegate,
         brick,
         nextcloud,
-        manta
+        manta,
+        gmxcloud
     }
 
     enum Case {

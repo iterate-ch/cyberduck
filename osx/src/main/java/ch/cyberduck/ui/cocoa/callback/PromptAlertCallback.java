@@ -18,12 +18,15 @@ package ch.cyberduck.ui.cocoa.callback;
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.notification.NotificationAlertCallback;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
+import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.ui.cocoa.controller.BackgroundExceptionAlertController;
 
 public class PromptAlertCallback implements AlertCallback {
@@ -37,7 +40,8 @@ public class PromptAlertCallback implements AlertCallback {
 
     @Override
     public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-        switch(new DefaultFailureDiagnostics().determine(failure)) {
+        final FailureDiagnostics.Type type = new DefaultFailureDiagnostics().determine(failure);
+        switch(type) {
             case cancel:
                 return false;
             default:
@@ -47,7 +51,14 @@ public class PromptAlertCallback implements AlertCallback {
                 final AlertController alert = new BackgroundExceptionAlertController(failure, host);
                 switch(alert.beginSheet(parent)) {
                     case SheetCallback.ALTERNATE_OPTION:
-                        ReachabilityFactory.get().diagnose(host);
+                        switch(type) {
+                            case network:
+                                ReachabilityFactory.get().diagnose(host);
+                                break;
+                            case quota:
+                                BrowserLauncherFactory.get().open(new DefaultProviderHelpService().help(host.getProtocol()));
+                                break;
+                        }
                         break;
                     case SheetCallback.DEFAULT_OPTION:
                         return true;

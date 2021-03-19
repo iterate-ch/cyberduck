@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.exception.SSLNegotiateException;
 import ch.cyberduck.core.exception.UnsupportedException;
@@ -88,6 +89,9 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
                 || cause instanceof SocketTimeoutException
                 || cause instanceof UnknownHostException) {
                 return Type.network;
+            }
+            if(cause instanceof QuotaException) {
+                return Type.quota;
             }
         }
         return Type.application;

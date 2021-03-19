@@ -44,7 +44,7 @@ public class GraphQuotaFeature implements Quota {
         final Path home = this.home.find();
         if(!session.isAccessible(home)) {
             // not accessible (important for Sharepoint)
-            return new Space(0L, Long.MAX_VALUE);
+            return unknown;
         }
         final Drive.Metadata metadata;
         try {
@@ -73,6 +73,6 @@ public class GraphQuotaFeature implements Quota {
                 }
             }
         }
-        return new Space(0L, Long.MAX_VALUE);
+        return unknown;
     }
 }

@@ -18,6 +18,7 @@
 
 using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.diagnostics;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.threading;
@@ -61,6 +62,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                         commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Try Again", "Alert"),
                                                        LocaleFactory.localizedString("Network Diagnostics", "Alert"));
                     }
+                    else if (type == FailureDiagnostics.Type.quota)
+                    {
+                        commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Try Again", "Alert"),
+                                                       LocaleFactory.localizedString("Help", "Main"));
+                    }
                     else
                     {
                         commandButtons = String.Format("{0}", LocaleFactory.localizedString("Try Again", "Alert"));
@@ -74,7 +80,14 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                                                            r = true;
                                                            break;
                                                        case 1:
-                                                           ReachabilityFactory.get().diagnose(host);
+                                                           if (type == FailureDiagnostics.Type.network)
+                                                           {
+                                                               ReachabilityFactory.get().diagnose(host);
+                                                           }
+                                                           if (type == FailureDiagnostics.Type.quota)
+                                                           {
+                                                               BrowserLauncherFactory.get().open(new DefaultProviderHelpService().help(host.getProtocol()));
+                                                           }
                                                            r = false;
                                                            break;
                                                    }

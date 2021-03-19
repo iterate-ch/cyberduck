@@ -36,7 +36,7 @@ public class DriveQuotaFeature implements Quota {
     public Space get() throws BackgroundException {
         // Shared Drives should not have any Quota applied.
         if(new DriveHomeFinderService(session).find().isChild(DriveHomeFinderService.SHARED_DRIVES_NAME)) {
-            return new Space(0L, Long.MAX_VALUE);
+            return unknown;
         }
 
         try {

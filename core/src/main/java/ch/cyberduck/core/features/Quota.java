@@ -17,6 +17,8 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.Objects;
+
 public interface Quota {
     Space get() throws BackgroundException;
 
@@ -37,5 +39,24 @@ public interface Quota {
             sb.append('}');
             return sb.toString();
         }
+
+        @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(!(o instanceof Space)) {
+                return false;
+            }
+            final Space space = (Space) o;
+            return Objects.equals(used, space.used) && Objects.equals(available, space.available);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(used, available);
+        }
     }
+
+    Space unknown = new Space(0L, Long.MAX_VALUE);
 }

@@ -34,6 +34,10 @@ public interface FailureDiagnostics<T> {
          */
         login,
         /**
+         * Quota failure
+         */
+        quota,
+        /**
          * Canceled by user
          */
         cancel,
