@@ -86,7 +86,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                                                            }
                                                            if (type == FailureDiagnostics.Type.quota)
                                                            {
-                                                               BrowserLauncherFactory.get().open(new DefaultProviderHelpService().help());
+                                                               BrowserLauncherFactory.get().open(new DefaultProviderHelpService().help(host.getProtocol()));
                                                            }
                                                            r = false;
                                                            break;

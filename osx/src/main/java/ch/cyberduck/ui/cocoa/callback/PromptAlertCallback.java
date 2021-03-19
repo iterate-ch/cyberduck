@@ -56,7 +56,7 @@ public class PromptAlertCallback implements AlertCallback {
                                 ReachabilityFactory.get().diagnose(host);
                                 break;
                             case quota:
-                                BrowserLauncherFactory.get().open(new DefaultProviderHelpService().help());
+                                BrowserLauncherFactory.get().open(new DefaultProviderHelpService().help(host.getProtocol()));
                                 break;
                         }
                         break;

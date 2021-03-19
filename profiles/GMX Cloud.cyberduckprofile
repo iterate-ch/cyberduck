@@ -12,5 +12,7 @@
     <string>webdav.mc.gmx.net</string>
     <key>Username Placeholder</key>
     <string>GMX Kundennummer</string>
+    <key>Help</key>
+    <string>https://www.gmx.net/produkte/cloud/speicher-erweitern/</string>
 </dict>
 </plist>

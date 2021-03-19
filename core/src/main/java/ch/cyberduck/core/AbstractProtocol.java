@@ -367,6 +367,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public String getHelp() {
+        return StringUtils.EMPTY;
+    }
+
+    @Override
     public <T> T getFeature(final Class<T> type) {
         return null;
     }

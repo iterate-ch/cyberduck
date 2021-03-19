@@ -516,6 +516,15 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public String getHelp() {
+        final String v = this.value("Help");
+        if(StringUtils.isBlank(v)) {
+            return parent.getHelp();
+        }
+        return v;
+    }
+
+    @Override
     public <T> T getFeature(final Class<T> type) {
         return parent.getFeature(type);
     }

@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
+import org.apache.commons.lang3.StringUtils;
+
 public class DefaultProviderHelpService extends RootProviderHelpService {
 
     public DefaultProviderHelpService() {
@@ -30,6 +32,9 @@ public class DefaultProviderHelpService extends RootProviderHelpService {
 
     @Override
     public String help(final Protocol provider) {
+        if(StringUtils.isNotBlank(provider.getHelp())) {
+            return provider.getHelp();
+        }
         return this.help(provider.getIdentifier());
     }
 
