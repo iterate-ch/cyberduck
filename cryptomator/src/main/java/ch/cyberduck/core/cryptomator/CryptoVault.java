@@ -77,6 +77,7 @@ public class CryptoVault implements Vault {
 
     public static final int VAULT_VERSION_DEPRECATED = 6;
     public static final int VAULT_VERSION = PreferencesFactory.get().getInteger("cryptomator.vault.version");
+    public static final byte[] VAULT_PEPPER = PreferencesFactory.get().getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
 
     public static final String DIR_PREFIX = "0";
 
@@ -106,7 +107,7 @@ public class CryptoVault implements Vault {
     }
 
     public CryptoVault(final Path home, final String masterkey) {
-        this(home, masterkey, new byte[0]);
+        this(home, masterkey, VAULT_PEPPER);
     }
 
     public CryptoVault(final Path home, final String masterkey, final byte[] pepper) {
