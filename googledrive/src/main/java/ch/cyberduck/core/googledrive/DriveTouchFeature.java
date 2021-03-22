@@ -53,7 +53,7 @@ public class DriveTouchFeature implements Touch<VersionId> {
                 new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));
         }
         catch(IOException e) {
-            throw new DriveExceptionMappingService().map("Cannot create file {0}", e, file);
+            throw new DriveExceptionMappingService().map("Cannot create {0}", e, file);
         }
     }
 

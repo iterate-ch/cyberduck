@@ -36,7 +36,7 @@ public class LocalSymlinkFeature implements Symlink {
             Files.createSymbolicLink(session.toPath(file), session.toPath(target));
         }
         catch(IOException e) {
-            throw new LocalExceptionMappingService().map("Cannot create file {0}", e, file);
+            throw new LocalExceptionMappingService().map("Cannot create {0}", e, file);
         }
     }
 }

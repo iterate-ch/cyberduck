@@ -40,7 +40,7 @@ public class FTPSymlinkFeature implements Symlink {
             }
         }
         catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Cannot create file {0}", e, file);
+            throw new FTPExceptionMappingService().map("Cannot create {0}", e, file);
         }
     }
 }

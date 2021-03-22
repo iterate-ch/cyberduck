@@ -51,10 +51,10 @@ public class GraphTouchFeature implements Touch<Void> {
                 new GraphAttributesFinderFeature(session).toAttributes(metadata));
         }
         catch(OneDriveAPIException e) {
-            throw new GraphExceptionMappingService().map("Cannot create file {0}", e, file);
+            throw new GraphExceptionMappingService().map("Cannot create {0}", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
+            throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
         }
     }
 

@@ -57,7 +57,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
                 new PathAttributes(file.attributes()).withVersionId(out.getStatus().id));
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
+            throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
         }
     }
 

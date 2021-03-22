@@ -44,13 +44,13 @@ public class MantaTouchFeature implements Touch {
             session.getClient().put(file.getAbsolute(), new byte[0]);
         }
         catch(MantaException e) {
-            throw new MantaExceptionMappingService().map("Cannot create file {0}", e, file);
+            throw new MantaExceptionMappingService().map("Cannot create {0}", e, file);
         }
         catch(MantaClientHttpResponseException e) {
-            throw new MantaHttpExceptionMappingService().map("Cannot create file {0}", e, file);
+            throw new MantaHttpExceptionMappingService().map("Cannot create {0}", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
+            throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
         }
         return file;
     }

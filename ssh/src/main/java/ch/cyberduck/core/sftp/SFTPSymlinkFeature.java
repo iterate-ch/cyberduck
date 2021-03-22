@@ -37,7 +37,7 @@ public class SFTPSymlinkFeature implements Symlink {
             session.sftp().symlink(target, file.getAbsolute());
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot create file {0}", e, file);
+            throw new SFTPExceptionMappingService().map("Cannot create {0}", e, file);
         }
     }
 }

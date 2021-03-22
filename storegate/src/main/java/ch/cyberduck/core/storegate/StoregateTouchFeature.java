@@ -44,7 +44,7 @@ public class StoregateTouchFeature implements Touch<String> {
                 new PathAttributes(file.attributes()).withFileId(out.getStatus()));
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
+            throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
         }
     }
 

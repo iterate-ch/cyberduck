@@ -42,7 +42,7 @@ public class LocalTouchFeature implements Touch {
                 //
             }
             catch(IOException e) {
-                throw new LocalExceptionMappingService().map("Cannot create file {0}", e, file);
+                throw new LocalExceptionMappingService().map("Cannot create {0}", e, file);
             }
         }
         return new Path(file.getParent(), file.getName(), file.getType(),

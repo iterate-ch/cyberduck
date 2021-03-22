@@ -46,7 +46,7 @@ public class IRODSTouchFeature implements Touch {
                 new IRODSAttributesFinderFeature(session).find(file));
         }
         catch(JargonException e) {
-            throw new IRODSExceptionMappingService().map("Cannot create file {0}", e, file);
+            throw new IRODSExceptionMappingService().map("Cannot create {0}", e, file);
         }
     }
 
