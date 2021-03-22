@@ -214,7 +214,6 @@ public class CryptoVault implements Vault {
                 bookmark, LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                 message,
                 new LoginOptions()
-                    .keychain(preferences.getBoolean("vault.keychain"))
                     .user(false)
                     .anonymous(false)
                     .icon("cryptomator.tiff")
