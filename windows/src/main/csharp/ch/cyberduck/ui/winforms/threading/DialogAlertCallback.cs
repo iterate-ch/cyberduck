@@ -39,6 +39,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             _controller = controller;
         }
 
+        public bool alert(Host host, BackgroundException failure)
+        {
+            return alert(host, failure, new StringBuilder());
+        }
+
         public bool alert(Host host, BackgroundException failure, StringBuilder log)
         {
             FailureDiagnostics.Type type = _diagnostics.determine(failure);
