@@ -36,8 +36,10 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements VaultRegistry {
     private static final Logger log = Logger.getLogger(DefaultVaultRegistry.class);
 
-    public static final String DEFAULT_MASTERKEY_FILE_NAME = "masterkey.cryptomator";
-    public static final String DEFAULT_BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
+    public static final String DEFAULT_MASTERKEY_FILE_NAME =
+        PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename");
+    public static final String DEFAULT_BACKUPKEY_FILE_NAME = String.format("%s.bkup",
+        PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename"));
 
     public static final byte[] DEFAULT_PEPPER = new byte[0];
 
