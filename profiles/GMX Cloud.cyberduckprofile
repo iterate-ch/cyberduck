@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>Protocol</key>
-    <string>gmxcloud</string>
+    <string>davs</string>
     <key>Vendor</key>
     <string>gmx</string>
     <key>Description</key>
