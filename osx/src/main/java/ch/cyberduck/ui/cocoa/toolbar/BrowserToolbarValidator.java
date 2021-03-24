@@ -295,16 +295,24 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             return false;
         }
         else if(action.equals(Foundation.selector("revertFileButtonClicked:"))) {
-            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {
+            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0) {
+                final Path selected = controller.getSelectedPath();
+                if(null == selected) {
+                    return false;
+                }
                 return controller.getSession().getFeature(Versioning.class) != null &&
-                    controller.getSession().getFeature(Versioning.class).isRevertable(controller.getSelectedPath());
+                    controller.getSession().getFeature(Versioning.class).isRevertable(selected);
             }
             return false;
         }
         else if(action.equals(Foundation.selector("restoreFileButtonClicked:"))) {
-            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {
+            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0) {
+                final Path selected = controller.getSelectedPath();
+                if(null == selected) {
+                    return false;
+                }
                 return controller.getSession().getFeature(Restore.class) != null &&
-                    controller.getSession().getFeature(Restore.class).isRestorable(controller.getSelectedPath());
+                    controller.getSession().getFeature(Restore.class).isRestorable(selected);
             }
             return false;
         }

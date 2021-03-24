@@ -1126,7 +1126,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateRevertFile()
         {
-            if (IsMounted() && SelectedPaths.Count == 1)
+            if (IsMounted() && SelectedPaths.Count > 0)
             {
                 return Session.getFeature(typeof(Versioning)) != null &&
                     ((Versioning) Session.getFeature(typeof(Versioning))).isRevertable(SelectedPath);
@@ -1135,7 +1135,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
         private bool View_ValidateRestoreFile()
         {
-            if (IsMounted() && SelectedPaths.Count == 1)
+            if (IsMounted() && SelectedPaths.Count > 0)
             {
                 return Session.getFeature(typeof(Restore)) != null &&
                     ((Restore) Session.getFeature(typeof(Restore))).isRestorable(SelectedPath);
