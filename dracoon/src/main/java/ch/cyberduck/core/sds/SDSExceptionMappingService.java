@@ -96,7 +96,6 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                                 switch(errorCode) {
                                     case -70501:
                                         // [-70501] User not found
-                                        return new AccessDeniedException(buffer.toString(), failure);
                                     case -40761:
                                         // [-40761] Filekey not found for encrypted file
                                         return new AccessDeniedException(buffer.toString(), failure);
