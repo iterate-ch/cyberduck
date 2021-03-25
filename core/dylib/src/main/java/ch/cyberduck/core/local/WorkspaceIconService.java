@@ -29,6 +29,8 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 public final class WorkspaceIconService implements IconService {
 
+    private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+
     @Override
     public boolean set(final Local file, final String image) {
         return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(image));
@@ -37,7 +39,6 @@ public final class WorkspaceIconService implements IconService {
     protected boolean update(final Local file, final NSImage icon) {
         synchronized(NSWorkspace.class) {
             // Specify 0 if you want to generate icons in all available icon representation formats
-            final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
             if(workspace.setIcon_forFile_options(icon, file.getAbsolute(), new NSUInteger(0))) {
                 workspace.noteFileSystemChanged(new NFDNormalizer().normalize(file.getAbsolute()).toString());
                 return true;
