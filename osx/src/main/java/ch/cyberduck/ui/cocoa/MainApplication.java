@@ -70,7 +70,7 @@ public final class MainApplication {
     }
 
     public static void main(String... arguments) {
-        final ActionOperationBatcher autorelease = new AutoreleaseActionOperationBatcher();
+        final ActionOperationBatcher autorelease = new AutoreleaseActionOperationBatcher(1);
         try {
             // This method also makes a connection to the window server and completes other initialization.
             // Your program should invoke this method as one of the first statements in main();
