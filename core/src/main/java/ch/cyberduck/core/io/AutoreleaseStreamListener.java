@@ -18,17 +18,31 @@ package ch.cyberduck.core.io;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 
+/**
+ * If your application or thread is long-lived and potentially generates a lot of autoreleased objects, you should
+ * periodically drain and create autorelease pools (like the Application Kit does on the main thread); otherwise,
+ * autoreleased objects accumulate and your memory footprint grows. If, however, your detached thread does not make
+ * Cocoa calls, you do not need to create an autorelease pool.
+ */
 public class AutoreleaseStreamListener implements StreamListener {
 
-    private final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get(100);
+    private final ThreadLocal<ActionOperationBatcher> autorelease;
+
+    public AutoreleaseStreamListener() {
+        this(ThreadLocal.withInitial(() -> ActionOperationBatcherFactory.get(100)));
+    }
+
+    public AutoreleaseStreamListener(final ThreadLocal<ActionOperationBatcher> autorelease) {
+        this.autorelease = autorelease;
+    }
 
     @Override
     public void sent(final long bytes) {
-        autorelease.operate();
+        autorelease.get().operate();
     }
 
     @Override
     public void recv(final long bytes) {
-        autorelease.operate();
+        autorelease.get().operate();
     }
 }
