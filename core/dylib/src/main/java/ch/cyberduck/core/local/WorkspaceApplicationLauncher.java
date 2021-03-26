@@ -34,11 +34,10 @@ import java.util.Map;
 public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
     private static final Logger log = Logger.getLogger(WorkspaceApplicationLauncher.class);
 
-    private final NSWorkspace workspace
-        = NSWorkspace.sharedWorkspace();
+    private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 
     private final Map<Application, ApplicationQuitCallback> registered
-        = new HashMap<Application, ApplicationQuitCallback>();
+        = new HashMap<>();
 
     public void register(final Application application, final ApplicationQuitCallback callback) {
         workspace.notificationCenter().addObserver(terminate.id(),

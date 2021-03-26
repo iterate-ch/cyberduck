@@ -42,6 +42,8 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
         Native.load("core");
     }
 
+    private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+
     public LaunchServicesApplicationFinder() {
         //
     }
@@ -166,7 +168,6 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
         final String identifier;
         final String name;
         synchronized(NSWorkspace.class) {
-            final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
             final String path;
             if(null != workspace.absolutePathForAppBundleWithIdentifier(search)) {
                 path = workspace.absolutePathForAppBundleWithIdentifier(search);
@@ -227,7 +228,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
             if(Application.notfound.equals(application)) {
                 return false;
             }
-            return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+            return workspace.absolutePathForAppBundleWithIdentifier(
                 application.getIdentifier()) != null;
         }
     }

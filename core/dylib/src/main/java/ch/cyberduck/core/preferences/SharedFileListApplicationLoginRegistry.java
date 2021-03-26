@@ -29,8 +29,8 @@ import ch.cyberduck.core.local.SidebarService;
 
 public class SharedFileListApplicationLoginRegistry implements ApplicationLoginRegistry {
 
+    private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
     private final FinderSidebarService service = new FinderSidebarService(SidebarService.List.login);
-
     private final ApplicationFinder finder;
 
     public SharedFileListApplicationLoginRegistry() {
@@ -45,7 +45,7 @@ public class SharedFileListApplicationLoginRegistry implements ApplicationLoginR
     public boolean register(final Application application) {
         try {
             if(finder.isInstalled(application)) {
-                service.add(new FinderLocal(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(application.getIdentifier())));
+                service.add(new FinderLocal(workspace.absolutePathForAppBundleWithIdentifier(application.getIdentifier())));
                 return true;
             }
             return false;
@@ -59,7 +59,7 @@ public class SharedFileListApplicationLoginRegistry implements ApplicationLoginR
     public boolean unregister(final Application application) {
         try {
             if(finder.isInstalled(application)) {
-                service.remove(new FinderLocal(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(application.getIdentifier())));
+                service.remove(new FinderLocal(workspace.absolutePathForAppBundleWithIdentifier(application.getIdentifier())));
                 return true;
             }
             return false;

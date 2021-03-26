@@ -30,6 +30,8 @@ import org.apache.log4j.Logger;
 public class WorkspaceTrashFeature implements Trash {
     private static final Logger log = Logger.getLogger(WorkspaceTrashFeature.class);
 
+    private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+
     /**
      * Move file to trash on main interface thread using <code>NSWorkspace.RecycleOperation</code>.
      */
@@ -39,7 +41,6 @@ public class WorkspaceTrashFeature implements Trash {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Move %s to Trash", file));
             }
-            final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
             // Asynchronous operation. 0 if the operation is performed synchronously and succeeds, and a positive
             // integer if the operation is performed asynchronously and succeeds
             if(!workspace.performFileOperation(

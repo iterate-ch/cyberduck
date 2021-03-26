@@ -26,12 +26,14 @@ import org.apache.commons.lang3.StringUtils;
 
 public class WorkspaceRevealService implements RevealService {
 
+    private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+
     @Override
     public boolean reveal(final Local file) {
         synchronized(NSWorkspace.class) {
             // If a second path argument is specified, a new file viewer is opened. If you specify an
             // empty string (@"") for this parameter, the file is selected in the main viewer.
-            return NSWorkspace.sharedWorkspace().selectFile(new NFDNormalizer().normalize(file.getAbsolute()).toString(),
+            return workspace.selectFile(new NFDNormalizer().normalize(file.getAbsolute()).toString(),
                 StringUtils.EMPTY);
         }
     }
