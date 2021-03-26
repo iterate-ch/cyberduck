@@ -250,7 +250,7 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
-                         final TransferStatus status, final ConnectionCallback connectionCallback,
+                         final TransferStatus overall, final TransferStatus segment, final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
@@ -277,22 +277,40 @@ public class DownloadTransfer extends Transfer {
             }
             // Transfer
             final Download download = source.getFeature(Download.class);
-            final DelegateStreamListener recvListener = new DelegateStreamListener(streamListener) {
+            final StreamListener recvListener = new DelegateStreamListener(streamListener) {
                 @Override
                 public void recv(final long bytes) {
                     addTransferred(bytes);
                     super.recv(bytes);
                 }
             };
-            download.download(file, local, bandwidth, this.options.icon ?
-                new IconUpdateSreamListener(recvListener, status, local) : recvListener, status, connectionCallback);
+            final StreamListener l;
+            if(this.options.icon) {
+                // Only update the file custom icon if the size is > 5MB. Otherwise creating too much overhead when transferring a large amount of files
+                if(segment.getLength() > PreferencesFactory.get().getLong("queue.download.icon.threshold")) {
+                    if(segment.getLength() == overall.getLength()) {
+                        l = new IconUpdateSreamListener(recvListener, overall, segment, local);
+                    }
+                    // No update of icon for segment files
+                    else {
+                        l = recvListener;
+                    }
+                }
+                else {
+                    l = recvListener;
+                }
+            }
+            else {
+                l = recvListener;
+            }
+            download.download(file, local, bandwidth, l, segment, connectionCallback);
         }
         else if(file.isDirectory()) {
-            if(!status.isExists()) {
+            if(!segment.isExists()) {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                     local.getName()));
                 new DefaultLocalDirectoryFeature().mkdir(local);
-                status.setComplete();
+                segment.setComplete();
             }
         }
     }

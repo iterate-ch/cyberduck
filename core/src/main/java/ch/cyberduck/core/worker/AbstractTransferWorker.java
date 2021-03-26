@@ -359,6 +359,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         }
         // Only transfer if accepted by filter and stored in table with transfer status
         if(table.containsKey(item)) {
+            // Overall transfer status
             final TransferStatus status = table.get(item);
             // Handle submit of one or more segments
             final List<TransferStatus> segments = status.getSegments();
@@ -414,7 +415,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             transfer.transfer(s, d,
                                 segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                 segment.getRename().local != null ? segment.getRename().local : item.local,
-                                options, segment, connect, progress, stream);
+                                options, status, segment, connect, progress, stream);
                         }
                         catch(BackgroundException e) {
                             release(s, Connection.source, e);

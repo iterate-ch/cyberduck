@@ -153,7 +153,7 @@ public class ConcurrentTransferWorkerTest {
 
             @Override
             public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
-                                 final TransferOptions options, final TransferStatus status,
+                                 final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
                                  final ConnectionCallback connectionCallback,
                                  final ProgressListener listener, final StreamListener streamListener) {
                 assertNotNull(source);

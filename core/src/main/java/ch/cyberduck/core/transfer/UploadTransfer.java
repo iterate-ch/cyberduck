@@ -228,7 +228,7 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
-                         final TransferStatus status, final ConnectionCallback connectionCallback,
+                         final TransferStatus overall, final TransferStatus segment, final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
@@ -260,15 +260,15 @@ public class UploadTransfer extends Transfer {
                     super.sent(bytes);
                 }
             };
-            final Object reply = upload.upload(file, local, bandwidth, sentListener, status, connectionCallback);
+            final Object reply = upload.upload(file, local, bandwidth, sentListener, segment, connectionCallback);
         }
         else if(file.isDirectory()) {
-            if(!status.isExists()) {
+            if(!segment.isExists()) {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
-                        file.getName()));
+                    file.getName()));
                 final Directory feature = source.getFeature(Directory.class);
-                feature.mkdir(file, null, status);
-                status.setComplete();
+                feature.mkdir(file, null, segment);
+                segment.setComplete();
             }
         }
     }

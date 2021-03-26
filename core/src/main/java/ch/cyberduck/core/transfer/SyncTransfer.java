@@ -219,17 +219,17 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
-                         final TransferOptions options, final TransferStatus status, final ConnectionCallback connectionCallback,
+                         final TransferOptions options, final TransferStatus overall, final TransferStatus segment, final ConnectionCallback connectionCallback,
                          final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         switch(comparison.compare(file, local)) {
             case remote:
-                download.transfer(source, destination, file, local, options, status, connectionCallback, progressListener, streamListener);
+                download.transfer(source, destination, file, local, options, overall, segment, connectionCallback, progressListener, streamListener);
                 break;
             case local:
-                upload.transfer(source, destination, file, local, options, status, connectionCallback, progressListener, streamListener);
+                upload.transfer(source, destination, file, local, options, overall, segment, connectionCallback, progressListener, streamListener);
                 break;
         }
     }

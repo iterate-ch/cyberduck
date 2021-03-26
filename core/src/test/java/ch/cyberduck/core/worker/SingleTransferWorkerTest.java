@@ -72,7 +72,7 @@ public class SingleTransferWorkerTest {
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
             public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
-                                 final TransferOptions options, final TransferStatus status,
+                                 final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
                                  final ConnectionCallback connectionCallback,
                                  final ProgressListener listener, final StreamListener streamListener) {
                 //
@@ -132,14 +132,14 @@ public class SingleTransferWorkerTest {
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
             public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
-                                 final TransferOptions options, final TransferStatus status,
+                                 final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
                                  final ConnectionCallback connectionCallback,
                                  final ProgressListener listener, final StreamListener streamListener) {
                 if(file.equals(root)) {
-                    assertTrue(status.isExists());
+                    assertTrue(segment.isExists());
                 }
                 else {
-                    assertFalse(status.isExists());
+                    assertFalse(segment.isExists());
                 }
             }
         };
@@ -199,14 +199,14 @@ public class SingleTransferWorkerTest {
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
             public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
-                                 final TransferOptions options, final TransferStatus status,
+                                 final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
                                  final ConnectionCallback connectionCallback,
                                  final ProgressListener listener, final StreamListener streamListener) {
                 if(file.equals(root)) {
-                    assertTrue(status.isExists());
+                    assertTrue(segment.isExists());
                 }
                 else {
-                    assertFalse(status.isExists());
+                    assertFalse(segment.isExists());
                 }
             }
 
