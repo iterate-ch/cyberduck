@@ -23,11 +23,14 @@ import org.rococoa.internal.AutoreleaseBatcher;
 public final class AutoreleaseActionOperationBatcher implements ActionOperationBatcher {
 
     /**
-     * An autorelease pool is used to manage Foundation's autorelease
-     * mechanism for Objective-C objects. If you start off a thread
-     * that calls Cocoa, there won't be a top-level pool.
+     * An autorelease pool is used to manage Foundation's autorelease mechanism for Objective-C objects. If you start
+     * off a thread that calls Cocoa, there won't be a top-level pool.
      */
-    private final AutoreleaseBatcher impl = AutoreleaseBatcher.forThread(1);
+    private final AutoreleaseBatcher impl;
+
+    public AutoreleaseActionOperationBatcher(final Integer batchsize) {
+        impl = AutoreleaseBatcher.forThread(batchsize);
+    }
 
     public void operate() {
         impl.operate();

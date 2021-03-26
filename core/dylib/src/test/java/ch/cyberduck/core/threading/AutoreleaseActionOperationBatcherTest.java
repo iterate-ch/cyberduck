@@ -24,6 +24,6 @@ public class AutoreleaseActionOperationBatcherTest {
 
     @Test
     public void testOperate() {
-        new AutoreleaseActionOperationBatcher().operate();
+        new AutoreleaseActionOperationBatcher(1).operate();
     }
 }
