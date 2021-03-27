@@ -226,12 +226,6 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public void stop() {
-        cache.clear();
-        super.stop();
-    }
-
-    @Override
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Bulk<?> feature = source.getFeature(Bulk.class);
         final Object id = feature.withCache(cache).pre(Type.download, files, callback);
@@ -277,33 +271,9 @@ public class DownloadTransfer extends Transfer {
             }
             // Transfer
             final Download download = source.getFeature(Download.class);
-            final StreamListener recvListener = new DelegateStreamListener(streamListener) {
-                @Override
-                public void recv(final long bytes) {
-                    addTransferred(bytes);
-                    super.recv(bytes);
-                }
-            };
-            final StreamListener l;
-            if(this.options.icon) {
-                // Only update the file custom icon if the size is > 5MB. Otherwise creating too much overhead when transferring a large amount of files
-                if(segment.getLength() > PreferencesFactory.get().getLong("queue.download.icon.threshold")) {
-                    if(segment.getLength() == overall.getLength()) {
-                        l = new IconUpdateSreamListener(recvListener, overall, segment, local);
-                    }
-                    // No update of icon for segment files
-                    else {
-                        l = recvListener;
-                    }
-                }
-                else {
-                    l = recvListener;
-                }
-            }
-            else {
-                l = recvListener;
-            }
-            download.download(file, local, bandwidth, l, segment, connectionCallback);
+            download.download(file, local, bandwidth, new DownloadStreamListener(this,
+                this.options.icon && segment.getLength() > PreferencesFactory.get().getLong("queue.download.icon.threshold") && segment.getLength() == overall.getLength() ?
+                    new IconUpdateSreamListener(streamListener, overall, segment, local) : streamListener), segment, connectionCallback);
         }
         else if(file.isDirectory()) {
             if(!segment.isExists()) {
@@ -320,5 +290,26 @@ public class DownloadTransfer extends Transfer {
         List<TransferItem> normalized = new DownloadRootPathsNormalizer().normalize(roots);
         roots.clear();
         roots.addAll(normalized);
+    }
+
+    @Override
+    public void stop() {
+        cache.clear();
+        super.stop();
+    }
+
+    private static final class DownloadStreamListener extends DelegateStreamListener {
+        private final DownloadTransfer transfer;
+
+        public DownloadStreamListener(final DownloadTransfer transfer, final StreamListener delegate) {
+            super(delegate);
+            this.transfer = transfer;
+        }
+
+        @Override
+        public void recv(final long bytes) {
+            transfer.addTransferred(bytes);
+            super.recv(bytes);
+        }
     }
 }
