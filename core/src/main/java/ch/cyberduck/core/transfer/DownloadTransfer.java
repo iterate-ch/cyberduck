@@ -272,7 +272,7 @@ public class DownloadTransfer extends Transfer {
             // Transfer
             final Download download = source.getFeature(Download.class);
             download.download(file, local, bandwidth, new DownloadStreamListener(this,
-                this.options.icon && segment.getLength() > PreferencesFactory.get().getLong("queue.download.icon.threshold") && segment.getLength() == overall.getLength() ?
+                this.options.icon && segment.getLength() > PreferencesFactory.get().getLong("queue.download.icon.threshold") && !overall.isSegmented() ?
                     new IconUpdateSreamListener(streamListener, overall, segment, local) : streamListener), segment, connectionCallback);
         }
         else if(file.isDirectory()) {
