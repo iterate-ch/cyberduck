@@ -143,9 +143,9 @@ public class DownloadTransfer extends Transfer {
                 list = session.getFeature(ListService.class).list(directory, listener);
                 cache.put(directory, list);
             }
-            final List<TransferItem> children = new ArrayList<TransferItem>();
+            final List<TransferItem> children = new ArrayList<>();
             // Return copy with filtered result only
-            for(Path f : new AttributedList<Path>(list.filter(comparator, filter))) {
+            for(Path f : new AttributedList<>(list.filter(comparator, filter))) {
                 children.add(new TransferItem(f, LocalFactory.get(local, f.getName())));
             }
             return children;

@@ -76,7 +76,7 @@ public class UploadTransfer extends Transfer {
 
     public UploadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)),
-            PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<Local>());
+            PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<>());
     }
 
     public UploadTransfer(final Host host, final Path root, final Local local, final Filter<Local> f) {
@@ -85,7 +85,7 @@ public class UploadTransfer extends Transfer {
 
     public UploadTransfer(final Host host, final List<TransferItem> roots) {
         this(host, roots,
-            PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<Local>());
+            PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<>());
     }
 
     public UploadTransfer(final Host host, final List<TransferItem> roots, final Filter<Local> f) {
@@ -131,7 +131,7 @@ public class UploadTransfer extends Transfer {
                 return Collections.emptyList();
             }
         }
-        final List<TransferItem> children = new ArrayList<TransferItem>();
+        final List<TransferItem> children = new ArrayList<>();
         for(Local local : directory.list().filter(comparator, filter)) {
             children.add(new TransferItem(new Path(remote, local.getName(),
                 local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
