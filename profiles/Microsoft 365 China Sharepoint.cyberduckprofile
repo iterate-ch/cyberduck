@@ -34,9 +34,9 @@
         <key>Port Configurable</key>
         <false/>
         <key>OAuth Authorization Url</key>
-        <string>https://login.microsoftonline.de/common/oauth2/authorize</string>
+        <string>https://login.chinacloudapi.cn/common/oauth2/authorize</string>
         <key>OAuth Token Url</key>
-        <string>https://login.microsoftonline.de/common/oauth2/token</string>
+        <string>https://login.chinacloudapi.cn/common/oauth2/token</string>
         <key>Scopes</key>
         <array>
             <string>sites.readwrite.all</string>
