@@ -22,7 +22,7 @@
         <key>Vendor</key>
         <string>microsoft365-cn-onedrive</string>
         <key>Description</key>
-        <string>Microsoft365 China OneDrive</string>
+        <string>Microsoft365 China OneDrive (operated by 21Vianet)</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>
