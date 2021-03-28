@@ -431,6 +431,8 @@ public abstract class Preferences implements Locales {
             Host.TransferType.concurrent.name()
         ));
         this.setDefault("queue.transfer.type", Host.TransferType.concurrent.name());
+        this.setDefault("queue.transfer.operationbatcher.size", String.valueOf(100));
+
         /*
           Warning when number of transfers in queue exceeds limit
          */

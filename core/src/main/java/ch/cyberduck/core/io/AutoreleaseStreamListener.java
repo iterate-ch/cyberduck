@@ -15,6 +15,7 @@ package ch.cyberduck.core.io;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 
@@ -29,7 +30,8 @@ public class AutoreleaseStreamListener implements StreamListener {
     private final ThreadLocal<ActionOperationBatcher> autorelease;
 
     public AutoreleaseStreamListener() {
-        this(ThreadLocal.withInitial(() -> ActionOperationBatcherFactory.get(100)));
+        this(ThreadLocal.withInitial(() -> ActionOperationBatcherFactory.get(
+            PreferencesFactory.get().getInteger("queue.transfer.operationbatcher.size"))));
     }
 
     public AutoreleaseStreamListener(final ThreadLocal<ActionOperationBatcher> autorelease) {
