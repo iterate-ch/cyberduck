@@ -37,6 +37,12 @@
         <string>https://login.microsoftonline.de/common/oauth2/authorize?resource=https://graph.microsoft.de/</string>
         <key>OAuth Token Url</key>
         <string>https://login.microsoftonline.de/common/oauth2/token</string>
+        <key>Scopes</key>
+        <array>
+            <string>files.readwrite.all</string>
+            <string>offline_access</string>
+            <string>user.read</string>
+        </array>
         <key>OAuth Client ID</key>
         <string>94b1c0a7-e1b5-4c8b-8f3e-7341cd2c3e13</string>
         <key>OAuth Redirect Url</key>
