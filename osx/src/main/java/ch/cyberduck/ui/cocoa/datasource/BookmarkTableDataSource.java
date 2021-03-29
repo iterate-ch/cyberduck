@@ -78,11 +78,11 @@ public class BookmarkTableDataSource extends OutlineDataSource {
     private final HostPasteboard pasteboard = HostPasteboard.getPasteboard();
 
     private final BrowserController controller;
+    private final CollectionListener<Host> listener = new BookmarkReloadListener();
     private final ScheduledThreadPool timerPool = new ScheduledThreadPool();
 
     private AbstractHostCollection source = AbstractHostCollection.empty();
     private Map<String, List<Host>> groups = Collections.emptyMap();
-    private CollectionListener<Host> listener = new BookmarkReloadListener();
 
     public BookmarkTableDataSource(final BrowserController controller) {
         this.controller = controller;
@@ -122,7 +122,7 @@ public class BookmarkTableDataSource extends OutlineDataSource {
 
     @Override
     public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
-        return item.isKindOfClass(Rococoa.createClass("NSString", NSString._Class.class));
+        return item.isKindOfClass(NSString.CLASS);
     }
 
     @Override
@@ -294,7 +294,7 @@ public class BookmarkTableDataSource extends OutlineDataSource {
                 if(object.isKindOfClass(NSArray.CLASS)) {
                     final NSArray elements = Rococoa.cast(object, NSArray.class);
                     // If regular files are dropped, these will be uploaded to the dropped bookmark location
-                    final List<TransferItem> uploads = new ArrayList<TransferItem>();
+                    final List<TransferItem> uploads = new ArrayList<>();
                     Host host = null;
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         final String filename = elements.objectAtIndex(new NSUInteger(i)).toString();
@@ -361,7 +361,7 @@ public class BookmarkTableDataSource extends OutlineDataSource {
         }
         else if(!pasteboard.isEmpty()) {
             if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
-                List<Host> duplicates = new ArrayList<Host>();
+                List<Host> duplicates = new ArrayList<>();
                 for(Host bookmark : pasteboard) {
                     final Host duplicate = new HostDictionary().deserialize(bookmark.serialize(SerializerFactory.get()));
                     // Make sure a new UUID is assigned for duplicate
@@ -439,7 +439,9 @@ public class BookmarkTableDataSource extends OutlineDataSource {
     @Override
     public boolean outlineView_writeItems_toPasteboard(final NSOutlineView view, final NSArray items, final NSPasteboard pboard) {
         for(int i = 0; i < items.count().intValue(); i++) {
-            pasteboard.add(new HostDictionary(new DeserializerFactory(PlistDeserializer.class)).deserialize(Rococoa.cast(items.objectAtIndex(new NSUInteger(i)), NSDictionary.class)));
+            if(items.objectAtIndex(new NSUInteger(i)).isKindOfClass(NSDictionary.CLASS)) {
+                pasteboard.add(new HostDictionary(new DeserializerFactory(PlistDeserializer.class)).deserialize(Rococoa.cast(items.objectAtIndex(new NSUInteger(i)), NSDictionary.class)));
+            }
         }
         NSEvent event = NSApplication.sharedApplication().currentEvent();
         if(event != null) {
