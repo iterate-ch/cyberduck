@@ -24,7 +24,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :10</i>
 public abstract class NSDictionary extends NSObject {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDictionary", _Class.class);
+    public static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDictionary", _Class.class);
 
     public static NSDictionary dictionaryWithObjectsForKeys(NSArray objects, NSArray keys) {
         return CLASS.dictionaryWithObjects_forKeys(objects, keys);
