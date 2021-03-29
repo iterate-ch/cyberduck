@@ -307,7 +307,7 @@ public final class TransferController extends WindowController implements Transf
             return;
         }
         final NSIndexSet selected = transferTable.selectedRowIndexes();
-        final float bandwidth = Float.valueOf(sender.representedObject());
+        final float bandwidth = Float.parseFloat(sender.representedObject());
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = collection.get(index.intValue());
             transfer.setBandwidth(bandwidth);
@@ -663,7 +663,7 @@ public final class TransferController extends WindowController implements Transf
             if(log.isDebugEnabled()) {
                 log.debug("Paste download transfer from pasteboard");
             }
-            final List<TransferItem> downloads = new ArrayList<TransferItem>();
+            final List<TransferItem> downloads = new ArrayList<>();
             for(Path download : pasteboard) {
                 downloads.add(new TransferItem(download, LocalFactory.get(
                     new DownloadDirectoryFinder().find(pasteboard.getBookmark()),
@@ -769,7 +769,7 @@ public final class TransferController extends WindowController implements Transf
         final NSIndexSet selected = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferTableModel.getSource();
         int i = 0;
-        final List<Transfer> remove = new ArrayList<Transfer>();
+        final List<Transfer> remove = new ArrayList<>();
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer t = transfers.get(index.intValue() - i);
             if(!t.isRunning()) {
@@ -890,7 +890,7 @@ public final class TransferController extends WindowController implements Transf
         public boolean menuUpdateItemAtIndex(final NSMenu menu, final NSMenuItem item, final NSInteger i, final boolean cancel) {
             if(item.representedObject() != null) {
                 final int selected = transferTable.numberOfSelectedRows().intValue();
-                final int bytes = Integer.valueOf(item.representedObject());
+                final int bytes = Integer.parseInt(item.representedObject());
                 final NSIndexSet iterator = transferTable.selectedRowIndexes();
                 for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
                     final Transfer transfer = collection.get(index.intValue());
