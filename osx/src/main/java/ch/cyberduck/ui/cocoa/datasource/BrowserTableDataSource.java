@@ -362,7 +362,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             final NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
             // Mount .webloc URLs dragged to browser window
             if(o != null) {
-                if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                if(o.isKindOfClass(NSArray.CLASS)) {
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         if(Scheme.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
@@ -384,7 +384,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 final NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
                 // A file drag has been received by another application; upload to the dragged directory
                 if(o != null) {
-                    if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                    if(o.isKindOfClass(NSArray.CLASS)) {
                         final NSArray elements = Rococoa.cast(o, NSArray.class);
                         final List<TransferItem> roots = new ArrayList<TransferItem>();
                         for(int i = 0; i < elements.count().intValue(); i++) {
@@ -445,7 +445,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             // Dragging URLs to mount new session
             final NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
-                if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                if(o.isKindOfClass(NSArray.CLASS)) {
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         // Validate if .webloc URLs dragged to browser window have a known protocol

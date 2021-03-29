@@ -257,7 +257,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         else if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
             final NSObject o = draggingPasteboard.propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
-                if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                if(o.isKindOfClass(NSArray.CLASS)) {
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         String file = elements.objectAtIndex(new NSUInteger(i)).toString();
@@ -277,7 +277,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         else if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
             final NSObject o = draggingPasteboard.propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
-                if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                if(o.isKindOfClass(NSArray.CLASS)) {
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         if(Scheme.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
@@ -340,7 +340,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             // We get a drag from another application e.g. Finder.app proposing some files
             final NSObject object = draggingPasteboard.propertyListForType(NSPasteboard.FilenamesPboardType);
             if(object != null) {
-                if(object.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                if(object.isKindOfClass(NSArray.CLASS)) {
                     final NSArray elements = Rococoa.cast(object, NSArray.class);
                     // If regular files are dropped, these will be uploaded to the dropped bookmark location
                     final List<TransferItem> uploads = new ArrayList<TransferItem>();
@@ -385,7 +385,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         else if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
             final NSObject object = draggingPasteboard.propertyListForType(NSPasteboard.URLPboardType);
             if(object != null) {
-                if(object.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                if(object.isKindOfClass(NSArray.CLASS)) {
                     final NSArray elements = Rococoa.cast(object, NSArray.class);
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         final String url = elements.objectAtIndex(new NSUInteger(i)).toString();

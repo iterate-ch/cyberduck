@@ -70,7 +70,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         NSObject next;
         final List<String> keys = new ArrayList<>();
         while((next = enumerator.nextObject()) != null) {
-            if(next.isKindOfClass(Rococoa.createClass("NSString", NSString._Class.class))) {
+            if(next.isKindOfClass(NSString.CLASS)) {
                 keys.add(Rococoa.cast(next, NSString.class).toString());
             }
         }
@@ -83,7 +83,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         if(null == value) {
             return null;
         }
-        if(value.isKindOfClass(Rococoa.createClass("NSDictionary", NSDictionary._Class.class))) {
+        if(value.isKindOfClass(NSDictionary.CLASS)) {
             return Rococoa.cast(value, NSDictionary.class);
         }
         log.warn(String.format("Unexpected value type for serialized key %s", key));
@@ -97,16 +97,16 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         if(null == value) {
             return null;
         }
-        if(value.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+        if(value.isKindOfClass(NSArray.CLASS)) {
             final NSArray array = Rococoa.cast(value, NSArray.class);
             final NSEnumerator enumerator = array.objectEnumerator();
             NSObject next;
             final List<T> list = new ArrayList<T>();
             while((next = enumerator.nextObject()) != null) {
-                if(next.isKindOfClass(Rococoa.createClass("NSDictionary", NSDictionary._Class.class))) {
+                if(next.isKindOfClass(NSDictionary.CLASS)) {
                     list.add((T) Rococoa.cast(next, NSDictionary.class));
                 }
-                if(next.isKindOfClass(Rococoa.createClass("NSString", NSString._Class.class))) {
+                if(next.isKindOfClass(NSString.CLASS)) {
                     list.add((T) Rococoa.cast(next, NSString.class).toString());
                 }
             }
@@ -122,7 +122,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         if(null == value) {
             return null;
         }
-        if(value.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+        if(value.isKindOfClass(NSArray.CLASS)) {
             final NSDictionary dict = Rococoa.cast(value, NSDictionary.class);
             final NSEnumerator enumerator = dict.allKeys().objectEnumerator();
             NSObject next;

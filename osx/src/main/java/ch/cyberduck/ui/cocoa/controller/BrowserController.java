@@ -518,16 +518,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 // Delay render until path is cached in the background
                 this.background(new WorkerBackgroundAction<>(this, pool,
-                    new SessionListWorker(cache, folder, listener) {
-                        @Override
-                        public void cleanup(final AttributedList<Path> list) {
-                            // Put into cache
-                            super.cleanup(list);
-                            // Update the working directory if listing is successful
-                            if(!(AttributedList.<Path>emptyList() == list)) {
-                                // Reload browser
-                                reload(browser, model, workdir, selected, folder);
-                            }
+                        new SessionListWorker(cache, folder, listener) {
+                            @Override
+                            public void cleanup(final AttributedList<Path> list) {
+                                // Put into cache
+                                super.cleanup(list);
+                                // Update the working directory if listing is successful
+                                if(!(AttributedList.<Path>emptyList() == list)) {
+                                    // Reload browser
+                                    reload(browser, model, workdir, selected, folder);
+                                }
                             }
                         }
                     )
@@ -2307,16 +2307,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     @Override
                     public void run() {
                         background(new WorkerBackgroundAction<>(BrowserController.this, pool,
-                            new CopyWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(BrowserController.this, pool.getHost()) : pool, cache,
-                                BrowserController.this, LoginCallbackFactory.get(BrowserController.this)) {
-                                @Override
-                                public void cleanup(final Map<Path, Path> result) {
-                                    final List<Path> changed = new ArrayList<>();
-                                    changed.addAll(result.keySet());
-                                    changed.addAll(result.values());
-                                    reload(workdir, changed, new ArrayList<>(selected.values()));
+                                new CopyWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(BrowserController.this, pool.getHost()) : pool, cache,
+                                    BrowserController.this, LoginCallbackFactory.get(BrowserController.this)) {
+                                    @Override
+                                    public void cleanup(final Map<Path, Path> result) {
+                                        final List<Path> changed = new ArrayList<>();
+                                        changed.addAll(result.keySet());
+                                        changed.addAll(result.values());
+                                        reload(workdir, changed, new ArrayList<>(selected.values()));
+                                    }
                                 }
-                            }
                             )
                         );
                     }
@@ -2492,16 +2492,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void shareFileButtonClicked(final ID sender) {
         final Path file = this.getSelectedPath();
         this.background(new WorkerBackgroundAction<>(this, pool,
-            new DownloadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this)) {
-                @Override
-                public void cleanup(final DescriptiveUrl url) {
-                    // Display
-                    if(!DescriptiveUrl.EMPTY.equals(url)) {
-                        final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Create Download Share", "Share"),
-                            MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
-                            LocaleFactory.localizedString("Continue", "Credentials"),
-                            LocaleFactory.localizedString("Copy", "Main"),
-                            null)) {
+                new DownloadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this)) {
+                    @Override
+                    public void cleanup(final DescriptiveUrl url) {
+                        // Display
+                        if(!DescriptiveUrl.EMPTY.equals(url)) {
+                            final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Create Download Share", "Share"),
+                                MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
+                                LocaleFactory.localizedString("Continue", "Credentials"),
+                                LocaleFactory.localizedString("Copy", "Main"),
+                                null)) {
                                 @Override
                                 public void callback(final int returncode) {
                                     switch(returncode) {
@@ -3029,7 +3029,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
             NSObject o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
-                if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                if(o.isKindOfClass(NSArray.CLASS)) {
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
                     final List<TransferItem> uploads = new ArrayList<>();
                     for(int i = 0; i < elements.count().intValue(); i++) {
@@ -3329,7 +3329,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     if(NSPasteboard.generalPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
                         NSObject o = NSPasteboard.generalPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
                         if(o != null) {
-                            if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                            if(o.isKindOfClass(NSArray.CLASS)) {
                                 final NSArray elements = Rococoa.cast(o, NSArray.class);
                                 if(elements.count().intValue() == 1) {
                                     item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),

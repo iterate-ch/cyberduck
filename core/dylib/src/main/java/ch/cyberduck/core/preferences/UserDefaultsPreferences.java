@@ -102,10 +102,10 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             return null == d ? MISSING_PROPERTY : d;
         }
         // Customized property found
-        if(value.isKindOfClass(Rococoa.createClass("NSString", NSString._Class.class))) {
+        if(value.isKindOfClass(NSString.CLASS)) {
             return value.toString();
         }
-        if(value.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+        if(value.isKindOfClass(NSArray.CLASS)) {
             return StringUtils.join(this.toList(Rococoa.cast(value, NSArray.class)), LIST_SEPERATOR);
         }
         log.warn(String.format("Unknown type for property %s", property));
@@ -269,7 +269,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         if(null == value) {
             return super.locale();
         }
-        if(value.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+        if(value.isKindOfClass(NSArray.CLASS)) {
             final List<String> languages = this.toList(Rococoa.cast(value, NSArray.class));
             if(null != languages) {
                 return languages.iterator().next();

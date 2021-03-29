@@ -1066,7 +1066,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
             NSObject o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
-                if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                if(o.isKindOfClass(NSArray.CLASS)) {
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
                     List<Local> files = new ArrayList<Local>();
                     for(int i = 0; i < elements.count().intValue(); i++) {
