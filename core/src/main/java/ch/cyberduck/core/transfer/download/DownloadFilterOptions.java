@@ -32,6 +32,11 @@ public final class DownloadFilterOptions {
     public boolean wherefrom;
     public boolean icon;
     public boolean checksum;
+    /**
+     * Add quarantine flag to downloaded file
+     */
+    public boolean quarantine;
+    public boolean open;
 
     public DownloadFilterOptions() {
         final Preferences preferences = PreferencesFactory.get();
@@ -41,6 +46,8 @@ public final class DownloadFilterOptions {
         wherefrom = preferences.getBoolean("queue.download.wherefrom");
         icon = preferences.getBoolean("queue.download.icon.update");
         checksum = preferences.getBoolean("queue.download.checksum.calculate");
+        quarantine = PreferencesFactory.get().getBoolean("queue.download.quarantine");
+        open = PreferencesFactory.get().getBoolean("queue.download.complete.open");
     }
 
     @Override
@@ -52,6 +59,8 @@ public final class DownloadFilterOptions {
         sb.append(", wherefrom=").append(wherefrom);
         sb.append(", icon=").append(icon);
         sb.append(", checksum=").append(checksum);
+        sb.append(", quarantine=").append(quarantine);
+        sb.append(", open=").append(open);
         sb.append('}');
         return sb.toString();
     }

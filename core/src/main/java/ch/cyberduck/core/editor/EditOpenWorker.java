@@ -39,6 +39,7 @@ import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
 import ch.cyberduck.core.worker.SingleTransferWorker;
 import ch.cyberduck.core.worker.Worker;
 
@@ -68,13 +69,17 @@ public class EditOpenWorker extends Worker<Transfer> {
         this.callback = callback;
         this.quit = quit;
         this.notification = notification;
+        final DownloadFilterOptions options = new DownloadFilterOptions();
+        options.quarantine = false;
+        options.wherefrom = false;
+        options.open = false;
         this.download = new DownloadTransfer(bookmark, editor.getRemote(), editor.getLocal(), new DownloadDuplicateFilter()) {
             @Override
             public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
                                          final TransferPrompt prompt, final ListProgressListener listener) {
                 return TransferAction.trash;
             }
-        };
+        }.withOptions(options);
         this.listener = listener;
         this.watcher = watcher;
     }
@@ -87,8 +92,6 @@ public class EditOpenWorker extends Worker<Transfer> {
         }
         // Delete any existing file which might be used by a watch editor already
         final TransferOptions options = new TransferOptions();
-        options.quarantine = false;
-        options.open = false;
         final SingleTransferWorker worker
             = new SingleTransferWorker(session, session, download, options, new TransferSpeedometer(download),
             new DisabledTransferPrompt(), callback,

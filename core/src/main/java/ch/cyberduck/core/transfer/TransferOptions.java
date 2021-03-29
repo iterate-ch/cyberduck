@@ -18,8 +18,6 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.PreferencesFactory;
-
 public final class TransferOptions {
 
     /**
@@ -31,25 +29,6 @@ public final class TransferOptions {
      * Reload requested using user interface
      */
     public boolean reloadRequested = false;
-
-    /**
-     * Add quarantine flag to downloaded file
-     */
-    public boolean quarantine =
-            PreferencesFactory.get().getBoolean("queue.download.quarantine");
-
-    public boolean open =
-            PreferencesFactory.get().getBoolean("queue.download.complete.open");
-
-    public TransferOptions open(boolean e) {
-        open = e;
-        return this;
-    }
-
-    public TransferOptions quarantine(boolean e) {
-        quarantine = e;
-        return this;
-    }
 
     public TransferOptions reload(boolean e) {
         reloadRequested = e;
@@ -63,11 +42,9 @@ public final class TransferOptions {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("TransferOptions");
-        sb.append("{resumeRequested=").append(resumeRequested);
+        final StringBuilder sb = new StringBuilder("TransferOptions{");
+        sb.append("resumeRequested=").append(resumeRequested);
         sb.append(", reloadRequested=").append(reloadRequested);
-        sb.append(", quarantine=").append(quarantine);
         sb.append('}');
         return sb.toString();
     }
