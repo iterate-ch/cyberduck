@@ -22,7 +22,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.core.TransferPromptControllerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.AutoreleaseStreamListener;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.pool.SessionPool;
@@ -67,7 +67,7 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
         this(controller, source, destination, listener, controller, transfer, options,
             TransferPromptControllerFactory.get(controller, transfer, source, destination),
             TransferErrorCallbackControllerFactory.get(controller),
-            new TransferSpeedometer(transfer), new AutoreleaseStreamListener());
+            new TransferSpeedometer(transfer), new DisabledStreamListener());
     }
 
     public TransferBackgroundAction(final Controller controller,
@@ -91,7 +91,7 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                                     final TransferOptions options,
                                     final TransferPrompt prompt) {
         this(controller, source, destination, listener, progress, transfer, options, prompt, TransferErrorCallbackControllerFactory.get(controller),
-            new TransferSpeedometer(transfer), new AutoreleaseStreamListener());
+            new TransferSpeedometer(transfer), new DisabledStreamListener());
     }
 
     public TransferBackgroundAction(final Controller controller,
@@ -104,7 +104,7 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                                     final TransferPrompt prompt,
                                     final TransferErrorCallback error) {
         this(controller, source, destination, listener, progress, transfer, options, prompt, error,
-            new TransferSpeedometer(transfer), new AutoreleaseStreamListener());
+            new TransferSpeedometer(transfer), new DisabledStreamListener());
     }
 
     public TransferBackgroundAction(final Controller controller,
