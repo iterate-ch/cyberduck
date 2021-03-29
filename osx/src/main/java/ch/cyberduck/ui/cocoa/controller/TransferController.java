@@ -261,7 +261,10 @@ public final class TransferController extends WindowController implements Transf
 
     @Action
     public void connectionsPopupChanged(final NSMenuItem sender) {
-        final Integer connections = Integer.valueOf(sender.representedObject());
+        if(null == sender.representedObject()) {
+            return;
+        }
+        final int connections = Integer.parseInt(sender.representedObject());
         preferences.setProperty("queue.connections.limit", connections);
         final TransferQueue queue = TransferQueueFactory.get();
         queue.resize(connections);
@@ -300,6 +303,9 @@ public final class TransferController extends WindowController implements Transf
 
     @Action
     public void bandwidthPopupChanged(NSMenuItem sender) {
+        if(null == sender.representedObject()) {
+            return;
+        }
         final NSIndexSet selected = transferTable.selectedRowIndexes();
         final float bandwidth = Float.valueOf(sender.representedObject());
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
