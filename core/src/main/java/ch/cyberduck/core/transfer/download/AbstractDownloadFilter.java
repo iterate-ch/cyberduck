@@ -210,7 +210,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     // this scales down to files of size 20MiB with 2 segments at 10 MiB
                     long remaining = status.getLength(), offset = 0;
                     // Sorted list
-                    final List<TransferStatus> segments = new ArrayList<TransferStatus>();
+                    final List<TransferStatus> segments = new ArrayList<>();
                     final Local segmentsFolder = LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName()));
                     for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
                         final Local segmentFile = LocalFactory.get(
@@ -307,7 +307,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 final DescriptiveUrlBag provider = session.getFeature(UrlProvider.class).toUrl(file).filter(DescriptiveUrl.Type.provider, DescriptiveUrl.Type.http);
                 for(DescriptiveUrl url : provider) {
                     try {
-                        if(options.quarantine) {
+                        if(this.options.quarantine) {
                             // Set quarantine attributes
                             quarantine.setQuarantine(local, new HostUrlProvider().withUsername(false).get(session.getHost()), url.getUrl());
                         }
@@ -383,7 +383,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     }
                     local.rename(status.getDisplayname().local);
                 }
-                if(options.open) {
+                if(this.options.open) {
                     launcher.open(local);
                 }
             }
