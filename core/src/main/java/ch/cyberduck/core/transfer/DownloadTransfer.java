@@ -143,9 +143,9 @@ public class DownloadTransfer extends Transfer {
                 list = session.getFeature(ListService.class).list(directory, listener);
                 cache.put(directory, list);
             }
-            final List<TransferItem> children = new ArrayList<TransferItem>();
+            final List<TransferItem> children = new ArrayList<>();
             // Return copy with filtered result only
-            for(Path f : new AttributedList<Path>(list.filter(comparator, filter))) {
+            for(Path f : new AttributedList<>(list.filter(comparator, filter))) {
                 children.add(new TransferItem(f, LocalFactory.get(local, f.getName())));
             }
             return children;
@@ -226,12 +226,6 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public void stop() {
-        cache.clear();
-        super.stop();
-    }
-
-    @Override
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Bulk<?> feature = source.getFeature(Bulk.class);
         final Object id = feature.withCache(cache).pre(Type.download, files, callback);
@@ -250,7 +244,7 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
-                         final TransferStatus status, final ConnectionCallback connectionCallback,
+                         final TransferStatus overall, final TransferStatus segment, final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
@@ -277,22 +271,16 @@ public class DownloadTransfer extends Transfer {
             }
             // Transfer
             final Download download = source.getFeature(Download.class);
-            final DelegateStreamListener recvListener = new DelegateStreamListener(streamListener) {
-                @Override
-                public void recv(final long bytes) {
-                    addTransferred(bytes);
-                    super.recv(bytes);
-                }
-            };
-            download.download(file, local, bandwidth, this.options.icon ?
-                new IconUpdateSreamListener(recvListener, status, local) : recvListener, status, connectionCallback);
+            download.download(file, local, bandwidth, new DownloadStreamListener(this,
+                this.options.icon && segment.getLength() > PreferencesFactory.get().getLong("queue.download.icon.threshold") && !overall.isSegmented() ?
+                    new IconUpdateSreamListener(streamListener, overall, segment, local) : streamListener), segment, connectionCallback);
         }
         else if(file.isDirectory()) {
-            if(!status.isExists()) {
+            if(!segment.isExists()) {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                     local.getName()));
                 new DefaultLocalDirectoryFeature().mkdir(local);
-                status.setComplete();
+                segment.setComplete();
             }
         }
     }
@@ -302,5 +290,26 @@ public class DownloadTransfer extends Transfer {
         List<TransferItem> normalized = new DownloadRootPathsNormalizer().normalize(roots);
         roots.clear();
         roots.addAll(normalized);
+    }
+
+    @Override
+    public void stop() {
+        cache.clear();
+        super.stop();
+    }
+
+    private static final class DownloadStreamListener extends DelegateStreamListener {
+        private final DownloadTransfer transfer;
+
+        public DownloadStreamListener(final DownloadTransfer transfer, final StreamListener delegate) {
+            super(delegate);
+            this.transfer = transfer;
+        }
+
+        @Override
+        public void recv(final long bytes) {
+            transfer.addTransferred(bytes);
+            super.recv(bytes);
+        }
     }
 }

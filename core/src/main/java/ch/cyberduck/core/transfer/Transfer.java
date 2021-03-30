@@ -150,8 +150,7 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * Create a transfer with a single root which can
-     * be a plain file or a directory
+     * Create a transfer with a single root which can be a plain file or a directory
      *
      * @param host Connection details
      * @param root File or directory
@@ -364,13 +363,14 @@ public abstract class Transfer implements Serializable {
      * @param file               Remote
      * @param local              Local
      * @param options            Quarantine option
-     * @param status             Transfer status
+     * @param overall            Overall transfer status
+     * @param segment            Segment transfer status
      * @param connectionCallback Prompt
      * @param progressListener   Listener
      * @param streamListener     Listener
      */
     public abstract void transfer(Session<?> source, Session<?> destination, Path file, Local local,
-                                  TransferOptions options, TransferStatus status,
+                                  TransferOptions options, final TransferStatus overall, TransferStatus segment,
                                   ConnectionCallback connectionCallback,
                                   ProgressListener progressListener,
                                   StreamListener streamListener) throws BackgroundException;

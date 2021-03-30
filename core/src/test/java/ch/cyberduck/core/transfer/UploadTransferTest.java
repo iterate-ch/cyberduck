@@ -142,7 +142,7 @@ public class UploadTransferTest {
         Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
             public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
-                                 final TransferOptions options, final TransferStatus status,
+                                 final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
                                  final ConnectionCallback connectionCallback,
                                  final ProgressListener listener, final StreamListener streamListener) {
                 assertTrue(options.resumeRequested);
@@ -206,7 +206,7 @@ public class UploadTransferTest {
         Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
             public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
-                                 final TransferOptions options, final TransferStatus status,
+                                 final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
                                  final ConnectionCallback connectionCallback,
                                  final ProgressListener listener, final StreamListener streamListener) {
                 //
@@ -390,9 +390,9 @@ public class UploadTransferTest {
         final Transfer transfer = new UploadTransfer(host, test, local) {
             @Override
             public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
-                                 final TransferOptions options, final TransferStatus status,
+                                 final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
                                  final ConnectionCallback connectionCallback, final ProgressListener listener, final StreamListener streamListener) {
-                status.setComplete();
+                segment.setComplete();
                 set.set(true);
             }
 

@@ -1,6 +1,14 @@
 Cyberduck
 https://cyberduck.io/
 
+7.8.5
+- [Feature] Support ED25519 and ECDSA keys in the PuTTY format (SFTP)
+- [Bugfix] Large increasing memory usage when downloading files with segmeted downloads option (#11151)
+- [Bugfix] Faster transfer rate with segemented downloads option enabled (SFTP)
+
+7.8.4
+- [Bugfix] Missing log file configuration (Windows)
+
 7.8.3
 - [Bugfix] Failure renaming files (OneDrive, Sharepoint)
 - [Bugfix] Optimize segmented downloads

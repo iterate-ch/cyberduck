@@ -65,9 +65,9 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                                     final Transfer transfer,
                                     final TransferOptions options) {
         this(controller, source, destination, listener, controller, transfer, options,
-                TransferPromptControllerFactory.get(controller, transfer, source, destination),
-                TransferErrorCallbackControllerFactory.get(controller),
-                new TransferSpeedometer(transfer), new DisabledStreamListener());
+            TransferPromptControllerFactory.get(controller, transfer, source, destination),
+            TransferErrorCallbackControllerFactory.get(controller),
+            new TransferSpeedometer(transfer), new DisabledStreamListener());
     }
 
     public TransferBackgroundAction(final Controller controller,
@@ -91,7 +91,7 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                                     final TransferOptions options,
                                     final TransferPrompt prompt) {
         this(controller, source, destination, listener, progress, transfer, options, prompt, TransferErrorCallbackControllerFactory.get(controller),
-                new TransferSpeedometer(transfer), new DisabledStreamListener());
+            new TransferSpeedometer(transfer), new DisabledStreamListener());
     }
 
     public TransferBackgroundAction(final Controller controller,

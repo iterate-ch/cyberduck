@@ -267,14 +267,21 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * If this path is currently transferred, interrupt it as soon as possible
      */
     public void setCanceled() {
+        for(TransferStatus segment : segments) {
+            segment.setCanceled();
+        }
         canceled.set(true);
         done.countDown();
     }
 
     /**
+     *
      */
     @Override
     public void validate() throws ConnectionCanceledException {
+        for(TransferStatus segment : segments) {
+            segment.validate();
+        }
         if(canceled.get()) {
             throw new TransferCanceledException();
         }

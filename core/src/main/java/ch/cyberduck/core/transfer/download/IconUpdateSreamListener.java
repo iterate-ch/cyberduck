@@ -23,8 +23,6 @@ import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.math.BigDecimal;
@@ -32,37 +30,28 @@ import java.math.RoundingMode;
 
 public class IconUpdateSreamListener extends DelegateStreamListener {
 
-    private final TransferStatus status;
-
+    private final IconService icon = IconServiceFactory.get();
+    private final TransferStatus overall;
+    private final TransferStatus segment;
     private final Local file;
-
-    private final IconService icon
-        = IconServiceFactory.get();
 
     // An integer between 0 and 9
     private int step = 0;
 
-    // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
-    // overhead when transferring a large amount of files
-    private final boolean threshold;
-
-    public IconUpdateSreamListener(final StreamListener delegate, final TransferStatus status, final Local file) {
+    public IconUpdateSreamListener(final StreamListener delegate, final TransferStatus overall, final TransferStatus segment, final Local file) {
         super(delegate);
-        this.status = status;
-        final Preferences preferences = PreferencesFactory.get();
-        this.threshold = status.getLength() > preferences.getLong("queue.download.icon.threshold");
+        this.overall = overall;
+        this.segment = segment;
         this.file = file;
     }
 
     @Override
     public void recv(final long bytes) {
-        if(threshold) {
-            final BigDecimal fraction = new BigDecimal(status.getOffset()).divide(new BigDecimal(status.getLength()), 1, RoundingMode.DOWN);
-            if(fraction.multiply(BigDecimal.TEN).intValue() > step) {
-                // Another 10 percent of the file has been transferred
-                icon.set(file, status);
-                step++;
-            }
+        final BigDecimal fraction = new BigDecimal(segment.getOffset()).divide(new BigDecimal(overall.getLength()), 1, RoundingMode.DOWN);
+        if(fraction.multiply(BigDecimal.TEN).intValue() > step) {
+            // Another 10 percent of the file has been transferred
+            icon.set(file, segment);
+            step++;
         }
         super.recv(bytes);
     }

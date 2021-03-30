@@ -27,11 +27,13 @@ import org.apache.log4j.Logger;
 public class WorkspaceBrowserLauncher implements BrowserLauncher {
     private static final Logger log = Logger.getLogger(WorkspaceBrowserLauncher.class);
 
+    private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+
     @Override
     public boolean open(final String url) {
         synchronized(NSWorkspace.class) {
             if(StringUtils.isNotBlank(url)) {
-                if(NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url))) {
+                if(workspace.openURL(NSURL.URLWithString(url))) {
                     return true;
                 }
                 log.warn(String.format("Failure opening URL %s with browser", url));

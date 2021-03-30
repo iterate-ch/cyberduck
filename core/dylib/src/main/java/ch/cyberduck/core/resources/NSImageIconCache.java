@@ -38,6 +38,8 @@ public class NSImageIconCache implements IconCache<NSImage> {
 
     private final static NSRect NSZeroRect = new NSRect(0, 0);
 
+    private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+
     private NSImage cache(final String name, final NSImage image, final Integer size) {
         if(null == image) {
             log.warn(String.format("No icon named %s", name));
@@ -76,7 +78,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
         NSImage image = this.load(extension, size);
         if(null == image) {
             return this.cache(extension,
-                this.convert(extension, NSWorkspace.sharedWorkspace().iconForFileType(extension), size), size);
+                this.convert(extension, workspace.iconForFileType(extension), size), size);
         }
         return image;
     }
@@ -173,7 +175,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
             icon = this.load(file.getAbsolute(), size);
             if(null == icon) {
                 return this.cache(file.getName(),
-                    this.convert(file.getName(), NSWorkspace.sharedWorkspace().iconForFile(file.getAbsolute()), size), size);
+                    this.convert(file.getName(), workspace.iconForFile(file.getAbsolute()), size), size);
             }
         }
         if(null == icon) {
@@ -191,11 +193,11 @@ public class NSImageIconCache implements IconCache<NSImage> {
     public NSImage applicationIcon(final Application app, final Integer size) {
         NSImage icon = this.load(app.getIdentifier(), size);
         if(null == icon) {
-            final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(app.getIdentifier());
+            final String path = workspace.absolutePathForAppBundleWithIdentifier(app.getIdentifier());
             // Null if the bundle cannot be found
             if(StringUtils.isNotBlank(path)) {
                 return this.cache(app.getIdentifier(),
-                    this.convert(app.getIdentifier(), NSWorkspace.sharedWorkspace().iconForFile(path), size), size);
+                    this.convert(app.getIdentifier(), workspace.iconForFile(path), size), size);
             }
         }
         if(null == icon) {

@@ -55,7 +55,7 @@ public class SFTPReadFeature implements Read {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skipping %d bytes", status.getOffset()));
             }
-            return handle.new ReadAheadRemoteFileInputStream(maxUnconfirmedReads, status.getOffset()) {
+            return handle.new ReadAheadRemoteFileInputStream(maxUnconfirmedReads, status.getOffset(), status.getLength()) {
                 private final AtomicBoolean close = new AtomicBoolean();
 
                 @Override

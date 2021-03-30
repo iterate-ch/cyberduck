@@ -20,13 +20,40 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Factory;
 
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.apache.log4j.Logger;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 public class ActionOperationBatcherFactory extends Factory<ActionOperationBatcher> {
+    private static final Logger log = Logger.getLogger(ActionOperationBatcherFactory.class);
 
     public ActionOperationBatcherFactory() {
         super("factory.autorelease.class");
     }
 
+    public ActionOperationBatcher create(final Integer batchsize) {
+        try {
+            final Constructor<ActionOperationBatcher> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, batchsize.getClass());
+            if(null == constructor) {
+                log.warn(String.format("No matching constructor for parameter %s", batchsize.getClass()));
+                // Call default constructor for disabled implementations
+                return clazz.newInstance();
+            }
+            return constructor.newInstance(batchsize);
+        }
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
+            log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
+            return new DisabledActionOperationBatcher();
+        }
+    }
+
     public static ActionOperationBatcher get() {
-        return new ActionOperationBatcherFactory().create();
+        return get(1);
+    }
+
+    public static ActionOperationBatcher get(final Integer batchsize) {
+        return new ActionOperationBatcherFactory().create(batchsize);
     }
 }

@@ -232,7 +232,7 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> session, final Session<?> destination, final Path source, final Local n,
-                         final TransferOptions options, final TransferStatus status,
+                         final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
                          final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
@@ -241,17 +241,17 @@ public class CopyTransfer extends Transfer {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
             source.getName(), mapping.get(source).getName()));
         if(source.isDirectory()) {
-            if(!status.isExists()) {
+            if(!segment.isExists()) {
                 final Directory feature = destination.getFeature(Directory.class);
-                feature.mkdir(mapping.get(source), null, status);
-                status.setComplete();
+                feature.mkdir(mapping.get(source), null, segment);
+                segment.setComplete();
             }
         }
         else {
             // Transfer
             final Copy feature = new DefaultCopyFeature(session).withTarget(destination);
-            feature.copy(source, mapping.get(source), status, connectionCallback);
-            this.addTransferred(status.getLength());
+            feature.copy(source, mapping.get(source), segment, connectionCallback);
+            this.addTransferred(segment.getLength());
         }
     }
 

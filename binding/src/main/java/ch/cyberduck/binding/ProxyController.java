@@ -61,6 +61,10 @@ public class ProxyController extends AbstractController {
         if(!runnable.isValid()) {
             return;
         }
+        // The Application Kit creates an autorelease pool on the main thread at the beginning of every cycle
+        // of the event loop, and drains it at the end, thereby releasing any autoreleased objects generated
+        // while processing an event. If you use the Application Kit, you therefore typically don’t have to
+        // create your own pools.
         proxy.invoke(runnable, runnable.lock(), wait);
     }
 }

@@ -70,13 +70,13 @@ public class UploadTransfer extends Transfer {
     private final Comparator<Local> comparator;
 
     private Cache<Path> cache
-            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
+        = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     private UploadFilterOptions options = new UploadFilterOptions();
 
     public UploadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)),
-                PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<Local>());
+            PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<>());
     }
 
     public UploadTransfer(final Host host, final Path root, final Local local, final Filter<Local> f) {
@@ -85,7 +85,7 @@ public class UploadTransfer extends Transfer {
 
     public UploadTransfer(final Host host, final List<TransferItem> roots) {
         this(host, roots,
-                PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<Local>());
+            PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<>());
     }
 
     public UploadTransfer(final Host host, final List<TransferItem> roots, final Filter<Local> f) {
@@ -131,10 +131,10 @@ public class UploadTransfer extends Transfer {
                 return Collections.emptyList();
             }
         }
-        final List<TransferItem> children = new ArrayList<TransferItem>();
+        final List<TransferItem> children = new ArrayList<>();
         for(Local local : directory.list().filter(comparator, filter)) {
             children.add(new TransferItem(new Path(remote, local.getName(),
-                    local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
+                local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
         }
         return children;
     }
@@ -180,12 +180,12 @@ public class UploadTransfer extends Transfer {
         final TransferAction action;
         if(reloadRequested) {
             action = TransferAction.forName(
-                    PreferencesFactory.get().getProperty("queue.upload.reload.action"));
+                PreferencesFactory.get().getProperty("queue.upload.reload.action"));
         }
         else {
             // Use default
             action = TransferAction.forName(
-                    PreferencesFactory.get().getProperty("queue.upload.action"));
+                PreferencesFactory.get().getProperty("queue.upload.action"));
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
@@ -228,7 +228,7 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
-                         final TransferStatus status, final ConnectionCallback connectionCallback,
+                         final TransferStatus overall, final TransferStatus segment, final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
@@ -236,11 +236,11 @@ public class UploadTransfer extends Transfer {
         if(local.isSymbolicLink()) {
             final Symlink feature = source.getFeature(Symlink.class);
             final UploadSymlinkResolver symlinkResolver
-                    = new UploadSymlinkResolver(feature, roots);
+                = new UploadSymlinkResolver(feature, roots);
             if(symlinkResolver.resolve(local)) {
                 // Make relative symbolic link
                 final String target = symlinkResolver.relativize(local.getAbsolute(),
-                        local.getSymlinkTarget().getAbsolute());
+                    local.getSymlinkTarget().getAbsolute());
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Create symbolic link from %s to %s", file, target));
                 }
@@ -253,22 +253,15 @@ public class UploadTransfer extends Transfer {
                 file.getName()));
             // Transfer
             final Upload upload = source.getFeature(Upload.class);
-            final DelegateStreamListener sentListener = new DelegateStreamListener(streamListener) {
-                @Override
-                public void sent(final long bytes) {
-                    addTransferred(bytes);
-                    super.sent(bytes);
-                }
-            };
-            final Object reply = upload.upload(file, local, bandwidth, sentListener, status, connectionCallback);
+            final Object reply = upload.upload(file, local, bandwidth, new UploadStreamListener(this, streamListener), segment, connectionCallback);
         }
         else if(file.isDirectory()) {
-            if(!status.isExists()) {
+            if(!segment.isExists()) {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
-                        file.getName()));
+                    file.getName()));
                 final Directory feature = source.getFeature(Directory.class);
-                feature.mkdir(file, null, status);
-                status.setComplete();
+                feature.mkdir(file, null, segment);
+                segment.setComplete();
             }
         }
     }
@@ -286,4 +279,18 @@ public class UploadTransfer extends Transfer {
         super.stop();
     }
 
+    private static final class UploadStreamListener extends DelegateStreamListener {
+        private final UploadTransfer transfer;
+
+        public UploadStreamListener(final UploadTransfer transfer, final StreamListener delegate) {
+            super(delegate);
+            this.transfer = transfer;
+        }
+
+        @Override
+        public void sent(final long bytes) {
+            transfer.addTransferred(bytes);
+            super.sent(bytes);
+        }
+    }
 }

@@ -13,7 +13,8 @@
   ~ GNU General Public License for more details.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ch.cyberduck</groupId>
@@ -22,7 +23,9 @@
     </parent>
     <artifactId>ssh</artifactId>
     <packaging>jar</packaging>
-
+    <properties>
+        <sshj-version>0.30.2</sshj-version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
@@ -44,7 +47,7 @@
         <dependency>
             <groupId>ch.iterate.ssh</groupId>
             <artifactId>sshj</artifactId>
-            <version>0.30.1</version>
+            <version>${sshj-version}</version>
         </dependency>
         <dependency>
             <groupId>com.jcraft</groupId>
