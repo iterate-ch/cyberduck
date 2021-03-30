@@ -214,7 +214,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     final Local segmentsFolder = LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName()));
                     for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
                         final Local segmentFile = LocalFactory.get(
-                            segmentsFolder, String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
+                            segmentsFolder, String.format("%d.cyberducksegment", segmentNumber));
                         // Last part can be less than 5 MB. Adjust part size.
                         long length = Math.min(segmentSize, remaining);
                         final TransferStatus segmentStatus = new TransferStatus()
