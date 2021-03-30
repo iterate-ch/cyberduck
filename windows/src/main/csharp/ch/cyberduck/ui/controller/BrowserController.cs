@@ -1126,19 +1126,41 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateRevertFile()
         {
-            if (IsMounted() && SelectedPaths.Count == 1)
+            if (IsBrowser() && IsMounted() && SelectedPaths.Count > 0)
             {
-                return Session.getFeature(typeof(Versioning)) != null &&
-                    ((Versioning) Session.getFeature(typeof(Versioning))).isRevertable(SelectedPath);
+                var feature = (Versioning) Session.getFeature(typeof(Versioning));
+                if (feature != null)
+                {
+                    foreach (var path in SelectedPaths)
+                    {
+                        if (!feature.isRevertable(path))
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
             }
             return false;
         }
         private bool View_ValidateRestoreFile()
         {
-            if (IsMounted() && SelectedPaths.Count == 1)
+            if (IsBrowser() && IsMounted() && SelectedPaths.Count > 0)
             {
-                return Session.getFeature(typeof(Restore)) != null &&
-                    ((Restore) Session.getFeature(typeof(Restore))).isRestorable(SelectedPath);
+                var feature = (Restore) Session.getFeature(typeof(Restore));
+                if (feature != null)
+                {
+                    foreach (var path in SelectedPaths)
+                    {
+                        if (!feature.isRestorable(path))
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
             }
             return false;
         }
@@ -1800,13 +1822,16 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateDelete()
         {
-            if (IsMounted() && SelectedPaths.Count > 0)
+            if (IsBrowser() && IsMounted() && SelectedPaths.Count > 0)
             {
-                if (null == SelectedPath)
+                foreach (var path in SelectedPaths)
                 {
-                    return false;
+                    if (!((Delete)Session.getFeature(typeof(Delete))).isSupported(path))
+                    {
+                        return false;
+                    }
                 }
-                return ((Delete) Session.getFeature(typeof(Delete))).isSupported(SelectedPath);
+                return true;
             }
             return false;
         }

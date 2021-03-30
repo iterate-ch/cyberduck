@@ -275,11 +275,12 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         }
         else if(action.equals(delete.action())) {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0) {
-                final Path selected = controller.getSelectedPath();
-                if(null == selected) {
-                    return false;
+                for(Path selected : controller.getSelectedPaths()) {
+                    if(!controller.getSession().getFeature(Delete.class).isSupported(selected)) {
+                        return false;
+                    }
                 }
-                return controller.getSession().getFeature(Delete.class).isSupported(selected);
+                return true;
             }
             return false;
         }
@@ -295,16 +296,30 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             return false;
         }
         else if(action.equals(Foundation.selector("revertFileButtonClicked:"))) {
-            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {
-                return controller.getSession().getFeature(Versioning.class) != null &&
-                    controller.getSession().getFeature(Versioning.class).isRevertable(controller.getSelectedPath());
+            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0) {
+                for(Path selected : controller.getSelectedPaths()) {
+                    if(null == controller.getSession().getFeature(Versioning.class)) {
+                        return false;
+                    }
+                    if(!controller.getSession().getFeature(Versioning.class).isRevertable(selected)) {
+                        return false;
+                    }
+                }
+                return true;
             }
             return false;
         }
         else if(action.equals(Foundation.selector("restoreFileButtonClicked:"))) {
-            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {
-                return controller.getSession().getFeature(Restore.class) != null &&
-                    controller.getSession().getFeature(Restore.class).isRestorable(controller.getSelectedPath());
+            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0) {
+                for(Path selected : controller.getSelectedPaths()) {
+                    if(null == controller.getSession().getFeature(Restore.class)) {
+                        return false;
+                    }
+                    if(!controller.getSession().getFeature(Restore.class).isRestorable(selected)) {
+                        return false;
+                    }
+                }
+                return true;
             }
             return false;
         }
