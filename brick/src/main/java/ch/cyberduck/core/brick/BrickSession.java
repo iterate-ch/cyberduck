@@ -66,7 +66,7 @@ public class BrickSession extends DAVSession {
     public DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
-        configuration.setServiceUnavailableRetryStrategy(new BrickUnauthorizedRetryStrategy(this, prompt, cancel));
+        configuration.setServiceUnavailableRetryStrategy(new BrickUnauthorizedRetryStrategy(this, cancel));
         return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
 
@@ -132,6 +132,7 @@ public class BrickSession extends DAVSession {
                 }
             }
         };
+        // Poll for pairing key until canceled
         scheduler.repeat(lock);
         // Await reply
         lock.warn(bookmark, String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
