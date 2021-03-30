@@ -51,12 +51,15 @@ import org.apache.log4j.Logger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class BrickSession extends DAVSession {
     private static final Logger log = Logger.getLogger(BrickSession.class);
+
+    private final Semaphore semaphore = new Semaphore(1);
 
     public BrickSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -88,6 +91,9 @@ public class BrickSession extends DAVSession {
     }
 
     public Credentials pair(final Host bookmark, final ConnectionCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        if(!semaphore.tryAcquire()) {
+            throw new LoginCanceledException();
+        }
         final String token = new BrickCredentialsConfigurator().configure(host).getToken();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt pairing with token %s", token));
