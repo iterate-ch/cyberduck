@@ -27,7 +27,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :85</i>
 public abstract class NSString extends NSObject implements NSCopying {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSString", _Class.class);
+    public static final _Class CLASS = org.rococoa.Rococoa.createClass("NSString", _Class.class);
 
     public static NSString stringWithString(String string) {
         return CLASS.stringWithString(string);
