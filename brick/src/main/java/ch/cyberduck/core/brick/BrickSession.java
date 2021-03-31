@@ -92,6 +92,7 @@ public class BrickSession extends DAVSession {
 
     public Credentials pair(final Host bookmark, final ConnectionCallback prompt, final CancelCallback cancel) throws BackgroundException {
         if(!semaphore.tryAcquire()) {
+            log.warn(String.format("Skip pairing because semaphore cannot be aquired for %s", bookmark));
             throw new LoginCanceledException();
         }
         final String token = new BrickCredentialsConfigurator().configure(host).getToken();
