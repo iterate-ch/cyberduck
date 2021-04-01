@@ -24,9 +24,9 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class AbstractTemporaryFileService implements TemporaryFileService {
     private static final Logger log = Logger.getLogger(AbstractTemporaryFileService.class);
@@ -34,7 +34,7 @@ public abstract class AbstractTemporaryFileService implements TemporaryFileServi
     /**
      * Set of filenames to be deleted on VM exit through a shutdown hook.
      */
-    private static final Set<Local> files = new LinkedHashSet<>();
+    private static final Set<Local> files = new CopyOnWriteArraySet<>();
 
     /**
      * Delete on exit
