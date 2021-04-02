@@ -175,7 +175,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             attributes.setStorageClass(object.getStorageClass());
         }
         else if(object.containsMetadata("storage-class")) {
-            attributes.setStorageClass(object.getMetadataMap().get("storage-class").toString());
+            attributes.setStorageClass(object.getMetadata("storage-class").toString());
         }
         if(StringUtils.isNotBlank(object.getETag())) {
             attributes.setETag(object.getETag());
