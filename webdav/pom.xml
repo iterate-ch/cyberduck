@@ -91,7 +91,7 @@
             </releases>
             <id>bintray-milton</id>
             <name>bintray</name>
-            <url>http://dl.bintray.com/milton/Milton</url>
+            <url>https://dl.bintray.com/milton/Milton</url>
         </repository>
     </repositories>
 </project>
