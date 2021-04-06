@@ -50,7 +50,7 @@ public class OneDriveSession extends GraphSession {
     @Override
     public DriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
         if(file.equals(OneDriveListService.MYFILES_NAME)) {
-            return new Drive(getUser().asDirectoryObject()).getRoot();
+            return new Drive(getClient()).getRoot();
         }
         final String versionId = fileIdProvider.getFileid(file, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
