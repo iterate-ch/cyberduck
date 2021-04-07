@@ -20,6 +20,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -27,6 +28,7 @@ import org.apache.http.client.HttpResponseException;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 
 import java.io.IOException;
+import java.time.Duration;
 
 public class GraphExceptionMappingService extends AbstractExceptionMappingService<OneDriveAPIException> {
 
@@ -36,6 +38,13 @@ public class GraphExceptionMappingService extends AbstractExceptionMappingServic
             final StringAppender buffer = new StringAppender();
             buffer.append(failure.getMessage());
             buffer.append(failure.getErrorMessage());
+            switch(failure.getResponseCode()) {
+                case 429:
+                    // Rate limit
+                    final Duration delay = Duration.ofMillis(0L);
+                    return new RetriableAccessDeniedException(buffer.toString(), delay);
+
+            }
             return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(failure.getResponseCode(), buffer.toString()));
         }
         if(ExceptionUtils.getRootCause(failure) != failure && ExceptionUtils.getRootCause(failure) instanceof IOException) {
