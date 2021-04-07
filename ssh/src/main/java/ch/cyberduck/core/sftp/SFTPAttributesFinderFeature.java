@@ -24,6 +24,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 
 import net.schmizz.sshj.sftp.FileAttributes;
@@ -81,7 +83,13 @@ public class SFTPAttributesFinderFeature implements AttributesFinder {
                 attributes.setSize(stat.getSize());
         }
         if(0 != stat.getMode().getPermissionsMask()) {
-            attributes.setPermission(new Permission(Integer.toString(stat.getMode().getPermissionsMask(), 8)));
+            if(StringUtils.contains("OpenSSH_for_Windows", session.getClient().getTransport().getServerVersion())) {
+                // Known erroneous bitmask
+                attributes.setPermission(Permission.EMPTY);
+            }
+            else {
+                attributes.setPermission(new Permission(Integer.toString(stat.getMode().getPermissionsMask(), 8)));
+            }
         }
         if(0 != stat.getUID()) {
             attributes.setOwner(String.valueOf(stat.getUID()));
