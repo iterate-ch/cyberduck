@@ -19,7 +19,7 @@ https://cyberduck.io/
 - [Bugfix] Missing default connection profile (Files.com)
 
 7.8.2
-- [Feature] Updated application when running on macOS Big Sur
+- [Feature] Updated application icon when running on macOS Big Sur
 - [Bugfix] Failure uploading large files with S3 compatible API (Backblaze B2) (#11233)
 - [Bugfix] Failure uploading large using legacy S3 compatible API (Google Cloud Storage) (#11547)
 - [Bugfix] MD5 mismatch error for uploads to Oracle Object Storage replacing object (#11548)
