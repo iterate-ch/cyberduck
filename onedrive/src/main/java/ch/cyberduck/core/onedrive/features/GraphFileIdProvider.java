@@ -47,8 +47,8 @@ public class GraphFileIdProvider implements IdProvider {
             final AttributedList<Path> list = cache.get(file.getParent());
             final Path found = list.find(new SimplePathPredicate(file));
             if(null != found) {
-                if(StringUtils.isNotBlank(file.attributes().getFileId())) {
-                    return this.set(file, file.attributes().getFileId());
+                if(StringUtils.isNotBlank(found.attributes().getFileId())) {
+                    return this.set(file, found.attributes().getFileId());
                 }
             }
         }
