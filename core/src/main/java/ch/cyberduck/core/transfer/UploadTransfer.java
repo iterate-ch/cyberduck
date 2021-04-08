@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Filter;
@@ -260,7 +261,9 @@ public class UploadTransfer extends Transfer {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                     file.getName()));
                 final Directory feature = source.getFeature(Directory.class);
-                feature.mkdir(file, null, segment);
+                final AttributedList<Path> list = new AttributedList<>(cache.get(file.getParent()));
+                list.add(feature.mkdir(file, null, segment));
+                cache.put(file.getParent(), list);
                 segment.setComplete();
             }
         }
