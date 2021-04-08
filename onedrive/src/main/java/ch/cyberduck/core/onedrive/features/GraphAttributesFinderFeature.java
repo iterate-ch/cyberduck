@@ -78,23 +78,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         else if(null != metadata.getSize()) {
             attributes.setSize(metadata.getSize());
         }
-        final ItemReference parent = metadata.getParentReference();
-        if(metadata.getRemoteItem() != null) {
-            final DriveItem.Metadata remoteMetadata = metadata.getRemoteItem();
-            final ItemReference remoteParent = remoteMetadata.getParentReference();
-            if(parent == null) {
-                setId(attributes, String.join(String.valueOf(Path.DELIMITER),
-                    remoteParent.getDriveId(), remoteParent.getId()));
-            }
-            else {
-                setId(attributes, String.join(String.valueOf(Path.DELIMITER),
-                    parent.getDriveId(), metadata.getId(),
-                    remoteParent.getDriveId(), remoteMetadata.getId()));
-            }
-        }
-        else {
-            setId(attributes, String.join(String.valueOf(Path.DELIMITER), parent.getDriveId(), metadata.getId()));
-        }
+        setId(attributes, metadata.getId());
         webUrl.ifPresent(attributes::setLink);
         final FileSystemInfo info = metadata.getFacet(FileSystemInfo.class);
         if(null != info) {
