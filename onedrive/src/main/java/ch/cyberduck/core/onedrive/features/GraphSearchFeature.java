@@ -39,9 +39,9 @@ public class GraphSearchFeature implements Search {
     private final GraphSession session;
     private final GraphAttributesFinderFeature attributes;
 
-    public GraphSearchFeature(final GraphSession session) {
+    public GraphSearchFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
         this.session = session;
-        this.attributes = new GraphAttributesFinderFeature(session);
+        this.attributes = new GraphAttributesFinderFeature(session, idProvider);
     }
 
     @Override

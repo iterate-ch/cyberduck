@@ -20,6 +20,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.AbstractItemListService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.types.DriveItem;
@@ -30,8 +31,8 @@ import java.util.Iterator;
 public class SharedWithMeListService extends AbstractItemListService {
     private final GraphSession session;
 
-    public SharedWithMeListService(final GraphSession session) {
-        super(new GraphAttributesFinderFeature(session));
+    public SharedWithMeListService(final GraphSession session, final GraphFileIdProvider idProvider) {
+        super(new GraphAttributesFinderFeature(session, idProvider));
         this.session = session;
     }
 

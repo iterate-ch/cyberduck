@@ -26,6 +26,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
@@ -60,7 +61,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
     public void testReadInterrupt() throws Exception {
         final Path drive = new OneDriveHomeFinderService(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session).touch(test, new TransferStatus());
+        new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(test, new TransferStatus());
         // Unknown length in status
         final TransferStatus status = new TransferStatus();
         // Read a single byte
@@ -81,7 +82,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
     public void testReadRange() throws Exception {
         final Path drive = new OneDriveHomeFinderService(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session).touch(test, new TransferStatus());
+        new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1000);
@@ -89,10 +90,10 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<Void>(new GraphWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                new TransferStatus().length(content.length),
-                new DisabledConnectionCallback());
+        new DefaultUploadFeature<Void>(new GraphWriteFeature(session, new GraphFileIdProvider(session))).upload(
+            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new TransferStatus().length(content.length),
+            new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
@@ -114,7 +115,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
     public void testReadInvalidRange() throws Exception {
         final Path drive = new OneDriveHomeFinderService(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session).touch(test, new TransferStatus());
+        new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(test, new TransferStatus());
         final GraphReadFeature read = new GraphReadFeature(session);
         final InputStream in = read.read(test, new TransferStatus().skip(1).append(true), new DisabledConnectionCallback());
         assertNull(in);
@@ -124,7 +125,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
     public void testReadRangeUnknownLength() throws Exception {
         final Path drive = new OneDriveHomeFinderService(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session).touch(test, new TransferStatus());
+        new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1000);
@@ -132,10 +133,10 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<Void>(new GraphWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                new TransferStatus().length(content.length),
-                new DisabledConnectionCallback());
+        new DefaultUploadFeature<Void>(new GraphWriteFeature(session, new GraphFileIdProvider(session))).upload(
+            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new TransferStatus().length(content.length),
+            new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         status.setAppend(true);

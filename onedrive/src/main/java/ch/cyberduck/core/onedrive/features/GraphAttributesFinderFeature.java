@@ -15,12 +15,14 @@ package ch.cyberduck.core.onedrive.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
@@ -41,9 +43,11 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(GraphAttributesFinderFeature.class);
 
     private final GraphSession session;
+    private final IdProvider idProvider;
 
-    public GraphAttributesFinderFeature(final GraphSession session) {
+    public GraphAttributesFinderFeature(final GraphSession session, final IdProvider idProvider) {
         this.session = session;
+        this.idProvider = idProvider;
     }
 
     @Override
@@ -127,5 +131,11 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
             log.warn(String.format("Cannot create URI of WebURL: %s", metadata.getWebUrl()), e);
         }
         return Optional.ofNullable(url);
+    }
+
+    @Override
+    public AttributesFinder withCache(final Cache<Path> cache) {
+        idProvider.withCache(cache);
+        return this;
     }
 }

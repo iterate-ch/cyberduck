@@ -29,7 +29,7 @@ public class GraphFileIdProviderTest extends AbstractOneDriveTest {
         final Path path2R = new Path(home, "/2R", EnumSet.of(Path.Type.directory));
         final Path path33 = new Path(home, "/33", EnumSet.of(Path.Type.directory));
 
-        final Directory directoryFeature = new GraphDirectoryFeature(session);
+        final Directory directoryFeature = new GraphDirectoryFeature(session, new GraphFileIdProvider(session));
         final Path path2RWithId = directoryFeature.mkdir(path2R, null, new TransferStatus());
         assertNotNull(path2RWithId.attributes().getVersionId());
         final Path path33WithId = directoryFeature.mkdir(path33, null, new TransferStatus());

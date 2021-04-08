@@ -203,37 +203,37 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) fileIdProvider;
         }
         if(type == AttributesFinder.class) {
-            return (T) new GraphAttributesFinderFeature(this);
+            return (T) new GraphAttributesFinderFeature(this, fileIdProvider);
         }
         if(type == Directory.class) {
-            return (T) new GraphDirectoryFeature(this);
+            return (T) new GraphDirectoryFeature(this, fileIdProvider);
         }
         if(type == Read.class) {
             return (T) new GraphReadFeature(this);
         }
         if(type == Write.class) {
-            return (T) new GraphWriteFeature(this);
+            return (T) new GraphWriteFeature(this, fileIdProvider);
         }
         if(type == MultipartWrite.class) {
-            return (T) new GraphBufferWriteFeature(this);
+            return (T) new GraphBufferWriteFeature(this, fileIdProvider);
         }
         if(type == Delete.class) {
             return (T) new GraphDeleteFeature(this);
         }
         if(type == Touch.class) {
-            return (T) new GraphTouchFeature(this);
+            return (T) new GraphTouchFeature(this, fileIdProvider);
         }
         if(type == Move.class) {
-            return (T) new GraphMoveFeature(this);
+            return (T) new GraphMoveFeature(this, fileIdProvider);
         }
         if(type == Copy.class) {
-            return (T) new GraphCopyFeature(this);
+            return (T) new GraphCopyFeature(this, fileIdProvider);
         }
         if(type == Find.class) {
-            return (T) new GraphFindFeature(this);
+            return (T) new GraphFindFeature(this, fileIdProvider);
         }
         if(type == Search.class) {
-            return (T) new GraphSearchFeature(this);
+            return (T) new GraphSearchFeature(this, fileIdProvider);
         }
         if(type == Timestamp.class) {
             return (T) new GraphTimestampFeature(this);

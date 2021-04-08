@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
@@ -90,5 +91,11 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
         attrs.setFileId(f.getId());
 
         return attrs;
+    }
+
+    @Override
+    public AttributesFinder withCache(final Cache<Path> cache) {
+        fileid.withCache(cache);
+        return this;
     }
 }

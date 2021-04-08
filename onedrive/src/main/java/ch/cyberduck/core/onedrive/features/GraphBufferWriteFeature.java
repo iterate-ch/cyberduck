@@ -49,15 +49,17 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
     private static final Logger log = Logger.getLogger(GraphBufferWriteFeature.class);
 
     private final GraphSession session;
+    private final GraphFileIdProvider idProvider;
     private final Find finder;
     private final AttributesFinder attributes;
 
-    public GraphBufferWriteFeature(final GraphSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+    public GraphBufferWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
+        this(session, idProvider, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public GraphBufferWriteFeature(final GraphSession session, final Find finder, final AttributesFinder attributes) {
+    public GraphBufferWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider, final Find finder, final AttributesFinder attributes) {
         this.session = session;
+        this.idProvider = idProvider;
         this.finder = finder;
         this.attributes = attributes;
     }
@@ -78,10 +80,10 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
                     // through StreamCopier when writing to buffer
                     final TransferStatus range = new TransferStatus(status).length(buffer.length()).append(false);
                     if(0L == buffer.length()) {
-                        new GraphTouchFeature(session).touch(file, new TransferStatus());
+                        new GraphTouchFeature(session, idProvider).touch(file, new TransferStatus());
                     }
                     else {
-                        final HttpResponseOutputStream<Void> out = new GraphWriteFeature(session).write(file,
+                        final HttpResponseOutputStream<Void> out = new GraphWriteFeature(session, idProvider).write(file,
                             range, callback);
                         new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                             @Override

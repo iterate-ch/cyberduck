@@ -56,15 +56,17 @@ public class GraphWriteFeature implements Write<Void> {
         = PreferencesFactory.get();
 
     private final GraphSession session;
+    private final GraphFileIdProvider idProvider;
     private final Find finder;
     private final AttributesFinder attributes;
 
-    public GraphWriteFeature(final GraphSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+    public GraphWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
+        this(session, idProvider, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public GraphWriteFeature(final GraphSession session, final Find finder, final AttributesFinder attributes) {
+    public GraphWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider, final Find finder, final AttributesFinder attributes) {
         this.session = session;
+        this.idProvider = idProvider;
         this.finder = finder;
         this.attributes = attributes;
     }
@@ -184,7 +186,7 @@ public class GraphWriteFeature implements Write<Void> {
                     log.warn(String.format("Abort upload session %s with no completed parts", upload));
                     // Use touch feature for empty file upload
                     upload.cancelUpload();
-                    new GraphTouchFeature(session).touch(file, new TransferStatus());
+                    new GraphTouchFeature(session, idProvider).touch(file, new TransferStatus());
                 }
             }
             catch(BackgroundException e) {

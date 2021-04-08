@@ -33,9 +33,11 @@ import java.io.IOException;
 public class GraphDirectoryFeature implements Directory<Void> {
 
     private final GraphSession session;
+    private final GraphAttributesFinderFeature attributes;
 
-    public GraphDirectoryFeature(final GraphSession session) {
+    public GraphDirectoryFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
         this.session = session;
+        this.attributes = new GraphAttributesFinderFeature(session, idProvider);
     }
 
     @Override
@@ -44,7 +46,7 @@ public class GraphDirectoryFeature implements Directory<Void> {
         try {
             final DriveItem.Metadata metadata = Files.createFolder(folder, directory.getName());
             return new Path(directory.getParent(), directory.getName(), directory.getType(),
-                new GraphAttributesFinderFeature(session).toAttributes(metadata));
+                attributes.toAttributes(metadata));
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Cannot create folder {0}", e, directory);

@@ -41,10 +41,12 @@ public class GraphMoveFeature implements Move {
 
     private final GraphSession session;
     private final Delete delete;
+    private final GraphFileIdProvider idProvider;
 
-    public GraphMoveFeature(final GraphSession session) {
+    public GraphMoveFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
         this.session = session;
         this.delete = new GraphDeleteFeature(session);
+        this.idProvider = idProvider;
     }
 
     @Override
@@ -77,7 +79,7 @@ public class GraphMoveFeature implements Move {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
         }
         return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-            new GraphAttributesFinderFeature(session).find(renamed));
+            new GraphAttributesFinderFeature(session, idProvider).find(renamed));
     }
 
     @Override
@@ -95,5 +97,4 @@ public class GraphMoveFeature implements Move {
         }
         return !source.getType().contains(Path.Type.shared);
     }
-
 }

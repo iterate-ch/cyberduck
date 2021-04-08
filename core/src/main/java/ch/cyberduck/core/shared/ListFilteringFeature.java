@@ -50,7 +50,7 @@ public abstract class ListFilteringFeature {
         if(!cache.isCached(file.getParent())) {
             try {
                 // Do not decrypt filenames to match with input
-                list = session._getFeature(ListService.class).list(file.getParent(), PathCache.empty() == cache ? new IndexedListProgressListener() {
+                list = session._getFeature(ListService.class).withCache(cache).list(file.getParent(), PathCache.empty() == cache ? new IndexedListProgressListener() {
                     @Override
                     public void message(final String message) {
                         //
