@@ -19,6 +19,7 @@ import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSToolbarItem;
 import ch.cyberduck.binding.foundation.NSIndexSet;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -58,7 +59,7 @@ public class TransferToolbarValidator implements ToolbarValidator {
                 @Override
                 public boolean validate(final Transfer transfer) {
                     final NSPopUpButton popup = Rococoa.cast(item.view(), NSPopUpButton.class);
-                    switch(transfer.getTransferType()) {
+                    switch(Host.TransferType.getType(transfer.getSource())) {
                         case newconnection:
                             popup.selectItemAtIndex(popup.indexOfItemWithRepresentedObject(String.valueOf(1)));
                             break;
