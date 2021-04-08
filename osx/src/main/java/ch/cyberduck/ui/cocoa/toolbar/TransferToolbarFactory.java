@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.transfer.TransferConnectionLimiter;
 import ch.cyberduck.ui.cocoa.controller.TransferController;
 
 import org.apache.commons.lang3.StringUtils;
@@ -283,12 +284,20 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     connectionsMenu.setAutoenablesItems(true);
                     final StringTokenizer options = new StringTokenizer(preferences.getProperty("queue.connections.options"), ",");
                     while(options.hasMoreTokens()) {
-                        final String n = options.nextToken();
-                        final NSMenuItem m = connectionsMenu.addItemWithTitle_action_keyEquivalent(
-                            MessageFormat.format(LocaleFactory.localizedString("{0} Connections", "Transfer"), n),
-                            TransferToolbarItem.connections.action(), StringUtils.EMPTY);
-                        m.setImage(connections.image());
-                        m.setRepresentedObject(n);
+                        final int connections = Integer.parseInt(options.nextToken());
+                        final NSMenuItem menu;
+                        if(TransferConnectionLimiter.AUTO == connections) {
+                            menu = connectionsMenu.addItemWithTitle_action_keyEquivalent(
+                                MessageFormat.format(LocaleFactory.localizedString("Auto"), connections),
+                                TransferToolbarItem.connections.action(), StringUtils.EMPTY);
+                        }
+                        else {
+                            menu = connectionsMenu.addItemWithTitle_action_keyEquivalent(
+                                MessageFormat.format(LocaleFactory.localizedString("{0} Connections", "Transfer"), connections),
+                                TransferToolbarItem.connections.action(), StringUtils.EMPTY);
+                        }
+                        menu.setImage(TransferToolbarItem.connections.image());
+                        menu.setRepresentedObject(String.valueOf(connections));
                     }
                     toolbarMenu.setSubmenu(connectionsMenu);
                     item.setMenuFormRepresentation(toolbarMenu);

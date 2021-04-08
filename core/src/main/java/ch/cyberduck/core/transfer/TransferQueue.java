@@ -41,30 +41,30 @@ public final class TransferQueue {
     private static final Logger log = Logger.getLogger(TransferQueue.class);
 
     private final ApplicationBadgeLabeler label
-            = ApplicationBadgeLabelerFactory.get();
+        = ApplicationBadgeLabelerFactory.get();
 
     private BlockingQueue<Transfer> running;
 
     private final NotificationService notification
-            = NotificationServiceFactory.get();
+        = NotificationServiceFactory.get();
 
     private final List<Transfer> temporary
-            = new ArrayList<Transfer>();
+        = new ArrayList<>();
 
     private final Map<Transfer, Thread> threads
-            = new HashMap<Transfer, Thread>();
+        = new HashMap<>();
 
     public TransferQueue() {
         this(PreferencesFactory.get().getInteger("queue.connections.limit"));
     }
 
     public TransferQueue(final int size) {
-        this.running = new ArrayBlockingQueue<Transfer>(size, true);
+        this.running = new ArrayBlockingQueue<>(size, true);
     }
 
     /**
-     * Idle this transfer until a free slot is available depending on
-     * the maximum number of concurrent transfers allowed in the Preferences.
+     * Idle this transfer until a free slot is available depending on the maximum number of concurrent transfers allowed
+     * in the Preferences.
      *
      * @param t This transfer should respect the settings for maximum number of transfers
      */
@@ -135,7 +135,12 @@ public final class TransferQueue {
             log.debug(String.format("Drained %d elements", drained));
         }
         running.clear();
-        running = new ArrayBlockingQueue<Transfer>(newsize);
+        if(TransferConnectionLimiter.AUTO == newsize) {
+            running = new ArrayBlockingQueue<>(Integer.MAX_VALUE, true);
+        }
+        else {
+            running = new ArrayBlockingQueue<>(newsize, true);
+        }
         this.poll();
     }
 

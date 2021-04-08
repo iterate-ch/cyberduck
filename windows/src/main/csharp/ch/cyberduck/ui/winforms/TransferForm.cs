@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2021 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -14,22 +14,22 @@
 // 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
+//
 
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Core;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.preferences;
-using Ch.Cyberduck.Core;
+using ch.cyberduck.core.transfer;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using Utils = Ch.Cyberduck.Core.Utils;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -52,8 +52,9 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             ConfigureToolbar();
 
-            bandwithSplitButton.Image = IconCache.IconForName("bandwidth", 16);
+            bandwidthSplitButton.Image = IconCache.IconForName("bandwidth", 16);
             showToolStripButton.Image = IconCache.IconForName("reveal");
+            connectionsSplitButton.Image = IconCache.IconForName("connection", 16);
 
             transferListView.FullRowSelect = false;
             transferListView.HeaderStyle = ColumnHeaderStyle.None;
@@ -126,7 +127,43 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { splitContainer.Panel2Collapsed = !value; }
         }
 
-        public float Bandwidth
+        public int QueueSize
+        {
+            get
+            {
+                foreach (ToolStripItem item in connectionsMenuStrip.Items)
+                {
+                    if (item is ToolStripMenuItem)
+                    {
+                        ToolStripMenuItem m = (ToolStripMenuItem) item;
+                        if (m.Checked)
+                        {
+                            return (int) m.Tag;
+                        }
+                    }
+                }
+
+                return TransferConnectionLimiter.AUTO;
+            }
+            set
+            {
+                foreach (ToolStripItem item in connectionsMenuStrip.Items)
+                {
+                    if (item is ToolStripMenuItem)
+                    {
+                        ToolStripMenuItem m = (ToolStripMenuItem) item;
+                        m.Checked = value.Equals(m.Tag);
+                    }
+                }
+            }
+        }
+
+        public bool BandwidthEnabled
+        {
+            set { bandwidthSplitButton.Enabled = value; }
+        }
+
+        public int Bandwidth
         {
             get
             {
@@ -137,10 +174,11 @@ namespace Ch.Cyberduck.Ui.Winforms
                         ToolStripMenuItem m = (ToolStripMenuItem) item;
                         if (m.Checked)
                         {
-                            return (float) m.Tag;
+                            return (int) m.Tag;
                         }
                     }
                 }
+
                 return BandwidthThrottle.UNLIMITED;
             }
             set
@@ -157,7 +195,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                             {
                                 if (!_currentImage.Equals("bandwidth"))
                                 {
-                                    bandwithSplitButton.Image = IconCache.IconForName("bandwidth", 16);
+                                    bandwidthSplitButton.Image = IconCache.IconForName("bandwidth", 16);
                                     _currentImage = "bandwidth";
                                 }
                             }
@@ -165,7 +203,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                             {
                                 if (!_currentImage.Equals("turtle"))
                                 {
-                                    bandwithSplitButton.Image = IconCache.IconForName("turtle");
+                                    bandwidthSplitButton.Image = IconCache.IconForName("turtle");
                                     _currentImage = "turtle";
                                 }
                             }
@@ -173,17 +211,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                     }
                 }
             }
-        }
-
-        public bool BandwidthEnabled
-        {
-            set { bandwithSplitButton.Enabled = value; }
-        }
-
-        public int QueueSize
-        {
-            get { return Convert.ToInt32(queueSizeUpDown.Value); }
-            set { queueSizeUpDown.Value = value; }
         }
 
         public void SelectTransfer(IProgressView view)
@@ -225,6 +252,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 transcriptBox.SelectionColor = Color.DarkGray;
             }
+
             transcriptBox.SelectedText = entry + Environment.NewLine;
             transcriptBox.Select(transcriptBox.TextLength, transcriptBox.TextLength);
             ScrollToBottom(transcriptBox);
@@ -239,6 +267,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 {
                     selected.Add(o);
                 }
+
                 return selected;
             }
         }
@@ -254,7 +283,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler ToggleTranscriptEvent = delegate { };
         public event VoidHandler SelectionChangedEvent = delegate { };
         public event VoidHandler BandwidthChangedEvent = delegate { };
-        public event VoidHandler QueueSizeChangedEvent = delegate { };
+        public event VoidHandler ConnectionsChangedEvent = delegate { };
         public event VoidHandler TranscriptHeightChangedEvent = delegate { };
         public event ValidateCommand ValidateResumeEvent = () => false;
         public event ValidateCommand ValidateReloadEvent = () => false;
@@ -264,11 +293,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event ValidateCommand ValidateOpenEvent = () => false;
         public event ValidateCommand ValidateShowEvent = () => false;
 
-        public void PopulateBandwidthList(IList<KeyValuePair<float, string>> throttles)
+        public void PopulateBandwidthList(IList<KeyValuePair<int, string>> throttles)
         {
             for (int index = 0; index < throttles.Count; index++)
             {
-                KeyValuePair<float, string> throttle = throttles[index];
+                KeyValuePair<int, string> throttle = throttles[index];
                 ToolStripMenuItem item = new ToolStripMenuItem(throttle.Value);
                 item.Tag = throttle.Key;
                 item.Click += delegate(object sender, EventArgs args)
@@ -279,8 +308,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                         {
                             ((ToolStripMenuItem) i).Checked = false;
                         }
+
                         ((ToolStripMenuItem) sender).Checked = true;
                     }
+
                     BandwidthChangedEvent();
                 };
 
@@ -293,23 +324,54 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
+        public void PopulateConnectionsList(IList<KeyValuePair<int, string>> connections)
+        {
+            for (int index = 0; index < connections.Count; index++)
+            {
+                KeyValuePair<int, string> connection = connections[index];
+                ToolStripMenuItem item = new ToolStripMenuItem(connection.Value);
+                item.Tag = connection.Key;
+                item.Click += delegate(object sender, EventArgs args)
+                {
+                    foreach (ToolStripItem i in connectionsMenuStrip.Items)
+                    {
+                        if (i is ToolStripMenuItem)
+                        {
+                            ((ToolStripMenuItem) i).Checked = false;
+                        }
+
+                        ((ToolStripMenuItem) sender).Checked = true;
+                    }
+
+                    ConnectionsChangedEvent();
+                };
+
+                connectionsMenuStrip.Items.Add(item);
+
+                if (index == 0)
+                {
+                    connectionsMenuStrip.Items.Add(new ToolStripSeparator());
+                }
+            }
+        }
+
         public void TaskbarOverlayIcon(Icon icon, string text)
         {
-			TaskbarManager.Instance.SetOverlayIcon(Handle, icon, text);
+            TaskbarManager.Instance.SetOverlayIcon(Handle, icon, text);
         }
 
         public void UpdateOverallProgressState(long progress, long maximum)
         {
             if (progress == 0 || maximum == 0)
             {
-				TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
+                TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
             }
             else
             {
-				var progressPercentage = progress / (double)maximum;
-				var progressPercentageInt = (int)Math.Round(progressPercentage * 100);
-				TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
-				TaskbarManager.Instance.SetProgressValue(progressPercentageInt, 100);
+                var progressPercentage = progress / (double) maximum;
+                var progressPercentageInt = (int) Math.Round(progressPercentage * 100);
+                TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
+                TaskbarManager.Instance.SetProgressValue(progressPercentageInt, 100);
             }
         }
 
@@ -376,7 +438,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void queueSizeUpDown_ValueChanged(object sender, EventArgs e)
         {
-            QueueSizeChangedEvent();
+            ConnectionsChangedEvent();
         }
 
         private void toolbarMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -392,9 +454,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             e.Cancel = (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked && _lastMenuItemClicked != null);
         }
 
-        private void bandwithSplitButton_Click(object sender, EventArgs e)
+        private void bandwidthSplitButton_Click(object sender, EventArgs e)
         {
-            bandwithSplitButton.SplitMenuStrip.Show(bandwithSplitButton, new Point(0, bandwithSplitButton.Height),
+            bandwidthSplitButton.SplitMenuStrip.Show(bandwidthSplitButton, new Point(0, bandwidthSplitButton.Height),
                 ToolStripDropDownDirection.BelowRight);
         }
 
@@ -409,6 +471,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 ReloadEvent();
             }
+
             if (e.KeyCode == Keys.Delete)
             {
                 RemoveEvent();

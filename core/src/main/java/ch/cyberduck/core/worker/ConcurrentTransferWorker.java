@@ -20,7 +20,6 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -28,10 +27,10 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
+import ch.cyberduck.core.transfer.AutoTransferConnectionLimiter;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -89,8 +88,8 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         this.source = source;
         this.destination = destination;
         this.pool = ThreadPoolFactory.get(String.format("%s-transfer", new AlphanumericRandomStringService().random()),
-            transfer.getTransferType() == Host.TransferType.newconnection ? 1 : PreferencesFactory.get().getInteger("queue.connections.limit"), priority);
-        this.completion = new ExecutorCompletionService<TransferStatus>(pool.executor());
+            new AutoTransferConnectionLimiter().getLimit(transfer.getSource()), priority);
+        this.completion = new ExecutorCompletionService<>(pool.executor());
     }
 
     @Override
