@@ -19,6 +19,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.brick.BrickProtocol;
+import ch.cyberduck.core.ctera.CTERAProtocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dropbox.DropboxProtocol;
@@ -145,7 +146,8 @@ public class Terminal {
             new MantaProtocol(),
             new StoregateProtocol(),
             new BrickProtocol(),
-            new NextcloudProtocol()
+            new NextcloudProtocol(),
+            new CTERAProtocol()
         );
         this.options = options;
         if(log.isInfoEnabled()) {
