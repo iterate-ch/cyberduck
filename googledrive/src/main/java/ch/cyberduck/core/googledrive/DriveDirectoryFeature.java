@@ -50,8 +50,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
                 final TeamDrive execute = session.getClient().teamdrives().create(
                     new UUIDRandomStringService().random(), new TeamDrive().setName(folder.getName())
                 ).execute();
-                return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                    new PathAttributes(folder.attributes()).withFileId(execute.getId()));
+                return folder.withAttributes(new PathAttributes(folder.attributes()).withFileId(execute.getId()));
             }
             else {
                 // Identified by the special folder MIME type application/vnd.google-apps.folder
@@ -62,8 +61,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
                 final File execute = insert
                     .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
                 execute.setVersion(1L);
-                return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                    new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));
+                return folder.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));
             }
         }
         catch(IOException e) {

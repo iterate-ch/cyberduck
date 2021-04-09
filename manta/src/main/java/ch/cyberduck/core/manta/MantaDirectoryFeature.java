@@ -39,6 +39,7 @@ public class MantaDirectoryFeature implements Directory {
     public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
             session.getClient().putDirectory(folder.getAbsolute());
+            return folder.withAttributes(new MantaAttributesFinderFeature(session).find(folder));
         }
         catch(MantaException e) {
             throw new MantaExceptionMappingService().map("Cannot create folder {0}", e, folder);
@@ -49,8 +50,6 @@ public class MantaDirectoryFeature implements Directory {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
-        return new Path(folder.getParent(), folder.getName(), folder.getType(),
-            new MantaAttributesFinderFeature(session).find(folder));
     }
 
     @Override

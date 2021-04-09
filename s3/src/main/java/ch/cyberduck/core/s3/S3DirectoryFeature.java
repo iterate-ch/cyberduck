@@ -65,12 +65,10 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             status.setMime(MIMETYPE);
             final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
             type.add(Path.Type.placeholder);
-            final StatusOutputStream<StorageObject> out = writer.write(new Path(folder.getParent(), folder.getName(), type,
-                new PathAttributes(folder.attributes())), status, new DisabledConnectionCallback());
+            final StatusOutputStream<StorageObject> out = writer.write(folder.withType(type), status, new DisabledConnectionCallback());
             new DefaultStreamCloser().close(out);
             final StorageObject metadata = out.getStatus();
-            return new Path(folder.getParent(), folder.getName(), type,
-                new S3AttributesFinderFeature(session).toAttributes(metadata));
+            return folder.withAttributes(new S3AttributesFinderFeature(session).toAttributes(metadata));
         }
     }
 

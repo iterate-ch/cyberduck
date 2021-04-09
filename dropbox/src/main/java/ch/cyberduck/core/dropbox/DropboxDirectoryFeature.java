@@ -40,9 +40,9 @@ public class DropboxDirectoryFeature implements Directory<String> {
     @Override
     public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            final CreateFolderResult result = new DbxUserFilesRequests(session.getClient(folder.getParent())).createFolderV2(containerService.getKey(folder), false);
-            return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
+            final CreateFolderResult result = new DbxUserFilesRequests(session.getClient(folder.getParent()))
+                .createFolderV2(containerService.getKey(folder), false);
+            return folder.withAttributes(new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map(e);

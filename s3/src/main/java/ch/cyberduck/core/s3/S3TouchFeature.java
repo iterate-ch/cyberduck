@@ -48,8 +48,7 @@ public class S3TouchFeature implements Touch<StorageObject> {
         final StatusOutputStream<StorageObject> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
         final S3Object metadata = (S3Object) out.getStatus();
-        return new Path(file.getParent(), file.getName(), file.getType(),
-            new S3AttributesFinderFeature(session).toAttributes(metadata));
+        return file.withAttributes(new S3AttributesFinderFeature(session).toAttributes(metadata));
     }
 
     @Override

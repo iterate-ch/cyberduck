@@ -65,8 +65,7 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
                 // Create container at top level
                 session.getClient().createContainer(regionService.lookup(
                     new SwiftLocationFeature.SwiftRegion(region)), folder.getName());
-                return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                    new SwiftAttributesFinderFeature(session, regionService).find(folder));
+                return folder.withAttributes(new SwiftAttributesFinderFeature(session, regionService).find(folder));
             }
             else {
                 status.setMime("application/directory");
@@ -74,8 +73,7 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
                 final StatusOutputStream<StorageObject> out = writer.write(folder, status, new DisabledConnectionCallback());
                 new DefaultStreamCloser().close(out);
                 final StorageObject metadata = out.getStatus();
-                return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                    new SwiftAttributesFinderFeature(session, regionService).toAttributes(metadata));
+                return folder.withAttributes(new SwiftAttributesFinderFeature(session, regionService).toAttributes(metadata));
             }
         }
         catch(GenericException e) {

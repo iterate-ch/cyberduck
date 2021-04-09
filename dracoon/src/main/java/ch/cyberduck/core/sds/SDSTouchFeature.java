@@ -53,8 +53,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
             }
             final StatusOutputStream<VersionId> out = writer.write(file, status.complete(), new DisabledConnectionCallback());
             out.close();
-            return new Path(file.getParent(), file.getName(), file.getType(),
-                new PathAttributes(file.attributes()).withVersionId(out.getStatus().id));
+            return file.withAttributes(file.attributes().withVersionId(out.getStatus().id));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);

@@ -52,7 +52,7 @@ public class AzureTouchFeature implements Touch<Void> {
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         status.setChecksum(writer.checksum(file, status).compute(new NullInputStream(0L), status));
         new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
-        return new Path(file.getParent(), file.getName(), file.getType(), new AzureAttributesFinderFeature(session, context).find(file));
+        return file.withAttributes(new AzureAttributesFinderFeature(session, context).find(file));
     }
 
     @Override

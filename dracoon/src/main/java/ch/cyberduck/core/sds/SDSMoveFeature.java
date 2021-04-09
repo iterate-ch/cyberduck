@@ -31,6 +31,7 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.MoveNode;
 import ch.cyberduck.core.sds.io.swagger.client.model.MoveNodesRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,10 +62,9 @@ public class SDSMoveFeature implements Move {
         try {
             final long nodeId = Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()));
             if(containerService.isContainer(file)) {
-                return new Path(renamed.getParent(), renamed.getName(), renamed.getType(), new SDSAttributesFinderFeature(session, nodeid).toAttributes(
-                    new NodesApi(session.getClient()).updateRoom(
-                        new UpdateRoomRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null)
-                ));
+                final Node node = new NodesApi(session.getClient()).updateRoom(
+                    new UpdateRoomRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
+                return renamed.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
             }
             else {
                 if(status.isExists()) {
@@ -82,8 +82,7 @@ public class SDSMoveFeature implements Move {
                     Long.parseLong(nodeid.getFileid(renamed.getParent(), new DisabledListProgressListener())),
                     StringUtils.EMPTY, null);
                 // Copy original file attributes
-                return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-                    new PathAttributes(renamed.attributes()).withVersionId(file.attributes().getVersionId()));
+                return renamed.withAttributes(new PathAttributes(renamed.attributes()).withVersionId(file.attributes().getVersionId()));
             }
         }
         catch(ApiException e) {

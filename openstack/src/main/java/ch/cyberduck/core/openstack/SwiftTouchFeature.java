@@ -52,8 +52,7 @@ public class SwiftTouchFeature implements Touch<StorageObject> {
         final StatusOutputStream<StorageObject> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
         final StorageObject metadata = out.getStatus();
-        return new Path(file.getParent(), file.getName(), file.getType(),
-            new SwiftAttributesFinderFeature(session, regionService).toAttributes(metadata));
+        return file.withAttributes(new SwiftAttributesFinderFeature(session, regionService).toAttributes(metadata));
     }
 
     @Override

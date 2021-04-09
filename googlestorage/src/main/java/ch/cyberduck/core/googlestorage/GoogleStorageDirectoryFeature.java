@@ -61,8 +61,7 @@ public class GoogleStorageDirectoryFeature implements Directory<VersionId> {
                         .setName(new GoogleStoragePathContainerService().getContainer(folder).getName())).execute();
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.volume);
-                return new Path(folder.getParent(), folder.getName(), type,
-                    new GoogleStorageAttributesFinderFeature(session).toAttributes(bucket));
+                return folder.withType(type).withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(bucket));
             }
             else {
                 // Add placeholder object
@@ -71,8 +70,7 @@ public class GoogleStorageDirectoryFeature implements Directory<VersionId> {
                 final StatusOutputStream<VersionId> out = writer.write(new Path(folder.getParent(), folder.getName(), type,
                     new PathAttributes(folder.attributes())), status, new DisabledConnectionCallback());
                 new DefaultStreamCloser().close(out);
-                return new Path(folder.getParent(), folder.getName(), type,
-                    folder.attributes().withVersionId(out.getStatus().id));
+                return folder.withType(type).withAttributes(folder.attributes().withVersionId(out.getStatus().id));
             }
         }
         catch(IOException e) {

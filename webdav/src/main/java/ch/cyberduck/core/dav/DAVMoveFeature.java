@@ -58,7 +58,7 @@ public class DAVMoveFeature implements Move {
                 session.getClient().move(new DAVPathEncoder().encode(file), file.isDirectory() ? String.format("%s/", target) : target, true);
             }
             // Copy original file attributes
-            return new Path(renamed.getParent(), renamed.getName(), renamed.getType(), new PathAttributes(file.attributes()));
+            return renamed.withAttributes(file.attributes());
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Cannot rename {0}", e, file);
