@@ -1276,7 +1276,7 @@ public class MainController extends BundleController implements NSApplication.De
                     oauth.notify(state, code);
                 }
                 else if(StringUtils.startsWith(url, CTERAProtocol.CTERA_REDIRECT_URI)) {
-                    final String action = StringUtils.removeStart(url, CTERAProtocol.CTERA_REDIRECT_URI);
+                    final String action = StringUtils.removeStart(url, String.format("%s:", preferences.getProperty("oauth.handler.scheme")));
                     final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
                     String code = StringUtils.EMPTY;
                     for(NameValuePair pair : pairs) {
