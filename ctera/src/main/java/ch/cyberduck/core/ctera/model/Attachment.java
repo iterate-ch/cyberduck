@@ -18,7 +18,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
 @JsonRootName("obj")
 public class Attachment {
@@ -26,9 +25,9 @@ public class Attachment {
     @JacksonXmlProperty(localName = "obj")
     private AttachedMobileDeviceParams mobileParams;
 
+    @JacksonXmlElementWrapper(useWrapping = false)
     private List<Attribute> attr;
 
-    @JacksonXmlElementWrapper(useWrapping = false)
     public List<Attribute> getAttr() {
         return attr;
     }
@@ -51,8 +50,7 @@ public class Attachment {
         @JacksonXmlProperty(isAttribute = true)
         private String id;
 
-        @JacksonXmlText
-        private String value;
+        private String val;
 
         public String getId() {
             return id;
@@ -63,12 +61,12 @@ public class Attachment {
             return this;
         }
 
-        public String getValue() {
-            return value;
+        public String getVal() {
+            return val;
         }
 
-        public Attribute setValue(final String value) {
-            this.value = value;
+        public Attribute setVal(final String val) {
+            this.val = val;
             return this;
         }
     }
@@ -79,9 +77,9 @@ public class Attachment {
         @JacksonXmlProperty(isAttribute = true, localName = "class")
         private String clazz = this.getClass().getSimpleName();
 
+        @JacksonXmlElementWrapper(useWrapping = false)
         private List<Attribute> attr;
 
-        @JacksonXmlElementWrapper(useWrapping = false)
         public List<Attribute> getAttr() {
             return attr;
         }

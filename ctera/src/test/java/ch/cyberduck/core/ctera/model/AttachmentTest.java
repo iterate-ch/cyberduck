@@ -30,29 +30,46 @@ public class AttachmentTest {
     @Test
     public void testSerialize() throws JsonProcessingException {
 
-        final String expected = "<obj>\n" +
-            "  <attr id=\"type\">user-defined</attr>\n" +
-            "  <attr id=\"name\">attachMobileDevice</attr>\n" +
-            "  <obj class=\"AttachedMobileDeviceParams\">\n" +
-            "    <attr id=\"deviceType\">Mobile</attr>\n" +
-            "    <attr id=\"serverName\">mountainduck.na.ctera.me</attr>\n" +
-            "    <attr id=\"deviceMac\">myMacAddress</attr>\n" +
-            "    <attr id=\"ssoActivationCode\">mySsoActivationCode</attr>\n" +
-            "    <attr id=\"password\"/>\n" +
-            "    <attr id=\"hostname\">myHostname</attr>\n" +
-            "  </obj>\n" +
-            "</obj>\n";
+        final String expected =
+            "<obj>\n" +
+                "  <attr id=\"type\">\n" +
+                "    <val>user-defined</val>\n" +
+                "  </attr>\n" +
+                "  <attr id=\"name\">\n" +
+                "    <val>attachMobileDevice</val>\n" +
+                "  </attr>\n" +
+                "  <obj class=\"AttachedMobileDeviceParams\">\n" +
+                "    <attr id=\"deviceType\">\n" +
+                "      <val>Mobile</val>\n" +
+                "    </attr>\n" +
+                "    <attr id=\"serverName\">\n" +
+                "      <val>mountainduck.na.ctera.me</val>\n" +
+                "    </attr>\n" +
+                "    <attr id=\"deviceMac\">\n" +
+                "      <val>myMacAddress</val>\n" +
+                "    </attr>\n" +
+                "    <attr id=\"ssoActivationCode\">\n" +
+                "      <val>mySsoActivationCode</val>\n" +
+                "    </attr>\n" +
+                "    <attr id=\"password\">\n" +
+                "      <val/>\n" +
+                "    </attr>\n" +
+                "    <attr id=\"hostname\">\n" +
+                "      <val>myHostname</val>\n" +
+                "    </attr>\n" +
+                "  </obj>\n" +
+                "</obj>\n";
 
         final Attachment attachment = new Attachment();
         final ArrayList<Attachment.Attribute> attributes = new ArrayList<>();
 
         final Attachment.Attribute type = new Attachment.Attribute();
         type.setId("type");
-        type.setValue("user-defined");
+        type.setVal("user-defined");
         attributes.add(type);
         final Attachment.Attribute name = new Attachment.Attribute();
         name.setId("name");
-        name.setValue("attachMobileDevice");
+        name.setVal("attachMobileDevice");
         attributes.add(name);
         attachment.setAttr(attributes);
 
@@ -62,26 +79,26 @@ public class AttachmentTest {
         params.setAttr(paramAttributes);
         final Attachment.Attribute deviceType = new Attachment.Attribute();
         deviceType.setId("deviceType");
-        deviceType.setValue("Mobile");
+        deviceType.setVal("Mobile");
         paramAttributes.add(deviceType);
         final Attachment.Attribute serverName = new Attachment.Attribute();
         serverName.setId("serverName");
-        serverName.setValue("mountainduck.na.ctera.me");
+        serverName.setVal("mountainduck.na.ctera.me");
         paramAttributes.add(serverName);
         final Attachment.Attribute deviceMac = new Attachment.Attribute();
         deviceMac.setId("deviceMac");
-        deviceMac.setValue("myMacAddress");
+        deviceMac.setVal("myMacAddress");
         paramAttributes.add(deviceMac);
         final Attachment.Attribute ssoActivationCode = new Attachment.Attribute();
         ssoActivationCode.setId("ssoActivationCode");
-        ssoActivationCode.setValue("mySsoActivationCode");
+        ssoActivationCode.setVal("mySsoActivationCode");
         paramAttributes.add(ssoActivationCode);
         final Attachment.Attribute password = new Attachment.Attribute();
         password.setId("password");
         paramAttributes.add(password);
         final Attachment.Attribute hostname = new Attachment.Attribute();
         hostname.setId("hostname");
-        hostname.setValue("myHostname");
+        hostname.setVal("myHostname");
         paramAttributes.add(hostname);
 
         XmlMapper xmlMapper = new XmlMapper();
