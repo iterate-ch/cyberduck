@@ -29,6 +29,7 @@ import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
 import ch.cyberduck.core.onedrive.OneDriveHomeFinderService;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -63,12 +64,12 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session)),
-            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(
+        final Path test = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session, new GraphFileIdProvider(session))),
+            new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session))), new GraphWriteFeature(session, new GraphFileIdProvider(session)), cryptomator).touch(
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVault());
-        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(test));
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(test);
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session, new GraphFileIdProvider(session)), cryptomator).find(test));
+        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)), cryptomator).find(test);
         assertNotNull(attributes.getVersionId());
         assertEquals(test.attributes(), attributes);
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -82,12 +83,12 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new GraphWriteFeature(session)),
-            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new GraphWriteFeature(session, new GraphFileIdProvider(session))),
+            new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session))), new GraphWriteFeature(session, new GraphFileIdProvider(session)), cryptomator).touch(
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVault());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(test);
+        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)), cryptomator).find(test);
         assertNotNull(attributes.getVersionId());
         assertEquals(test.attributes(), attributes);
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

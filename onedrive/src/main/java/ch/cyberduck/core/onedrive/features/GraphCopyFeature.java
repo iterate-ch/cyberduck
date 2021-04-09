@@ -39,9 +39,11 @@ public class GraphCopyFeature implements Copy {
     private static final Logger logger = Logger.getLogger(GraphCopyFeature.class);
 
     private final GraphSession session;
+    private final GraphAttributesFinderFeature attributes;
 
-    public GraphCopyFeature(final GraphSession session) {
+    public GraphCopyFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
         this.session = session;
+        this.attributes = new GraphAttributesFinderFeature(session, idProvider);
     }
 
     @Override
@@ -65,7 +67,7 @@ public class GraphCopyFeature implements Copy {
             target.attributes().setVersionId(null);
             target.attributes().setFileId(null);
             return new Path(target.getParent(), target.getName(), target.getType(),
-                new GraphAttributesFinderFeature(session).find(target));
+                attributes.find(target));
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Cannot copy {0}", e, source);

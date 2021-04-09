@@ -19,6 +19,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -32,12 +33,12 @@ public class GraphItemListService extends AbstractItemListService {
     private static final Logger log = Logger.getLogger(GraphItemListService.class);
 
     private final GraphSession session;
-    private final GraphAttributesFinderFeature attributes;
+    private final IdProvider idProvider;
 
-    public GraphItemListService(final GraphSession session) {
-        super(new GraphAttributesFinderFeature(session));
+    public GraphItemListService(final GraphSession session, final IdProvider idProvider) {
+        super(new GraphAttributesFinderFeature(session, idProvider));
         this.session = session;
-        this.attributes = new GraphAttributesFinderFeature(session);
+        this.idProvider = idProvider;
     }
 
     @Override
@@ -48,7 +49,7 @@ public class GraphItemListService extends AbstractItemListService {
 
     @Override
     public ListService withCache(final Cache<Path> cache) {
-        attributes.withCache(cache);
+        idProvider.withCache(cache);
         return this;
     }
 }

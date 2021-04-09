@@ -32,6 +32,7 @@ import ch.cyberduck.core.onedrive.OneDriveHomeFinderService;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.core.onedrive.features.GraphMoveFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
@@ -65,26 +66,26 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session)).mkdir(folder, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, new GraphFileIdProvider(session))).mkdir(folder, null, new TransferStatus());
         final String filename = new AlphanumericRandomStringService().random();
-        final Path file = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session)),
-            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(
+        final Path file = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session, new GraphFileIdProvider(session))),
+            new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session))), new GraphWriteFeature(session, new GraphFileIdProvider(session)), cryptomator).touch(
             new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
-        final Move move = cryptomator.getFeature(session, Move.class, new GraphMoveFeature(session));
+        final Move move = cryptomator.getFeature(session, Move.class, new GraphMoveFeature(session, new GraphFileIdProvider(session)));
         // rename file
         final Path fileRenamed = move.move(file, new Path(folder, "f1", EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(file.attributes().getVersionId(), fileRenamed.attributes().getVersionId());
-        assertFalse(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(new Path(folder, filename, EnumSet.of(Path.Type.file))));
-        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(fileRenamed));
-        assertEquals(fileRenamed.attributes().getModificationDate(), new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(fileRenamed).getModificationDate());
+        assertFalse(new CryptoFindFeature(session, new GraphFindFeature(session, new GraphFileIdProvider(session)), cryptomator).find(new Path(folder, filename, EnumSet.of(Path.Type.file))));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session, new GraphFileIdProvider(session)), cryptomator).find(fileRenamed));
+        assertEquals(fileRenamed.attributes().getModificationDate(), new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)), cryptomator).find(fileRenamed).getModificationDate());
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(folder));
-        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(folderRenamed));
+        assertFalse(new CryptoFindFeature(session, new GraphFindFeature(session, new GraphFileIdProvider(session)), cryptomator).find(folder));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session, new GraphFileIdProvider(session)), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
-        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session, new GraphFileIdProvider(session)), cryptomator).find(fileRenamedInRenamedFolder));
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(
             fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

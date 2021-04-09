@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -32,13 +33,13 @@ public class GraphFindFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testFindFileNotFound() throws Exception {
-        final GraphFindFeature f = new GraphFindFeature(session);
+        final GraphFindFeature f = new GraphFindFeature(session, new GraphFileIdProvider(session));
         assertFalse(f.find(new Path(new OneDriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
     }
 
     @Test
     public void testFindDriveNotFound() throws Exception {
-        final GraphFindFeature f = new GraphFindFeature(session);
+        final GraphFindFeature f = new GraphFindFeature(session, new GraphFileIdProvider(session));
         assertFalse(f.find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
     }
 }

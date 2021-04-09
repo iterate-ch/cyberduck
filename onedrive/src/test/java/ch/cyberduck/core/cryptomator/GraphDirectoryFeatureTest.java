@@ -30,6 +30,7 @@ import ch.cyberduck.core.onedrive.OneDriveHomeFinderService;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -59,14 +60,14 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session)).mkdir(
+        final Path test = cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, new GraphFileIdProvider(session))).mkdir(
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertNotNull(test.attributes().getVault());
         final String versionId = test.attributes().getVersionId();
         final Long timestamp = test.attributes().getModificationDate();
         assertNotEquals(-1L, timestamp, 0L);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(test);
+        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)), cryptomator).find(test);
         assertEquals(versionId, attributes.getVersionId());
         assertEquals(timestamp, attributes.getModificationDate(), 0L);
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -80,12 +81,12 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session)).mkdir(
+        final Path test = cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, new GraphFileIdProvider(session))).mkdir(
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertNotNull(test.attributes().getVault());
         final String versionId = test.attributes().getVersionId();
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(test);
+        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)), cryptomator).find(test);
         assertEquals(versionId, attributes.getVersionId());
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

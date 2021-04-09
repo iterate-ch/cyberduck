@@ -33,6 +33,7 @@ public abstract class AbstractSharepointListService implements ListService {
 
     private final AbstractSharepointSession session;
     private final IdProvider idProvider;
+    private Cache<Path> cache;
 
     public AbstractSharepointListService(final AbstractSharepointSession session, final IdProvider idProvider) {
         this.session = session;
@@ -41,10 +42,6 @@ public abstract class AbstractSharepointListService implements ListService {
 
     public AbstractSharepointSession getSession() {
         return session;
-    }
-
-    public IdProvider getIdProvider() {
-        return idProvider;
     }
 
     @Override
@@ -76,11 +73,12 @@ public abstract class AbstractSharepointListService implements ListService {
             return collectionListService.get().list(directory, listener);
         }
 
-        return new GraphItemListService(session).list(directory, listener);
+        return new GraphItemListService(session, idProvider).withCache(cache).list(directory, listener);
     }
 
     @Override
     public ListService withCache(final Cache<Path> cache) {
+        this.cache = cache;
         idProvider.withCache(cache);
         return this;
     }

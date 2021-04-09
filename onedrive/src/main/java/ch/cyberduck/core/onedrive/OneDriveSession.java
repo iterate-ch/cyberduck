@@ -32,9 +32,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
-import javax.swing.text.html.Option;
-import java.util.Collections;
-
 public class OneDriveSession extends GraphSession {
 
     public final static ContainerItem MYFILES = new ContainerItem(OneDriveListService.MYFILES_NAME, null, true);
@@ -101,7 +98,7 @@ public class OneDriveSession extends GraphSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new OneDriveListService(this);
+            return (T) new OneDriveListService(this, fileIdProvider);
         }
         if(type == UrlProvider.class) {
             return (T) new OneDriveUrlProvider();

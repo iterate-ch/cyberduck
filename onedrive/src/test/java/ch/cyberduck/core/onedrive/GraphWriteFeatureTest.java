@@ -52,13 +52,13 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWrite() throws Exception {
-        final GraphWriteFeature feature = new GraphWriteFeature(session);
+        final GraphWriteFeature feature = new GraphWriteFeature(session, new GraphFileIdProvider(session));
         final Path container = new OneDriveHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final String id = new GraphTouchFeature(session).touch(file, new TransferStatus()).attributes().getFileId();
+        final String id = new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus()).attributes().getFileId();
         final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final byte[] buffer = new byte[32 * 1024];
@@ -84,7 +84,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWriteUmlaut() throws Exception {
-        final GraphWriteFeature feature = new GraphWriteFeature(session);
+        final GraphWriteFeature feature = new GraphWriteFeature(session, new GraphFileIdProvider(session));
         final Path container = new OneDriveHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(2048);
         final TransferStatus status = new TransferStatus();
@@ -107,7 +107,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWriteUmlautZeroLength() throws Exception {
-        final GraphWriteFeature feature = new GraphWriteFeature(session);
+        final GraphWriteFeature feature = new GraphWriteFeature(session, new GraphFileIdProvider(session));
         final Path container = new OneDriveHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();
@@ -130,7 +130,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWriteSingleByte() throws Exception {
-        final GraphWriteFeature feature = new GraphWriteFeature(session);
+        final GraphWriteFeature feature = new GraphWriteFeature(session, new GraphFileIdProvider(session));
         final Path container = new OneDriveHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(1);
         final TransferStatus status = new TransferStatus();
@@ -153,7 +153,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWriteZeroLength() throws Exception {
-        final GraphWriteFeature feature = new GraphWriteFeature(session);
+        final GraphWriteFeature feature = new GraphWriteFeature(session, new GraphFileIdProvider(session));
         final Path container = new OneDriveHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();
@@ -176,7 +176,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testWriteUnknownLength() throws Exception {
-        final GraphWriteFeature feature = new GraphWriteFeature(session);
+        final GraphWriteFeature feature = new GraphWriteFeature(session, new GraphFileIdProvider(session));
         final Path container = new OneDriveHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();

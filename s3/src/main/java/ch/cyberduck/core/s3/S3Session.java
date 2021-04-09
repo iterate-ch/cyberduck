@@ -321,9 +321,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(type == Search.class) {
             return (T) new S3SearchFeature(this);
         }
-        if(type == IdProvider.class) {
-            return (T) new S3VersionIdProvider(this);
-        }
         if(type == Scheduler.class) {
             return (T) new DelegatingSchedulerFeature(
                 new CloudFrontDistributionConfigurationPreloader(this) {

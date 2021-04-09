@@ -19,7 +19,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -36,12 +35,10 @@ import synapticloop.b2.response.B2BucketResponse;
 public class B2FindFeature implements Find {
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+        = new B2PathContainerService();
 
     private final B2Session session;
     private final B2FileidProvider fileid;
-
-    private Cache<Path> cache = PathCache.empty();
 
     public B2FindFeature(final B2Session session, final B2FileidProvider fileid) {
         this.session = session;
@@ -61,7 +58,7 @@ public class B2FindFeature implements Find {
             }
             else {
                 try {
-                    return null != fileid.withCache(cache).getFileid(file, new DisabledListProgressListener());
+                    return null != fileid.getFileid(file, new DisabledListProgressListener());
                 }
                 catch(NotfoundException e) {
                     return false;
@@ -79,7 +76,7 @@ public class B2FindFeature implements Find {
 
     @Override
     public Find withCache(final Cache<Path> cache) {
-        this.cache = cache;
+        fileid.withCache(cache);
         return this;
     }
 }

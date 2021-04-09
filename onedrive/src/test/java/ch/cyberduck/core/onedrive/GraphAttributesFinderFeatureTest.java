@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -42,14 +43,14 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        new GraphAttributesFinderFeature(session).find(new Path(new OneDriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+        new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(new Path(new OneDriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
     public void testFindFile() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
-        final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(file);
+        new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
+        final PathAttributes attributes = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(file);
         assertNotNull(attributes);
         assertNotEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getCreationDate());
@@ -64,8 +65,8 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testFindDirectory() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new GraphDirectoryFeature(session).mkdir(file, null, new TransferStatus());
-        final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(file);
+        new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(file, null, new TransferStatus());
+        final PathAttributes attributes = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(file);
         assertNotNull(attributes);
         assertNotEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getCreationDate());

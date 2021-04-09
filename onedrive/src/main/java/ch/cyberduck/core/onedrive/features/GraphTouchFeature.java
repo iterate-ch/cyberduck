@@ -36,9 +36,11 @@ import java.io.IOException;
 public class GraphTouchFeature implements Touch<Void> {
 
     private final GraphSession session;
+    private final GraphAttributesFinderFeature attributes;
 
-    public GraphTouchFeature(final GraphSession session) {
+    public GraphTouchFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
         this.session = session;
+        this.attributes = new GraphAttributesFinderFeature(session, idProvider);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class GraphTouchFeature implements Touch<Void> {
             final DriveItem.Metadata metadata = Files.createFile(folder, URIEncoder.encode(file.getName()),
                 StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
             return new Path(file.getParent(), file.getName(), file.getType(),
-                new GraphAttributesFinderFeature(session).toAttributes(metadata));
+                attributes.toAttributes(metadata));
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Cannot create {0}", e, file);
