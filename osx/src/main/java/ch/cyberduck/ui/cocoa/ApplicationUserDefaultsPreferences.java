@@ -19,12 +19,15 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.bonjour.RendezvousResponder;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.logging.SystemLogAppender;
 import ch.cyberduck.core.logging.UnifiedSystemLogAppender;
 import ch.cyberduck.core.preferences.ApplicationPreferences;
+import ch.cyberduck.core.preferences.LogDirectoryFinderFactory;
 import ch.cyberduck.core.sparkle.SparklePeriodicUpdateChecker;
 import ch.cyberduck.core.threading.DispatchThreadPool;
 import ch.cyberduck.ui.browser.BrowserColumn;
@@ -40,9 +43,15 @@ import ch.cyberduck.ui.cocoa.controller.DownloadPromptController;
 import ch.cyberduck.ui.cocoa.controller.SyncPromptController;
 import ch.cyberduck.ui.cocoa.controller.UploadPromptController;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Appender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
 
@@ -108,15 +117,31 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         super.configureLogging(level);
         // Send log output to system.log
         Logger root = Logger.getRootLogger();
-        final Appender appender;
-        if(Factory.Platform.osversion.matches("10\\.(8|9|10|11).*")) {
-            appender = new SystemLogAppender();
+        {
+            final Appender appender;
+            if(Factory.Platform.osversion.matches("10\\.(8|9|10|11).*")) {
+                appender = new SystemLogAppender();
+            }
+            else {
+                // macOS 10.12+
+                appender = new UnifiedSystemLogAppender();
+            }
+            appender.setLayout(new PatternLayout("[%t] %-5p %c - %m%n"));
+            root.addAppender(appender);
         }
-        else {
-            // macOS 10.12+
-            appender = new UnifiedSystemLogAppender();
+        {
+            final Local file = LocalFactory.get(LogDirectoryFinderFactory.get().find().getAbsolute(), String.format("%s.log", StringUtils.replaceChars(StringUtils.lowerCase(
+                this.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY)));
+            try {
+                RollingFileAppender appender = new RollingFileAppender(new PatternLayout("%d [%t] %-5p %c - %m%n"), file.getAbsolute(), true);
+                appender.setEncoding(StandardCharsets.UTF_8.name());
+                appender.setMaxFileSize(Level.DEBUG.toString().equals(level) ? "250MB" : "10MB");
+                appender.setMaxBackupIndex(0);
+                root.addAppender(appender);
+            }
+            catch(IOException e) {
+                // Ignore failure
+            }
         }
-        appender.setLayout(new PatternLayout("[%t] %-5p %c - %m%n"));
-        root.addAppender(appender);
     }
 }
