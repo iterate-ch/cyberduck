@@ -70,7 +70,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         assertNotNull(test.attributes().getVault());
         assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session, new GraphFileIdProvider(session)), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)), cryptomator).find(test);
-        assertNotNull(attributes.getVersionId());
+        assertNotNull(attributes.getFileId());
         assertEquals(test.attributes(), attributes);
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -89,7 +89,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         assertNotNull(test.attributes().getVault());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)), cryptomator).find(test);
-        assertNotNull(attributes.getVersionId());
+        assertNotNull(attributes.getFileId());
         assertEquals(test.attributes(), attributes);
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

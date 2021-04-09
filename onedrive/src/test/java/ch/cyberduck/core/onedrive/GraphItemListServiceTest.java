@@ -80,7 +80,7 @@ public class GraphItemListServiceTest extends AbstractOneDriveTest {
             assertNotEquals(-1L, attributes.getCreationDate());
             assertNotEquals(-1L, attributes.getModificationDate());
             assertNotNull(attributes.getETag());
-            assertNotNull(attributes.getVersionId());
+            assertNotNull(attributes.getFileId());
             assertNotNull(attributes.getLink());
         }
         new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

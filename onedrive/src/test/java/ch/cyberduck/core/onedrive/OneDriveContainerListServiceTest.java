@@ -45,7 +45,7 @@ public class OneDriveContainerListServiceTest extends AbstractOneDriveTest {
             assertNotEquals(-1L, attributes.getSize());
             assertNotEquals(-1L, attributes.getCreationDate());
             assertNotEquals(-1L, attributes.getModificationDate());
-            assertNotNull(attributes.getVersionId());
+            assertNotNull(attributes.getFileId());
             assertNotNull(attributes.getLink());
         }
     }

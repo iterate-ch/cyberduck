@@ -31,16 +31,16 @@ public class GraphFileIdProviderTest extends AbstractOneDriveTest {
 
         final Directory directoryFeature = new GraphDirectoryFeature(session, new GraphFileIdProvider(session));
         final Path path2RWithId = directoryFeature.mkdir(path2R, null, new TransferStatus());
-        assertNotNull(path2RWithId.attributes().getVersionId());
+        assertNotNull(path2RWithId.attributes().getFileId());
         final Path path33WithId = directoryFeature.mkdir(path33, null, new TransferStatus());
-        assertNotNull(path33WithId.attributes().getVersionId());
-        assertNotEquals(path2RWithId.attributes().getVersionId(), path33WithId.attributes().getVersionId());
+        assertNotNull(path33WithId.attributes().getFileId());
+        assertNotEquals(path2RWithId.attributes().getFileId(), path33WithId.attributes().getFileId());
 
         final IdProvider idProvider = new GraphFileIdProvider(session);
         final String fileId = idProvider.getFileid(path33, new DisabledListProgressListener());
 
-        assertEquals(fileId, path33WithId.attributes().getVersionId());
-        assertNotEquals(fileId, path2RWithId.attributes().getVersionId());
+        assertEquals(fileId, path33WithId.attributes().getFileId());
+        assertNotEquals(fileId, path2RWithId.attributes().getFileId());
 
         new GraphDeleteFeature(session).delete(Arrays.asList(path2RWithId, path33WithId), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
