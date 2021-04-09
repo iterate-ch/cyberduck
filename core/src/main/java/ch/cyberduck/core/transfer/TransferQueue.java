@@ -27,39 +27,30 @@ import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Semaphore;
 
 public final class TransferQueue {
     private static final Logger log = Logger.getLogger(TransferQueue.class);
 
-    private final ApplicationBadgeLabeler label
-        = ApplicationBadgeLabelerFactory.get();
+    private final ApplicationBadgeLabeler label = ApplicationBadgeLabelerFactory.get();
+    private final NotificationService notification = NotificationServiceFactory.get();
 
-    private BlockingQueue<Transfer> running;
+    private final ResizeableSemaphore semaphore;
 
-    private final NotificationService notification
-        = NotificationServiceFactory.get();
-
-    private final List<Transfer> temporary
-        = new ArrayList<>();
-
-    private final Map<Transfer, Thread> threads
-        = new HashMap<>();
+    /**
+     * Adjustable number of connections
+     */
+    private int permits;
 
     public TransferQueue() {
         this(PreferencesFactory.get().getInteger("queue.connections.limit"));
     }
 
     public TransferQueue(final int size) {
-        this.running = new ArrayBlockingQueue<>(size, true);
+        this.permits = size;
+        this.semaphore = new ResizeableSemaphore(size, true);
     }
 
     /**
@@ -72,28 +63,16 @@ public final class TransferQueue {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Add transfer %s to queue", t));
         }
-        if(0 == running.remainingCapacity()) {
+        if(!semaphore.tryAcquire()) {
+            // The maximum number of transfers is already reached. Wait for transfer slot.
             if(log.isInfoEnabled()) {
                 log.info(String.format("Queuing transfer %s", t));
             }
             listener.message(LocaleFactory.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
             notification.notify(t.getName(), t.getUuid(), "Transfer queued", t.getName());
+            semaphore.acquireUninterruptibly();
         }
-        // The maximum number of transfers is already reached. Wait for transfer slot.
-        try {
-            threads.put(t, Thread.currentThread());
-            running.put(t);
-        }
-        catch(InterruptedException e) {
-            log.error(String.format("Error waiting for slot in queue. %s", e.getMessage()));
-        }
-        finally {
-            threads.remove(t);
-        }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Released from queue %s", t));
-        }
-        label.badge(String.valueOf(running.size()));
+        label.badge(String.valueOf(permits - semaphore.availablePermits() + semaphore.getQueueLength()));
     }
 
     /**
@@ -103,54 +82,42 @@ public final class TransferQueue {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Remove %s from queue", t));
         }
-        if(running.remove(t)) {
-            if(0 == running.size()) {
-                label.badge(StringUtils.EMPTY);
-            }
-            else {
-                label.badge(String.valueOf(running.size()));
-            }
-        }
-        else {
-            final Thread removed = threads.remove(t);
-            if(removed != null) {
-                log.warn(String.format("Interrupt thread %s for transfer %s", removed, t));
-                removed.interrupt();
-            }
-            temporary.remove(t);
-        }
-        // Transfer has finished.
-        this.poll();
+        semaphore.release();
+        label.badge(String.valueOf(permits - semaphore.availablePermits() + semaphore.getQueueLength()));
     }
 
     /**
      * Resize queue with current setting in preferences.
+     *
+     * @param limit New limit
      */
-    public void resize(int newsize) {
+    public void resize(int limit) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Resize queue to %d", newsize));
+            log.debug(String.format("Resize queue to %d", limit));
         }
-        final int drained = running.drainTo(temporary);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Drained %d elements", drained));
-        }
-        running.clear();
-        if(TransferConnectionLimiter.AUTO == newsize) {
-            running = new ArrayBlockingQueue<>(Integer.MAX_VALUE, true);
+        if(limit < permits) {
+            // Reduce number of permits
+            semaphore.reducePermits(permits - limit);
         }
         else {
-            running = new ArrayBlockingQueue<>(newsize, true);
+            // Increase number of permits
+            semaphore.release(limit - permits);
         }
-        this.poll();
+        this.permits = limit;
     }
 
-    /**
-     * Poll temporary queue
-     */
-    private void poll() {
-        if(log.isDebugEnabled()) {
-            log.debug("Polling overflow queue");
+    private static final class ResizeableSemaphore extends Semaphore {
+        public ResizeableSemaphore(final int permits) {
+            super(permits);
         }
-        temporary.removeIf(transfer -> running.offer(transfer));
+
+        public ResizeableSemaphore(final int permits, final boolean fair) {
+            super(permits, fair);
+        }
+
+        @Override
+        protected void reducePermits(int reduction) {
+            super.reducePermits(reduction);
+        }
     }
 }
