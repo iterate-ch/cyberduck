@@ -92,6 +92,31 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
     }
 
     @Test
+    public void testMoveToRoot() throws BackgroundException {
+        final Directory directory = new GraphDirectoryFeature(session);
+        final Touch touch = new GraphTouchFeature(session);
+        final Move move = new GraphMoveFeature(session);
+        final Delete delete = new GraphDeleteFeature(session);
+        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
+        final Path drive = new OneDriveHomeFinderService(session).find();
+        Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        directory.mkdir(targetDirectory, null, null);
+        assertNotNull(attributesFinder.find(targetDirectory));
+
+        Path touchedFile = new Path(targetDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
+        assertNotNull(attributesFinder.find(touchedFile));
+
+        Path rename = new Path(drive, touchedFile.getName(), EnumSet.of(Path.Type.file));
+        assertTrue(move.isSupported(touchedFile, rename));
+        move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertNotNull(attributesFinder.find(rename));
+
+        delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        delete.delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testMoveRename() throws BackgroundException {
         final Directory directory = new GraphDirectoryFeature(session);
         final Touch touch = new GraphTouchFeature(session);

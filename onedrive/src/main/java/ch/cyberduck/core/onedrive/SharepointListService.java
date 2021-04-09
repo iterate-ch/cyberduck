@@ -16,12 +16,10 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.features.sharepoint.GroupDrivesListService;
 import ch.cyberduck.core.onedrive.features.sharepoint.GroupListService;
@@ -32,24 +30,19 @@ import org.nuxeo.onedrive.client.types.Site;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 public class SharepointListService extends AbstractSharepointListService {
     static final Logger log = Logger.getLogger(SharepointListService.class);
-
-    public static final String DEFAULT_ID = "root";
 
     public static final String DEFAULT_SITE = "Default";
     public static final String DRIVES_CONTAINER = "Drives";
     public static final String GROUPS_CONTAINER = "Groups";
     public static final String SITES_CONTAINER = "Sites";
 
-    public static final Path DEFAULT_NAME = new Path("/" + DEFAULT_SITE, EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withFileId(DEFAULT_ID));
+    public static final Path DEFAULT_NAME = new Path("/" + DEFAULT_SITE, EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory));
     public static final Path DRIVES_NAME = new Path("/" + DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
     public static final Path GROUPS_NAME = new Path("/" + GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
     public static final Path SITES_NAME = new Path("/" + SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
-
-    public static final Predicate<Path> DEFAULT_PREDICATE = new CaseInsensitivePathPredicate(DEFAULT_NAME);
 
     private final SharepointSession session;
 
@@ -88,24 +81,6 @@ public class SharepointListService extends AbstractSharepointListService {
     static void addDefaultItems(final AttributedList<Path> list) throws BackgroundException {
         list.add(GROUPS_NAME);
         list.add(SITES_NAME);
-    }
-
-    static boolean isDefaultPath(final Path directory) {
-        return DEFAULT_PREDICATE.test(directory);
-    }
-
-    Path findDefaultPath(final Path directory) throws BackgroundException {
-        if(isDefaultPath(directory)) {
-            return getDefault(directory.getParent()).orElseThrow(() -> new NotfoundException(String.format("%s not found.", directory.getAbsolute())));
-        }
-        return directory;
-    }
-
-    Path getDefaultSymlinkTarget(final Path directory) throws BackgroundException {
-        if(directory.getSymlinkTarget() != null) {
-            return directory.getSymlinkTarget();
-        }
-        return getDefault(directory.getParent()).orElseThrow(() -> new NotfoundException(String.format("%s not found.", directory.getAbsolute()))).getSymlinkTarget();
     }
 
     @Override

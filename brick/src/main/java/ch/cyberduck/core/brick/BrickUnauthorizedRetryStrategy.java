@@ -18,15 +18,13 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.proxy.ProxyFactory;
-import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.BackgroundActionStateCancelCallback;
@@ -44,12 +42,10 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
 
     private final HostPasswordStore store = PasswordStoreFactory.get();
     private final BrickSession session;
-    private final LoginCallback prompt;
     private final CancelCallback cancel;
 
-    public BrickUnauthorizedRetryStrategy(final BrickSession session, final LoginCallback prompt, final CancelCallback cancel) {
+    public BrickUnauthorizedRetryStrategy(final BrickSession session, final CancelCallback cancel) {
         this.session = session;
-        this.prompt = prompt;
         this.cancel = cancel;
     }
 
@@ -64,16 +60,8 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                         final Host bookmark = session.getHost();
                         final Credentials credentials = bookmark.getCredentials();
                         credentials.reset();
-                        session.login(ProxyFactory.get().find(new ProxyHostUrlProvider().get(bookmark)), prompt, new CancelCallback() {
-                            @Override
-                            public void verify() throws ConnectionCanceledException {
-                                cancel.verify();
-                                for(BackgroundAction action : BackgroundActionRegistry.global()) {
-                                    // Fail if any current background action is canceled
-                                    new BackgroundActionStateCancelCallback(action).verify();
-                                }
-                            }
-                        });
+                        // Blocks until pairing is complete or canceled
+                        session.pair(bookmark, new DisabledConnectionCallback(), new BackgroundActionRegistryCancelCallback(cancel));
                         if(credentials.isSaved()) {
                             store.save(bookmark);
                         }
@@ -93,5 +81,25 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                 }
         }
         return false;
+    }
+
+    private static final class BackgroundActionRegistryCancelCallback implements CancelCallback {
+        private final CancelCallback delegate;
+
+        public BackgroundActionRegistryCancelCallback(final CancelCallback delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void verify() throws ConnectionCanceledException {
+            delegate.verify();
+            for(BackgroundAction action : BackgroundActionRegistry.global()) {
+                if(null == action) {
+                    continue;
+                }
+                // Fail if any current background action is canceled
+                new BackgroundActionStateCancelCallback(action).verify();
+            }
+        }
     }
 }

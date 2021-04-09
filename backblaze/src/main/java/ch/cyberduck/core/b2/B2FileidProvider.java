@@ -67,6 +67,9 @@ public class B2FileidProvider implements IdProvider {
         try {
             if(containerService.isContainer(file)) {
                 final B2BucketResponse info = session.getClient().listBucket(file.getName());
+                if(null == info) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
                 // Cache in file attributes
                 return this.set(file, info.getBucketId());
             }

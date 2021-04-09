@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>7.8.5-SNAPSHOT</version>
+        <version>7.8.6-SNAPSHOT</version>
     </parent>
     <artifactId>webdav</artifactId>
     <packaging>jar</packaging>
@@ -91,7 +91,7 @@
             </releases>
             <id>bintray-milton</id>
             <name>bintray</name>
-            <url>http://dl.bintray.com/milton/Milton</url>
+            <url>https://dl.bintray.com/milton/Milton</url>
         </repository>
     </repositories>
 </project>
