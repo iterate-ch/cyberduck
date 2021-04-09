@@ -52,6 +52,7 @@ import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.bonjour.NotificationRendezvousListener;
 import ch.cyberduck.core.bonjour.Rendezvous;
 import ch.cyberduck.core.bonjour.RendezvousFactory;
+import ch.cyberduck.core.ctera.CTERAProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
@@ -1273,6 +1274,18 @@ public class MainController extends BundleController implements NSApplication.De
                     }
                     final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
                     oauth.notify(state, code);
+                }
+                else if(StringUtils.startsWith(url, CTERAProtocol.CTERA_REDIRECT_URI)) {
+                    final String action = StringUtils.removeStart(url, CTERAProtocol.CTERA_REDIRECT_URI);
+                    final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
+                    String code = StringUtils.EMPTY;
+                    for(NameValuePair pair : pairs) {
+                        if(StringUtils.equals(pair.getName(), "ActivationCode")) {
+                            code = StringUtils.equals(pair.getName(), "ActivationCode") ? pair.getValue() : StringUtils.EMPTY;
+                        }
+                    }
+                    final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
+                    oauth.notify(StringUtils.EMPTY, code);
                 }
                 else {
                     try {

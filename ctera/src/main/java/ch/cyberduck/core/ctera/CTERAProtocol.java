@@ -18,8 +18,11 @@ package ch.cyberduck.core.ctera;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class CTERAProtocol extends AbstractProtocol {
+
+    public static final String CTERA_REDIRECT_URI = String.format("%s:websso", PreferencesFactory.get().getProperty("oauth.handler.scheme"));
 
     @Override
     public Type getType() {

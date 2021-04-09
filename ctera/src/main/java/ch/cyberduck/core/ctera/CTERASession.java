@@ -54,8 +54,6 @@ public class CTERASession extends DAVSession {
 
     public final BrowserLauncher browser = BrowserLauncherFactory.get();
 
-    public static final String REDIRECT_KEY = "x-ctera-action:websso";
-
     public CTERASession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
@@ -79,7 +77,7 @@ public class CTERASession extends DAVSession {
 
     private void startWebSSOFlow(final CancelCallback cancel) throws BackgroundException {
         final String url = String.format("%s/ServicesPortal/activate?scheme=%s",
-            new HostUrlProvider().withUsername(false).withPath(false).get(host), REDIRECT_KEY
+            new HostUrlProvider().withUsername(false).withPath(false).get(host), CTERAProtocol.CTERA_REDIRECT_URI
         );
         if(log.isDebugEnabled()) {
             log.debug(String.format("Open browser with URL %s", url));
@@ -110,14 +108,13 @@ public class CTERASession extends DAVSession {
     private PublicInfo getPublicInfo() {
         final HttpGet request = new HttpGet("/ServicesPortal/public/publicInfo?format=jsonext");
         try {
-            final PublicInfo info = client.execute(request, new AbstractResponseHandler<PublicInfo>() {
+            return client.execute(request, new AbstractResponseHandler<PublicInfo>() {
                 @Override
                 public PublicInfo handleEntity(final HttpEntity entity) throws IOException {
                     ObjectMapper mapper = new ObjectMapper();
                     return mapper.readValue(entity.getContent(), PublicInfo.class);
                 }
             });
-            return info;
         }
         catch(IOException e) {
             //TODO
