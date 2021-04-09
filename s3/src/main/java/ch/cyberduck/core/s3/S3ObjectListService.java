@@ -47,15 +47,15 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
     private final Preferences preferences
         = PreferencesFactory.get();
 
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final S3Session session;
     private final S3AttributesFinderFeature attributes;
 
     public S3ObjectListService(final S3Session session) {
+        super(session);
         this.session = session;
         this.attributes = new S3AttributesFinderFeature(session);
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

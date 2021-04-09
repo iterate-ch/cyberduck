@@ -40,17 +40,15 @@ import com.google.api.services.storage.model.StorageObject;
 public class GoogleStorageObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(GoogleStorageObjectListService.class);
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
+    private final Preferences preferences = PreferencesFactory.get();
     private final GoogleStorageSession session;
     private final GoogleStorageAttributesFinderFeature attributes;
-    private final PathContainerService containerService
-        = new GoogleStoragePathContainerService();
+    private final PathContainerService containerService;
 
     public GoogleStorageObjectListService(final GoogleStorageSession session) {
         this.session = session;
         this.attributes = new GoogleStorageAttributesFinderFeature(session);
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

@@ -43,7 +43,7 @@ public class LocalSymlinkFeatureTest {
         assumeTrue(session.isPosixFilesystem());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path workdir = new LocalHomeFinderFeature(session).find();
+        final Path workdir = new LocalHomeFinderFeature().find();
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(target, new TransferStatus());
         final Path link = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));

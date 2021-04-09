@@ -16,7 +16,6 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -33,11 +32,9 @@ import com.google.api.services.storage.model.Buckets;
 
 public class GoogleStorageBucketListService implements ListService {
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
+    private final Preferences preferences = PreferencesFactory.get();
     private final GoogleStorageSession session;
-    private GoogleStorageAttributesFinderFeature attributes;
+    private final GoogleStorageAttributesFinderFeature attributes;
 
     public GoogleStorageBucketListService(final GoogleStorageSession session) {
         this.session = session;

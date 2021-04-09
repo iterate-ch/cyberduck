@@ -39,7 +39,7 @@ public class MantaListServiceTest extends AbstractMantaTest {
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolder() throws Exception {
         new MantaListService(session).list(new Path(
-            new MantaHomeFinderFeature(session).find(), "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            new MantaHomeFinderFeature(session.getHost()).find(), "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
     @Test

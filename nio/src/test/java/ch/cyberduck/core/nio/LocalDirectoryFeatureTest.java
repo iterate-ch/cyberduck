@@ -42,7 +42,7 @@ public class LocalDirectoryFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path folder = new Path(new LocalHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path folder = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new LocalDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         assertTrue(Files.exists(session.toPath(folder)));
         new LocalDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -54,7 +54,7 @@ public class LocalDirectoryFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path folder = new Path(new LocalHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path folder = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new LocalDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         new LocalDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         new LocalDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());

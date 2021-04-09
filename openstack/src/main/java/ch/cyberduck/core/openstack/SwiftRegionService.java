@@ -17,6 +17,7 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -34,7 +35,7 @@ public class SwiftRegionService {
     private final SwiftSession session;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new DefaultPathContainerService();
 
     private final SwiftLocationFeature location;
 

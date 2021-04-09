@@ -59,9 +59,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
     private final Preferences preferences
         = PreferencesFactory.get();
 
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final S3Session session;
     private final Integer concurrency;
     private final boolean references;
@@ -80,9 +78,11 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
      * @param references  Set references of previous versions in file attributes
      */
     public S3VersionedObjectListService(final S3Session session, final Integer concurrency, final boolean references) {
+        super(session);
         this.session = session;
         this.concurrency = concurrency;
         this.references = references;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

@@ -184,9 +184,6 @@ public class SwiftSession extends HttpSession<Client> {
         if(type == AttributesFinder.class) {
             return (T) new SwiftAttributesFinderFeature(this, regionService);
         }
-        if(type == Home.class) {
-            return (T) new SwiftHomeFinderService(this);
-        }
         if(type == Scheduler.class) {
             return (T) new DelegatingSchedulerFeature(
                 new SwiftAccountLoader(this) {

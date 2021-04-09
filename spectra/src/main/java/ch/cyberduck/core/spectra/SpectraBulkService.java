@@ -31,7 +31,6 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
-import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -78,9 +77,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
 
     private final SpectraSession session;
     private Delete delete;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
+    private final PathContainerService containerService;
 
     private static final String REQUEST_PARAMETER_JOBID_IDENTIFIER = "job";
     private static final String REQUEST_PARAMETER_OFFSET = "offset";
@@ -88,6 +85,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     public SpectraBulkService(final SpectraSession session) {
         this.session = session;
         this.delete = new SpectraDeleteFeature(session);
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

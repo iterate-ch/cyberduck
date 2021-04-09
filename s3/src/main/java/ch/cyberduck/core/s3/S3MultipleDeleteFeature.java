@@ -46,12 +46,8 @@ public class S3MultipleDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(S3MultipleDeleteFeature.class);
 
     private final S3Session session;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final S3MultipartService multipartService;
-
     private final Versioning versioningService;
 
     public S3MultipleDeleteFeature(final S3Session session) {
@@ -62,6 +58,7 @@ public class S3MultipleDeleteFeature implements Delete {
         this.session = session;
         this.multipartService = multipartService;
         this.versioningService = session.getFeature(Versioning.class);
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {

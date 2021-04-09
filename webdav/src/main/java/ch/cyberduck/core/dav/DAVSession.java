@@ -49,6 +49,8 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -184,7 +186,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             return;
         }
         try {
-            final Path home = new DefaultHomeFinderService(host).find();
+            final Path home = new DefaultHomeFinderService(this).find();
             try {
                 client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new ValidatingResponseHandler<Void>() {
                     @Override
@@ -259,7 +261,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     public boolean alert(final ConnectionCallback callback) throws BackgroundException {
         if(super.alert(callback)) {
             // Propose protocol change if HEAD request redirects to HTTPS
-            final Path home = new DefaultHomeFinderService(host).find();
+            final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
             try {
                 final RequestConfig context = client.context().getRequestConfig();
                 final HttpHead request = new HttpHead(new DAVPathEncoder().encode(home));

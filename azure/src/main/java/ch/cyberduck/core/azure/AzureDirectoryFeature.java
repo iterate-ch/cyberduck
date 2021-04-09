@@ -18,6 +18,7 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -43,7 +44,7 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
 public class AzureDirectoryFeature implements Directory<Void> {
 
     private final PathContainerService containerService
-        = new AzurePathContainerService();
+        = new DirectoryDelimiterPathContainerService();
 
     private final AzureSession session;
     private final OperationContext context;

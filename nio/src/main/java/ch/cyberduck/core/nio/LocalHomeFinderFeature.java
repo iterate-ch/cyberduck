@@ -18,26 +18,17 @@ package ch.cyberduck.core.nio;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.AbstractHomeFeature;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
 
-public class LocalHomeFinderFeature extends DefaultHomeFinderService {
-
-    public LocalHomeFinderFeature(final LocalSession session) {
-        super(session.getHost());
-    }
+public class LocalHomeFinderFeature extends AbstractHomeFeature {
 
     @Override
     public Path find() throws BackgroundException {
-        final Path directory = super.find();
-        if(directory == DEFAULT_HOME) {
-            final String home = LocalFactory.get().getAbsolute();
-            return this.toPath(home);
-        }
-        return directory;
+        return this.toPath(LocalFactory.get().getAbsolute());
     }
 
     protected Path toPath(final String home) {

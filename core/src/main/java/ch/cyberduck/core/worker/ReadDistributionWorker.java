@@ -20,6 +20,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -36,9 +37,7 @@ public class ReadDistributionWorker extends Worker<Distribution> {
      * Selected files.
      */
     private final List<Path> files;
-
     private final LoginCallback prompt;
-
     private final Distribution.Method method;
 
     public ReadDistributionWorker(final List<Path> files, final LoginCallback prompt, final Distribution.Method method) {
@@ -50,14 +49,15 @@ public class ReadDistributionWorker extends Worker<Distribution> {
     @Override
     public Distribution run(final Session<?> session) throws BackgroundException {
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
-        for(Path file : this.getContainers(files)) {
+        final PathContainerService container = session.getFeature(PathContainerService.class);
+        for(Path file : this.getContainers(container, files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
             final Distribution distribution = cdn.read(file, method, prompt);
             if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
                 // Make sure container items are cached for default root object.
-                distribution.setRootDocuments(session.getFeature(ListService.class).list(containerService.getContainer(file), new DisabledListProgressListener()).toList());
+                distribution.setRootDocuments(session.getFeature(ListService.class).list(container.getContainer(file), new DisabledListProgressListener()).toList());
             }
             return distribution;
         }

@@ -36,12 +36,11 @@ public class GoogleStorageMetadataFeature implements Headers {
     private static final Logger log = Logger.getLogger(GoogleStorageMetadataFeature.class);
 
     private final GoogleStorageSession session;
-
-    private final PathContainerService containerService
-        = new GoogleStoragePathContainerService();
+    private final PathContainerService containerService;
 
     public GoogleStorageMetadataFeature(final GoogleStorageSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

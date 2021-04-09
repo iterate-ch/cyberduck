@@ -27,15 +27,14 @@ import java.util.Collections;
 
 public class GoogleStorageMoveFeature implements Move {
 
-    private final PathContainerService containerService
-        = new GoogleStoragePathContainerService();
-
+    private final PathContainerService containerService;
     private final GoogleStorageSession session;
 
     private Delete delete;
 
     public GoogleStorageMoveFeature(final GoogleStorageSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
         this.delete = new GoogleStorageDeleteFeature(session);
     }
 

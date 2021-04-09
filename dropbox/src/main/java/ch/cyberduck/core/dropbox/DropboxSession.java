@@ -26,7 +26,20 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Lock;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Search;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
@@ -113,9 +126,6 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(Class<T> type) {
-        if(type == Home.class) {
-            return (T) new DropboxHomeFinderFeature(this);
-        }
         if(type == ListService.class) {
             return PreferencesFactory.get().getBoolean("dropbox.business.enable") ?
                 (T) new DropboxRootListService(this) : (T) new DropboxListService(this);

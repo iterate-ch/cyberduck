@@ -18,13 +18,13 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 public class HomeFinderWorker extends Worker<Path> {
 
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
-        return session.getFeature(Home.class).find();
+        return new DefaultHomeFinderService(session).find();
     }
 
     @Override

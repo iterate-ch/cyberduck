@@ -104,7 +104,7 @@ public class OneDriveSession extends GraphSession {
             return (T) new OneDriveUrlProvider();
         }
         if(type == Home.class) {
-            return (T) new OneDriveHomeFinderService(this);
+            return (T) new OneDriveHomeFinderService();
         }
         if(type == Lock.class) {
             // this is a hack. Graph creationType can be present, but `null`, which is totally valid.

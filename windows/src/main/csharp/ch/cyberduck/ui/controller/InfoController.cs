@@ -65,7 +65,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly BrowserController _controller;
         private readonly FileDescriptor _descriptor = FileDescriptorFactory.get();
         private readonly LoginCallback _prompt;
-        private readonly PathContainerService containerService = new PathContainerService();
+        private readonly PathContainerService containerService = new DefaultPathContainerService();
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
         private IList<Path> _files;
         private IList<KeyValuePair<string, string>> _lifecycleDeletePeriods;

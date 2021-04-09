@@ -31,9 +31,23 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -160,7 +174,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         }
         // Fetch reference for directory to check login credentials
         try {
-            this.getFeature(ListService.class).list(new AzureHomeFinderService(this).find(), new DisabledListProgressListener() {
+            this.getFeature(ListService.class).list(new DefaultHomeFinderService(this).find(), new DisabledListProgressListener() {
                 @Override
                 public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
                     throw new ListCanceledException(list);
@@ -209,9 +223,6 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         }
         if(type == Logging.class) {
             return (T) new AzureLoggingFeature(this, context);
-        }
-        if(type == Home.class) {
-            return (T) new AzureHomeFinderService(this);
         }
         if(type == Move.class) {
             return (T) new AzureMoveFeature(this, context);

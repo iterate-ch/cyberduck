@@ -15,6 +15,8 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -35,6 +37,7 @@ import org.junit.experimental.categories.Category;
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -60,7 +63,9 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
     public void testFindRoot() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
-        assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory))));
+        final PathAttributes attributes = f.find(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)));
+        assertNotEquals(PathAttributes.EMPTY, attributes);
+        assertNotEquals(Acl.EMPTY, attributes.getAcl());
     }
 
     @Test

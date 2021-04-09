@@ -158,6 +158,11 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
         this.type = type;
     }
 
+    public Path withType(final EnumSet<Type> type) {
+        this.setType(type);
+        return this;
+    }
+
     public boolean isVolume() {
         return type.contains(Type.volume);
     }

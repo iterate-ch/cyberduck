@@ -57,7 +57,7 @@ public class LocalWriteFeatureTest {
         if(session.isPosixFilesystem()) {
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-            final Path workdir = new LocalHomeFinderFeature(session).find();
+            final Path workdir = new LocalHomeFinderFeature().find();
             final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
             new LocalTouchFeature(session).touch(target, new TransferStatus());
             assertTrue(new LocalFindFeature(session).find(target));
@@ -98,7 +98,7 @@ public class LocalWriteFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path workdir = new LocalHomeFinderFeature(session).find();
+        final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir.getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalWriteFeature(session).write(test, new TransferStatus(), new DisabledConnectionCallback());
     }
@@ -108,7 +108,7 @@ public class LocalWriteFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path workdir = new LocalHomeFinderFeature(session).find();
+        final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(new LocalWriteFeature(session).append(test, 0L, PathCache.empty()).append);
         new LocalTouchFeature(session).touch(test, new TransferStatus());
@@ -122,7 +122,7 @@ public class LocalWriteFeatureTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final LocalWriteFeature feature = new LocalWriteFeature(session);
-        final Path workdir = new LocalHomeFinderFeature(session).find();
+        final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(64000);
         {
@@ -160,7 +160,7 @@ public class LocalWriteFeatureTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final LocalWriteFeature feature = new LocalWriteFeature(session);
-        final Path workdir = new LocalHomeFinderFeature(session).find();
+        final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(2048);
         {
@@ -201,7 +201,7 @@ public class LocalWriteFeatureTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final LocalWriteFeature feature = new LocalWriteFeature(session);
-        final Path workdir = new LocalHomeFinderFeature(session).find();
+        final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, String.format("~$%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(2048);
         final TransferStatus status = new TransferStatus().length(content.length);

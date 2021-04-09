@@ -51,7 +51,7 @@ public class LocalFindFeatureTest {
         assumeTrue(session.isPosixFilesystem());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new LocalHomeFinderFeature(session).find();
+        final Path home = new LocalHomeFinderFeature().find();
         final Path file = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.symboliclink));
         // Symlink to non existing target
         new LocalSymlinkFeature(session).symlink(file, UUID.randomUUID().toString());
@@ -64,7 +64,7 @@ public class LocalFindFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new LocalHomeFinderFeature(session).find();
+        final Path home = new LocalHomeFinderFeature().find();
         final Path file = new LocalTouchFeature(session).touch(new Path(home, StringUtils.lowerCase(new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new LocalFindFeature(session).find(file));
         assertFalse(new LocalFindFeature(session).find(new Path(home, StringUtils.capitalize(file.getName()), EnumSet.of(Path.Type.file))));
@@ -76,7 +76,7 @@ public class LocalFindFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new LocalHomeFinderFeature(session).find();
+        final Path home = new LocalHomeFinderFeature().find();
         assertTrue(new LocalFindFeature(session).find(home));
         session.close();
     }

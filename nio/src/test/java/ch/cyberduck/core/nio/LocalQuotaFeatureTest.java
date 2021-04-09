@@ -34,7 +34,7 @@ public class LocalQuotaFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new LocalHomeFinderFeature(session).find();
+        final Path home = new LocalHomeFinderFeature().find();
         final Quota.Space quota = new LocalQuotaFeature(session).get();
         assertNotNull(quota.used);
         assertNotNull(quota.available);

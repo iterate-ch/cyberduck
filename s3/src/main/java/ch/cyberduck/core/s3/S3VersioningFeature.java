@@ -43,10 +43,7 @@ public class S3VersioningFeature implements Versioning {
     private static final Logger log = Logger.getLogger(S3VersioningFeature.class);
 
     private final S3Session session;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final S3AccessControlListFeature accessControlListFeature;
 
     private LRUCache<Path, VersioningConfiguration> cache
@@ -55,6 +52,7 @@ public class S3VersioningFeature implements Versioning {
     public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
         this.accessControlListFeature = accessControlListFeature;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

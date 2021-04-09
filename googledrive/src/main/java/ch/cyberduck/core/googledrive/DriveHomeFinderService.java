@@ -19,11 +19,12 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.shared.AbstractHomeFeature;
 
 import java.util.EnumSet;
 
-public class DriveHomeFinderService extends DefaultHomeFinderService {
+public class DriveHomeFinderService extends AbstractHomeFeature {
 
     public static final String ROOT_FOLDER_ID = "root";
 
@@ -39,7 +40,8 @@ public class DriveHomeFinderService extends DefaultHomeFinderService {
         = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Shared Drives", "Google Drive")),
         EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
 
-    public DriveHomeFinderService(final DriveSession session) {
-        super(session.getHost());
+    @Override
+    public Path find() throws BackgroundException {
+        return MYDRIVE_FOLDER;
     }
 }

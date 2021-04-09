@@ -43,7 +43,7 @@ public class LocalAttributesFinderFeatureTest {
         if(session.isPosixFilesystem()) {
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-            final Path file = new Path(new LocalHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+            final Path file = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
             new LocalTouchFeature(session).touch(file, new TransferStatus());
             final java.nio.file.Path local = session.toPath(file);
             final PosixFileAttributes posixAttributes = Files.readAttributes(local, PosixFileAttributes.class);

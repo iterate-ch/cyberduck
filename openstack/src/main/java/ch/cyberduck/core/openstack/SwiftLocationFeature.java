@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -49,10 +50,7 @@ public class SwiftLocationFeature implements Location {
     private static final Logger log = Logger.getLogger(SwiftLocationFeature.class);
 
     private final SwiftSession session;
-
-    private final PathContainerService containerService
-        = new PathContainerService();
-
+    private final PathContainerService containerService = new DefaultPathContainerService();
     private final Map<Path, Name> cache = new HashMap<>();
 
     public SwiftLocationFeature(final SwiftSession session) {

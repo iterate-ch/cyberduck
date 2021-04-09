@@ -37,13 +37,12 @@ import com.google.api.services.storage.model.Bucket;
 public class GoogleStorageLoggingFeature implements Logging, DistributionLogging {
     private static final Logger log = Logger.getLogger(GoogleStorageLoggingFeature.class);
 
-    private final PathContainerService containerService
-        = new GoogleStoragePathContainerService();
-
-    final GoogleStorageSession session;
+    private final PathContainerService containerService;
+    private final GoogleStorageSession session;
 
     public GoogleStorageLoggingFeature(final GoogleStorageSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

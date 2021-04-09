@@ -37,15 +37,12 @@ public class S3BucketCreateService {
     private static final Logger log = Logger.getLogger(S3BucketCreateService.class);
 
     private final S3Session session;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
-    private final Preferences preferences
-        = PreferencesFactory.get();
+    private final PathContainerService containerService;
+    private final Preferences preferences = PreferencesFactory.get();
 
     public S3BucketCreateService(final S3Session session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     public void create(final Path bucket, final String region) throws BackgroundException {

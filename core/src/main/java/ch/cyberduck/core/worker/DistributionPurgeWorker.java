@@ -18,6 +18,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -50,7 +51,8 @@ public class DistributionPurgeWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         final Purge feature = cdn.getFeature(Purge.class, method);
-        for(Path file : this.getContainers(files)) {
+        final PathContainerService container = session.getFeature(PathContainerService.class);
+        for(Path file : this.getContainers(container, files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }

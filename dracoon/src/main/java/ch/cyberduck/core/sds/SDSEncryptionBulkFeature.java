@@ -17,9 +17,9 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
@@ -53,7 +53,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
             default: {
                 final Map<Path, Boolean> rooms = this.getRoomEncryptionStatus(files);
                 for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-                    final Path container = new PathContainerService().getContainer(entry.getKey().remote);
+                    final Path container = new DefaultPathContainerService().getContainer(entry.getKey().remote);
                     if(rooms.get(container)) {
                         final TransferStatus status = entry.getValue();
                         status.setFilekey(nodeid.getFileKey());
@@ -67,7 +67,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
     private Map<Path, Boolean> getRoomEncryptionStatus(final Map<TransferItem, TransferStatus> files) {
         final Map<Path, Boolean> rooms = new HashMap<>();
         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-            final Path container = new PathContainerService().getContainer(entry.getKey().remote);
+            final Path container = new DefaultPathContainerService().getContainer(entry.getKey().remote);
             if(rooms.containsKey(container)) {
                 continue;
             }
@@ -88,7 +88,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                         final Map<Path, Boolean> rooms = this.getRoomEncryptionStatus(files);
                         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
                             final Path file = entry.getKey().remote;
-                            final Path container = new PathContainerService().getContainer(file);
+                            final Path container = new DefaultPathContainerService().getContainer(file);
                             if(rooms.get(container)) {
                                 final TransferStatus status = entry.getValue();
                                 final VersionId version = status.getVersion();

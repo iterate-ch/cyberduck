@@ -15,15 +15,15 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.dropbox.core.v2.common.PathRoot;
 
-public class DropboxPathContainerService extends PathContainerService {
+public class DropboxPathContainerService extends DefaultPathContainerService {
 
     private boolean useNamespace = false;
 

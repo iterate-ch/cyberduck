@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
@@ -89,7 +90,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
             new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
         final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
-            new Path(new S3HomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         try {
             new S3ObjectListService(session).list(new Path(directory, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         }
@@ -144,9 +145,9 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         }, new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
-        assertEquals(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory)), new S3HomeFinderService(session).find());
+        assertEquals(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory)), new DefaultHomeFinderService(session).find());
         final AttributedList<Path> list
-            = new S3ObjectListService(session).list(new S3HomeFinderService(session).find(), new DisabledListProgressListener());
+            = new S3ObjectListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("/dist.springframework.org/release/SWF", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         session.close();

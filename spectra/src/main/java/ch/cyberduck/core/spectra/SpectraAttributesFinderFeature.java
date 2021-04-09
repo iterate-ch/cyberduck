@@ -23,7 +23,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.s3.S3PathContainerService;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
@@ -42,12 +41,11 @@ public class SpectraAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(SpectraAttributesFinderFeature.class);
 
     private final SpectraSession session;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
+    private final PathContainerService containerService;
 
     public SpectraAttributesFinderFeature(final SpectraSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

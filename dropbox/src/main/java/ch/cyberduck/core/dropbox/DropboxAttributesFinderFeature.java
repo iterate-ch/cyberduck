@@ -21,13 +21,18 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
+import org.apache.log4j.Logger;
+
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.Metadata;
+import com.dropbox.core.v2.users.DbxUserUsersRequests;
+import com.dropbox.core.v2.users.FullAccount;
 
 public class DropboxAttributesFinderFeature implements AttributesFinder {
+    private static final Logger log = Logger.getLogger(DropboxAttributesFinderFeature.class);
 
     private final DropboxSession session;
 
@@ -41,6 +46,22 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
+            if(file.isRoot()) {
+                try {
+                    // Retrieve he namespace ID for a users home folder and team root folder
+                    final FullAccount account = new DbxUserUsersRequests(session.getClient()).getCurrentAccount();
+                    switch(account.getAccountType()) {
+                        case BUSINESS:
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Set root namespace %s", account.getRootInfo().getRootNamespaceId()));
+                            }
+                            return new PathAttributes().withFileId(account.getRootInfo().getRootNamespaceId());
+                    }
+                }
+                catch(DbxException e) {
+                    throw new DropboxExceptionMappingService().map(e);
+                }
+            }
             final Metadata metadata = new DbxUserFilesRequests(session.getClient(file)).getMetadata(containerService.getKey(file));
             return this.toAttributes(metadata);
         }

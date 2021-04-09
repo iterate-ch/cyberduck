@@ -16,6 +16,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -27,7 +28,7 @@ import java.util.List;
 public class SwiftSegmentCopyService implements Copy {
 
     private final PathContainerService containerService
-        = new PathContainerService();
+        = new DefaultPathContainerService();
 
     private final SwiftSession session;
     private final SwiftRegionService regionService;

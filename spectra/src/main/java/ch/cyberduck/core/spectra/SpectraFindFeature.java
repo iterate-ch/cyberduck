@@ -20,7 +20,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.s3.S3PathContainerService;
 
 import org.apache.log4j.Logger;
 
@@ -37,12 +36,11 @@ public class SpectraFindFeature implements Find {
     private static final Logger log = Logger.getLogger(SpectraFindFeature.class);
 
     private final SpectraSession session;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
+    private final PathContainerService containerService;
 
     public SpectraFindFeature(final SpectraSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

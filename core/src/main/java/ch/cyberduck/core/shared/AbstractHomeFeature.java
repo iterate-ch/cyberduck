@@ -1,8 +1,8 @@
-package ch.cyberduck.core.azure;
+package ch.cyberduck.core.shared;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.io/
+ * Copyright (c) 2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,18 +15,11 @@ package ch.cyberduck.core.azure;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.io
+ * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.shared.PathContainerHomeFinderService;
+import ch.cyberduck.core.features.Home;
 
-public class AzureHomeFinderService extends PathContainerHomeFinderService {
+public abstract class AbstractHomeFeature implements Home {
 
-    private final PathContainerService containerService
-        = new AzurePathContainerService();
-
-    public AzureHomeFinderService(final AzureSession session) {
-        super(session.getHost(), new AzurePathContainerService());
-    }
 }

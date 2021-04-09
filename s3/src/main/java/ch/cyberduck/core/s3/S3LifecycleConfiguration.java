@@ -36,12 +36,11 @@ public class S3LifecycleConfiguration implements Lifecycle {
     private static final Logger log = Logger.getLogger(S3LifecycleConfiguration.class);
 
     private final S3Session session;
-
-    private final PathContainerService containerService
-            = new S3PathContainerService();
+    private final PathContainerService containerService;
 
     public S3LifecycleConfiguration(final S3Session session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

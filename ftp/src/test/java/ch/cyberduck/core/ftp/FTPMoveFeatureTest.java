@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -54,7 +54,7 @@ public class FTPMoveFeatureTest extends AbstractFTPTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testMoveOverride() throws Exception {
-        final DefaultHomeFinderService workdir = new FTPWorkdirService(session);
+        final Home workdir = new FTPWorkdirService(session);
         final Path test = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -67,7 +67,7 @@ public class FTPMoveFeatureTest extends AbstractFTPTest {
 
     @Test
     public void testMoveNotFound() throws Exception {
-        final DefaultHomeFinderService workdir = new FTPWorkdirService(session);
+        final Home workdir = new FTPWorkdirService(session);
         final Path test = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         try {
             new FTPMoveFeature(session).move(test, new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());

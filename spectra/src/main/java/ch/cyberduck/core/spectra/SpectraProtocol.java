@@ -15,7 +15,9 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.s3.S3Protocol;
 
@@ -78,5 +80,13 @@ public class SpectraProtocol extends AbstractProtocol {
     @Override
     public String getAuthorization() {
         return S3Protocol.AuthenticationHeaderSignatureVersion.AWS2.name();
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == PathContainerService.class) {
+            return (T) new DirectoryDelimiterPathContainerService();
+        }
+        return super.getFeature(type);
     }
 }

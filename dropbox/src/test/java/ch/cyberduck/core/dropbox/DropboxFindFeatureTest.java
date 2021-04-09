@@ -20,6 +20,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -42,20 +43,20 @@ public class DropboxFindFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testFindHome() throws Exception {
-        assertTrue(new DropboxFindFeature(session).find(new DropboxHomeFinderFeature(session).find()));
+        assertTrue(new DropboxFindFeature(session).find(new DefaultHomeFinderService(session).find()));
     }
 
     @Test
     public void testFindDirectory() throws Exception {
         final Path folder = new DropboxDirectoryFeature(session).mkdir(
-            new Path(new DropboxHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(folder));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testFindFile() throws Exception {
-        final Path file = new Path(new DropboxHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -43,13 +43,12 @@ import com.google.api.services.storage.model.StorageObject;
 public class GoogleStorageAccessControlListFeature extends DefaultAclFeature implements AclPermission {
     private static final Logger log = Logger.getLogger(GoogleStorageAccessControlListFeature.class);
 
-    private final PathContainerService containerService
-        = new GoogleStoragePathContainerService();
-
+    private final PathContainerService containerService;
     private final GoogleStorageSession session;
 
     public GoogleStorageAccessControlListFeature(final GoogleStorageSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

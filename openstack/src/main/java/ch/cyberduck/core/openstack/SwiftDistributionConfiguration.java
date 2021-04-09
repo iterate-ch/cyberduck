@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
@@ -53,9 +54,7 @@ import ch.iterate.openstack.swift.model.ContainerMetadata;
 public class SwiftDistributionConfiguration implements DistributionConfiguration, Index, DistributionLogging {
     private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
 
-    private final PathContainerService containerService
-        = new PathContainerService();
-
+    private final PathContainerService containerService = new DefaultPathContainerService();
     private final SwiftSession session;
     private final Map<Path, Distribution> distributions;
     private final SwiftRegionService regionService;

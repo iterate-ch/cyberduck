@@ -33,8 +33,8 @@ public class LocalHomeFinderFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(new LocalHomeFinderFeature(session).find().getAbsolute().endsWith(
-                System.getProperty("user.home").replaceAll("\\\\", "/")));
+        assertTrue(new LocalHomeFinderFeature().find().getAbsolute().endsWith(
+            System.getProperty("user.home").replaceAll("\\\\", "/")));
         session.close();
     }
 
@@ -43,7 +43,7 @@ public class LocalHomeFinderFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertEquals("/C:/Users/Default", new LocalHomeFinderFeature(session).toPath("C:\\Users\\Default").getAbsolute());
+        assertEquals("/C:/Users/Default", new LocalHomeFinderFeature().toPath("C:\\Users\\Default").getAbsolute());
         session.close();
     }
 }

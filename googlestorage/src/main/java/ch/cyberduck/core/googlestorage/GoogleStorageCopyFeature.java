@@ -33,13 +33,12 @@ import com.google.api.services.storage.model.StorageObject;
 public class GoogleStorageCopyFeature implements Copy {
     private static final Logger log = Logger.getLogger(GoogleStorageMoveFeature.class);
 
-    private final PathContainerService containerService
-        = new GoogleStoragePathContainerService();
-
+    private final PathContainerService containerService;
     private final GoogleStorageSession session;
 
     public GoogleStorageCopyFeature(final GoogleStorageSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

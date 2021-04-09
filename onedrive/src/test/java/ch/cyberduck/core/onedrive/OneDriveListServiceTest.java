@@ -39,6 +39,6 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
         for(Path f : list) {
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
         }
-        assertTrue(list.contains(new OneDriveHomeFinderService(session).find()));
+        assertTrue(list.contains(new OneDriveHomeFinderService().find()));
     }
 }

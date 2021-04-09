@@ -16,6 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
@@ -71,5 +72,13 @@ public class B2Protocol extends AbstractProtocol {
     @Override
     public Comparator<String> getListComparator() {
         return new DefaultLexicographicOrderComparator();
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == PathContainerService.class) {
+            return (T) new B2PathContainerService();
+        }
+        return super.getFeature(type);
     }
 }

@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -42,7 +43,7 @@ public class GoogleStorageLifecycleFeatureTest extends AbstractGoogleStorageTest
 
     @Test
     public void testSetConfiguration() throws Exception {
-        final Path test = new Path(new GoogleStorageHomeFinderService(session).find(), new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         final GoogleStorageLifecycleFeature feature = new GoogleStorageLifecycleFeature(session);
         assertEquals(LifecycleConfiguration.empty(), feature.getConfiguration(test));

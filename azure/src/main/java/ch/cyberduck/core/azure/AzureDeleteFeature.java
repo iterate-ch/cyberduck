@@ -18,6 +18,7 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -44,7 +45,7 @@ public class AzureDeleteFeature implements Delete {
     private final OperationContext context;
 
     private final PathContainerService containerService
-            = new AzurePathContainerService();
+        = new DirectoryDelimiterPathContainerService();
 
     public AzureDeleteFeature(final AzureSession session, final OperationContext context) {
         this.session = session;

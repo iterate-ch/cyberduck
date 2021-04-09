@@ -23,6 +23,7 @@ import ch.cyberduck.core.unicode.UnicodeNormalizer;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.EnumSet;
 import java.util.List;
 
 public final class PathNormalizer {
@@ -172,5 +173,34 @@ public final class PathNormalizer {
             }
         }
         return normalized;
+    }
+
+    /**
+     * Compose path name
+     *
+     * @param root Parent directory
+     * @param path Filename or path relative to workdir
+     * @return Composed path
+     */
+    public static Path compose(final Path root, final String path) {
+        if(StringUtils.startsWith(path, String.valueOf(Path.DELIMITER))) {
+            // Mount absolute path
+            final String normalized = normalize(StringUtils.replace(path, "\\", String.valueOf(Path.DELIMITER)), true);
+            return new Path(normalized, normalized.equals(String.valueOf(Path.DELIMITER)) ?
+                EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
+        }
+        else {
+            final String normalized;
+            if(StringUtils.startsWith(path, Path.HOME)) {
+                // Relative path to the home directory
+                normalized = normalize(StringUtils.removeStart(StringUtils.removeStart(
+                    StringUtils.replace(path, "\\", String.valueOf(Path.DELIMITER)), Path.HOME), String.valueOf(Path.DELIMITER)), false);
+            }
+            else {
+                // Relative path
+                normalized = normalize(StringUtils.replace(path, "\\", String.valueOf(Path.DELIMITER)), false);
+            }
+            return new Path(String.format("%s%s%s", root.getAbsolute(), Path.DELIMITER, normalized), EnumSet.of(Path.Type.directory));
+        }
     }
 }

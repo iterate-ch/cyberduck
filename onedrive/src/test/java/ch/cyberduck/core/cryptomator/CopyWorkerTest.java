@@ -77,7 +77,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testCopyFile() throws Exception {
-        final Path home = new OneDriveHomeFinderService(session).find();
+        final Path home = new OneDriveHomeFinderService().find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -103,7 +103,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testCopyToDifferentFolderCryptomator() throws Exception {
-        final Path home = new OneDriveHomeFinderService(session).find();
+        final Path home = new OneDriveHomeFinderService().find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path targetFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -127,7 +127,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
     @Test
     public void testCopyToDifferentFolderLongFilenameCryptomator() throws Exception {
         assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
-        final Path home = new OneDriveHomeFinderService(session).find();
+        final Path home = new OneDriveHomeFinderService().find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
         final Path targetFolder = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.directory));
@@ -150,7 +150,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testCopyFolder() throws Exception {
-        final Path home = new OneDriveHomeFinderService(session).find();
+        final Path home = new OneDriveHomeFinderService().find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -181,7 +181,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testCopyFileIntoVault() throws Exception {
-        final Path home = new OneDriveHomeFinderService(session).find();
+        final Path home = new OneDriveHomeFinderService().find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final GraphWriteFeature write = new GraphWriteFeature(session, new GraphFileIdProvider(session));
@@ -211,7 +211,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testCopyDirectoryIntoVault() throws Exception {
-        final Path home = new OneDriveHomeFinderService(session).find();
+        final Path home = new OneDriveHomeFinderService().find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(cleartextFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -239,7 +239,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testCopyFileOutsideVault() throws Exception {
-        final Path home = new OneDriveHomeFinderService(session).find();
+        final Path home = new OneDriveHomeFinderService().find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(clearFolder, null, new TransferStatus());
@@ -266,7 +266,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testCopyDirectoryOutsideVault() throws Exception {
-        final Path home = new OneDriveHomeFinderService(session).find();
+        final Path home = new OneDriveHomeFinderService().find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

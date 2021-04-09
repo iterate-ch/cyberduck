@@ -37,20 +37,17 @@ public class S3LocationFeature implements Location {
     private static final Logger log = Logger.getLogger(S3LocationFeature.class);
 
     private final S3Session session;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
-    private RegionEndpointCache cache
-        = new RegionEndpointCache();
+    private final PathContainerService containerService;
+    private final RegionEndpointCache cache;
 
     public S3LocationFeature(final S3Session session) {
-        this.session = session;
+        this(session, new RegionEndpointCache());
     }
 
     public S3LocationFeature(final S3Session session, final RegionEndpointCache cache) {
         this.session = session;
         this.cache = cache;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

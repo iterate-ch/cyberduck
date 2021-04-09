@@ -19,6 +19,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -60,7 +61,7 @@ public class AzureAclPermissionFeature extends DefaultAclFeature implements AclP
     private final OperationContext context;
 
     private final PathContainerService containerService
-            = new AzurePathContainerService();
+        = new DirectoryDelimiterPathContainerService();
 
     public AzureAclPermissionFeature(final AzureSession session, final OperationContext context) {
         this.session = session;

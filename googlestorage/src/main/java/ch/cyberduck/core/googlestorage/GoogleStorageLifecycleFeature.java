@@ -36,12 +36,11 @@ public class GoogleStorageLifecycleFeature implements Lifecycle {
     private static final Logger log = Logger.getLogger(GoogleStorageLifecycleFeature.class);
 
     private final GoogleStorageSession session;
-
-    private final PathContainerService containerService
-        = new GoogleStoragePathContainerService();
+    private final PathContainerService containerService;
 
     public GoogleStorageLifecycleFeature(final GoogleStorageSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

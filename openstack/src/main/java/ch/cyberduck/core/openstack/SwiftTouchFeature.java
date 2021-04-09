@@ -20,7 +20,6 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -31,9 +30,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftTouchFeature implements Touch<StorageObject> {
-
-    final PathContainerService containerService
-        = new PathContainerService();
 
     private final SwiftSession session;
     private final SwiftRegionService regionService;

@@ -15,25 +15,21 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.AbstractHomeFeature;
 
-public class MantaHomeFinderFeature extends DefaultHomeFinderService {
+public class MantaHomeFinderFeature extends AbstractHomeFeature {
 
-    private final MantaSession session;
+    private final Host host;
 
-    public MantaHomeFinderFeature(final MantaSession session) {
-        super(session.getHost());
-        this.session = session;
+    public MantaHomeFinderFeature(final Host host) {
+        this.host = host;
     }
 
     @Override
     public Path find() throws BackgroundException {
-        final Path home = super.find();
-        if(home == DEFAULT_HOME) {
-            return new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getNormalizedHomePath();
-        }
-        return home;
+        return new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath()).getNormalizedHomePath();
     }
 }

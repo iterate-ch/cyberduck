@@ -166,9 +166,6 @@ public class DriveSession extends HttpSession<Drive> {
         if(type == PromptUrlProvider.class) {
             return (T) new DriveSharingUrlProvider(this, fileid);
         }
-        if(type == Home.class) {
-            return (T) new DriveHomeFinderService(this);
-        }
         if(type == IdProvider.class) {
             return (T) fileid;
         }

@@ -58,7 +58,7 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
 
     @Test
     public void testListCryptomator() throws Exception {
-        final Path home = new OneDriveHomeFinderService(session).find();
+        final Path home = new OneDriveHomeFinderService().find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -74,7 +74,7 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
     @Test
     public void testListCryptomatorCached() throws Exception {
         final PathCache cache = new PathCache(Integer.MAX_VALUE);
-        final Path home = new OneDriveHomeFinderService(session).find();
+        final Path home = new OneDriveHomeFinderService().find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final ListService listService = session._getFeature(ListService.class);

@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -41,7 +42,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testMoveFile() throws Exception {
-        final Path home = new DropboxHomeFinderFeature(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path file = new DropboxTouchFeature(session).touch(new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(file));
@@ -56,7 +57,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testMoveDirectory() throws Exception {
-        final Path home = new DropboxHomeFinderFeature(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path directory = new DropboxDirectoryFeature(session).mkdir(new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(directory));
         assertTrue(new DefaultFindFeature(session).find(directory));
@@ -70,7 +71,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testMoveToExistingFile() throws Exception {
-        final Path home = new DropboxHomeFinderFeature(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path folder = new DropboxDirectoryFeature(session).mkdir(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));

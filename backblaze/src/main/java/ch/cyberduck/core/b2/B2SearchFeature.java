@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -39,7 +40,7 @@ import synapticloop.b2.response.B2ListFilesResponse;
 public class B2SearchFeature implements Search {
 
     private final PathContainerService containerService
-        = new PathContainerService();
+        = new DefaultPathContainerService();
 
     private final B2Session session;
     private final B2FileidProvider fileid;

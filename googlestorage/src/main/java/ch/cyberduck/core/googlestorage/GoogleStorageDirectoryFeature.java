@@ -38,15 +38,14 @@ public class GoogleStorageDirectoryFeature implements Directory<VersionId> {
 
     private static final String MIMETYPE = "application/x-directory";
 
-    private final PathContainerService containerService
-        = new GoogleStoragePathContainerService();
-
+    private final PathContainerService containerService;
     private final GoogleStorageSession session;
 
     private Write<VersionId> writer;
 
     public GoogleStorageDirectoryFeature(final GoogleStorageSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
         this.writer = new GoogleStorageWriteFeature(session);
     }
 
@@ -58,7 +57,7 @@ public class GoogleStorageDirectoryFeature implements Directory<VersionId> {
                     new Bucket()
                         .setLocation(location)
                         .setStorageClass(status.getStorageClass())
-                        .setName(new GoogleStoragePathContainerService().getContainer(folder).getName())).execute();
+                        .setName(containerService.getContainer(folder).getName())).execute();
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.volume);
                 return new Path(folder.getParent(), folder.getName(), type,

@@ -38,7 +38,7 @@ public class S3StorageClassFeature implements Redundancy {
 
     private final S3Session session;
     private final Preferences preferences = PreferencesFactory.get();
-    private final PathContainerService containerService = new S3PathContainerService();
+    private final PathContainerService containerService;
 
     public static final Set<String> STORAGE_CLASS_LIST = new LinkedHashSet<>(Arrays.asList(
         S3Object.STORAGE_CLASS_STANDARD,
@@ -51,6 +51,7 @@ public class S3StorageClassFeature implements Redundancy {
 
     public S3StorageClassFeature(final S3Session session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

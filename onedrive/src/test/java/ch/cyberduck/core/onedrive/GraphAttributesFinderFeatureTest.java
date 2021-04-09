@@ -43,12 +43,12 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(new Path(new OneDriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+        new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(new Path(new OneDriveHomeFinderService().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
     public void testFindFile() throws Exception {
-        final Path file = new Path(new OneDriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         final PathAttributes attributes = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(file);
         assertNotNull(attributes);
@@ -64,7 +64,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testFindDirectory() throws Exception {
-        final Path file = new Path(new OneDriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(file, null, new TransferStatus());
         final PathAttributes attributes = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(file);
         assertNotNull(attributes);

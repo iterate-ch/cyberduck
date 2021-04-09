@@ -52,10 +52,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(S3AttributesFinderFeature.class);
 
     private final S3Session session;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     /**
      * Lookup previous versions
      */
@@ -68,6 +65,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
     public S3AttributesFinderFeature(final S3Session session, final boolean references) {
         this.session = session;
         this.references = references;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

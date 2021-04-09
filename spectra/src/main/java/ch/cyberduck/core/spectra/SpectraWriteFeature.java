@@ -23,7 +23,6 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.s3.S3DisabledMultipartService;
-import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -35,8 +34,7 @@ import org.jets3t.service.utils.ServiceUtils;
 
 public class SpectraWriteFeature extends S3WriteFeature {
 
-    private final PathContainerService containerService
-        = new S3PathContainerService();
+    private final PathContainerService containerService;
 
     public SpectraWriteFeature(final SpectraSession session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
@@ -44,6 +42,7 @@ public class SpectraWriteFeature extends S3WriteFeature {
 
     public SpectraWriteFeature(final SpectraSession session, final Find finder, final AttributesFinder attributes) {
         super(session, new S3DisabledMultipartService(), finder, attributes);
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     /**

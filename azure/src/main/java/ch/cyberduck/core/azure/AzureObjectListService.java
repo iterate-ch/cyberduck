@@ -19,7 +19,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -56,7 +56,7 @@ public class AzureObjectListService implements ListService {
     private final OperationContext context;
 
     private final PathContainerService containerService
-            = new AzurePathContainerService();
+        = new DirectoryDelimiterPathContainerService();
 
     public AzureObjectListService(final AzureSession session, final OperationContext context) {
         this.session = session;

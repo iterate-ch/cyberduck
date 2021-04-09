@@ -65,10 +65,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
 
     private final S3Session session;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final S3DefaultMultipartService multipartService;
 
     private Write<StorageObject> writer;
@@ -87,6 +84,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         super(writer);
         this.session = session;
         this.multipartService = new S3DefaultMultipartService(session);
+        this.containerService = session.getFeature(PathContainerService.class);
         this.writer = writer;
         this.partsize = partsize;
         this.concurrency = concurrency;

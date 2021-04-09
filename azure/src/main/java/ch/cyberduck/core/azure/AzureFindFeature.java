@@ -18,6 +18,7 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,7 +39,7 @@ public class AzureFindFeature implements Find {
     private final OperationContext context;
 
     private final PathContainerService containerService
-        = new AzurePathContainerService();
+        = new DirectoryDelimiterPathContainerService();
 
     public AzureFindFeature(final AzureSession session, final OperationContext context) {
         this.session = session;

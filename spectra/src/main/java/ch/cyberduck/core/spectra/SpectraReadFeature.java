@@ -19,7 +19,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -36,11 +35,8 @@ import java.util.List;
 
 public class SpectraReadFeature implements Read {
 
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final SpectraSession session;
-
     private final SpectraBulkService bulk;
 
     public SpectraReadFeature(final SpectraSession session) {
@@ -50,6 +46,7 @@ public class SpectraReadFeature implements Read {
     public SpectraReadFeature(final SpectraSession session, final SpectraBulkService bulk) {
         this.session = session;
         this.bulk = bulk;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

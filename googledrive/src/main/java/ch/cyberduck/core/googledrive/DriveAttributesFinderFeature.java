@@ -17,12 +17,12 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -61,7 +61,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
-        if(new PathContainerService().isContainer(file)) {
+        if(new DefaultPathContainerService().isContainer(file)) {
             return PathAttributes.EMPTY;
         }
         final Path query;

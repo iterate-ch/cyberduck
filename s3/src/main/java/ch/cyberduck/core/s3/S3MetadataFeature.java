@@ -43,15 +43,13 @@ public class S3MetadataFeature implements Headers {
     private static final Logger log = Logger.getLogger(S3MetadataFeature.class);
 
     private final S3Session session;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final S3AccessControlListFeature accessControlListFeature;
 
     public S3MetadataFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
         this.accessControlListFeature = accessControlListFeature;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

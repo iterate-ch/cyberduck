@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -45,7 +46,7 @@ public class DropboxListServiceTest extends AbstractDropboxTest {
 
     @Test
     public void testFilenameColon() throws Exception {
-        final Path home = new DropboxHomeFinderFeature(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path file = new DropboxTouchFeature(session).touch(new Path(home, String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path folder = new DropboxDirectoryFeature(session).mkdir(new Path(home, String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final AttributedList<Path> list = new DropboxListService(session).list(home, new DisabledListProgressListener());

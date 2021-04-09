@@ -32,9 +32,7 @@ import org.jets3t.service.utils.ServiceUtils;
 
 public class S3TransferAccelerationService implements TransferAcceleration {
 
-    private final PathContainerService containerService
-            = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final S3Session session;
 
     public static final String S3_ACCELERATE_HOSTNAME = "s3-accelerate.amazonaws.com";
@@ -49,6 +47,7 @@ public class S3TransferAccelerationService implements TransferAcceleration {
     public S3TransferAccelerationService(final S3Session session, final String hostname) {
         this.session = session;
         this.hostname = hostname;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override
