@@ -53,6 +53,7 @@ import org.rococoa.cocoa.foundation.NSSize;
 import java.util.HashMap;
 import java.util.Map;
 
+import static ch.cyberduck.binding.application.NSButton.NSTexturedRoundedBezelStyle;
 import static ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarFactory.BrowserToolbarItem.*;
 
 public class BrowserToolbarFactory extends AbstractToolbarFactory implements ToolbarFactory {
@@ -553,6 +554,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     toolbarMenu.setSubmenu(charsetMenu);
                     item.setMenuFormRepresentation(toolbarMenu);
                     final NSPopUpButton button = NSPopUpButton.buttonWithFrame(new NSRect(120, 26));
+                    button.setBezelStyle(NSTexturedRoundedBezelStyle);
                     button.setImage(encoding.image());
                     button.setMenu(charsetMenu);
                     button.setTarget(controller.id());

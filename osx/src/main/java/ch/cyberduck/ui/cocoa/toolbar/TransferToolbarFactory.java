@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import static ch.cyberduck.binding.application.NSButton.NSTexturedRoundedBezelStyle;
 import static ch.cyberduck.ui.cocoa.toolbar.TransferToolbarFactory.TransferToolbarItem.*;
 
 public class TransferToolbarFactory extends AbstractToolbarFactory implements ToolbarFactory {
@@ -263,6 +264,7 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     toolbarMenu.setSubmenu(bandwidthMenu);
                     item.setMenuFormRepresentation(toolbarMenu);
                     final NSPopUpButton button = NSPopUpButton.buttonWithFrame(new NSRect(52, 26));
+                    button.setBezelStyle(NSTexturedRoundedBezelStyle);
                     button.setImage(bandwidth.image());
                     button.setMenu(bandwidthMenu);
                     button.setTarget(controller.id());
@@ -291,6 +293,7 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     toolbarMenu.setSubmenu(connectionsMenu);
                     item.setMenuFormRepresentation(toolbarMenu);
                     final NSPopUpButton button = NSPopUpButton.buttonWithFrame(new NSRect(52, 26));
+                    button.setBezelStyle(NSTexturedRoundedBezelStyle);
                     button.setImage(connections.image());
                     button.setMenu(connectionsMenu);
                     button.setTarget(controller.id());
