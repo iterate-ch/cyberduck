@@ -28,7 +28,7 @@ namespace Ch.Cyberduck.Ui.Controller
         string Url { set; }
         string Local { set; }
         Image FileIcon { set; }
-        float Bandwidth { set; get; }
+        int Bandwidth { set; get; }
         bool BandwidthEnabled { set; }
         int QueueSize { set; get; }
         bool TranscriptVisible { get; set; }
@@ -57,8 +57,9 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler TranscriptHeightChangedEvent;
         event VoidHandler SelectionChangedEvent;
         event VoidHandler BandwidthChangedEvent;
-        event VoidHandler QueueSizeChangedEvent;
-        void PopulateBandwidthList(IList<KeyValuePair<float, string>> throttles);
+        event VoidHandler ConnectionsChangedEvent;
+        void PopulateBandwidthList(IList<KeyValuePair<int, string>> throttles);
+        void PopulateConnectionsList(IList<KeyValuePair<int, string>> connections);
         void TaskbarOverlayIcon(Icon icon, string text);
         void UpdateOverallProgressState(long progress, long maximum);
     }

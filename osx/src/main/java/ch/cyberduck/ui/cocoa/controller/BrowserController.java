@@ -2728,7 +2728,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public void transfer(final Transfer transfer, final List<Path> selected) {
         // Determine from current browser session if new connection should be opened for transfers
-        this.transfer(transfer, selected, transfer.getTransferType().equals(Host.TransferType.browser));
+        this.transfer(transfer, selected, Host.TransferType.getType(transfer.getSource()).equals(Host.TransferType.browser));
     }
 
     /**

@@ -257,13 +257,6 @@ public abstract class Transfer implements Serializable {
         return null;
     }
 
-    public Host.TransferType getTransferType() {
-        if(Host.TransferType.unknown.equals(host.getTransferType())) {
-            return Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type"));
-        }
-        return host.getTransferType();
-    }
-
     public String getName() {
         if(roots.isEmpty()) {
             return LocaleFactory.localizedString("None");

@@ -25,13 +25,13 @@ using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
-using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using java.text;
 using org.apache.log4j;
 using StructureMap;
 
@@ -169,7 +169,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private void Init()
         {
             _collection.addListener(this);
-            PopulateBandwithList();
+            PopulateBandwidthList();
+            PopulateConnectionsList();
 
             View.PositionSizeRestoredEvent += delegate
             {
@@ -192,7 +193,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.TrashEvent += View_TrashEvent;
             View.SelectionChangedEvent += View_SelectionChangedEvent;
             View.BandwidthChangedEvent += View_BandwidthChangedEvent;
-            View.QueueSizeChangedEvent += View_QueueSizeChangedEvent;
+            View.ConnectionsChangedEvent += ViewConnectionsChangedEvent;
 
             View.ValidateResumeEvent += View_ValidateResumeEvent;
             View.ValidateReloadEvent += View_ValidateReloadEvent;
@@ -322,22 +323,43 @@ namespace Ch.Cyberduck.Ui.Controller
             });
         }
 
-        private void PopulateBandwithList()
+        private void PopulateBandwidthList()
         {
-            IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
-            list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
+            IList<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
+            list.Add(new KeyValuePair<int, string>(BandwidthThrottle.UNLIMITED,
                 LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
             foreach (String option in
                 _preferences.getProperty("queue.bandwidth.options")
                     .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
             {
-                list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
+                list.Add(new KeyValuePair<int, string>(Convert.ToInt32(option.Trim()),
                     (SizeFormatterFactory.get(true).format(Convert.ToInt32(option.Trim())) + "/s")));
             }
             View.PopulateBandwidthList(list);
         }
+        private void PopulateConnectionsList()
+        {
+            IList<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
+            foreach (String option in
+                _preferences.getProperty("queue.connections.options")
+                    .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
+            {
+                int connections = Convert.ToInt32(option.Trim());
+                if (TransferConnectionLimiter.AUTO == connections)
+                {
+                    list.Add(new KeyValuePair<int, string>(connections, LocaleFactory.localizedString("Auto")));
 
-        private void View_QueueSizeChangedEvent()
+                }
+                else
+                {
+                    list.Add(new KeyValuePair<int, string>(connections, 
+                        MessageFormat.format(LocaleFactory.localizedString("{0} Connections", "Transfer"), connections)));
+                }
+            }
+            View.PopulateConnectionsList(list);
+        }
+
+        private void ViewConnectionsChangedEvent()
         {
             int connections = View.QueueSize;
             _preferences.setProperty("queue.connections.limit", connections);
@@ -391,7 +413,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Transfer transfer = GetTransferFromView(progressView);
                 if (transfer.getBandwidth().getRate() != BandwidthThrottle.UNLIMITED)
                 {
-                    View.Bandwidth = transfer.getBandwidth().getRate();
+                    View.Bandwidth = Convert.ToInt32(transfer.getBandwidth().getRate());
                 }
                 else
                 {

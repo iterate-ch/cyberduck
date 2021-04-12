@@ -47,6 +47,7 @@ import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.AutoTransferConnectionLimiter;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -202,7 +203,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 else if(status.getLength() > threshold) {
                     // if file is smaller than threshold do not attempt to segment
                     final long segmentSize = findSegmentSize(status.getLength(),
-                        preferences.getLong("queue.connections.limit"), threshold,
+                        new AutoTransferConnectionLimiter().getLimit(session.getHost()), threshold,
                         preferences.getLong("queue.download.segments.size"),
                         preferences.getLong("queue.download.segments.count"));
 
@@ -390,7 +391,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
     }
 
-    static long findSegmentSize(final long length, final long initialSplit, final long segmentThreshold, final long segmentSizeMaximum, final long segmentCountLimit) {
+    static long findSegmentSize(final long length, final int initialSplit, final long segmentThreshold, final long segmentSizeMaximum, final long segmentCountLimit) {
         // Make segments
         long parts, segmentSize, nextParts = initialSplit;
         // find segment size

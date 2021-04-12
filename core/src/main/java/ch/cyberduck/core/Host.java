@@ -700,6 +700,13 @@ public class Host implements Serializable, Comparable<Host> {
             public String toString() {
                 return LocaleFactory.localizedString("Qloudsonic (UDP-based Data Transfer Protocol)", "Transfer");
             }
+        };
+
+        public static TransferType getType(Host host) {
+            if(Host.TransferType.unknown.equals(host.getTransferType())) {
+                return Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type"));
+            }
+            return host.getTransferType();
         }
     }
 }

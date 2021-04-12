@@ -17,8 +17,6 @@ package ch.cyberduck.core.transfer.download;
 
 import org.junit.Test;
 
-import javax.swing.text.Segment;
-
 import static ch.cyberduck.core.transfer.download.AbstractDownloadFilterTest.Unit.GiB;
 import static ch.cyberduck.core.transfer.download.AbstractDownloadFilterTest.Unit.MiB;
 import static org.junit.Assert.assertEquals;
@@ -89,7 +87,7 @@ public class AbstractDownloadFilterTest {
 
     class SegmentSizePair {
         public final long length;
-        public final long connections;
+        public final int connections;
         public final long segmentThreshold;
         public final long segmentSizeMaximum;
         public final long segmentCount;
@@ -99,7 +97,7 @@ public class AbstractDownloadFilterTest {
             return expected;
         }
 
-        SegmentSizePair(final long length, final long connections, final long segmentThreshold, final long segmentSizeMaximum, final long segmentCount) {
+        SegmentSizePair(final long length, final int connections, final long segmentThreshold, final long segmentSizeMaximum, final long segmentCount) {
             this.length = length;
             this.connections = connections;
             this.segmentThreshold = segmentThreshold;

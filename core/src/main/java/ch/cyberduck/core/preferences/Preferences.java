@@ -57,6 +57,7 @@ import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferConnectionLimiter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.updater.DisabledPeriodicUpdater;
 import ch.cyberduck.core.updater.DisabledUpdateCheckerArguments;
@@ -565,9 +566,13 @@ public abstract class Preferences implements Locales {
         /*
          * Concurrent connections for single transfer and maximum number of concurrent transfers in transfer list
          */
-        this.setDefault("queue.connections.limit", String.valueOf(2));
+        this.setDefault("queue.connections.limit", String.valueOf(TransferConnectionLimiter.AUTO));
+        this.setDefault("queue.connections.limit.default", String.valueOf(20));
+        this.setDefault("queue.connections.limit.ftp", String.valueOf(1));
+
         {
             final StringBuilder options = new StringBuilder();
+            options.append(TransferConnectionLimiter.AUTO).append(","); // Auto determine number of connections
             options.append(1).append(",");
             options.append(2).append(",");
             options.append(3).append(",");
