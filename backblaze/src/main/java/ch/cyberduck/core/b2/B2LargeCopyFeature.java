@@ -141,7 +141,7 @@ public class B2LargeCopyFeature implements Copy {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Finished large file upload %s with %d parts", target, completed.size()));
             }
-            return new Path(target.getParent(), target.getName(), target.getType(), new PathAttributes(source.attributes()).withVersionId(response.getFileId()));
+            return target.withAttributes(new PathAttributes(source.attributes()).withVersionId(response.getFileId()));
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map("Cannot copy {0}", e, source);

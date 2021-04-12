@@ -59,8 +59,7 @@ public class SDSCopyFeature implements Copy {
                 // Target Parent Node ID
                 Long.parseLong(nodeid.getFileid(target.getParent(), new DisabledListProgressListener())),
                 StringUtils.EMPTY, null);
-            return new Path(target.getParent(), target.getName(), target.getType(),
-                new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
+            return target.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Cannot copy {0}", e, source);

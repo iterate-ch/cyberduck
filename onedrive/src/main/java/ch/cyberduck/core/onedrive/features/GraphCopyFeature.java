@@ -66,8 +66,7 @@ public class GraphCopyFeature implements Copy {
                 statusObject.getStatus())));
             target.attributes().setVersionId(null);
             target.attributes().setFileId(null);
-            return new Path(target.getParent(), target.getName(), target.getType(),
-                attributes.find(target));
+            return target.withAttributes(attributes.find(target));
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Cannot copy {0}", e, source);

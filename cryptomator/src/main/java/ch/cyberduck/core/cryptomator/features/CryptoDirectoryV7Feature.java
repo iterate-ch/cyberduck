@@ -74,7 +74,7 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
         final Path target = proxy.mkdir(encrypt, region, status);
         // Implementation may return new copy of attributes without encryption attributes
         target.attributes().setDirectoryId(directoryId);
-        target.attributes().setDecrypted(encrypt.attributes().getDecrypted());
+        target.attributes().setDecrypted(folder);
         // Make reference of encrypted path in attributes of decrypted file point to metadata file
         final Path decrypt = vault.decrypt(session, vault.encrypt(session, target, true));
         decrypt.attributes().setFileId(target.attributes().getFileId());

@@ -71,8 +71,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                     case allPublic:
                         folder.attributes().setAcl(new Acl(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ)));
                 }
-                return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                    new PathAttributes(folder.attributes()));
+                return folder;
             }
             else {
                 status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status));
@@ -81,8 +80,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 new DefaultStreamCloser().close(out);
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
-                return new Path(folder.getParent(), folder.getName(), type,
-                    new B2AttributesFinderFeature(session, fileid).toAttributes((B2FileResponse) out.getStatus()));
+                return folder.withType(type).withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes((B2FileResponse) out.getStatus()));
             }
         }
         catch(B2ApiException e) {

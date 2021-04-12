@@ -43,7 +43,7 @@ public class MantaMoveFeature implements Move {
         try {
             session.getClient().move(file.getAbsolute(), renamed.getAbsolute());
             // Copy original file attributes
-            return new Path(renamed.getParent(), renamed.getName(), renamed.getType(), new PathAttributes(file.attributes()));
+            return renamed.withAttributes(file.attributes());
         }
         catch(MantaException e) {
             throw new MantaExceptionMappingService().map("Cannot rename {0}", e, file);

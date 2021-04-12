@@ -40,11 +40,11 @@ public class FTPDirectoryFeature implements Directory<Integer> {
             if(!session.getClient().makeDirectory(folder.getAbsolute())) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
+            return folder.withAttributes(new DefaultAttributesFinderFeature(session).find(folder));
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
-        return new Path(folder.getParent(), folder.getName(), folder.getType(), new DefaultAttributesFinderFeature(session).find(folder));
     }
 
     @Override

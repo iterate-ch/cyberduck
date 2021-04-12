@@ -47,8 +47,7 @@ public class LocalMoveFeature implements Move {
             throw new LocalExceptionMappingService().map("Cannot rename {0}", new NoSuchFileException(file.getName()), file);
         }
         // Copy attributes from original file
-        return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-            new LocalAttributesFinderFeature(session).find(renamed));
+        return renamed.withAttributes(new LocalAttributesFinderFeature(session).find(renamed));
     }
 
     @Override

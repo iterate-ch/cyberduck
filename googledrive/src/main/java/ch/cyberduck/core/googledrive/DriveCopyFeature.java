@@ -45,8 +45,7 @@ public class DriveCopyFeature implements Copy {
                 .setParents(Collections.singletonList(fileid.getFileid(target.getParent(), new DisabledListProgressListener())))
                 .setName(target.getName()))
                 .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
-            return new Path(target.getParent(), target.getName(), target.getType(),
-                new DriveAttributesFinderFeature(session, fileid).toAttributes(copy));
+            return target.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(copy));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot copy {0}", e, source);

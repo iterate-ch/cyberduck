@@ -47,8 +47,7 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
         status.setTimestamp(System.currentTimeMillis());
         final StatusOutputStream<BaseB2Response> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
-        return new Path(file.getParent(), file.getName(), file.getType(),
-            new B2AttributesFinderFeature(session, fileid).toAttributes((B2FileResponse) out.getStatus()));
+        return file.withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes((B2FileResponse) out.getStatus()));
     }
 
     @Override

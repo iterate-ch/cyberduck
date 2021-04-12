@@ -78,8 +78,7 @@ public class GraphMoveFeature implements Move {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
         }
-        return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-            new GraphAttributesFinderFeature(session, idProvider).find(renamed));
+        return renamed.withAttributes(new GraphAttributesFinderFeature(session, idProvider).find(renamed));
     }
 
     @Override

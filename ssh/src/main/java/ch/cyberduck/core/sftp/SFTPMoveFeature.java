@@ -46,7 +46,7 @@ public class SFTPMoveFeature implements Move {
             }
             session.sftp().rename(file.getAbsolute(), renamed.getAbsolute());
             // Copy original file attributes
-            return new Path(renamed.getParent(), renamed.getName(), renamed.getType(), new PathAttributes(file.attributes()));
+            return renamed.withAttributes(file.attributes());
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot rename {0}", e, file);

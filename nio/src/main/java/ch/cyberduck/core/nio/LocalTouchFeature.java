@@ -45,8 +45,7 @@ public class LocalTouchFeature implements Touch {
                 throw new LocalExceptionMappingService().map("Cannot create {0}", e, file);
             }
         }
-        return new Path(file.getParent(), file.getName(), file.getType(),
-            new LocalAttributesFinderFeature(session).find(file));
+        return file.withAttributes(new LocalAttributesFinderFeature(session).find(file));
     }
 
     @Override

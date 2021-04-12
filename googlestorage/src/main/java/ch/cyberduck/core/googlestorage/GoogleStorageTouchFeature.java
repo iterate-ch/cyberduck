@@ -39,8 +39,7 @@ public class GoogleStorageTouchFeature implements Touch<VersionId> {
         status.setLength(0L);
         final StatusOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
-        return new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(out.getStatus().id));
+        return file.withAttributes(new PathAttributes(file.attributes()).withVersionId(out.getStatus().id));
     }
 
     @Override

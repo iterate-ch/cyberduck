@@ -72,7 +72,7 @@ public class AzureCopyFeature implements Copy {
                 log.debug(String.format("Started copy for %s with copy operation ID %s", copy, id));
             }
             // Copy original file attributes
-            return new Path(copy.getParent(), copy.getName(), copy.getType(), new PathAttributes(source.attributes()));
+            return copy.withAttributes(source.attributes());
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Cannot copy {0}", e, source);

@@ -48,8 +48,7 @@ public class DropboxMoveFeature implements Move {
             }
             final RelocationResult result = new DbxUserFilesRequests(session.getClient(file)).moveV2(containerService.getKey(file), containerService.getKey(renamed));
             // Copy original file attributes
-            return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-                new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
+            return renamed.withAttributes(new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Cannot move {0}", e, file);

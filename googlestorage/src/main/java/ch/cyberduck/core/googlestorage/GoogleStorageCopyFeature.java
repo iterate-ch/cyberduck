@@ -54,8 +54,7 @@ public class GoogleStorageCopyFeature implements Copy {
             while(!rewrite.setRewriteToken(response.getRewriteToken()).execute().getDone()) {
                 log.warn(String.format("Pending rewrite for object %s", storageObject));
             }
-            return new Path(target.getParent(), target.getName(), target.getType(),
-                new GoogleStorageAttributesFinderFeature(session).toAttributes(response.getResource()));
+            return target.withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(response.getResource()));
         }
         catch(IOException e) {
             throw new GoogleStorageExceptionMappingService().map("Cannot copy {0}", e, source);
