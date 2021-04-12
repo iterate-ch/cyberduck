@@ -111,16 +111,11 @@ public class LoginConnectionService implements ConnectionService {
     }
 
     @Override
-    public void close(final Session<?> session) {
+    public void close(final Session<?> session) throws BackgroundException {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
             session.getHost().getHostname()));
-        try {
-            // Close the underlying socket first
-            session.interrupt();
-        }
-        catch(BackgroundException e) {
-            log.warn(String.format("Ignore failure closing connection %s", e.getMessage()));
-        }
+        // Close the underlying socket first
+        session.interrupt();
     }
 
     @Override
