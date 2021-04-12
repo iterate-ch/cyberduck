@@ -162,6 +162,7 @@ public class CTERASession extends DAVSession {
     private Attachment getAttachment(final String code, final String server, final String hostname, final String mac) {
         final Attachment attachment = new Attachment();
         final ArrayList<Attachment.Attribute> attributes = new ArrayList<>();
+        attachment.setAttributes(attributes);
 
         final Attachment.Attribute type = new Attachment.Attribute();
         type.setId("type");
@@ -171,35 +172,32 @@ public class CTERASession extends DAVSession {
         name.setId("name");
         name.setVal("attachMobileDevice");
         attributes.add(name);
-        attachment.setAttr(attributes);
-
+        final Attachment.Attribute param = new Attachment.Attribute();
+        param.setId("param");
         final Attachment.AttachedMobileDeviceParams params = new Attachment.AttachedMobileDeviceParams();
-        attachment.setMobileParams(params);
-        final ArrayList<Attachment.Attribute> paramAttributes = new ArrayList<>();
-        params.setAttr(paramAttributes);
+        param.setParams(params);
+        attributes.add(param);
+        final ArrayList<Attachment.Attribute> paramsAttributes = new ArrayList<>();
+        params.setAtt(paramsAttributes);
         final Attachment.Attribute deviceType = new Attachment.Attribute();
         deviceType.setId("deviceType");
         deviceType.setVal("Mobile");
-        paramAttributes.add(deviceType);
-        final Attachment.Attribute serverName = new Attachment.Attribute();
-        serverName.setId("serverName");
-        serverName.setVal(server);
-        paramAttributes.add(serverName);
+        paramsAttributes.add(deviceType);
         final Attachment.Attribute deviceMac = new Attachment.Attribute();
         deviceMac.setId("deviceMac");
         deviceMac.setVal(mac);
-        paramAttributes.add(deviceMac);
+        paramsAttributes.add(deviceMac);
         final Attachment.Attribute ssoActivationCode = new Attachment.Attribute();
         ssoActivationCode.setId("ssoActivationCode");
         ssoActivationCode.setVal(code);
-        paramAttributes.add(ssoActivationCode);
+        paramsAttributes.add(ssoActivationCode);
         final Attachment.Attribute password = new Attachment.Attribute();
         password.setId("password");
-        paramAttributes.add(password);
+        paramsAttributes.add(password);
         final Attachment.Attribute host = new Attachment.Attribute();
         host.setId("hostname");
         host.setVal(URIEncoder.encode(hostname));
-        paramAttributes.add(host);
+        paramsAttributes.add(host);
 
         return attachment;
     }

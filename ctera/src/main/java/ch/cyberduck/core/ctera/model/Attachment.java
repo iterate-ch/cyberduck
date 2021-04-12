@@ -15,6 +15,7 @@ package ch.cyberduck.core.ctera.model;/*
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -22,35 +23,28 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 @JsonRootName("obj")
 public class Attachment {
 
-    @JacksonXmlProperty(localName = "obj")
-    private AttachedMobileDeviceParams mobileParams;
-
     @JacksonXmlElementWrapper(useWrapping = false)
-    private List<Attribute> attr;
+    @JacksonXmlProperty(localName = "att")
+    private List<Attribute> attributes;
 
-    public List<Attribute> getAttr() {
-        return attr;
+    public List<Attribute> getAttributes() {
+        return attributes;
     }
 
-    public Attachment setAttr(final List<Attribute> attr) {
-        this.attr = attr;
+    public Attachment setAttributes(final List<Attribute> attributes) {
+        this.attributes = attributes;
         return this;
     }
 
-    public AttachedMobileDeviceParams getMobileParams() {
-        return mobileParams;
-    }
-
-    public Attachment setMobileParams(final AttachedMobileDeviceParams mobileParams) {
-        this.mobileParams = mobileParams;
-        return this;
-    }
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Attribute {
         @JacksonXmlProperty(isAttribute = true)
         private String id;
 
         private String val;
+
+        @JacksonXmlProperty(localName = "obj")
+        private AttachedMobileDeviceParams params;
 
         public String getId() {
             return id;
@@ -69,6 +63,15 @@ public class Attachment {
             this.val = val;
             return this;
         }
+
+        public AttachedMobileDeviceParams getParams() {
+            return params;
+        }
+
+        public Attribute setParams(final AttachedMobileDeviceParams params) {
+            this.params = params;
+            return this;
+        }
     }
 
     @JsonRootName("obj")
@@ -78,14 +81,14 @@ public class Attachment {
         private String clazz = this.getClass().getSimpleName();
 
         @JacksonXmlElementWrapper(useWrapping = false)
-        private List<Attribute> attr;
+        private List<Attribute> att;
 
-        public List<Attribute> getAttr() {
-            return attr;
+        public List<Attribute> getAtt() {
+            return att;
         }
 
-        public AttachedMobileDeviceParams setAttr(final List<Attribute> attr) {
-            this.attr = attr;
+        public AttachedMobileDeviceParams setAtt(final List<Attribute> att) {
+            this.att = att;
             return this;
         }
 

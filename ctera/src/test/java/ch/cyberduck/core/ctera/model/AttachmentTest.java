@@ -32,32 +32,29 @@ public class AttachmentTest {
 
         final String expected =
             "<obj>\n" +
-                "  <attr id=\"type\">\n" +
+                "  <att id=\"type\">\n" +
                 "    <val>user-defined</val>\n" +
-                "  </attr>\n" +
-                "  <attr id=\"name\">\n" +
+                "  </att>\n" +
+                "  <att id=\"name\">\n" +
                 "    <val>attachMobileDevice</val>\n" +
-                "  </attr>\n" +
-                "  <obj class=\"AttachedMobileDeviceParams\">\n" +
-                "    <attr id=\"deviceType\">\n" +
-                "      <val>Mobile</val>\n" +
-                "    </attr>\n" +
-                "    <attr id=\"serverName\">\n" +
-                "      <val>mountainduck.na.ctera.me</val>\n" +
-                "    </attr>\n" +
-                "    <attr id=\"deviceMac\">\n" +
-                "      <val>myMacAddress</val>\n" +
-                "    </attr>\n" +
-                "    <attr id=\"ssoActivationCode\">\n" +
-                "      <val>mySsoActivationCode</val>\n" +
-                "    </attr>\n" +
-                "    <attr id=\"password\">\n" +
-                "      <val/>\n" +
-                "    </attr>\n" +
-                "    <attr id=\"hostname\">\n" +
-                "      <val>myHostname</val>\n" +
-                "    </attr>\n" +
-                "  </obj>\n" +
+                "  </att>\n" +
+                "  <att id=\"param\">\n" +
+                "    <obj class=\"AttachedMobileDeviceParams\">\n" +
+                "      <att id=\"deviceType\">\n" +
+                "        <val>Mobile</val>\n" +
+                "      </att>\n" +
+                "      <att id=\"deviceMac\">\n" +
+                "        <val>myMacAddress</val>\n" +
+                "      </att>\n" +
+                "      <att id=\"ssoActivationCode\">\n" +
+                "        <val>mySsoActivationCode</val>\n" +
+                "      </att>\n" +
+                "      <att id=\"password\"/>\n" +
+                "      <att id=\"hostname\">\n" +
+                "        <val>myHostname</val>\n" +
+                "      </att>\n" +
+                "    </obj>\n" +
+                "  </att>\n" +
                 "</obj>\n";
 
         final Attachment attachment = new Attachment();
@@ -71,20 +68,19 @@ public class AttachmentTest {
         name.setId("name");
         name.setVal("attachMobileDevice");
         attributes.add(name);
-        attachment.setAttr(attributes);
+        attachment.setAttributes(attributes);
 
-        final Attachment.AttachedMobileDeviceParams params = new Attachment.AttachedMobileDeviceParams();
-        attachment.setMobileParams(params);
+        final Attachment.AttachedMobileDeviceParams attachedMobileDeviceParams = new Attachment.AttachedMobileDeviceParams();
         final ArrayList<Attachment.Attribute> paramAttributes = new ArrayList<>();
-        params.setAttr(paramAttributes);
+        attachedMobileDeviceParams.setAtt(paramAttributes);
+        final Attachment.Attribute methodParams = new Attachment.Attribute();
+        methodParams.setId("param");
+        methodParams.setParams(attachedMobileDeviceParams);
+        attributes.add(methodParams);
         final Attachment.Attribute deviceType = new Attachment.Attribute();
         deviceType.setId("deviceType");
         deviceType.setVal("Mobile");
         paramAttributes.add(deviceType);
-        final Attachment.Attribute serverName = new Attachment.Attribute();
-        serverName.setId("serverName");
-        serverName.setVal("mountainduck.na.ctera.me");
-        paramAttributes.add(serverName);
         final Attachment.Attribute deviceMac = new Attachment.Attribute();
         deviceMac.setId("deviceMac");
         deviceMac.setVal("myMacAddress");
