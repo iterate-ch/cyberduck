@@ -19,6 +19,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
+import ch.cyberduck.core.profiles.LocalProfilesFinder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -28,7 +29,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public final class ProtocolFactory {
@@ -68,54 +68,19 @@ public final class ProtocolFactory {
      * Load profiles embedded in bundles and installed in the application support directory.
      */
     public void loadDefaultProfiles() {
-        if(bundle.exists()) {
-            try {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Load profiles from %s", bundle));
-                }
-                for(Local f : bundle.list().filter(new ProfileFilter())) {
-                    try {
-                        final Profile profile = ProfileReaderFactory.get().read(f);
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Adding bundled protocol %s", profile));
-                        }
-                        // Replace previous possibly disable protocol in Preferences
-                        registered.add(profile);
-                    }
-                    catch(AccessDeniedException e) {
-                        log.error(String.format("Failure reading profile from %s. %s", f, e));
-                    }
-                }
-            }
-            catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading collection %s %s", bundle, e));
-            }
+        try {
+            registered.addAll(new LocalProfilesFinder(bundle).find());
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure %s reading profiles from %s", bundle, e));
         }
         // Load thirdparty protocols
-        final Local library = LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
-            PreferencesFactory.get().getProperty("profiles.folder.name"));
-        if(library.exists()) {
-            try {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Load profiles from %s", library));
-                }
-                for(Local f : library.list().filter(new ProfileFilter())) {
-                    try {
-                        final Profile profile = ProfileReaderFactory.get().read(f);
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Adding profile %s", profile));
-                        }
-                        // Replace previous possibly disable protocol in Preferences
-                        registered.add(profile);
-                    }
-                    catch(AccessDeniedException e) {
-                        log.warn(String.format("Failure reading profile from %s. %s", f, e));
-                    }
-                }
-            }
-            catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading collection %s %s", library, e));
-            }
+        try {
+            registered.addAll(new LocalProfilesFinder(LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
+                PreferencesFactory.get().getProperty("profiles.folder.name"))).find());
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure %s reading profiles from %s", bundle, e));
         }
     }
 
@@ -223,18 +188,6 @@ public final class ProtocolFactory {
         return enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(
             enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(fallback)
         );
-    }
-
-    private static final class ProfileFilter implements Filter<Local> {
-        @Override
-        public boolean accept(final Local file) {
-            return "cyberduckprofile".equals(Path.getExtension(file.getName()));
-        }
-
-        @Override
-        public Pattern toPattern() {
-            return Pattern.compile(".*\\.cyberduckprofile");
-        }
     }
 
     @Override
