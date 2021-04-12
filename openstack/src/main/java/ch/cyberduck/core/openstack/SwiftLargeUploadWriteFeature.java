@@ -17,6 +17,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -53,9 +54,7 @@ import ch.iterate.openstack.swift.model.StorageObject;
 public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<StorageObject>> {
     private static final Logger log = Logger.getLogger(SwiftLargeUploadWriteFeature.class);
 
-    private final PathContainerService containerService
-        = new PathContainerService();
-
+    private final PathContainerService containerService = new DefaultPathContainerService();
     private final SwiftSession session;
     private final Find finder;
     private final AttributesFinder attributes;

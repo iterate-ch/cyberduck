@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class DropboxDirectoryFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testDirectory() throws Exception {
-        final Path home = new DropboxHomeFinderFeature(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path level1 = new DropboxDirectoryFeature(session).mkdir(new Path(home,
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, null);
         assertTrue(new DefaultFindFeature(session).find(level1));

@@ -47,9 +47,6 @@ import com.amazonaws.services.s3.model.RestoreObjectRequest;
 public class Glacier implements Restore {
     private static final Logger log = Logger.getLogger(Glacier.class);
 
-    private final PathContainerService containerService
-        = new PathContainerService();
-
     private final Preferences preferences = PreferencesFactory.get();
 
     private final S3Session session;
@@ -73,11 +70,10 @@ public class Glacier implements Restore {
      *
      * @param file   Archived file
      * @param prompt Callback
-     * @throws BackgroundException
      */
     @Override
     public void restore(final Path file, final LoginCallback prompt) throws BackgroundException {
-        final Path container = containerService.getContainer(file);
+        final Path container = session.getFeature(PathContainerService.class).getContainer(file);
         try {
             try {
                 final AmazonS3 client = client(container);
@@ -85,7 +81,7 @@ public class Glacier implements Restore {
                 // This is the default option for the GLACIER and DEEP_ARCHIVE retrieval requests that do not specify
                 // the retrieval option. S3 Standard retrievals typically complete within 3-5 hours from the GLACIER
                 // storage class and typically complete within 12 hours from the DEEP_ARCHIVE storage class.
-                client.restoreObjectV2(new RestoreObjectRequest(container.getName(), containerService.getKey(file))
+                client.restoreObjectV2(new RestoreObjectRequest(container.getName(), session.getFeature(PathContainerService.class).getKey(file))
                     // To restore a specific object version, you can provide a version ID. If you don't provide a version ID, Amazon S3 restores the current version.
                     .withVersionId(file.attributes().getVersionId())
                     .withExpirationInDays(preferences.getInteger("s3.glacier.restore.expiration.days"))

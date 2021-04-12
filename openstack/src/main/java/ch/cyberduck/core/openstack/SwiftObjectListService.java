@@ -20,6 +20,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -43,10 +44,7 @@ public class SwiftObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(SwiftObjectListService.class);
 
     private final SwiftSession session;
-
-    private final PathContainerService containerService
-        = new PathContainerService();
-
+    private final PathContainerService containerService = new DefaultPathContainerService();
     private final SwiftRegionService regionService;
     private final SwiftAttributesFinderFeature attributes;
 

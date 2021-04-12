@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -35,10 +36,9 @@ public class DriveQuotaFeature implements Quota {
     @Override
     public Space get() throws BackgroundException {
         // Shared Drives should not have any Quota applied.
-        if(new DriveHomeFinderService(session).find().isChild(DriveHomeFinderService.SHARED_DRIVES_NAME)) {
+        if(new DefaultHomeFinderService(session).find().isChild(DriveHomeFinderService.SHARED_DRIVES_NAME)) {
             return unknown;
         }
-
         try {
             final About about = session.getClient().about().get().setFields("user, storageQuota").execute();
             final Long used = null == about.getStorageQuota().getUsageInDrive() ? 0L

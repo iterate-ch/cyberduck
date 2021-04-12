@@ -17,20 +17,12 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.AbstractHomeFeature;
 
-public class OneDriveHomeFinderService extends DefaultHomeFinderService {
-
-    public OneDriveHomeFinderService(final OneDriveSession session) {
-        super(session.getHost());
-    }
+public class OneDriveHomeFinderService extends AbstractHomeFeature {
 
     @Override
     public Path find() throws BackgroundException {
-        final Path home = super.find();
-        if(home == DEFAULT_HOME) {
-            return OneDriveListService.MYFILES_NAME;
-        }
-        return home;
+        return OneDriveListService.MYFILES_NAME;
     }
 }

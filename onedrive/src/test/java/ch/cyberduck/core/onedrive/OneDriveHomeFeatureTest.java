@@ -32,7 +32,7 @@ public class OneDriveHomeFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testHomeFeature() throws BackgroundException {
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         assertNotNull(drive);
         assertFalse(drive.isRoot());
         assertTrue(drive.isVolume());

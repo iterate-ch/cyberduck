@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
@@ -58,7 +59,7 @@ public class SwiftUrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(SwiftUrlProvider.class);
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new DefaultPathContainerService();
 
     private final SwiftSession session;
     private final SwiftRegionService regionService;

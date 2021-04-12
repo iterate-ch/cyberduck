@@ -23,8 +23,11 @@ import org.apache.commons.lang3.StringUtils;
 
 public abstract class S3AbstractListService implements ListService {
 
-    private final PathContainerService containerService
-        = new S3PathContainerService();
+    private final PathContainerService containerService;
+
+    public S3AbstractListService(final S3Session session) {
+        this.containerService = session.getFeature(PathContainerService.class);
+    }
 
     protected String createPrefix(final Path directory) {
         // Keys can be listed by prefix. By choosing a common prefix

@@ -30,15 +30,14 @@ import org.jets3t.service.ServiceException;
 
 public class S3FindFeature implements Find {
 
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final S3Session session;
     private final S3AttributesFinderFeature attributes;
 
     public S3FindFeature(final S3Session session) {
         this.session = session;
         this.attributes = new S3AttributesFinderFeature(session);
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

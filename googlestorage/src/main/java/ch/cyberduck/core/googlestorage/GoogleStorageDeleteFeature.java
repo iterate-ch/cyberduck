@@ -30,13 +30,12 @@ import java.util.Map;
 public class GoogleStorageDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(GoogleStorageDeleteFeature.class);
 
-    private final PathContainerService containerService
-        = new GoogleStoragePathContainerService();
-
+    private final PathContainerService containerService;
     private final GoogleStorageSession session;
 
     public GoogleStorageDeleteFeature(final GoogleStorageSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

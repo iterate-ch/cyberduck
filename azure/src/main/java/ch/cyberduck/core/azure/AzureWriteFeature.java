@@ -20,6 +20,7 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -70,7 +71,7 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
     private final OperationContext context;
 
     private final PathContainerService containerService
-        = new AzurePathContainerService();
+        = new DirectoryDelimiterPathContainerService();
 
     private final Preferences preferences
         = PreferencesFactory.get();

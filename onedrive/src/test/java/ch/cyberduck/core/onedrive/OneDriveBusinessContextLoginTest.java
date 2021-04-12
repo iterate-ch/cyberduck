@@ -77,6 +77,6 @@ public class OneDriveBusinessContextLoginTest {
                     return super.getPassword(hostname, user);
                 }
             }, new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
-        assertEquals("/b!9prv2DvXt0Cua27a0kKBHlYP69u02QdCtkueQRimv8UsYPDHr-_uQoMvBiuYAjdH", (new OneDriveHomeFinderService(session).find().getAbsolute()));
+        assertEquals("/b!9prv2DvXt0Cua27a0kKBHlYP69u02QdCtkueQRimv8UsYPDHr-_uQoMvBiuYAjdH", (new OneDriveHomeFinderService().find().getAbsolute()));
     }
 }

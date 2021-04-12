@@ -17,6 +17,7 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
@@ -82,7 +83,7 @@ public class StoregateIdProvider implements IdProvider {
      * Mapping of path "/Common" to "Common files"
      */
     protected String getPrefixedPath(final Path file) {
-        final PathContainerService service = new PathContainerService();
+        final PathContainerService service = new DefaultPathContainerService();
         final String root = service.getContainer(file).getAbsolute();
         for(RootFolder r : session.roots()) {
             if(root.endsWith(r.getName())) {

@@ -17,6 +17,7 @@ package ch.cyberduck.core.cdn;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
@@ -38,7 +39,7 @@ public class DistributionUrlProvider implements UrlProvider {
     private final Distribution distribution;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new DefaultPathContainerService();
 
     public DistributionUrlProvider(final Distribution distribution) {
         this.distribution = distribution;

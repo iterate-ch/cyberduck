@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -39,12 +40,8 @@ public class SwiftDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(SwiftDeleteFeature.class);
 
     private final SwiftSession session;
-
-    private final PathContainerService containerService
-        = new PathContainerService();
-
+    private final PathContainerService containerService = new DefaultPathContainerService();
     private final SwiftSegmentService segmentService;
-
     private final SwiftRegionService regionService;
 
     public SwiftDeleteFeature(final SwiftSession session) {

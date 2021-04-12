@@ -25,12 +25,11 @@ import java.util.Set;
 public class GoogleStorageLocationFeature implements Location {
 
     private final GoogleStorageSession session;
-
-    private final PathContainerService containerService
-        = new GoogleStoragePathContainerService();
+    private final PathContainerService containerService;
 
     public GoogleStorageLocationFeature(final GoogleStorageSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

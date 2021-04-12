@@ -31,7 +31,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -97,7 +97,7 @@ public class GotoController extends AlertController {
             case DEFAULT_OPTION:
                 final String filename = folderCombobox.stringValue();
                 final Path workdir = parent.workdir();
-                final Path directory = parent.getSession().getFeature(Home.class).find(workdir, filename);
+                final Path directory = PathNormalizer.compose(workdir, filename);
                 if(workdir.getParent().equals(directory)) {
                     parent.setWorkdir(directory, workdir);
                 }

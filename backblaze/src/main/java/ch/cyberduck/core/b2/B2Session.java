@@ -140,9 +140,6 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == AttributesFinder.class) {
             return (T) new B2AttributesFinderFeature(this, fileid);
         }
-        if(type == Home.class) {
-            return (T) new B2HomeFinderService(this);
-        }
         if(type == AclPermission.class) {
             return (T) new B2BucketTypeFeature(this, fileid);
         }

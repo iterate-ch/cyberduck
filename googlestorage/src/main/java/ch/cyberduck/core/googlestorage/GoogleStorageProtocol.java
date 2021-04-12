@@ -18,7 +18,9 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
@@ -111,5 +113,13 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     @Override
     public Comparator<String> getListComparator() {
         return new DefaultLexicographicOrderComparator();
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == PathContainerService.class) {
+            return (T) new DirectoryDelimiterPathContainerService();
+        }
+        return super.getFeature(type);
     }
 }

@@ -39,8 +39,6 @@ public abstract class Worker<T> {
     private final AtomicBoolean canceled
             = new AtomicBoolean();
 
-    protected final PathContainerService containerService = new PathContainerService();
-
     protected String toString(final List<Path> files) {
         if(files.isEmpty()) {
             return LocaleFactory.localizedString("None");
@@ -52,7 +50,7 @@ public abstract class Worker<T> {
         return String.format("%s…", name);
     }
 
-    protected Set<Path> getContainers(final List<Path> files) {
+    protected Set<Path> getContainers(final PathContainerService containerService, final List<Path> files) {
         final Set<Path> containers = new HashSet<>();
         for(Path file : files) {
             containers.add(containerService.getContainer(file));

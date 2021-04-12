@@ -18,8 +18,16 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-public interface Home {
-    Path find() throws BackgroundException;
+import java.util.EnumSet;
 
-    Path find(Path workdir, String path);
+public interface Home {
+
+    Path ROOT = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
+
+    /**
+     * Find user home directory
+     *
+     * @return Home directory or null if not found
+     */
+    Path find() throws BackgroundException;
 }

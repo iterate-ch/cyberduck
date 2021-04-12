@@ -90,7 +90,7 @@ public class OneDriveMeContextLoginTest {
 
     @Test
     public void testLogin() throws Exception {
-        final Path home = new OneDriveHomeFinderService(session).find();
+        final Path home = new OneDriveHomeFinderService().find();
         assertEquals("My Files", home.getName());
     }
 }

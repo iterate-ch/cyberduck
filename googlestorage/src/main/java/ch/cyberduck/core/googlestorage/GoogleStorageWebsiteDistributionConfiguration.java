@@ -43,12 +43,11 @@ import com.google.api.services.storage.model.Bucket;
 public class GoogleStorageWebsiteDistributionConfiguration implements DistributionConfiguration, Index {
 
     private final GoogleStorageSession session;
-
-    private final PathContainerService containerService
-        = new GoogleStoragePathContainerService();
+    private final PathContainerService containerService;
 
     public GoogleStorageWebsiteDistributionConfiguration(final GoogleStorageSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     /**

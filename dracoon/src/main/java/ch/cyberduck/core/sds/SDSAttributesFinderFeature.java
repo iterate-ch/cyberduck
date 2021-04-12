@@ -77,7 +77,14 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     protected PathAttributes find(final Path file, final int chunksize) throws BackgroundException {
         if(file.isRoot()) {
             // {"code":400,"message":"Bad Request","debugInfo":"Node ID must be positive.","errorCode":-80001}
-            return PathAttributes.EMPTY;
+            final PathAttributes attributes = new PathAttributes();
+            if(session.userAccount().isUserInRole(SDSPermissionsFeature.ROOM_MANAGER_ROLE)) {
+                // We need to map user roles to ACLs in order to decide if creating a top-level room is allowed
+                final Acl acl = new Acl();
+                acl.addAll(new Acl.CanonicalUser(), SDSPermissionsFeature.CREATE_ROLE);
+                attributes.setAcl(acl);
+            }
+            return attributes;
         }
         try {
             if(file.attributes().isDuplicate()) {

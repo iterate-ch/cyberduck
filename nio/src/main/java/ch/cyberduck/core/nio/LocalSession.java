@@ -108,7 +108,7 @@ public class LocalSession extends Session<FileSystem> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Path home = new LocalHomeFinderFeature(this).find();
+        final Path home = new LocalHomeFinderFeature().find();
         try {
             lock = LocalFactory.get(this.toPath(home).toString()).lock(true);
         }
@@ -119,7 +119,7 @@ public class LocalSession extends Session<FileSystem> {
 
     @Override
     protected void logout() throws BackgroundException {
-        final Path home = new LocalHomeFinderFeature(this).find();
+        final Path home = new LocalHomeFinderFeature().find();
         LocalFactory.get(this.toPath(home).toString()).release(lock);
     }
 
@@ -171,7 +171,7 @@ public class LocalSession extends Session<FileSystem> {
             }
         }
         if(type == Home.class) {
-            return (T) new LocalHomeFinderFeature(this);
+            return (T) new LocalHomeFinderFeature();
         }
         if(type == Quota.class) {
             return (T) new LocalQuotaFeature(this);

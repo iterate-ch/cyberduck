@@ -45,11 +45,8 @@ import java.util.concurrent.TimeUnit;
 public class S3UrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(S3UrlProvider.class);
 
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final HostPasswordStore store;
-
     private final S3Session session;
 
     public S3UrlProvider(final S3Session session) {
@@ -59,6 +56,7 @@ public class S3UrlProvider implements UrlProvider {
     public S3UrlProvider(final S3Session session, final HostPasswordStore store) {
         this.session = session;
         this.store = store;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

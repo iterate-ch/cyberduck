@@ -41,15 +41,14 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
     private static final String MIMETYPE = "application/x-directory";
 
     private final S3Session session;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
+    private final PathContainerService containerService;
 
     private Write<StorageObject> writer;
 
     public S3DirectoryFeature(final S3Session session, final Write<StorageObject> writer) {
         this.session = session;
         this.writer = writer;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

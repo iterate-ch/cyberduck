@@ -81,9 +81,6 @@ import com.amazonaws.services.cloudfront.model.*;
 public class CloudFrontDistributionConfiguration implements DistributionConfiguration, Purge, Index, DistributionLogging, Cname {
     private static final Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
-    private final PathContainerService containerService
-        = new PathContainerService();
-
     private final Preferences preferences = PreferencesFactory.get();
 
     protected final S3Session session;
@@ -130,7 +127,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
-        final Path container = containerService.getContainer(file);
+        final Path container = session.getFeature(PathContainerService.class).getContainer(file);
         // Filter including region
         final Optional<Path> byRegion = distributions.keySet().stream().filter(new DefaultPathPredicate(container)).findFirst();
         if(byRegion.isPresent()) {
@@ -151,7 +148,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     @Override
     public Distribution read(final Path file, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
-        final Path container = containerService.getContainer(file);
+        final Path container = session.getFeature(PathContainerService.class).getContainer(file);
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("List %s distributions", method));
@@ -214,7 +211,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     @Override
     public void write(final Path file, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
-        final Path container = containerService.getContainer(file);
+        final Path container = session.getFeature(PathContainerService.class).getContainer(file);
         try {
             if(null == distribution.getId()) {
                 // No existing configuration
@@ -286,17 +283,17 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             final Distribution d = this.read(container, method, prompt);
             final List<String> keys = new ArrayList<>();
             for(Path file : files) {
-                if(containerService.isContainer(file)) {
+                if(session.getFeature(PathContainerService.class).isContainer(file)) {
                     // To invalidate all of the objects in a distribution
                     keys.add(String.format("%s*", Path.DELIMITER));
                 }
                 else {
                     if(file.isDirectory()) {
                         // The *, which replaces 0 or more characters, must be the last character in the invalidation path
-                        keys.add(String.format("/%s*", containerService.getKey(file)));
+                        keys.add(String.format("/%s*", session.getFeature(PathContainerService.class).getKey(file)));
                     }
                     else {
-                        keys.add(String.format("/%s", containerService.getKey(file)));
+                        keys.add(String.format("/%s", session.getFeature(PathContainerService.class).getKey(file)));
                     }
                 }
             }

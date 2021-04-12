@@ -51,9 +51,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
     private final Preferences preferences
         = PreferencesFactory.get();
 
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final S3Session session;
     private final Find finder;
     private final AttributesFinder attributes;
@@ -66,6 +64,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
         this.session = session;
         this.finder = finder;
         this.attributes = attributes;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

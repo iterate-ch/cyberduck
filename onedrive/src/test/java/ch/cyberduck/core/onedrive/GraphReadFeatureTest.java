@@ -53,13 +53,13 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         new GraphReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
     public void testReadInterrupt() throws Exception {
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(test, new TransferStatus());
         // Unknown length in status
@@ -80,7 +80,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testReadRange() throws Exception {
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(test, new TransferStatus());
 
@@ -113,7 +113,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testReadInvalidRange() throws Exception {
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(test, new TransferStatus());
         final GraphReadFeature read = new GraphReadFeature(session);
@@ -123,7 +123,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testReadRangeUnknownLength() throws Exception {
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(test, new TransferStatus());
 

@@ -18,10 +18,10 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -61,7 +61,7 @@ public class DefaultTemporaryFileService extends AbstractTemporaryFileService im
 
         String attributes = StringUtils.EMPTY;
         if(StringUtils.isNotBlank(file.attributes().getRegion())) {
-            if(new PathContainerService().isContainer(file)) {
+            if(new DefaultPathContainerService().isContainer(file)) {
                 attributes += file.attributes().getRegion();
             }
         }

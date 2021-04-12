@@ -34,12 +34,11 @@ import com.google.api.services.storage.model.StorageObject;
 public class GoogleStorageStorageClassFeature implements Redundancy {
 
     private final GoogleStorageSession session;
-
-    private final PathContainerService containerService
-        = new GoogleStoragePathContainerService();
+    private final PathContainerService containerService;
 
     public GoogleStorageStorageClassFeature(final GoogleStorageSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

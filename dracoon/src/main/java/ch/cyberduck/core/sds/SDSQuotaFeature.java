@@ -15,16 +15,14 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
-import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CustomerData;
-import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.PathAttributesHomeFeature;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -45,15 +43,14 @@ public class SDSQuotaFeature implements Quota {
     @Override
     public Space get() throws BackgroundException {
         try {
-            final Path home = new DefaultHomeFinderService(session.getHost()).find();
+            final Path home = new PathAttributesHomeFeature(new DefaultHomeFinderService(session),
+                new SDSAttributesFinderFeature(session, nodeid), new SDSPathContainerService()).find();
             if(!home.isRoot()) {
-                final Node node = new NodesApi(session.getClient()).requestNode(
-                    Long.parseLong(nodeid.getFileid(home, new DisabledListProgressListener())), StringUtils.EMPTY, null);
-                if(null == node.getQuota()) {
+                if(-1L == home.attributes().getQuota()) {
                     log.warn(String.format("No quota set for node %s", home));
                 }
                 else {
-                    return new Space(node.getSize(), node.getQuota() - node.getSize());
+                    return new Space(home.attributes().getSize(), home.attributes().getQuota() - home.attributes().getSize());
                 }
             }
             final CustomerData info = new UserApi(session.getClient()).requestCustomerInfo(StringUtils.EMPTY);

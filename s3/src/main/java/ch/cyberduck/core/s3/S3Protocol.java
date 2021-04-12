@@ -19,7 +19,9 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.CredentialsConfigurator;
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
@@ -176,5 +178,13 @@ public class S3Protocol extends AbstractProtocol {
     @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.explicit;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == PathContainerService.class) {
+            return (T) new DirectoryDelimiterPathContainerService();
+        }
+        return super.getFeature(type);
     }
 }

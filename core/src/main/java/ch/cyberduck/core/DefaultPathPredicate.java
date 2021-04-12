@@ -36,7 +36,7 @@ public class DefaultPathPredicate implements CacheReference<Path> {
         final Path.Type type = file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory;
         String qualifier = StringUtils.EMPTY;
         if(StringUtils.isNotBlank(file.attributes().getRegion())) {
-            if(new PathContainerService().isContainer(file)) {
+            if(new DefaultPathContainerService().isContainer(file)) {
                 qualifier += file.attributes().getRegion();
             }
         }

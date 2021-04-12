@@ -38,12 +38,11 @@ public class S3ListService implements ListService {
     private static final Logger log = Logger.getLogger(S3ListService.class);
 
     private final S3Session session;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
+    private final PathContainerService containerService;
 
     public S3ListService(final S3Session session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

@@ -18,34 +18,29 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.AbstractHomeFeature;
 
 import java.io.IOException;
 import java.util.EnumSet;
 
-public class SFTPHomeDirectoryService extends DefaultHomeFinderService {
+public class SFTPHomeDirectoryService extends AbstractHomeFeature {
 
     private final SFTPSession session;
 
     public SFTPHomeDirectoryService(final SFTPSession session) {
-        super(session.getHost());
         this.session = session;
     }
 
     @Override
     public Path find() throws BackgroundException {
-        final Path home = super.find();
-        if(home == DEFAULT_HOME) {
-            try {
-                // "." as referring to the current directory
-                final String directory = session.sftp().canonicalize(".");
-                return new Path(PathNormalizer.normalize(directory), directory.equals(String.valueOf(Path.DELIMITER)) ?
-                    EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
-            }
-            catch(IOException e) {
-                throw new SFTPExceptionMappingService().map(e);
-            }
+        try {
+            // "." as referring to the current directory
+            final String directory = session.sftp().canonicalize(".");
+            return new Path(PathNormalizer.normalize(directory), directory.equals(String.valueOf(Path.DELIMITER)) ?
+                EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
         }
-        return home;
+        catch(IOException e) {
+            throw new SFTPExceptionMappingService().map(e);
+        }
     }
 }

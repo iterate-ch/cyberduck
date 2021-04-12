@@ -24,7 +24,6 @@ import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.PromptUrlProvider;
@@ -40,7 +39,6 @@ import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultSearchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
@@ -329,9 +327,6 @@ public abstract class Session<C> implements TranscriptListener {
         }
         if(type == AttributesFinder.class) {
             return (T) new DefaultAttributesFinderFeature(this);
-        }
-        if(type == Home.class) {
-            return (T) new DefaultHomeFinderService(host);
         }
         if(type == Search.class) {
             return (T) new DefaultSearchFeature(this);

@@ -115,7 +115,7 @@ public class PathTest {
         assertEquals(EnumSet.of(Path.Type.volume, Path.Type.directory), path.getType());
         assertNotNull(path.getParent());
         assertEquals("/", path.getParent().getAbsolute());
-        assertTrue(new PathContainerService().isContainer(path));
+        assertTrue(new DefaultPathContainerService().isContainer(path));
         assertFalse(path.isRoot());
     }
 
@@ -127,7 +127,7 @@ public class PathTest {
         assertEquals(EnumSet.of(Path.Type.volume, Path.Type.directory), path.getType());
         assertNotNull(path.getParent());
         assertEquals("/", path.getParent().getAbsolute());
-        assertTrue(new PathContainerService().isContainer(path));
+        assertTrue(new DefaultPathContainerService().isContainer(path));
         assertFalse(path.isRoot());
     }
 

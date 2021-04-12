@@ -22,7 +22,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3MultipleDeleteFeature;
-import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -37,14 +36,13 @@ import com.spectralogic.ds3client.networking.FailedRequestException;
 
 public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
 
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
     private final SpectraSession session;
+    private final PathContainerService containerService;
 
     public SpectraDeleteFeature(final SpectraSession session) {
         super(session, new S3DisabledMultipartService());
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

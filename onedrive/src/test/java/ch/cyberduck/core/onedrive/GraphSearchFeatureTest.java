@@ -49,7 +49,7 @@ public class GraphSearchFeatureTest extends AbstractOneDriveTest {
     @Ignore
     public void testSearch() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         final Path directory = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path file = new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final GraphSearchFeature feature = new GraphSearchFeature(session, new GraphFileIdProvider(session));

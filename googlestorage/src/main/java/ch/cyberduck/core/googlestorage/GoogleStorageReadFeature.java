@@ -46,13 +46,12 @@ import static com.google.api.client.json.Json.MEDIA_TYPE;
 public class GoogleStorageReadFeature implements Read {
     private static final Logger log = Logger.getLogger(GoogleStorageReadFeature.class);
 
-    private final PathContainerService containerService
-        = new GoogleStoragePathContainerService();
-
+    private final PathContainerService containerService;
     private final GoogleStorageSession session;
 
     public GoogleStorageReadFeature(final GoogleStorageSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

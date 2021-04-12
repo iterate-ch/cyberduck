@@ -56,7 +56,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Move move = new GraphMoveFeature(session, new GraphFileIdProvider(session));
         final Delete delete = new GraphDeleteFeature(session);
         final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session));
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         file.attributes().setModificationDate(touch.touch(file, new TransferStatus().withMime("x-application/cyberduck")).attributes().getModificationDate());
         final PathAttributes attributes = attributesFinder.find(file);
@@ -75,7 +75,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Move move = new GraphMoveFeature(session, new GraphFileIdProvider(session));
         final Delete delete = new GraphDeleteFeature(session);
         final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session));
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
         assertNotNull(attributesFinder.find(targetDirectory));
@@ -99,7 +99,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Move move = new GraphMoveFeature(session, new GraphFileIdProvider(session));
         final Delete delete = new GraphDeleteFeature(session);
         final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session));
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
         assertNotNull(attributesFinder.find(targetDirectory));
@@ -124,7 +124,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Move move = new GraphMoveFeature(session, new GraphFileIdProvider(session));
         final Delete delete = new GraphDeleteFeature(session);
         final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session));
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
         assertNotNull(attributesFinder.find(targetDirectory));
@@ -143,7 +143,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testMoveToExistingFile() throws Exception {
-        final Path folder = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(new OneDriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path folder = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path test = new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path temp = new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());

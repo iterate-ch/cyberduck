@@ -41,9 +41,7 @@ import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKE
 public class S3MoveFeature implements Move {
     private static final Logger log = Logger.getLogger(S3MoveFeature.class);
 
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final S3Session session;
     private final S3AccessControlListFeature accessControlListFeature;
 
@@ -57,6 +55,7 @@ public class S3MoveFeature implements Move {
         this.session = session;
         this.accessControlListFeature = accessControlListFeature;
         this.delete = new S3DefaultDeleteFeature(session);
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

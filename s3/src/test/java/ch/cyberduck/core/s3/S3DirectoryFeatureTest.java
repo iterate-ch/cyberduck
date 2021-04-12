@@ -34,6 +34,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -60,7 +61,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
                     // Not enabled for account
                     break;
                 default:
-                    final Path test = new Path(new S3HomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+                    final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
                     assertTrue(feature.isSupported(test.getParent(), test.getName()));
                     test.attributes().setRegion(region.getIdentifier());
                     feature.mkdir(test, region.getIdentifier(), new TransferStatus());
@@ -74,7 +75,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     @Test(expected = InteroperabilityException.class)
     public void testCreateBucketInvalidName() throws Exception {
         final S3DirectoryFeature feature = new S3DirectoryFeature(session, new S3WriteFeature(session));
-        final Path test = new Path(new S3HomeFinderService(session).find(), "untitled folder", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), "untitled folder", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertFalse(feature.isSupported(test.getParent(), test.getName()));
         final S3LocationFeature.S3Region region = new S3LocationFeature.S3Region("eu-west-2");
         test.attributes().setRegion(region.getIdentifier());
@@ -122,7 +123,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         login.check(session, new DisabledCancelCallback());
         final String name = String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());
         final Path bucket = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
-            new Path(new S3HomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));

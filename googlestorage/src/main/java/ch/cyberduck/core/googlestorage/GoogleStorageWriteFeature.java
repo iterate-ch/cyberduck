@@ -62,9 +62,7 @@ import static com.google.api.client.json.Json.MEDIA_TYPE;
 
 public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionId> implements Write<VersionId> {
 
-    private final PathContainerService containerService
-        = new GoogleStoragePathContainerService();
-
+    private final PathContainerService containerService;
     private final GoogleStorageSession session;
     private final Find finder;
     private final AttributesFinder attributes;
@@ -78,6 +76,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
         this.session = session;
         this.finder = finder;
         this.attributes = attributes;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

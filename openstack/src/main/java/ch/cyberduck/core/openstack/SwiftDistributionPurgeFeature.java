@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -34,10 +35,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 public class SwiftDistributionPurgeFeature implements Purge {
 
     private final SwiftSession session;
-
-    private final PathContainerService containerService
-            = new PathContainerService();
-
+    private final PathContainerService containerService = new DefaultPathContainerService();
     private final SwiftRegionService regionService;
 
     public SwiftDistributionPurgeFeature(final SwiftSession session) {

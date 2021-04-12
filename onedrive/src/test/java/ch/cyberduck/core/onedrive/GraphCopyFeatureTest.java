@@ -54,7 +54,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
         final Copy copy = new GraphCopyFeature(session, new GraphFileIdProvider(session));
         final Delete delete = new GraphDeleteFeature(session);
         final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session));
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
         assertNotNull(attributesFinder.find(targetDirectory));
@@ -74,7 +74,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testCopyToExistingFile() throws Exception {
-        final Path folder = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(new OneDriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path folder = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path test = new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String target = new AlphanumericRandomStringService().random();
         final Path copy = new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(new Path(folder, target, EnumSet.of(Path.Type.file)), new TransferStatus());

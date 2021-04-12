@@ -50,6 +50,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.restore.Glacier;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -186,7 +187,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return;
         }
         try {
-            this.getFeature(ListService.class).list(new S3HomeFinderService(this).find(), new DisabledListProgressListener() {
+            this.getFeature(ListService.class).list(new DefaultHomeFinderService(this).find(), new DisabledListProgressListener() {
                 @Override
                 public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
                     throw new ListCanceledException(list);
@@ -300,9 +301,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == AttributesFinder.class) {
             return (T) new S3AttributesFinderFeature(this);
-        }
-        if(type == Home.class) {
-            return (T) new S3HomeFinderService(this);
         }
         if(type == TransferAcceleration.class) {
             // Only for AWS. Disable transfer acceleration for AWS GovCloud

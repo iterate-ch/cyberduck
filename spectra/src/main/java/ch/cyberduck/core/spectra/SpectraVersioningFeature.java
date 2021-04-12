@@ -24,7 +24,6 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.s3.S3PathContainerService;
 
 import org.apache.log4j.Logger;
 
@@ -42,22 +41,20 @@ import com.spectralogic.ds3client.models.VersioningLevel;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 
 public class SpectraVersioningFeature implements Versioning {
-
     private static final Logger log = Logger.getLogger(SpectraVersioningFeature.class);
 
     public static final String KEY_REVERTABLE
         = "revertable";
 
     private final SpectraSession session;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
+    private final PathContainerService containerService;
 
     private LRUCache<Path, VersioningConfiguration> cache
         = LRUCache.build(10);
 
     public SpectraVersioningFeature(final SpectraSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

@@ -1,25 +1,23 @@
 package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-public class PathContainerService {
+public interface PathContainerService {
 
-    public Path getRoot(final Path file) {
+    default Path getRoot(final Path file) {
         Path parent = file;
         while(!parent.isRoot()) {
             parent = parent.getParent();
@@ -27,17 +25,16 @@ public class PathContainerService {
         return parent;
     }
 
-    public boolean isContainer(final Path file) {
-        if(file.isRoot()) {
-            return false;
-        }
-        return file.getParent().isRoot();
-    }
+    /**
+     * @param file Directory
+     * @return True if file is container
+     */
+    boolean isContainer(Path file);
 
     /**
      * @return Default path or root with volume attributes set
      */
-    public Path getContainer(final Path file) {
+    default Path getContainer(Path file) {
         if(file.isRoot()) {
             return file;
         }
@@ -49,15 +46,8 @@ public class PathContainerService {
     }
 
     /**
-     * @return Path relative to the container name
+     * @param file Path in storage
+     * @return Path relative to the container name or null for root or container argument
      */
-    public String getKey(final Path file) {
-        if(file.isRoot()) {
-            return null;
-        }
-        if(this.isContainer(file)) {
-            return null;
-        }
-        return PathRelativizer.relativize(this.getContainer(file).getAbsolute(), file.getAbsolute());
-    }
+    String getKey(Path file);
 }

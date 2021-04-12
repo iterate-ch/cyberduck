@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -48,16 +49,9 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(SwiftAttributesFinderFeature.class);
 
     private final SwiftSession session;
-
-    private final PathContainerService containerService
-        = new PathContainerService();
-
-    private final RFC1123DateFormatter rfc1123DateFormatter
-        = new RFC1123DateFormatter();
-
-    private final ISO8601DateParser iso8601DateParser
-        = new ISO8601DateParser();
-
+    private final PathContainerService containerService = new DefaultPathContainerService();
+    private final RFC1123DateFormatter rfc1123DateFormatter = new RFC1123DateFormatter();
+    private final ISO8601DateParser iso8601DateParser = new ISO8601DateParser();
     private final SwiftRegionService regionService;
 
     public SwiftAttributesFinderFeature(SwiftSession session) {

@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -40,10 +41,7 @@ public class SwiftMetadataFeature implements Headers {
     private static final Logger log = Logger.getLogger(SwiftMetadataFeature.class);
 
     private final SwiftSession session;
-
-    private final PathContainerService containerService
-            = new PathContainerService();
-
+    private final PathContainerService containerService = new DefaultPathContainerService();
     private final SwiftRegionService regionService;
 
     public SwiftMetadataFeature(final SwiftSession session) {

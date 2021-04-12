@@ -18,36 +18,31 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.AbstractHomeFeature;
 
 import java.io.IOException;
 import java.util.EnumSet;
 
-public class FTPWorkdirService extends DefaultHomeFinderService {
+public class FTPWorkdirService extends AbstractHomeFeature {
 
     private final FTPSession session;
 
     public FTPWorkdirService(final FTPSession session) {
-        super(session.getHost());
         this.session = session;
     }
 
     @Override
     public Path find() throws BackgroundException {
-        final Path home = super.find();
-        if(home == DEFAULT_HOME) {
-            final String directory;
-            try {
-                directory = session.getClient().printWorkingDirectory();
-                if(null == directory) {
-                    throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
-                }
-                return new Path(PathNormalizer.normalize(directory), directory.equals(String.valueOf(Path.DELIMITER)) ? EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
+        final String directory;
+        try {
+            directory = session.getClient().printWorkingDirectory();
+            if(null == directory) {
+                throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
-            catch(IOException e) {
-                throw new FTPExceptionMappingService().map(e);
-            }
+            return new Path(PathNormalizer.normalize(directory), directory.equals(String.valueOf(Path.DELIMITER)) ? EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
         }
-        return home;
+        catch(IOException e) {
+            throw new FTPExceptionMappingService().map(e);
+        }
     }
 }

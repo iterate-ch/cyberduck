@@ -48,7 +48,7 @@ public class GraphItemListServiceTest extends AbstractOneDriveTest {
 
     @Test
     public void testListLexicographically() throws Exception {
-        final Path directory = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(new OneDriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path directory = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path f2 = new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(new Path(directory, "aa", EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path f1 = new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(new Path(directory, "a", EnumSet.of(Path.Type.file)), new TransferStatus());
         final AttributedList<Path> list = new GraphItemListService(session, new GraphFileIdProvider(session)).list(directory, new DisabledListProgressListener());
@@ -60,17 +60,17 @@ public class GraphItemListServiceTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
-        final Path directory = new Path(new OneDriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path directory = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new GraphItemListService(session, new GraphFileIdProvider(session)).list(directory, new DisabledListProgressListener());
     }
 
     @Test
     public void testListDriveChildren() throws Exception {
-        final Path file = new Path(new OneDriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus());
         assertNotNull(new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(file));
         final GraphItemListService listService = new GraphItemListService(session, new GraphFileIdProvider(session));
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         final AttributedList<Path> list = listService.list(drive, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
@@ -89,7 +89,7 @@ public class GraphItemListServiceTest extends AbstractOneDriveTest {
     @Test
     public void testWhitespacedChild() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
-        final Path target = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(new OneDriveHomeFinderService(session).find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.directory)), null, null);
+        final Path target = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(new OneDriveHomeFinderService().find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.directory)), null, null);
         final AttributedList<Path> list = new GraphItemListService(session, new GraphFileIdProvider(session)).list(target, new DisabledListProgressListener());
         new GraphDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

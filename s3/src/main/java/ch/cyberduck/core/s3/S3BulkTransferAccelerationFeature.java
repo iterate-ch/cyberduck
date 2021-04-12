@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -44,6 +45,7 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
 
     private final S3Session session;
     private final TransferAcceleration accelerationService;
+    private final PathContainerService containerService;
 
     public S3BulkTransferAccelerationFeature(final S3Session session) {
         this(session, session.getFeature(TransferAcceleration.class));
@@ -52,6 +54,7 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
     public S3BulkTransferAccelerationFeature(final S3Session session, final TransferAcceleration accelerationService) {
         this.session = session;
         this.accelerationService = accelerationService;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override
@@ -78,7 +81,7 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
     private void configure(final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback, final boolean enabled) throws BackgroundException {
         final Set<Path> buckets = new HashSet<>();
         for(TransferItem file : files.keySet()) {
-            buckets.add(new S3PathContainerService().getContainer(file.remote));
+            buckets.add(containerService.getContainer(file.remote));
         }
         for(Path bucket : buckets) {
             if(enabled) {

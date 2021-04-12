@@ -18,6 +18,7 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -48,7 +49,7 @@ public class AzureAttributesFinderFeature implements AttributesFinder {
     private final AzureSession session;
     private final OperationContext context;
     private final PathContainerService containerService
-            = new AzurePathContainerService();
+        = new DirectoryDelimiterPathContainerService();
 
     public static final String KEY_BLOB_TYPE = "blob_type";
 

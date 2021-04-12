@@ -49,7 +49,7 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testWrite() throws Exception {
         final GraphBufferWriteFeature feature = new GraphBufferWriteFeature(session, new GraphFileIdProvider(session));
-        final Path container = new OneDriveHomeFinderService(session).find();
+        final Path container = new OneDriveHomeFinderService().find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -77,7 +77,7 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testWriteOverwrite() throws Exception {
         final GraphBufferWriteFeature feature = new GraphBufferWriteFeature(session, new GraphFileIdProvider(session));
-        final Path container = new OneDriveHomeFinderService(session).find();
+        final Path container = new OneDriveHomeFinderService().find();
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus());
         {
@@ -122,7 +122,7 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testWriteUnknownLength() throws Exception {
         final GraphBufferWriteFeature feature = new GraphBufferWriteFeature(session, new GraphFileIdProvider(session));
-        final Path container = new OneDriveHomeFinderService(session).find();
+        final Path container = new OneDriveHomeFinderService().find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
@@ -146,7 +146,7 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testWriteZeroLength() throws Exception {
         final GraphBufferWriteFeature feature = new GraphBufferWriteFeature(session, new GraphFileIdProvider(session));
-        final Path container = new OneDriveHomeFinderService(session).find();
+        final Path container = new OneDriveHomeFinderService().find();
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);

@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class DropboxRootListServiceTest extends AbstractDropboxTest {
 
     @Test
     public void testList() throws Exception {
-        final AttributedList<Path> list = new DropboxRootListService(session).list(new DropboxHomeFinderFeature(session).find(), new DisabledListProgressListener());
+        final AttributedList<Path> list = new DropboxRootListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
         assertNotNull(list);
         assertFalse(list.isEmpty());
     }

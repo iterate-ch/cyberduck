@@ -15,10 +15,11 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 
-public class SDSPathContainerService extends PathContainerService {
+public class SDSPathContainerService extends DefaultPathContainerService {
+
     @Override
     public boolean isContainer(final Path file) {
         return super.isContainer(file) || file.getType().contains(Path.Type.volume);

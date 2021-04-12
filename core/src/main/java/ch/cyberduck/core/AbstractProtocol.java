@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.shared.RootPathContainerService;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -373,6 +374,9 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public <T> T getFeature(final Class<T> type) {
+        if(type == PathContainerService.class) {
+            return (T) new RootPathContainerService();
+        }
         return null;
     }
 }

@@ -92,7 +92,7 @@ public class MantaSession extends HttpSession<MantaClient> {
             config.setNoAuth(false);
             config.reload();
             // Instantiation of client does not validate credentials. List the home path to test the connection
-            client.isDirectoryEmpty(new MantaHomeFinderFeature(this).find().getAbsolute());
+            client.isDirectoryEmpty(new MantaHomeFinderFeature(host).find().getAbsolute());
         }
         catch(ConfigurationException e) {
             throw new BackgroundException(e.getRawMessage(), e);
@@ -180,7 +180,7 @@ public class MantaSession extends HttpSession<MantaClient> {
             return (T) new MantaUrlProviderFeature(this);
         }
         else if(type == Home.class) {
-            return (T) new MantaHomeFinderFeature(this);
+            return (T) new MantaHomeFinderFeature(host);
         }
         else if(type == Search.class) {
             return (T) new MantaSearchFeature(this);

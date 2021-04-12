@@ -112,7 +112,7 @@ public class InfoController extends ToolbarWindowController {
     private final LoginCallback prompt = LoginCallbackFactory.get(this);
 
     private final PathContainerService containerService
-        = new PathContainerService();
+        = new DefaultPathContainerService();
 
     private final Preferences preferences
         = PreferencesFactory.get();

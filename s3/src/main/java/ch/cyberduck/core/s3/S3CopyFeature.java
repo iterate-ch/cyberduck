@@ -40,10 +40,7 @@ public class S3CopyFeature implements Copy {
     private static final Logger log = Logger.getLogger(S3CopyFeature.class);
 
     private final S3Session session;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final S3AccessControlListFeature accessControlListFeature;
 
     public S3CopyFeature(final S3Session session) {
@@ -53,6 +50,7 @@ public class S3CopyFeature implements Copy {
     public S3CopyFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
         this.accessControlListFeature = accessControlListFeature;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

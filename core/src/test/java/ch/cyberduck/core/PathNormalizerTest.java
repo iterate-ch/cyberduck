@@ -125,4 +125,38 @@ public class PathNormalizerTest {
     public void testNormalizeNameWithBackslash() {
         assertEquals("file\\name", PathNormalizer.name("/path/to/file\\name"));
     }
+
+    @Test
+    public void testFindWithWorkdir() {
+        assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
+            PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox"));
+        assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
+            PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), "/sandbox"));
+    }
+
+    @Test
+    public void testRelativeParent() {
+        final Path home = PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox/sub");
+        assertEquals(new Path("/sandbox/sub", EnumSet.of(Path.Type.directory)), home);
+        assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)), home.getParent());
+    }
+
+    @Test
+    public void testHomeParent() {
+        final Path home = PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), String.format("%s/sandbox/sub", Path.HOME));
+        assertEquals(new Path("/sandbox/sub", EnumSet.of(Path.Type.directory)), home);
+        assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)), home.getParent());
+    }
+
+    @Test
+    public void testDefaultLocalPathDriveLetter() {
+        assertEquals(new Path("/C:/Users/example/Documents/vault", EnumSet.of(Path.Type.directory)),
+            PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), "C:/Users/example/Documents/vault"));
+    }
+
+    @Test
+    public void testDefaultLocalPathDriveLetterBackwardSlashes() {
+        assertEquals(new Path("/C:/Users/example/Documents/vault", EnumSet.of(Path.Type.directory)),
+            PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), "C:\\Users\\example\\Documents\\vault"));
+    }
 }

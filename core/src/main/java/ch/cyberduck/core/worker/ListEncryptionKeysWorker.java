@@ -18,6 +18,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -53,8 +54,9 @@ public class ListEncryptionKeysWorker extends Worker<Set<Encryption.Algorithm>> 
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", feature));
         }
+        final PathContainerService container = session.getFeature(PathContainerService.class);
         final Set<Encryption.Algorithm> keys = new HashSet<>();
-        for(Path file : this.getContainers(files)) {
+        for(Path file : this.getContainers(container, files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }

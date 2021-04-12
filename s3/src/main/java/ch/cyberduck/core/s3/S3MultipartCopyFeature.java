@@ -47,9 +47,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
     private static final Logger log = Logger.getLogger(S3MultipartCopyFeature.class);
 
     private final S3Session session;
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
+    private final PathContainerService containerService;
 
     private final ThreadPool pool
         = ThreadPoolFactory.get("multipart", PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
@@ -67,6 +65,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
     public S3MultipartCopyFeature(final S3Session session, final S3AccessControlListFeature acl) {
         super(session, acl);
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

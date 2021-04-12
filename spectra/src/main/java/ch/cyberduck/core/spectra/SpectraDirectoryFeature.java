@@ -20,7 +20,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
-import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -28,13 +27,12 @@ import org.jets3t.service.model.StorageObject;
 
 public class SpectraDirectoryFeature extends S3DirectoryFeature {
 
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final Write<StorageObject> writer;
 
     public SpectraDirectoryFeature(final SpectraSession session, final Write<StorageObject> writer) {
         super(session, writer);
+        this.containerService = session.getFeature(PathContainerService.class);
         this.writer = writer;
     }
 

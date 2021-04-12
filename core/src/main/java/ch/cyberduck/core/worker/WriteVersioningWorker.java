@@ -18,6 +18,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -54,7 +55,8 @@ public class WriteVersioningWorker extends Worker<Boolean> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", feature));
         }
-        for(Path file : this.getContainers(files)) {
+        final PathContainerService container = session.getFeature(PathContainerService.class);
+        for(Path file : this.getContainers(container, files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }

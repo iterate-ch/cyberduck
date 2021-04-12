@@ -30,6 +30,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.apache.log4j.Logger;
 
@@ -51,19 +52,18 @@ public class MountWorker extends Worker<Path> {
     }
 
     /**
-     * Mount the default path of the configured host or the home directory as returned by the server
-     * when not given.
+     * Mount the default path of the configured host or the home directory as returned by the server when not given.
      */
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
-        return this.list(session);
+        return this.list(session, new DefaultHomeFinderService(session));
     }
 
-    protected Path list(final Session<?> session) throws BackgroundException {
+    protected Path list(final Session<?> session, final Home feature) throws BackgroundException {
         Path home;
         AttributedList<Path> list;
         try {
-            home = session.getFeature(Home.class).find();
+            home = feature.find();
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of default path
@@ -107,7 +107,7 @@ public class MountWorker extends Worker<Path> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Mounting {0}", "Status"),
-                bookmark.getHostname());
+            bookmark.getHostname());
     }
 
     @Override

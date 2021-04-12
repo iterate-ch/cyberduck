@@ -61,9 +61,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     private final Preferences preferences
         = PreferencesFactory.get();
 
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final S3Session session;
     private final S3MultipartService multipartService;
     private final Find finder;
@@ -84,6 +82,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         this.multipartService = multipartService;
         this.finder = finder;
         this.attributes = attributes;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

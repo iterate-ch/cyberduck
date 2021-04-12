@@ -44,7 +44,7 @@ public class GraphTimestampFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testSetTimestamp() throws Exception {
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(file));
@@ -57,7 +57,7 @@ public class GraphTimestampFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testSetTimestampDirectory() throws Exception {
-        final Path drive = new OneDriveHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService().find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(test, null, null);
         assertNotNull(new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(test));

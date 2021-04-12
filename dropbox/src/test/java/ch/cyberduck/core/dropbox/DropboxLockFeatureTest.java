@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -40,7 +41,7 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
     @Test
     public void testLockNotShared() throws Exception {
         final DropboxTouchFeature touch = new DropboxTouchFeature(session);
-        final Path file = touch.touch(new Path(new DropboxHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = touch.touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxLockFeature f = new DropboxLockFeature(session);
         try {
             final String lock = f.lock(file);
@@ -55,7 +56,7 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
     @Test(expected = InteroperabilityException.class)
     public void testLock() throws Exception {
         final DropboxTouchFeature touch = new DropboxTouchFeature(session);
-        final Path file = touch.touch(new Path(new Path(new DropboxHomeFinderFeature(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new PathAttributes().withFileId("7581509952")),
+        final Path file = touch.touch(new Path(new Path(new DefaultHomeFinderService(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new PathAttributes().withFileId("7581509952")),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxLockFeature f = new DropboxLockFeature(session);
         final String lock = f.lock(file);
@@ -67,7 +68,7 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testLockNoSuchFile() throws Exception {
-        final Path file = new Path(new Path(new DropboxHomeFinderFeature(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new PathAttributes().withFileId("7581509952")),
+        final Path file = new Path(new Path(new DefaultHomeFinderService(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new PathAttributes().withFileId("7581509952")),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DropboxLockFeature f = new DropboxLockFeature(session);
         f.lock(file);
@@ -76,7 +77,7 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
     @Test
     public void testLockNotfound() throws Exception {
         final DropboxTouchFeature touch = new DropboxTouchFeature(session);
-        final Path file = touch.touch(new Path(new Path(new DropboxHomeFinderFeature(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.shared)).withAttributes(new PathAttributes().withFileId("7581509952")),
+        final Path file = touch.touch(new Path(new Path(new DefaultHomeFinderService(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.shared)).withAttributes(new PathAttributes().withFileId("7581509952")),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxLockFeature f = new DropboxLockFeature(session);
         f.unlock(file, "l");

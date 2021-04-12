@@ -20,6 +20,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -58,14 +59,10 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private static final Logger log = Logger.getLogger(SwiftLargeObjectUploadFeature.class);
 
     private final SwiftSession session;
-
-    private final PathContainerService containerService
-        = new PathContainerService();
-
+    private final PathContainerService containerService = new DefaultPathContainerService();
     private final SwiftSegmentService segmentService;
     private final SwiftObjectListService listService;
     private final SwiftRegionService regionService;
-
     private final Long segmentSize;
     private final Integer concurrency;
 

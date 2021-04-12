@@ -51,11 +51,7 @@ import java.util.concurrent.Callable;
 public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
     private static final Logger log = Logger.getLogger(CustomOriginCloudFrontDistributionConfiguration.class);
 
-    private final PathContainerService containerService
-        = new PathContainerService();
-
     private final Map<Path, Distribution> cache = new HashMap<Path, Distribution>();
-
     private final Host origin;
 
     public CustomOriginCloudFrontDistributionConfiguration(final Host origin,
@@ -85,7 +81,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
                 return CustomOriginCloudFrontDistributionConfiguration.super.read(file, method, prompt);
             }
         }, prompt);
-        cache.put(containerService.getContainer(file), distribution);
+        cache.put(session.getFeature(PathContainerService.class).getContainer(file), distribution);
         return distribution;
     }
 
@@ -121,8 +117,8 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
-        if(cache.containsKey(containerService.getContainer(file))) {
-            return new DistributionUrlProvider(cache.get(containerService.getContainer(file))).toUrl(file);
+        if(cache.containsKey(session.getFeature(PathContainerService.class).getContainer(file))) {
+            return new DistributionUrlProvider(cache.get(session.getFeature(PathContainerService.class).getContainer(file))).toUrl(file);
         }
         return DescriptiveUrlBag.empty();
     }

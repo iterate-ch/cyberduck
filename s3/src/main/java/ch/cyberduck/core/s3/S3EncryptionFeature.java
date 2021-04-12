@@ -37,14 +37,12 @@ import java.util.Set;
 public class S3EncryptionFeature implements Encryption {
 
     private final Preferences preferences = PreferencesFactory.get();
-
-    private final PathContainerService containerService
-        = new S3PathContainerService();
-
+    private final PathContainerService containerService;
     private final S3Session session;
 
     public S3EncryptionFeature(final S3Session session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override

@@ -19,6 +19,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
@@ -47,7 +48,7 @@ import com.microsoft.azure.storage.blob.SharedAccessBlobPolicy;
 public class AzureUrlProvider implements PromptUrlProvider<Void, Void> {
 
     private final PathContainerService containerService
-        = new AzurePathContainerService();
+        = new DirectoryDelimiterPathContainerService();
 
     private final AzureSession session;
 

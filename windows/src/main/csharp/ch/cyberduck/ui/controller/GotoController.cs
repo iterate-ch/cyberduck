@@ -20,7 +20,6 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
-using ch.cyberduck.core.features;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Core.Resources;
 
@@ -54,7 +53,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void GotoFolder(Path workdir, String filename)
         {
-            Path dir = ((Home) BrowserController.Session.getFeature(typeof (Home))).find(workdir, filename);
+            Path dir = PathNormalizer.compose(workdir, filename);
             if (workdir.getParent().Equals(dir))
             {
                 BrowserController.SetWorkdir(dir, workdir);
