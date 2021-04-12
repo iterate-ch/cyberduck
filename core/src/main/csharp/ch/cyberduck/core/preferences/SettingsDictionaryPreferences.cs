@@ -32,6 +32,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Windows.Storage;
 using StringUtils = org.apache.commons.lang3.StringUtils;
+using ch.cyberduck.core.preferences;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
@@ -139,7 +140,7 @@ namespace Ch.Cyberduck.Core.Preferences
             base.configureLogging(level);
 
             Logger root = Logger.getRootLogger();
-            var fileName = Path.Combine(new RoamingSupportDirectoryFinder().find().getAbsolute(),
+            var fileName = Path.Combine(LogDirectoryFinderFactory.get().find().getAbsolute(),
                 getProperty("application.name").ToLower().Replace(" ", "") + ".log");
             RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
                 fileName, true);
