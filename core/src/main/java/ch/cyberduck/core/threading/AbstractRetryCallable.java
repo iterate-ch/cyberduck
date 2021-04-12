@@ -41,12 +41,15 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
     /**
      * The number of times to retry a failed action
      */
-    private int retry;
+    private final int retry;
 
     /**
      * The number of times this action has been run
      */
     private int count = 0;
+    /**
+     * Backoff in seconds
+     */
     private int backoff;
 
     public AbstractRetryCallable(final Host host) {
@@ -86,7 +89,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                 break;
             case application:
                 if(failure instanceof RetriableAccessDeniedException) {
-                    final Duration duration = ((RetriableAccessDeniedException) failure).getRetry();
+                    final Duration duration = ((RetriableAccessDeniedException) failure).getDelay();
                     if(duration != null) {
                         // Explicitly retry
                         delay = (int) duration.getSeconds();

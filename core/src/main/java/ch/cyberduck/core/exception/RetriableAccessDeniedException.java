@@ -19,7 +19,7 @@ import java.time.Duration;
 
 public class RetriableAccessDeniedException extends AccessDeniedException {
 
-    private Duration retry;
+    private Duration delay;
 
     public RetriableAccessDeniedException(final String detail) {
         super(detail);
@@ -29,20 +29,20 @@ public class RetriableAccessDeniedException extends AccessDeniedException {
         super(detail, cause);
     }
 
-    public RetriableAccessDeniedException(final String detail, final Duration seconds) {
+    public RetriableAccessDeniedException(final String detail, final Duration delay) {
         super(detail);
-        this.retry = seconds;
+        this.delay = delay;
     }
 
-    public RetriableAccessDeniedException(final String detail, final Duration seconds, final Throwable cause) {
+    public RetriableAccessDeniedException(final String detail, final Duration delay, final Throwable cause) {
         super(detail, cause);
-        this.retry = seconds;
+        this.delay = delay;
     }
 
     /**
      * @return Retry after this delay has expired
      */
-    public Duration getRetry() {
-        return retry;
+    public Duration getDelay() {
+        return delay;
     }
 }
