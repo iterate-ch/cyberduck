@@ -165,7 +165,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                     return new VersionId(null);
                 }
                 catch(IOException e) {
-                    throw new GoogleStorageExceptionMappingService().map("Upload failed", e, file);
+                    throw new GoogleStorageExceptionMappingService().map("Upload {0} failed", e, file);
                 }
             }
 
