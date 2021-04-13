@@ -61,8 +61,11 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
-    public <T> T serialize(final Serializer dict) {
-        throw new UnsupportedOperationException();
+    public <T> T serialize(final Serializer serializer) {
+        for(String key : dict.keys()) {
+            serializer.setStringForKey(dict.stringForKey(key), key);
+        }
+        return serializer.getSerialized();
     }
 
     public Protocol getProtocol() {
@@ -79,8 +82,7 @@ public class Profile implements Protocol, Serializable {
      */
     @Override
     public boolean isEnabled() {
-        return StringUtils.isNotBlank(this.value("Protocol"))
-            && StringUtils.isNotBlank(this.value("Vendor"));
+        return StringUtils.isNotBlank(this.value("Protocol")) && StringUtils.isNotBlank(this.value("Vendor"));
     }
 
     @Override
