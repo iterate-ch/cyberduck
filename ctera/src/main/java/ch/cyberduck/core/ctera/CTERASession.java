@@ -15,10 +15,14 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.MacUniqueIdService;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.ctera.model.Attachment;
@@ -91,8 +95,11 @@ public class CTERASession extends DAVSession {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        final Credentials credentials = host.getCredentials();
+        final String token = credentials.getToken();
         if(this.getPublicInfo().hasWebSSO) {
-            this.startWebSSOFlow(cancel);
+            final CTERAToken t = StringUtils.isBlank(token) ? this.startWebSSOFlow(cancel) : CTERAToken.parse(token);
+            cookieInterceptor.setCookie(t.getCookie());
         }
         else {
             if(StringUtils.isBlank(token)) {
@@ -112,35 +119,32 @@ public class CTERASession extends DAVSession {
         }
     }
 
-    private void startWebSSOFlow(final CancelCallback cancel) throws BackgroundException {
+    private CTERAToken startWebSSOFlow(final CancelCallback cancel) throws BackgroundException {
         final String url = String.format("%s/ServicesPortal/activate?scheme=%s",
             new HostUrlProvider().withUsername(false).withPath(false).get(host), CTERAProtocol.CTERA_REDIRECT_URI
         );
         if(log.isDebugEnabled()) {
             log.debug(String.format("Open browser with URL %s", url));
         }
-        if(!browser.open(url)) {
+        if(!BrowserLauncherFactory.get().open(url)) {
             log.warn(String.format("Failed to launch web browser for %s", url));
         }
         final AtomicReference<String> authenticationCode = new AtomicReference<>();
         final CountDownLatch signal = new CountDownLatch(1);
         final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
-        registry.register(StringUtils.EMPTY, new OAuth2TokenListener() {
-            @Override
-            public void callback(final String code) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Callback with code %s", code));
-                }
-                if(!StringUtils.isBlank(code)) {
-                    authenticationCode.set(code);
-                }
-                signal.countDown();
+        registry.register(StringUtils.EMPTY, code -> {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Callback with code %s", code));
             }
+            if(!StringUtils.isBlank(code)) {
+                authenticationCode.set(code);
+            }
+            signal.countDown();
         });
         while(!Uninterruptibles.awaitUninterruptibly(signal, 500, TimeUnit.MILLISECONDS)) {
             cancel.verify();
         }
-
+        final CTERAToken token = new CTERAToken();
         // Attach device
         final HttpPost attach = new HttpPost("/ServicesPortal/public/users?format=jsonext");
         try {
@@ -166,7 +170,6 @@ public class CTERASession extends DAVSession {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
         }
-
         // WebDAV authentication
         this.webdavAuthenticate(token);
         host.getCredentials().setToken(token.toString());
@@ -226,7 +229,7 @@ public class CTERASession extends DAVSession {
         }
     }
 
-    private Attachment getAttachment(final String code, final String server, final String hostname, final String mac) {
+    private static Attachment getAttachment(final String code, final String hostname, final String mac) {
         final Attachment attachment = new Attachment();
         final ArrayList<Attachment.Attribute> attributes = new ArrayList<>();
         attachment.setAttributes(attributes);
@@ -269,8 +272,8 @@ public class CTERASession extends DAVSession {
         return attachment;
     }
 
-    private String getAttachmentAsString(final String code, final String server, final String hostname, final String mac) throws JsonProcessingException {
-        final Attachment attachment = this.getAttachment(code, server, hostname, mac);
+    private String getAttachmentAsString(final String code, final String hostname, final String mac) throws JsonProcessingException {
+        final Attachment attachment = getAttachment(code, hostname, mac);
         final XmlMapper xmlMapper = new XmlMapper();
         return xmlMapper.writeValueAsString(attachment);
     }
