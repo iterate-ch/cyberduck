@@ -16,6 +16,8 @@ package ch.cyberduck.core.ctera;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -64,5 +66,15 @@ public class CTERAProtocol extends AbstractProtocol {
     @Override
     public String icon() {
         return new DAVSSLProtocol().icon();
+    }
+
+    @Override
+    public boolean isTokenConfigurable() {
+        return true;
+    }
+
+    @Override
+    public boolean validate(final Credentials credentials, final LoginOptions options) {
+        return super.validate(credentials, new LoginOptions(options).token(false).password(false).user(false));
     }
 }

@@ -26,11 +26,10 @@ import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVRedirectStrategy;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
-import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.oauth.OAuth2TokenListener;
 import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -38,18 +37,29 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestWrapper;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.cookie.CookieOrigin;
+import org.apache.http.cookie.MalformedCookieException;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.cookie.DefaultCookieSpec;
+import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +74,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 public class CTERASession extends DAVSession {
     private static final Logger log = Logger.getLogger(CTERASession.class);
 
-    public final BrowserLauncher browser = BrowserLauncherFactory.get();
+    private CTERACookieInterceptor cookieInterceptor;
 
     public CTERASession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -74,6 +84,8 @@ public class CTERASession extends DAVSession {
     public DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
+        cookieInterceptor = new CTERACookieInterceptor();
+        configuration.addInterceptorLast(cookieInterceptor);
         return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
 
@@ -83,7 +95,20 @@ public class CTERASession extends DAVSession {
             this.startWebSSOFlow(cancel);
         }
         else {
-            //TODO
+            if(StringUtils.isBlank(token)) {
+                // Prompt for credentials
+                final Credentials input = prompt.prompt(host,
+                    MessageFormat.format(LocaleFactory.localizedString(
+                        "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)),
+                    LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"),
+                    new LoginOptions(host.getProtocol()).token(false)
+                );
+                credentials.setUsername(input.getUsername());
+                credentials.setPassword(input.getPassword());
+                credentials.setSaved(input.isSaved());
+                // Flow to get additional token
+                //todo
+            }
         }
     }
 
@@ -117,30 +142,72 @@ public class CTERASession extends DAVSession {
         }
 
         // Attach device
-        final HttpPost request = new HttpPost("/ServicesPortal/public/users?format=jsonext");
+        final HttpPost attach = new HttpPost("/ServicesPortal/public/users?format=jsonext");
         try {
-            request.setEntity(
+            attach.setEntity(
                 new StringEntity(
-                    this.getAttachmentAsString(authenticationCode.get(), host.getHostname(),
+                    this.getAttachmentAsString(authenticationCode.get(),
                         URIEncoder.encode(InetAddress.getLocalHost().getHostName()), new MacUniqueIdService().getUUID()),
                     ContentType.create("application/xml", StandardCharsets.UTF_8.name()
                     )
                 ));
-            final AttachDeviceResponse response = client.execute(request, new AbstractResponseHandler<AttachDeviceResponse>() {
+            final AttachDeviceResponse response = client.execute(attach, new AbstractResponseHandler<AttachDeviceResponse>() {
                 @Override
                 public AttachDeviceResponse handleEntity(final HttpEntity entity) throws IOException {
                     ObjectMapper mapper = new ObjectMapper();
                     return mapper.readValue(entity.getContent(), AttachDeviceResponse.class);
                 }
             });
-            // TODO save deviceUid and sharedSecret
+            token.
+                setSharedSecret(response.sharedSecret).
+                setDeviceId(response.deviceUID);
         }
+
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
         }
 
         // WebDAV authentication
-        // TODO
+        this.webdavAuthenticate(token);
+        host.getCredentials().setToken(token.toString());
+        host.getCredentials().setSaved(true);
+        return token;
+    }
+
+    private void webdavAuthenticate(final CTERAToken token) throws BackgroundException {
+        final HttpPost login = new HttpPost("/ServicesPortal/api/login?format=jsonext");
+        try {
+            login.setEntity(
+                new StringEntity(String.format("j_username=device%%5c%s&j_password=%s", token.getDeviceId(), token.getSharedSecret()),
+                    ContentType.APPLICATION_FORM_URLENCODED
+                )
+            );
+            client.execute(login, new AbstractResponseHandler<Void>() {
+                @Override
+                public Void handleResponse(final HttpResponse response) throws IOException {
+                    final Header header = response.getFirstHeader("Set-Cookie");
+                    try {
+                        final Cookie cookie = new DefaultCookieSpec().parse(header, new CookieOrigin(host.getHostname(), host.getPort(), StringUtils.EMPTY, true)).get(0);
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Received cookie %s", cookie));
+                        }
+                        token.setCookie(cookie.getValue());
+                        return super.handleResponse(response);
+                    }
+                    catch(MalformedCookieException e) {
+                        throw new IOException("Unable to parse cookie", e);
+                    }
+                }
+
+                @Override
+                public Void handleEntity(final HttpEntity entity) {
+                    return null;
+                }
+            });
+        }
+        catch(IOException e) {
+            throw new HttpExceptionMappingService().map(e);
+        }
     }
 
     private PublicInfo getPublicInfo() throws BackgroundException {
@@ -226,5 +293,79 @@ public class CTERASession extends DAVSession {
     private static final class AttachDeviceResponse {
         public String deviceUID;
         public String sharedSecret;
+    }
+
+    private static class CTERAToken {
+        private String deviceId;
+        private String sharedSecret;
+        private String cookie;
+
+        public static CTERAToken parse(final String token) throws BackgroundException {
+            final String[] t = token.split(":");
+            if(t.length < 3) {
+                log.error("Unable to parse token");
+                throw new LoginCanceledException();
+            }
+            return new CTERAToken().
+                setDeviceId(t[0]).
+                setSharedSecret(t[1]).
+                setCookie(t[2]);
+        }
+
+        public String getDeviceId() {
+            return deviceId;
+        }
+
+        public CTERAToken setDeviceId(final String deviceId) {
+            this.deviceId = deviceId;
+            return this;
+        }
+
+        public String getSharedSecret() {
+            return sharedSecret;
+        }
+
+        public CTERAToken setSharedSecret(final String sharedSecret) {
+            this.sharedSecret = sharedSecret;
+            return this;
+        }
+
+        public String getCookie() {
+            return cookie;
+        }
+
+        public CTERAToken setCookie(final String cookie) {
+            this.cookie = cookie;
+            return this;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s:%s:%s", deviceId, sharedSecret, cookie);
+        }
+    }
+
+    private class CTERACookieInterceptor implements HttpRequestInterceptor {
+
+        private String cookie;
+
+        @Override
+        public void process(final HttpRequest request, final HttpContext httpContext) {
+            if(request instanceof HttpRequestWrapper) {
+                final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
+                if(null != wrapper.getTarget()) {
+                    if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
+                        if(StringUtils.isNotBlank(cookie)) {
+                            request.addHeader("Cookie", String.format("JSESSIONID=%s", cookie));
+                        }
+                    }
+                }
+            }
+        }
+
+        public CTERACookieInterceptor setCookie(final String cookie) {
+            this.cookie = cookie;
+            return this;
+        }
     }
 }
