@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17132.0.2"
+          targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17132.0.2"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -119,7 +120,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="272" y="168" width="507" height="518"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1667"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
             <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -185,12 +186,6 @@
                             </tabViewItem>
                             <tabViewItem label="Connection" identifier="connection" id="24">
                                 <view key="view" id="25">
-                                    <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                </view>
-                            </tabViewItem>
-                            <tabViewItem label="Profiles" identifier="profiles" id="wO2-Y8-aa2">
-                                <view key="view" id="OYi-mN-bHe">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
@@ -356,7 +351,6 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-581" y="1539"/>
         </customView>
         <customView id="61">
             <rect key="frame" x="0.0" y="0.0" width="507" height="422"/>
@@ -523,7 +517,6 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-6" y="1669"/>
         </customView>
         <customView id="99">
             <rect key="frame" x="0.0" y="0.0" width="507" height="412"/>
@@ -1291,7 +1284,6 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-1753" y="849"/>
         </customView>
         <customView id="272">
             <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
@@ -1330,7 +1322,6 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-1607" y="1047"/>
         </customView>
         <customView id="280">
             <rect key="frame" x="0.0" y="0.0" width="507" height="383"/>
@@ -1483,7 +1474,6 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-1032" y="1086"/>
         </customView>
         <userDefaultsController representsSharedInstance="YES" id="314"/>
         <customView id="315">
@@ -1539,7 +1529,6 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-1032" y="495"/>
         </customView>
         <customView id="327">
             <rect key="frame" x="0.0" y="0.0" width="507" height="183"/>
@@ -1632,7 +1621,6 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-886" y="734"/>
         </customView>
         <customView id="349">
             <rect key="frame" x="0.0" y="0.0" width="507" height="335"/>
@@ -1724,7 +1712,6 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-457" y="1094"/>
         </customView>
         <customView id="368">
             <rect key="frame" x="0.0" y="0.0" width="507" height="168"/>
@@ -1771,7 +1758,6 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-311" y="773"/>
         </customView>
         <customView id="408">
             <rect key="frame" x="0.0" y="0.0" width="507" height="134"/>
@@ -1806,65 +1792,6 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-311" y="553"/>
-        </customView>
-        <customView id="ttP-qL-xXs" userLabel="Panel Connection Profiles">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="134"/>
-            <autoresizingMask key="autoresizingMask"/>
-            <subviews>
-                <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="17" horizontalPageScroll="10" verticalLineScroll="17" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O8v-6z-Xdx">
-                    <rect key="frame" x="20" y="13" width="467" height="101"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <clipView key="contentView" drawsBackground="NO" id="Bv4-wy-F40">
-                        <rect key="frame" x="1" y="1" width="465" height="99"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" id="eUZ-SN-EPd">
-                                <rect key="frame" x="0.0" y="0.0" width="465" height="99"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <size key="intercellSpacing" width="17" height="0.0"/>
-                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
-                                <tableColumns>
-                                    <tableColumn width="24" minWidth="10" maxWidth="3.4028234663852886e+38" id="oiE-t9-xeU">
-                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
-                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </tableHeaderCell>
-                                        <buttonCell key="dataCell" type="check" bezelStyle="regularSquare" imagePosition="only" state="on" inset="2" id="QVE-op-9jY">
-                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                    </tableColumn>
-                                    <tableColumn width="412" minWidth="40" maxWidth="1000" id="1Pz-JL-O5U">
-                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
-                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
-                                        </tableHeaderCell>
-                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="ljU-A6-Shd">
-                                            <font key="font" metaFont="system"/>
-                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                    </tableColumn>
-                                </tableColumns>
-                            </tableView>
-                        </subviews>
-                        <nil key="backgroundColor"/>
-                    </clipView>
-                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="vyu-64-8Zi">
-                        <rect key="frame" x="1" y="85" width="465" height="15"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </scroller>
-                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="DNo-Vh-j1T">
-                        <rect key="frame" x="224" y="17" width="15" height="102"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </scroller>
-                </scrollView>
-            </subviews>
-            <point key="canvasLocation" x="-311.5" y="553"/>
         </customView>
         <customView id="UTQ-mX-sfj" userLabel="Panel Cryptomator">
             <rect key="frame" x="0.0" y="0.0" width="507" height="103"/>
