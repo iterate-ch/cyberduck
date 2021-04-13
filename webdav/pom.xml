@@ -81,18 +81,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <repositories>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <id>bintray-milton</id>
-            <name>bintray</name>
-            <url>https://dl.bintray.com/milton/Milton</url>
-        </repository>
-    </repositories>
 </project>
 
