@@ -52,6 +52,11 @@ public abstract class AbstractSharepointSession extends GraphSession {
     public abstract GroupItem getGroup(final Path file) throws BackgroundException;
 
     @Override
+    public String getFileId(final DriveItem.Metadata metadata) {
+        return metadata.getId();
+    }
+
+    @Override
     public DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
         final String versionId = fileIdProvider.getFileid(file, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {

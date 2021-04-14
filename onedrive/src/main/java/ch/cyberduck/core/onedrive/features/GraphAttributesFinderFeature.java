@@ -77,7 +77,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         else if(null != metadata.getSize()) {
             attributes.setSize(metadata.getSize());
         }
-        setId(attributes, metadata.getId());
+        setId(attributes, session.getFileId(metadata));
         webUrl.ifPresent(attributes::setLink);
         final FileSystemInfo info = metadata.getFacet(FileSystemInfo.class);
         if(null != info) {

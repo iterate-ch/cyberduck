@@ -31,6 +31,9 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.ItemReference;
+
+import java.util.Optional;
 
 public class OneDriveSession extends GraphSession {
 
@@ -39,6 +42,28 @@ public class OneDriveSession extends GraphSession {
 
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
+    }
+
+    @Override
+    public String getFileId(final DriveItem.Metadata metadata) {
+        final ItemReference parent = metadata.getParentReference();
+        if(metadata.getRemoteItem() != null) {
+            final DriveItem.Metadata remoteMetadata = metadata.getRemoteItem();
+            final ItemReference remoteParent = remoteMetadata.getParentReference();
+            if(parent == null) {
+                return String.join(String.valueOf(Path.DELIMITER),
+                    remoteParent.getDriveId(), remoteParent.getId());
+            }
+            else {
+                return String.join(String.valueOf(Path.DELIMITER),
+                    parent.getDriveId(), metadata.getId(),
+                    remoteParent.getDriveId(), remoteMetadata.getId());
+            }
+        }
+        else {
+            return String.join(String.valueOf(Path.DELIMITER), parent.getDriveId(), metadata.getId());
+        }
+
     }
 
     /**
@@ -53,6 +78,9 @@ public class OneDriveSession extends GraphSession {
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }
+
+        // recursively find items …
+
         final String[] idParts = versionId.split(String.valueOf(Path.DELIMITER));
         final String driveId;
         final String itemId;

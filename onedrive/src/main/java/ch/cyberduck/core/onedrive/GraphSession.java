@@ -72,6 +72,8 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         super(host, trust, key);
     }
 
+    public abstract String getFileId(final DriveItem.Metadata metadata);
+
     public DriveItem getItem(final Path currentPath) throws BackgroundException {
         return this.getItem(currentPath, true);
     }
