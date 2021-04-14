@@ -28,6 +28,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -42,7 +43,7 @@ public class CTERASessionTest {
     @Test
     public void testLoginRefreshCookie() throws Exception {
         final Host host = new Host(new CTERAProtocol(), "mountainduck.na.ctera.me", new Credentials(
-            System.getProperties().getProperty("ctera.user"), System.getProperties().getProperty("ctera.password"),
+            StringUtils.EMPTY, StringUtils.EMPTY,
             System.getProperties().getProperty("ctera.token")
         ));
         host.setDefaultPath("/ServicesPortal/webdav");
