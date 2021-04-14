@@ -53,6 +53,11 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
     }
 
     @Override
+    public void unregister() {
+        timer.cancel();
+    }
+
+    @Override
     public void register() {
         log.info(String.format("Register profiles checker hook after %s", delay));
         try {

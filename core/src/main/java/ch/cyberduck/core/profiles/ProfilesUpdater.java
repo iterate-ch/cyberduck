@@ -29,6 +29,8 @@ package ch.cyberduck.core.profiles;/*
  */
 
 public interface ProfilesUpdater {
+    void unregister();
+
     /**
      * Synchronize and register timer to update profiles installed in background
      */
