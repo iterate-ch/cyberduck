@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.shared.RootPathContainerService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +37,11 @@ import java.util.Objects;
 import java.util.Set;
 
 public abstract class AbstractProtocol implements Protocol {
+
+    @Override
+    public <T> T serialize(final Serializer dict) {
+        return null;
+    }
 
     @Override
     public String getProvider() {

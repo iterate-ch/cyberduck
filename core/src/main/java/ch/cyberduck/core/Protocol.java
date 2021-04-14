@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface Protocol extends Comparable<Protocol> {
+public interface Protocol extends Comparable<Protocol>, Serializable {
 
     /**
      * Check login credentials for validity for this protocol.

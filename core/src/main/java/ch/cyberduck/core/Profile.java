@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Profile implements Protocol, Serializable {
+public class Profile implements Protocol {
     private static final Logger log = Logger.getLogger(Profile.class);
 
     private final Deserializer<String> dict;
