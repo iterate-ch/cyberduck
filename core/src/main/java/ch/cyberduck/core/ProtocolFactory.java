@@ -96,6 +96,12 @@ public final class ProtocolFactory {
         registered.add(protocol);
     }
 
+    public void unregister(final Protocol protocol) {
+        if(!registered.remove(protocol)) {
+            log.warn(String.format("Failure removing protocol %s", protocol));
+        }
+    }
+
     /**
      * @return List of enabled protocols
      */
