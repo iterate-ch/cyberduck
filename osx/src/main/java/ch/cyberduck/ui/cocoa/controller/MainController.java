@@ -1268,9 +1268,6 @@ public class MainController extends BundleController implements NSApplication.De
                         if(StringUtils.equals(pair.getName(), "code")) {
                             code = StringUtils.equals(pair.getName(), "code") ? pair.getValue() : StringUtils.EMPTY;
                         }
-                        if(StringUtils.equals(pair.getName(), "ActivationCode")) {
-                            code = StringUtils.equals(pair.getName(), "ActivationCode") ? pair.getValue() : StringUtils.EMPTY;
-                        }
                     }
                     final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
                     oauth.notify(state, code);
