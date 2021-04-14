@@ -26,9 +26,11 @@ import org.apache.log4j.Logger;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class ProtocolFactory {
     private static final Logger log = Logger.getLogger(ProtocolFactory.class);
@@ -68,14 +70,16 @@ public final class ProtocolFactory {
      */
     public void loadDefaultProfiles() {
         try {
-            registered.addAll(new LocalProfilesFinder(bundle).find().map(description -> description.getProfile().get()).collect(Collectors.toList()));
+            final Stream<Profile> finder = new LocalProfilesFinder(bundle).find().map(description -> description.getProfile().get()).filter(Objects::nonNull);
+            finder.forEach(registered::add);
         }
         catch(AccessDeniedException e) {
             log.warn(String.format("Failure %s reading profiles from %s", bundle, e));
         }
         // Load thirdparty protocols
         try {
-            registered.addAll(new LocalProfilesFinder().find().map(description -> description.getProfile().get()).collect(Collectors.toList()));
+            final Stream<Profile> finder = new LocalProfilesFinder().find().map(description -> description.getProfile().get()).filter(Objects::nonNull);
+            finder.forEach(registered::add);
         }
         catch(AccessDeniedException e) {
             log.warn(String.format("Failure %s reading profiles from %s", bundle, e));
