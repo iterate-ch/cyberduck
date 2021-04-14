@@ -28,6 +28,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 
@@ -242,31 +243,33 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     /**
      * You should implement this method if your table supports varying row heights.
      * <p/>
-     * Although table views may cache the returned values, you should ensure that this
-     * method is efficient. When you change a row's height you must invalidate the
-     * existing row height by calling noteHeightOfRowsWithIndexesChanged:. NSTableView
-     * automatically invalidates its entire row height cache when reloadData and
-     * noteNumberOfRowsChanged are called.
+     * Although table views may cache the returned values, you should ensure that this method is efficient. When you
+     * change a row's height you must invalidate the existing row height by calling noteHeightOfRowsWithIndexesChanged:.
+     * NSTableView automatically invalidates its entire row height cache when reloadData and noteNumberOfRowsChanged are
+     * called.
      *
      * @param tableView The table view that sent the message.
      * @param row       The row index.
      * @return The height of the row. The height should not include intercell spacing and must be greater than zero.
      */
-//    public CGFloat tableView_heightOfRow(NSTableView tableView, NSInteger row);
+    public CGFloat tableView_heightOfRow(NSTableView tableView, NSInteger row) {
+        return tableView.rowHeight();
+    }
 
     /**
-     * Values returned by this method should not include intercell spacing and must be greater than 0. Implement
-     * this method to support an outline view with varying row heights.
+     * Values returned by this method should not include intercell spacing and must be greater than 0. Implement this
+     * method to support an outline view with varying row heights.
      * <p/>
-     * Special Considerations. For large tables in particular, you should make sure that this method is
-     * efficient. NSTableView
-     * may cache the values this method returns, so if you would like to change a row's height
-     * make sure to invalidate the row height by calling noteHeightOfRowsWithIndexesChanged:. NSTableView
-     * automatically invalidates its entire row height cache in reloadData and noteNumberOfRowsChanged.
+     * Special Considerations. For large tables in particular, you should make sure that this method is efficient.
+     * NSTableView may cache the values this method returns, so if you would like to change a row's height make sure to
+     * invalidate the row height by calling noteHeightOfRowsWithIndexesChanged:. NSTableView automatically invalidates
+     * its entire row height cache in reloadData and noteNumberOfRowsChanged.
      *
-     * @param outlineView
-     * @param item
-     * @return
+     * @param outlineView The outline view that sent the message.
+     * @param item        The row item.
+     * @return The height of the row.
      */
-//    public CGFloat outlineView_heightOfRowByItem(NSOutlineView outlineView, NSObject item);
+    public CGFloat outlineView_heightOfRowByItem(NSOutlineView outlineView, NSObject item) {
+        return outlineView.rowHeight();
+    }
 }
