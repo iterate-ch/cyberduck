@@ -129,7 +129,7 @@
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Neuer Verschlüsselter Tresor…" keyEquivalent="N" id="XIo-o9-At2">
+                            <menuItem title="Neuer verschlüsselter Tresor…" keyEquivalent="N" id="XIo-o9-At2">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
@@ -215,7 +215,7 @@ CA
                                     <action selector="deleteFileButtonClicked:" target="-1" id="389"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Wiederherstellen" id="270">
+                            <menuItem title="Zurückkehren" id="270">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="revertFileButtonClicked:" target="-1" id="390"/>
@@ -315,12 +315,12 @@ CA
                 <menuItem title="Darstellung" id="290">
                     <menu key="submenu" title="Darstellung" id="291">
                         <items>
-                            <menuItem title="als Liste" keyEquivalent="1" id="292">
+                            <menuItem title="Als Liste" keyEquivalent="1" id="292">
                                 <connections>
                                     <action selector="browserSwitchMenuClicked:" target="-1" id="400"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="als erweiterte Liste" tag="1" keyEquivalent="2" id="293">
+                            <menuItem title="Als erweiterte Liste" tag="1" keyEquivalent="2" id="293">
                                 <connections>
                                     <action selector="browserSwitchMenuClicked:" target="-1" id="401"/>
                                 </connections>
