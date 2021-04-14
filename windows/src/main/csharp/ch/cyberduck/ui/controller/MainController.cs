@@ -161,7 +161,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
                 new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(), new SharepointSiteProtocol(),
                 new MantaProtocol(), new SDSProtocol(), new StoregateProtocol(), new BrickProtocol(), new NextcloudProtocol(), new CTERAProtocol());
-            ProtocolFactory.get().loadDefaultProfiles();
+            ProtocolFactory.get().load();
         }
 
         /// <summary>

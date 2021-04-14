@@ -19,6 +19,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.profiles.LocalProfilesFinder;
+import ch.cyberduck.core.profiles.ProfilesFinder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,7 +31,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class ProtocolFactory {
     private static final Logger log = Logger.getLogger(ProtocolFactory.class);
@@ -68,18 +68,20 @@ public final class ProtocolFactory {
     /**
      * Load profiles embedded in bundles and installed in the application support directory.
      */
-    public void loadDefaultProfiles() {
-        try {
-            final Stream<Profile> finder = new LocalProfilesFinder(bundle).find().map(description -> description.getProfile().get()).filter(Objects::nonNull);
-            finder.forEach(registered::add);
-        }
-        catch(AccessDeniedException e) {
-            log.warn(String.format("Failure %s reading profiles from %s", bundle, e));
-        }
+    public void load() {
+        this.load(new LocalProfilesFinder(bundle));
         // Load thirdparty protocols
+        this.load(new LocalProfilesFinder());
+    }
+
+    /**
+     * Load all profiles found
+     *
+     * @param finder Finder to locate profiles
+     */
+    public void load(final ProfilesFinder finder) {
         try {
-            final Stream<Profile> finder = new LocalProfilesFinder().find().map(description -> description.getProfile().get()).filter(Objects::nonNull);
-            finder.forEach(registered::add);
+            finder.find().map(description -> description.getProfile().get()).filter(Objects::nonNull).forEach(registered::add);
         }
         catch(AccessDeniedException e) {
             log.warn(String.format("Failure %s reading profiles from %s", bundle, e));

@@ -244,11 +244,11 @@ public class Terminal {
                 protocols.register(profile);
             }
             else {
-                protocols.loadDefaultProfiles();
+                protocols.load();
             }
         }
         else {
-            protocols.loadDefaultProfiles();
+            protocols.load();
         }
         if(input.hasOption(TerminalAction.help.name())) {
             TerminalHelpPrinter.print(options);
