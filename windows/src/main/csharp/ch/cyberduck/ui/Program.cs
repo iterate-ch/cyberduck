@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
+using ch.cyberduck.core.ctera;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core.Contracts;
@@ -75,6 +76,12 @@ namespace Ch.Cyberduck.Ui
                                         var state = query.Get("state");
                                         var code = query.Get("code");
                                         proxy.OAuth(state, code);
+                                    }
+                                    else if (item.StartsWith(CTERAProtocol.CTERA_REDIRECT_URI))
+                                    {
+                                        var query = HttpUtility.ParseQueryString(result.Query);
+                                        var code = query.Get("ActivationCode");
+                                        proxy.OAuth(String.Empty, code);
                                     }
                                     break;
 
