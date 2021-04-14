@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.FileSystemInfo;
-import org.nuxeo.onedrive.client.types.ItemReference;
 
 import java.io.IOException;
 import java.net.URI;
@@ -55,7 +54,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
-        final DriveItem item = session.toItem(file);
+        final DriveItem item = session.getItem(file);
         try {
             final DriveItem.Metadata metadata = item.getMetadata();
             return this.toAttributes(metadata);

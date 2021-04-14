@@ -45,7 +45,7 @@ public class OneDriveSession extends GraphSession {
      * Resolves given path to OneDriveItem
      */
     @Override
-    public DriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
+    public DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
         if(file.equals(OneDriveListService.MYFILES_NAME)) {
             return new Drive(getClient()).getRoot();
         }

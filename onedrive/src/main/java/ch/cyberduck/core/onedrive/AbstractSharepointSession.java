@@ -52,7 +52,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
     public abstract GroupItem getGroup(final Path file) throws BackgroundException;
 
     @Override
-    public DriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
+    public DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
         final String versionId = fileIdProvider.getFileid(file, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));

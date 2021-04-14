@@ -46,7 +46,7 @@ public class GraphTouchFeature implements Touch<Void> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final DriveItem folder = session.toFolder(file.getParent());
+            final DriveItem folder = session.getItem(file.getParent());
             final DriveItem.Metadata metadata = Files.createFile(folder, URIEncoder.encode(file.getName()),
                 StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
             return file.withAttributes(attributes.toAttributes(metadata));

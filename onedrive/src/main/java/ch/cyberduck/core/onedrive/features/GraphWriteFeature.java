@@ -74,7 +74,7 @@ public class GraphWriteFeature implements Write<Void> {
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final DriveItem folder = session.toFolder(file.getParent());
+            final DriveItem folder = session.getItem(file.getParent());
             final DriveItem oneDriveFile = new DriveItem(folder,
                 URIEncoder.encode(file.getName()));
             final UploadSession upload = Files.createUploadSession(oneDriveFile);
