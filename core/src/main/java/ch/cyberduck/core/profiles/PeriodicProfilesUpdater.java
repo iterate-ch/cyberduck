@@ -96,8 +96,8 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
             public Stream<ProfilesFinder.ProfileDescription> run(final Session<?> session) throws BackgroundException {
                 // Find all locally installed profiles
                 final Stream<ProfilesFinder.ProfileDescription> stream = new RemoteProfilesFinder(new ProfilePlistReader(protocols), session).find();
-                stream.forEach(profileDescription -> {
-                    final Optional<Profile> optional = comparator.compare(profileDescription);
+                stream.forEach(description -> {
+                    final Optional<Profile> optional = comparator.compare(description);
                     if(optional.isPresent()) {
                         final Profile profile = optional.get();
                         if(log.isInfoEnabled()) {
