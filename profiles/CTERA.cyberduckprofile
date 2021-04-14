@@ -23,6 +23,8 @@
         <string>iterate GmbH</string>
         <key>Description</key>
         <string>CTERA Portal</string>
+        <key>Default Path</key>
+        <string>/ServicesPortal/webdav</string>
         <key>Path Configurable</key>
         <true/>
         <key>Hostname Configurable</key>
