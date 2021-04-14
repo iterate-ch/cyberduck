@@ -60,6 +60,7 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.Arrays;
@@ -80,9 +81,21 @@ public class PreferencesController extends ToolbarWindowController {
     private final Preferences preferences
         = PreferencesFactory.get();
 
+    private final ProfilesPreferencesController profilesPanelController;
+
+    public PreferencesController() {
+        profilesPanelController = new ProfilesPreferencesController();
+    }
+
     @Override
     protected String getBundleName() {
         return "Preferences";
+    }
+
+    @Override
+    public void loadBundle() {
+        profilesPanelController.loadBundle();
+        super.loadBundle();
     }
 
     @Outlet
@@ -178,6 +191,7 @@ public class PreferencesController extends ToolbarWindowController {
         views.put(new Label(PreferencesToolbarItem.browser.name(), PreferencesToolbarItem.browser.label()), panelBrowser);
         views.put(new Label(PreferencesToolbarItem.queue.name(), PreferencesToolbarItem.queue.label()), panelTransfer);
         views.put(new Label(PreferencesToolbarItem.pencil.name(), PreferencesToolbarItem.pencil.label()), panelEditor);
+        views.put(new Label(PreferencesToolbarItem.profiles.name(), PreferencesToolbarItem.profiles.label()), profilesPanelController.getPanel());
         views.put(new Label(PreferencesToolbarItem.ftp.name(), PreferencesToolbarItem.ftp.label()), panelFTP);
         views.put(new Label(PreferencesToolbarItem.sftp.name(), PreferencesToolbarItem.sftp.label()), panelSFTP);
         views.put(new Label(PreferencesToolbarItem.s3.name(), PreferencesToolbarItem.s3.label()), panelS3);
@@ -235,7 +249,8 @@ public class PreferencesController extends ToolbarWindowController {
         connection,
         cryptomator,
         update,
-        language;
+        language,
+        profiles;
 
         public String label() {
             return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Preferences");

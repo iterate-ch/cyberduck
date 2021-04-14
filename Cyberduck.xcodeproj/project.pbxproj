@@ -188,6 +188,8 @@
 		47B331941668102400C9FFA0 /* swift.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B331921668102400C9FFA0 /* swift.tiff */; };
 		47B6074A0DA420880068282C /* Keychain.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47B6072E0DA420880068282C /* Keychain.strings */; };
 		47BCF18E13BB4EC700D26E4C /* setup/app/container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */; };
+		47C35B0B26247FE4002AABBD /* Profiles.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47C35B0926247FE4002AABBD /* Profiles.xib */; };
+		47C35B122627690E002AABBD /* Profile.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47C35B112627690E002AABBD /* Profile.xib */; };
 		47C9427E2175D461008871C8 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C9427C2175D451008871C8 /* AppKit.framework */; };
 		47CD043812DB5F2000694306 /* File.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD041612DB5F2000694306 /* File.strings */; };
 		47CD045B12DB5F2E00694306 /* Folder.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD043912DB5F2E00694306 /* Folder.strings */; };
@@ -1324,6 +1326,8 @@
 		47B607490DA420880068282C /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = da; path = i18n/src/main/resources/da.lproj/Keychain.strings; sourceTree = "<group>"; };
 		47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "setup/app/container-migration.plist"; sourceTree = "<group>"; };
 		47C2AD801A268C880047B67A /* duck.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = duck.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		47C35B0A26247FE4002AABBD /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = i18n/src/main/resources/en.lproj/Profiles.xib; sourceTree = "<group>"; };
+		47C35B112627690E002AABBD /* Profile.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Profile.xib; path = osx/src/main/resources/Profile.xib; sourceTree = "<group>"; };
 		47C4D6CB08798D0C007A1D39 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = cs; path = i18n/src/main/resources/cs.lproj/Command.xib; sourceTree = "<group>"; };
 		47C4D6CC08798D10007A1D39 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = nl; path = i18n/src/main/resources/nl.lproj/Command.xib; sourceTree = "<group>"; };
 		47C4D6CD08798D14007A1D39 /* fi */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = fi; path = i18n/src/main/resources/fi.lproj/Command.xib; sourceTree = "<group>"; };
@@ -1866,6 +1870,8 @@
 				47B2E9FC1E2CF5E1007BE83D /* Task.xib */,
 				47B2E9FD1E2CF5E1007BE83D /* Transcript.xib */,
 				47B2E9FE1E2CF5E1007BE83D /* Transfer.xib */,
+				47C35B0926247FE4002AABBD /* Profiles.xib */,
+				47C35B112627690E002AABBD /* Profile.xib */,
 				474D86191DEF6017002D101F /* Cryptomator.strings */,
 				47F35947248A2A2D0095A386 /* Bookmark.strings */,
 				47F3593C248A2A2D0095A386 /* Browser.strings */,
@@ -2325,6 +2331,7 @@
 				4732BDA813182C7F00CBC46B /* Download.strings in Resources */,
 				47F35959248A2A2F0095A386 /* Login.strings in Resources */,
 				479C63B022A167EA002CAA60 /* folderplus.tiff in Resources */,
+				47C35B122627690E002AABBD /* Profile.xib in Resources */,
 				47BCF18E13BB4EC700D26E4C /* setup/app/container-migration.plist in Resources */,
 				476730B716108E1300B28D35 /* add.tiff in Resources */,
 				47DE479A2598F2D400B18BCB /* preferences-queue.pdf in Resources */,
@@ -2435,6 +2442,7 @@
 				474960661CD75C9700B020C9 /* connect.pdf in Resources */,
 				473BF0871892968E0068B4C1 /* azure.tiff in Resources */,
 				475C6D5A170C9214006535BB /* googlestorage.tiff in Resources */,
+				47C35B0B26247FE4002AABBD /* Profiles.xib in Resources */,
 				47CE3BFA1799309F0031DB9F /* transfer-copy.tiff in Resources */,
 				47DE47982598F2D400B18BCB /* preferences-pencil.pdf in Resources */,
 				475B22EF25B0DB17005D7887 /* cyberduck-application-rect.icns in Resources */,
@@ -3732,6 +3740,14 @@
 				47F35941248A2A2D0095A386 /* hr */,
 			);
 			name = Keychain.strings;
+			sourceTree = "<group>";
+		};
+		47C35B0926247FE4002AABBD /* Profiles.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				47C35B0A26247FE4002AABBD /* en */,
+			);
+			name = Profiles.xib;
 			sourceTree = "<group>";
 		};
 		47CD041612DB5F2000694306 /* File.strings */ = {
