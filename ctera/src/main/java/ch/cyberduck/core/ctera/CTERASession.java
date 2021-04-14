@@ -25,12 +25,14 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.MacUniqueIdService;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.ctera.auth.CTERATokens;
 import ch.cyberduck.core.ctera.model.Attachment;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVRedirectStrategy;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -43,20 +45,15 @@ import ch.cyberduck.core.threading.CancelCallback;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestWrapper;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.cookie.CookieOrigin;
-import org.apache.http.cookie.MalformedCookieException;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.cookie.DefaultCookieSpec;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
@@ -78,7 +75,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 public class CTERASession extends DAVSession {
     private static final Logger log = Logger.getLogger(CTERASession.class);
 
-    private CTERACookieInterceptor cookieInterceptor;
+    protected CTERACookieRefreshInterceptor cookieInterceptor;
 
     public CTERASession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -88,38 +85,33 @@ public class CTERASession extends DAVSession {
     public DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
-        cookieInterceptor = new CTERACookieInterceptor();
-        configuration.addInterceptorLast(cookieInterceptor);
+        cookieInterceptor = new CTERACookieRefreshInterceptor();
+        configuration.setServiceUnavailableRetryStrategy(cookieInterceptor);
         return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
-        final String token = credentials.getToken();
-        if(this.getPublicInfo().hasWebSSO) {
-            final CTERAToken t = StringUtils.isBlank(token) ? this.startWebSSOFlow(cancel) : CTERAToken.parse(token);
-            cookieInterceptor.setCookie(t.getCookie());
-        }
-        else {
-            if(StringUtils.isBlank(token)) {
-                // Prompt for credentials
-                final Credentials input = prompt.prompt(host,
-                    MessageFormat.format(LocaleFactory.localizedString(
-                        "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)),
-                    LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"),
-                    new LoginOptions(host.getProtocol()).token(false)
-                );
-                credentials.setUsername(input.getUsername());
-                credentials.setPassword(input.getPassword());
-                credentials.setSaved(input.isSaved());
-                // Flow to get additional token
-                //todo
+        final String t = credentials.getToken();
+        final CTERATokens tokens;
+        if(StringUtils.isBlank(t)) {
+            tokens = new CTERATokens();
+            if(this.getPublicInfo().hasWebSSO) {
+                this.startWebSSOFlow(cancel, tokens);
+            }
+            else {
+                this.startDesktopFlow(prompt, credentials, tokens);
             }
         }
+        else {
+            tokens = CTERATokens.parse(t);
+        }
+        cookieInterceptor.setTokens(tokens);
+        this.webdavAuthenticate(tokens);
     }
 
-    private CTERAToken startWebSSOFlow(final CancelCallback cancel) throws BackgroundException {
+    private void startWebSSOFlow(final CancelCallback cancel, final CTERATokens tokens) throws BackgroundException {
         final String url = String.format("%s/ServicesPortal/activate?scheme=%s",
             new HostUrlProvider().withUsername(false).withPath(false).get(host), CTERAProtocol.CTERA_REDIRECT_URI
         );
@@ -129,7 +121,7 @@ public class CTERASession extends DAVSession {
         if(!BrowserLauncherFactory.get().open(url)) {
             log.warn(String.format("Failed to launch web browser for %s", url));
         }
-        final AtomicReference<String> authenticationCode = new AtomicReference<>();
+        final AtomicReference<String> activationCode = new AtomicReference<>();
         final CountDownLatch signal = new CountDownLatch(1);
         final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
         registry.register(StringUtils.EMPTY, code -> {
@@ -137,51 +129,83 @@ public class CTERASession extends DAVSession {
                 log.info(String.format("Callback with code %s", code));
             }
             if(!StringUtils.isBlank(code)) {
-                authenticationCode.set(code);
+                activationCode.set(code);
             }
             signal.countDown();
         });
         while(!Uninterruptibles.awaitUninterruptibly(signal, 500, TimeUnit.MILLISECONDS)) {
             cancel.verify();
         }
-        final CTERAToken token = new CTERAToken();
-        // Attach device
+        this.attachDeviceWithActivationCode(activationCode.get(), tokens);
+        host.getCredentials().setToken(tokens.toString());
+        host.getCredentials().setSaved(true);
+    }
+
+    private void startDesktopFlow(final LoginCallback prompt, final Credentials credentials, final CTERATokens tokens) throws BackgroundException {
+        final Credentials input = prompt.prompt(host,
+            MessageFormat.format(LocaleFactory.localizedString(
+                "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)),
+            LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"),
+            new LoginOptions(host.getProtocol()).token(false)
+        );
+        credentials.setUsername(input.getUsername());
+        credentials.setPassword(input.getPassword());
+        credentials.setSaved(input.isSaved());
+        attachDeviceWithUsernamePassword(input.getUsername(), input.getPassword(), tokens);
+    }
+
+    private void attachDeviceWithActivationCode(final String activationCode, final CTERATokens tokens) throws BackgroundException {
         final HttpPost attach = new HttpPost("/ServicesPortal/public/users?format=jsonext");
         try {
             attach.setEntity(
                 new StringEntity(
-                    this.getAttachmentAsString(authenticationCode.get(),
+                    this.getAttachmentAsString(activationCode, null,
                         URIEncoder.encode(InetAddress.getLocalHost().getHostName()), new MacUniqueIdService().getUUID()),
                     ContentType.create("application/xml", StandardCharsets.UTF_8.name()
                     )
                 ));
-            final AttachDeviceResponse response = client.execute(attach, new AbstractResponseHandler<AttachDeviceResponse>() {
-                @Override
-                public AttachDeviceResponse handleEntity(final HttpEntity entity) throws IOException {
-                    ObjectMapper mapper = new ObjectMapper();
-                    return mapper.readValue(entity.getContent(), AttachDeviceResponse.class);
-                }
-            });
-            token.
-                setSharedSecret(response.sharedSecret).
-                setDeviceId(response.deviceUID);
+            this.attachDevice(attach, tokens);
         }
-
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
         }
-        // WebDAV authentication
-        this.webdavAuthenticate(token);
-        host.getCredentials().setToken(token.toString());
-        host.getCredentials().setSaved(true);
-        return token;
     }
 
-    private void webdavAuthenticate(final CTERAToken token) throws BackgroundException {
+    private void attachDeviceWithUsernamePassword(final String username, final String password, final CTERATokens tokens) throws BackgroundException {
+        final HttpPost attach = new HttpPost(String.format("/ServicesPortal/public/users/%s?format=jsonext", username));
+        try {
+            attach.setEntity(
+                new StringEntity(
+                    this.getAttachmentAsString(null, password,
+                        URIEncoder.encode(InetAddress.getLocalHost().getHostName()), new MacUniqueIdService().getUUID()),
+                    ContentType.create("application/xml", StandardCharsets.UTF_8.name()
+                    )
+                ));
+            this.attachDevice(attach, tokens);
+        }
+        catch(IOException e) {
+            throw new HttpExceptionMappingService().map(e);
+        }
+    }
+
+    private void attachDevice(final HttpPost attach, final CTERATokens tokens) throws IOException {
+        final AttachDeviceResponse response = client.execute(attach, new AbstractResponseHandler<AttachDeviceResponse>() {
+            @Override
+            public AttachDeviceResponse handleEntity(final HttpEntity entity) throws IOException {
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.readValue(entity.getContent(), AttachDeviceResponse.class);
+            }
+        });
+        tokens.
+            setSharedSecret(response.sharedSecret).
+            setDeviceId(response.deviceUID);
+    }
+
+    private void webdavAuthenticate(final CTERATokens tokens) throws BackgroundException {
         final HttpPost login = new HttpPost("/ServicesPortal/api/login?format=jsonext");
         try {
             login.setEntity(
-                new StringEntity(String.format("j_username=device%%5c%s&j_password=%s", token.getDeviceId(), token.getSharedSecret()),
+                new StringEntity(String.format("j_username=device%%5c%s&j_password=%s", tokens.getDeviceId(), tokens.getSharedSecret()),
                     ContentType.APPLICATION_FORM_URLENCODED
                 )
             );
@@ -189,17 +213,10 @@ public class CTERASession extends DAVSession {
                 @Override
                 public Void handleResponse(final HttpResponse response) throws IOException {
                     final Header header = response.getFirstHeader("Set-Cookie");
-                    try {
-                        final Cookie cookie = new DefaultCookieSpec().parse(header, new CookieOrigin(host.getHostname(), host.getPort(), StringUtils.EMPTY, true)).get(0);
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Received cookie %s", cookie));
-                        }
-                        token.setCookie(cookie.getValue());
-                        return super.handleResponse(response);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Received cookie %s", header.getValue()));
                     }
-                    catch(MalformedCookieException e) {
-                        throw new IOException("Unable to parse cookie", e);
-                    }
+                    return super.handleResponse(response);
                 }
 
                 @Override
@@ -229,7 +246,7 @@ public class CTERASession extends DAVSession {
         }
     }
 
-    private static Attachment getAttachment(final String code, final String hostname, final String mac) {
+    private static Attachment getAttachment(final String activationCode, final String password, final String hostname, final String mac) {
         final Attachment attachment = new Attachment();
         final ArrayList<Attachment.Attribute> attributes = new ArrayList<>();
         attachment.setAttributes(attributes);
@@ -259,11 +276,12 @@ public class CTERASession extends DAVSession {
         paramsAttributes.add(deviceMac);
         final Attachment.Attribute ssoActivationCode = new Attachment.Attribute();
         ssoActivationCode.setId("ssoActivationCode");
-        ssoActivationCode.setVal(code);
+        ssoActivationCode.setVal(activationCode);
         paramsAttributes.add(ssoActivationCode);
-        final Attachment.Attribute password = new Attachment.Attribute();
-        password.setId("password");
-        paramsAttributes.add(password);
+        final Attachment.Attribute pwd = new Attachment.Attribute();
+        pwd.setId("password");
+        pwd.setVal(password);
+        paramsAttributes.add(pwd);
         final Attachment.Attribute host = new Attachment.Attribute();
         host.setId("hostname");
         host.setVal(URIEncoder.encode(hostname));
@@ -272,8 +290,9 @@ public class CTERASession extends DAVSession {
         return attachment;
     }
 
-    private String getAttachmentAsString(final String code, final String hostname, final String mac) throws JsonProcessingException {
-        final Attachment attachment = getAttachment(code, hostname, mac);
+    private String getAttachmentAsString(final String activationCode, final String password,
+                                         final String hostname, final String mac) throws JsonProcessingException {
+        final Attachment attachment = getAttachment(activationCode, password, hostname, mac);
         final XmlMapper xmlMapper = new XmlMapper();
         return xmlMapper.writeValueAsString(attachment);
     }
@@ -298,77 +317,49 @@ public class CTERASession extends DAVSession {
         public String sharedSecret;
     }
 
-    private static class CTERAToken {
-        private String deviceId;
-        private String sharedSecret;
-        private String cookie;
+    private class CTERACookieRefreshInterceptor extends DisabledServiceUnavailableRetryStrategy {
 
-        public static CTERAToken parse(final String token) throws BackgroundException {
-            final String[] t = token.split(":");
-            if(t.length < 3) {
-                log.error("Unable to parse token");
-                throw new LoginCanceledException();
-            }
-            return new CTERAToken().
-                setDeviceId(t[0]).
-                setSharedSecret(t[1]).
-                setCookie(t[2]);
-        }
+        private final Logger log = Logger.getLogger(CTERACookieRefreshInterceptor.class);
+        private static final int MAX_RETRIES = 1;
 
-        public String getDeviceId() {
-            return deviceId;
-        }
-
-        public CTERAToken setDeviceId(final String deviceId) {
-            this.deviceId = deviceId;
-            return this;
-        }
-
-        public String getSharedSecret() {
-            return sharedSecret;
-        }
-
-        public CTERAToken setSharedSecret(final String sharedSecret) {
-            this.sharedSecret = sharedSecret;
-            return this;
-        }
-
-        public String getCookie() {
-            return cookie;
-        }
-
-        public CTERAToken setCookie(final String cookie) {
-            this.cookie = cookie;
-            return this;
-        }
+        private static final String SAML_LOCATION = "https://myapps.microsoft.com/signin/CTERA/e8e5145e-4fac-412e-b87b-fbfc26123827";
+        private CTERATokens tokens;
 
         @Override
-        public String toString() {
-            return String.format("%s:%s:%s", deviceId, sharedSecret, cookie);
-        }
-    }
-
-    private class CTERACookieInterceptor implements HttpRequestInterceptor {
-
-        private String cookie;
-
-        @Override
-        public void process(final HttpRequest request, final HttpContext httpContext) {
-            if(request instanceof HttpRequestWrapper) {
-                final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
-                if(null != wrapper.getTarget()) {
-                    if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
-                        if(StringUtils.isNotBlank(cookie)) {
-                            request.addHeader("Cookie", String.format("JSESSIONID=%s", cookie));
+        public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
+            switch(response.getStatusLine().getStatusCode()) {
+                case HttpStatus.SC_MOVED_TEMPORARILY:
+                    final Header l = response.getFirstHeader(HttpHeaders.LOCATION);
+                    if(StringUtils.startsWith(l.getValue(), SAML_LOCATION)) {
+                        if(executionCount <= MAX_RETRIES) {
+                            try {
+                                try {
+                                    log.info(String.format("Attempt to refresh cookie for failure %s", response));
+                                    webdavAuthenticate(tokens);
+                                }
+                                catch(BackgroundException e) {
+                                    log.error(String.format("Failure refreshing cookie. %s", e));
+                                    // Reset Token
+                                    host.getCredentials().setToken(null);
+                                    //TODO review
+                                    //login();
+                                    throw new LoginCanceledException();
+                                }
+                                // Try again
+                                return true;
+                            }
+                            catch(BackgroundException e) {
+                                log.warn(String.format("Failure refreshing OAuth tokens. %s", e));
+                            }
                         }
+                        break;
                     }
-                }
             }
+            return false;
         }
 
-        public CTERACookieInterceptor setCookie(final String cookie) {
-            this.cookie = cookie;
-            return this;
+        public void setTokens(final CTERATokens tokens) {
+            this.tokens = tokens;
         }
     }
 }
