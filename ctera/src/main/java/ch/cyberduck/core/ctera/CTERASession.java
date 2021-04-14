@@ -1,7 +1,7 @@
 package ch.cyberduck.core.ctera;
 
 /*
- * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,8 +33,6 @@ import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVRedirectStrategy;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -50,6 +48,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.ServiceUnavailableRetryStrategy;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -73,10 +72,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.util.concurrent.Uninterruptibles;
 
-public class CTERASession extends DAVSession {
+public class CTERASession extends DAVSession implements ServiceUnavailableRetryStrategy {
     private static final Logger log = Logger.getLogger(CTERASession.class);
 
-    protected CTERACookieRefreshInterceptor cookieInterceptor;
+    private static final String SAML_LOCATION = "https://myapps.microsoft.com/signin/CTERA/e8e5145e-4fac-412e-b87b-fbfc26123827";
+    private static final int MAX_RETRIES = 1;
+
+    private CTERATokens tokens;
 
     public CTERASession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -86,8 +88,7 @@ public class CTERASession extends DAVSession {
     public DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
-        cookieInterceptor = new CTERACookieRefreshInterceptor();
-        configuration.setServiceUnavailableRetryStrategy(cookieInterceptor);
+        configuration.setServiceUnavailableRetryStrategy(this);
         return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
 
@@ -95,7 +96,6 @@ public class CTERASession extends DAVSession {
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
         final String t = credentials.getToken();
-        final CTERATokens tokens;
         if(StringUtils.isBlank(t)) {
             tokens = new CTERATokens();
             if(this.getPublicInfo().hasWebSSO) {
@@ -108,7 +108,6 @@ public class CTERASession extends DAVSession {
         else {
             tokens = CTERATokens.parse(t);
         }
-        cookieInterceptor.setTokens(tokens);
         this.webdavAuthenticate(tokens);
     }
 
@@ -143,7 +142,7 @@ public class CTERASession extends DAVSession {
     }
 
     private void startDesktopFlow(final LoginCallback prompt, final Credentials credentials, final CTERATokens tokens) throws BackgroundException {
-        final Credentials input = prompt.prompt(host,
+        final Credentials input = prompt.prompt(host, credentials.getUsername(),
             MessageFormat.format(LocaleFactory.localizedString(
                 "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)),
             LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"),
@@ -247,6 +246,35 @@ public class CTERASession extends DAVSession {
         }
     }
 
+    @Override
+    public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
+        switch(response.getStatusLine().getStatusCode()) {
+            case HttpStatus.SC_MOVED_TEMPORARILY:
+                final Header l = response.getFirstHeader(HttpHeaders.LOCATION);
+                if(StringUtils.startsWith(l.getValue(), SAML_LOCATION)) {
+                    if(executionCount <= MAX_RETRIES) {
+                        try {
+                            log.info(String.format("Attempt to refresh cookie for failure %s", response));
+                            webdavAuthenticate(tokens);
+                        }
+                        catch(BackgroundException e) {
+                            log.error(String.format("Failure refreshing cookie. %s", e));
+                            return false;
+                        }
+                        // Try again
+                        return true;
+                    }
+                    break;
+                }
+        }
+        return false;
+    }
+
+    @Override
+    public long getRetryInterval() {
+        return 0L;
+    }
+
     private static Attachment getAttachment(final String activationCode, final String password, final String hostname, final String mac) {
         final Attachment attachment = new Attachment();
         final ArrayList<Attachment.Attribute> attributes = new ArrayList<>();
@@ -291,56 +319,10 @@ public class CTERASession extends DAVSession {
         return attachment;
     }
 
-    private String getAttachmentAsString(final String activationCode, final String password,
-                                         final String hostname, final String mac) throws JsonProcessingException {
+    private static String getAttachmentAsString(final String activationCode, final String password,
+                                                final String hostname, final String mac) throws JsonProcessingException {
         final Attachment attachment = getAttachment(activationCode, password, hostname, mac);
         final XmlMapper xmlMapper = new XmlMapper();
         return xmlMapper.writeValueAsString(attachment);
-    }
-
-    private class CTERACookieRefreshInterceptor extends DisabledServiceUnavailableRetryStrategy {
-
-        private final Logger log = Logger.getLogger(CTERACookieRefreshInterceptor.class);
-        private static final int MAX_RETRIES = 1;
-
-        private static final String SAML_LOCATION = "https://myapps.microsoft.com/signin/CTERA/e8e5145e-4fac-412e-b87b-fbfc26123827";
-        private CTERATokens tokens;
-
-        @Override
-        public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
-            switch(response.getStatusLine().getStatusCode()) {
-                case HttpStatus.SC_MOVED_TEMPORARILY:
-                    final Header l = response.getFirstHeader(HttpHeaders.LOCATION);
-                    if(StringUtils.startsWith(l.getValue(), SAML_LOCATION)) {
-                        if(executionCount <= MAX_RETRIES) {
-                            try {
-                                try {
-                                    log.info(String.format("Attempt to refresh cookie for failure %s", response));
-                                    webdavAuthenticate(tokens);
-                                }
-                                catch(BackgroundException e) {
-                                    log.error(String.format("Failure refreshing cookie. %s", e));
-                                    // Reset Token
-                                    host.getCredentials().setToken(null);
-                                    //TODO review
-                                    //login();
-                                    throw new LoginCanceledException();
-                                }
-                                // Try again
-                                return true;
-                            }
-                            catch(BackgroundException e) {
-                                log.warn(String.format("Failure refreshing OAuth tokens. %s", e));
-                            }
-                        }
-                        break;
-                    }
-            }
-            return false;
-        }
-
-        public void setTokens(final CTERATokens tokens) {
-            this.tokens = tokens;
-        }
     }
 }
