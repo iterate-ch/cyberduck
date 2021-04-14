@@ -18,7 +18,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 import ch.cyberduck.core.profiles.LocalProfilesFinder;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +43,7 @@ public final class ProtocolFactory {
     private final Local bundle;
 
     public ProtocolFactory() {
-        this(new LinkedHashSet<Protocol>());
+        this(new LinkedHashSet<>());
     }
 
     public ProtocolFactory(final Set<Protocol> protocols) {
@@ -69,15 +68,14 @@ public final class ProtocolFactory {
      */
     public void loadDefaultProfiles() {
         try {
-            registered.addAll(new LocalProfilesFinder(bundle).find());
+            registered.addAll(new LocalProfilesFinder(bundle).find().map(description -> description.getProfile().get()).collect(Collectors.toList()));
         }
         catch(AccessDeniedException e) {
             log.warn(String.format("Failure %s reading profiles from %s", bundle, e));
         }
         // Load thirdparty protocols
         try {
-            registered.addAll(new LocalProfilesFinder(LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
-                PreferencesFactory.get().getProperty("profiles.folder.name"))).find());
+            registered.addAll(new LocalProfilesFinder().find().map(description -> description.getProfile().get()).collect(Collectors.toList()));
         }
         catch(AccessDeniedException e) {
             log.warn(String.format("Failure %s reading profiles from %s", bundle, e));
