@@ -15,10 +15,16 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.Test;
@@ -66,29 +72,33 @@ public class RemoteProfilesFinderTest {
             }
         })));
         final ProfilePlistReader reader = new ProfilePlistReader(protocols);
-        final RemoteProfilesFinder finder = new RemoteProfilesFinder(reader,
-            new HostParser(protocols, new TestProtocol() {
-                @Override
-                public String getIdentifier() {
-                    return "davs";
-                }
+        final TestProtocol protocol = new TestProtocol() {
+            @Override
+            public String getIdentifier() {
+                return "davs";
+            }
 
-                @Override
-                public Scheme getScheme() {
-                    return Scheme.https;
-                }
+            @Override
+            public Scheme getScheme() {
+                return Scheme.https;
+            }
 
-                @Override
-                public Type getType() {
-                    return Type.dav;
-                }
+            @Override
+            public Type getType() {
+                return Type.dav;
+            }
 
-                @Override
-                public boolean isEnabled() {
-                    return false;
-                }
-            }).get("https://svn.cyberduck.io/trunk/profiles"));
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
+        };
+        final Host host = new HostParser(protocols, protocol).get("https://svn.cyberduck.io/trunk/profiles");
+        final NullSession session = new NullSession(host);
+        session.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final RemoteProfilesFinder finder = new RemoteProfilesFinder(reader, session);
         final Stream<ProfilesFinder.ProfileDescription> stream = finder.find();
         assertTrue(stream.collect(Collectors.toList()).isEmpty());
+        session.close();
     }
 }

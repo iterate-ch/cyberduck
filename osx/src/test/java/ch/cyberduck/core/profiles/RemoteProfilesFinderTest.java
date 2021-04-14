@@ -15,10 +15,17 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.Test;
 
@@ -38,9 +45,11 @@ public class RemoteProfilesFinderTest {
                 return true;
             }
         }));
-        final RemoteProfilesFinder finder = new RemoteProfilesFinder(new ProfilePlistReader(protocols),
-            new HostParser(protocols).get("https://svn.cyberduck.io/trunk/profiles"));
+        final DAVSession session = new DAVSession(new HostParser(protocols).get("https://svn.cyberduck.io/trunk/profiles"), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final RemoteProfilesFinder finder = new RemoteProfilesFinder(new ProfilePlistReader(protocols), session);
         final Stream<ProfilesFinder.ProfileDescription> stream = finder.find();
         assertFalse(stream.collect(Collectors.toList()).isEmpty());
+        session.close();
     }
 }

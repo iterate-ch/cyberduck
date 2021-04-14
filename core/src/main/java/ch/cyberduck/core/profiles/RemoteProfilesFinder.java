@@ -15,17 +15,20 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
-import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -41,60 +44,44 @@ import java.util.stream.Stream;
 public class RemoteProfilesFinder implements ProfilesFinder {
     private static final Logger log = Logger.getLogger(RemoteProfilesFinder.class);
 
+    private final Session<?> session;
     private final Reader<Profile> reader;
-    private final Host server;
 
-    public RemoteProfilesFinder() throws HostParserException {
-        this(new ProfilePlistReader(ProtocolFactory.get()), HostParser.parse(PreferencesFactory.get().getProperty(
-            "profiles.discovery.updater.url"
-        )));
+    public RemoteProfilesFinder(final Session<?> session) {
+        this(new ProfilePlistReader(ProtocolFactory.get()), session);
     }
 
-    public RemoteProfilesFinder(final Reader<Profile> reader, final Host server) {
+    public RemoteProfilesFinder(final Reader<Profile> reader, final Session<?> session) {
         this.reader = reader;
-        this.server = server;
+        this.session = session;
     }
 
     @Override
     public Stream<ProfileDescription> find() throws AccessDeniedException {
         try {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Fetch profiles from %s", server));
+                log.info(String.format("Fetch profiles from %s", session.getHost()));
             }
-            final AnonymousConnectionService connection = new AnonymousConnectionService();
-            final Session<?> session = SessionFactory.create(server,
-                new KeychainX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(server), CertificateStoreFactory.get()),
-                new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), server, CertificateStoreFactory.get()));
-            try {
-                connection.connect(session, new DisabledCancelCallback());
-                final ProfileFilter filter = new ProfileFilter();
-                final AttributedList<Path> list = session.getFeature(ListService.class).list(new Path(server.getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-                return list.filter(filter).toStream().map(file -> new PathProfileDescription(file,
-                    new Supplier<Profile>() {
-                        @Override
-                        public Profile get() {
+            final ProfileFilter filter = new ProfileFilter();
+            final AttributedList<Path> list = session.getFeature(ListService.class).list(new Path(
+                session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            return list.filter(filter).toStream().map(file -> new PathProfileDescription(file,
+                new Supplier<Profile>() {
+                    @Override
+                    public Profile get() {
+                        try {
                             final Read read = session.getFeature(Read.class);
-                            try {
-                                final InputStream in = read.read(file, new TransferStatus(), new DisabledConnectionCallback());
-                                final Profile profile = reader.read(in);
-                                in.close();
-                                return profile;
-                            }
-                            catch(BackgroundException | IOException e) {
-                                throw new CompletionException(e);
-                            }
+                            final InputStream in = read.read(file, new TransferStatus(), new DisabledConnectionCallback());
+                            final Profile profile = reader.read(in);
+                            in.close();
+                            return profile;
+                        }
+                        catch(BackgroundException | IOException e) {
+                            throw new CompletionException(e);
                         }
                     }
-                ));
-            }
-            finally {
-                try {
-                    connection.close(session);
                 }
-                catch(BackgroundException e) {
-                    log.warn(String.format("Ignore failure %s closing connection", e));
-                }
-            }
+            ));
         }
         catch(BackgroundException e) {
             throw new AccessDeniedException(e.getDetail(), e);
@@ -132,5 +119,4 @@ public class RemoteProfilesFinder implements ProfilesFinder {
             return Pattern.compile(".*\\.cyberduckprofile");
         }
     }
-
 }
