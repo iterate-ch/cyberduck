@@ -16,8 +16,12 @@ package ch.cyberduck.core.profiles;
  */
 
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.Protocol;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public interface ProfileMatcher {
     /**
@@ -25,4 +29,18 @@ public interface ProfileMatcher {
      * @return Non null if profile from server has been updated
      */
     Optional<Profile> compare(ProfilesFinder.ProfileDescription next);
+
+    class IdentifierProtocolPredicate implements Predicate<Protocol> {
+        private final Protocol installed;
+
+        public IdentifierProtocolPredicate(final Protocol installed) {
+            this.installed = installed;
+        }
+
+        @Override
+        public boolean test(final Protocol protocol) {
+            return StringUtils.equals(installed.getIdentifier(), protocol.getIdentifier())
+                && StringUtils.equals(installed.getProvider(), protocol.getProvider());
+        }
+    }
 }

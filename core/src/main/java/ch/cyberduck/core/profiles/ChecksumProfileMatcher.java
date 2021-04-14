@@ -17,7 +17,6 @@ package ch.cyberduck.core.profiles;
 
 import ch.cyberduck.core.Profile;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Optional;
@@ -50,7 +49,7 @@ public class ChecksumProfileMatcher implements ProfileMatcher {
                     log.warn(String.format("Ignore unknown profile %s", installed));
                     return false;
                 }
-                return StringUtils.equals(installed.getIdentifier(), profile.getIdentifier()) && StringUtils.equals(installed.getProvider(), profile.getProvider());
+                return new IdentifierProtocolPredicate(installed).test(profile);
             }).findFirst();
         if(found.isPresent()) {
             return Optional.of(profile);
