@@ -285,6 +285,7 @@ public class PreferencesController extends ToolbarWindowController {
         if(window.respondsToSelector(Foundation.selector("setToolbarStyle:"))) {
             window.setToolbarStyle(NSWindow.NSWindowToolbarStyle.NSWindowToolbarStylePreference);
         }
+        window.setContentMinSize(new NSSize(600d, 200d));
         super.setWindow(window);
     }
 
