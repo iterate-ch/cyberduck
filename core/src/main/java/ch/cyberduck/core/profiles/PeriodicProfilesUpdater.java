@@ -13,17 +13,22 @@ package ch.cyberduck.core.profiles;/*
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileWriterFactory;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.threading.WorkerBackgroundAction;
+import ch.cyberduck.core.worker.Worker;
 
 import org.apache.log4j.Logger;
 
@@ -31,22 +36,25 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 public class PeriodicProfilesUpdater implements ProfilesUpdater {
     private static final Logger log = Logger.getLogger(PeriodicProfilesUpdater.class.getName());
 
+    private final Controller controller;
     private final ProtocolFactory protocols;
     private final Duration delay;
     private final Timer timer = new Timer("profiles", true);
     private final Local directory;
 
-    public PeriodicProfilesUpdater() {
-        this(ProtocolFactory.get(), LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
+    public PeriodicProfilesUpdater(final Controller controller) {
+        this(controller, ProtocolFactory.get(), LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
             PreferencesFactory.get().getProperty("profiles.folder.name")), Duration.ofSeconds(PreferencesFactory.get().getLong("update.check.interval")));
     }
 
-    public PeriodicProfilesUpdater(final ProtocolFactory protocols, final Local directory, final Duration delay) {
+    public PeriodicProfilesUpdater(final Controller controller, final ProtocolFactory protocols, final Local directory, final Duration delay) {
+        this.controller = controller;
         this.protocols = protocols;
         this.delay = delay;
         this.directory = directory;
@@ -81,28 +89,34 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
         }
     }
 
-    public void synchronize(final ProfileMatcher comparator) throws BackgroundException {
-        // Find all locally installed profiles
-        final Stream<ProfilesFinder.ProfileDescription> stream = new RemoteProfilesFinder(new ProfilePlistReader(protocols),
-            HostParser.parse(PreferencesFactory.get().getProperty("profiles.url"))).find();
-        stream.forEach(profileDescription -> {
-            final Optional<Profile> optional = comparator.compare(profileDescription);
-            if(optional.isPresent()) {
-                final Profile profile = optional.get();
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Install updated profile %s", profile));
-                }
-                try {
-                    ProfileWriterFactory.get().write(profile, LocalFactory.get(directory, optional.get().getName()));
-                }
-                catch(AccessDeniedException e) {
-                    log.warn(String.format("Failure %s writing profile %s", e, profile));
-                }
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Register updated profile %s", profile));
-                }
-                protocols.register(profile);
+    public Future<Stream<ProfilesFinder.ProfileDescription>> synchronize(final ProfileMatcher comparator) throws BackgroundException {
+        return controller.background(new WorkerBackgroundAction<>(controller, SessionPoolFactory.create(controller,
+            HostParser.parse(PreferencesFactory.get().getProperty("profiles.discovery.updater.url"))), new Worker<Stream<ProfilesFinder.ProfileDescription>>() {
+            @Override
+            public Stream<ProfilesFinder.ProfileDescription> run(final Session<?> session) throws BackgroundException {
+                // Find all locally installed profiles
+                final Stream<ProfilesFinder.ProfileDescription> stream = new RemoteProfilesFinder(new ProfilePlistReader(protocols), session).find();
+                stream.forEach(profileDescription -> {
+                    final Optional<Profile> optional = comparator.compare(profileDescription);
+                    if(optional.isPresent()) {
+                        final Profile profile = optional.get();
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Install updated profile %s", profile));
+                        }
+                        try {
+                            ProfileWriterFactory.get().write(profile, LocalFactory.get(directory, optional.get().getName()));
+                        }
+                        catch(AccessDeniedException e) {
+                            log.warn(String.format("Failure %s writing profile %s", e, profile));
+                        }
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Register updated profile %s", profile));
+                        }
+                        protocols.register(profile);
+                    }
+                });
+                return stream;
             }
-        });
+        }));
     }
 }

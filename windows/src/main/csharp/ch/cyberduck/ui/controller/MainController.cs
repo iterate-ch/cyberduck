@@ -843,7 +843,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
             if (PreferencesFactory.get().getBoolean("profiles.discovery.updater.enable")) {
-                _profiles = new PeriodicProfilesUpdater();
+                _profiles = new PeriodicProfilesUpdater(_application);
                 // Synchronize and register timer
                 _profiles.register();
             }

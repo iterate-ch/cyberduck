@@ -149,7 +149,7 @@ public class MainController extends BundleController implements NSApplication.De
         = PeriodicUpdateCheckerFactory.get(this);
 
     private final ProfilesUpdater profiles
-        = new PeriodicProfilesUpdater();
+        = new PeriodicProfilesUpdater(this);
 
     private final PathKindDetector detector = new DefaultPathKindDetector();
     /**
@@ -1052,7 +1052,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
         if(preferences.getBoolean("profiles.discovery.updater.enable")) {
             // Synchronize and register timer
-            profiles.register();
+//            profiles.register();
         }
         // Register OAuth handler
         final String handler = preferences.getProperty("oauth.handler.scheme");
