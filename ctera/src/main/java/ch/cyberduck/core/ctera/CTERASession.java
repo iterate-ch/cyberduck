@@ -98,7 +98,7 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
         final String t = credentials.getToken();
         if(StringUtils.isBlank(t)) {
             tokens = new CTERATokens();
-            if(this.getPublicInfo().hasWebSSO) {
+            if(!this.getPublicInfo().hasWebSSO) {
                 this.startWebSSOFlow(cancel, tokens);
             }
             else {
@@ -146,7 +146,7 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
             MessageFormat.format(LocaleFactory.localizedString(
                 "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)),
             LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"),
-            new LoginOptions(host.getProtocol()).token(false)
+            new LoginOptions(host.getProtocol()).token(false).user(true).password(true)
         );
         credentials.setUsername(input.getUsername());
         credentials.setPassword(input.getPassword());
