@@ -107,8 +107,17 @@ public class OneDriveSession extends GraphSession {
 
         final ContainerItem containerItem = getContainer(file);
         // Rename not possible in /Shared, items inside subfolder can be renamed
-        return containerItem.isDrive() && (container || !containerItem.getContainerPath().map(file::equals).orElse(false)) ||
-            !containerItem.isDrive() && !containerItem.getCollectionPath().map(o -> file.equals(o) || file.getParent().equals(o)).orElse(false);
+
+        if(containerItem.isDrive()) {
+            return container || !containerItem.getContainerPath().map(file::equals).orElse(false);
+        }
+        else {
+            Optional<Boolean> predicate = containerItem.getCollectionPath().map(o -> file.equals(o));
+            if(!container) {
+                predicate = predicate.map(o -> o || file.getParent().equals(o));
+            }
+            return !predicate.orElse(false);
+        }
     }
 
     @Override
