@@ -98,7 +98,7 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
         final String t = credentials.getToken();
         if(StringUtils.isBlank(t)) {
             tokens = new CTERATokens();
-            if(!this.getPublicInfo().hasWebSSO) {
+            if(this.getPublicInfo().hasWebSSO) {
                 this.startWebSSOFlow(cancel, tokens);
             }
             else {
