@@ -58,39 +58,36 @@ public abstract class AbstractSharepointSession extends GraphSession {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }
 
-        // Finds /Sites/<Site Name>/Drives/<drive id>
-        // Finds /Groups/<Groups Name>/Drives/<drive id>
+        // Finds Sites/<Site Name>/Drives/<drive id>
+        // Finds /Groups/<Groups Name>/<drive id>
         // Finds /Default/Drives/<drive id>
+        // collection is: Drives
+        // container is: Drives/<drive id>
         final GraphSession.ContainerItem driveContainer = getContainer(file);
         if(!driveContainer.isDrive()) {
             throw new NotfoundException(String.format("File %s is not in a drive.", file.getAbsolute()));
         }
-        final String driveId = fileIdProvider.getFileid(driveContainer.getContainerPath().get(), new DisabledListProgressListener());
         final Drive drive;
-        if(driveContainer.getContainerPath().map(p -> SharepointListService.DEFAULT_SITE.equals(p.getName())).orElse(false)) {
+        final String driveId = fileIdProvider.getFileid(driveContainer.getContainerPath().get(), new DisabledListProgressListener());
+        final GraphSession.ContainerItem parentContainer = getContainer(driveContainer.getContainerPath().get().getParent());
+        if(parentContainer.getCollectionPath().map(p -> SharepointListService.GROUPS_CONTAINER.equals(p.getName())).orElse(false)) {
+            drive = new Drive(getGroup(parentContainer.getContainerPath().get()), driveId);
+        }
+        else if(parentContainer.getContainerPath().map(p -> SharepointListService.DEFAULT_SITE.equals(p.getName())).orElse(false)) {
             // Handles /Default-case, which is a site.
-            drive = new Drive(getSite(driveContainer.getContainerPath().get()), driveId);
+            drive = new Drive(getSite(parentContainer.getContainerPath().get()), driveId);
         }
         else {
-            // Handles Sites/<sitename>
-            // Handles /Groups/<group name>
-            final GraphSession.ContainerItem containerItem = driveContainer.getCollectionPath()
-                .map(p -> getContainer(p.getParent()))
-                .orElseThrow(() -> new NotfoundException(String.format("Cannot find container for drive of %s", file.getAbsolute())));
-            if(!containerItem.getCollectionPath().isPresent()) {
-                throw new NotfoundException("???");
-            }
-            switch(containerItem.getCollectionPath().get().getName()) {
-                case SharepointListService.SITES_CONTAINER:
-                    drive = new Drive(getSite(containerItem.getContainerPath().get()), driveId);
-                    break;
-                case SharepointListService.GROUPS_CONTAINER:
-                    drive = new Drive(getGroup(containerItem.getContainerPath().get()), driveId);
-                    break;
-                default:
-                    throw new NotfoundException("???");
+            // finds:
+            // Sites/<site name>
+            final GraphSession.ContainerItem containerItem = getContainer(parentContainer.getContainerPath().get());
+            if (containerItem.getCollectionPath().map(p -> SharepointListService.SITES_CONTAINER.equals(p.getName())).orElse(false)) {
+                drive = new Drive(getSite(containerItem.getContainerPath().get()), driveId);
+            } else {
+                throw new NotfoundException(String.format("File %s is not part of any drive.", file.getAbsolute()));
             }
         }
+
         final DriveItem ownItem;
         if(driveContainer.getContainerPath().map(file::equals).orElse(false)) {
             ownItem = drive.getRoot();
