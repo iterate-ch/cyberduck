@@ -15,9 +15,10 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.Test;
@@ -28,18 +29,25 @@ import java.util.stream.Stream;
 
 import static org.junit.Assert.assertFalse;
 
-public class RemoteProfilesFinderTest {
+public class LocalProfilesFinderTest {
 
     @Test
     public void find() throws Exception {
-        final ProtocolFactory protocols = new ProtocolFactory(Collections.singleton(new DAVSSLProtocol() {
+        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+            @Override
+            public Type getType() {
+                return Type.s3;
+            }
+
             @Override
             public boolean isEnabled() {
-                return true;
+                return false;
             }
-        }));
-        final RemoteProfilesFinder finder = new RemoteProfilesFinder(new ProfilePlistReader(protocols),
-            new HostParser(protocols).get("https://svn.cyberduck.io/trunk/profiles"));
+        })));
+        final Profile profile = reader.read(
+            new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
+        );
+        final LocalProfilesFinder finder = new LocalProfilesFinder(reader, new Local("src/test/resources/"));
         final Stream<ProfilesFinder.ProfileDescription> stream = finder.find();
         assertFalse(stream.collect(Collectors.toList()).isEmpty());
     }
