@@ -17,50 +17,95 @@ package ch.cyberduck.core.profiles;
 
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
+import ch.cyberduck.core.serializer.Reader;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class LocalProfilesFinder implements ProfilesFinder {
     private static final Logger log = Logger.getLogger(LocalProfilesFinder.class);
 
+    private final Reader<Profile> reader;
     private final Local directory;
 
+    public LocalProfilesFinder() {
+        this(new ProfilePlistReader(ProtocolFactory.get()), LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
+            PreferencesFactory.get().getProperty("profiles.folder.name")));
+    }
+
     public LocalProfilesFinder(final Local directory) {
+        this(new ProfilePlistReader(ProtocolFactory.get()), directory);
+    }
+
+    public LocalProfilesFinder(final Reader<Profile> reader, final Local directory) {
+        this.reader = reader;
         this.directory = directory;
     }
 
     @Override
-    public Set<Profile> find() throws AccessDeniedException {
+    public Stream<ProfileDescription> find() throws AccessDeniedException {
         if(directory.exists()) {
-            final Set<Profile> registered = new HashSet<>();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Load profiles from %s", directory));
             }
-            for(Local f : directory.list().filter(new ProfileFilter())) {
-                try {
-                    final Profile profile = ProfileReaderFactory.get().read(f);
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Adding bundled protocol %s", profile));
-                    }
-                    // Replace previous possibly disable protocol in Preferences
-                    registered.add(profile);
-                }
-                catch(AccessDeniedException e) {
-                    log.error(String.format("Failure %s reading profile from %s", f, e));
-                }
-            }
-            return registered;
+            return directory.list().filter(new ProfileFilter()).toList().stream().map(file -> new LocalProfileDescription(reader, file));
         }
-        return Collections.emptySet();
+        return Stream.empty();
+    }
+
+    private static final class LocalProfileDescription extends ProfileDescription {
+        private final Local file;
+
+        public LocalProfileDescription(final Reader<Profile> reader, final Local file) {
+            super(file.getName(), Checksum.NONE, new Supplier<Profile>() {
+                    @Override
+                    public Profile get() {
+                        try {
+                            return reader.read(file);
+                        }
+                        catch(AccessDeniedException e) {
+                            return null;
+                        }
+                    }
+                }
+            );
+            this.file = file;
+        }
+
+        @Override
+        public Checksum getChecksum() {
+            try {
+                // Calculate checksum lazily
+                return ChecksumComputeFactory.get(HashAlgorithm.md5).compute(file.getInputStream(), new TransferStatus());
+            }
+            catch(ChecksumException | AccessDeniedException e) {
+                return Checksum.NONE;
+            }
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("LocalProfileDescription{");
+            sb.append("file=").append(file);
+            sb.append('}');
+            return sb.toString();
+        }
     }
 
     private static final class ProfileFilter implements Filter<Local> {

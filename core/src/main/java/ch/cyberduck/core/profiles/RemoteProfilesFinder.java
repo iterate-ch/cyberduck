@@ -22,76 +22,68 @@ import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Reader;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
-import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.concurrent.CompletionException;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class RemoteProfilesFinder implements ProfilesFinder {
     private static final Logger log = Logger.getLogger(RemoteProfilesFinder.class);
+
+    private final Reader<Profile> reader;
     private final Host server;
 
     public RemoteProfilesFinder() throws HostParserException {
-        this(new HostParser(new ProtocolFactory(Collections.singleton(ProtocolFactory.get()
-            .forName(Scheme.davs.name())))).get(PreferencesFactory.get().getProperty("profiles.url")));
+        this(new ProfilePlistReader(ProtocolFactory.get()), HostParser.parse(PreferencesFactory.get().getProperty("profiles.url")));
     }
 
-    public RemoteProfilesFinder(final Host server) {
+    public RemoteProfilesFinder(final Reader<Profile> reader, final Host server) {
+        this.reader = reader;
         this.server = server;
     }
 
     @Override
-    public Set<Profile> find() throws AccessDeniedException {
-        final CancelCallback cancel = new DisabledCancelCallback();
-        final ProgressListener listener = new DisabledProgressListener();
+    public Stream<ProfileDescription> find() throws AccessDeniedException {
         try {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Fetch trial license from %s", server));
+                log.info(String.format("Fetch profiles from %s", server));
             }
             final AnonymousConnectionService connection = new AnonymousConnectionService();
             final Session<?> session = SessionFactory.create(server,
                 new KeychainX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(server), CertificateStoreFactory.get()),
                 new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), server, CertificateStoreFactory.get()));
             try {
-                connection.connect(session, cancel);
-                final Reader<Profile> reader = ProfileReaderFactory.get();
-                final Set<Profile> registered = new HashSet<>();
-                session.getFeature(ListService.class).list(new Path(server.getDefaultPath(), EnumSet.of(Path.Type.directory)), new IndexedListProgressListener() {
-
-                    private final ProfileFilter filter = new ProfileFilter();
-
-                    @Override
-                    public void visit(final AttributedList<Path> list, final int index, final Path file) {
-                        if(filter.accept(file)) {
+                connection.connect(session, new DisabledCancelCallback());
+                final ProfileFilter filter = new ProfileFilter();
+                final AttributedList<Path> list = session.getFeature(ListService.class).list(new Path(server.getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+                return list.filter(filter).toStream().map(file -> new PathProfileDescription(file,
+                    new Supplier<Profile>() {
+                        @Override
+                        public Profile get() {
                             final Read read = session.getFeature(Read.class);
                             try {
                                 final InputStream in = read.read(file, new TransferStatus(), new DisabledConnectionCallback());
-                                registered.add(reader.read(in));
+                                final Profile profile = reader.read(in);
                                 in.close();
+                                return profile;
                             }
                             catch(BackgroundException | IOException e) {
-                                log.warn(String.format("Ignore failure %s reading profile %s", e, file));
+                                throw new CompletionException(e);
                             }
                         }
                     }
-
-                    @Override
-                    public void message(final String message) {
-                        listener.message(message);
-                    }
-                });
-                return registered;
+                ));
             }
             finally {
                 try {
@@ -104,6 +96,23 @@ public class RemoteProfilesFinder implements ProfilesFinder {
         }
         catch(BackgroundException e) {
             throw new AccessDeniedException(e.getDetail(), e);
+        }
+    }
+
+    private static final class PathProfileDescription extends ProfileDescription {
+        private final Path file;
+
+        public PathProfileDescription(final Path file, final Supplier<Profile> profile) {
+            super(file.getName(), file.attributes().getChecksum(), profile);
+            this.file = file;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("PathProfileDescription{");
+            sb.append("file=").append(file);
+            sb.append('}');
+            return sb.toString();
         }
     }
 
