@@ -45,7 +45,9 @@ public class RemoteProfilesFinder implements ProfilesFinder {
     private final Host server;
 
     public RemoteProfilesFinder() throws HostParserException {
-        this(new ProfilePlistReader(ProtocolFactory.get()), HostParser.parse(PreferencesFactory.get().getProperty("profiles.url")));
+        this(new ProfilePlistReader(ProtocolFactory.get()), HostParser.parse(PreferencesFactory.get().getProperty(
+            "profiles.discovery.updater.url"
+        )));
     }
 
     public RemoteProfilesFinder(final Reader<Profile> reader, final Host server) {
