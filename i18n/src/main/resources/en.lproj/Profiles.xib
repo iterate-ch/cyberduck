@@ -64,39 +64,6 @@
                                                     <outlet property="textField" destination="xTN-uB-Qpp" id="GFG-qY-2o1"/>
                                                 </connections>
                                             </tableCellView>
-                                            <tableCellView identifier="content" id="lr5-Mg-aFP">
-                                                <rect key="frame" x="11" y="17" width="440" height="45"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                <subviews>
-                                                    <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9GK-Lm-PyD">
-                                                        <rect key="frame" x="79" y="3" width="361" height="42"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Amazon S3" id="7TZ-BL-12i">
-                                                            <font key="font" metaFont="system"/>
-                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                        </textFieldCell>
-                                                    </textField>
-                                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ihm-Y4-7Ag">
-                                                        <rect key="frame" x="1" y="13" width="18" height="18"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                                                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="kNB-mk-k8C">
-                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <font key="font" metaFont="system"/>
-                                                        </buttonCell>
-                                                    </button>
-                                                    <imageView wantsLayer="YES" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="E6R-vJ-7oW">
-                                                        <rect key="frame" x="25" y="0.0" width="48" height="48"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                        <imageCell key="cell" refusesFirstResponder="YES" imageScaling="proportionallyDown" image="NSActionTemplate" catalog="system" id="H1N-xO-ebR"/>
-                                                    </imageView>
-                                                </subviews>
-                                                <connections>
-                                                    <outlet property="checkbox" destination="ihm-Y4-7Ag" id="QEp-xo-0cd"/>
-                                                    <outlet property="imageView" destination="E6R-vJ-7oW" id="Gob-A0-Brd"/>
-                                                    <outlet property="textField" destination="9GK-Lm-PyD" id="bkx-RT-15F"/>
-                                                </connections>
-                                            </tableCellView>
                                         </prototypeCellViews>
                                     </tableColumn>
                                 </tableColumns>
@@ -125,7 +92,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8SA-tM-6R2">
                     <rect key="frame" x="18" y="418" width="471" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Install additional connection profiles of different service providers." id="pCs-Wg-GmC">
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Install additional connection profiles from different service providers." id="pCs-Wg-GmC">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -148,7 +115,4 @@
             <point key="canvasLocation" x="105.5" y="921"/>
         </customView>
     </objects>
-    <resources>
-        <image name="NSActionTemplate" catalog="system" width="15" height="15"/>
-    </resources>
 </document>
