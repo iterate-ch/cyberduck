@@ -316,6 +316,14 @@ public class ProfilesPreferencesController extends BundleController {
             }
             return null;
         }
+
+        @Override
+        public CGFloat outlineView_heightOfRowByItem(NSOutlineView outlineView, NSObject item) {
+            if(null == item) {
+                return outlineView.rowHeight();
+            }
+            return new CGFloat(45d);
+        }
     }
 
     public static final class ProfilesTableDataSource extends OutlineDataSource {
@@ -365,13 +373,6 @@ public class ProfilesPreferencesController extends BundleController {
                 return true;
             }
             return false;
-        }
-
-        public CGFloat outlineView_heightOfRowByItem(NSOutlineView outlineView, NSObject item) {
-            if(null == item) {
-                return outlineView.rowHeight();
-            }
-            return new CGFloat(45d);
         }
     }
 
