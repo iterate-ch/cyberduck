@@ -56,7 +56,7 @@ public class AttachmentTest {
                 "      </att>" + LF +
                 "    </obj>" + LF +
                 "  </att>" + LF +
-                "</obj>\n";
+                "</obj>" + LF;
 
         final Attachment attachment = new Attachment();
         final ArrayList<Attachment.Attribute> attributes = new ArrayList<>();
