@@ -296,7 +296,7 @@
                         <action selector="createFolderButtonClicked:" target="-1" id="166"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Neuer Verschlüsselter Tresor…" keyEquivalent="N" id="6n9-Af-09P">
+                <menuItem title="Neuer verschlüsselter Tresor…" keyEquivalent="N" id="6n9-Af-09P">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                     <connections>
                         <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
@@ -380,7 +380,7 @@ CA
                         <action selector="deleteFileButtonClicked:" target="-1" id="165"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Wiederherstellen" id="86">
+                <menuItem title="Zurückkehren" id="86">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="revertFileButtonClicked:" target="-1" id="182"/>
