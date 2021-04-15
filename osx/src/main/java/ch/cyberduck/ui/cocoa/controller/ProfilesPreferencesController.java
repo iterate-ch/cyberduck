@@ -411,6 +411,8 @@ public class ProfilesPreferencesController extends BundleController {
         private NSTextField textField;
         @Outlet
         private NSButton checkbox;
+        @Outlet
+        private NSButton helpButton;
 
         public ProfileTableViewController(final Profile profile) {
             this.profile = profile;
@@ -452,6 +454,12 @@ public class ProfilesPreferencesController extends BundleController {
             }
         }
 
+        public void setHelpButton(final NSButton helpButton) {
+            this.helpButton = helpButton;
+            this.helpButton.setTarget(this.id());
+            this.helpButton.setAction(Foundation.selector("helpButtonClicked:"));
+        }
+
         @Action
         public void profileCheckboxClicked(final NSButton sender) {
             boolean enabled = sender.state() == NSCell.NSOnState;
@@ -463,6 +471,11 @@ public class ProfilesPreferencesController extends BundleController {
                 // Uninstall profile
                 registry.unregister(profile);
             }
+        }
+
+        @Action
+        public void helpButtonClicked(final NSButton sender) {
+            BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help(profile));
         }
 
         @Override

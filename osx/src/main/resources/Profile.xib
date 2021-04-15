@@ -12,6 +12,7 @@
                 <outlet property="checkbox" destination="abN-eZ-quq" id="PTE-fc-Y3j"/>
                 <outlet property="imageView" destination="RHR-n3-aFt" id="jB9-6V-dAB"/>
                 <outlet property="textField" destination="8Ra-PK-bfV" id="hUN-k9-Ny1"/>
+                <outlet property="helpButton" destination="J4c-0A-ghD" id="eiY8AiKo"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -21,8 +22,8 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8Ra-PK-bfV">
-                    <rect key="frame" x="79" y="3" width="361" height="42"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <rect key="frame" x="79" y="3" width="332" height="42"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Amazon S3" id="g1l-GP-OZf">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -39,11 +40,19 @@
                 </button>
                 <imageView wantsLayer="YES" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RHR-n3-aFt">
                     <rect key="frame" x="25" y="0.0" width="48" height="48"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                     <imageCell key="cell" refusesFirstResponder="YES" imageScaling="proportionallyDown" image="NSActionTemplate" id="dNA-DX-61o"/>
                 </imageView>
+                <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J4c-0A-ghD">
+                    <rect key="frame" x="414" y="10" width="25" height="25"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
+                    <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ndx-Mw-dBk">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                </button>
             </subviews>
-            <point key="canvasLocation" x="-175" y="110"/>
+            <point key="canvasLocation" x="-175" y="109.5"/>
         </tableCellView>
     </objects>
     <resources>
