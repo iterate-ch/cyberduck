@@ -14,6 +14,7 @@ package ch.cyberduck.core.profiles;/*
  */
 
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -89,7 +90,8 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
 
     public Future<Stream<ProfileDescription>> synchronize() throws BackgroundException {
         return controller.background(new WorkerBackgroundAction<>(controller, SessionPoolFactory.create(controller,
-            HostParser.parse(PreferencesFactory.get().getProperty("profiles.discovery.updater.url"))), new SynchronizeWorker()));
+            HostParser.parse(PreferencesFactory.get().getProperty("profiles.discovery.updater.url")).withCredentials(
+                new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name")))), new SynchronizeWorker()));
     }
 
     private final class SynchronizeWorker extends Worker<Stream<ProfileDescription>> {

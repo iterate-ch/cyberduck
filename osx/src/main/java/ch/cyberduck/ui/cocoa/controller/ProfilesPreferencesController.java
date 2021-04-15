@@ -167,7 +167,8 @@ public class ProfilesPreferencesController extends BundleController {
         progressIndicator.startAnimation(null);
         try {
             this.background(new WorkerBackgroundAction<>(this, SessionPoolFactory.create(this,
-                HostParser.parse(PreferencesFactory.get().getProperty("profiles.discovery.updater.url"))), new Worker<Void>() {
+                HostParser.parse(PreferencesFactory.get().getProperty("profiles.discovery.updater.url")).withCredentials(
+                    new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name")))), new Worker<Void>() {
                 @Override
                 public Void run(final Session<?> session) throws BackgroundException {
                     final Stream<ProfilesFinder.ProfileDescription> stream = new RemoteProfilesFinder(session).find();
