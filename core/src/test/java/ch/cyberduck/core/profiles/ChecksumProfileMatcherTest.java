@@ -15,18 +15,19 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.serializer.Deserializer;
 
 import org.junit.Test;
 
-import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -35,23 +36,58 @@ public class ChecksumProfileMatcherTest {
 
     @Test
     public void compare() throws Exception {
-        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+        // Local only profile
+        assertFalse(new ChecksumProfileMatcher(Stream.of(new ProfilesFinder.ProfileDescription("Profile.cyberduckprofile", Checksum.NONE, () -> null)))
+            .compare(new ProfilesFinder.ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)).isPresent());
+        // Managed profile
+        assertFalse(new ChecksumProfileMatcher(Stream.of(new ProfilesFinder.ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)))
+            .compare(new ProfilesFinder.ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)).isPresent());
+        assertTrue(new ChecksumProfileMatcher(Stream.of(new ProfilesFinder.ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null) {
             @Override
-            public Type getType() {
-                return Type.s3;
+            public boolean isLatest() {
+                return false;
             }
 
             @Override
-            public boolean isEnabled() {
-                return false;
+            public Supplier<Profile> getProfile() {
+                return new Supplier<Profile>() {
+                    @Override
+                    public Profile get() {
+                        return new Profile(new TestProtocol(Scheme.dav), new Deserializer<String>() {
+                            @Override
+                            public String stringForKey(final String key) {
+                                return null;
+                            }
+
+                            @Override
+                            public String objectForKey(final String key) {
+                                return null;
+                            }
+
+                            @Override
+                            public <L> List<L> listForKey(final String key) {
+                                return null;
+                            }
+
+                            @Override
+                            public Map<String, String> mapForKey(final String key) {
+                                return null;
+                            }
+
+                            @Override
+                            public boolean booleanForKey(final String key) {
+                                return false;
+                            }
+
+                            @Override
+                            public List<String> keys() {
+                                return null;
+                            }
+                        });
+                    }
+                };
             }
-        })));
-        final Local file = new Local("src/test/resources/Custom Regions S3.cyberduckprofile");
-        final Profile profile = reader.read(file);
-        final LocalProfilesFinder finder = new LocalProfilesFinder(reader, new Local("src/test/resources/"));
-        assertTrue(new ChecksumProfileMatcher(finder.find()).compare(new ProfilesFinder.ProfileDescription("Custom Regions S3.cyberduckprofile",
-            Checksum.NONE, () -> profile)).isPresent());
-        assertFalse(new ChecksumProfileMatcher(finder.find()).compare(new ProfilesFinder.ProfileDescription("Custom Regions S3.cyberduckprofile",
-            new MD5ChecksumCompute().compute(file.getInputStream(), new TransferStatus()), () -> profile)).isPresent());
+        }))
+            .compare(new ProfilesFinder.ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)).isPresent());
     }
 }

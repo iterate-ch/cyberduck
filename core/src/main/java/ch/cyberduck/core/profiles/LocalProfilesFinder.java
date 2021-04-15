@@ -92,6 +92,7 @@ public class LocalProfilesFinder implements ProfilesFinder {
         public Checksum getChecksum() {
             try {
                 // Calculate checksum lazily
+                // todo cache
                 return ChecksumComputeFactory.get(HashAlgorithm.md5).compute(file.getInputStream(), new TransferStatus());
             }
             catch(ChecksumException | AccessDeniedException e) {

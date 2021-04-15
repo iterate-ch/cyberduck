@@ -18,11 +18,9 @@ import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProfileWriterFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionPoolFactory;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
@@ -76,7 +74,7 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
                         log.info(String.format("Check for new profiles after %s", delay));
                     }
                     try {
-                        synchronize(new FilenameProfileMatcher(new LocalProfilesFinder(new ProfilePlistReader(protocols), directory).find()));
+                        PeriodicProfilesUpdater.this.synchronize();
                     }
                     catch(BackgroundException e) {
                         log.warn(String.format("Failure %s refreshing profiles", e));
@@ -89,34 +87,30 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
         }
     }
 
-    public Future<Stream<ProfilesFinder.ProfileDescription>> synchronize(final ProfileMatcher comparator) throws BackgroundException {
+    public Future<Stream<ProfilesFinder.ProfileDescription>> synchronize() throws BackgroundException {
         return controller.background(new WorkerBackgroundAction<>(controller, SessionPoolFactory.create(controller,
-            HostParser.parse(PreferencesFactory.get().getProperty("profiles.discovery.updater.url"))), new Worker<Stream<ProfilesFinder.ProfileDescription>>() {
-            @Override
-            public Stream<ProfilesFinder.ProfileDescription> run(final Session<?> session) throws BackgroundException {
-                // Find all locally installed profiles
-                final Stream<ProfilesFinder.ProfileDescription> stream = new RemoteProfilesFinder(new ProfilePlistReader(protocols), session).find();
-                stream.forEach(description -> {
-                    final Optional<Profile> optional = comparator.compare(description);
-                    if(optional.isPresent()) {
-                        final Profile profile = optional.get();
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Install updated profile %s", profile));
-                        }
-                        try {
-                            ProfileWriterFactory.get().write(profile, LocalFactory.get(directory, optional.get().getName()));
-                        }
-                        catch(AccessDeniedException e) {
-                            log.warn(String.format("Failure %s writing profile %s", e, profile));
-                        }
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Register updated profile %s", profile));
-                        }
-                        protocols.register(profile);
-                    }
-                });
-                return stream;
-            }
-        }));
+            HostParser.parse(PreferencesFactory.get().getProperty("profiles.discovery.updater.url"))), new SynchronizeWorker()));
+    }
+
+    private final class SynchronizeWorker extends Worker<Stream<ProfilesFinder.ProfileDescription>> {
+        @Override
+        public Stream<ProfilesFinder.ProfileDescription> run(final Session<?> session) throws BackgroundException {
+            // Find all locally installed profiles
+            final Stream<ProfilesFinder.ProfileDescription> installed = new LocalProfilesFinder(new ProfilePlistReader(protocols), directory).find();
+            // Find all profiles from repository
+            final Stream<ProfilesFinder.ProfileDescription> repository = new RemoteProfilesFinder(new ProfilePlistReader(protocols), session).find();
+            final ProfileMatcher matcher = new ChecksumProfileMatcher(repository);
+            // Iterate over every installed profile and find match in repository
+            installed.forEach(description -> {
+                final Optional<Profile> optional = matcher.compare(description);
+                if(optional.isPresent()) {
+                    // Optional returned if matching profile with later version in repository found
+                    final Profile profile = optional.get();
+                    // todo handle name
+                    protocols.register(profile, LocalFactory.get(directory, optional.get().getName()));
+                }
+            });
+            return repository;
+        }
     }
 }

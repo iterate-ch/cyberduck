@@ -68,6 +68,10 @@ public interface ProfilesFinder {
             return Objects.hash(checksum);
         }
 
+        public boolean isLatest() {
+            return true;
+        }
+
         @Override
         public String toString() {
             final StringBuilder sb = new StringBuilder("ProfileDescription{");

@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
@@ -71,7 +72,12 @@ public class RemoteProfilesFinder implements ProfilesFinder {
                     public Profile get() {
                         try {
                             final Read read = session.getFeature(Read.class);
-                            final InputStream in = read.read(file, new TransferStatus(), new DisabledConnectionCallback());
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Download profile %s", file));
+                            }
+                            final InputStream in = read.read(file.withAttributes(new PathAttributes(file.attributes())
+                                // Read latest version
+                                .withVersionId(null)), new TransferStatus(), new DisabledConnectionCallback());
                             final Profile profile = reader.read(in);
                             in.close();
                             return profile;
@@ -94,6 +100,11 @@ public class RemoteProfilesFinder implements ProfilesFinder {
         public PathProfileDescription(final Path file, final Supplier<Profile> profile) {
             super(file.getName(), file.attributes().getChecksum(), profile);
             this.file = file;
+        }
+
+        @Override
+        public boolean isLatest() {
+            return !file.attributes().isDuplicate();
         }
 
         @Override
