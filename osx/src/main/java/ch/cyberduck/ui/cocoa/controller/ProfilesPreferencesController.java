@@ -139,8 +139,7 @@ public class ProfilesPreferencesController extends BundleController {
     public void searchFieldTextDidEndEditing(final NSNotification notification) {
         final String input = searchField.stringValue();
         // Setup search filter
-        final List<Protocol> filtered = profiles.stream().filter(new SearchProtocolPredicate(input)).collect(Collectors.toList());
-        filtered.sort(Comparator.comparing(Protocol::getType));
+        final List<Protocol> filtered = profiles.stream().filter(new SearchProtocolPredicate(input)).sorted(Comparator.comparing(Protocol::getType)).collect(Collectors.toList());
         this.profilesTableDataSource.setSource(filtered);
         // Reload with current cache
         this.profilesTableView.reloadData();
