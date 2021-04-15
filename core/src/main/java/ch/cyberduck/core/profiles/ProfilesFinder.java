@@ -13,72 +13,10 @@ package ch.cyberduck.core.profiles;/*
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.io.Checksum;
 
-import org.apache.log4j.Logger;
-
-import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public interface ProfilesFinder {
-    Logger log = Logger.getLogger(ProfilesFinder.class);
-
     Stream<ProfileDescription> find() throws AccessDeniedException;
-
-    class ProfileDescription {
-        private final String name;
-        private final Checksum checksum;
-        private final Supplier<Profile> profile;
-
-        public ProfileDescription(final String name, final Checksum checksum, final Supplier<Profile> profile) {
-            this.name = name;
-            this.checksum = checksum;
-            this.profile = profile;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Checksum getChecksum() {
-            return checksum;
-        }
-
-        public Supplier<Profile> getProfile() {
-            return profile;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if(this == o) {
-                return true;
-            }
-            if(!(o instanceof ProfileDescription)) {
-                return false;
-            }
-            final ProfileDescription that = (ProfileDescription) o;
-            return Objects.equals(checksum, that.checksum);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(checksum);
-        }
-
-        public boolean isLatest() {
-            return true;
-        }
-
-        @Override
-        public String toString() {
-            final StringBuilder sb = new StringBuilder("ProfileDescription{");
-            sb.append("checksum=").append(checksum);
-            sb.append(", profile=").append(profile);
-            sb.append('}');
-            return sb.toString();
-        }
-    }
 }

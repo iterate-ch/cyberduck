@@ -48,7 +48,7 @@ public class LocalProfilesFinderTest {
             new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
         );
         final LocalProfilesFinder finder = new LocalProfilesFinder(reader, new Local("src/test/resources/"));
-        final Stream<ProfilesFinder.ProfileDescription> stream = finder.find();
+        final Stream<ProfileDescription> stream = finder.find();
         assertFalse(stream.collect(Collectors.toList()).isEmpty());
     }
 }

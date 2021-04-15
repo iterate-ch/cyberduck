@@ -97,7 +97,7 @@ public class RemoteProfilesFinderTest {
         final NullSession session = new NullSession(host);
         session.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final RemoteProfilesFinder finder = new RemoteProfilesFinder(reader, session);
-        final Stream<ProfilesFinder.ProfileDescription> stream = finder.find();
+        final Stream<ProfileDescription> stream = finder.find();
         assertTrue(stream.collect(Collectors.toList()).isEmpty());
         session.close();
     }

@@ -28,7 +28,7 @@ public interface ProfileMatcher {
      * @param next Description of profile installed
      * @return Non null if profile from server has been updated. Matching profile with later version in repository.
      */
-    Optional<Profile> compare(ProfilesFinder.ProfileDescription next);
+    Optional<Profile> compare(ProfileDescription next);
 
     class IdentifierProtocolPredicate implements Predicate<Protocol> {
         private final Protocol installed;

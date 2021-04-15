@@ -87,18 +87,18 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
         }
     }
 
-    public Future<Stream<ProfilesFinder.ProfileDescription>> synchronize() throws BackgroundException {
+    public Future<Stream<ProfileDescription>> synchronize() throws BackgroundException {
         return controller.background(new WorkerBackgroundAction<>(controller, SessionPoolFactory.create(controller,
             HostParser.parse(PreferencesFactory.get().getProperty("profiles.discovery.updater.url"))), new SynchronizeWorker()));
     }
 
-    private final class SynchronizeWorker extends Worker<Stream<ProfilesFinder.ProfileDescription>> {
+    private final class SynchronizeWorker extends Worker<Stream<ProfileDescription>> {
         @Override
-        public Stream<ProfilesFinder.ProfileDescription> run(final Session<?> session) throws BackgroundException {
+        public Stream<ProfileDescription> run(final Session<?> session) throws BackgroundException {
             // Find all locally installed profiles
-            final Stream<ProfilesFinder.ProfileDescription> installed = new LocalProfilesFinder(new ProfilePlistReader(protocols), directory).find();
+            final Stream<ProfileDescription> installed = new LocalProfilesFinder(new ProfilePlistReader(protocols), directory).find();
             // Find all profiles from repository
-            final Stream<ProfilesFinder.ProfileDescription> repository = new RemoteProfilesFinder(new ProfilePlistReader(protocols), session).find();
+            final Stream<ProfileDescription> repository = new RemoteProfilesFinder(new ProfilePlistReader(protocols), session).find();
             final ProfileMatcher matcher = new ChecksumProfileMatcher(repository);
             // Iterate over every installed profile and find match in repository
             installed.forEach(description -> {
@@ -106,8 +106,9 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
                 if(optional.isPresent()) {
                     // Optional returned if matching profile with later version in repository found
                     final Profile profile = optional.get();
-                    // todo handle name
-                    protocols.register(profile, LocalFactory.get(directory, optional.get().getName()));
+                    log.warn(String.format("Override %s with latest profile verison %s", description.getName(), profile));
+                    // Override in registry taking name from existing file to override
+                    protocols.register(profile, description.getName());
                 }
             });
             return repository;

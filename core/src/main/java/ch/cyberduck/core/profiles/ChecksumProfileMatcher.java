@@ -28,12 +28,12 @@ import java.util.stream.Stream;
 public class ChecksumProfileMatcher implements ProfileMatcher {
     private static final Logger log = Logger.getLogger(ChecksumProfileMatcher.class.getName());
 
-    private final Stream<ProfilesFinder.ProfileDescription> repository;
+    private final Stream<ProfileDescription> repository;
 
     /**
      * @param repository Profiles from remote repository
      */
-    public ChecksumProfileMatcher(final Stream<ProfilesFinder.ProfileDescription> repository) {
+    public ChecksumProfileMatcher(final Stream<ProfileDescription> repository) {
         this.repository = repository;
     }
 
@@ -44,9 +44,9 @@ public class ChecksumProfileMatcher implements ProfileMatcher {
      * @return Non null if matching profile is found on disk with checksum mismatch
      */
     @Override
-    public Optional<Profile> compare(final ProfilesFinder.ProfileDescription next) {
+    public Optional<Profile> compare(final ProfileDescription next) {
         // Filter out profiles with matching checksum
-        final Optional<ProfilesFinder.ProfileDescription> found = repository
+        final Optional<ProfileDescription> found = repository
             .filter(description -> description.getChecksum().equals(next.getChecksum()))
             .findFirst();
         if(found.isPresent()) {

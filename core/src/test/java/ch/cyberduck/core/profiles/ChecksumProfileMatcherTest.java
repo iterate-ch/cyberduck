@@ -37,12 +37,12 @@ public class ChecksumProfileMatcherTest {
     @Test
     public void compare() throws Exception {
         // Local only profile
-        assertFalse(new ChecksumProfileMatcher(Stream.of(new ProfilesFinder.ProfileDescription("Profile.cyberduckprofile", Checksum.NONE, () -> null)))
-            .compare(new ProfilesFinder.ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)).isPresent());
+        assertFalse(new ChecksumProfileMatcher(Stream.of(new ProfileDescription("Profile.cyberduckprofile", Checksum.NONE, () -> null)))
+            .compare(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)).isPresent());
         // Managed profile
-        assertFalse(new ChecksumProfileMatcher(Stream.of(new ProfilesFinder.ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)))
-            .compare(new ProfilesFinder.ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)).isPresent());
-        assertTrue(new ChecksumProfileMatcher(Stream.of(new ProfilesFinder.ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null) {
+        assertFalse(new ChecksumProfileMatcher(Stream.of(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)))
+            .compare(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)).isPresent());
+        assertTrue(new ChecksumProfileMatcher(Stream.of(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null) {
             @Override
             public boolean isLatest() {
                 return false;
@@ -88,6 +88,6 @@ public class ChecksumProfileMatcherTest {
                 };
             }
         }))
-            .compare(new ProfilesFinder.ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)).isPresent());
+            .compare(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)).isPresent());
     }
 }
