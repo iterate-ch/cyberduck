@@ -20,6 +20,7 @@ import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 import ch.cyberduck.core.profiles.LocalProfilesFinder;
 import ch.cyberduck.core.profiles.ProfilesFinder;
 
@@ -91,7 +92,7 @@ public final class ProtocolFactory {
             finder.find().map(description -> description.getProfile().get()).filter(Objects::nonNull).forEach(registered::add);
         }
         catch(AccessDeniedException e) {
-            log.warn(String.format("Failure %s reading profiles from %s", bundle, e));
+            log.warn(String.format("Failure %s reading profiles from %s", finder, e));
         }
     }
 
@@ -112,10 +113,12 @@ public final class ProtocolFactory {
         registered.add(profile);
         preferences.setProperty(String.format("profiles.%s.%s.enabled", profile.getName(), profile.getProvider()), true);
         try {
-            if(!bundle.exists()) {
-                new DefaultLocalDirectoryFeature().mkdir(bundle);
+            final Local directory = LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
+                PreferencesFactory.get().getProperty("profiles.folder.name"));
+            if(!directory.exists()) {
+                new DefaultLocalDirectoryFeature().mkdir(directory);
             }
-            final Local file = LocalFactory.get(bundle, String.format("%s.cyberduckprofile", FilenameUtils.removeExtension(installname)));
+            final Local file = LocalFactory.get(directory, String.format("%s.cyberduckprofile", FilenameUtils.removeExtension(installname)));
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Save profile %s to %s", profile, file));
             }
