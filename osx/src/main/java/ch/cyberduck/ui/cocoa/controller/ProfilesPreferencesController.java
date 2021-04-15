@@ -432,8 +432,8 @@ public class ProfilesPreferencesController extends BundleController {
 
         public void setTextField(final NSTextField textField) {
             this.textField = textField;
-            final NSMutableAttributedString description = NSMutableAttributedString.create(profile.getName(), PRIMARY_FONT_ATTRIBUTES);
-            description.appendAttributedString(NSMutableAttributedString.create(String.format("\n%s", profile.getDescription()), SECONDARY_FONT_ATTRIBUTES));
+            final NSMutableAttributedString description = NSMutableAttributedString.create(profile.getDescription(), PRIMARY_FONT_ATTRIBUTES);
+            description.appendAttributedString(NSMutableAttributedString.create(String.format("\n%s", profile.getName()), SECONDARY_FONT_ATTRIBUTES));
             this.textField.setAttributedStringValue(description);
         }
 
