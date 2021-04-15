@@ -314,6 +314,8 @@ public abstract class Preferences implements Locales, PreferencesReader {
           Lowercase folder name to use when looking for profiles in user support directory
          */
         this.setDefault("profiles.folder.name", "Profiles");
+        this.setDefault("profiles.discovery.updater.enable", String.valueOf(true));
+        this.setDefault("profiles.discovery.updater.url", "s3:/profiles.cyberduck.io");
 
         /*
           Maximum number of directory listings to cache using a most recently used implementation
@@ -1126,9 +1128,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("cryptomator.vault.masterkey.filename", "masterkey.cryptomator");
         this.setDefault("cryptomator.vault.pepper", "");
         this.setDefault("cryptomator.cache.size", String.valueOf(1000));
-
-        this.setDefault("profiles.discovery.updater.enable", String.valueOf(true));
-        this.setDefault("profiles.discovery.updater.url", "https://svn.cyberduck.io/trunk/profiles");
     }
 
     /**

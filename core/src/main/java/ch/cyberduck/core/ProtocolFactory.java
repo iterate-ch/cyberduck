@@ -16,15 +16,19 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.profiles.LocalProfilesFinder;
 import ch.cyberduck.core.profiles.ProfilesFinder;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +40,8 @@ public final class ProtocolFactory {
     private static final Logger log = Logger.getLogger(ProtocolFactory.class);
 
     private static final ProtocolFactory global = new ProtocolFactory();
+
+    private final Preferences preferences = PreferencesFactory.get();
 
     public static ProtocolFactory get() {
         return global;
@@ -59,10 +65,11 @@ public final class ProtocolFactory {
     }
 
     public void register(Protocol... protocols) {
-        // Order determines list in connection dropdown
-        for(Protocol protocol : protocols) {
-            this.register(protocol);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Register protocols %s", protocols));
         }
+        // Order determines list in connection dropdown
+        Collections.addAll(registered, protocols);
     }
 
     /**
@@ -88,17 +95,43 @@ public final class ProtocolFactory {
         }
     }
 
-    public void register(final Protocol protocol) {
-        if(null == protocol) {
+    /**
+     * Register profile and write to application support directory
+     *
+     * @param profile     Profile
+     * @param installname Install name
+     */
+    public void register(final Profile profile, final String installname) {
+        if(null == profile) {
             log.error("Attempt to register unknown protocol");
             return;
         }
-        registered.add(protocol);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Register profile %s", profile));
+        }
+        registered.add(profile);
+        preferences.setProperty(String.format("profiles.%s.%s.enabled", profile.getName(), profile.getProvider()), true);
+        try {
+            if(!bundle.exists()) {
+                new DefaultLocalDirectoryFeature().mkdir(bundle);
+            }
+            final Local file = LocalFactory.get(bundle, String.format("%s.cyberduckprofile", FilenameUtils.removeExtension(installname)));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Save profile %s to %s", profile, file));
+            }
+            ProfileWriterFactory.get().write(profile, file);
+        }
+        catch(AccessDeniedException e) {
+            log.error(String.format("Failure %s writing profile %s", e, profile));
+        }
     }
 
-    public void unregister(final Protocol protocol) {
-        if(!registered.remove(protocol)) {
-            log.warn(String.format("Failure removing protocol %s", protocol));
+    public void unregister(final Profile profile) {
+        if(registered.remove(profile)) {
+            preferences.setProperty(String.format("profiles.%s.%s.enabled", profile.getName(), profile.getProvider()), false);
+        }
+        else {
+            log.warn(String.format("Failure removing protocol %s", profile));
         }
     }
 

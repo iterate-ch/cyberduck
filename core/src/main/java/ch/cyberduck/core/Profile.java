@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -82,7 +83,17 @@ public class Profile implements Protocol {
      */
     @Override
     public boolean isEnabled() {
-        return StringUtils.isNotBlank(this.value("Protocol")) && StringUtils.isNotBlank(this.value("Vendor"));
+        final String protocol = this.value("Protocol");
+        final String vendor = this.value("Vendor");
+        if(StringUtils.isNotBlank(protocol) && StringUtils.isNotBlank(vendor)) {
+            final String property = PreferencesFactory.get().getProperty(String.format("profiles.%s.%s.enabled", protocol, vendor));
+            if(null == property) {
+                // Not previously configured. Assume enabled
+                return true;
+            }
+            return Boolean.parseBoolean(property);
+        }
+        return false;
     }
 
     @Override
