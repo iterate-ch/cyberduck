@@ -639,12 +639,13 @@ public class MainController extends BundleController implements NSApplication.De
             }
             else if("cyberduckprofile".equals(f.getExtension())) {
                 try {
-                    final Protocol profile = ProfileReaderFactory.get().read(f);
+                    final Profile profile = ProfileReaderFactory.get().read(f);
                     if(profile.isEnabled()) {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Register profile %s", profile));
                         }
-                        ProtocolFactory.get().register(profile);
+                        final ProtocolFactory protocols = ProtocolFactory.get();
+                        protocols.register(profile);
                         final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                         newDocument().addBookmark(host);
                         // Register in application support
