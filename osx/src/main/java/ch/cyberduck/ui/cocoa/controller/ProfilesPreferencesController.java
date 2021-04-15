@@ -42,51 +42,63 @@ import ch.cyberduck.binding.foundation.NSMutableAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.core.DeserializerFactory;
+import ch.cyberduck.binding.foundation.NSString;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.SearchProtocolPredicate;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.profiles.ProfileMatcher;
-import ch.cyberduck.core.profiles.ProfilesFinder;
+import ch.cyberduck.core.profiles.LocalProfilesFinder;
+import ch.cyberduck.core.profiles.ProfileDescription;
 import ch.cyberduck.core.profiles.RemoteProfilesFinder;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.serializer.ProfileDictionary;
-import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
-import ch.cyberduck.core.serializer.impl.jna.PlistSerializer;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.Worker;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
-import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ProfilesPreferencesController extends BundleController {
     private static final Logger log = Logger.getLogger(ProfilesPreferencesController.class);
 
+    private final ProtocolFactory protocols = ProtocolFactory.get();
+
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
     private final Preferences preferences = PreferencesFactory.get();
-    private final List<Protocol> profiles = new ArrayList<>();
+
+    /**
+     * List of profiles installed
+     */
+    private final Map<ProfileDescription, Profile> installed = new LinkedHashMap<>();
+    /**
+     * List of profiles from repository
+     */
+    private final Map<ProfileDescription, Profile> repository = new LinkedHashMap<>();
 
     @Delegate
     private ProfilesTableDataSource profilesTableDataSource;
@@ -138,16 +150,21 @@ public class ProfilesPreferencesController extends BundleController {
     @Action
     public void searchFieldTextDidEndEditing(final NSNotification notification) {
         final String input = searchField.stringValue();
-        // Setup search filter
-        final List<Protocol> filtered = profiles.stream().filter(new SearchProtocolPredicate(input)).sorted(Comparator.comparing(Protocol::getType)).collect(Collectors.toList());
-        this.profilesTableDataSource.setSource(filtered);
+        if(StringUtils.isBlank(input)) {
+            this.profilesTableDataSource.withSource(repository.keySet());
+        }
+        else {
+            // Setup search filter
+            this.profilesTableDataSource.withSource(repository.entrySet().stream().filter(
+                new SearchProtocolPredicate(input)).map(Map.Entry::getKey).collect(Collectors.toSet()));
+        }
         // Reload with current cache
         this.profilesTableView.reloadData();
     }
 
     public void setProfilesTableView(final NSOutlineView profilesTableView) {
         this.profilesTableView = profilesTableView;
-        this.profilesTableDataSource = new ProfilesTableDataSource(profiles);
+        this.profilesTableDataSource = new ProfilesTableDataSource().withSource(repository.keySet());
         this.profilesTableView.setDataSource(profilesTableDataSource.id());
         this.profilesTableDelegate = new ProfilesTableDelegate(profilesTableView.tableColumnWithIdentifier("Default"));
         this.profilesTableView.setDelegate(profilesTableDelegate.id());
@@ -171,15 +188,21 @@ public class ProfilesPreferencesController extends BundleController {
                     new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name")))), new Worker<Void>() {
                 @Override
                 public Void run(final Session<?> session) throws BackgroundException {
-                    final Stream<ProfilesFinder.ProfileDescription> stream = new RemoteProfilesFinder(session).find();
-                    stream.forEach(description -> profiles.add(description.getProfile().get()));
-                    profiles.sort(Comparator.comparing(Protocol::getType));
+                    new LocalProfilesFinder().find().forEach(description -> installed.put(description, description.getProfile().get()));
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Fetch profiles from %s", session.getHost()));
+                    }
+                    new RemoteProfilesFinder(session).find().forEach(description -> {
+                        // Fetch contents
+                        repository.put(description, description.getProfile().get());
+                    });
                     return null;
                 }
 
                 @Override
                 public void cleanup(final Void result) {
                     progressIndicator.stopAnimation(null);
+                    profilesTableDataSource.withSource(repository.keySet());
                     profilesTableView.reloadData();
                 }
             }));
@@ -190,15 +213,17 @@ public class ProfilesPreferencesController extends BundleController {
         super.awakeFromNib();
     }
 
-    public static final class ProfilesTableDelegate extends AbstractTableDelegate<Protocol, Void> implements NSOutlineView.Delegate {
-        private final Map<Protocol, ProfileTableViewController> controllers = new HashMap<>();
-
-        private static Profile toProfile(final NSDictionary dict) {
-            return new ProfileDictionary(new DeserializerFactory<NSDictionary, PlistDeserializer>(PlistDeserializer.class)).deserialize(dict);
-        }
+    public final class ProfilesTableDelegate extends AbstractTableDelegate<Protocol, Void> implements NSOutlineView.Delegate {
+        private final Map<ProfileDescription, ProfileTableViewController> controllers = new HashMap<>();
 
         public ProfilesTableDelegate(final NSTableColumn selectedColumn) {
             super(selectedColumn);
+        }
+
+        private ProfileDescription fromChecksum(final NSObject hash) {
+            final ProfileDescription key = new ProfileDescription(null, new Checksum(HashAlgorithm.md5, hash.toString()), () -> null);
+            final Optional<ProfileDescription> found = repository.keySet().stream().filter(description -> description.equals(key)).findFirst();
+            return found.orElse(null);
         }
 
         @Override
@@ -223,12 +248,11 @@ public class ProfilesPreferencesController extends BundleController {
 
         @Override
         public String outlineView_typeSelectStringForTableColumn_item(final NSOutlineView view, final NSTableColumn tableColumn, final NSObject item) {
-            if(item.isKindOfClass(NSDictionary.CLASS)) {
-                final NSDictionary dict = Rococoa.cast(item, NSDictionary.class);
-                final Profile profile = toProfile(dict);
-                return profile.getName();
+            final ProfileDescription description = fromChecksum(item);
+            if(null == description) {
+                return null;
             }
-            return null;
+            return repository.get(description).getDescription();
         }
 
         @Override
@@ -243,12 +267,11 @@ public class ProfilesPreferencesController extends BundleController {
 
         @Override
         public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView t, NSCell cell, ID rect, NSTableColumn c, NSObject item, NSPoint mouseLocation) {
-            if(item.isKindOfClass(NSDictionary.CLASS)) {
-                final NSDictionary dict = Rococoa.cast(item, NSDictionary.class);
-                final Profile profile = toProfile(dict);
-                return profile.getDefaultHostname();
+            final ProfileDescription description = fromChecksum(item);
+            if(null == description) {
+                return null;
             }
-            return null;
+            return repository.get(description).getDefaultHostname();
         }
 
         @Override
@@ -293,28 +316,25 @@ public class ProfilesPreferencesController extends BundleController {
 
         @Override
         public boolean outlineView_shouldSelectItem(final NSOutlineView view, final NSObject item) {
-            if(item.isKindOfClass(NSDictionary.CLASS)) {
-                final NSDictionary dict = Rococoa.cast(item, NSDictionary.class);
-                final Profile profile = toProfile(dict);
-                return !profile.isBundled();
+            final ProfileDescription description = fromChecksum(item);
+            if(null == description) {
+                return false;
             }
-            return false;
+            return !repository.get(description).isBundled();
         }
 
         public NSView outlineView_viewForTableColumn_item(final NSOutlineView outlineView, final NSTableColumn tableColumn, final NSObject item) {
-            log.debug(String.format("outlineView_viewForTableColumn_item:%s", item));
-            // We only have a single column
-            if(item.isKindOfClass(NSDictionary.CLASS)) {
-                final NSDictionary dict = Rococoa.cast(item, NSDictionary.class);
-                final Profile profile = toProfile(dict);
-                if(controllers.containsKey(profile)) {
-                    return controllers.get(profile).getCellView();
-                }
-                final ProfileTableViewController controller = new ProfileTableViewController(profile);
-                controllers.put(profile, controller);
-                return controller.getCellView();
+            final ProfileDescription description = fromChecksum(item);
+            if(null == description) {
+                return null;
             }
-            return null;
+            final Profile profile = repository.get(description);
+            if(controllers.containsKey(description)) {
+                return controllers.get(description).getCellView();
+            }
+            final ProfileTableViewController controller = new ProfileTableViewController(description, profile);
+            controllers.put(description, controller);
+            return controller.getCellView();
         }
 
         @Override
@@ -328,19 +348,15 @@ public class ProfilesPreferencesController extends BundleController {
 
     public static final class ProfilesTableDataSource extends OutlineDataSource {
 
-        private List<Protocol> profiles;
+        private List<ProfileDescription> profiles;
 
-        public ProfilesTableDataSource(final List<Protocol> profiles) {
-            this.profiles = profiles;
-        }
-
-        public void setSource(final List<Protocol> source) {
-            this.profiles = source;
+        public ProfilesTableDataSource withSource(final Set<ProfileDescription> source) {
+            this.profiles = new ArrayList<>(source);
+            return this;
         }
 
         @Override
         public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, final NSObject item) {
-            log.debug(String.format("outlineView_numberOfChildrenOfItem:%s", item));
             if(null == item) {
                 return new NSInteger(profiles.size());
             }
@@ -349,18 +365,15 @@ public class ProfilesPreferencesController extends BundleController {
 
         @Override
         public NSObject outlineView_child_ofItem(final NSOutlineView outlineView, final NSInteger index, final NSObject item) {
-            log.debug(String.format("outlineView_child_ofItem:%s", index));
             if(null == item) {
                 // If item is nil, returns the appropriate child item of the root object.
-                final Protocol profile = profiles.get(index.intValue());
-                return profile.serialize(new PlistSerializer());
+                return NSString.stringWithString(profiles.get(index.intValue()).getChecksum().hash);
             }
             return null;
         }
 
         @Override
         public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, final NSObject item) {
-            log.debug(String.format("outlineView_objectValueForTableColumn_byItem:%s", item));
             if(null == item) {
                 return null;
             }
@@ -376,31 +389,30 @@ public class ProfilesPreferencesController extends BundleController {
         }
     }
 
-    public static final class ProfileTableViewController extends BundleController {
-        private static final NSDictionary PRIMARY_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(
-                NSFont.boldSystemFontOfSize(NSFont.systemFontSize()),
-                NSColor.controlTextColor(),
-                BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
-            NSArray.arrayWithObjects(
-                NSAttributedString.FontAttributeName,
-                NSAttributedString.ForegroundColorAttributeName,
-                NSAttributedString.ParagraphStyleAttributeName)
-        );
+    private static final NSDictionary PRIMARY_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
+        NSArray.arrayWithObjects(
+            NSFont.boldSystemFontOfSize(NSFont.systemFontSize()),
+            NSColor.controlTextColor(),
+            BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
+        NSArray.arrayWithObjects(
+            NSAttributedString.FontAttributeName,
+            NSAttributedString.ForegroundColorAttributeName,
+            NSAttributedString.ParagraphStyleAttributeName)
+    );
 
-        private static final NSDictionary SECONDARY_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(
-                NSFont.systemFontOfSize(NSFont.systemFontSize()),
-                NSColor.secondaryLabelColor(),
-                BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
-            NSArray.arrayWithObjects(
-                NSAttributedString.FontAttributeName,
-                NSAttributedString.ForegroundColorAttributeName,
-                NSAttributedString.ParagraphStyleAttributeName)
-        );
+    private static final NSDictionary SECONDARY_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
+        NSArray.arrayWithObjects(
+            NSFont.systemFontOfSize(NSFont.systemFontSize()),
+            NSColor.secondaryLabelColor(),
+            BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
+        NSArray.arrayWithObjects(
+            NSAttributedString.FontAttributeName,
+            NSAttributedString.ForegroundColorAttributeName,
+            NSAttributedString.ParagraphStyleAttributeName)
+    );
 
-        private static final ProtocolFactory registry = ProtocolFactory.get();
-
+    public final class ProfileTableViewController extends BundleController {
+        private final ProfileDescription description;
         private final Profile profile;
 
         @Outlet
@@ -414,7 +426,8 @@ public class ProfilesPreferencesController extends BundleController {
         @Outlet
         private NSButton helpButton;
 
-        public ProfileTableViewController(final Profile profile) {
+        public ProfileTableViewController(final ProfileDescription description, final Profile profile) {
+            this.description = description;
             this.profile = profile;
             this.loadBundle();
         }
@@ -444,10 +457,9 @@ public class ProfilesPreferencesController extends BundleController {
             this.checkbox.setState(NSCell.NSOnState);
             this.checkbox.setTarget(this.id());
             this.checkbox.setAction(Foundation.selector("profileCheckboxClicked:"));
-            final Optional<Protocol> installed = registry.find().stream().filter(new ProfileMatcher.IdentifierProtocolPredicate(profile)).findFirst();
-            this.checkbox.setState(installed.isPresent() ? NSCell.NSOnState : NSCell.NSOffState);
-            if(installed.isPresent()) {
-                this.checkbox.setEnabled(!installed.get().isBundled());
+            this.checkbox.setState(installed.containsKey(description) ? NSCell.NSOnState : NSCell.NSOffState);
+            if(installed.containsKey(description)) {
+                this.checkbox.setEnabled(!installed.get(description).isBundled());
             }
             else {
                 this.checkbox.setEnabled(true);
@@ -465,11 +477,18 @@ public class ProfilesPreferencesController extends BundleController {
             boolean enabled = sender.state() == NSCell.NSOnState;
             if(enabled) {
                 // Install profile
-                registry.register(profile);
+                if(installed.containsKey(description)) {
+                    // Update with latest version from repository
+                    protocols.register(profile, installed.get(description).getName());
+                }
+                else {
+                    // Not previously installed
+                    protocols.register(profile, description.getName());
+                }
             }
             else {
                 // Uninstall profile
-                registry.unregister(profile);
+                protocols.unregister(profile);
             }
         }
 

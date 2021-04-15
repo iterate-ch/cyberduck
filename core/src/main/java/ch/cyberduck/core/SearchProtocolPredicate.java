@@ -15,11 +15,14 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.profiles.ProfileDescription;
+
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Map;
 import java.util.function.Predicate;
 
-public class SearchProtocolPredicate implements Predicate<Protocol> {
+public class SearchProtocolPredicate implements Predicate<Map.Entry<ProfileDescription, Profile>> {
 
     private final String input;
 
@@ -28,7 +31,8 @@ public class SearchProtocolPredicate implements Predicate<Protocol> {
     }
 
     @Override
-    public boolean test(final Protocol protocol) {
+    public boolean test(final Map.Entry<ProfileDescription, Profile> entry) {
+        final Protocol protocol = entry.getValue();
         return StringUtils.containsIgnoreCase(protocol.getName(), input)
             || StringUtils.containsIgnoreCase(protocol.getDescription(), input)
             || StringUtils.containsIgnoreCase(protocol.getDefaultHostname(), input)
