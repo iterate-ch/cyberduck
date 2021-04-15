@@ -27,34 +27,35 @@ import static org.junit.Assert.assertEquals;
 
 public class AttachmentTest {
 
+    private final String LF = System.getProperty("line.separator");
+
     @Test
     public void testSerialize() throws JsonProcessingException {
-
         final String expected =
-            "<obj>\n" +
-                "  <att id=\"type\">\n" +
-                "    <val>user-defined</val>\n" +
-                "  </att>\n" +
-                "  <att id=\"name\">\n" +
-                "    <val>attachMobileDevice</val>\n" +
-                "  </att>\n" +
-                "  <att id=\"param\">\n" +
-                "    <obj class=\"AttachedMobileDeviceParams\">\n" +
-                "      <att id=\"deviceType\">\n" +
-                "        <val>Mobile</val>\n" +
-                "      </att>\n" +
-                "      <att id=\"deviceMac\">\n" +
-                "        <val>myMacAddress</val>\n" +
-                "      </att>\n" +
-                "      <att id=\"ssoActivationCode\">\n" +
-                "        <val>mySsoActivationCode</val>\n" +
-                "      </att>\n" +
-                "      <att id=\"password\"/>\n" +
-                "      <att id=\"hostname\">\n" +
-                "        <val>myHostname</val>\n" +
-                "      </att>\n" +
-                "    </obj>\n" +
-                "  </att>\n" +
+            "<obj>" + LF +
+                "  <att id=\"type\">" + LF +
+                "    <val>user-defined</val>" + LF +
+                "  </att>" + LF +
+                "  <att id=\"name\">" + LF +
+                "    <val>attachMobileDevice</val>" + LF +
+                "  </att>" + LF +
+                "  <att id=\"param\">" + LF +
+                "    <obj class=\"AttachedMobileDeviceParams\">" + LF +
+                "      <att id=\"deviceType\">" + LF +
+                "        <val>Mobile</val>" + LF +
+                "      </att>" + LF +
+                "      <att id=\"deviceMac\">" + LF +
+                "        <val>myMacAddress</val>" + LF +
+                "      </att>" + LF +
+                "      <att id=\"ssoActivationCode\">" + LF +
+                "        <val>mySsoActivationCode</val>" + LF +
+                "      </att>" + LF +
+                "      <att id=\"password\"/>" + LF +
+                "      <att id=\"hostname\">" + LF +
+                "        <val>myHostname</val>" + LF +
+                "      </att>" + LF +
+                "    </obj>" + LF +
+                "  </att>" + LF +
                 "</obj>\n";
 
         final Attachment attachment = new Attachment();
