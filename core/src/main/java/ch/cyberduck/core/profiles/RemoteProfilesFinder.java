@@ -33,6 +33,7 @@ import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.log4j.Logger;
@@ -103,6 +104,11 @@ public class RemoteProfilesFinder implements ProfilesFinder {
             super(file.getName(), new LazyInitializer<Checksum>() {
                 @Override
                 protected Checksum initialize() {
+                    if(Checksum.NONE == file.attributes().getChecksum()) {
+                        if(StringUtils.isNotBlank(file.attributes().getETag())) {
+                            return Checksum.parse(StringUtils.remove(file.attributes().getETag(), '"'));
+                        }
+                    }
                     return file.attributes().getChecksum();
                 }
             }, profile);
