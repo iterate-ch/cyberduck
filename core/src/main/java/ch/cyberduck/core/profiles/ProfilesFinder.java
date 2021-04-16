@@ -15,8 +15,28 @@ package ch.cyberduck.core.profiles;/*
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 public interface ProfilesFinder {
-    Stream<ProfileDescription> find() throws AccessDeniedException;
+    default List<ProfileDescription> find() throws AccessDeniedException {
+        return this.find(Visitor.Noop);
+    }
+
+    List<ProfileDescription> find(Visitor visitor) throws AccessDeniedException;
+
+    interface Visitor {
+        ProfileDescription visit(ProfileDescription description);
+
+        Visitor Noop = new Visitor() {
+            @Override
+            public ProfileDescription visit(final ProfileDescription description) {
+                return description;
+            }
+        };
+
+        Visitor Prefetch = description -> {
+            description.getProfile();
+            return description;
+        };
+    }
 }

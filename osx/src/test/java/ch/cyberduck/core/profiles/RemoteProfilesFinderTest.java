@@ -30,8 +30,7 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 
@@ -48,8 +47,8 @@ public class RemoteProfilesFinderTest {
         final DAVSession session = new DAVSession(new HostParser(protocols).get("https://svn.cyberduck.io/trunk/profiles"), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final RemoteProfilesFinder finder = new RemoteProfilesFinder(new ProfilePlistReader(protocols), session);
-        final Stream<ProfileDescription> stream = finder.find();
-        assertFalse(stream.collect(Collectors.toList()).isEmpty());
+        final List<ProfileDescription> stream = finder.find();
+        assertFalse(stream.isEmpty());
         session.close();
     }
 }

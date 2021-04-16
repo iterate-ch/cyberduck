@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertFalse;
@@ -37,57 +37,52 @@ public class ChecksumProfileMatcherTest {
     @Test
     public void compare() throws Exception {
         // Local only profile
-        assertFalse(new ChecksumProfileMatcher(Stream.of(new ProfileDescription("Profile.cyberduckprofile", Checksum.NONE, () -> null)))
-            .compare(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)).isPresent());
+        assertFalse(new ChecksumProfileMatcher(Stream.of(new ProfileDescription("Profile.cyberduckprofile", Checksum.NONE, null)).collect(Collectors.toList()))
+            .compare(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null)).isPresent());
         // Managed profile
-        assertFalse(new ChecksumProfileMatcher(Stream.of(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)))
-            .compare(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)).isPresent());
-        assertTrue(new ChecksumProfileMatcher(Stream.of(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null) {
+        assertFalse(new ChecksumProfileMatcher(Stream.of(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null)).collect(Collectors.toList()))
+            .compare(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null)).isPresent());
+        assertTrue(new ChecksumProfileMatcher(Stream.of(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null) {
             @Override
             public boolean isLatest() {
                 return false;
             }
 
             @Override
-            public Supplier<Profile> getProfile() {
-                return new Supplier<Profile>() {
+            public Profile getProfile() {
+                return new Profile(new TestProtocol(Scheme.dav), new Deserializer<String>() {
                     @Override
-                    public Profile get() {
-                        return new Profile(new TestProtocol(Scheme.dav), new Deserializer<String>() {
-                            @Override
-                            public String stringForKey(final String key) {
-                                return null;
-                            }
-
-                            @Override
-                            public String objectForKey(final String key) {
-                                return null;
-                            }
-
-                            @Override
-                            public <L> List<L> listForKey(final String key) {
-                                return null;
-                            }
-
-                            @Override
-                            public Map<String, String> mapForKey(final String key) {
-                                return null;
-                            }
-
-                            @Override
-                            public boolean booleanForKey(final String key) {
-                                return false;
-                            }
-
-                            @Override
-                            public List<String> keys() {
-                                return null;
-                            }
-                        });
+                    public String stringForKey(final String key) {
+                        return null;
                     }
-                };
+
+                    @Override
+                    public String objectForKey(final String key) {
+                        return null;
+                    }
+
+                    @Override
+                    public <L> List<L> listForKey(final String key) {
+                        return null;
+                    }
+
+                    @Override
+                    public Map<String, String> mapForKey(final String key) {
+                        return null;
+                    }
+
+                    @Override
+                    public boolean booleanForKey(final String key) {
+                        return false;
+                    }
+
+                    @Override
+                    public List<String> keys() {
+                        return null;
+                    }
+                });
             }
-        }))
-            .compare(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), () -> null)).isPresent());
+        }).collect(Collectors.toList()))
+            .compare(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null)).isPresent());
     }
 }

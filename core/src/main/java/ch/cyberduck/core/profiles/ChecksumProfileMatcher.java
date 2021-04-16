@@ -19,8 +19,8 @@ import ch.cyberduck.core.Profile;
 
 import org.apache.log4j.Logger;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * Compare checksums with all versions found in repository
@@ -28,12 +28,12 @@ import java.util.stream.Stream;
 public class ChecksumProfileMatcher implements ProfileMatcher {
     private static final Logger log = Logger.getLogger(ChecksumProfileMatcher.class.getName());
 
-    private final Stream<ProfileDescription> repository;
+    private final List<ProfileDescription> repository;
 
     /**
      * @param repository Profiles from remote repository
      */
-    public ChecksumProfileMatcher(final Stream<ProfileDescription> repository) {
+    public ChecksumProfileMatcher(final List<ProfileDescription> repository) {
         this.repository = repository;
     }
 
@@ -46,7 +46,7 @@ public class ChecksumProfileMatcher implements ProfileMatcher {
     @Override
     public Optional<Profile> compare(final ProfileDescription next) {
         // Filter out profiles with matching checksum
-        final Optional<ProfileDescription> found = repository
+        final Optional<ProfileDescription> found = repository.stream()
             .filter(description -> description.getChecksum().equals(next.getChecksum()))
             .findFirst();
         if(found.isPresent()) {
@@ -57,7 +57,7 @@ public class ChecksumProfileMatcher implements ProfileMatcher {
             }
             else {
                 // Read latest profile from server as we found matching checksum for previous version
-                return Optional.of(found.get().getProfile().get());
+                return Optional.of(found.get().getProfile());
             }
         }
         log.warn(String.format("Local only profile %s", next));

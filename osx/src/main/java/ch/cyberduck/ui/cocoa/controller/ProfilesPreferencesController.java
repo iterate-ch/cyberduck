@@ -43,28 +43,21 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.SearchProtocolPredicate;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.HostParserException;
-import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.profiles.LocalProfilesFinder;
+import ch.cyberduck.core.profiles.PeriodicProfilesUpdater;
 import ch.cyberduck.core.profiles.ProfileDescription;
-import ch.cyberduck.core.profiles.RemoteProfilesFinder;
+import ch.cyberduck.core.profiles.ProfilesFinder;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.threading.WorkerBackgroundAction;
-import ch.cyberduck.core.worker.Worker;
+import ch.cyberduck.core.threading.AbstractBackgroundAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -81,6 +74,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 public class ProfilesPreferencesController extends BundleController {
@@ -181,34 +176,42 @@ public class ProfilesPreferencesController extends BundleController {
 
     @Override
     public void awakeFromNib() {
-        progressIndicator.startAnimation(null);
         try {
-            this.background(new WorkerBackgroundAction<>(this, SessionPoolFactory.create(this,
-                HostParser.parse(PreferencesFactory.get().getProperty("profiles.discovery.updater.url")).withCredentials(
-                    new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name")))), new Worker<Void>() {
+            progressIndicator.startAnimation(null);
+            final List<ProfileDescription> installed = new LocalProfilesFinder().find();
+            installed.forEach(description -> this.installed.put(description, description.getProfile()));
+            final Future<List<ProfileDescription>> synchronize = new PeriodicProfilesUpdater(this).synchronize(installed, new ProfilesFinder.Visitor() {
                 @Override
-                public Void run(final Session<?> session) throws BackgroundException {
-                    new LocalProfilesFinder().find().forEach(description -> installed.put(description, description.getProfile().get()));
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Fetch profiles from %s", session.getHost()));
+                public ProfileDescription visit(final ProfileDescription description) {
+                    // Fetch contents
+                    final Profile profile = description.getProfile();
+                    if(profile != null) {
+                        repository.put(description, profile);
                     }
-                    new RemoteProfilesFinder(session).find().forEach(description -> {
-                        // Fetch contents
-                        repository.put(description, description.getProfile().get());
-                    });
-                    return null;
+                    return description;
+                }
+            });
+            this.background(new AbstractBackgroundAction<List<ProfileDescription>>() {
+                @Override
+                public List<ProfileDescription> run() throws BackgroundException {
+                    try {
+                        return synchronize.get();
+                    }
+                    catch(InterruptedException | ExecutionException e) {
+                        throw new BackgroundException(e);
+                    }
                 }
 
                 @Override
-                public void cleanup(final Void result) {
-                    progressIndicator.stopAnimation(null);
+                public void cleanup() {
                     profilesTableDataSource.withSource(repository.keySet());
                     profilesTableView.reloadData();
+                    progressIndicator.stopAnimation(null);
                 }
-            }));
+            });
         }
-        catch(HostParserException e) {
-            log.warn(String.format("Failure %s parsing profiles service disovery URL", e));
+        catch(BackgroundException e) {
+            log.error(String.format("Failure %s retrieving profiles", e));
         }
         super.awakeFromNib();
     }
@@ -221,8 +224,8 @@ public class ProfilesPreferencesController extends BundleController {
         }
 
         private ProfileDescription fromChecksum(final NSObject hash) {
-            final ProfileDescription key = new ProfileDescription(null, new Checksum(HashAlgorithm.md5, hash.toString()), () -> null);
-            final Optional<ProfileDescription> found = repository.keySet().stream().filter(description -> description.equals(key)).findFirst();
+            final Optional<ProfileDescription> found = repository.keySet().stream()
+                .filter(description -> description.getChecksum().hash.equals(hash.toString())).findFirst();
             return found.orElse(null);
         }
 

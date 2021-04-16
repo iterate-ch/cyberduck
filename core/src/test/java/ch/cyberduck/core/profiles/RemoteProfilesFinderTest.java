@@ -31,8 +31,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
@@ -97,8 +96,8 @@ public class RemoteProfilesFinderTest {
         final NullSession session = new NullSession(host);
         session.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final RemoteProfilesFinder finder = new RemoteProfilesFinder(reader, session);
-        final Stream<ProfileDescription> stream = finder.find();
-        assertTrue(stream.collect(Collectors.toList()).isEmpty());
+        final List<ProfileDescription> stream = finder.find();
+        assertTrue(stream.isEmpty());
         session.close();
     }
 }

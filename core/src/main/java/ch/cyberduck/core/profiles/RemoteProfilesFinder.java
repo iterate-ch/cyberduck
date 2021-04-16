@@ -28,19 +28,21 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumSet;
-import java.util.concurrent.CompletionException;
-import java.util.function.Supplier;
+import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 public class RemoteProfilesFinder implements ProfilesFinder {
     private static final Logger log = Logger.getLogger(RemoteProfilesFinder.class);
@@ -58,7 +60,7 @@ public class RemoteProfilesFinder implements ProfilesFinder {
     }
 
     @Override
-    public Stream<ProfileDescription> find() throws AccessDeniedException {
+    public List<ProfileDescription> find(final Visitor visitor) throws AccessDeniedException {
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Fetch profiles from %s", session.getHost()));
@@ -66,10 +68,10 @@ public class RemoteProfilesFinder implements ProfilesFinder {
             final ProfileFilter filter = new ProfileFilter();
             final AttributedList<Path> list = session.getFeature(ListService.class).list(new Path(
                 session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-            return list.filter(filter).toStream().map(file -> new PathProfileDescription(file,
-                new Supplier<Profile>() {
+            return list.filter(filter).toStream().map(file -> visitor.visit(new PathProfileDescription(file,
+                new LazyInitializer<Profile>() {
                     @Override
-                    public Profile get() {
+                    protected Profile initialize() throws ConcurrentException {
                         try {
                             final Read read = session.getFeature(Read.class);
                             if(log.isInfoEnabled()) {
@@ -83,11 +85,11 @@ public class RemoteProfilesFinder implements ProfilesFinder {
                             return profile;
                         }
                         catch(BackgroundException | IOException e) {
-                            throw new CompletionException(e);
+                            throw new ConcurrentException(e);
                         }
                     }
                 }
-            ));
+            ))).collect(Collectors.toList());
         }
         catch(BackgroundException e) {
             throw new AccessDeniedException(e.getDetail(), e);
@@ -97,8 +99,13 @@ public class RemoteProfilesFinder implements ProfilesFinder {
     private static final class PathProfileDescription extends ProfileDescription {
         private final Path file;
 
-        public PathProfileDescription(final Path file, final Supplier<Profile> profile) {
-            super(file.getName(), file.attributes().getChecksum(), profile);
+        public PathProfileDescription(final Path file, final LazyInitializer<Profile> profile) {
+            super(file.getName(), new LazyInitializer<Checksum>() {
+                @Override
+                protected Checksum initialize() {
+                    return file.attributes().getChecksum();
+                }
+            }, profile);
             this.file = file;
         }
 

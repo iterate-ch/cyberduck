@@ -32,11 +32,11 @@ import ch.cyberduck.core.worker.Worker;
 import org.apache.log4j.Logger;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Future;
-import java.util.stream.Stream;
 
 public class PeriodicProfilesUpdater implements ProfilesUpdater {
     private static final Logger log = Logger.getLogger(PeriodicProfilesUpdater.class.getName());
@@ -75,7 +75,10 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
                         log.info(String.format("Check for new profiles after %s", delay));
                     }
                     try {
-                        PeriodicProfilesUpdater.this.synchronize();
+                        // Find all locally installed profiles
+                        final List<ProfileDescription> installed = new LocalProfilesFinder(
+                            new ProfilePlistReader(protocols), directory).find(ProfilesFinder.Visitor.Noop);
+                        PeriodicProfilesUpdater.this.synchronize(installed, ProfilesFinder.Visitor.Noop);
                     }
                     catch(BackgroundException e) {
                         log.warn(String.format("Failure %s refreshing profiles", e));
@@ -88,19 +91,27 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
         }
     }
 
-    public Future<Stream<ProfileDescription>> synchronize() throws BackgroundException {
+    public Future<List<ProfileDescription>> synchronize(final List<ProfileDescription> installed,
+                                                        final ProfilesFinder.Visitor visitor) throws BackgroundException {
+        final SynchronizeWorker worker = new SynchronizeWorker(installed, visitor);
         return controller.background(new WorkerBackgroundAction<>(controller, SessionPoolFactory.create(controller,
             HostParser.parse(PreferencesFactory.get().getProperty("profiles.discovery.updater.url")).withCredentials(
-                new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name")))), new SynchronizeWorker()));
+                new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name")))), worker));
     }
 
-    private final class SynchronizeWorker extends Worker<Stream<ProfileDescription>> {
+    private final class SynchronizeWorker extends Worker<List<ProfileDescription>> {
+        private final List<ProfileDescription> installed;
+        private final ProfilesFinder.Visitor visitor;
+
+        public SynchronizeWorker(final List<ProfileDescription> installed, final ProfilesFinder.Visitor visitor) {
+            this.installed = installed;
+            this.visitor = visitor;
+        }
+
         @Override
-        public Stream<ProfileDescription> run(final Session<?> session) throws BackgroundException {
-            // Find all locally installed profiles
-            final Stream<ProfileDescription> installed = new LocalProfilesFinder(new ProfilePlistReader(protocols), directory).find();
+        public List<ProfileDescription> run(final Session<?> session) throws BackgroundException {
             // Find all profiles from repository
-            final Stream<ProfileDescription> repository = new RemoteProfilesFinder(new ProfilePlistReader(protocols), session).find();
+            final List<ProfileDescription> repository = new RemoteProfilesFinder(new ProfilePlistReader(protocols), session).find(visitor);
             final ProfileMatcher matcher = new ChecksumProfileMatcher(repository);
             // Iterate over every installed profile and find match in repository
             installed.forEach(description -> {

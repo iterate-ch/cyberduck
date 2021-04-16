@@ -32,11 +32,14 @@ import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.log4j.Logger;
 
-import java.util.function.Supplier;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 public class LocalProfilesFinder implements ProfilesFinder {
     private static final Logger log = Logger.getLogger(LocalProfilesFinder.class);
@@ -59,45 +62,44 @@ public class LocalProfilesFinder implements ProfilesFinder {
     }
 
     @Override
-    public Stream<ProfileDescription> find() throws AccessDeniedException {
+    public List<ProfileDescription> find(final Visitor visitor) throws AccessDeniedException {
         if(directory.exists()) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Load profiles from %s", directory));
             }
-            return directory.list().filter(new ProfileFilter()).toList().stream().map(file -> new LocalProfileDescription(reader, file));
+            return directory.list().filter(new ProfileFilter()).toList().stream().map(file -> visitor.visit(new LocalProfileDescription(reader, file))).collect(Collectors.toList());
         }
-        return Stream.empty();
+        return Collections.emptyList();
     }
 
     private static final class LocalProfileDescription extends ProfileDescription {
         private final Local file;
 
         public LocalProfileDescription(final Reader<Profile> reader, final Local file) {
-            super(file.getName(), Checksum.NONE, new Supplier<Profile>() {
+            super(file.getName(), new LazyInitializer<Checksum>() {
                     @Override
-                    public Profile get() {
+                    protected Checksum initialize() throws ConcurrentException {
+                        try {
+                            // Calculate checksum lazily
+                            return ChecksumComputeFactory.get(HashAlgorithm.md5).compute(file.getInputStream(), new TransferStatus());
+                        }
+                        catch(ChecksumException | AccessDeniedException e) {
+                            throw new ConcurrentException(e);
+                        }
+                    }
+                }, new LazyInitializer<Profile>() {
+                    @Override
+                    protected Profile initialize() throws ConcurrentException {
                         try {
                             return reader.read(file);
                         }
                         catch(AccessDeniedException e) {
-                            return null;
+                            throw new ConcurrentException(e);
                         }
                     }
                 }
             );
             this.file = file;
-        }
-
-        @Override
-        public Checksum getChecksum() {
-            try {
-                // Calculate checksum lazily
-                // todo cache
-                return ChecksumComputeFactory.get(HashAlgorithm.md5).compute(file.getInputStream(), new TransferStatus());
-            }
-            catch(ChecksumException | AccessDeniedException e) {
-                return Checksum.NONE;
-            }
         }
 
         @Override

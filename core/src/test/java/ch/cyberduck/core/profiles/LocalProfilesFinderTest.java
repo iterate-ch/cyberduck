@@ -24,8 +24,7 @@ import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 
@@ -48,7 +47,7 @@ public class LocalProfilesFinderTest {
             new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
         );
         final LocalProfilesFinder finder = new LocalProfilesFinder(reader, new Local("src/test/resources/"));
-        final Stream<ProfileDescription> stream = finder.find();
-        assertFalse(stream.collect(Collectors.toList()).isEmpty());
+        final List<ProfileDescription> stream = finder.find();
+        assertFalse(stream.isEmpty());
     }
 }

@@ -22,6 +22,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 import ch.cyberduck.core.profiles.LocalProfilesFinder;
+import ch.cyberduck.core.profiles.ProfileDescription;
 import ch.cyberduck.core.profiles.ProfilesFinder;
 
 import org.apache.commons.io.FilenameUtils;
@@ -89,7 +90,7 @@ public final class ProtocolFactory {
      */
     public void load(final ProfilesFinder finder) {
         try {
-            finder.find().map(description -> description.getProfile().get()).filter(Objects::nonNull).forEach(registered::add);
+            finder.find().stream().map(ProfileDescription::getProfile).filter(Objects::nonNull).forEach(registered::add);
         }
         catch(AccessDeniedException e) {
             log.warn(String.format("Failure %s reading profiles from %s", finder, e));

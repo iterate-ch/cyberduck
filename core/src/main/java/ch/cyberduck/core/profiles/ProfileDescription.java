@@ -18,18 +18,34 @@ package ch.cyberduck.core.profiles;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.io.Checksum;
 
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
+
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * Profile metadata
  */
 public class ProfileDescription {
     private final String name;
-    private final Checksum checksum;
-    private final Supplier<Profile> profile;
+    private final LazyInitializer<Checksum> checksum;
+    private final LazyInitializer<Profile> profile;
 
-    public ProfileDescription(final String name, final Checksum checksum, final Supplier<Profile> profile) {
+    public ProfileDescription(final String name, final Checksum checksum, final Profile profile) {
+        this(name, new LazyInitializer<Checksum>() {
+            @Override
+            protected Checksum initialize() {
+                return checksum;
+            }
+        }, new LazyInitializer<Profile>() {
+            @Override
+            protected Profile initialize() {
+                return profile;
+            }
+        });
+    }
+
+    public ProfileDescription(final String name, final LazyInitializer<Checksum> checksum, final LazyInitializer<Profile> profile) {
         this.name = name;
         this.checksum = checksum;
         this.profile = profile;
@@ -40,11 +56,21 @@ public class ProfileDescription {
     }
 
     public Checksum getChecksum() {
-        return checksum;
+        try {
+            return checksum.get();
+        }
+        catch(ConcurrentException e) {
+            return Checksum.NONE;
+        }
     }
 
-    public Supplier<Profile> getProfile() {
-        return profile;
+    public Profile getProfile() {
+        try {
+            return profile.get();
+        }
+        catch(ConcurrentException e) {
+            return null;
+        }
     }
 
     @Override
