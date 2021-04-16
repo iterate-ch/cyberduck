@@ -148,26 +148,26 @@
           <netfx:NativeImage Id="ngen_Cyberduck.Importer" Platform="64bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="Cyberduck.Cryptomator">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_Cyberduck.Cryptomator" Platform="64bit" Priority="3" />
-        </File>
-      </Component>
-      <Component Id="WinSparkle">
-        <File Source="$(var.cyberduck.TargetDir)/WinSparkle.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="msvcr100">
-        <File Source="$(var.cyberduck.TargetDir)/msvcr100.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="ikvm.beans">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Beans.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.beans" Platform="64bit" Priority="3" />
-        </File>
-      </Component>
-      <Component Id="ikvm.core">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Core.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.core" Platform="64bit" Priority="3" />
-        </File>
+        <Component Id="Cyberduck.Cryptomator">
+            <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes">
+                <netfx:NativeImage Id="ngen_Cyberduck.Cryptomator" Platform="64bit" Priority="3"/>
+            </File>
+        </Component>
+        <Component Id="WinSparkle">
+            <File Source="$(var.cyberduck.TargetDir)/WinSparkle.dll" KeyPath="yes" Checksum="yes"/>
+        </Component>
+        <Component Id="msvcr120">
+            <File Source="$(var.cyberduck.TargetDir)/msvcr120.dll" KeyPath="yes" Checksum="yes"/>
+        </Component>
+        <Component Id="ikvm.beans">
+            <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Beans.dll" KeyPath="yes" Checksum="yes">
+                <netfx:NativeImage Id="ngen_ikvm.beans" Platform="64bit" Priority="3"/>
+            </File>
+        </Component>
+        <Component Id="ikvm.core">
+            <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Core.dll" KeyPath="yes" Checksum="yes">
+                <netfx:NativeImage Id="ngen_ikvm.core" Platform="64bit" Priority="3"/>
+            </File>
       </Component>
       <Component Id="ikvm.charsets">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Charsets.dll" KeyPath="yes" Checksum="yes">
