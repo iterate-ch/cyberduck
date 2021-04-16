@@ -41,6 +41,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveJsonObject;
 import org.nuxeo.onedrive.client.UploadSession;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
@@ -75,8 +76,7 @@ public class GraphWriteFeature implements Write<Void> {
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final DriveItem folder = session.toFolder(file.getParent());
-            final DriveItem oneDriveFile = new DriveItem(folder,
-                URIEncoder.encode(file.getName()));
+            final DriveItem oneDriveFile = new DriveItem(folder, URIEncoder.encode(file.getName()));
             final UploadSession upload = Files.createUploadSession(oneDriveFile);
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, status);
             final int partsize = preferences.getInteger("onedrive.upload.multipart.partsize.minimum")
@@ -152,8 +152,10 @@ public class GraphWriteFeature implements Write<Void> {
                     @Override
                     public Void call() throws BackgroundException {
                         try {
-                            if(upload.uploadFragment(header, content) instanceof DriveItem.Metadata) {
+                            final OneDriveJsonObject response = upload.uploadFragment(header, content);
+                            if(response instanceof DriveItem.Metadata) {
                                 log.info(String.format("Completed upload for %s", file));
+                                overall.setId(((DriveItem.Metadata) response).getId());
                             }
                             else {
                                 log.debug(String.format("Uploaded fragment %s for file %s", header, file));

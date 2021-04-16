@@ -299,6 +299,19 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(status.isComplete()) {
+            // Update file attributes with metadata from server
+            if(status.getVersion() != null) {
+                file.attributes().setVersionId(status.getVersion().id);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set version ID for %s to %s", file, status.getVersion()));
+                }
+            }
+            if(status.getId() != null) {
+                file.attributes().setFileId(status.getId());
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set file ID for %s to %s", file, status.getId()));
+                }
+            }
             if(!Permission.EMPTY.equals(status.getPermission())) {
                 final UnixPermission feature = session.getFeature(UnixPermission.class);
                 if(feature != null) {
