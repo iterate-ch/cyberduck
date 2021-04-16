@@ -43,7 +43,7 @@ public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAc
                                     final ProgressListener progress,
                                     final AlertCallback alert,
                                     final LoginCallback login) {
-        super(controller, session, progress, alert, login);
+        super(controller, session, progress, alert);
     }
 
     @Override

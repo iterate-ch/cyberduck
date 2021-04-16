@@ -935,11 +935,6 @@ public abstract class Preferences implements Locales {
         this.setDefault("transfer.connection.retry.delay", String.valueOf(0));
         this.setDefault("connection.retry.backoff.enable", String.valueOf(false));
 
-        /*
-         * Enable login prompt in connect retry
-         */
-        this.setDefault("connection.retry.login.enable", String.valueOf(true));
-
         this.setDefault("connection.hostname.default", StringUtils.EMPTY);
         /*
           Convert hostname to Punycode
