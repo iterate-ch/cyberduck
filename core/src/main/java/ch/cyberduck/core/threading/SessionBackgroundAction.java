@@ -19,23 +19,12 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.KeychainLoginService;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.ProxyFactory;
-import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -58,18 +47,15 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         = System.getProperty("line.separator");
 
     private final AlertCallback alert;
-    private final LoginCallback login;
     private final ProgressListener progress;
 
     protected final SessionPool pool;
 
     public SessionBackgroundAction(final SessionPool pool,
                                    final AlertCallback alert,
-                                   final LoginCallback login,
                                    final ProgressListener progress) {
         this.pool = pool;
         this.alert = alert;
-        this.login = login;
         this.progress = progress;
     }
 
@@ -134,21 +120,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         try {
             return this.run(session);
         }
-        catch(LoginFailureException e) {
-            if(PreferencesFactory.get().getBoolean("connection.retry.login.enable")) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Prompt to re-authenticate for failure %s", e));
-                }
-                if(this.login(session, e)) {
-                    return this.run();
-                }
-            }
-            else {
-                log.warn(String.format("Disabled retry for login failure %s", e));
-            }
-            failure = e;
-            throw e;
-        }
         catch(BackgroundException e) {
             failure = e;
             throw e;
@@ -156,31 +127,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         finally {
             pool.release(session.removeListener(this), failure);
         }
-    }
-
-    protected boolean login(final Session<?> session, final LoginFailureException e) {
-        final Host bookmark = pool.getHost();
-        try {
-            // Prompt for new credentials
-            final KeychainLoginService service = new KeychainLoginService(PasswordStoreFactory.get());
-            final StringAppender details = new StringAppender();
-            details.append(LocaleFactory.localizedString("Login failed", "Credentials"));
-            details.append(e.getDetail());
-            if(service.prompt(bookmark, details.toString(), login, new LoginOptions(bookmark.getProtocol()))) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Re-authenticate with credentials %s", bookmark.getCredentials()));
-                }
-                // Try to authenticate again
-                service.authenticate(ProxyFactory.get().find(new ProxyHostUrlProvider().get(bookmark)), session, progress, login,
-                    new BackgroundActionStateCancelCallback(this));
-                // Run action again after login
-                return true;
-            }
-        }
-        catch(BackgroundException f) {
-            log.warn(String.format("Ignore error %s after login failure %s ", f, e));
-        }
-        return false;
     }
 
     public abstract T run(final Session<?> session) throws BackgroundException;
