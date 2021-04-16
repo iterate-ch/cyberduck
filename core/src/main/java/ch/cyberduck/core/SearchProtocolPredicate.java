@@ -33,9 +33,15 @@ public class SearchProtocolPredicate implements Predicate<Map.Entry<ProfileDescr
     @Override
     public boolean test(final Map.Entry<ProfileDescription, Profile> entry) {
         final Protocol protocol = entry.getValue();
-        return StringUtils.containsIgnoreCase(protocol.getName(), input)
-            || StringUtils.containsIgnoreCase(protocol.getDescription(), input)
-            || StringUtils.containsIgnoreCase(protocol.getDefaultHostname(), input)
-            || StringUtils.containsIgnoreCase(protocol.getProvider(), input);
+        for(String i : StringUtils.split(input, StringUtils.SPACE)) {
+            if(StringUtils.containsIgnoreCase(protocol.getName(), i)
+                || StringUtils.containsIgnoreCase(protocol.getDescription(), i)
+                || StringUtils.containsIgnoreCase(protocol.getDefaultHostname(), i)
+                || StringUtils.containsIgnoreCase(protocol.getProvider(), i)) {
+                continue;
+            }
+            return false;
+        }
+        return true;
     }
 }
