@@ -245,8 +245,8 @@
       <PackagePath>$(PackageLayout)\profiles\Openstack Swift (Keystone 3).cyberduckprofile</PackagePath>
     </LayoutFile>
 
-    <LayoutFile Include="$(OutputPath)msvcr120.dll">
-      <PackagePath>$(PackageLayout)\msvcr120.dll</PackagePath>
+    <LayoutFile Include="$(OutputPath)msvcr100.dll">
+      <PackagePath>$(PackageLayout)\msvcr100.dll</PackagePath>
     </LayoutFile>
   </ItemGroup>
 
