@@ -27,11 +27,14 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolException;
+import org.apache.http.client.RedirectException;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -120,16 +123,27 @@ public class RequestEntityRestStorageService extends RestS3Service {
         this.properties = this.getJetS3tProperties();
         // Client configuration
         configuration.disableContentCompression();
-        configuration.setRetryHandler(new S3HttpRequestRetryHandler(this, preferences.getInteger("http.connections.retry")));
+        final RequestEntityRestStorageService authorizer = this;
+        configuration.setRetryHandler(new S3HttpRequestRetryHandler(authorizer, preferences.getInteger("http.connections.retry")));
         configuration.setRedirectStrategy(new DefaultRedirectStrategy() {
             @Override
             public HttpUriRequest getRedirect(final HttpRequest request, final HttpResponse response, final HttpContext context) throws ProtocolException {
                 if(response.containsHeader("x-amz-bucket-region")) {
-                    final String host = ((HttpUriRequest) request).getURI().getHost();
-                    if(!StringUtils.equals(session.getHost().getHostname(), host)) {
-                        regionEndpointCache.putRegionForBucketName(
-                            StringUtils.split(StringUtils.removeEnd(((HttpUriRequest) request).getURI().getHost(), session.getHost().getHostname()), ".")[0],
-                            response.getFirstHeader("x-amz-bucket-region").getValue());
+                    final Header header = response.getFirstHeader("x-amz-bucket-region");
+                    log.warn(String.format("Received redirect response %s with %s", response, header));
+                    String uri = request.getRequestLine().getUri();
+                    for(Location.Name region : session.getHost().getProtocol().getRegions()) {
+                        if(StringUtils.contains(uri, region.getIdentifier())) {
+                            log.warn(String.format("Retry request with URI %s", uri));
+                            final HttpUriRequest uriRequest = RequestBuilder.copy(request).setUri(StringUtils.replace(uri, region.getIdentifier(), header.getValue())).build();
+                            try {
+                                authorizer.authorizeHttpRequest(uriRequest, context, null);
+                            }
+                            catch(ServiceException e) {
+                                throw new RedirectException(e.getMessage(), e);
+                            }
+                            return uriRequest;
+                        }
                     }
                 }
                 return super.getRedirect(request, response, context);
