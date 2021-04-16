@@ -183,10 +183,12 @@ public class ProfilesPreferencesController extends BundleController {
             final Future<List<ProfileDescription>> synchronize = new PeriodicProfilesUpdater(this).synchronize(installed, new ProfilesFinder.Visitor() {
                 @Override
                 public ProfileDescription visit(final ProfileDescription description) {
-                    // Fetch contents
-                    final Profile profile = description.getProfile();
-                    if(profile != null) {
-                        repository.put(description, profile);
+                    if(description.isLatest()) {
+                        // Fetch contents
+                        final Profile profile = description.getProfile();
+                        if(profile != null) {
+                            repository.put(description, profile);
+                        }
                     }
                     return description;
                 }
