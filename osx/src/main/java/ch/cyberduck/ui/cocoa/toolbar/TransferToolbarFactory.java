@@ -307,7 +307,7 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     button.setMenu(connectionsMenu);
                     button.setTarget(controller.id());
                     button.setAction(connections.action());
-                    button.selectItemAtIndex(button.indexOfItemWithRepresentedObject(preferences.getProperty("queue.connections.limit")));
+                    button.selectItemAtIndex(button.indexOfItemWithRepresentedObject(String.valueOf(preferences.getInteger("queue.connections.limit"))));
                     item.setView(button);
                     item.setMaxSize(new NSSize(button.frame().size.width.doubleValue(), button.frame().size.height.doubleValue()));
                     return item;
