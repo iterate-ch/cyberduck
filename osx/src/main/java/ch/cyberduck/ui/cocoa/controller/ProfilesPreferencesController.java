@@ -462,12 +462,14 @@ public class ProfilesPreferencesController extends BundleController {
             this.checkbox.setState(NSCell.NSOnState);
             this.checkbox.setTarget(this.id());
             this.checkbox.setAction(Foundation.selector("profileCheckboxClicked:"));
-            this.checkbox.setState(installed.containsKey(description) ? NSCell.NSOnState : NSCell.NSOffState);
             if(installed.containsKey(description)) {
-                this.checkbox.setEnabled(!installed.get(description).isBundled());
+                final Profile profile = installed.get(description);
+                this.checkbox.setEnabled(!profile.isBundled());
+                this.checkbox.setState(profile.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
             }
             else {
                 this.checkbox.setEnabled(true);
+                this.checkbox.setState(NSCell.NSOffState);
             }
         }
 
