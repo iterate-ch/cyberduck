@@ -24,8 +24,8 @@ import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 import ch.cyberduck.core.profiles.LocalProfilesFinder;
 import ch.cyberduck.core.profiles.ProfileDescription;
 import ch.cyberduck.core.profiles.ProfilesFinder;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -90,7 +89,18 @@ public final class ProtocolFactory {
      */
     public void load(final ProfilesFinder finder) {
         try {
-            finder.find().stream().map(ProfileDescription::getProfile).filter(Objects::nonNull).forEach(registered::add);
+            final ProfilePlistReader reader = new ProfilePlistReader(this);
+            for(ProfileDescription description : finder.find()) {
+                Local e = description.getProfile();
+                if(e != null) {
+                    try {
+                        registered.add(reader.read(e));
+                    }
+                    catch(AccessDeniedException f) {
+                        log.warn(String.format("Failure %s reading profile %s", e, e));
+                    }
+                }
+            }
         }
         catch(AccessDeniedException e) {
             log.warn(String.format("Failure %s reading profiles from %s", finder, e));
@@ -100,33 +110,32 @@ public final class ProtocolFactory {
     /**
      * Register profile and write to application support directory
      *
-     * @param profile     Profile
-     * @param installname Install name
+     * @param file Profile
      */
-    public void register(final Profile profile, final String installname) {
-        if(null == profile) {
-            log.error("Attempt to register unknown protocol");
-            return;
-        }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Register profile %s", profile));
-        }
-        registered.add(profile);
-        preferences.setProperty(String.format("profiles.%s.%s.enabled", profile.getName(), profile.getProvider()), true);
+    public void register(final Local file) {
         try {
+            final Profile profile = new ProfilePlistReader(this).read(file);
+            if(null == profile) {
+                log.error("Attempt to register unknown protocol");
+                return;
+            }
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Register profile %s", profile));
+            }
+            registered.add(profile);
+            preferences.setProperty(String.format("profiles.%s.%s.enabled", profile.getName(), profile.getProvider()), true);
             final Local directory = LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
                 PreferencesFactory.get().getProperty("profiles.folder.name"));
             if(!directory.exists()) {
                 new DefaultLocalDirectoryFeature().mkdir(directory);
             }
-            final Local file = LocalFactory.get(directory, String.format("%s.cyberduckprofile", FilenameUtils.removeExtension(installname)));
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Save profile %s to %s", profile, file));
+                log.debug(String.format("Save profile %s to %s", profile, directory));
             }
-            ProfileWriterFactory.get().write(profile, file);
+            file.copy(LocalFactory.get(directory, file.getName()));
         }
         catch(AccessDeniedException e) {
-            log.error(String.format("Failure %s writing profile %s", e, profile));
+            log.error(String.format("Failure %s reading profile %s", e, file));
         }
     }
 

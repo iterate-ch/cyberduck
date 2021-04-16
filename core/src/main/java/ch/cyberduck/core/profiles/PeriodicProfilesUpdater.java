@@ -18,14 +18,12 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.Worker;
 
@@ -76,8 +74,7 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
                     }
                     try {
                         // Find all locally installed profiles
-                        final List<ProfileDescription> installed = new LocalProfilesFinder(
-                            new ProfilePlistReader(protocols), directory).find(ProfilesFinder.Visitor.Noop);
+                        final List<ProfileDescription> installed = new LocalProfilesFinder(directory).find(ProfilesFinder.Visitor.Noop);
                         PeriodicProfilesUpdater.this.synchronize(installed, ProfilesFinder.Visitor.Noop);
                     }
                     catch(BackgroundException e) {
@@ -111,17 +108,17 @@ public class PeriodicProfilesUpdater implements ProfilesUpdater {
         @Override
         public List<ProfileDescription> run(final Session<?> session) throws BackgroundException {
             // Find all profiles from repository
-            final List<ProfileDescription> repository = new RemoteProfilesFinder(new ProfilePlistReader(protocols), session).find(visitor);
+            final List<ProfileDescription> repository = new RemoteProfilesFinder(session).find(visitor);
             final ProfileMatcher matcher = new ChecksumProfileMatcher(repository);
             // Iterate over every installed profile and find match in repository
             installed.forEach(description -> {
-                final Optional<Profile> optional = matcher.compare(description);
+                final Optional<ProfileDescription> optional = matcher.compare(description);
                 if(optional.isPresent()) {
                     // Optional returned if matching profile with later version in repository found
-                    final Profile profile = optional.get();
-                    log.warn(String.format("Override %s with latest profile verison %s", description.getName(), profile));
+                    final Local profile = optional.get().getProfile();
+                    log.warn(String.format("Override %s with latest profile verison %s", description, profile));
                     // Override in registry taking name from existing file to override
-                    protocols.register(profile, description.getName());
+                    protocols.register(profile);
                 }
             });
             return repository;

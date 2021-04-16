@@ -15,17 +15,13 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.serializer.Deserializer;
 
 import org.junit.Test;
 
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,38 +45,8 @@ public class ChecksumProfileMatcherTest {
             }
 
             @Override
-            public Profile getProfile() {
-                return new Profile(new TestProtocol(Scheme.dav), new Deserializer<String>() {
-                    @Override
-                    public String stringForKey(final String key) {
-                        return null;
-                    }
-
-                    @Override
-                    public String objectForKey(final String key) {
-                        return null;
-                    }
-
-                    @Override
-                    public <L> List<L> listForKey(final String key) {
-                        return null;
-                    }
-
-                    @Override
-                    public Map<String, String> mapForKey(final String key) {
-                        return null;
-                    }
-
-                    @Override
-                    public boolean booleanForKey(final String key) {
-                        return false;
-                    }
-
-                    @Override
-                    public List<String> keys() {
-                        return null;
-                    }
-                });
+            public Local getProfile() {
+                return new NullLocal("Profile.cyberduckprofile");
             }
         }).collect(Collectors.toList()))
             .compare(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null)).isPresent());

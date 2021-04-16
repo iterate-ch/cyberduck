@@ -95,7 +95,7 @@ public class RemoteProfilesFinderTest {
         final Host host = new HostParser(protocols, protocol).get("https://svn.cyberduck.io/trunk/profiles");
         final NullSession session = new NullSession(host);
         session.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final RemoteProfilesFinder finder = new RemoteProfilesFinder(reader, session);
+        final RemoteProfilesFinder finder = new RemoteProfilesFinder(session);
         final List<ProfileDescription> stream = finder.find();
         assertTrue(stream.isEmpty());
         session.close();

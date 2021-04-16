@@ -15,8 +15,6 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Profile;
-
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -44,7 +42,7 @@ public class ChecksumProfileMatcher implements ProfileMatcher {
      * @return Non null if matching profile is found on disk with checksum mismatch
      */
     @Override
-    public Optional<Profile> compare(final ProfileDescription next) {
+    public Optional<ProfileDescription> compare(final ProfileDescription next) {
         // Filter out profiles with matching checksum
         final Optional<ProfileDescription> found = repository.stream()
             .filter(description -> description.getChecksum().equals(next.getChecksum()))
@@ -57,7 +55,7 @@ public class ChecksumProfileMatcher implements ProfileMatcher {
             }
             else {
                 // Read latest profile from server as we found matching checksum for previous version
-                return Optional.of(found.get().getProfile());
+                return found;
             }
         }
         log.warn(String.format("Local only profile %s", next));

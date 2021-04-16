@@ -19,8 +19,6 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.Checksum;
@@ -28,8 +26,6 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
-import ch.cyberduck.core.serializer.Reader;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
@@ -44,20 +40,14 @@ import java.util.stream.Collectors;
 public class LocalProfilesFinder implements ProfilesFinder {
     private static final Logger log = Logger.getLogger(LocalProfilesFinder.class);
 
-    private final Reader<Profile> reader;
     private final Local directory;
 
     public LocalProfilesFinder() {
-        this(new ProfilePlistReader(ProtocolFactory.get()), LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
+        this(LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
             PreferencesFactory.get().getProperty("profiles.folder.name")));
     }
 
     public LocalProfilesFinder(final Local directory) {
-        this(new ProfilePlistReader(ProtocolFactory.get()), directory);
-    }
-
-    public LocalProfilesFinder(final Reader<Profile> reader, final Local directory) {
-        this.reader = reader;
         this.directory = directory;
     }
 
@@ -67,7 +57,8 @@ public class LocalProfilesFinder implements ProfilesFinder {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Load profiles from %s", directory));
             }
-            return directory.list().filter(new ProfileFilter()).toList().stream().map(file -> visitor.visit(new LocalProfileDescription(reader, file))).collect(Collectors.toList());
+            return directory.list().filter(new ProfileFilter()).toList().stream()
+                .map(file -> visitor.visit(new LocalProfileDescription(file))).collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
@@ -75,8 +66,9 @@ public class LocalProfilesFinder implements ProfilesFinder {
     private static final class LocalProfileDescription extends ProfileDescription {
         private final Local file;
 
-        public LocalProfileDescription(final Reader<Profile> reader, final Local file) {
-            super(file.getName(), new LazyInitializer<Checksum>() {
+        public LocalProfileDescription(final Local file) {
+            super(
+                new LazyInitializer<Checksum>() {
                     @Override
                     protected Checksum initialize() throws ConcurrentException {
                         try {
@@ -87,15 +79,10 @@ public class LocalProfilesFinder implements ProfilesFinder {
                             throw new ConcurrentException(e);
                         }
                     }
-                }, new LazyInitializer<Profile>() {
+                }, new LazyInitializer<Local>() {
                     @Override
-                    protected Profile initialize() throws ConcurrentException {
-                        try {
-                            return reader.read(file);
-                        }
-                        catch(AccessDeniedException e) {
-                            throw new ConcurrentException(e);
-                        }
+                    protected Local initialize() throws ConcurrentException {
+                        return file;
                     }
                 }
             );

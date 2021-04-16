@@ -15,7 +15,7 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
@@ -27,32 +27,26 @@ import java.util.Objects;
  * Profile metadata
  */
 public class ProfileDescription {
-    private final String name;
     private final LazyInitializer<Checksum> checksum;
-    private final LazyInitializer<Profile> profile;
+    private final LazyInitializer<Local> profile;
 
-    public ProfileDescription(final String name, final Checksum checksum, final Profile profile) {
-        this(name, new LazyInitializer<Checksum>() {
+    public ProfileDescription(final String name, final Checksum checksum, final Local profile) {
+        this(new LazyInitializer<Checksum>() {
             @Override
             protected Checksum initialize() {
                 return checksum;
             }
-        }, new LazyInitializer<Profile>() {
+        }, new LazyInitializer<Local>() {
             @Override
-            protected Profile initialize() {
+            protected Local initialize() {
                 return profile;
             }
         });
     }
 
-    public ProfileDescription(final String name, final LazyInitializer<Checksum> checksum, final LazyInitializer<Profile> profile) {
-        this.name = name;
+    public ProfileDescription(final LazyInitializer<Checksum> checksum, final LazyInitializer<Local> profile) {
         this.checksum = checksum;
         this.profile = profile;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public Checksum getChecksum() {
@@ -64,7 +58,7 @@ public class ProfileDescription {
         }
     }
 
-    public Profile getProfile() {
+    public Local getProfile() {
         try {
             return profile.get();
         }
@@ -82,12 +76,22 @@ public class ProfileDescription {
             return false;
         }
         final ProfileDescription that = (ProfileDescription) o;
-        return Objects.equals(checksum, that.checksum);
+        try {
+            return Objects.equals(checksum.get(), that.checksum.get());
+        }
+        catch(ConcurrentException e) {
+            return false;
+        }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(checksum);
+        try {
+            return Objects.hash(checksum.get());
+        }
+        catch(ConcurrentException e) {
+            return Objects.hash(Checksum.NONE);
+        }
     }
 
     public boolean isLatest() {

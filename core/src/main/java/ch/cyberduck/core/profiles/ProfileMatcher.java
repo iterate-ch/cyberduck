@@ -15,7 +15,6 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +27,7 @@ public interface ProfileMatcher {
      * @param next Description of profile installed
      * @return Non null if profile from server has been updated. Matching profile with later version in repository.
      */
-    Optional<Profile> compare(ProfileDescription next);
+    Optional<ProfileDescription> compare(ProfileDescription next);
 
     class IdentifierProtocolPredicate implements Predicate<Protocol> {
         private final Protocol installed;

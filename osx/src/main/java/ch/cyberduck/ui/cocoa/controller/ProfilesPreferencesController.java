@@ -43,11 +43,13 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.SearchProtocolPredicate;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -57,6 +59,7 @@ import ch.cyberduck.core.profiles.PeriodicProfilesUpdater;
 import ch.cyberduck.core.profiles.ProfileDescription;
 import ch.cyberduck.core.profiles.ProfilesFinder;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 
 import org.apache.commons.lang.StringUtils;
@@ -179,15 +182,28 @@ public class ProfilesPreferencesController extends BundleController {
         try {
             progressIndicator.startAnimation(null);
             final List<ProfileDescription> installed = new LocalProfilesFinder().find();
-            installed.forEach(description -> this.installed.put(description, description.getProfile()));
+            final ProfilePlistReader reader = new ProfilePlistReader(protocols);
+            for(ProfileDescription description : installed) {
+                try {
+                    this.installed.put(description, reader.read(description.getProfile()));
+                }
+                catch(AccessDeniedException e) {
+                    log.warn(String.format("Failure %s reading profile %s", e, description));
+                }
+            }
             final Future<List<ProfileDescription>> synchronize = new PeriodicProfilesUpdater(this).synchronize(installed, new ProfilesFinder.Visitor() {
                 @Override
                 public ProfileDescription visit(final ProfileDescription description) {
                     if(description.isLatest()) {
                         // Fetch contents
-                        final Profile profile = description.getProfile();
+                        final Local profile = description.getProfile();
                         if(profile != null) {
-                            repository.put(description, profile);
+                            try {
+                                repository.put(description, reader.read(profile));
+                            }
+                            catch(AccessDeniedException e) {
+                                log.warn(String.format("Failure %s reading profile %s", e, description));
+                            }
                         }
                     }
                     return description;
@@ -483,15 +499,8 @@ public class ProfilesPreferencesController extends BundleController {
         public void profileCheckboxClicked(final NSButton sender) {
             boolean enabled = sender.state() == NSCell.NSOnState;
             if(enabled) {
-                // Install profile
-                if(installed.containsKey(description)) {
-                    // Update with latest version from repository
-                    protocols.register(profile, installed.get(description).getName());
-                }
-                else {
-                    // Not previously installed
-                    protocols.register(profile, description.getName());
-                }
+                // Update with latest version from repository
+                protocols.register(description.getProfile());
             }
             else {
                 // Uninstall profile

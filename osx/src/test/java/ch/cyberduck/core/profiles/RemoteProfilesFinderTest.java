@@ -23,7 +23,6 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
@@ -46,7 +45,7 @@ public class RemoteProfilesFinderTest {
         }));
         final DAVSession session = new DAVSession(new HostParser(protocols).get("https://svn.cyberduck.io/trunk/profiles"), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final RemoteProfilesFinder finder = new RemoteProfilesFinder(new ProfilePlistReader(protocols), session);
+        final RemoteProfilesFinder finder = new RemoteProfilesFinder(session);
         final List<ProfileDescription> stream = finder.find();
         assertFalse(stream.isEmpty());
         session.close();
