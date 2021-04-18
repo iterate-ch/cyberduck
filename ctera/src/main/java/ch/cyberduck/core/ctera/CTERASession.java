@@ -33,6 +33,8 @@ import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVRedirectStrategy;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -142,6 +144,24 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
     }
 
     private void startDesktopFlow(final LoginCallback prompt, final Credentials credentials, final CTERATokens tokens) throws BackgroundException {
+        // TODO review - all LoginOptions disabled in CTERAProtocol, need to use custom validation. Same needs to be done for the prompt below. Any better options?
+        if(StringUtils.isNotBlank(credentials.getUsername()) &&
+            StringUtils.isNotBlank(credentials.getPassword())) {
+            try {
+                this.attachDeviceWithUsernamePassword(credentials.getUsername(), credentials.getPassword(), tokens);
+            }
+            catch(LoginFailureException e) {
+                this.prompt(prompt, credentials);
+                this.startDesktopFlow(prompt, credentials, tokens);
+            }
+        }
+        else {
+            this.prompt(prompt, credentials);
+            this.startDesktopFlow(prompt, credentials, tokens);
+        }
+    }
+
+    private void prompt(final LoginCallback prompt, final Credentials credentials) throws LoginCanceledException {
         final Credentials input = prompt.prompt(host, credentials.getUsername(),
             MessageFormat.format(LocaleFactory.localizedString(
                 "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)),
@@ -151,8 +171,8 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
         credentials.setUsername(input.getUsername());
         credentials.setPassword(input.getPassword());
         credentials.setSaved(input.isSaved());
-        attachDeviceWithUsernamePassword(input.getUsername(), input.getPassword(), tokens);
     }
+
 
     private void attachDeviceWithActivationCode(final String activationCode, final CTERATokens tokens) throws BackgroundException {
         final HttpPost attach = new HttpPost("/ServicesPortal/public/users?format=jsonext");
@@ -188,14 +208,51 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
         }
     }
 
-    private void attachDevice(final HttpPost attach, final CTERATokens tokens) throws IOException {
-        final AttachDeviceResponse response = client.execute(attach, new AbstractResponseHandler<AttachDeviceResponse>() {
-            @Override
-            public AttachDeviceResponse handleEntity(final HttpEntity entity) throws IOException {
-                ObjectMapper mapper = new ObjectMapper();
-                return mapper.readValue(entity.getContent(), AttachDeviceResponse.class);
+    private void attachDevice(final HttpPost attach, final CTERATokens tokens) throws IOException, BackgroundException {
+        final AttachDeviceResponse response;
+        final Attachment[] error = new Attachment[1];
+        try {
+            response = client.execute(attach, new AbstractResponseHandler<AttachDeviceResponse>() {
+                @Override
+                public AttachDeviceResponse handleResponse(final HttpResponse response) throws IOException {
+                    switch(response.getStatusLine().getStatusCode()) {
+                        case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+                            final XmlMapper mapper = new XmlMapper();
+                            try {
+                                error[0] = mapper.readValue(response.getEntity().getContent(), Attachment.class);
+                                for(Attachment.Attribute attr : error[0].getAttributes()) {
+                                    if("msg".equals(attr.getId())) {
+                                        //TODO review - i18n?
+                                        if("Invalid username or password".equals(attr.getVal())) {
+                                            log.error(attr.getVal());
+                                        }
+                                        else {
+                                            log.error("Failure attaching the device " + attr.getVal());
+                                            error[0] = null;
+                                        }
+                                    }
+                                }
+                            }
+                            catch(IOException e) {
+                                log.error("Error parsing response", e);
+                            }
+                    }
+                    return super.handleResponse(response);
+                }
+
+                @Override
+                public AttachDeviceResponse handleEntity(final HttpEntity entity) throws IOException {
+                    ObjectMapper mapper = new ObjectMapper();
+                    return mapper.readValue(entity.getContent(), AttachDeviceResponse.class);
+                }
+            });
+        }
+        catch(IOException e) {
+            if(error[0] != null) {
+                throw new LoginFailureException("Invalid username or password");
             }
-        });
+            throw e;
+        }
         tokens.
             setSharedSecret(response.sharedSecret).
             setDeviceId(response.deviceUID);
