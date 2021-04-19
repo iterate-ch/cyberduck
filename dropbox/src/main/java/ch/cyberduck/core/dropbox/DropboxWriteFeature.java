@@ -180,9 +180,8 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
                         .build()
                 );
                 finish.getOutputStream().close();
-                final FileMetadata metadtata = finish.finish();
-                status.setId(metadtata.getId());
-                fileId = metadtata.getId();
+                final FileMetadata metadata = finish.finish();
+                fileId = metadata.getId();
             }
             catch(IllegalStateException e) {
                 // Already closed
