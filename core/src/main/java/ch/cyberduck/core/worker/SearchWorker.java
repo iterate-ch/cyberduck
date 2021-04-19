@@ -20,6 +20,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -52,7 +53,7 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
     @Override
     public AttributedList<Path> run(final Session<?> session) throws BackgroundException {
         // Run recursively
-        final Search feature = session.getFeature(Search.class).withCache(cache);
+        final Search feature = session.getFeature(Search.class);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", feature));
         }
@@ -63,25 +64,37 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        // Get filtered list from search
-        final AttributedList<Path> list = search.search(workdir, new RecursiveSearchFilter(filter), new WorkerListProgressListener(this, listener));
-        if(!search.isRecursive()) {
-            final Set<Path> removal = new HashSet<>();
-            for(final Path file : list) {
-                if(file.isDirectory()) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Recursively search in %s", file));
-                    }
-                    final AttributedList<Path> children = this.search(search, file);
-                    list.addAll(children);
-                    if(children.isEmpty()) {
-                        removal.add(file);
-                    }
+        final AttributedList<Path> list;
+        if(cache.isCached(workdir)) {
+            list = cache.get(workdir);
+        }
+        else {
+            // Get filtered list from search
+            list = search.search(workdir, new RecursiveSearchFilter(filter), new WorkerListProgressListener(this, listener));
+        }
+        if(search.isRecursive()) {
+            return list;
+        }
+        final Set<Path> removal = new HashSet<>();
+        for(final Path file : list) {
+            if(file.isDirectory()) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Recursively search in %s", file));
+                }
+                final AttributedList<Path> children = this.search(search, file);
+                list.addAll(children);
+                if(children.isEmpty()) {
+                    removal.add(file);
                 }
             }
-            list.removeAll(removal);
         }
-        return list;
+        cache.put(workdir, list);
+        return list.filter(new NullFilter<Path>() {
+            @Override
+            public boolean accept(final Path file) {
+                return !removal.contains(file);
+            }
+        }).filter(new RecursiveSearchFilter(filter));
     }
 
     @Override
