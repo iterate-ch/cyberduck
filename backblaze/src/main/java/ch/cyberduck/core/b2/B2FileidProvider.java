@@ -15,14 +15,10 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
@@ -43,8 +39,6 @@ public class B2FileidProvider implements IdProvider {
 
     private final B2Session session;
 
-    private Cache<Path> cache = PathCache.empty();
-
     public B2FileidProvider(final B2Session session) {
         this.session = session;
     }
@@ -54,16 +48,6 @@ public class B2FileidProvider implements IdProvider {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
         }
-        if(cache.isCached(file.getParent())) {
-            final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.find(new SimplePathPredicate(file));
-            if(null != found) {
-                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    // Cache in file attributes
-                    return set(file, found.attributes().getVersionId());
-                }
-            }
-        }
         try {
             if(containerService.isContainer(file)) {
                 final B2BucketResponse info = session.getClient().listBucket(file.getName());
@@ -72,16 +56,6 @@ public class B2FileidProvider implements IdProvider {
                 }
                 // Cache in file attributes
                 return this.set(file, info.getBucketId());
-            }
-            if(cache.isCached(file.getParent())) {
-                final AttributedList<Path> list = cache.get(file.getParent());
-                final Path found = list.find(new SimplePathPredicate(file));
-                if(null != found) {
-                    if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                        // Cache in file attributes
-                        return this.set(file, found.attributes().getVersionId());
-                    }
-                }
             }
             final B2ListFilesResponse response = session.getClient().listFileNames(
                 this.getFileid(containerService.getContainer(file), listener),
@@ -105,11 +79,5 @@ public class B2FileidProvider implements IdProvider {
     protected String set(final Path file, final String id) {
         file.attributes().setVersionId(id);
         return id;
-    }
-
-    @Override
-    public B2FileidProvider withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return this;
     }
 }

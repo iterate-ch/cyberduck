@@ -15,14 +15,10 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -56,8 +52,6 @@ public class SDSNodeIdProvider implements IdProvider {
 
     private final SDSSession session;
 
-    private Cache<Path> cache = PathCache.empty();
-
     public SDSNodeIdProvider(final SDSSession session) {
         this.session = session;
     }
@@ -76,15 +70,6 @@ public class SDSNodeIdProvider implements IdProvider {
         }
         if(file.isRoot()) {
             return ROOT_NODE_ID;
-        }
-        if(cache.isCached(file.getParent())) {
-            final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.find(new SimplePathPredicate(file));
-            if(null != found) {
-                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    return this.set(file, found.attributes().getVersionId());
-                }
-            }
         }
         try {
             final String type;
@@ -169,11 +154,5 @@ public class SDSNodeIdProvider implements IdProvider {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         return ByteBuffer.wrap(out.toByteArray());
-    }
-
-    @Override
-    public SDSNodeIdProvider withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return this;
     }
 }

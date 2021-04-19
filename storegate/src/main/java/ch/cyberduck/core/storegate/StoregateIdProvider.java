@@ -15,15 +15,11 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathRelativizer;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
@@ -37,8 +33,6 @@ public class StoregateIdProvider implements IdProvider {
 
     private final StoregateSession session;
 
-    private Cache<Path> cache = PathCache.empty();
-
     public StoregateIdProvider(final StoregateSession session) {
         this.session = session;
     }
@@ -48,15 +42,6 @@ public class StoregateIdProvider implements IdProvider {
         try {
             if(StringUtils.isNotBlank(file.attributes().getFileId())) {
                 return file.attributes().getFileId();
-            }
-            if(cache.isCached(file.getParent())) {
-                final AttributedList<Path> list = cache.get(file.getParent());
-                final Path found = list.find(new SimplePathPredicate(file));
-                if(null != found) {
-                    if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                        return this.set(file, found.attributes().getVersionId());
-                    }
-                }
             }
             final String id = new FilesApi(session.getClient()).filesGet_1(URIEncoder.encode(this.getPrefixedPath(file))).getId();
             this.set(file, id);
@@ -70,12 +55,6 @@ public class StoregateIdProvider implements IdProvider {
     protected String set(final Path file, final String id) {
         file.attributes().setVersionId(id);
         return id;
-    }
-
-    @Override
-    public StoregateIdProvider withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return this;
     }
 
     /**
