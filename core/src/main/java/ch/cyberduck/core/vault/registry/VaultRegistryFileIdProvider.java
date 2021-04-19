@@ -40,6 +40,16 @@ public class VaultRegistryFileIdProvider implements FileIdProvider {
     }
 
     @Override
+    public String cache(final Path file, final String id) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, FileIdProvider.class, proxy).cache(file, id);
+    }
+
+    @Override
+    public void clear() {
+        //
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("VaultRegistryFileIdProvider{");
         sb.append("proxy=").append(proxy);

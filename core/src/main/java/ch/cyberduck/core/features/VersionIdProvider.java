@@ -32,4 +32,18 @@ public interface VersionIdProvider {
      * @return Latest version id for file
      */
     String getVersionId(Path file, ListProgressListener listener) throws BackgroundException;
+
+    /**
+     * Override any cached value
+     *
+     * @param file File
+     * @param id   New value or null to delete
+     * @return Value set
+     */
+    String cache(Path file, String id) throws BackgroundException;
+
+    /**
+     * Clear any cached values
+     */
+    void clear();
 }

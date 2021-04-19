@@ -19,16 +19,22 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.onedrive.GraphSession;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 public class GraphFileIdProvider implements FileIdProvider {
+    private static final Logger log = Logger.getLogger(GraphFileIdProvider.class);
 
     private final GraphSession session;
+    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("browser.cache.size"));
 
     public GraphFileIdProvider(final GraphSession session) {
         this.session = session;
@@ -39,16 +45,31 @@ public class GraphFileIdProvider implements FileIdProvider {
         if(StringUtils.isNotBlank(file.attributes().getFileId())) {
             return file.attributes().getFileId();
         }
+        if(cache.contains(new SimplePathPredicate(file))) {
+            final String cached = cache.get(new SimplePathPredicate(file));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return cached fileid %s for file %s", cached, file));
+            }
+        }
         final AttributedList<Path> list = session._getFeature(ListService.class).list(file.getParent(), listener);
         final Path found = list.find(path -> file.getAbsolute().equals(path.getAbsolute()));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
-        return this.set(file, found.attributes().getFileId());
+        return this.cache(file, found.attributes().getFileId());
     }
 
-    protected String set(final Path file, final String id) {
-        file.attributes().setFileId(id);
+    @Override
+    public String cache(final Path file, final String id) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Cache %s for file %s", id, file));
+        }
+        cache.put(new SimplePathPredicate(file), id);
         return id;
+    }
+
+    @Override
+    public void clear() {
+        cache.clear();
     }
 }

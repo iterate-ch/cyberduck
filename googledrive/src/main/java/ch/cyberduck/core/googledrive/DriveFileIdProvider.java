@@ -20,18 +20,23 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.FileIdProvider;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.Comparator;
 
 public class DriveFileIdProvider implements FileIdProvider {
+    private static final Logger log = Logger.getLogger(DriveFileIdProvider.class);
 
     private final DriveSession session;
+    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("browser.cache.size"));
 
     public DriveFileIdProvider(final DriveSession session) {
         this.session = session;
@@ -48,6 +53,12 @@ public class DriveFileIdProvider implements FileIdProvider {
             || file.equals(DriveHomeFinderService.SHARED_DRIVES_NAME)) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
+        if(cache.contains(new SimplePathPredicate(file))) {
+            final String cached = cache.get(new SimplePathPredicate(file));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return cached fileid %s for file %s", cached, file));
+            }
+        }
         if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
             final Path found = new DriveTeamDrivesListService(session).list(file.getParent(), listener).find(
                 new SimplePathPredicate(file)
@@ -55,7 +66,7 @@ public class DriveFileIdProvider implements FileIdProvider {
             if(null == found) {
                 throw new NotfoundException(file.getAbsolute());
             }
-            return this.set(file, found.attributes().getFileId());
+            return this.cache(file, found.attributes().getFileId());
         }
         final Path query;
         if(file.getType().contains(Path.Type.placeholder)) {
@@ -69,12 +80,21 @@ public class DriveFileIdProvider implements FileIdProvider {
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
-        return this.set(file, found.attributes().getFileId());
+        return this.cache(file, found.attributes().getFileId());
     }
 
-    protected String set(final Path file, final String id) {
-        file.attributes().setFileId(id);
+    @Override
+    public String cache(final Path file, final String id) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Cache %s for file %s", id, file));
+        }
+        cache.put(new SimplePathPredicate(file), id);
         return id;
+    }
+
+    @Override
+    public void clear() {
+        cache.clear();
     }
 
     public static final class IgnoreTrashedPathPredicate extends SimplePathPredicate {

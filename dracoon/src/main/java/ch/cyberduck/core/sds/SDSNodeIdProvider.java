@@ -19,7 +19,9 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.VersionIdProvider;
@@ -51,6 +53,7 @@ public class SDSNodeIdProvider implements VersionIdProvider {
     private static final String ROOT_NODE_ID = "0";
 
     private final SDSSession session;
+    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("browser.cache.size"));
 
     public SDSNodeIdProvider(final SDSSession session) {
         this.session = session;
@@ -63,10 +66,17 @@ public class SDSNodeIdProvider implements VersionIdProvider {
 
     protected String getFileid(final Path file, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Return cached node %s for file %s", file.attributes().getVersionId(), file));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return version %s from attributes for file %s", file.attributes().getVersionId(), file));
             }
             return file.attributes().getVersionId();
+        }
+        if(cache.contains(new SimplePathPredicate(file))) {
+            final String cached = cache.get(new SimplePathPredicate(file));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return cached node %s for file %s", cached, file));
+            }
+            return cached;
         }
         if(file.isRoot()) {
             return ROOT_NODE_ID;
@@ -94,7 +104,7 @@ public class SDSNodeIdProvider implements VersionIdProvider {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Return node %s for file %s", node.getId(), file));
                         }
-                        return this.set(file, node.getId().toString());
+                        return this.cache(file, node.getId().toString());
                     }
                 }
                 offset += chunksize;
@@ -107,9 +117,18 @@ public class SDSNodeIdProvider implements VersionIdProvider {
         }
     }
 
-    protected String set(final Path file, final String id) {
-        file.attributes().setVersionId(id);
+    @Override
+    public String cache(final Path file, final String id) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Cache %s for file %s", id, file));
+        }
+        cache.put(new SimplePathPredicate(file), id);
         return id;
+    }
+
+    @Override
+    public void clear() {
+        cache.clear();
     }
 
     public boolean isEncrypted(final Path file) {

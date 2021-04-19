@@ -19,11 +19,15 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.VersionIdProvider;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -33,11 +37,11 @@ import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
 
 public class B2VersionIdProvider implements VersionIdProvider {
+    private static final Logger log = Logger.getLogger(B2VersionIdProvider.class);
 
-    private final PathContainerService containerService
-        = new B2PathContainerService();
-
+    private final PathContainerService containerService = new B2PathContainerService();
     private final B2Session session;
+    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("browser.cache.size"));
 
     public B2VersionIdProvider(final B2Session session) {
         this.session = session;
@@ -46,7 +50,17 @@ public class B2VersionIdProvider implements VersionIdProvider {
     @Override
     public String getVersionId(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return version %s from attributes for file %s", file.attributes().getVersionId(), file));
+            }
             return file.attributes().getVersionId();
+        }
+        if(cache.contains(new SimplePathPredicate(file))) {
+            final String cached = cache.get(new SimplePathPredicate(file));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return cached node %s for file %s", cached, file));
+            }
+            return cached;
         }
         try {
             if(containerService.isContainer(file)) {
@@ -55,7 +69,7 @@ public class B2VersionIdProvider implements VersionIdProvider {
                     throw new NotfoundException(file.getAbsolute());
                 }
                 // Cache in file attributes
-                return this.set(file, info.getBucketId());
+                return this.cache(file, info.getBucketId());
             }
             final B2ListFilesResponse response = session.getClient().listFileNames(
                 this.getVersionId(containerService.getContainer(file), listener),
@@ -63,7 +77,7 @@ public class B2VersionIdProvider implements VersionIdProvider {
             for(B2FileInfoResponse info : response.getFiles()) {
                 if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {
                     // Cache in file attributes
-                    return this.set(file, info.getFileId());
+                    return this.cache(file, info.getFileId());
                 }
             }
             throw new NotfoundException(file.getAbsolute());
@@ -76,8 +90,17 @@ public class B2VersionIdProvider implements VersionIdProvider {
         }
     }
 
-    protected String set(final Path file, final String id) {
-        file.attributes().setVersionId(id);
+    @Override
+    public String cache(final Path file, final String id) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Cache %s for file %s", id, file));
+        }
+        cache.put(new SimplePathPredicate(file), id);
         return id;
+    }
+
+    @Override
+    public void clear() {
+        cache.clear();
     }
 }

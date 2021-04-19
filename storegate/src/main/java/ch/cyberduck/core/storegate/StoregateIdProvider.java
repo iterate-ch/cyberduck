@@ -20,18 +20,24 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathRelativizer;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.FileIdProvider;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 public class StoregateIdProvider implements FileIdProvider {
+    private static final Logger log = Logger.getLogger(StoregateIdProvider.class);
 
     private final StoregateSession session;
+    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("browser.cache.size"));
 
     public StoregateIdProvider(final StoregateSession session) {
         this.session = session;
@@ -43,8 +49,15 @@ public class StoregateIdProvider implements FileIdProvider {
             if(StringUtils.isNotBlank(file.attributes().getFileId())) {
                 return file.attributes().getFileId();
             }
+            if(cache.contains(new SimplePathPredicate(file))) {
+                final String cached = cache.get(new SimplePathPredicate(file));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Return cached fileid %s for file %s", cached, file));
+                }
+                return cached;
+            }
             final String id = new FilesApi(session.getClient()).filesGet_1(URIEncoder.encode(this.getPrefixedPath(file))).getId();
-            this.set(file, id);
+            this.cache(file, id);
             return id;
         }
         catch(ApiException e) {
@@ -52,14 +65,22 @@ public class StoregateIdProvider implements FileIdProvider {
         }
     }
 
-    protected String set(final Path file, final String id) {
-        file.attributes().setFileId(id);
+    @Override
+    public String cache(final Path file, final String id) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Cache %s for file %s", id, file));
+        }
+        cache.put(new SimplePathPredicate(file), id);
         return id;
     }
 
+    @Override
+    public void clear() {
+        cache.clear();
+    }
+
     /**
-     * Mapping of path "/Home/mduck" to "My files"
-     * Mapping of path "/Common" to "Common files"
+     * Mapping of path "/Home/mduck" to "My files" Mapping of path "/Common" to "Common files"
      */
     protected String getPrefixedPath(final Path file) {
         final PathContainerService service = new DefaultPathContainerService();

@@ -39,6 +39,16 @@ public class CryptoFileIdProvider implements FileIdProvider {
     }
 
     @Override
+    public String cache(final Path file, final String id) throws BackgroundException {
+        return delegate.cache(vault.encrypt(session, file), id);
+    }
+
+    @Override
+    public void clear() {
+        delegate.clear();
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CryptoFileIdProvider{");
         sb.append("delegate=").append(delegate);
