@@ -194,6 +194,9 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+        finally {
+            fileIdProvider.clear();
+        }
     }
 
     @Override

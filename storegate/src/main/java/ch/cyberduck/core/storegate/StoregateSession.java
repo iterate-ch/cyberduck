@@ -205,6 +205,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     @Override
     protected void logout() {
         client.getHttpClient().close();
+        fileid.clear();
     }
 
     @Override
