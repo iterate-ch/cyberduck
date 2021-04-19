@@ -18,10 +18,8 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -35,9 +33,6 @@ public class DefaultAttributesFinderFeature extends ListFilteringFeature impleme
     private static final Logger log = Logger.getLogger(DefaultAttributesFinderFeature.class);
 
     private final Session<?> session;
-
-    private Cache<Path> cache
-            = PathCache.empty();
 
     public DefaultAttributesFinderFeature(final Session<?> session) {
         super(session);
@@ -63,14 +58,7 @@ public class DefaultAttributesFinderFeature extends ListFilteringFeature impleme
             if(feature instanceof DefaultAttributesFinderFeature) {
                 throw f;
             }
-            return feature.withCache(cache).find(file);
+            return feature.find(file);
         }
-    }
-
-    @Override
-    public DefaultAttributesFinderFeature withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        super.withCache(cache);
-        return this;
     }
 }

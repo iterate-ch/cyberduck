@@ -18,7 +18,6 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -43,11 +42,5 @@ public class DefaultFindFeature extends ListFilteringFeature implements Find {
         catch(NotfoundException e) {
             return false;
         }
-    }
-
-    @Override
-    public DefaultFindFeature withCache(final Cache<Path> cache) {
-        super.withCache(cache);
-        return this;
     }
 }
