@@ -30,10 +30,12 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
@@ -319,6 +321,12 @@ public class FTPSession extends SSLSession<FTPClient> {
         }
         if(type == Move.class) {
             return (T) new FTPMoveFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new FTPFindFeature(this);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new FTPAttributesFinderFeature(this);
         }
         if(type == UnixPermission.class) {
             return (T) permission;

@@ -17,13 +17,9 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 
@@ -48,7 +44,7 @@ public class FTPUnixPermissionFeature extends DefaultUnixPermissionFeature imple
         try {
             if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, owner, file.getAbsolute()))) {
                 throw new FTPException(session.getClient().getReplyCode(),
-                        session.getClient().getReplyString());
+                    session.getClient().getReplyString());
             }
         }
         catch(IOException e) {
@@ -61,8 +57,7 @@ public class FTPUnixPermissionFeature extends DefaultUnixPermissionFeature imple
         final String command = "chgrp";
         try {
             if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, group, file.getAbsolute()))) {
-                throw new FTPException(session.getClient().getReplyCode(),
-                        session.getClient().getReplyString());
+                throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
         }
         catch(IOException e) {
@@ -72,17 +67,7 @@ public class FTPUnixPermissionFeature extends DefaultUnixPermissionFeature imple
 
     @Override
     public Permission getUnixPermission(final Path file) throws BackgroundException {
-        try {
-            return new FTPAttributesFinderFeature(session).find(file).getPermission();
-        }
-        catch(InteroperabilityException e) {
-            for(Path f : session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener())) {
-                if(f.equals(file)) {
-                    return f.attributes().getPermission();
-                }
-            }
-        }
-        throw new NotfoundException(file.getAbsolute());
+        return new FTPAttributesFinderFeature(session).find(file).getPermission();
     }
 
     @Override
@@ -96,7 +81,7 @@ public class FTPUnixPermissionFeature extends DefaultUnixPermissionFeature imple
         try {
             if(!session.getClient().sendSiteCommand(String.format("CHMOD %s %s", permission.getMode(), file.getAbsolute()))) {
                 throw new FTPException(session.getClient().getReplyCode(),
-                        session.getClient().getReplyString());
+                    session.getClient().getReplyString());
             }
         }
         catch(IOException e) {

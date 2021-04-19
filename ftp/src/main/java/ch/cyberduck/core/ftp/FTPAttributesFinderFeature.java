@@ -23,18 +23,20 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.ftp.list.FTPDataResponseReader;
 import ch.cyberduck.core.ftp.list.FTPMlsdListResponseReader;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Arrays;
 
 public class FTPAttributesFinderFeature implements AttributesFinder {
+    private static final Logger log = Logger.getLogger(FTPAttributesFinderFeature.class);
 
     private final FTPSession session;
 
@@ -54,12 +56,13 @@ public class FTPAttributesFinderFeature implements AttributesFinder {
                 }
                 final FTPDataResponseReader reader = new FTPMlsdListResponseReader();
                 final AttributedList<Path> attributes
-                        = reader.read(file.getParent(), Arrays.asList(session.getClient().getReplyStrings()), new DisabledListProgressListener());
+                    = reader.read(file.getParent(), Arrays.asList(session.getClient().getReplyStrings()), new DisabledListProgressListener());
                 if(attributes.contains(file)) {
                     return attributes.get(attributes.indexOf(file)).attributes();
                 }
             }
-            throw new InteroperabilityException("No support for MLST in reply to FEAT");
+            log.warn("No support for MLST in reply to FEAT");
+            return new DefaultAttributesFinderFeature(session).find(file);
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Failure to read attributes of {0}", e, file);

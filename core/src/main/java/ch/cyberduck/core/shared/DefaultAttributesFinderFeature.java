@@ -21,9 +21,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
@@ -32,11 +30,8 @@ import org.apache.log4j.Logger;
 public class DefaultAttributesFinderFeature extends ListFilteringFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(DefaultAttributesFinderFeature.class);
 
-    private final Session<?> session;
-
     public DefaultAttributesFinderFeature(final Session<?> session) {
         super(session);
-        this.session = session;
     }
 
     @Override
@@ -44,21 +39,10 @@ public class DefaultAttributesFinderFeature extends ListFilteringFeature impleme
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
-        try {
-            final Path found = this.search(file);
-            if(null == found) {
-                throw new NotfoundException(file.getAbsolute());
-            }
-            return found.attributes();
+        final Path found = this.search(file);
+        if(null == found) {
+            throw new NotfoundException(file.getAbsolute());
         }
-        catch(InteroperabilityException | AccessDeniedException | NotfoundException f) {
-            log.warn(String.format("Failure listing directory %s. %s", file.getParent(), f.getMessage()));
-            // Try native implementation
-            final AttributesFinder feature = session._getFeature(AttributesFinder.class);
-            if(feature instanceof DefaultAttributesFinderFeature) {
-                throw f;
-            }
-            return feature.find(file);
-        }
+        return found.attributes();
     }
 }
