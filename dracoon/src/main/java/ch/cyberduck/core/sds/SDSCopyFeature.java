@@ -54,10 +54,10 @@ public class SDSCopyFeature implements Copy {
             final Node node = new NodesApi(session.getClient()).copyNodes(
                 new CopyNodesRequest()
                     .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE)
-                    .addItemsItem(new CopyNode().id(Long.parseLong(nodeid.getFileid(source, new DisabledListProgressListener()))))
+                    .addItemsItem(new CopyNode().id(Long.parseLong(nodeid.getVersionId(source, new DisabledListProgressListener()))))
                     .keepShareLinks(PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep")),
                 // Target Parent Node ID
-                Long.parseLong(nodeid.getFileid(target.getParent(), new DisabledListProgressListener())),
+                Long.parseLong(nodeid.getVersionId(target.getParent(), new DisabledListProgressListener())),
                 StringUtils.EMPTY, null);
             return target.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
         }

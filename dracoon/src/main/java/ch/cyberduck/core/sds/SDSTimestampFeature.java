@@ -52,7 +52,7 @@ public class SDSTimestampFeature extends DefaultTimestampFeature {
                 }
             }
             new NodesApi(session.getClient()).updateFile(new UpdateFileRequest().timestampModification(new DateTime(status.getTimestamp())),
-                Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
+                Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Failure to write attributes of {0}", e, file);

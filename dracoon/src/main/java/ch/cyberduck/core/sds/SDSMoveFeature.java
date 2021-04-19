@@ -60,7 +60,7 @@ public class SDSMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
-            final long nodeId = Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()));
+            final long nodeId = Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener()));
             if(containerService.isContainer(file)) {
                 final Node node = new NodesApi(session.getClient()).updateRoom(
                     new UpdateRoomRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
@@ -79,7 +79,7 @@ public class SDSMoveFeature implements Move {
                         .resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE)
                         .addItemsItem(new MoveNode().id(nodeId).name(renamed.getName()))
                         .keepShareLinks(PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep")),
-                    Long.parseLong(nodeid.getFileid(renamed.getParent(), new DisabledListProgressListener())),
+                    Long.parseLong(nodeid.getVersionId(renamed.getParent(), new DisabledListProgressListener())),
                     StringUtils.EMPTY, null);
                 // Copy original file attributes
                 return renamed.withAttributes(new PathAttributes(renamed.attributes()).withVersionId(file.attributes().getVersionId()));

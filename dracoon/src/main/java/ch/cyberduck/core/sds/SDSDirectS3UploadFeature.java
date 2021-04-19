@@ -122,7 +122,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
                 .directS3Upload(true)
                 .timestampModification(status.getTimestamp() == null ? null : new DateTime(status.getTimestamp()))
                 .size(-1 == status.getLength() ? null : status.getLength())
-                .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
+                .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName());
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
                 .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);

@@ -69,7 +69,7 @@ public class SDSUploadService {
         try {
             final CreateFileUploadRequest body = new CreateFileUploadRequest()
                 .size(-1 == status.getLength() ? null : status.getLength())
-                .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
+                .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName())
                 .directS3Upload(null);
             if(status.getTimestamp() != null) {

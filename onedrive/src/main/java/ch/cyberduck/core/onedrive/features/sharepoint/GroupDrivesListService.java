@@ -15,15 +15,10 @@ package ch.cyberduck.core.onedrive.features.sharepoint;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.AbstractDriveListService;
 import ch.cyberduck.core.onedrive.AbstractSharepointSession;
-import ch.cyberduck.core.onedrive.GraphSession;
 
 import org.nuxeo.onedrive.client.Drives;
 import org.nuxeo.onedrive.client.types.Drive;

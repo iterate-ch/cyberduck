@@ -22,23 +22,23 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.FileIdProvider;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Comparator;
 
-public class DriveFileidProvider implements IdProvider {
+public class DriveFileIdProvider implements FileIdProvider {
 
     private final DriveSession session;
 
-    public DriveFileidProvider(final DriveSession session) {
+    public DriveFileIdProvider(final DriveSession session) {
         this.session = session;
     }
 
     @Override
-    public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public String getFileId(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getFileId())) {
             return file.attributes().getFileId();
         }

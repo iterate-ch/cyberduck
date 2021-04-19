@@ -39,9 +39,9 @@ public class B2LifecycleFeature implements Lifecycle {
         = new B2PathContainerService();
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
 
-    public B2LifecycleFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2LifecycleFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -77,13 +77,13 @@ public class B2LifecycleFeature implements Lifecycle {
         try {
             if(LifecycleConfiguration.empty().equals(configuration)) {
                 session.getClient().updateBucket(
-                    fileid.getFileid(containerService.getContainer(container), new DisabledListProgressListener()),
+                    fileid.getVersionId(containerService.getContainer(container), new DisabledListProgressListener()),
                     new B2BucketTypeFeature(session, fileid).convert(container.attributes().getAcl())
                 );
             }
             else {
                 session.getClient().updateBucket(
-                    fileid.getFileid(containerService.getContainer(container), new DisabledListProgressListener()),
+                    fileid.getVersionId(containerService.getContainer(container), new DisabledListProgressListener()),
                     new B2BucketTypeFeature(session, fileid).convert(container.attributes().getAcl()),
                     new LifecycleRule(
                         null == configuration.getExpiration() ? null : configuration.getExpiration().longValue(),

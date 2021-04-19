@@ -22,14 +22,14 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathRelativizer;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class StoregateIdProvider implements IdProvider {
+public class StoregateIdProvider implements FileIdProvider {
 
     private final StoregateSession session;
 
@@ -38,7 +38,7 @@ public class StoregateIdProvider implements IdProvider {
     }
 
     @Override
-    public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public String getFileId(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             if(StringUtils.isNotBlank(file.attributes().getFileId())) {
                 return file.attributes().getFileId();
@@ -53,7 +53,7 @@ public class StoregateIdProvider implements IdProvider {
     }
 
     protected String set(final Path file, final String id) {
-        file.attributes().setVersionId(id);
+        file.attributes().setFileId(id);
         return id;
     }
 

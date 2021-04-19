@@ -21,7 +21,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -90,9 +90,9 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             if(userKeyPairContainerDeprecated != null) {
                 passphraseDeprecated = triplecrypt.unlock(callback, session.getHost(), TripleCryptConverter.toCryptoUserKeyPair(userKeyPairContainerDeprecated));
             }
-            final IdProvider node = session.getFeature(IdProvider.class);
+            final VersionIdProvider node = session.getFeature(VersionIdProvider.class);
             // Null when operating from scheduler. File reference is set for post upload.
-            final Long fileId = file != null ? Long.parseLong(node.getFileid(file, new DisabledListProgressListener())) : null;
+            final Long fileId = file != null ? Long.parseLong(node.getVersionId(file, new DisabledListProgressListener())) : null;
             UserFileKeySetBatchRequest request;
             do {
                 if(log.isDebugEnabled()) {

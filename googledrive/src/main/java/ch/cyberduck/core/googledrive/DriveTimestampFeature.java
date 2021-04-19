@@ -30,9 +30,9 @@ import com.google.api.services.drive.model.File;
 public class DriveTimestampFeature extends DefaultTimestampFeature {
 
     private final DriveSession session;
-    private final DriveFileidProvider fileid;
+    private final DriveFileIdProvider fileid;
 
-    public DriveTimestampFeature(final DriveSession session, final DriveFileidProvider fileid) {
+    public DriveTimestampFeature(final DriveSession session, final DriveFileIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -40,7 +40,7 @@ public class DriveTimestampFeature extends DefaultTimestampFeature {
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final String fileid = this.fileid.getFileid(file, new DisabledListProgressListener());
+            final String fileid = this.fileid.getFileId(file, new DisabledListProgressListener());
             final File properties = new File();
             properties.setModifiedTime(new DateTime(status.getTimestamp()));
             session.getClient().files().update(fileid, properties).setFields("modifiedTime").

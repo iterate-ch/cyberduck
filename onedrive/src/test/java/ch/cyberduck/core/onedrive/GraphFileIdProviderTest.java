@@ -5,7 +5,6 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
@@ -36,8 +35,8 @@ public class GraphFileIdProviderTest extends AbstractOneDriveTest {
         assertNotNull(path33WithId.attributes().getFileId());
         assertNotEquals(path2RWithId.attributes().getFileId(), path33WithId.attributes().getFileId());
 
-        final IdProvider idProvider = new GraphFileIdProvider(session);
-        final String fileId = idProvider.getFileid(path33, new DisabledListProgressListener());
+        final GraphFileIdProvider idProvider = new GraphFileIdProvider(session);
+        final String fileId = idProvider.getFileId(path33, new DisabledListProgressListener());
 
         assertEquals(fileId, path33WithId.attributes().getFileId());
         assertNotEquals(fileId, path2RWithId.attributes().getFileId());

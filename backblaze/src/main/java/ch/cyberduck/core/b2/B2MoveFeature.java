@@ -31,10 +31,10 @@ public class B2MoveFeature implements Move {
         = new B2PathContainerService();
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
     private final B2ThresholdCopyFeature proxy;
 
-    public B2MoveFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2MoveFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
         this.proxy = new B2ThresholdCopyFeature(session, fileid);

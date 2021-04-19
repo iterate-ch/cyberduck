@@ -1,4 +1,4 @@
-package ch.cyberduck.core.googledrive;
+package ch.cyberduck.core.features;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -19,21 +19,17 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-public class DriveDefaultListService extends AbstractDriveListService {
-
-    private final DriveFileIdProvider fileid;
-
-    public DriveDefaultListService(final DriveSession session, final DriveFileIdProvider fileid) {
-        super(session, fileid);
-        this.fileid = fileid;
-    }
-
-    public DriveDefaultListService(final DriveSession session, final DriveFileIdProvider fileid, final int pagesize) {
-        super(session, fileid, pagesize);
-        this.fileid = fileid;
-    }
-
-    protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return String.format("'%s' in parents", fileid.getFileId(directory, listener));
-    }
+/**
+ * Determine an ID for a file for services where API calls take IDs rather than file paths. Implemented for services
+ * where the file id changes when updating file contents.
+ */
+public interface VersionIdProvider {
+    /**
+     * Determine version id for file
+     *
+     * @param file     File
+     * @param listener Progress listener
+     * @return Latest version id for file
+     */
+    String getVersionId(Path file, ListProgressListener listener) throws BackgroundException;
 }

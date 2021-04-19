@@ -20,7 +20,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -46,19 +46,19 @@ public class SharepointSession extends AbstractSharepointSession {
 
     @Override
     public Site getSite(final Path file) throws BackgroundException {
-        return Site.byId(getClient(), fileIdProvider.getFileid(file, new DisabledListProgressListener()));
+        return Site.byId(getClient(), fileIdProvider.getFileId(file, new DisabledListProgressListener()));
     }
 
     @Override
     public GroupItem getGroup(final Path file) throws BackgroundException {
-        return new GroupItem(getClient(), fileIdProvider.getFileid(file, new DisabledListProgressListener()));
+        return new GroupItem(getClient(), fileIdProvider.getFileId(file, new DisabledListProgressListener()));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new SharepointListService(this, this.getFeature(IdProvider.class));
+            return (T) new SharepointListService(this, this.getFeature(FileIdProvider.class));
         }
         return super._getFeature(type);
     }

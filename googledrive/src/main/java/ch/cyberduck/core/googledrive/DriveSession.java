@@ -60,7 +60,7 @@ public class DriveSession extends HttpSession<Drive> {
     private ApacheHttpTransport transport;
     private OAuth2RequestInterceptor authorizationService;
 
-    private final DriveFileidProvider fileid = new DriveFileidProvider(this);
+    private final DriveFileIdProvider fileid = new DriveFileIdProvider(this);
 
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -166,7 +166,7 @@ public class DriveSession extends HttpSession<Drive> {
         if(type == PromptUrlProvider.class) {
             return (T) new DriveSharingUrlProvider(this, fileid);
         }
-        if(type == IdProvider.class) {
+        if(type == FileIdProvider.class) {
             return (T) fileid;
         }
         if(type == Quota.class) {

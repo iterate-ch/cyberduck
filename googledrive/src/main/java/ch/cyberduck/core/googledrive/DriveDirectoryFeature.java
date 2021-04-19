@@ -36,9 +36,9 @@ import com.google.api.services.drive.model.TeamDrive;
 public class DriveDirectoryFeature implements Directory<VersionId> {
 
     private final DriveSession session;
-    private final DriveFileidProvider fileid;
+    private final DriveFileIdProvider fileid;
 
-    public DriveDirectoryFeature(final DriveSession session, final DriveFileidProvider fileid) {
+    public DriveDirectoryFeature(final DriveSession session, final DriveFileIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -57,10 +57,11 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
                 final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(folder.getName())
                     .setMimeType("application/vnd.google-apps.folder")
-                    .setParents(Collections.singletonList(fileid.getFileid(folder.getParent(), new DisabledListProgressListener()))));
+                    .setParents(Collections.singletonList(fileid.getFileId(folder.getParent(), new DisabledListProgressListener()))));
                 final File execute = insert
                     .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
                 execute.setVersion(1L);
+                status.setId(execute.getId());
                 return folder.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));
             }
         }

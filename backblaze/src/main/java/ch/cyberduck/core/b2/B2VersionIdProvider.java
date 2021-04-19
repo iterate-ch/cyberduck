@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.VersionIdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,19 +32,19 @@ import synapticloop.b2.response.B2BucketResponse;
 import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
 
-public class B2FileidProvider implements IdProvider {
+public class B2VersionIdProvider implements VersionIdProvider {
 
     private final PathContainerService containerService
         = new B2PathContainerService();
 
     private final B2Session session;
 
-    public B2FileidProvider(final B2Session session) {
+    public B2VersionIdProvider(final B2Session session) {
         this.session = session;
     }
 
     @Override
-    public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public String getVersionId(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
         }
@@ -58,7 +58,7 @@ public class B2FileidProvider implements IdProvider {
                 return this.set(file, info.getBucketId());
             }
             final B2ListFilesResponse response = session.getClient().listFileNames(
-                this.getFileid(containerService.getContainer(file), listener),
+                this.getVersionId(containerService.getContainer(file), listener),
                 containerService.getKey(file), 2);
             for(B2FileInfoResponse info : response.getFiles()) {
                 if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {

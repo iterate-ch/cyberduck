@@ -32,10 +32,10 @@ import synapticloop.b2.response.BaseB2Response;
 public class B2TouchFeature implements Touch<BaseB2Response> {
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
     private Write<BaseB2Response> writer;
 
-    public B2TouchFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2TouchFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
         this.writer = new B2WriteFeature(session, fileid);

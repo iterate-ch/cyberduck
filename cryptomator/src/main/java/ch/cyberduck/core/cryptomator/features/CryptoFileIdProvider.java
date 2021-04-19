@@ -19,28 +19,28 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.features.Vault;
 
-public class CryptoIdProvider implements IdProvider {
+public class CryptoFileIdProvider implements FileIdProvider {
     private final Session<?> session;
-    private final IdProvider delegate;
+    private final FileIdProvider delegate;
     private final Vault vault;
 
-    public CryptoIdProvider(final Session<?> session, final IdProvider delegate, final Vault vault) {
+    public CryptoFileIdProvider(final Session<?> session, final FileIdProvider delegate, final Vault vault) {
         this.session = session;
         this.delegate = delegate;
         this.vault = vault;
     }
 
     @Override
-    public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return delegate.getFileid(vault.encrypt(session, file), listener);
+    public String getFileId(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return delegate.getFileId(vault.encrypt(session, file), listener);
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CryptoIdProvider{");
+        final StringBuilder sb = new StringBuilder("CryptoFileIdProvider{");
         sb.append("delegate=").append(delegate);
         sb.append('}');
         return sb.toString();

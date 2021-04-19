@@ -31,9 +31,9 @@ import com.google.api.services.drive.model.File;
 public class DriveDeleteFeature implements Delete {
 
     private final DriveSession session;
-    private final DriveFileidProvider fileid;
+    private final DriveFileIdProvider fileid;
 
-    public DriveDeleteFeature(final DriveSession session, final DriveFileidProvider fileid) {
+    public DriveDeleteFeature(final DriveSession session, final DriveFileIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -47,17 +47,17 @@ public class DriveDeleteFeature implements Delete {
             callback.delete(file);
             try {
                 if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
-                    session.getClient().teamdrives().delete(fileid.getFileid(file, new DisabledListProgressListener())).execute();
+                    session.getClient().teamdrives().delete(fileid.getFileId(file, new DisabledListProgressListener())).execute();
                 }
                 else {
                     if(PreferencesFactory.get().getBoolean("googledrive.delete.trash")) {
                         final File properties = new File();
                         properties.setTrashed(true);
-                        session.getClient().files().update(fileid.getFileid(file, new DisabledListProgressListener()), properties)
+                        session.getClient().files().update(fileid.getFileId(file, new DisabledListProgressListener()), properties)
                             .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
                     }
                     else {
-                        session.getClient().files().delete(fileid.getFileid(file, new DisabledListProgressListener()))
+                        session.getClient().files().delete(fileid.getFileId(file, new DisabledListProgressListener()))
                             .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
                     }
                 }

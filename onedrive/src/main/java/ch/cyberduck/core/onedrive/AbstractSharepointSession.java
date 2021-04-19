@@ -50,7 +50,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
 
     @Override
     public DriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
-        final String versionId = fileIdProvider.getFileid(file, new DisabledListProgressListener());
+        final String versionId = fileIdProvider.getFileId(file, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }

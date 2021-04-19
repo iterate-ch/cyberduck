@@ -59,8 +59,8 @@ public class SDSVersioningFeature implements Versioning {
                 new RestoreDeletedNodesRequest()
                     .resolutionStrategy(RestoreDeletedNodesRequest.ResolutionStrategyEnum.OVERWRITE)
                     .keepShareLinks(PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep"))
-                    .addDeletedNodeIdsItem(Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())))
-                    .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener()))), StringUtils.EMPTY);
+                    .addDeletedNodeIdsItem(Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())))
+                    .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener()))), StringUtils.EMPTY);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Failure to write attributes of {0}", e, file);

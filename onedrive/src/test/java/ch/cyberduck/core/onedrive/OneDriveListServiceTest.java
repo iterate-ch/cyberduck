@@ -3,7 +3,6 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -34,7 +33,7 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
     @Test
     public void testListDrives() throws Exception {
         // "Drives" rather placeholders for "My Files" and "Shared".
-        final AttributedList<Path> list = new OneDriveListService(session, new GraphFileIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new OneDriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());

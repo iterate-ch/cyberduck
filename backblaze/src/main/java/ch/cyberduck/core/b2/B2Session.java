@@ -46,7 +46,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
 
     private B2ErrorResponseInterceptor retryHandler;
 
-    private final B2FileidProvider fileid = new B2FileidProvider(this);
+    private final B2VersionIdProvider fileid = new B2VersionIdProvider(this);
     private final B2ListService listService = new B2ListService(this, fileid);
 
     public B2Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -146,7 +146,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == Location.class) {
             return (T) new B2BucketTypeFeature(this, fileid);
         }
-        if(type == IdProvider.class) {
+        if(type == VersionIdProvider.class) {
             return (T) fileid;
         }
         if(type == Lifecycle.class) {

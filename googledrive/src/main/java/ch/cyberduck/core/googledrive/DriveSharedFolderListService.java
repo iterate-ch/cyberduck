@@ -25,11 +25,11 @@ import com.google.api.services.drive.model.File;
 
 public class DriveSharedFolderListService extends AbstractDriveListService {
 
-    public DriveSharedFolderListService(final DriveSession session, final DriveFileidProvider fileid) {
+    public DriveSharedFolderListService(final DriveSession session, final DriveFileIdProvider fileid) {
         super(session, fileid);
     }
 
-    public DriveSharedFolderListService(final DriveSession session, final DriveFileidProvider fileid, final int pagesize) {
+    public DriveSharedFolderListService(final DriveSession session, final DriveFileIdProvider fileid, final int pagesize) {
         super(session, fileid, pagesize);
     }
 

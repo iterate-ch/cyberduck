@@ -21,12 +21,12 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.onedrive.GraphSession;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class GraphFileIdProvider implements IdProvider {
+public class GraphFileIdProvider implements FileIdProvider {
 
     private final GraphSession session;
 
@@ -35,7 +35,7 @@ public class GraphFileIdProvider implements IdProvider {
     }
 
     @Override
-    public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public String getFileId(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getFileId())) {
             return file.attributes().getFileId();
         }

@@ -58,16 +58,17 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
                 roomRequest.addAdminIdsItem(user.getId());
                 roomRequest.setAdminGroupIds(null);
                 if(!folder.getParent().isRoot()) {
-                    roomRequest.setParentId(Long.parseLong(nodeid.getFileid(folder.getParent(), new DisabledListProgressListener())));
+                    roomRequest.setParentId(Long.parseLong(nodeid.getVersionId(folder.getParent(), new DisabledListProgressListener())));
                 }
                 roomRequest.setName(folder.getName());
                 final Node r = new NodesApi(session.getClient()).createRoom(roomRequest, StringUtils.EMPTY, null);
+                status.setVersion(new VersionId(r.getId().toString()));
                 return folder.withType(EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                     new SDSAttributesFinderFeature(session, nodeid).toAttributes(r));
             }
             else {
                 final CreateFolderRequest folderRequest = new CreateFolderRequest();
-                folderRequest.setParentId(Long.parseLong(nodeid.getFileid(folder.getParent(), new DisabledListProgressListener())));
+                folderRequest.setParentId(Long.parseLong(nodeid.getVersionId(folder.getParent(), new DisabledListProgressListener())));
                 folderRequest.setName(folder.getName());
                 final Node f = new NodesApi(session.getClient()).createFolder(folderRequest, StringUtils.EMPTY, null);
                 return folder.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(f));

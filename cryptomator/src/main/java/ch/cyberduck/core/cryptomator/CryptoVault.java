@@ -601,8 +601,11 @@ public class CryptoVault implements Vault {
             if(type == UrlProvider.class) {
                 return (T) new CryptoUrlProvider(session, (UrlProvider) delegate, this);
             }
-            if(type == IdProvider.class) {
-                return (T) new CryptoIdProvider(session, (IdProvider) delegate, this);
+            if(type == FileIdProvider.class) {
+                return (T) new CryptoFileIdProvider(session, (FileIdProvider) delegate, this);
+            }
+            if(type == VersionIdProvider.class) {
+                return (T) new CryptoVersionIdProvider(session, (VersionIdProvider) delegate, this);
             }
             if(type == Delete.class) {
                 return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?

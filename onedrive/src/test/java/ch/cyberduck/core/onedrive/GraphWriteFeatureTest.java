@@ -74,7 +74,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         assertArrayEquals(content, compare);
         final Path copy = new Path(file);
         copy.attributes().setCustom(Collections.emptyMap());
-        assertEquals(id, new GraphFileIdProvider(session).getFileid(copy, new DisabledListProgressListener()));
+        assertEquals(id, new GraphFileIdProvider(session).getFileId(copy, new DisabledListProgressListener()));
         // Overwrite
         final HttpResponseOutputStream<Void> overwrite = feature.write(file, status.exists(true), new DisabledConnectionCallback());
         assertNotNull(overwrite);

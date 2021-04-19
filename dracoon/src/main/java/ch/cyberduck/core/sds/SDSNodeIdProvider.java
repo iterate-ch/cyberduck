@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -44,7 +44,7 @@ import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-public class SDSNodeIdProvider implements IdProvider {
+public class SDSNodeIdProvider implements VersionIdProvider {
     private static final Logger log = Logger.getLogger(SDSNodeIdProvider.class);
 
     private static final UnicodeNormalizer normalizer = new NFCNormalizer();
@@ -57,7 +57,7 @@ public class SDSNodeIdProvider implements IdProvider {
     }
 
     @Override
-    public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public String getVersionId(final Path file, final ListProgressListener listener) throws BackgroundException {
         return this.getFileid(file, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
     }
 

@@ -28,14 +28,14 @@ public class B2ThresholdCopyFeature implements Copy {
     private static final Logger log = Logger.getLogger(B2ThresholdCopyFeature.class);
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
     private final Long threshold;
 
-    public B2ThresholdCopyFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2ThresholdCopyFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this(session, fileid, PreferencesFactory.get().getLong("b2.copy.largeobject.threshold"));
     }
 
-    public B2ThresholdCopyFeature(final B2Session session, final B2FileidProvider fileid, final Long threshold) {
+    public B2ThresholdCopyFeature(final B2Session session, final B2VersionIdProvider fileid, final Long threshold) {
         this.session = session;
         this.fileid = fileid;
         this.threshold = threshold;

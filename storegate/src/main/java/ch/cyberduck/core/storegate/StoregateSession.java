@@ -31,8 +31,8 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
@@ -210,7 +210,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
-        if(type == IdProvider.class) {
+        if(type == FileIdProvider.class) {
             return (T) fileid;
         }
         if(type == ListService.class) {
