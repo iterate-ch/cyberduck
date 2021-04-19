@@ -58,6 +58,7 @@ public class DriveFileIdProvider implements FileIdProvider {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Return cached fileid %s for file %s", cached, file));
             }
+            return cached;
         }
         if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
             final Path found = new DriveTeamDrivesListService(session).list(file.getParent(), listener).find(
