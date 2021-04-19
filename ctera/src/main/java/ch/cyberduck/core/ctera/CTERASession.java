@@ -178,7 +178,7 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
         try {
             attach.setEntity(
                 new StringEntity(
-                    this.getAttachmentAsString(activationCode, null,
+                    getAttachmentAsString(activationCode, null,
                         URIEncoder.encode(InetAddress.getLocalHost().getHostName()), new MacUniqueIdService().getUUID()),
                     ContentType.create("application/xml", StandardCharsets.UTF_8.name()
                     )
@@ -195,7 +195,7 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
         try {
             attach.setEntity(
                 new StringEntity(
-                    this.getAttachmentAsString(null, password,
+                    getAttachmentAsString(null, password,
                         URIEncoder.encode(InetAddress.getLocalHost().getHostName()), new MacUniqueIdService().getUUID()),
                     ContentType.create("application/xml", StandardCharsets.UTF_8.name()
                     )
