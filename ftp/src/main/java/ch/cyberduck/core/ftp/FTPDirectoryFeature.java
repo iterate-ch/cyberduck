@@ -21,7 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -40,7 +39,7 @@ public class FTPDirectoryFeature implements Directory<Integer> {
             if(!session.getClient().makeDirectory(folder.getAbsolute())) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
-            return folder.withAttributes(new DefaultAttributesFinderFeature(session).find(folder));
+            return folder.withAttributes(new FTPAttributesFinderFeature(session).find(folder));
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Cannot create folder {0}", e, folder);
