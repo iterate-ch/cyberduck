@@ -46,6 +46,7 @@ import java.util.Map;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileInfoResponse;
+import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.B2GetUploadPartUrlResponse;
 import synapticloop.b2.response.B2GetUploadUrlResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
@@ -137,11 +138,12 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                 if(null != status.getTimestamp()) {
                     fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
                 }
-                return session.getClient().uploadFile(uploadUrl,
+                final B2FileResponse response = session.getClient().uploadFile(uploadUrl,
                     containerService.getKey(file),
                     entity, checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
-                    status.getMime(),
-                    fileinfo);
+                    status.getMime(), fileinfo);
+                status.setVersion(response.getFileId());
+                return response;
             }
 
             @Override
