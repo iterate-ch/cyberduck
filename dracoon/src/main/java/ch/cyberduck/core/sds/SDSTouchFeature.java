@@ -52,7 +52,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
             }
             final StatusOutputStream<VersionId> out = writer.write(file, status.complete(), new DisabledConnectionCallback());
             out.close();
-            status.setVersion(new VersionId(out.getStatus().id));
+            status.setVersion(out.getStatus().id);
             return file.withAttributes(file.attributes().withVersionId(out.getStatus().id));
         }
         catch(IOException e) {

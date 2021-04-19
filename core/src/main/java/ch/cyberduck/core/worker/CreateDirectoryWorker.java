@@ -77,7 +77,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
         final Path result = feature.mkdir(folder, region, status);
         final VersionIdProvider versionIdProvider = session.getFeature(VersionIdProvider.class);
         if(versionIdProvider != null) {
-            versionIdProvider.cache(result, status.getVersion().id);
+            versionIdProvider.cache(result, status.getVersion());
         }
         final FileIdProvider fileIdProvider = session.getFeature(FileIdProvider.class);
         if(fileIdProvider != null) {

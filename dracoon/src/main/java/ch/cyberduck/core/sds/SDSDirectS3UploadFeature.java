@@ -239,7 +239,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
                                 break;
                             case "done":
                                 // Set node id in transfer status
-                                status.setVersion(new VersionId(String.valueOf(uploadStatus.getNode().getId())));
+                                status.setVersion(String.valueOf(uploadStatus.getNode().getId()));
                                 done.countDown();
                                 break;
                         }
@@ -257,7 +257,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
             }
             // Mark parent status as complete
             status.setComplete();
-            return status.getVersion();
+            return new VersionId(status.getVersion());
         }
         catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException | UnknownVersionException e) {
             throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file);

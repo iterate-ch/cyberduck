@@ -145,7 +145,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Upload finished for %s with response %s", file, response));
                     }
-                    overall.setVersion(new VersionId(response.getFileId()));
+                    overall.setVersion(response.getFileId());
                     close.set(true);
                 }
                 else {
@@ -156,10 +156,9 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                         }
                         final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
                             containerService.getKey(file), overall.getMime(), fileinfo);
-                        final VersionId version = new VersionId(response.getFileId());
-                        overall.setVersion(version);
+                        overall.setVersion(response.getFileId());
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Multipart upload started for %s with ID %s", file, version));
+                            log.debug(String.format("Multipart upload started for %s with ID %s", file, response.getFileId()));
                         }
                     }
                     final int segment = ++partNumber;
@@ -174,7 +173,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                             final Checksum checksum = ChecksumComputeFactory.get(HashAlgorithm.sha1)
                                 .compute(new ByteArrayInputStream(content, off, len), status);
                             try {
-                                return session.getClient().uploadLargeFilePart(overall.getVersion().id, segment, entity, checksum.hash);
+                                return session.getClient().uploadLargeFilePart(overall.getVersion(), segment, entity, checksum.hash);
                             }
                             catch(B2ApiException e) {
                                 throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);
@@ -204,11 +203,11 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                 if(completed.isEmpty()) {
                     if(null == overall.getVersion()) {
                         // No single file upload and zero parts
-                        overall.setVersion(new VersionId(new B2TouchFeature(session, fileid).touch(file, new TransferStatus()).attributes().getVersionId()));
+                        overall.setVersion(new B2TouchFeature(session, fileid).touch(file, new TransferStatus()).attributes().getVersionId());
                     }
                     else {
                         // Cancel upload
-                        session.getClient().cancelLargeFileUpload(overall.getVersion().id);
+                        session.getClient().cancelLargeFileUpload(overall.getVersion());
                     }
                 }
                 else {
@@ -222,7 +221,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     for(B2UploadPartResponse part : completed) {
                         checksums.add(part.getContentSha1());
                     }
-                    session.getClient().finishLargeFileUpload(overall.getVersion().id, checksums.toArray(new String[checksums.size()]));
+                    session.getClient().finishLargeFileUpload(overall.getVersion(), checksums.toArray(new String[checksums.size()]));
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
                     }
@@ -240,7 +239,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
         }
 
         public VersionId getFileId() {
-            return overall.getVersion();
+            return new VersionId(overall.getVersion());
         }
     }
 }

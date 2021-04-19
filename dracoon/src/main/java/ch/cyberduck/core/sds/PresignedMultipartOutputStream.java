@@ -224,7 +224,7 @@ public class PresignedMultipartOutputStream extends OutputStream {
                                         failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
                                         done.countDown();
                                     case "done":
-                                        overall.setVersion(new VersionId(String.valueOf(uploadStatus.getNode().getId())));
+                                        overall.setVersion(String.valueOf(uploadStatus.getNode().getId()));
                                         done.countDown();
                                         break;
                                 }
@@ -270,6 +270,6 @@ public class PresignedMultipartOutputStream extends OutputStream {
     }
 
     public VersionId getVersionId() {
-        return overall.getVersion();
+        return new VersionId(overall.getVersion());
     }
 }

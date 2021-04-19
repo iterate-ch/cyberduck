@@ -130,7 +130,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
         }
 
         public VersionId getVersionId() {
-            return overall.getVersion();
+            return new VersionId(overall.getVersion());
         }
 
         @Override
@@ -191,7 +191,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
                 if(completed.isEmpty()) {
                     log.warn(String.format("Abort multipart upload %s with no completed parts", multipart));
                     session.getClient().multipartAbortUpload(multipart);
-                    overall.setVersion(new VersionId(new S3TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId()));
+                    overall.setVersion(new S3TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId());
                 }
                 else {
                     final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
@@ -199,7 +199,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
                         log.debug(String.format("Completed multipart upload for %s with checksum %s",
                             complete.getObjectKey(), complete.getEtag()));
                     }
-                    overall.setVersion(new VersionId(complete.getVersionId()));
+                    overall.setVersion(complete.getVersionId());
                     if(file.getType().contains(Path.Type.encrypted)) {
                         log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                     }

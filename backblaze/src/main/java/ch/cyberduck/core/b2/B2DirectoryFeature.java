@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -81,7 +80,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
                 final B2FileResponse response = (B2FileResponse) out.getStatus();
-                status.setVersion(new VersionId(response.getFileId()));
+                status.setVersion(response.getFileId());
                 return folder.withType(type).withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
             }
         }

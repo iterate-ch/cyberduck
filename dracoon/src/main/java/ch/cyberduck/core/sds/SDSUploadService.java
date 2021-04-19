@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Version;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.Checksum;
@@ -88,7 +87,7 @@ public class SDSUploadService {
         }
     }
 
-    public VersionId complete(final Path file, final String uploadToken, final TransferStatus status) throws BackgroundException {
+    public String complete(final Path file, final String uploadToken, final TransferStatus status) throws BackgroundException {
         try {
             final CompleteUploadRequest body = new CompleteUploadRequest()
                 .keepShareLinks(status.isExists() ? PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep") : false)
@@ -118,7 +117,7 @@ public class SDSUploadService {
                     }
                 }
             }
-            return new VersionId(String.valueOf(upload.getId()));
+            return String.valueOf(upload.getId());
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);

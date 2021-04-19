@@ -61,7 +61,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
                 final File execute = insert
                     .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
                 execute.setVersion(1L);
-                status.setVersion(new VersionId(String.valueOf(1L)));
+                status.setVersion(String.valueOf(1L));
                 status.setId(execute.getId());
                 return folder.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));
             }

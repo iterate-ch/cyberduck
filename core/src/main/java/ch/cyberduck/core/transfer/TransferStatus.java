@@ -23,7 +23,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Encryption;
@@ -185,7 +184,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * Version after write
      */
-    private VersionId version;
+    private String version;
 
     /**
      * File Id assigned after write
@@ -642,15 +641,15 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
-    public VersionId getVersion() {
+    public String getVersion() {
         return version;
     }
 
-    public void setVersion(final VersionId version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
-    public TransferStatus withVersion(final VersionId version) {
+    public TransferStatus withVersion(final String version) {
         this.version = version;
         return this;
     }

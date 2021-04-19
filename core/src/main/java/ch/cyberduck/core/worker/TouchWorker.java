@@ -82,7 +82,7 @@ public class TouchWorker extends Worker<Path> {
         final Path result = feature.touch(file, status);
         final VersionIdProvider versionIdProvider = session.getFeature(VersionIdProvider.class);
         if(versionIdProvider != null) {
-            versionIdProvider.cache(result, status.getVersion().id);
+            versionIdProvider.cache(result, status.getVersion());
         }
         final FileIdProvider fileIdProvider = session.getFeature(FileIdProvider.class);
         if(fileIdProvider != null) {
