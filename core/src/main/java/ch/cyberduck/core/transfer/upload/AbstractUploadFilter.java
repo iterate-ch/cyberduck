@@ -17,7 +17,19 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.MappingMimeTypeService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -72,13 +84,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         this.options = options;
         this.find = session.getFeature(Find.class, new DefaultFindFeature(session));
         this.attribute = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
-    }
-
-    @Override
-    public AbstractUploadFilter withCache(final Cache<Path> cache) {
-        this.find = new CachingFindFeature(cache, find);
-        this.attribute = new CachingAttributesFinderFeature(cache, attribute);
-        return this;
     }
 
     public AbstractUploadFilter withFinder(final Find finder) {

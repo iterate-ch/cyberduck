@@ -18,7 +18,6 @@ package ch.cyberduck.core.synchronization;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -63,10 +62,6 @@ public class ComparisonServiceFilter implements ComparePathFilter {
 
     public ComparisonServiceFilter withAttributes(final AttributesFinder attribute) {
         this.attribute = attribute;
-        return this;
-    }
-
-    public ComparisonServiceFilter withCache(final Cache<Path> cache) {
         return this;
     }
 

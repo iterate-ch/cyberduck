@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -53,12 +52,6 @@ public class CompareFilter extends AbstractUploadFilter {
                          final ComparisonServiceFilter comparisonService) {
         super(symlinkResolver, session, options);
         this.comparisonService = comparisonService;
-    }
-
-    @Override
-    public AbstractUploadFilter withCache(final Cache<Path> cache) {
-        comparisonService.withCache(cache);
-        return super.withCache(cache);
     }
 
     @Override
