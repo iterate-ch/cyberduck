@@ -49,7 +49,6 @@ public abstract class AbstractDriveListService implements ListService {
     private final UrlFileWriter urlFileWriter = UrlFileWriterFactory.get();
     private final String fields;
     private final DriveAttributesFinderFeature attributes;
-    private final DriveFileIdProvider fileid;
 
     public AbstractDriveListService(final DriveSession session, final DriveFileIdProvider fileid) {
         this(session, fileid, PreferencesFactory.get().getInteger("googledrive.list.limit"));
@@ -61,7 +60,6 @@ public abstract class AbstractDriveListService implements ListService {
 
     public AbstractDriveListService(final DriveSession session, final DriveFileIdProvider fileid, final int pagesize, final String fields) {
         this.session = session;
-        this.fileid = fileid;
         this.pagesize = pagesize;
         this.fields = fields;
         this.attributes = new DriveAttributesFinderFeature(session, fileid);
