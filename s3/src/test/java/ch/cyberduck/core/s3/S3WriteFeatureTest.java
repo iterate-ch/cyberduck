@@ -124,4 +124,21 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(file).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testWriteVersionedBucket() throws Exception {
+        final S3WriteFeature feature = new S3WriteFeature(session);
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final byte[] content = new RandomStringGenerator.Builder().build().generate(5 * 1024 * 1024).getBytes(StandardCharsets.UTF_8);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        assertNotNull(status.getVersion());
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(file).getSize());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }
