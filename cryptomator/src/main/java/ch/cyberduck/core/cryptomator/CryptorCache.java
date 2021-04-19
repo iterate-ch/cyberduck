@@ -33,7 +33,7 @@ public class CryptorCache {
     private final LRUCache<CacheKey, String> decryptCache = LRUCache.build(5000);
     private final LRUCache<CacheKey, String> encryptCache = LRUCache.build(5000);
 
-    private FileNameCryptor impl;
+    private final FileNameCryptor impl;
 
     public CryptorCache(final FileNameCryptor impl) {
         this.impl = impl;
