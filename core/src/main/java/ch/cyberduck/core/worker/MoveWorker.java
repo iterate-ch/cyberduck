@@ -57,14 +57,12 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
     private final Map<Path, Path> files;
     private final SessionPool target;
     private final ProgressListener listener;
-    private final Cache<Path> cache;
     private final ConnectionCallback callback;
 
     public MoveWorker(final Map<Path, Path> files, final SessionPool target, final Cache<Path> cache, final ProgressListener listener, final ConnectionCallback callback) {
         this.files = files;
         this.target = target;
         this.listener = listener;
-        this.cache = cache;
         this.callback = callback;
     }
 
