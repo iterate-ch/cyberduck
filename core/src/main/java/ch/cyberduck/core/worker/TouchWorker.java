@@ -24,9 +24,11 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.browser.SearchFilterFactory;
@@ -77,7 +79,16 @@ public class TouchWorker extends Worker<Path> {
                 status.setAcl(acl.getDefault(EnumSet.of(Path.Type.file)));
             }
         }
-        return feature.touch(file, status);
+        final Path result = feature.touch(file, status);
+        final VersionIdProvider versionIdProvider = session.getFeature(VersionIdProvider.class);
+        if(versionIdProvider != null) {
+            versionIdProvider.cache(result, status.getVersion().id);
+        }
+        final FileIdProvider fileIdProvider = session.getFeature(FileIdProvider.class);
+        if(fileIdProvider != null) {
+            fileIdProvider.cache(result, status.getId());
+        }
+        return result;
     }
 
     protected String getLockId(final Path file) {

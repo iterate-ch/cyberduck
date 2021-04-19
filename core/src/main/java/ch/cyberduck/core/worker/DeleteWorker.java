@@ -32,6 +32,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.FileIdProvider;
+import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.browser.PathReloadFinder;
 
@@ -88,6 +90,16 @@ public class DeleteWorker extends Worker<List<Path>> {
                     file.getName()));
             }
         });
+        for(Path f : recursive.keySet()) {
+            final VersionIdProvider versionIdProvider = session.getFeature(VersionIdProvider.class);
+            if(versionIdProvider != null) {
+                versionIdProvider.cache(f, null);
+            }
+            final FileIdProvider fileIdProvider = session.getFeature(FileIdProvider.class);
+            if(fileIdProvider != null) {
+                fileIdProvider.cache(f, null);
+            }
+        }
         return new ArrayList<>(recursive.keySet());
     }
 
