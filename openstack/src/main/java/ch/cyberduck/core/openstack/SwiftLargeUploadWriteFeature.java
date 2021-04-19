@@ -14,7 +14,6 @@
 
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
@@ -30,8 +29,6 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -62,15 +59,15 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
     private final SwiftRegionService regionService;
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+        this(session, new SwiftFindFeature(session), new SwiftAttributesFinderFeature(session));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, new SwiftSegmentService(session, regionService), new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+        this(session, regionService, new SwiftSegmentService(session, regionService), new SwiftFindFeature(session), new SwiftAttributesFinderFeature(session));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService, final SwiftSegmentService segmentService) {
-        this(session, regionService, segmentService, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+        this(session, regionService, segmentService, new SwiftFindFeature(session), new SwiftAttributesFinderFeature(session));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final Find finder, final AttributesFinder attributes) {
@@ -99,9 +96,9 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = this.attributes.withCache(cache).find(file);
+    public Append append(final Path file, final Long length) throws BackgroundException {
+        if(finder.find(file)) {
+            final PathAttributes attr = this.attributes.find(file);
             return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
         }
         return Write.notfound;

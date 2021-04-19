@@ -59,7 +59,7 @@ public class RenameFilter extends AbstractUploadFilter {
                     status.rename(new Path(file.getParent(), proposal, file.getType()));
                 }
             }
-            while(find.withCache(cache).find(status.getRename().remote));
+            while(find.find(status.getRename().remote));
             if(log.isInfoEnabled()) {
                 log.info(String.format("Changed upload target from %s to %s", file, status.getRename().remote));
             }

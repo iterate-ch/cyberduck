@@ -15,7 +15,6 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -35,8 +34,6 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -71,13 +68,13 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
     private final B2Session session;
     private final Find finder;
     private final AttributesFinder attributes;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
 
-    public B2LargeUploadWriteFeature(final B2Session session, final B2FileidProvider fileid) {
-        this(session, fileid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+    public B2LargeUploadWriteFeature(final B2Session session, final B2VersionIdProvider fileid) {
+        this(session, fileid, new B2FindFeature(session, fileid), new B2AttributesFinderFeature(session, fileid));
     }
 
-    public B2LargeUploadWriteFeature(final B2Session session, final B2FileidProvider fileid, final Find finder, final AttributesFinder attributes) {
+    public B2LargeUploadWriteFeature(final B2Session session, final B2VersionIdProvider fileid, final Find finder, final AttributesFinder attributes) {
         this.session = session;
         this.fileid = fileid;
         this.finder = finder;
@@ -97,9 +94,9 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = attributes.withCache(cache).find(file);
+    public Append append(final Path file, final Long length) throws BackgroundException {
+        if(finder.find(file)) {
+            final PathAttributes attr = attributes.find(file);
             return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
         }
         return Write.notfound;
@@ -138,7 +135,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
             try {
                 if(0 == partNumber && len < PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum")) {
                     // Write single upload
-                    final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()));
+                    final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()));
                     final Checksum checksum = overall.getChecksum();
                     final B2FileResponse response = session.getClient().uploadFile(uploadUrl,
                         containerService.getKey(file),
@@ -157,7 +154,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                         if(null != overall.getTimestamp()) {
                             fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(overall.getTimestamp()));
                         }
-                        final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
+                        final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
                             containerService.getKey(file), overall.getMime(), fileinfo);
                         final VersionId version = new VersionId(response.getFileId());
                         overall.setVersion(version);

@@ -15,7 +15,6 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
@@ -110,9 +109,4 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
         return this;
     }
 
-    @Override
-    public Bulk<Void> withCache(final Cache<Path> cache) {
-        nodeid.withCache(cache);
-        return this;
-    }
 }

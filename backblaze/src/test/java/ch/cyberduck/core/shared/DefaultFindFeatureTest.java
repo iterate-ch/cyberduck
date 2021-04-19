@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2DeleteFeature;
-import ch.cyberduck.core.b2.B2FileidProvider;
+import ch.cyberduck.core.b2.B2VersionIdProvider;
 import ch.cyberduck.core.b2.B2LargeUploadWriteFeature;
 import ch.cyberduck.core.b2.B2TouchFeature;
 import ch.cyberduck.core.features.Delete;
@@ -48,7 +48,7 @@ public class DefaultFindFeatureTest extends AbstractB2Test {
     public void testFind() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
         // Find without version id set in attributes
         new DefaultFindFeature(session).find(file);
@@ -59,7 +59,7 @@ public class DefaultFindFeatureTest extends AbstractB2Test {
     public void testFindLargeUpload() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<VersionId> out = new B2LargeUploadWriteFeature(session, new B2FileidProvider(session).withCache(cache)).write(file, new TransferStatus(), new DisabledConnectionCallback());
+        final StatusOutputStream<VersionId> out = new B2LargeUploadWriteFeature(session, new B2VersionIdProvider(session)).write(file, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.copyLarge(new ByteArrayInputStream(RandomUtils.nextBytes(100)), out);
         out.close();
         assertTrue(new DefaultFindFeature(session).find(file));

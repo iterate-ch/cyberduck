@@ -91,7 +91,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         out.close();
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoListService(session, new SFTPListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, writer.append(test, status.getLength()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
@@ -128,7 +128,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         cache.put(vault, list);
         assertEquals(content.length, cache.get(vault).get(0).attributes().getSize());
         assertEquals(content.length, found.attributes().getSize());
-        assertEquals(content.length, writer.append(test, status.getLength(), cache).size, 0L);
+        assertEquals(content.length, writer.append(test, status.getLength()).size, 0L);
         {
             final PathAttributes attributes = new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(test);
             assertEquals(content.length, attributes.getSize());
@@ -138,7 +138,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
             assertEquals(content.length, attributes.getSize());
         }
         {
-            final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).withCache(cache).find(test);
+            final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test);
             assertEquals(content.length, attributes.getSize());
         }
         assertEquals(content.length, cache.get(vault).get(0).attributes().getSize());

@@ -15,7 +15,6 @@ package ch.cyberduck.core.sds.triplecrypt;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
@@ -74,8 +73,8 @@ public class TripleCryptWriteFeature implements Write<VersionId> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        return proxy.append(file, length, cache);
+    public Append append(final Path file, final Long length) throws BackgroundException {
+        return proxy.append(file, length);
     }
 
     @Override

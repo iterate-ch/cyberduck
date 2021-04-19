@@ -54,9 +54,8 @@ public class ChecksumFilter extends AbstractCopyFilter {
         final Path target = files.get(source);
         if(source.isFile()) {
             if(parent.isExists()) {
-                final PathAttributes attributes = sourceSession.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(sourceSession))
-                    .withCache(sourceCache).find(source);
-                final Write.Append append = upload.append(target, attributes.getSize(), destinationCache);
+                final PathAttributes attributes = sourceSession.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(sourceSession)).find(source);
+                final Write.Append append = upload.append(target, attributes.getSize());
                 if(append.override || append.append) {
                     // Compare source with target attributes
                     if(append.size == attributes.getSize()) {

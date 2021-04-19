@@ -15,7 +15,6 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
@@ -29,8 +28,6 @@ import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.JSON;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
@@ -65,7 +62,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
     private final AttributesFinder attributes;
 
     public StoregateMultipartWriteFeature(final StoregateSession session, final StoregateIdProvider nodeid) {
-        this(session, nodeid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+        this(session, nodeid, new StoregateFindFeature(session, nodeid), new StoregateAttributesFinderFeature(session, nodeid));
     }
 
     public StoregateMultipartWriteFeature(final StoregateSession session, final StoregateIdProvider fileid, final Find finder, final AttributesFinder attributes) {
@@ -76,9 +73,9 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = attributes.withCache(cache).find(file);
+    public Append append(final Path file, final Long length) throws BackgroundException {
+        if(finder.find(file)) {
+            final PathAttributes attr = attributes.find(file);
             return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
         }
         return Write.notfound;

@@ -42,19 +42,13 @@ public class VaultRegistrySearchFeature implements Search {
     @Override
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         return registry.find(session, workdir).getFeature(session, Search.class, proxy)
-                .withCache(cache)
-                .search(workdir, regex, listener);
+
+            .search(workdir, regex, listener);
     }
 
     @Override
     public boolean isRecursive() {
         return proxy.isRecursive();
-    }
-
-    @Override
-    public Search withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return this;
     }
 
     @Override

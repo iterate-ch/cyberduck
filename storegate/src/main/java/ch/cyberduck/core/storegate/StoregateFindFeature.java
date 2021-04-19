@@ -15,7 +15,6 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -42,9 +41,4 @@ public class StoregateFindFeature implements Find {
         }
     }
 
-    @Override
-    public Find withCache(final Cache<Path> cache) {
-        fileid.withCache(cache);
-        return this;
-    }
 }

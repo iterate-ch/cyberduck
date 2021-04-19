@@ -26,7 +26,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -234,8 +233,8 @@ public class IRODSWriteFeatureTest {
             status.setAppend(false);
             status.setLength(content.length);
 
-            assertFalse(new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).append);
-            assertEquals(0L, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
+            assertFalse(new IRODSWriteFeature(session).append(test, status.getLength()).append);
+            assertEquals(0L, new IRODSWriteFeature(session).append(test, status.getLength()).size, 0L);
 
             final StatusOutputStream<Integer> out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
@@ -260,8 +259,8 @@ public class IRODSWriteFeatureTest {
             status.setAppend(false);
             status.setLength(newcontent.length);
 
-            assertTrue(new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).append);
-            assertEquals(content.length, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
+            assertTrue(new IRODSWriteFeature(session).append(test, status.getLength()).append);
+            assertEquals(content.length, new IRODSWriteFeature(session).append(test, status.getLength()).size, 0L);
 
             final StatusOutputStream<Integer> out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
@@ -307,8 +306,8 @@ public class IRODSWriteFeatureTest {
         status.setAppend(true);
         status.setLength(content.length);
 
-        assertFalse(new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).append);
-        assertEquals(0L, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertFalse(new IRODSWriteFeature(session).append(test, status.getLength()).append);
+        assertEquals(0L, new IRODSWriteFeature(session).append(test, status.getLength()).size, 0L);
 
         final OutputStream out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
@@ -333,8 +332,8 @@ public class IRODSWriteFeatureTest {
         status_append.setAppend(true);
         status_append.setLength(content_append.length);
 
-        assertTrue(new IRODSWriteFeature(session).append(test, status_append.getLength(), PathCache.empty()).append);
-        assertEquals(status.getLength(), new IRODSWriteFeature(session).append(test, status_append.getLength(), PathCache.empty()).size, 0L);
+        assertTrue(new IRODSWriteFeature(session).append(test, status_append.getLength()).append);
+        assertEquals(status.getLength(), new IRODSWriteFeature(session).append(test, status_append.getLength()).size, 0L);
 
         final OutputStream out_append = new IRODSWriteFeature(session).write(test, status_append, new DisabledConnectionCallback());
         assertNotNull(out_append);

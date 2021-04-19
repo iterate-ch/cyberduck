@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
-import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
@@ -40,7 +39,7 @@ public class OneDriveContainerListServiceTest extends AbstractOneDriveTest {
         final AttributedList<Path> drives = new GraphDrivesListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertFalse(drives.isEmpty());
         for(Path drive : drives) {
-            final PathAttributes attributes = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(drive);
+            final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(drive);
             assertNotNull(attributes);
             assertNotEquals(-1L, attributes.getSize());
             assertNotEquals(-1L, attributes.getCreationDate());

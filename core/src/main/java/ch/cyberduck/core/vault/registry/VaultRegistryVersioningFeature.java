@@ -41,7 +41,6 @@ public class VaultRegistryVersioningFeature implements Versioning {
 
     @Override
     public Versioning withCache(final LRUCache<Path, VersioningConfiguration> cache) {
-        proxy.withCache(cache);
         return this;
     }
 

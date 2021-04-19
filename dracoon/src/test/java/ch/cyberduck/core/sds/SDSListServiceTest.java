@@ -38,7 +38,7 @@ public class SDSListServiceTest extends AbstractSDSTest {
 
     @Test
     public void testList() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         assertTrue(new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).isEmpty());
@@ -55,7 +55,7 @@ public class SDSListServiceTest extends AbstractSDSTest {
 
     @Test
     public void testListAlphanumeric() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         assertTrue(new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).isEmpty());

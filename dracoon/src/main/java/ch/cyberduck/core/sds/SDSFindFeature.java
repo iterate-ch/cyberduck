@@ -15,7 +15,6 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -33,7 +32,7 @@ public class SDSFindFeature implements Find {
     @Override
     public boolean find(final Path file) throws BackgroundException {
         try {
-            nodeid.getFileid(file, new DisabledListProgressListener());
+            nodeid.getVersionId(file, new DisabledListProgressListener());
             return true;
         }
         catch(NotfoundException e) {
@@ -41,9 +40,4 @@ public class SDSFindFeature implements Find {
         }
     }
 
-    @Override
-    public Find withCache(final Cache<Path> cache) {
-        nodeid.withCache(cache);
-        return this;
-    }
 }

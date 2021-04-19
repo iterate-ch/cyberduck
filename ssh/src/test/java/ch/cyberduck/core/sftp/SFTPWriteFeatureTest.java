@@ -7,7 +7,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -51,7 +50,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         out.close();
         assertTrue(new SFTPFindFeature(session).find(test));
         assertEquals(content.length, new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, new SFTPWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, new SFTPWriteFeature(session).append(test, status.getLength()).size, 0L);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
@@ -85,7 +84,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         out.close();
         assertTrue(new SFTPFindFeature(session).find(test));
         assertEquals(content.length, new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, new SFTPWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, new SFTPWriteFeature(session).append(test, status.getLength()).size, 0L);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
@@ -150,9 +149,9 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
     public void testAppend() throws Exception {
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertFalse(new SFTPWriteFeature(session).append(test, 0L, PathCache.empty()).append);
+        assertFalse(new SFTPWriteFeature(session).append(test, 0L).append);
         new SFTPTouchFeature(session).touch(test, new TransferStatus());
-        assertTrue(new SFTPWriteFeature(session).append(test, 0L, PathCache.empty()).append);
+        assertTrue(new SFTPWriteFeature(session).append(test, 0L).append);
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

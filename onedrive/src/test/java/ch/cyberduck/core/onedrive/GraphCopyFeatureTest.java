@@ -53,7 +53,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
         final Touch touch = new GraphTouchFeature(session, new GraphFileIdProvider(session));
         final Copy copy = new GraphCopyFeature(session, new GraphFileIdProvider(session));
         final Delete delete = new GraphDeleteFeature(session);
-        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session));
+        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderService().find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);

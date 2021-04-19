@@ -16,7 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -59,7 +58,7 @@ public class SDSSearchFeature implements Search {
                     String.format("*%s*", new NFCNormalizer().normalize(regex.toPattern().pattern())),
                     StringUtils.EMPTY,
                     -1,
-                    Long.valueOf(nodeid.getFileid(workdir, listener)),
+                    Long.valueOf(nodeid.getVersionId(workdir, listener)),
                     null, null, offset, chunksize, StringUtils.EMPTY
                 );
                 final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
@@ -94,8 +93,4 @@ public class SDSSearchFeature implements Search {
         return true;
     }
 
-    @Override
-    public Search withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

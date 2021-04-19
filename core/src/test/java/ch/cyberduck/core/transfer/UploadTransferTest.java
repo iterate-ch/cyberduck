@@ -364,7 +364,7 @@ public class UploadTransferTest {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final Cache cache) {
+                        public Append append(final Path file, final Long length) {
                             fail();
                             return new Write.Append(0L);
                         }

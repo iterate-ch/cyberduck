@@ -42,7 +42,7 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testMkdir() throws Exception {
         final Path target = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, null);
-        assertNotNull(new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(target).getETag());
+        assertNotNull(new GraphAttributesFinderFeature(session).find(target).getETag());
         new GraphDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -52,9 +52,9 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
         final String name = String.format("%s %s", randomStringService.random(), randomStringService.random());
         final Path target = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(new OneDriveHomeFinderService().find(), name, EnumSet.of(Path.Type.directory)), null, null);
         assertEquals(name, target.getName());
-        final AttributedList<Path> list = new GraphItemListService(session, new GraphFileIdProvider(session)).list(new OneDriveHomeFinderService().find(), new DisabledListProgressListener());
+        final AttributedList<Path> list = new GraphItemListService(session).list(new OneDriveHomeFinderService().find(), new DisabledListProgressListener());
         assertTrue(list.contains(target));
-        assertNotNull(new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(target).getETag());
+        assertNotNull(new GraphAttributesFinderFeature(session).find(target).getETag());
         new GraphDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

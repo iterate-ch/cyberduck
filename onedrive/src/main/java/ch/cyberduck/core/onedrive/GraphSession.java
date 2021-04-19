@@ -199,11 +199,11 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
-        if(type == IdProvider.class) {
+        if(type == FileIdProvider.class) {
             return (T) fileIdProvider;
         }
         if(type == AttributesFinder.class) {
-            return (T) new GraphAttributesFinderFeature(this, fileIdProvider);
+            return (T) new GraphAttributesFinderFeature(this);
         }
         if(type == Directory.class) {
             return (T) new GraphDirectoryFeature(this, fileIdProvider);
@@ -230,7 +230,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) new GraphCopyFeature(this, fileIdProvider);
         }
         if(type == Find.class) {
-            return (T) new GraphFindFeature(this, fileIdProvider);
+            return (T) new GraphFindFeature(this);
         }
         if(type == Search.class) {
             return (T) new GraphSearchFeature(this, fileIdProvider);

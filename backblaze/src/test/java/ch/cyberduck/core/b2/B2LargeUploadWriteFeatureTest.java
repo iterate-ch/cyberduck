@@ -45,7 +45,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
 
     @Test
     public void testWrite() throws Exception {
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2LargeUploadWriteFeature feature = new B2LargeUploadWriteFeature(session, fileid);
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
@@ -70,7 +70,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
 
     @Test
     public void testWriteLowerMinimumSize() throws Exception {
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2LargeUploadWriteFeature feature = new B2LargeUploadWriteFeature(session, fileid);
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
@@ -93,7 +93,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
 
     @Test
     public void testWriteZeroLength() throws Exception {
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2LargeUploadWriteFeature feature = new B2LargeUploadWriteFeature(session, fileid);
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final byte[] content = RandomUtils.nextBytes(0);

@@ -15,7 +15,6 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -29,13 +28,4 @@ public interface AttributesFinder {
      * @param file File
      */
     PathAttributes find(Path file) throws BackgroundException;
-
-    /**
-     * Decorate with cache
-     *
-     * @param cache Path cache
-     */
-    default AttributesFinder withCache(Cache<Path> cache) {
-        return this;
-    }
 }

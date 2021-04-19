@@ -40,7 +40,7 @@ public class GraphTouchFeature implements Touch<Void> {
 
     public GraphTouchFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
         this.session = session;
-        this.attributes = new GraphAttributesFinderFeature(session, idProvider);
+        this.attributes = new GraphAttributesFinderFeature(session);
     }
 
     @Override

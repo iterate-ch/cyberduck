@@ -15,7 +15,6 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -39,10 +38,9 @@ public interface Write<Reply> {
      *
      * @param file   File
      * @param length Transfer Status
-     * @param cache  Cache
      * @return True if can append to existing file
      */
-    Append append(Path file, Long length, Cache<Path> cache) throws BackgroundException;
+    Append append(Path file, Long length) throws BackgroundException;
 
     /**
      * @return True if temporary upload filename can be used

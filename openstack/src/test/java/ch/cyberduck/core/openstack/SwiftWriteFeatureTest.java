@@ -7,7 +7,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -54,7 +53,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         assertTrue(new SwiftFindFeature(session).find(test));
         final PathAttributes attributes = new SwiftListService(session, regionService).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
-        final Write.Append append = new SwiftWriteFeature(session, regionService).append(test, status.getLength(), PathCache.empty());
+        final Write.Append append = new SwiftWriteFeature(session, regionService).append(test, status.getLength());
         assertTrue(append.override);
         assertEquals(content.length, append.size, 0L);
         final byte[] buffer = new byte[content.length];
@@ -83,7 +82,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
                 list.set(true);
                 return new AttributedList<Path>(Collections.<Path>emptyList());
             }
-        }, new SwiftSegmentService(session)).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 2L * 1024L * 1024L * 1024L, PathCache.empty());
+        }, new SwiftSegmentService(session)).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 2L * 1024L * 1024L * 1024L);
         assertTrue(list.get());
         assertFalse(append.append);
         assertFalse(append.override);
@@ -108,7 +107,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
                 segment2.attributes().setSize(2L);
                 return new AttributedList<Path>(Arrays.asList(segment1, segment2));
             }
-        }, segments).append(file, 2L * 1024L * 1024L * 1024L, PathCache.empty());
+        }, segments).append(file, 2L * 1024L * 1024L * 1024L);
         assertTrue(append.append);
         assertEquals(3L, append.size, 0L);
         assertTrue(list.get());
@@ -140,7 +139,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
                 return new PathAttributes();
             }
         }
-        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, PathCache.empty());
+        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L);
         assertFalse(append.append);
         assertTrue(append.override);
         assertFalse(list.get());
@@ -168,7 +167,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
                 return false;
             }
         }
-        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, PathCache.empty());
+        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L);
         assertFalse(append.append);
         assertFalse(append.override);
         assertEquals(Write.notfound, append);

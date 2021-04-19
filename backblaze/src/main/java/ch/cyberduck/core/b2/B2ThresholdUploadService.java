@@ -15,7 +15,6 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -35,15 +34,15 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
     private static final Logger log = Logger.getLogger(B2ThresholdUploadService.class);
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
     private Write<BaseB2Response> writer;
     private final Long threshold;
 
-    public B2ThresholdUploadService(final B2Session session, final B2FileidProvider fileid) {
+    public B2ThresholdUploadService(final B2Session session, final B2VersionIdProvider fileid) {
         this(session, fileid, PreferencesFactory.get().getLong("b2.upload.largeobject.threshold"));
     }
 
-    public B2ThresholdUploadService(final B2Session session, final B2FileidProvider fileid, final Long threshold) {
+    public B2ThresholdUploadService(final B2Session session, final B2VersionIdProvider fileid, final Long threshold) {
         this.session = session;
         this.fileid = fileid;
         this.writer = new B2WriteFeature(session, fileid);
@@ -51,8 +50,8 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        return new B2WriteFeature(session, fileid).append(file, length, cache);
+    public Write.Append append(final Path file, final Long length) throws BackgroundException {
+        return new B2WriteFeature(session, fileid).append(file, length);
     }
 
     @Override

@@ -15,7 +15,6 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -35,8 +34,6 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.AbstractHttpEntity;
@@ -63,7 +60,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
         = new B2PathContainerService();
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
     private final Find finder;
     private final AttributesFinder attributes;
 
@@ -72,11 +69,11 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    public B2WriteFeature(final B2Session session, final B2FileidProvider fileid) {
-        this(session, fileid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+    public B2WriteFeature(final B2Session session, final B2VersionIdProvider fileid) {
+        this(session, fileid, new B2FindFeature(session, fileid), new B2AttributesFinderFeature(session, fileid));
     }
 
-    public B2WriteFeature(final B2Session session, final B2FileidProvider fileid, final Find finder, final AttributesFinder attributes) {
+    public B2WriteFeature(final B2Session session, final B2VersionIdProvider fileid, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
         this.fileid = fileid;
@@ -102,7 +99,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                     }
                     else {
                         if(null == urls.get()) {
-                            final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()));
+                            final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()));
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Obtained upload URL %s for file %s", uploadUrl, file));
                             }
@@ -171,7 +168,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+    public Append append(final Path file, final Long length) throws BackgroundException {
         if(length >= preferences.getLong("b2.upload.largeobject.threshold")) {
             if(preferences.getBoolean("b2.upload.largeobject")) {
                 final B2LargeUploadPartService partService = new B2LargeUploadPartService(session, fileid);
@@ -185,9 +182,9 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                 }
             }
         }
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+        if(finder.find(file)) {
+            final PathAttributes attr = attributes.find(file);
+            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
         }
         return Write.notfound;
     }

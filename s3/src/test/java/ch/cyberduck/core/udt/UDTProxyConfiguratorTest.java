@@ -28,7 +28,6 @@ import ch.cyberduck.core.Header;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
@@ -265,7 +264,7 @@ public class UDTProxyConfiguratorTest {
 
         assertTrue(tunneled.getFeature(Find.class).find(test));
         assertEquals(status.getLength(), new S3ListService(tunneled).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
-        assertTrue(new S3WriteFeature(tunneled).append(test, status.getLength(), PathCache.empty()).override);
+        assertTrue(new S3WriteFeature(tunneled).append(test, status.getLength()).override);
         {
             final byte[] buffer = new byte[random.getBytes().length];
             IOUtils.readFully(new S3ReadFeature(tunneled).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);

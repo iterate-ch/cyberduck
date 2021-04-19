@@ -15,7 +15,6 @@ package ch.cyberduck.core.onedrive.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
@@ -32,8 +31,6 @@ import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -62,7 +59,7 @@ public class GraphWriteFeature implements Write<Void> {
     private final AttributesFinder attributes;
 
     public GraphWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
-        this(session, idProvider, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+        this(session, idProvider, new GraphFindFeature(session), new GraphAttributesFinderFeature(session));
     }
 
     public GraphWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider, final Find finder, final AttributesFinder attributes) {
@@ -97,9 +94,9 @@ public class GraphWriteFeature implements Write<Void> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
+    public Append append(final Path file, final Long length) throws BackgroundException {
+        if(finder.find(file)) {
+            final PathAttributes attributes = this.attributes.find(file);
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
         }
         return Write.notfound;

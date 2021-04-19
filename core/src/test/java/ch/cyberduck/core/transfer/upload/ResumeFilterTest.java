@@ -1,7 +1,6 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -163,7 +162,7 @@ public class ResumeFilterTest {
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
                 new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
-            public Write.Append append(final Path file, final Long length, final Cache<Path> cache) {
+            public Write.Append append(final Path file, final Long length) {
                 return new Write.Append(length);
             }
         });
@@ -198,7 +197,7 @@ public class ResumeFilterTest {
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
                 new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
-            public Write.Append append(final Path file, final Long length, final Cache<Path> cache) {
+            public Write.Append append(final Path file, final Long length) {
                 return new Write.Append(length - 1);
             }
         });
@@ -238,7 +237,7 @@ public class ResumeFilterTest {
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
                 new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
-            public Write.Append append(final Path file, final Long length, final Cache<Path> cache) {
+            public Write.Append append(final Path file, final Long length) {
                 return new Write.Append(length + 1);
             }
         });

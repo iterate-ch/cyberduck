@@ -28,7 +28,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
-import ch.cyberduck.core.b2.B2FileidProvider;
+import ch.cyberduck.core.b2.B2VersionIdProvider;
 import ch.cyberduck.core.b2.B2LargeUploadService;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.b2.B2Session;
@@ -87,7 +87,7 @@ public class SingleTransferWorkerTest extends AbstractB2Test {
             ));
         final AtomicBoolean failed = new AtomicBoolean();
         final B2Session session = new B2Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
-            final B2LargeUploadService upload = new B2LargeUploadService(this, new B2FileidProvider(this).withCache(cache), new B2WriteFeature(this, new B2FileidProvider(this).withCache(cache)),
+            final B2LargeUploadService upload = new B2LargeUploadService(this, new B2VersionIdProvider(this), new B2WriteFeature(this, new B2VersionIdProvider(this)),
                 PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
                 PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency")) {
                 @Override
@@ -134,7 +134,7 @@ public class SingleTransferWorkerTest extends AbstractB2Test {
 
         }.run(session));
         local.delete();
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         assertEquals(content.length, new B2AttributesFinderFeature(session, fileid).find(test).getSize());
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());

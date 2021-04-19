@@ -4,7 +4,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -48,7 +47,7 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
         out.close();
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new FTPListService(session, null, TimeZone.getDefault()).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, new FTPWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, new FTPWriteFeature(session).append(test, status.getLength()).size, 0L);
         {
             final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
@@ -146,10 +145,10 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
     @Test
     public void testAppend() throws Exception {
         assertFalse(new FTPWriteFeature(session).append(
-            new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
+            new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L).append);
         final Path f = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(f, new TransferStatus());
-        assertTrue(new FTPWriteFeature(session).append(f, 0L, PathCache.empty()).append);
+        assertTrue(new FTPWriteFeature(session).append(f, 0L).append);
         new FTPDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

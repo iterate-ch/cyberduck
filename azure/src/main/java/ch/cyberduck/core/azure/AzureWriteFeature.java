@@ -18,7 +18,6 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.Path;
@@ -116,10 +115,10 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        final Append status = super.append(file, length, cache);
+    public Append append(final Path file, final Long length) throws BackgroundException {
+        final Append status = super.append(file, length);
         if(status.append) {
-            final PathAttributes attr = new AzureAttributesFinderFeature(session, context).withCache(cache).find(file);
+            final PathAttributes attr = new AzureAttributesFinderFeature(session, context).find(file);
             if(BlobType.APPEND_BLOB == BlobType.valueOf(attr.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE))) {
                 return status;
             }

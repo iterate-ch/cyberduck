@@ -16,7 +16,6 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -99,9 +98,4 @@ public class StoregateListService implements ListService {
         }
     }
 
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        fileid.withCache(cache);
-        return this;
-    }
 }

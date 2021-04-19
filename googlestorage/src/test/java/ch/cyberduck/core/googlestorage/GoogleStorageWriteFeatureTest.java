@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
@@ -60,7 +59,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
             out.close();
             assertNotNull(out.getStatus().id);
             assertTrue(new GoogleStorageFindFeature(session).find(test));
-            final Write.Append append = new GoogleStorageWriteFeature(session).append(test, status.getLength(), PathCache.empty());
+            final Write.Append append = new GoogleStorageWriteFeature(session).append(test, status.getLength());
             assertTrue(append.override);
             assertEquals(content.length, append.size, 0L);
             final byte[] buffer = new byte[content.length];

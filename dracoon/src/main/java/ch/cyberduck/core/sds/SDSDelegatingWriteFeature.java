@@ -15,7 +15,6 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
@@ -24,7 +23,6 @@ import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptOutputStream;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -56,11 +54,11 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+    public Append append(final Path file, final Long length) throws BackgroundException {
         if(nodeid.isEncrypted(file)) {
-            return new TripleCryptWriteFeature(session, nodeid, proxy).append(file, length, cache);
+            return new TripleCryptWriteFeature(session, nodeid, proxy).append(file, length);
         }
-        return proxy.append(file, length, cache);
+        return proxy.append(file, length);
     }
 
     @Override

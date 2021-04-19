@@ -1,7 +1,6 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
@@ -149,7 +148,7 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final Cache<Path> cache) {
+                        public Append append(final Path file, final Long length) {
                             fail();
                             return new Append(1L);
                         }
@@ -237,7 +236,7 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final Cache<Path> cache) {
+                        public Append append(final Path file, final Long length) {
                             fail();
                             return new Append(0L);
                         }

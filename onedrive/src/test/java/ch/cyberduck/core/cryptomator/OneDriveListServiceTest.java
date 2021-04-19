@@ -64,10 +64,10 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        assertTrue(new CryptoListService(session, new GraphItemListService(session, new GraphFileIdProvider(session)), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
+        assertTrue(new CryptoListService(session, new GraphItemListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session, new GraphFileIdProvider(session))),
-            new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session))), new GraphWriteFeature(session, new GraphFileIdProvider(session)), cryptomator).touch(test, new TransferStatus());
-        assertEquals(new SimplePathPredicate(test), new SimplePathPredicate(new CryptoListService(session, new GraphItemListService(session, new GraphFileIdProvider(session)), cryptomator).list(vault, new DisabledListProgressListener()).get(0)));
+            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session, new GraphFileIdProvider(session)), cryptomator).touch(test, new TransferStatus());
+        assertEquals(new SimplePathPredicate(test), new SimplePathPredicate(new CryptoListService(session, new GraphItemListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0)));
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -79,14 +79,14 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final ListService listService = session._getFeature(ListService.class);
 
-        cache.put(home, listService.withCache(cache).list(home, new DisabledListProgressListener()));
+        cache.put(home, listService.list(home, new DisabledListProgressListener()));
 
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, listService, cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session, new GraphFileIdProvider(session))),
-            new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session))), new GraphWriteFeature(session, new GraphFileIdProvider(session)), cryptomator).touch(test, new TransferStatus());
+            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session, new GraphFileIdProvider(session)), cryptomator).touch(test, new TransferStatus());
         assertEquals(new SimplePathPredicate(test), new SimplePathPredicate(new CryptoListService(session, listService, cryptomator).list(vault, new DisabledListProgressListener()).get(0)));
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

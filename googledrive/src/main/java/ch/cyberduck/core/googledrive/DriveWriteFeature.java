@@ -15,7 +15,6 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
@@ -29,8 +28,6 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -60,15 +57,15 @@ import static com.google.api.client.json.Json.MEDIA_TYPE;
 public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implements Write<String> {
 
     private final DriveSession session;
-    private final DriveFileidProvider fileid;
+    private final DriveFileIdProvider fileid;
     private final Find finder;
     private final AttributesFinder attributes;
 
-    public DriveWriteFeature(final DriveSession session, final DriveFileidProvider fileid) {
-        this(session, fileid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+    public DriveWriteFeature(final DriveSession session, final DriveFileIdProvider fileid) {
+        this(session, fileid, new DriveFindFeature(session, fileid), new DriveAttributesFinderFeature(session, fileid));
     }
 
-    public DriveWriteFeature(final DriveSession session, final DriveFileidProvider fileid, final Find finder, final AttributesFinder attributes) {
+    public DriveWriteFeature(final DriveSession session, final DriveFileIdProvider fileid, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
         this.fileid = fileid;
@@ -77,9 +74,9 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = attributes.withCache(cache).find(file);
+    public Append append(final Path file, final Long length) throws BackgroundException {
+        if(finder.find(file)) {
+            final PathAttributes attr = attributes.find(file);
             return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
         }
         return Write.notfound;
@@ -104,7 +101,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
                     // Initiate a resumable upload
                     final HttpEntityEnclosingRequestBase request;
                     if(status.isExists()) {
-                        final String fileid = DriveWriteFeature.this.fileid.getFileid(file, new DisabledListProgressListener());
+                        final String fileid = DriveWriteFeature.this.fileid.getFileId(file, new DisabledListProgressListener());
                         request = new HttpPatch(String.format("%supload/drive/v3/files/%s?supportsAllDrives=true",
                             session.getClient().getRootUrl(), fileid));
                         if(StringUtils.isNotBlank(status.getMime())) {
@@ -118,7 +115,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
                             session.getClient().getRootUrl(), PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
                         request.setEntity(new StringEntity("{\"name\": \""
                             + file.getName() + "\", \"parents\": [\""
-                            + fileid.getFileid(file.getParent(), new DisabledListProgressListener()) + "\"]}",
+                            + fileid.getFileId(file.getParent(), new DisabledListProgressListener()) + "\"]}",
                             ContentType.create("application/json", StandardCharsets.UTF_8.name())));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             // Set to the media MIME type of the upload data to be transferred in subsequent requests.
@@ -179,7 +176,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
                                 new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                         }
                     }
-                    return fileid.getFileid(file, new DisabledListProgressListener());
+                    return fileid.getFileId(file, new DisabledListProgressListener());
                 }
                 catch(IOException e) {
                     throw new DriveExceptionMappingService().map("Upload {0} failed", e, file);

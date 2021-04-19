@@ -63,7 +63,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     protected Find find;
     protected AttributesFinder attribute;
-    protected Cache<Path> cache = PathCache.empty();
     protected UploadFilterOptions options;
 
     public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
@@ -77,7 +76,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     @Override
     public AbstractUploadFilter withCache(final Cache<Path> cache) {
-        this.cache = cache;
+        this.find = new CachingFindFeature(cache, find);
+        this.attribute = new CachingAttributesFinderFeature(cache, attribute);
         return this;
     }
 
@@ -112,21 +112,21 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             .withLockId(parent.getLockId());
         // Read remote attributes first
         if(parent.isExists()) {
-            if(find.withCache(cache).find(file)) {
+            if(find.find(file)) {
                 status.setExists(true);
                 // Read remote attributes
-                final PathAttributes attributes = attribute.withCache(cache).find(file);
+                final PathAttributes attributes = attribute.find(file);
                 status.setRemote(attributes);
             }
             else {
                 // Look if there is directory or file that clashes with this upload
                 if(file.getType().contains(Path.Type.file)) {
-                    if(find.withCache(cache).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory)))) {
+                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory)))) {
                         throw new AccessDeniedException(String.format("Cannot replace folder %s with file %s", file.getAbsolute(), local.getName()));
                     }
                 }
                 if(file.getType().contains(Path.Type.directory)) {
-                    if(find.withCache(cache).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.file)))) {
+                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.file)))) {
                         throw new AccessDeniedException(String.format("Cannot replace file %s with folder %s", file.getAbsolute(), local.getName()));
                     }
                 }

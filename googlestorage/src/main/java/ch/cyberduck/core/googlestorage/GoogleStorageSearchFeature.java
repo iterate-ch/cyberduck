@@ -16,7 +16,6 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -61,8 +60,4 @@ public class GoogleStorageSearchFeature implements Search {
         return false;
     }
 
-    @Override
-    public Search withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

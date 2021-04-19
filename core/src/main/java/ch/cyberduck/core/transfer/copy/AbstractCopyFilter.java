@@ -89,7 +89,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
     public TransferStatus prepare(final Path source, final Local n, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         // Read remote attributes from source
-        final PathAttributes attributes = sourceSession.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(sourceSession)).withCache(sourceCache).find(source);
+        final PathAttributes attributes = sourceSession.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(sourceSession)).find(source);
         if(source.isFile()) {
             // Content length
             status.setLength(attributes.getSize());
@@ -118,7 +118,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
             // Do not attempt to create a directory that already exists
             final Path target = files.get(source);
             // Look for file in target host
-            if(destinationSession.getFeature(Find.class, new DefaultFindFeature(destinationSession)).withCache(destinationCache).find(target)) {
+            if(destinationSession.getFeature(Find.class, new DefaultFindFeature(destinationSession)).find(target)) {
                 status.setExists(true);
             }
         }

@@ -16,7 +16,6 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -162,9 +161,4 @@ public class GoogleStorageObjectListService implements ListService {
         return prefix;
     }
 
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        attributes.withCache(cache);
-        return this;
-    }
 }

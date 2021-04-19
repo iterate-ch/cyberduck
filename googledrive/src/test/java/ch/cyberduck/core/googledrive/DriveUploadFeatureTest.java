@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -55,15 +54,15 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
         IOUtils.closeQuietly(out);
         status.setLength(content.length);
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final DriveUploadFeature upload = new DriveUploadFeature(new DriveWriteFeature(session, fileid));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
             status, new DisabledConnectionCallback());
-        test.attributes().setFileId(fileid.getFileid(test, new DisabledListProgressListener()));
+        test.attributes().setFileId(fileid.getFileId(test, new DisabledListProgressListener()));
         test.attributes().setVersionId("1");
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new DriveListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
-        assertEquals(content.length, new DriveWriteFeature(session, fileid).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, new DriveWriteFeature(session, fileid).append(test, status.getLength()).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(new DriveReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);

@@ -21,7 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2DeleteFeature;
-import ch.cyberduck.core.b2.B2FileidProvider;
+import ch.cyberduck.core.b2.B2VersionIdProvider;
 import ch.cyberduck.core.b2.B2TouchFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -44,7 +44,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractB2Test {
     public void testFind() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
         // Find without version id set in attributes
         assertNotNull(new DefaultAttributesFinderFeature(session).find(file).getVersionId());
@@ -56,7 +56,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
-            new B2FileidProvider(session).withCache(cache).getFileid(bucket, new DisabledListProgressListener()),
+            new B2VersionIdProvider(session).getVersionId(bucket, new DisabledListProgressListener()),
             file.getName(), null, Collections.emptyMap());
         assertNotNull(new DefaultAttributesFinderFeature(session).find(file));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());

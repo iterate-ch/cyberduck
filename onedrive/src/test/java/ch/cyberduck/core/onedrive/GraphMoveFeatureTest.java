@@ -55,7 +55,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Touch touch = new GraphTouchFeature(session, new GraphFileIdProvider(session));
         final Move move = new GraphMoveFeature(session, new GraphFileIdProvider(session));
         final Delete delete = new GraphDeleteFeature(session);
-        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session));
+        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderService().find();
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         file.attributes().setModificationDate(touch.touch(file, new TransferStatus().withMime("x-application/cyberduck")).attributes().getModificationDate());
@@ -74,7 +74,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Touch touch = new GraphTouchFeature(session, new GraphFileIdProvider(session));
         final Move move = new GraphMoveFeature(session, new GraphFileIdProvider(session));
         final Delete delete = new GraphDeleteFeature(session);
-        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session));
+        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderService().find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
@@ -98,7 +98,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Touch touch = new GraphTouchFeature(session, new GraphFileIdProvider(session));
         final Move move = new GraphMoveFeature(session, new GraphFileIdProvider(session));
         final Delete delete = new GraphDeleteFeature(session);
-        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session));
+        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderService().find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
@@ -123,7 +123,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Touch touch = new GraphTouchFeature(session, new GraphFileIdProvider(session));
         final Move move = new GraphMoveFeature(session, new GraphFileIdProvider(session));
         final Delete delete = new GraphDeleteFeature(session);
-        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session));
+        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderService().find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
@@ -149,7 +149,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Path temp = new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new GraphMoveFeature(session, new GraphFileIdProvider(session)).move(temp, new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
-        final AttributedList<Path> files = new GraphItemListService(session, new GraphFileIdProvider(session)).list(folder, new DisabledListProgressListener());
+        final AttributedList<Path> files = new GraphItemListService(session).list(folder, new DisabledListProgressListener());
         assertEquals(1, files.size());
         assertFalse(find.find(temp));
         assertTrue(find.find(test));

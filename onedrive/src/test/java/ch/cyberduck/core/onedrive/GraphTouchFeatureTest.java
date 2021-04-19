@@ -44,7 +44,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
     public void testTouch() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertNotNull(new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus()).attributes().getFileId());
-        assertNotNull(new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(file));
+        assertNotNull(new GraphAttributesFinderFeature(session).find(file));
         new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -52,7 +52,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
     public void testTouchUmlaut() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), String.format("%sä", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus());
-        assertNotNull(new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(file));
+        assertNotNull(new GraphAttributesFinderFeature(session).find(file));
         new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -60,7 +60,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
     public void testTouchEqualSign() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), String.format("%s====", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus());
-        assertNotNull(new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(file));
+        assertNotNull(new GraphAttributesFinderFeature(session).find(file));
         new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -69,7 +69,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final Path file = new Path(new OneDriveHomeFinderService().find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
-        assertNotNull(new GraphAttributesFinderFeature(session, new GraphFileIdProvider(session)).find(file));
+        assertNotNull(new GraphAttributesFinderFeature(session).find(file));
         new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

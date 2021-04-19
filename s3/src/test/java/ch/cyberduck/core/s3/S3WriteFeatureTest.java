@@ -5,7 +5,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
@@ -47,7 +46,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
                 return new PathAttributes();
             }
         });
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty());
+        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L);
         assertFalse(append.append);
     }
 
@@ -67,7 +66,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
                 return attributes;
             }
         });
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty());
+        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L);
         assertFalse(append.append);
         assertTrue(append.override);
         assertEquals(3L, append.size, 0L);
@@ -76,9 +75,9 @@ public class S3WriteFeatureTest extends AbstractS3Test {
     @Test
     public void testAppendNoMultipartFound() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), Long.MAX_VALUE, PathCache.empty()).append);
-        assertEquals(Write.notfound, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), Long.MAX_VALUE, PathCache.empty()));
-        assertEquals(Write.notfound, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()));
+        assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), Long.MAX_VALUE).append);
+        assertEquals(Write.notfound, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), Long.MAX_VALUE));
+        assertEquals(Write.notfound, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L));
     }
 
     @Test(expected = InteroperabilityException.class)

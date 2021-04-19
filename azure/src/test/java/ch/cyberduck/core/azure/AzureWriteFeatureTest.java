@@ -11,7 +11,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
@@ -68,7 +67,7 @@ public class AzureWriteFeatureTest {
         final Map<String, String> metadata = new AzureMetadataFeature(session, context).getMetadata(test);
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("public,max-age=86400", metadata.get("Cache-Control"));
-        assertEquals(content.length, new AzureWriteFeature(session, context).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, new AzureWriteFeature(session, context).append(test, status.getLength()).size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new AzureReadFeature(session, context).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
@@ -113,7 +112,7 @@ public class AzureWriteFeatureTest {
         final Map<String, String> metadata = new AzureMetadataFeature(session, context).getMetadata(test);
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("public,max-age=86400", metadata.get("Cache-Control"));
-        final Write.Append append = new AzureWriteFeature(session, context).append(test, status.getLength(), PathCache.empty());
+        final Write.Append append = new AzureWriteFeature(session, context).append(test, status.getLength());
         assertFalse(append.append);
         assertTrue(append.override);
         assertEquals(0L, append.size, 0L);

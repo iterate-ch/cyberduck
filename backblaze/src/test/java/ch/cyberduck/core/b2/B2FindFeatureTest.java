@@ -41,7 +41,7 @@ public class B2FindFeatureTest extends AbstractB2Test {
     public void testFind() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
         assertTrue(new B2FindFeature(session, fileid).find(file));
         assertFalse(new B2FindFeature(session, fileid).find(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
@@ -53,9 +53,9 @@ public class B2FindFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
-            new B2FileidProvider(session).withCache(cache).getFileid(bucket, new DisabledListProgressListener()),
-                file.getName(), null, Collections.emptyMap());
-        assertTrue(new B2FindFeature(session, new B2FileidProvider(session).withCache(cache)).find(file));
+            new B2VersionIdProvider(session).getVersionId(bucket, new DisabledListProgressListener()),
+            file.getName(), null, Collections.emptyMap());
+        assertTrue(new B2FindFeature(session, new B2VersionIdProvider(session)).find(file));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
     }
 }

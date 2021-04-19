@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
@@ -152,7 +151,7 @@ public class SpectraWriteFeatureTest {
                 return attributes;
             }
         });
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty());
+        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L);
         assertFalse(append.append);
         assertTrue(append.override);
         assertEquals(3L, append.size, 0L);

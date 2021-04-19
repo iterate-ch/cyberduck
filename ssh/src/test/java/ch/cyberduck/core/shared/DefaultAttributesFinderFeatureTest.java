@@ -36,7 +36,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractSFTPTest {
     @Test
     public void testAttributes() throws Exception {
         final PathCache cache = new PathCache(1);
-        final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session).withCache(cache);
+        final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session);
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path file = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(file, new TransferStatus());

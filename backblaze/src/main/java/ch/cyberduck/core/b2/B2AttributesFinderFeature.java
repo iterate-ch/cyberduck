@@ -15,7 +15,6 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
@@ -40,9 +39,9 @@ import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED
 public class B2AttributesFinderFeature implements AttributesFinder {
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
 
-    public B2AttributesFinderFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2AttributesFinderFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -57,7 +56,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         try {
-            final B2FileResponse info = session.getClient().getFileInfo(fileid.getFileid(file, new DisabledListProgressListener()));
+            final B2FileResponse info = session.getClient().getFileInfo(fileid.getVersionId(file, new DisabledListProgressListener()));
             return this.toAttributes(info);
         }
         catch(B2ApiException e) {
@@ -95,10 +94,5 @@ public class B2AttributesFinderFeature implements AttributesFinder {
         return attributes;
     }
 
-    @Override
-    public AttributesFinder withCache(final Cache<Path> cache) {
-        fileid.withCache(cache);
-        return this;
-    }
 }
 

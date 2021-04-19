@@ -25,7 +25,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.googledrive.AbstractDriveTest;
 import ch.cyberduck.core.googledrive.DriveDeleteFeature;
 import ch.cyberduck.core.googledrive.DriveDirectoryFeature;
-import ch.cyberduck.core.googledrive.DriveFileidProvider;
+import ch.cyberduck.core.googledrive.DriveFileIdProvider;
 import ch.cyberduck.core.googledrive.DriveHomeFinderService;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -50,7 +50,7 @@ public class ListWorkerTest extends AbstractDriveTest {
     public void testRun() throws Exception {
         final String f1 = new AlphanumericRandomStringService().random();
         final String f2 = new AlphanumericRandomStringService().random();
-        final DriveFileidProvider fileidProvider = new DriveFileidProvider(session).withCache(cache);
+        final DriveFileIdProvider fileidProvider = new DriveFileIdProvider(session);
         final Path parent = new DriveDirectoryFeature(session, fileidProvider).mkdir(
             new Path(DriveHomeFinderService.MYDRIVE_FOLDER, f1, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         Path folder = new DriveDirectoryFeature(session, fileidProvider).mkdir(
@@ -58,7 +58,7 @@ public class ListWorkerTest extends AbstractDriveTest {
         assertTrue(new DefaultFindFeature(session).find(folder));
         {
             // trash folder and recreate it
-            final String fileid = fileidProvider.getFileid(folder, new DisabledListProgressListener());
+            final String fileid = fileidProvider.getFileId(folder, new DisabledListProgressListener());
             final File body = new File();
             body.set("trashed", true);
             session.getClient().files().update(fileid, body).execute();
@@ -75,7 +75,7 @@ public class ListWorkerTest extends AbstractDriveTest {
         }
         {
             // trash recreated folder
-            final String fileid = fileidProvider.getFileid(folder, new DisabledListProgressListener());
+            final String fileid = fileidProvider.getFileId(folder, new DisabledListProgressListener());
             final File body = new File();
             body.set("trashed", true);
             session.getClient().files().update(fileid, body).execute();

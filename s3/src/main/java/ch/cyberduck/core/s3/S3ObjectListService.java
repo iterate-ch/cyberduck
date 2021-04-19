@@ -19,7 +19,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -56,12 +55,6 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
         this.session = session;
         this.attributes = new S3AttributesFinderFeature(session);
         this.containerService = session.getFeature(PathContainerService.class);
-    }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        attributes.withCache(cache);
-        return this;
     }
 
     @Override

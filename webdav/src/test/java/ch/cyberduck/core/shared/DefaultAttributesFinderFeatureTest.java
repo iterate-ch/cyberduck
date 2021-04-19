@@ -56,7 +56,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDAVTest {
     @Test
     public void testAttributes() throws Exception {
         final PathCache cache = new PathCache(1);
-        final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session).withCache(cache);
+        final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session);
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(file, new TransferStatus());

@@ -37,7 +37,7 @@ public class GraphDirectoryFeature implements Directory<Void> {
 
     public GraphDirectoryFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
         this.session = session;
-        this.attributes = new GraphAttributesFinderFeature(session, idProvider);
+        this.attributes = new GraphAttributesFinderFeature(session);
     }
 
     @Override

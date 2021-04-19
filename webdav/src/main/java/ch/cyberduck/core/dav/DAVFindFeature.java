@@ -18,9 +18,7 @@ package ch.cyberduck.core.dav;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -43,8 +41,6 @@ import com.github.sardine.impl.handler.ExistsResponseHandler;
 public class DAVFindFeature implements Find {
 
     private final DAVSession session;
-
-    private Cache<Path> cache = PathCache.empty();
 
     public DAVFindFeature(final DAVSession session) {
         this.session = session;
@@ -73,7 +69,7 @@ public class DAVFindFeature implements Find {
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 // 400 Multiple choices
-                return new DefaultFindFeature(session).withCache(cache).find(file);
+                return new DefaultFindFeature(session).find(file);
             }
         }
         catch(AccessDeniedException e) {
@@ -87,11 +83,5 @@ public class DAVFindFeature implements Find {
 
     public Set<Header> headers() {
         return Collections.emptySet();
-    }
-
-    @Override
-    public Find withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return this;
     }
 }

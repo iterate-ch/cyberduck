@@ -41,7 +41,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
     @Test
     public void testCreateBucket() throws Exception {
         final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2DirectoryFeature feature = new B2DirectoryFeature(session, fileid);
         assertTrue(feature.isSupported(bucket.getParent(), bucket.getName()));
         feature.mkdir(bucket, null, new TransferStatus());
@@ -52,7 +52,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
     public void testBucketExists() throws Exception {
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         try {
-            new B2DirectoryFeature(session, new B2FileidProvider(session).withCache(cache)).mkdir(bucket, null, new TransferStatus());
+            new B2DirectoryFeature(session, new B2VersionIdProvider(session)).mkdir(bucket, null, new TransferStatus());
         }
         catch(InteroperabilityException e) {
             assertEquals("Bucket name is already in use. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -64,7 +64,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
     @Test(expected = InteroperabilityException.class)
     public void testBucketInvalidCharacter() throws Exception {
         final Path bucket = new Path("untitled folder", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         assertFalse(new B2DirectoryFeature(session, fileid).isSupported(bucket.getParent(), bucket.getName()));
         try {
             new B2DirectoryFeature(session, fileid).mkdir(bucket, null, new TransferStatus());
@@ -80,7 +80,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
     @Ignore
     public void testCreatePlaceholder() throws Exception {
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path test = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new B2FindFeature(session, fileid).find(test));
@@ -95,7 +95,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final TransferStatus status = new TransferStatus();
         final long timestamp = 1509959502930L;
         status.setTimestamp(timestamp);
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path directory = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, status);
         final Path test = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, status);
         assertEquals(timestamp, new B2AttributesFinderFeature(session, fileid).find(test).getModificationDate());

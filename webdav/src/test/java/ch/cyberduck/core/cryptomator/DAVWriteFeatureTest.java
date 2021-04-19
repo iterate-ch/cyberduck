@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
@@ -88,8 +87,8 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         out.close();
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoListService(session, new DAVListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new DAVWriteFeature(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session), true), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new DAVWriteFeature(session, new DAVFindFeature(session), new DAVAttributesFinderFeature(session), true), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, new CryptoWriteFeature<>(session, new DAVWriteFeature(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session), true), cryptomator).append(test, status.getLength()).size, 0L);
+        assertEquals(content.length, new CryptoWriteFeature<>(session, new DAVWriteFeature(session, new DAVFindFeature(session), new DAVAttributesFinderFeature(session), true), cryptomator).append(test, status.getLength()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);

@@ -54,7 +54,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
                 listener.chunk(directory, list);
                 return list;
             }
-            final ListService service = session.getFeature(ListService.class).withCache(cache);
+            final ListService service = session.getFeature(ListService.class);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Run with feature %s", service));
             }

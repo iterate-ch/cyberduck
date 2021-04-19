@@ -15,7 +15,6 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MimeTypeService;
@@ -31,8 +30,6 @@ import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -55,8 +52,8 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<VersionId>
     private final Find finder;
     private final AttributesFinder attributes;
 
-    public SDSDirectS3WriteFeature(final SDSSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+    public SDSDirectS3WriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
+        this(session, new SDSFindFeature(nodeid), new SDSAttributesFinderFeature(session, nodeid));
     }
 
     public SDSDirectS3WriteFeature(final SDSSession session, final Find finder, final AttributesFinder attributes) {
@@ -115,9 +112,9 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<VersionId>
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = attributes.withCache(cache).find(file);
+    public Append append(final Path file, final Long length) throws BackgroundException {
+        if(finder.find(file)) {
+            final PathAttributes attr = attributes.find(file);
             return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
         }
         return Write.notfound;

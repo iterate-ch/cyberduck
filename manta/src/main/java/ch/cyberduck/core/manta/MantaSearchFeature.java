@@ -16,7 +16,6 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullFilter;
@@ -112,8 +111,4 @@ public class MantaSearchFeature implements Search {
         return true;
     }
 
-    @Override
-    public Search withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

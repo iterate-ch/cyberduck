@@ -34,7 +34,7 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
 
     @Test
     public void testListRoot() throws Exception {
-        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final AttributedList<Path> list = new StoregateListService(session, nodeid).list(
             new Path("/", EnumSet.of(directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotNull(list);
@@ -43,13 +43,13 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
         for(Path f : list) {
             assertTrue(f.attributes().getModificationDate() > 0);
             assertTrue(f.attributes().getCreationDate() > 0);
-            assertNotNull(nodeid.getFileid(f.withAttributes(PathAttributes.EMPTY), new DisabledListProgressListener()));
+            assertNotNull(nodeid.getFileId(f.withAttributes(PathAttributes.EMPTY), new DisabledListProgressListener()));
         }
     }
 
     @Test
     public void testList() throws Exception {
-        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final AttributedList<Path> list = new StoregateListService(session, nodeid).list(
             new Path("/My files", EnumSet.of(directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotNull(list);

@@ -159,24 +159,24 @@ public class DownloadTransfer extends Transfer {
         }
         final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(roots);
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, source, options).withCache(cache);
+            return new ResumeFilter(resolver, source, options);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, source, options).withCache(cache);
+            return new RenameFilter(resolver, source, options);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, source, options).withCache(cache);
+            return new RenameExistingFilter(resolver, source, options);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, source, options).withCache(cache);
+            return new SkipFilter(resolver, source, options);
         }
         if(action.equals(TransferAction.trash)) {
-            return new TrashFilter(resolver, source, options).withCache(cache);
+            return new TrashFilter(resolver, source, options);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, source, options, listener).withCache(cache);
+            return new CompareFilter(resolver, source, options, listener);
         }
-        return new OverwriteFilter(resolver, source, options).withCache(cache);
+        return new OverwriteFilter(resolver, source, options);
     }
 
     @Override
@@ -228,7 +228,7 @@ public class DownloadTransfer extends Transfer {
     @Override
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Bulk<?> feature = source.getFeature(Bulk.class);
-        final Object id = feature.withCache(cache).pre(Type.download, files, callback);
+        final Object id = feature.pre(Type.download, files, callback);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
         }

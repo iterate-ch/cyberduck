@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -49,9 +48,9 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
     protected static final String DEFAULT_FIELDS = "createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails,version";
 
     private final DriveSession session;
-    private final DriveFileidProvider fileid;
+    private final DriveFileIdProvider fileid;
 
-    public DriveAttributesFinderFeature(final DriveSession session, final DriveFileidProvider fileid) {
+    public DriveAttributesFinderFeature(final DriveSession session, final DriveFileIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -126,9 +125,4 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
         return attributes;
     }
 
-    @Override
-    public AttributesFinder withCache(final Cache<Path> cache) {
-        fileid.withCache(cache);
-        return this;
-    }
 }

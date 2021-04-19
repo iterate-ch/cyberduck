@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
@@ -29,8 +28,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -45,8 +42,8 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
 
     public CryptoWriteFeature(final Session<?> session, final Write<Reply> proxy, final CryptoVault vault) {
         this(session, proxy,
-            new CryptoFindFeature(session, new DefaultFindFeature(session), vault),
-            new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), vault),
+            new CryptoFindFeature(session, session.getFeature(Find.class), vault),
+            new CryptoAttributesFeature(session, session.getFeature(AttributesFinder.class), vault),
             vault);
     }
 
@@ -87,9 +84,9 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(vault.encrypt(session, file))) {
-            final PathAttributes attributes = this.attributes.withCache(cache).find(vault.encrypt(session, file));
+    public Append append(final Path file, final Long length) throws BackgroundException {
+        if(finder.find(vault.encrypt(session, file))) {
+            final PathAttributes attributes = this.attributes.find(vault.encrypt(session, file));
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
         }
         return Write.notfound;

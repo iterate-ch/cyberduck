@@ -43,7 +43,7 @@ public class B2SearchFeatureTest extends AbstractB2Test {
     public void testSearchInBucket() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path file = new B2TouchFeature(session, fileid).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final B2SearchFeature feature = new B2SearchFeature(session, fileid);
         assertNotNull(feature.search(bucket, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
@@ -59,7 +59,7 @@ public class B2SearchFeatureTest extends AbstractB2Test {
     public void testSearchInRoot() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path file = new B2TouchFeature(session, fileid).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final B2SearchFeature feature = new B2SearchFeature(session, fileid);
         assertNotNull(feature.search(bucket, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
@@ -73,7 +73,7 @@ public class B2SearchFeatureTest extends AbstractB2Test {
     public void testSearchInDirectory() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path workdir = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path file = new B2TouchFeature(session, fileid).touch(new Path(workdir, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final B2SearchFeature feature = new B2SearchFeature(session, fileid);

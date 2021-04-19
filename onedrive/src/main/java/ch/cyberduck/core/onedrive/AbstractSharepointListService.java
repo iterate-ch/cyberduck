@@ -16,12 +16,10 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.features.sharepoint.SiteDrivesListService;
 import ch.cyberduck.core.onedrive.features.sharepoint.SitesListService;
 
@@ -32,12 +30,9 @@ import static ch.cyberduck.core.onedrive.SharepointListService.*;
 public abstract class AbstractSharepointListService implements ListService {
 
     private final AbstractSharepointSession session;
-    private final IdProvider idProvider;
-    private Cache<Path> cache;
 
-    public AbstractSharepointListService(final AbstractSharepointSession session, final IdProvider idProvider) {
+    public AbstractSharepointListService(final AbstractSharepointSession session) {
         this.session = session;
-        this.idProvider = idProvider;
     }
 
     public AbstractSharepointSession getSession() {
@@ -72,15 +67,7 @@ public abstract class AbstractSharepointListService implements ListService {
         if(collectionListService.isPresent() && (!container.isDefined() || container.isCollectionInContainer())) {
             return collectionListService.get().list(directory, listener);
         }
-
-        return new GraphItemListService(session, idProvider).withCache(cache).list(directory, listener);
-    }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        idProvider.withCache(cache);
-        return this;
+        return new GraphItemListService(session).list(directory, listener);
     }
 
     AttributedList<Path> addSiteItems(final Path directory, final ListProgressListener listener) throws BackgroundException {

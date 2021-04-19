@@ -15,33 +15,32 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 
 public class BrickWriteFeature extends DAVWriteFeature {
 
-    private final Find finder;
+    private final DAVSession session;
 
     public BrickWriteFeature(final DAVSession session) {
         super(session);
-        this.finder = new DefaultFindFeature(session);
+        this.session = session;
     }
 
     public BrickWriteFeature(final DAVSession session, final boolean expect) {
         super(session, expect);
-        this.finder = new DefaultFindFeature(session);
+        this.session = session;
     }
 
     public BrickWriteFeature(final DAVSession session, final Find finder, final AttributesFinder attributes, final boolean expect) {
         super(session, finder, attributes, expect);
-        this.finder = finder;
+        this.session = session;
     }
 
     @Override
@@ -50,8 +49,8 @@ public class BrickWriteFeature extends DAVWriteFeature {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.find(file)) {
+    public Append append(final Path file, final Long length) throws BackgroundException {
+        if(new DAVFindFeature(session).find(file)) {
             return Write.override;
         }
         return Write.notfound;

@@ -87,7 +87,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     @Override
     public AbstractDownloadFilter withCache(final Cache<Path> cache) {
-        attribute.withCache(cache);
         return this;
     }
 

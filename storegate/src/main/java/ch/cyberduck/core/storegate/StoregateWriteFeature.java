@@ -15,7 +15,6 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
@@ -31,8 +30,6 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.JSON;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
@@ -71,7 +68,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<String> {
     private final AttributesFinder attributes;
 
     public StoregateWriteFeature(final StoregateSession session, final StoregateIdProvider nodeid) {
-        this(session, nodeid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+        this(session, nodeid, new StoregateFindFeature(session, nodeid), new StoregateAttributesFinderFeature(session, nodeid));
     }
 
     public StoregateWriteFeature(final StoregateSession session, final StoregateIdProvider fileid, final Find finder, final AttributesFinder attributes) {
@@ -83,9 +80,9 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = attributes.withCache(cache).find(file);
+    public Append append(final Path file, final Long length) throws BackgroundException {
+        if(finder.find(file)) {
+            final PathAttributes attr = attributes.find(file);
             return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
         }
         return Write.notfound;
@@ -188,7 +185,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<String> {
                 request.addHeader("X-Lock-Id", status.getLockId().toString());
             }
             meta.setFileName(URIEncoder.encode(file.getName()));
-            meta.setParentId(fileid.getFileid(file.getParent(), new DisabledListProgressListener()));
+            meta.setParentId(fileid.getFileId(file.getParent(), new DisabledListProgressListener()));
             meta.setFileSize(status.getLength() > 0 ? status.getLength() : null);
             meta.setCreated(DateTime.now());
             if(null != status.getTimestamp()) {

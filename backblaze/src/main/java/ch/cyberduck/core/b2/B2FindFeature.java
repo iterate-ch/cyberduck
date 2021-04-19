@@ -15,7 +15,6 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
@@ -38,9 +37,9 @@ public class B2FindFeature implements Find {
         = new B2PathContainerService();
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
 
-    public B2FindFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2FindFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -58,7 +57,7 @@ public class B2FindFeature implements Find {
             }
             else {
                 try {
-                    return null != fileid.getFileid(file, new DisabledListProgressListener());
+                    return null != fileid.getVersionId(file, new DisabledListProgressListener());
                 }
                 catch(NotfoundException e) {
                     return false;
@@ -74,9 +73,4 @@ public class B2FindFeature implements Find {
         }
     }
 
-    @Override
-    public Find withCache(final Cache<Path> cache) {
-        fileid.withCache(cache);
-        return this;
-    }
 }

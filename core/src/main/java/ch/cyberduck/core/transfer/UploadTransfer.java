@@ -151,21 +151,21 @@ public class UploadTransfer extends Transfer {
             options.withTemporary(source.getFeature(Write.class).temporary());
         }
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, source, options).withCache(cache);
+            return new ResumeFilter(resolver, source, options);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, source, options).withCache(cache);
+            return new RenameFilter(resolver, source, options);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, source, options).withCache(cache);
+            return new RenameExistingFilter(resolver, source, options);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, source, options).withCache(cache);
+            return new SkipFilter(resolver, source, options);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, source, options, listener).withCache(cache);
+            return new CompareFilter(resolver, source, options, listener);
         }
-        return new OverwriteFilter(resolver, source, options).withCache(cache);
+        return new OverwriteFilter(resolver, source, options);
     }
 
     @Override
@@ -191,7 +191,7 @@ public class UploadTransfer extends Transfer {
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
                 final Upload<?> write = source.getFeature(Upload.class);
-                final Write.Append append = write.append(upload.remote, upload.local.attributes().getSize(), cache);
+                final Write.Append append = write.append(upload.remote, upload.local.attributes().getSize());
                 if(append.override || append.append) {
                     // Found remote file
                     if(upload.remote.isDirectory()) {
@@ -213,7 +213,7 @@ public class UploadTransfer extends Transfer {
     @Override
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Bulk<?> feature = source.getFeature(Bulk.class);
-        final Object id = feature.withCache(cache).pre(Type.upload, files, callback);
+        final Object id = feature.pre(Type.upload, files, callback);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
         }

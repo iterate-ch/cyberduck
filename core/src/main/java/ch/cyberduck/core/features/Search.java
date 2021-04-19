@@ -16,7 +16,6 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -36,11 +35,4 @@ public interface Search {
      * @return True if search is capable of recursively searching in folders
      */
     boolean isRecursive();
-
-    /**
-     * Decorate with read-only cache
-     *
-     * @param cache Path cache
-     */
-    Search withCache(Cache<Path> cache);
 }

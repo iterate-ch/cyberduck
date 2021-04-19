@@ -16,12 +16,10 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoPathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Vault;
@@ -46,12 +44,6 @@ public class CryptoSearchFeature implements Search {
     @Override
     public boolean isRecursive() {
         return delegate.isRecursive();
-    }
-
-    @Override
-    public Search withCache(final Cache<Path> cache) {
-        delegate.withCache(new CryptoPathCache(cache));
-        return this;
     }
 
     @Override

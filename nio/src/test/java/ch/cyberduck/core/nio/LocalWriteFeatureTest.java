@@ -25,7 +25,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
@@ -110,9 +109,9 @@ public class LocalWriteFeatureTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        assertFalse(new LocalWriteFeature(session).append(test, 0L, PathCache.empty()).append);
+        assertFalse(new LocalWriteFeature(session).append(test, 0L).append);
         new LocalTouchFeature(session).touch(test, new TransferStatus());
-        assertTrue(new LocalWriteFeature(session).append(test, 0L, PathCache.empty()).append);
+        assertTrue(new LocalWriteFeature(session).append(test, 0L).append);
         new LocalDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
