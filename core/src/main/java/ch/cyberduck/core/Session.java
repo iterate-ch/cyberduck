@@ -24,7 +24,6 @@ import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Quota;
@@ -45,7 +44,6 @@ import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.shared.DisabledQuotaFeature;
-import ch.cyberduck.core.shared.NullFileidProvider;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultRegistry;
 
@@ -330,9 +328,6 @@ public abstract class Session<C> implements TranscriptListener {
         }
         if(type == Search.class) {
             return (T) new DefaultSearchFeature(this);
-        }
-        if(type == IdProvider.class) {
-            return (T) new NullFileidProvider();
         }
         if(type == Quota.class) {
             return (T) new DisabledQuotaFeature();
