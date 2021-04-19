@@ -376,17 +376,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         // Transfer
                         // Do transfer with retry
                         this.retry(segment);
-                        // Recursive
-                        if(item.remote.isDirectory()) {
-                            if(!cache.isCached(item)) {
-                                log.warn(String.format("Missing entry for %s in cache", item));
-                            }
-                            for(TransferItem f : cache.get(item)) {
-                                // Recursive
-                                transfer(f, action);
-                            }
-                            cache.remove(item);
-                        }
                         final Session<?> source = borrow(Connection.source);
                         final Session<?> destination = borrow(Connection.destination);
                         try {
@@ -401,6 +390,17 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         finally {
                             release(source, Connection.source, null);
                             release(destination, Connection.destination, null);
+                        }
+                        // Recursive
+                        if(item.remote.isDirectory()) {
+                            if(!cache.isCached(item)) {
+                                log.warn(String.format("Missing entry for %s in cache", item));
+                            }
+                            for(TransferItem f : cache.get(item)) {
+                                // Recursive
+                                transfer(f, action);
+                            }
+                            cache.remove(item);
                         }
                         return segment;
                     }
