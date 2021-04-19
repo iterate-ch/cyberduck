@@ -49,6 +49,7 @@ public class GraphTouchFeature implements Touch<Void> {
             final DriveItem folder = session.toFolder(file.getParent());
             final DriveItem.Metadata metadata = Files.createFile(folder, URIEncoder.encode(file.getName()),
                 StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
+            status.setId(metadata.getId());
             return file.withAttributes(attributes.toAttributes(metadata));
         }
         catch(OneDriveAPIException e) {

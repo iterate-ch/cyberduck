@@ -40,7 +40,9 @@ public class StoregateTouchFeature implements Touch<String> {
         try {
             final StatusOutputStream<String> out = writer.write(file, status, new DisabledConnectionCallback());
             out.close();
-            return file.withAttributes(new PathAttributes(file.attributes()).withFileId(out.getStatus()));
+            final String fileid = out.getStatus();
+            status.setId(fileid);
+            return file.withAttributes(new PathAttributes(file.attributes()).withFileId(fileid));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);

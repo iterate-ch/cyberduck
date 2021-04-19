@@ -17,6 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -47,7 +48,9 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
         status.setTimestamp(System.currentTimeMillis());
         final StatusOutputStream<BaseB2Response> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
-        return file.withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes((B2FileResponse) out.getStatus()));
+        final B2FileResponse response = (B2FileResponse) out.getStatus();
+        status.setVersion(new VersionId(response.getFileId()));
+        return file.withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
     }
 
     @Override

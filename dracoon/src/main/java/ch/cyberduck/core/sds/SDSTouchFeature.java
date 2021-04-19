@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
@@ -53,6 +52,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
             }
             final StatusOutputStream<VersionId> out = writer.write(file, status.complete(), new DisabledConnectionCallback());
             out.close();
+            status.setVersion(new VersionId(out.getStatus().id));
             return file.withAttributes(file.attributes().withVersionId(out.getStatus().id));
         }
         catch(IOException e) {
