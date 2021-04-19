@@ -24,8 +24,6 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3WriteFeature;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +35,7 @@ public class SpectraWriteFeature extends S3WriteFeature {
     private final PathContainerService containerService;
 
     public SpectraWriteFeature(final SpectraSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+        this(session, new SpectraFindFeature(session), new SpectraAttributesFinderFeature(session));
     }
 
     public SpectraWriteFeature(final SpectraSession session, final Find finder, final AttributesFinder attributes) {
