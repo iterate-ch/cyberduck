@@ -144,7 +144,6 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
     }
 
     private void startDesktopFlow(final LoginCallback prompt, final Credentials credentials, final CTERATokens tokens) throws BackgroundException {
-        // TODO review - all LoginOptions disabled in CTERAProtocol, need to use custom validation. Same needs to be done for the prompt below. Any better options?
         if(StringUtils.isNotBlank(credentials.getUsername()) &&
             StringUtils.isNotBlank(credentials.getPassword())) {
             try {
@@ -210,7 +209,7 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
 
     private void attachDevice(final HttpPost attach, final CTERATokens tokens) throws IOException, BackgroundException {
         final AttachDeviceResponse response;
-        final Attachment[] error = new Attachment[1];
+        AtomicReference<Attachment> error = new AtomicReference<>();
         try {
             response = client.execute(attach, new AbstractResponseHandler<AttachDeviceResponse>() {
                 @Override
@@ -219,16 +218,15 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
                         case HttpStatus.SC_INTERNAL_SERVER_ERROR:
                             final XmlMapper mapper = new XmlMapper();
                             try {
-                                error[0] = mapper.readValue(response.getEntity().getContent(), Attachment.class);
-                                for(Attachment.Attribute attr : error[0].getAttributes()) {
+                                error.set(mapper.readValue(response.getEntity().getContent(), Attachment.class));
+                                for(Attachment.Attribute attr : error.get().getAttributes()) {
                                     if("msg".equals(attr.getId())) {
-                                        //TODO review - i18n?
                                         if("Invalid username or password".equals(attr.getVal())) {
                                             log.error(attr.getVal());
                                         }
                                         else {
-                                            log.error("Failure attaching the device " + attr.getVal());
-                                            error[0] = null;
+                                            log.error(String.format("Failure attaching the device %s", attr.getVal()));
+                                            error.set(null);
                                         }
                                     }
                                 }
@@ -248,7 +246,7 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
             });
         }
         catch(IOException e) {
-            if(error[0] != null) {
+            if(error.get() != null) {
                 throw new LoginFailureException("Invalid username or password");
             }
             throw e;
