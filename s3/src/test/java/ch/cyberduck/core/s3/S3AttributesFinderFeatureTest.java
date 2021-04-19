@@ -218,7 +218,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     }
 
     @Test
-    public void testFindProfile() throws Exception {
+    public void testRedirectWithNoLocationHeader() throws Exception {
         final Path container = new Path("profiles.cyberduck.io", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "S3 (HTTP).cyberduckprofile", EnumSet.of(Path.Type.file),
             new PathAttributes().withVersionId("4ajsLHgDubdGpoOjd1XCY1m4K5IUOfMY"));
