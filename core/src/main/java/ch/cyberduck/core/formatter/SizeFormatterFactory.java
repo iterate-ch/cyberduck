@@ -31,9 +31,9 @@ public final class SizeFormatterFactory {
 
     public static SizeFormatter get(final boolean decimal) {
         if(decimal) {
-            return new ch.cyberduck.core.formatter.DecimalSizeFormatter();
+            return new DecimalSizeFormatter();
         }
         // Default is binary sizes
-        return new ch.cyberduck.core.formatter.BinarySizeFormatter();
+        return new BinarySizeFormatter();
     }
 }
