@@ -61,16 +61,16 @@ public class SDSNodeIdProvider implements VersionIdProvider {
 
     @Override
     public String getVersionId(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return this.getFileid(file, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
-    }
-
-    protected String getFileid(final Path file, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Return version %s from attributes for file %s", file.attributes().getVersionId(), file));
             }
             return file.attributes().getVersionId();
         }
+        return this.getNodeId(file, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
+    }
+
+    protected String getNodeId(final Path file, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         if(cache.contains(new SimplePathPredicate(file))) {
             final String cached = cache.get(new SimplePathPredicate(file));
             if(log.isDebugEnabled()) {
