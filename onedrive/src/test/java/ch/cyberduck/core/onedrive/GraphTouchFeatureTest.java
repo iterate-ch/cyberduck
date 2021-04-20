@@ -34,6 +34,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
@@ -43,8 +44,9 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testTouch() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertNotNull(new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus()).attributes().getFileId());
-        assertNotNull(new GraphAttributesFinderFeature(session).find(file));
+        final TransferStatus status = new TransferStatus();
+        new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, status);
+        assertEquals(status.getId(), new GraphAttributesFinderFeature(session).find(file).getFileId());
         new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

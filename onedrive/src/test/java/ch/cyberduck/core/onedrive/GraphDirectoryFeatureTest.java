@@ -20,12 +20,14 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -41,8 +43,11 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testMkdir() throws Exception {
-        final Path target = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, null);
-        assertNotNull(new GraphAttributesFinderFeature(session).find(target).getETag());
+        final TransferStatus status = new TransferStatus();
+        final Path target = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, status);
+        final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(target);
+        assertNotNull(attributes.getETag());
+        assertEquals(status.getId(), attributes.getFileId());
         new GraphDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive.features;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
@@ -49,8 +50,9 @@ public class GraphTouchFeature implements Touch<Void> {
             final DriveItem folder = session.toFolder(file.getParent());
             final DriveItem.Metadata metadata = Files.createFile(folder, URIEncoder.encode(file.getName()),
                 StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
-            status.setId(metadata.getId());
-            return file.withAttributes(attributes.toAttributes(metadata));
+            final PathAttributes attr = attributes.toAttributes(metadata);
+            status.setId(attr.getFileId());
+            return file.withAttributes(attr);
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Cannot create {0}", e, file);

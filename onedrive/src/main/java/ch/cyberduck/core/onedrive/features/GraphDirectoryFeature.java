@@ -17,6 +17,7 @@ package ch.cyberduck.core.onedrive.features;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -45,8 +46,9 @@ public class GraphDirectoryFeature implements Directory<Void> {
         final DriveItem folder = session.toFolder(directory.getParent());
         try {
             final DriveItem.Metadata metadata = Files.createFolder(folder, directory.getName());
-            status.setId(metadata.getId());
-            return directory.withAttributes(attributes.toAttributes(metadata));
+            final PathAttributes attr = attributes.toAttributes(metadata);
+            status.setId(attr.getFileId());
+            return directory.withAttributes(attr);
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Cannot create folder {0}", e, directory);
