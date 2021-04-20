@@ -63,8 +63,8 @@ public abstract class NSFileManager extends NSObject {
 
     public interface _Class extends ObjCClass {
         /**
-         * Returns the default singleton CLASS.<br>
-         * Original signature : <code>NSFileManager* defaultManager()</code><br>
+         * Returns the default singleton CLASS.<br> Original signature : <code>NSFileManager*
+         * defaultManager()</code><br>
          * <i>native declaration : :16</i>
          */
         NSFileManager defaultManager();
@@ -72,11 +72,11 @@ public abstract class NSFileManager extends NSObject {
 
     /**
      * <i>native declaration : :22</i><br>
-     * Conversion Error : /**<br>
-     * * CLASSs of NSFileManager may now have delegates. Each CLASS has one delegate, and the delegate is not retained. In versions of Mac OS X prior to 10.5, the behavior of calling [[NSFileManager alloc] init] was undefined. In Mac OS X 10.5 "Leopard" and later, calling [[NSFileManager alloc] init] returns a new CLASS of an NSFileManager.<br>
-     * * Original signature : <code>void setDelegate(null)</code><br>
-     * * /<br>
-     * - (void)setDelegate:(null)delegate; (Argument delegate cannot be converted)
+     * Conversion Error : /**<br> * CLASSs of NSFileManager may now have delegates. Each CLASS has one delegate, and the
+     * delegate is not retained. In versions of Mac OS X prior to 10.5, the behavior of calling [[NSFileManager alloc]
+     * init] was undefined. In Mac OS X 10.5 "Leopard" and later, calling [[NSFileManager alloc] init] returns a new
+     * CLASS of an NSFileManager.<br> * Original signature : <code>void setDelegate(null)</code><br> * /<br> -
+     * (void)setDelegate:(null)delegate; (Argument delegate cannot be converted)
      */
     public abstract void setDelegate(org.rococoa.ID delegate);
 
@@ -87,17 +87,27 @@ public abstract class NSFileManager extends NSObject {
     public abstract org.rococoa.ID delegate();
 
     /**
-     * -mountedVolumeURLsIncludingResourceValuesForKeys:options: returns an NSArray of NSURLs locating the mounted volumes available on the computer. The property keys that can be requested are available in <Foundation/NSURL.h>.<br>
-     * Original signature : <code>-(NSArray*)mountedVolumeURLsIncludingResourceValuesForKeys:(NSArray*) options:(NSVolumeEnumerationOptions)</code><br>
+     * -mountedVolumeURLsIncludingResourceValuesForKeys:options: returns an NSArray of NSURLs locating the mounted
+     * volumes available on the computer. The property keys that can be requested are available in
+     * <Foundation/NSURL.h>.<br> Original signature : <code>-(NSArray*)mountedVolumeURLsIncludingResourceValuesForKeys:(NSArray*)
+     * options:(NSVolumeEnumerationOptions)</code><br>
      * <i>native declaration : NSFileManager.h:69</i>
      */
     public abstract NSArray mountedVolumeURLsIncludingResourceValuesForKeys_options(NSArray propertyKeys, NSUInteger options);
 
     /**
-     * -contentsOfDirectoryAtURL:includingPropertiesForKeys:options:error: returns an NSArray of NSURLs identifying the the directory entries. If this method returns nil, an NSError will be returned by reference in the 'error' parameter. If the directory contains no entries, this method will return the empty array. When an array is specified for the 'keys' parameter, the specified property values will be pre-fetched and cached with each enumerated URL.<br>
-     * This method always does a shallow enumeration of the specified directory (i.e. it always acts as if NSDirectoryEnumerationSkipsSubdirectoryDescendants has been specified). If you need to perform a deep enumeration, use +[NSFileManager enumeratorAtURL:includingPropertiesForKeys:options:errorHandler:].<br>
-     * If you wish to only receive the URLs and no other attributes, then pass '0' for 'options' and an empty NSArray ('[NSArray array]') for 'keys'. If you wish to have the property caches of the vended URLs pre-populated with a default set of attributes, then pass '0' for 'options' and 'nil' for 'keys'.<br>
-     * Original signature : <code>-(NSArray*)contentsOfDirectoryAtURL:(NSURL*) includingPropertiesForKeys:(NSArray*) options:(NSDirectoryEnumerationOptions) error:(NSError**)</code><br>
+     * -contentsOfDirectoryAtURL:includingPropertiesForKeys:options:error: returns an NSArray of NSURLs identifying the
+     * the directory entries. If this method returns nil, an NSError will be returned by reference in the 'error'
+     * parameter. If the directory contains no entries, this method will return the empty array. When an array is
+     * specified for the 'keys' parameter, the specified property values will be pre-fetched and cached with each
+     * enumerated URL.<br> This method always does a shallow enumeration of the specified directory (i.e. it always acts
+     * as if NSDirectoryEnumerationSkipsSubdirectoryDescendants has been specified). If you need to perform a deep
+     * enumeration, use +[NSFileManager enumeratorAtURL:includingPropertiesForKeys:options:errorHandler:].<br> If you
+     * wish to only receive the URLs and no other attributes, then pass '0' for 'options' and an empty NSArray
+     * ('[NSArray array]') for 'keys'. If you wish to have the property caches of the vended URLs pre-populated with a
+     * default set of attributes, then pass '0' for 'options' and 'nil' for 'keys'.<br> Original signature :
+     * <code>-(NSArray*)contentsOfDirectoryAtURL:(NSURL*) includingPropertiesForKeys:(NSArray*)
+     * options:(NSDirectoryEnumerationOptions) error:(NSError**)</code><br>
      * <i>native declaration : NSFileManager.h:77</i>
      */
     public abstract NSArray contentsOfDirectoryAtURL_includingPropertiesForKeys_options_error(NSURL url, NSArray keys, NSUInteger mask, ObjCObjectByReference error);
@@ -119,79 +129,102 @@ public abstract class NSFileManager extends NSObject {
      * - (NSURL*)URLForDirectory:(null)directory inDomain:(null)domain appropriateForURL:(NSURL*)url create:(BOOL)shouldCreate error:(NSError**)error; (Argument directory cannot be converted)
      */
     /**
-     * Instances of NSFileManager may now have delegates. Each instance has one delegate, and the delegate is not retained. In versions of Mac OS X prior to 10.5, the behavior of calling [[NSFileManager alloc] init] was undefined. In Mac OS X 10.5 "Leopard" and later, calling [[NSFileManager alloc] init] returns a new instance of an NSFileManager.<br>
-     * Original signature : <code>-(void)setDelegate:(id)</code><br>
+     * Instances of NSFileManager may now have delegates. Each instance has one delegate, and the delegate is not
+     * retained. In versions of Mac OS X prior to 10.5, the behavior of calling [[NSFileManager alloc] init] was
+     * undefined. In Mac OS X 10.5 "Leopard" and later, calling [[NSFileManager alloc] init] returns a new instance of
+     * an NSFileManager.<br> Original signature : <code>-(void)setDelegate:(id)</code><br>
      * <i>native declaration : NSFileManager.h:94</i>
      */
     public abstract void setDelegate(org.rococoa.ObjCObject delegate);
 
     /**
-     * setAttributes:ofItemAtPath:error: returns YES when the attributes specified in the 'attributes' dictionary are set successfully on the item specified by 'path'. If this method returns NO, a presentable NSError will be provided by-reference in the 'error' parameter. If no error is required, you may pass 'nil' for the error.<br>
-     * This method replaces changeFileAttributes:atPath:.<br>
-     * Original signature : <code>-(BOOL)setAttributes:(NSDictionary*) ofItemAtPath:(String*) error:(NSError**)</code><br>
+     * setAttributes:ofItemAtPath:error: returns YES when the attributes specified in the 'attributes' dictionary are
+     * set successfully on the item specified by 'path'. If this method returns NO, a presentable NSError will be
+     * provided by-reference in the 'error' parameter. If no error is required, you may pass 'nil' for the error.<br>
+     * This method replaces changeFileAttributes:atPath:.<br> Original signature : <code>-(BOOL)setAttributes:(NSDictionary*)
+     * ofItemAtPath:(String*) error:(NSError**)</code><br>
      * <i>native declaration : NSFileManager.h:101</i>
      */
     public abstract boolean setAttributes_ofItemAtPath_error(NSDictionary attributes, String path, ObjCObjectByReference error);
 
     /**
-     * createDirectoryAtPath:withIntermediateDirectories:attributes:error: creates a directory at the specified path. If you pass 'NO' for createIntermediates, the directory must not exist at the time this call is made. Passing 'YES' for 'createIntermediates' will create any necessary intermediate directories. This method returns YES if all directories specified in 'path' were created and attributes were set. Directories are created with attributes specified by the dictionary passed to 'attributes'. If no dictionary is supplied, directories are created according to the umask of the process. This method returns NO if a failure occurs at any stage of the operation. If an error parameter was provided, a presentable NSError will be returned by reference.<br>
-     * This method replaces createDirectoryAtPath:attributes:<br>
-     * Original signature : <code>-(BOOL)createDirectoryAtPath:(String*) withIntermediateDirectories:(BOOL) attributes:(NSDictionary*) error:(NSError**)</code><br>
+     * createDirectoryAtPath:withIntermediateDirectories:attributes:error: creates a directory at the specified path. If
+     * you pass 'NO' for createIntermediates, the directory must not exist at the time this call is made. Passing 'YES'
+     * for 'createIntermediates' will create any necessary intermediate directories. This method returns YES if all
+     * directories specified in 'path' were created and attributes were set. Directories are created with attributes
+     * specified by the dictionary passed to 'attributes'. If no dictionary is supplied, directories are created
+     * according to the umask of the process. This method returns NO if a failure occurs at any stage of the operation.
+     * If an error parameter was provided, a presentable NSError will be returned by reference.<br> This method replaces
+     * createDirectoryAtPath:attributes:<br> Original signature : <code>-(BOOL)createDirectoryAtPath:(String*)
+     * withIntermediateDirectories:(BOOL) attributes:(NSDictionary*) error:(NSError**)</code><br>
      * <i>native declaration : NSFileManager.h:107</i>
      */
     public abstract boolean createDirectoryAtPath_withIntermediateDirectories_attributes_error(String path, boolean createIntermediates, NSDictionary attributes, ObjCObjectByReference error);
 
     /**
-     * contentsOfDirectoryAtPath:error: returns an NSArray of Strings representing the filenames of the items in the directory. If this method returns 'nil', an NSError will be returned by reference in the 'error' parameter. If the directory contains no items, this method will return the empty array.<br>
-     * This method replaces directoryContentsAtPath:<br>
-     * Original signature : <code>-(NSArray*)contentsOfDirectoryAtPath:(String*) error:(NSError**)</code><br>
+     * contentsOfDirectoryAtPath:error: returns an NSArray of Strings representing the filenames of the items in the
+     * directory. If this method returns 'nil', an NSError will be returned by reference in the 'error' parameter. If
+     * the directory contains no items, this method will return the empty array.<br> This method replaces
+     * directoryContentsAtPath:<br> Original signature : <code>-(NSArray*)contentsOfDirectoryAtPath:(String*)
+     * error:(NSError**)</code><br>
      * <i>native declaration : NSFileManager.h:113</i>
      */
     public abstract NSArray contentsOfDirectoryAtPath_error(String path, ObjCObjectByReference error);
 
     /**
-     * subpathsOfDirectoryAtPath:error: returns an NSArray of Strings represeting the filenames of the items in the specified directory and all its subdirectories recursively. If this method returns 'nil', an NSError will be returned by reference in the 'error' parameter. If the directory contains no items, this method will return the empty array.<br>
-     * This method replaces subpathsAtPath:<br>
-     * Original signature : <code>-(NSArray*)subpathsOfDirectoryAtPath:(String*) error:(NSError**)</code><br>
+     * subpathsOfDirectoryAtPath:error: returns an NSArray of Strings represeting the filenames of the items in the
+     * specified directory and all its subdirectories recursively. If this method returns 'nil', an NSError will be
+     * returned by reference in the 'error' parameter. If the directory contains no items, this method will return the
+     * empty array.<br> This method replaces subpathsAtPath:<br> Original signature :
+     * <code>-(NSArray*)subpathsOfDirectoryAtPath:(String*) error:(NSError**)</code><br>
      * <i>native declaration : NSFileManager.h:119</i>
      */
     public abstract NSArray subpathsOfDirectoryAtPath_error(String path, ObjCObjectByReference error);
 
     /**
-     * attributesOfItemAtPath:error: returns an NSDictionary of key/value pairs containing the attributes of the item (file, directory, symlink, etc.) at the path in question. If this method returns 'nil', an NSError will be returned by reference in the 'error' parameter. This method does not traverse a terminal symlink.<br>
-     * This method replaces fileAttributesAtPath:traverseLink:.<br>
-     * Original signature : <code>-(NSDictionary*)attributesOfItemAtPath:(String*) error:(NSError**)</code><br>
+     * attributesOfItemAtPath:error: returns an NSDictionary of key/value pairs containing the attributes of the item
+     * (file, directory, symlink, etc.) at the path in question. If this method returns 'nil', an NSError will be
+     * returned by reference in the 'error' parameter. This method does not traverse a terminal symlink.<br> This method
+     * replaces fileAttributesAtPath:traverseLink:.<br> Original signature : <code>-(NSDictionary*)attributesOfItemAtPath:(String*)
+     * error:(NSError**)</code><br>
      * <i>native declaration : NSFileManager.h:125</i>
      */
     public abstract NSDictionary attributesOfItemAtPath_error(String path, ObjCObjectByReference error);
 
     /**
-     * attributesOfFileSystemForPath:error: returns an NSDictionary of key/value pairs containing the attributes of the filesystem containing the provided path. If this method returns 'nil', an NSError will be returned by reference in the 'error' parameter. This method does not traverse a terminal symlink.<br>
-     * This method replaces fileSystemAttributesAtPath:.<br>
-     * Original signature : <code>-(NSDictionary*)attributesOfFileSystemForPath:(String*) error:(NSError**)</code><br>
+     * attributesOfFileSystemForPath:error: returns an NSDictionary of key/value pairs containing the attributes of the
+     * filesystem containing the provided path. If this method returns 'nil', an NSError will be returned by reference
+     * in the 'error' parameter. This method does not traverse a terminal symlink.<br> This method replaces
+     * fileSystemAttributesAtPath:.<br> Original signature : <code>-(NSDictionary*)attributesOfFileSystemForPath:(String*)
+     * error:(NSError**)</code><br>
      * <i>native declaration : NSFileManager.h:131</i>
      */
     public abstract NSDictionary attributesOfFileSystemForPath_error(String path, ObjCObjectByReference error);
 
     /**
-     * createSymbolicLinkAtPath:withDestination:error: returns YES if the symbolic link that point at 'destPath' was able to be created at the location specified by 'path'. If this method returns NO, the link was unable to be created and an NSError will be returned by reference in the 'error' parameter. This method does not traverse a terminal symlink.<br>
-     * This method replaces createSymbolicLinkAtPath:pathContent:<br>
-     * Original signature : <code>-(BOOL)createSymbolicLinkAtPath:(String*) withDestinationPath:(String*) error:(NSError**)</code><br>
+     * createSymbolicLinkAtPath:withDestination:error: returns YES if the symbolic link that point at 'destPath' was
+     * able to be created at the location specified by 'path'. If this method returns NO, the link was unable to be
+     * created and an NSError will be returned by reference in the 'error' parameter. This method does not traverse a
+     * terminal symlink.<br> This method replaces createSymbolicLinkAtPath:pathContent:<br> Original signature :
+     * <code>-(BOOL)createSymbolicLinkAtPath:(String*) withDestinationPath:(String*) error:(NSError**)</code><br>
      * <i>native declaration : NSFileManager.h:137</i>
      */
     public abstract boolean createSymbolicLinkAtPath_withDestinationPath_error(String path, String destPath, ObjCObjectByReference error);
 
     /**
-     * destinationOfSymbolicLinkAtPath:error: returns an String containing the path of the item pointed at by the symlink specified by 'path'. If this method returns 'nil', an NSError will be returned by reference in the 'error' parameter.<br>
-     * This method replaces pathContentOfSymbolicLinkAtPath:<br>
-     * Original signature : <code>-(String*)destinationOfSymbolicLinkAtPath:(String*) error:(NSError**)</code><br>
+     * destinationOfSymbolicLinkAtPath:error: returns an String containing the path of the item pointed at by the
+     * symlink specified by 'path'. If this method returns 'nil', an NSError will be returned by reference in the
+     * 'error' parameter.<br> This method replaces pathContentOfSymbolicLinkAtPath:<br> Original signature :
+     * <code>-(String*)destinationOfSymbolicLinkAtPath:(String*) error:(NSError**)</code><br>
      * <i>native declaration : NSFileManager.h:143</i>
      */
     public abstract String destinationOfSymbolicLinkAtPath_error(String path, ObjCObjectByReference error);
 
     /**
-     * These methods replace their non-error returning counterparts below. See the NSFileManagerFileOperationAdditions category below for methods that are dispatched to the NSFileManager instance's delegate.<br>
-     * Original signature : <code>-(BOOL)copyItemAtPath:(String*) toPath:(String*) error:(NSError**)</code><br>
+     * These methods replace their non-error returning counterparts below. See the NSFileManagerFileOperationAdditions
+     * category below for methods that are dispatched to the NSFileManager instance's delegate.<br> Original signature
+     * :
+     * <code>-(BOOL)copyItemAtPath:(String*) toPath:(String*) error:(NSError**)</code><br>
      * <i>native declaration : NSFileManager.h:147</i>
      */
     public abstract boolean copyItemAtPath_toPath_error(String srcPath, String dstPath, ObjCObjectByReference error);
@@ -215,8 +248,9 @@ public abstract class NSFileManager extends NSObject {
     public abstract boolean removeItemAtPath_error(String path, ObjCObjectByReference error);
 
     /**
-     * These methods are URL-taking equivalents of the four methods above. Their delegate methods are defined in the NSFileManagerFileOperationAdditions category below.<br>
-     * Original signature : <code>-(BOOL)copyItemAtURL:(NSURL*) toURL:(NSURL*) error:(NSError**)</code><br>
+     * These methods are URL-taking equivalents of the four methods above. Their delegate methods are defined in the
+     * NSFileManagerFileOperationAdditions category below.<br> Original signature : <code>-(BOOL)copyItemAtURL:(NSURL*)
+     * toURL:(NSURL*) error:(NSError**)</code><br>
      * <i>native declaration : NSFileManager.h:156</i>
      */
     public abstract boolean copyItemAtURL_toURL_error(NSURL srcURL, NSURL dstURL, ObjCObjectByReference error);
@@ -240,8 +274,9 @@ public abstract class NSFileManager extends NSObject {
     public abstract boolean removeItemAtURL_error(NSURL URL, ObjCObjectByReference error);
 
     /**
-     * The following methods are deprecated on Mac OS X 10.5. Their URL-based and/or error-returning replacements are listed above.<br>
-     * Original signature : <code>-(NSDictionary*)fileAttributesAtPath:(String*) traverseLink:(BOOL)</code><br>
+     * The following methods are deprecated on Mac OS X 10.5. Their URL-based and/or error-returning replacements are
+     * listed above.<br> Original signature : <code>-(NSDictionary*)fileAttributesAtPath:(String*)
+     * traverseLink:(BOOL)</code><br>
      * <i>native declaration : NSFileManager.h:163</i>
      */
     public abstract NSDictionary fileAttributesAtPath_traverseLink(String path, boolean yorn);
@@ -307,8 +342,9 @@ public abstract class NSFileManager extends NSObject {
     public abstract boolean removeFileAtPath_handler(String path, org.rococoa.ObjCObject handler);
 
     /**
-     * Process working directory management. Despite the fact that these are instance methods on NSFileManager, these methods report and change (respectively) the working directory for the entire process. Developers are cautioned that doing so is fraught with peril.<br>
-     * Original signature : <code>-(String*)currentDirectoryPath</code><br>
+     * Process working directory management. Despite the fact that these are instance methods on NSFileManager, these
+     * methods report and change (respectively) the working directory for the entire process. Developers are cautioned
+     * that doing so is fraught with peril.<br> Original signature : <code>-(String*)currentDirectoryPath</code><br>
      * <i>native declaration : NSFileManager.h:180</i>
      */
     public abstract String currentDirectoryPath();
@@ -320,8 +356,11 @@ public abstract class NSFileManager extends NSObject {
     public abstract boolean changeCurrentDirectoryPath(String path);
 
     /**
-     * The following methods are of limited utility. Attempting to predicate behavior based on the current state of the filesystem or a particular file on the filesystem is encouraging odd behavior in the face of filesystem race conditions. It's far better to attempt an operation (like loading a file or creating a directory) and handle the error gracefully than it is to try to figure out ahead of time whether the operation will succeed.<br>
-     * Original signature : <code>-(BOOL)fileExistsAtPath:(String*)</code><br>
+     * The following methods are of limited utility. Attempting to predicate behavior based on the current state of the
+     * filesystem or a particular file on the filesystem is encouraging odd behavior in the face of filesystem race
+     * conditions. It's far better to attempt an operation (like loading a file or creating a directory) and handle the
+     * error gracefully than it is to try to figure out ahead of time whether the operation will succeed.<br> Original
+     * signature : <code>-(BOOL)fileExistsAtPath:(String*)</code><br>
      * <i>native declaration : NSFileManager.h:185</i>
      */
     public abstract boolean fileExistsAtPath(String path);
@@ -357,67 +396,83 @@ public abstract class NSFileManager extends NSObject {
     public abstract boolean isDeletableFileAtPath(String path);
 
     /**
-     * -contentsEqualAtPath:andPath: does not take into account data stored in the resource fork or filesystem extended attributes.<br>
-     * Original signature : <code>-(BOOL)contentsEqualAtPath:(String*) andPath:(String*)</code><br>
+     * -contentsEqualAtPath:andPath: does not take into account data stored in the resource fork or filesystem extended
+     * attributes.<br> Original signature : <code>-(BOOL)contentsEqualAtPath:(String*) andPath:(String*)</code><br>
      * <i>native declaration : NSFileManager.h:194</i>
      */
     public abstract boolean contentsEqualAtPath_andPath(String path1, String path2);
 
     /**
-     * displayNameAtPath: returns an String suitable for presentation to the user. For directories which have localization information, this will return the appropriate localized string. This string is not suitable for passing to anything that must interact with the filesystem.<br>
-     * Original signature : <code>-(String*)displayNameAtPath:(String*)</code><br>
+     * displayNameAtPath: returns an String suitable for presentation to the user. For directories which have
+     * localization information, this will return the appropriate localized string. This string is not suitable for
+     * passing to anything that must interact with the filesystem.<br> Original signature :
+     * <code>-(String*)displayNameAtPath:(String*)</code><br>
      * <i>native declaration : NSFileManager.h:198</i>
      */
     public abstract String displayNameAtPath(String path);
 
     /**
-     * componentsToDisplayForPath: returns an NSArray of display names for the path provided. Localization will occur as in displayNameAtPath: above. This array cannot and should not be reassembled into an usable filesystem path for any kind of access.<br>
-     * Original signature : <code>-(NSArray*)componentsToDisplayForPath:(String*)</code><br>
+     * componentsToDisplayForPath: returns an NSArray of display names for the path provided. Localization will occur as
+     * in displayNameAtPath: above. This array cannot and should not be reassembled into an usable filesystem path for
+     * any kind of access.<br> Original signature : <code>-(NSArray*)componentsToDisplayForPath:(String*)</code><br>
      * <i>native declaration : NSFileManager.h:203</i>
      */
     public abstract NSArray componentsToDisplayForPath(String path);
 
     /**
-     * subpathsAtPath: returns an NSArray of all contents and subpaths recursively from the provided path. This may be very expensive to compute for deep filesystem hierarchies, and should probably be avoided.<br>
-     * Original signature : <code>-(NSArray*)subpathsAtPath:(String*)</code><br>
+     * subpathsAtPath: returns an NSArray of all contents and subpaths recursively from the provided path. This may be
+     * very expensive to compute for deep filesystem hierarchies, and should probably be avoided.<br> Original signature
+     * : <code>-(NSArray*)subpathsAtPath:(String*)</code><br>
      * <i>native declaration : NSFileManager.h:220</i>
      */
     public abstract NSArray subpathsAtPath(String path);
 
     /**
-     * These methods are provided here for compatibility. The corresponding methods on NSData which return NSErrors should be regarded as the primary method of creating a file from an NSData or retrieving the contents of a file as an NSData.<br>
-     * Original signature : <code>-(NSData*)contentsAtPath:(String*)</code><br>
+     * These methods are provided here for compatibility. The corresponding methods on NSData which return NSErrors
+     * should be regarded as the primary method of creating a file from an NSData or retrieving the contents of a file
+     * as an NSData.<br> Original signature : <code>-(NSData*)contentsAtPath:(String*)</code><br>
      * <i>native declaration : NSFileManager.h:224</i>
      */
     public abstract NSData contentsAtPath(String path);
 
     /**
-     * Original signature : <code>-(BOOL)createFileAtPath:(String*) contents:(NSData*) attributes:(NSDictionary*)</code><br>
+     * Original signature : <code>-(BOOL)createFileAtPath:(String*) contents:(NSData*)
+     * attributes:(NSDictionary*)</code><br>
      * <i>native declaration : NSFileManager.h:225</i>
      */
     public abstract boolean createFileAtPath_contents_attributes(String path, NSData data, NSDictionary attr);
 
     /**
-     * fileSystemRepresentationWithPath: returns an array of characters suitable for passing to lower-level POSIX style APIs. The string is provided in the representation most appropriate for the filesystem in question.<br>
-     * Original signature : <code>-(const char*)fileSystemRepresentationWithPath:(String*)</code><br>
+     * fileSystemRepresentationWithPath: returns an array of characters suitable for passing to lower-level POSIX style
+     * APIs. The string is provided in the representation most appropriate for the filesystem in question.<br> Original
+     * signature : <code>-(const char*)fileSystemRepresentationWithPath:(String*)</code><br>
      * <i>native declaration : NSFileManager.h:229</i>
      */
     public abstract String fileSystemRepresentationWithPath(String path);
 
     /**
-     * stringWithFileSystemRepresentation:length: returns an String created from an array of bytes that are in the filesystem representation.<br>
-     * Original signature : <code>-(String*)stringWithFileSystemRepresentation:(const char*) length:(NSUInteger)</code><br>
+     * stringWithFileSystemRepresentation:length: returns an String created from an array of bytes that are in the
+     * filesystem representation.<br> Original signature : <code>-(String*)stringWithFileSystemRepresentation:(const
+     * char*) length:(NSUInteger)</code><br>
      * <i>native declaration : NSFileManager.h:233</i>
      */
     public abstract String stringWithFileSystemRepresentation_length(String str, NSUInteger len);
 
     /**
-     * -replaceItemAtURL:withItemAtURL:backupItemName:options:resultingItemURL:error: is for developers who wish to perform a safe-save without using the full NSDocument machinery that is available in the AppKit.<br>
-     * The `originalItemURL` is the item being replaced.<br>
-     * `newItemURL` is the item which will replace the original item. This item should be placed in a temporary directory as provided by the OS, or in a uniquely named directory placed in the same directory as the original item if the temporary directory is not available.<br>
-     * If `backupItemName` is provided, that name will be used to create a backup of the original item. The backup is placed in the same directory as the original item. If an error occurs during the creation of the backup item, the operation will fail. If there is already an item with the same name as the backup item, that item will be removed. The backup item will be removed in the event of success unless the `NSFileManagerItemReplacementWithoutDeletingBackupItem` option is provided in `options`.<br>
-     * For `options`, pass `0` to get the default behavior, which uses only the metadata from the new item while adjusting some properties using values from the original item. Pass `NSFileManagerItemReplacementUsingNewMetadataOnly` in order to use all possible metadata from the new item.<br>
-     * Original signature : <code>-(BOOL)replaceItemAtURL:(NSURL*) withItemAtURL:(NSURL*) backupItemName:(String*) options:(NSFileManagerItemReplacementOptions) resultingItemURL:(NSURL**) error:(NSError**)</code><br>
+     * -replaceItemAtURL:withItemAtURL:backupItemName:options:resultingItemURL:error: is for developers who wish to
+     * perform a safe-save without using the full NSDocument machinery that is available in the AppKit.<br> The
+     * `originalItemURL` is the item being replaced.<br> `newItemURL` is the item which will replace the original item.
+     * This item should be placed in a temporary directory as provided by the OS, or in a uniquely named directory
+     * placed in the same directory as the original item if the temporary directory is not available.<br> If
+     * `backupItemName` is provided, that name will be used to create a backup of the original item. The backup is
+     * placed in the same directory as the original item. If an error occurs during the creation of the backup item, the
+     * operation will fail. If there is already an item with the same name as the backup item, that item will be
+     * removed. The backup item will be removed in the event of success unless the `NSFileManagerItemReplacementWithoutDeletingBackupItem`
+     * option is provided in `options`.<br> For `options`, pass `0` to get the default behavior, which uses only the
+     * metadata from the new item while adjusting some properties using values from the original item. Pass
+     * `NSFileManagerItemReplacementUsingNewMetadataOnly` in order to use all possible metadata from the new item.<br>
+     * Original signature : <code>-(BOOL)replaceItemAtURL:(NSURL*) withItemAtURL:(NSURL*) backupItemName:(String*)
+     * options:(NSFileManagerItemReplacementOptions) resultingItemURL:(NSURL**) error:(NSError**)</code><br>
      * <i>native declaration : NSFileManager.h:242</i>
      */
     public abstract boolean replaceItemAtURL_withItemAtURL_backupItemName_options_resultingItemURL_error(NSURL originalItemURL, NSURL newItemURL, String backupItemName, NSUInteger options, ObjCObjectByReference resultingURL, ObjCObjectByReference error);
@@ -425,13 +480,27 @@ public abstract class NSFileManager extends NSObject {
 
     /**
      * As explained in App Sandbox Design Guide, groups of sandboxed apps that need to share files and other information
-     * can request a container directory as part of their entitlements. These directories are stored
-     * in ~/Library/Group Containers/.
+     * can request a container directory as part of their entitlements. These directories are stored in ~/Library/Group
+     * Containers/.
      * <p>
      *
-     * @return When called with a valid group identifier, this method returns the location of that directory as a
-     * n NSURL object. This method also creates the directory if it does not yet exist.
+     * @return When called with a valid group identifier, this method returns the location of that directory as a n
+     * NSURL object. This method also creates the directory if it does not yet exist.
      */
     public abstract NSURL containerURLForSecurityApplicationGroupIdentifier(String groupIdentifier);
 
+    /**
+     * Moves an item to the trash.
+     *
+     * @param url             The item to move to the trash.
+     * @param outResultingURL On input, a pointer to a URL object. On output, this pointer is set to the item’s location
+     *                        in the trash. The actual name of the item may be changed when moving it to the trash, so
+     *                        use this URL to access it. You may specify nil for this parameter if you do not want the
+     *                        information.
+     * @param error           On input, a pointer to an error object. If an error occurs, this pointer is set to an
+     *                        actual error object containing the error information. You may specify nil for this
+     *                        parameter if you do not want the error information.
+     * @return YES if the item at url was successfully moved to the trash, or NO if the item was not moved to the trash.
+     */
+    public abstract boolean trashItemAtURL_resultingItemURL_error(NSURL url, NSURL outResultingURL, ObjCObjectByReference error);
 }
