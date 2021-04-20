@@ -72,11 +72,13 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         super(host, trust, key);
     }
 
-    public DriveItem toItem(final Path currentPath) throws BackgroundException {
-        return this.toItem(currentPath, true);
+    public abstract String getFileId(final DriveItem.Metadata metadata);
+
+    public DriveItem getItem(final Path currentPath) throws BackgroundException {
+        return this.getItem(currentPath, true);
     }
 
-    public abstract DriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException;
+    public abstract DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException;
 
     public boolean isAccessible(final Path path) {
         return this.isAccessible(path, true);
@@ -85,30 +87,6 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     public abstract boolean isAccessible(Path file, boolean container);
 
     public abstract ContainerItem getContainer(Path file);
-
-    public DriveItem toFile(final Path file) throws BackgroundException {
-        return this.toFile(file, true);
-    }
-
-    public DriveItem toFile(final Path file, final boolean resolveLastItem) throws BackgroundException {
-        final DriveItem item = this.toItem(file, resolveLastItem);
-        if(!(item instanceof DriveItem)) {
-            throw new NotfoundException(String.format("%s is not a file.", file.getAbsolute()));
-        }
-        return item;
-    }
-
-    public DriveItem toFolder(final Path file) throws BackgroundException {
-        return this.toFolder(file, true);
-    }
-
-    public DriveItem toFolder(final Path file, final boolean resolveLastItem) throws BackgroundException {
-        final DriveItem item = this.toItem(file, resolveLastItem);
-        if(!(item instanceof DriveItem)) {
-            throw new NotfoundException(String.format("%s is not a folder.", file.getAbsolute()));
-        }
-        return item;
-    }
 
     @Override
     protected OneDriveAPI connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws HostParserException {

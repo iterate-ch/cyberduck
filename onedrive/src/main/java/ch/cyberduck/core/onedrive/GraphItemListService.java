@@ -43,7 +43,7 @@ public class GraphItemListService extends AbstractItemListService {
 
     @Override
     protected Iterator<DriveItem.Metadata> getIterator(final Path directory) throws BackgroundException {
-        final DriveItem folder = session.toFolder(directory);
+        final DriveItem folder = session.getItem(directory);
         return Files.getFiles(folder, PreferencesFactory.get().getInteger("onedrive.listing.chunksize"));
     }
 

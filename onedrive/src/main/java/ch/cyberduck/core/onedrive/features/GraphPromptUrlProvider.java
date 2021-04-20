@@ -51,7 +51,7 @@ public class GraphPromptUrlProvider implements PromptUrlProvider {
     @Override
     public DescriptiveUrl toDownloadUrl(Path file, Object options, PasswordCallback callback)
         throws BackgroundException {
-        final DriveItem item = session.toItem(file);
+        final DriveItem item = session.getItem(file);
         try {
             return new DescriptiveUrl(URI.create(Files.createSharedLink(item, OneDriveSharingLink.Type.VIEW).getLink().getWebUrl()),
                 DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")));

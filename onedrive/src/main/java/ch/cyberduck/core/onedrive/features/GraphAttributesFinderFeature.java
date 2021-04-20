@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.FileSystemInfo;
-import org.nuxeo.onedrive.client.types.ItemReference;
 
 import java.io.IOException;
 import java.net.URI;
@@ -55,7 +54,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
-        final DriveItem item = session.toItem(file);
+        final DriveItem item = session.getItem(file);
         try {
             final DriveItem.Metadata metadata = item.getMetadata();
             return this.toAttributes(metadata);
@@ -78,23 +77,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         else if(null != metadata.getSize()) {
             attributes.setSize(metadata.getSize());
         }
-        final ItemReference parent = metadata.getParentReference();
-        if(metadata.getRemoteItem() != null) {
-            final DriveItem.Metadata remoteMetadata = metadata.getRemoteItem();
-            final ItemReference remoteParent = remoteMetadata.getParentReference();
-            if(parent == null) {
-                setId(attributes, String.join(String.valueOf(Path.DELIMITER),
-                    remoteParent.getDriveId(), remoteParent.getId()));
-            }
-            else {
-                setId(attributes, String.join(String.valueOf(Path.DELIMITER),
-                    parent.getDriveId(), metadata.getId(),
-                    remoteParent.getDriveId(), remoteMetadata.getId()));
-            }
-        }
-        else {
-            setId(attributes, String.join(String.valueOf(Path.DELIMITER), parent.getDriveId(), metadata.getId()));
-        }
+        setId(attributes, session.getFileId(metadata));
         webUrl.ifPresent(attributes::setLink);
         final FileSystemInfo info = metadata.getFacet(FileSystemInfo.class);
         if(null != info) {

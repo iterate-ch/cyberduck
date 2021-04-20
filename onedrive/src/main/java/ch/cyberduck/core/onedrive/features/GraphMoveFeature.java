@@ -61,14 +61,14 @@ public class GraphMoveFeature implements Move {
             patchOperation.rename(renamed.getName());
         }
         if(!file.getParent().equals(renamed.getParent())) {
-            final DriveItem moveTarget = session.toFolder(renamed.getParent());
+            final DriveItem moveTarget = session.getItem(renamed.getParent());
             patchOperation.move(moveTarget);
         }
         // Keep current timestamp set
         final FileSystemInfo info = new FileSystemInfo();
         info.setLastModifiedDateTime(Instant.ofEpochMilli(file.attributes().getModificationDate()).atOffset(ZoneOffset.UTC));
         patchOperation.facet("fileSystemInfo", info);
-        final DriveItem item = session.toItem(file);
+        final DriveItem item = session.getItem(file);
         try {
             Files.patch(item, patchOperation);
         }

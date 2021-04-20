@@ -61,7 +61,7 @@ public class GraphReadFeature implements Read {
                 return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
             }
             else {
-                final DriveItem target = session.toFile(file);
+                final DriveItem target = session.getItem(file);
                 if(status.isAppend()) {
                     final HttpRange range = HttpRange.withStatus(status);
                     final String header;

@@ -56,9 +56,9 @@ public class GraphCopyFeature implements Copy {
             new GraphDeleteFeature(session).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
         }
 
-        final DriveItem targetItem = session.toFolder(target.getParent());
+        final DriveItem targetItem = session.getItem(target.getParent());
         copyOperation.copy(targetItem);
-        final DriveItem item = session.toItem(source);
+        final DriveItem item = session.getItem(source);
         try {
             Files.copy(item, copyOperation).await(statusObject -> logger.info(String.format("Copy Progress Operation %s progress %f status %s",
                 statusObject.getOperation(),
