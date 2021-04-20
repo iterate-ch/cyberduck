@@ -38,7 +38,7 @@ public class GraphLockFeature implements Lock<String> {
     @Override
     public String lock(final Path file) throws BackgroundException {
         try {
-            Files.checkout(session.toItem(file));
+            Files.checkout(session.getItem(file));
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Failure to checkout file {0}", e, file);
@@ -52,7 +52,7 @@ public class GraphLockFeature implements Lock<String> {
     @Override
     public void unlock(final Path file, final String token) throws BackgroundException {
         try {
-            Files.checkin(session.toItem(file), String.format("%s-%s",
+            Files.checkin(session.getItem(file), String.format("%s-%s",
                 PreferencesFactory.get().getProperty("application.name"),
                 new AlphanumericRandomStringService().random()));
         }

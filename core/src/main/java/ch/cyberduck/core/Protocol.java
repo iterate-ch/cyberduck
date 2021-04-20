@@ -299,7 +299,8 @@ public interface Protocol extends Comparable<Protocol> {
         brick,
         nextcloud,
         manta,
-        gmxcloud
+        gmxcloud,
+        ctera
     }
 
     enum Case {

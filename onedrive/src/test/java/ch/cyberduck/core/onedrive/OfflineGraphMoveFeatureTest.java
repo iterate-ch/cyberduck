@@ -90,12 +90,10 @@ public class OfflineGraphMoveFeatureTest {
         cases.add(new TestCase("/My Files/Folder", "/", false));
         // can move rename folder
         cases.add(new TestCase("/My Files/Folder", "/My Files/Sub Folder/Folder 2", true));
-        // cannot rename Shared
-        cases.add(new TestCase("/Shared/", false));
         // cannot rename item in Shared
-        cases.add(new TestCase("/Shared/Folder", false));
+        cases.add(new TestCase("/Shared", false));
         // can rename item in folder in Shared
-        cases.add(new TestCase("/Shared/Folder/Item", true));
+        cases.add(new TestCase("/Shared/Folder", true));
 
         for(TestCase testCase : cases) {
             final Path from = new Path(testCase.getSource(), EnumSet.of(Path.Type.directory));

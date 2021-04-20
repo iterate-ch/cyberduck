@@ -47,7 +47,7 @@ public class GraphQuotaFeature implements Quota {
         final Drive.Metadata metadata;
         try {
             // retrieve OneDriveItem from home
-            final DriveItem item = session.toItem(home, true);
+            final DriveItem item = session.getItem(home, true);
             // returns drive, which can then query metadata.
             metadata = item.getDrive().getMetadata();
         }

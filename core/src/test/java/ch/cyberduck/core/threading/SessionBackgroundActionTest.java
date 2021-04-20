@@ -18,7 +18,6 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -45,7 +44,7 @@ public class SessionBackgroundActionTest {
     public void testGetExceptionConnectionCanceledException() {
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new StatelessSessionPool(
             new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")),
-            new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new DisabledAlertCallback(), new DisabledLoginCallback(), new DisabledProgressListener()) {
+            new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new DisabledAlertCallback(), new DisabledProgressListener()) {
 
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
@@ -73,7 +72,7 @@ public class SessionBackgroundActionTest {
                 assertEquals(failure, f);
                 return false;
             }
-        }, new DisabledLoginCallback(), new DisabledProgressListener()) {
+        }, new DisabledProgressListener()) {
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
                 throw failure;
@@ -100,7 +99,7 @@ public class SessionBackgroundActionTest {
                 assertEquals(failure, f);
                 return false;
             }
-        }, new DisabledLoginCallback(), new DisabledProgressListener()) {
+        }, new DisabledProgressListener()) {
 
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
@@ -129,7 +128,7 @@ public class SessionBackgroundActionTest {
                 assertEquals(failure, f);
                 return false;
             }
-        }, new DisabledLoginCallback(), new DisabledProgressListener()) {
+        }, new DisabledProgressListener()) {
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
                 throw failure;

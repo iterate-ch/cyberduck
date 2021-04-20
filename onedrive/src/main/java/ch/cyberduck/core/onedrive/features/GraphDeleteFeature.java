@@ -47,7 +47,7 @@ public class GraphDeleteFeature implements Delete {
         for(Path file : files.keySet()) {
             callback.delete(file);
             try {
-                final DriveItem item = session.toItem(file);
+                final DriveItem item = session.getItem(file);
                 Files.delete(item);
             }
             catch(NotfoundException e) {

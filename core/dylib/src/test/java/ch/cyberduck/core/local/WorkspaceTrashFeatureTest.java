@@ -65,6 +65,7 @@ public class WorkspaceTrashFeatureTest {
         trash.trash(directory);
     }
 
+    @Test
     public void testTrashOpenFile() throws Exception {
         final Trash trash = new WorkspaceTrashFeature();
         final SupportDirectoryFinder finder = new TemporarySupportDirectoryFinder();
@@ -83,6 +84,7 @@ public class WorkspaceTrashFeatureTest {
         }
     }
 
+    @Test
     public void testTrashOpenDirectoryEnumeration() throws Exception {
         final Trash trash = new WorkspaceTrashFeature();
         final SupportDirectoryFinder finder = new TemporarySupportDirectoryFinder();

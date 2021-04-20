@@ -47,7 +47,7 @@ public class GraphSearchFeature implements Search {
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
 
-        final DriveItem folder = session.toFolder(workdir);
+        final DriveItem folder = session.getItem(workdir);
 
         // The query text used to search for items. Values may be matched across several fields including filename, metadata, and file content.
         final Iterator<DriveItem.Metadata> iterator = Files.search(folder, regex.toPattern().pattern());

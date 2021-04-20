@@ -31,6 +31,9 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.ItemReference;
+
+import java.util.Optional;
 
 public class OneDriveSession extends GraphSession {
 
@@ -41,11 +44,32 @@ public class OneDriveSession extends GraphSession {
         super(host, trust, key);
     }
 
+    @Override
+    public String getFileId(final DriveItem.Metadata metadata) {
+        final ItemReference parent = metadata.getParentReference();
+        if(metadata.getRemoteItem() != null) {
+            final DriveItem.Metadata remoteMetadata = metadata.getRemoteItem();
+            final ItemReference remoteParent = remoteMetadata.getParentReference();
+            if(parent == null) {
+                return String.join(String.valueOf(Path.DELIMITER),
+                    remoteParent.getDriveId(), remoteParent.getId());
+            }
+            else {
+                return String.join(String.valueOf(Path.DELIMITER),
+                    parent.getDriveId(), metadata.getId(),
+                    remoteParent.getDriveId(), remoteMetadata.getId());
+            }
+        }
+        else {
+            return String.join(String.valueOf(Path.DELIMITER), parent.getDriveId(), metadata.getId());
+        }
+    }
+
     /**
      * Resolves given path to OneDriveItem
      */
     @Override
-    public DriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
+    public DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
         if(file.equals(OneDriveListService.MYFILES_NAME)) {
             return new Drive(getClient()).getRoot();
         }
@@ -53,6 +77,9 @@ public class OneDriveSession extends GraphSession {
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }
+
+        // recursively find items …
+
         final String[] idParts = versionId.split(String.valueOf(Path.DELIMITER));
         final String driveId;
         final String itemId;
@@ -79,8 +106,17 @@ public class OneDriveSession extends GraphSession {
 
         final ContainerItem containerItem = getContainer(file);
         // Rename not possible in /Shared, items inside subfolder can be renamed
-        return containerItem.isDrive() && (container || !containerItem.getContainerPath().map(file::equals).orElse(false)) ||
-            !containerItem.isDrive() && !containerItem.getCollectionPath().map(o -> file.equals(o) || file.getParent().equals(o)).orElse(false);
+
+        if(containerItem.isDrive()) {
+            return container || !containerItem.getContainerPath().map(file::equals).orElse(false);
+        }
+        else {
+            Optional<Boolean> predicate = containerItem.getCollectionPath().map(o -> file.equals(o));
+            if(!container) {
+                predicate = predicate.map(o -> o || file.getParent().equals(o));
+            }
+            return !predicate.orElse(false);
+        }
     }
 
     @Override

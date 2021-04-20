@@ -21,7 +21,7 @@ public interface TransferConnectionLimiter {
     /**
      * Auto adjust depending on protocol
      */
-    int AUTO = -1;
+    int AUTO = 0;
 
     int getLimit(Host host);
 }

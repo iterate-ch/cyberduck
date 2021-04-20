@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -27,11 +28,13 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.GroupItem;
 import org.nuxeo.onedrive.client.types.Site;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -49,41 +52,70 @@ public abstract class AbstractSharepointSession extends GraphSession {
     public abstract GroupItem getGroup(final Path file) throws BackgroundException;
 
     @Override
-    public DriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
+    public String getFileId(final DriveItem.Metadata metadata) {
+        return metadata.getId();
+    }
+
+    @Override
+    public DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
         final String versionId = fileIdProvider.getFileId(file, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }
-        final String[] idParts = versionId.split(String.valueOf(Path.DELIMITER));
-        if(idParts.length == 1) {
-            return new Drive(getClient(), idParts[0]).getRoot();
+
+        // Finds Sites/<Site Name>/Drives/<drive id>
+        // Finds /Groups/<Groups Name>/<drive id>
+        // Finds /Default/Drives/<drive id>
+        // collection is: Drives
+        // container is: Drives/<drive id>
+        final GraphSession.ContainerItem driveContainer = getContainer(file);
+        if(!driveContainer.isDrive()) {
+            throw new NotfoundException(String.format("File %s is not in a drive.", file.getAbsolute()));
+        }
+        final Drive drive;
+        final String driveId = fileIdProvider.getFileid(driveContainer.getContainerPath().get(), new DisabledListProgressListener());
+        final GraphSession.ContainerItem parentContainer = getContainer(driveContainer.getContainerPath().get().getParent());
+        if(parentContainer.getCollectionPath().map(p -> SharepointListService.GROUPS_CONTAINER.equals(p.getName())).orElse(false)) {
+            drive = new Drive(getGroup(parentContainer.getContainerPath().get()), driveId);
+        }
+        else if(parentContainer.getContainerPath().map(p -> SharepointListService.DEFAULT_SITE.equals(p.getName())).orElse(false)) {
+            // Handles /Default-case, which is a site.
+            drive = new Drive(getSite(parentContainer.getContainerPath().get()), driveId);
         }
         else {
-            final String driveId;
-            final String itemId;
-            if(idParts.length == 2 || !resolveLastItem) {
-                driveId = idParts[0];
-                itemId = idParts[1];
-            }
-            else if(idParts.length == 4) {
-                driveId = idParts[2];
-                itemId = idParts[3];
-            }
-            else {
-                throw new NotfoundException(file.getAbsolute());
-            }
-            final Drive drive = new Drive(getClient(), driveId);
-            if(file.getType().contains(Path.Type.file)) {
-                return new DriveItem(drive, itemId);
-            }
-            else if(file.getType().contains(Path.Type.directory)) {
-                return new DriveItem(drive, itemId);
-            }
-            else if(file.getType().contains(Path.Type.placeholder)) {
-                return new DriveItem(drive, itemId);
+            // finds:
+            // Sites/<site name>
+            final GraphSession.ContainerItem containerItem = getContainer(parentContainer.getContainerPath().get());
+            if (containerItem.getCollectionPath().map(p -> SharepointListService.SITES_CONTAINER.equals(p.getName())).orElse(false)) {
+                drive = new Drive(getSite(containerItem.getContainerPath().get()), driveId);
+            } else {
+                throw new NotfoundException(String.format("File %s is not part of any drive.", file.getAbsolute()));
             }
         }
-        throw new NotfoundException(file.getAbsolute());
+
+        final DriveItem ownItem;
+        if(driveContainer.getContainerPath().map(file::equals).orElse(false)) {
+            ownItem = drive.getRoot();
+        }
+        else {
+            ownItem = new DriveItem(drive, versionId);
+        }
+        if(resolveLastItem) {
+            try {
+                final DriveItem.Metadata metadata = ownItem.getMetadata();
+                final DriveItem.Metadata remoteMetadata = metadata.getRemoteItem();
+                if(null != remoteMetadata) {
+                    return (DriveItem) remoteMetadata.getItem();
+                }
+            }
+            catch(OneDriveAPIException oneDriveAPIException) {
+                throw new GraphExceptionMappingService().map(oneDriveAPIException);
+            }
+            catch(IOException ioException) {
+                throw new DefaultIOExceptionMappingService().map(ioException);
+            }
+        }
+        return ownItem;
     }
 
     @Override

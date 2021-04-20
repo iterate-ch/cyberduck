@@ -43,7 +43,7 @@ public class GraphDirectoryFeature implements Directory<Void> {
 
     @Override
     public Path mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
-        final DriveItem folder = session.toFolder(directory.getParent());
+        final DriveItem folder = session.getItem(directory.getParent());
         try {
             final DriveItem.Metadata metadata = Files.createFolder(folder, directory.getName());
             final PathAttributes attr = attributes.toAttributes(metadata);
