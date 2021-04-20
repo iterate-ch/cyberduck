@@ -216,4 +216,14 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
             // Expected
         }
     }
+
+    @Test
+    public void testRedirectWithNoLocationHeader() throws Exception {
+        final Path container = new Path("profiles.cyberduck.io", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, "S3 (HTTP).cyberduckprofile", EnumSet.of(Path.Type.file),
+            new PathAttributes().withVersionId("4ajsLHgDubdGpoOjd1XCY1m4K5IUOfMY"));
+        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session);
+        final PathAttributes attributes = f.find(test);
+        assertEquals("30298e0b4a1bd3ce954289281347c6ad", attributes.getChecksum().hash);
+    }
 }
