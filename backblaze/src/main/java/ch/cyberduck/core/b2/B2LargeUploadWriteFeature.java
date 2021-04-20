@@ -145,7 +145,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Upload finished for %s with response %s", file, response));
                     }
-                    overall.setVersion(response.getFileId());
+                    overall.setVersionId(response.getFileId());
                     close.set(true);
                 }
                 else {
@@ -156,14 +156,14 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                         }
                         final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
                             containerService.getKey(file), overall.getMime(), fileinfo);
-                        overall.setVersion(response.getFileId());
+                        overall.setVersionId(response.getFileId());
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Multipart upload started for %s with ID %s", file, response.getFileId()));
                         }
                     }
                     final int segment = ++partNumber;
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Write segment %d for upload %s", segment, overall.getVersion()));
+                        log.debug(String.format("Write segment %d for upload %s", segment, overall.getVersionId()));
                     }
                     completed.add(new DefaultRetryCallable<B2UploadPartResponse>(session.getHost(), new BackgroundExceptionCallable<B2UploadPartResponse>() {
                         @Override
@@ -173,7 +173,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                             final Checksum checksum = ChecksumComputeFactory.get(HashAlgorithm.sha1)
                                 .compute(new ByteArrayInputStream(content, off, len), status);
                             try {
-                                return session.getClient().uploadLargeFilePart(overall.getVersion(), segment, entity, checksum.hash);
+                                return session.getClient().uploadLargeFilePart(overall.getVersionId(), segment, entity, checksum.hash);
                             }
                             catch(B2ApiException e) {
                                 throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);
@@ -201,13 +201,13 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     return;
                 }
                 if(completed.isEmpty()) {
-                    if(null == overall.getVersion()) {
+                    if(null == overall.getVersionId()) {
                         // No single file upload and zero parts
-                        overall.setVersion(new B2TouchFeature(session, fileid).touch(file, new TransferStatus()).attributes().getVersionId());
+                        overall.setVersionId(new B2TouchFeature(session, fileid).touch(file, new TransferStatus()).attributes().getVersionId());
                     }
                     else {
                         // Cancel upload
-                        session.getClient().cancelLargeFileUpload(overall.getVersion());
+                        session.getClient().cancelLargeFileUpload(overall.getVersionId());
                     }
                 }
                 else {
@@ -221,7 +221,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     for(B2UploadPartResponse part : completed) {
                         checksums.add(part.getContentSha1());
                     }
-                    session.getClient().finishLargeFileUpload(overall.getVersion(), checksums.toArray(new String[checksums.size()]));
+                    session.getClient().finishLargeFileUpload(overall.getVersionId(), checksums.toArray(new String[checksums.size()]));
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
                     }
@@ -239,7 +239,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
         }
 
         public VersionId getFileId() {
-            return new VersionId(overall.getVersion());
+            return new VersionId(overall.getVersionId());
         }
     }
 }

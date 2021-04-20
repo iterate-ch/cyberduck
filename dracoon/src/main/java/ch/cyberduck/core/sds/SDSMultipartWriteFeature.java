@@ -75,10 +75,10 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                     }
                     super.close();
                     try {
-                        status.setVersion(upload.complete(file, uploadToken, status));
+                        status.setVersionId(upload.complete(file, uploadToken, status));
                     }
                     catch(ConflictException e) {
-                        status.setVersion(upload.complete(file, uploadToken, new TransferStatus(status).exists(true)));
+                        status.setVersionId(upload.complete(file, uploadToken, new TransferStatus(status).exists(true)));
                     }
                 }
                 catch(BackgroundException e) {

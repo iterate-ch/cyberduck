@@ -184,12 +184,12 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * Version after write
      */
-    private String version;
+    private String versionId;
 
     /**
      * File Id assigned after write
      */
-    private String fileid;
+    private String fileId;
 
     public TransferStatus() {
         // Default
@@ -227,8 +227,8 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.filekey = copy.filekey;
         this.nonces = copy.nonces;
         this.lockId = copy.lockId;
-        this.version = copy.version;
-        this.fileid = copy.fileid;
+        this.versionId = copy.versionId;
+        this.fileId = copy.fileId;
     }
 
     /**
@@ -641,29 +641,29 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
-    public String getVersion() {
-        return version;
+    public String getVersionId() {
+        return versionId;
     }
 
-    public void setVersion(final String version) {
-        this.version = version;
+    public void setVersionId(final String versionId) {
+        this.versionId = versionId;
     }
 
     public TransferStatus withVersion(final String version) {
-        this.version = version;
+        this.versionId = version;
         return this;
     }
 
-    public String getId() {
-        return fileid;
+    public String getFileId() {
+        return fileId;
     }
 
-    public void setId(final String fileid) {
-        this.fileid = fileid;
+    public void setFileId(final String fileid) {
+        this.fileId = fileid;
     }
 
-    public TransferStatus withId(final String fileid) {
-        this.fileid = fileid;
+    public TransferStatus withFileId(final String fileid) {
+        this.fileId = fileid;
         return this;
     }
 
@@ -715,8 +715,8 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         sb.append(", parameters=").append(parameters);
         sb.append(", metadata=").append(metadata);
         sb.append(", lockId=").append(lockId);
-        sb.append(", version=").append(version);
-        sb.append(", fileid=").append(fileid);
+        sb.append(", version=").append(versionId);
+        sb.append(", fileid=").append(fileId);
         sb.append('}');
         return sb.toString();
     }

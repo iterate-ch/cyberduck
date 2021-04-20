@@ -45,7 +45,7 @@ public class StoregateDirectoryFeature implements Directory<VersionId> {
             request.setName(folder.getName());
             request.setParentID(fileid.getFileId(folder.getParent(), new DisabledListProgressListener()));
             final File f = files.filesCreateFolder(request);
-            status.setId(f.getId());
+            status.setFileId(f.getId());
             return folder.withAttributes(new StoregateAttributesFinderFeature(session, fileid).toAttributes(f));
         }
         catch(ApiException e) {

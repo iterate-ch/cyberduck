@@ -77,11 +77,11 @@ public class CreateDirectoryWorker extends Worker<Path> {
         final Path result = feature.mkdir(folder, region, status);
         final VersionIdProvider versionIdProvider = session.getFeature(VersionIdProvider.class);
         if(versionIdProvider != null) {
-            versionIdProvider.cache(result, status.getVersion());
+            versionIdProvider.cache(result, status.getVersionId());
         }
         final FileIdProvider fileIdProvider = session.getFeature(FileIdProvider.class);
         if(fileIdProvider != null) {
-            fileIdProvider.cache(result, status.getId());
+            fileIdProvider.cache(result, status.getFileId());
         }
         return result;
     }

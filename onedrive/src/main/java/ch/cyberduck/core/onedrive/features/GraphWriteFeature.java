@@ -152,7 +152,7 @@ public class GraphWriteFeature implements Write<Void> {
                             final OneDriveJsonObject response = upload.uploadFragment(header, content);
                             if(response instanceof DriveItem.Metadata) {
                                 log.info(String.format("Completed upload for %s", file));
-                                overall.setId(((DriveItem.Metadata) response).getId());
+                                overall.setFileId(((DriveItem.Metadata) response).getId());
                             }
                             else {
                                 log.debug(String.format("Uploaded fragment %s for file %s", header, file));

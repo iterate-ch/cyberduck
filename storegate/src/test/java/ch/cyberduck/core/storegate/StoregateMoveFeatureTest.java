@@ -47,8 +47,8 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
         final TransferStatus status = new TransferStatus();
         final Path test = new StoregateTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         final Path target = new StoregateMoveFeature(session, nodeid).move(test, new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertEquals(status.getId(), target.attributes().getFileId());
-        assertEquals(status.getId(), new StoregateAttributesFinderFeature(session, nodeid).find(target).getFileId());
+        assertEquals(status.getFileId(), target.attributes().getFileId());
+        assertEquals(status.getFileId(), new StoregateAttributesFinderFeature(session, nodeid).find(target).getFileId());
         assertFalse(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));

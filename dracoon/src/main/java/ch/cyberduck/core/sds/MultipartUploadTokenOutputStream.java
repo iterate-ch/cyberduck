@@ -148,6 +148,6 @@ public class MultipartUploadTokenOutputStream extends OutputStream {
     }
 
     public VersionId getVersionId() {
-        return new VersionId(overall.getVersion());
+        return new VersionId(overall.getVersionId());
     }
 }

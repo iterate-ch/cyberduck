@@ -41,7 +41,7 @@ public class StoregateTouchFeature implements Touch<String> {
             final StatusOutputStream<String> out = writer.write(file, status, new DisabledConnectionCallback());
             out.close();
             final String fileid = out.getStatus();
-            status.setId(fileid);
+            status.setFileId(fileid);
             return file.withAttributes(new PathAttributes(file.attributes()).withFileId(fileid));
         }
         catch(IOException e) {

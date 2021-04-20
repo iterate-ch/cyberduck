@@ -89,8 +89,8 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                             final Path container = new DefaultPathContainerService().getContainer(file);
                             if(rooms.get(container)) {
                                 final TransferStatus status = entry.getValue();
-                                if(null != status.getVersion()) {
-                                    background.operate(session, callback, file.withAttributes(new PathAttributes(file.attributes()).withVersionId(status.getVersion())));
+                                if(null != status.getVersionId()) {
+                                    background.operate(session, callback, file.withAttributes(new PathAttributes(file.attributes()).withVersionId(status.getVersionId())));
                                 }
                                 else {
                                     log.warn(String.format("Missing fileid in transfer status %s for file %s", status, file));

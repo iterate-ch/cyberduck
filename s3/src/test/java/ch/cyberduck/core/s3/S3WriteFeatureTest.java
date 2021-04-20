@@ -137,7 +137,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertNotNull(status.getVersion());
+        assertNotNull(status.getVersionId());
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(file).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

@@ -121,16 +121,16 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 final B2LargeUploadPartService partService = new B2LargeUploadPartService(session, fileid);
                 final List<B2FileInfoResponse> uploads = partService.find(file);
                 if(uploads.isEmpty()) {
-                    status.setVersion(session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
+                    status.setVersionId(session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
                         containerService.getKey(file), status.getMime(), fileinfo).getFileId());
                 }
                 else {
-                    status.setVersion(uploads.iterator().next().getFileId());
-                    completed.addAll(partService.list(status.getVersion()));
+                    status.setVersionId(uploads.iterator().next().getFileId());
+                    completed.addAll(partService.list(status.getVersionId()));
                 }
             }
             else {
-                status.setVersion(session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
+                status.setVersionId(session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
                     containerService.getKey(file), status.getMime(), fileinfo).getFileId());
             }
             // Full size of file
@@ -194,7 +194,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             for(B2UploadPartResponse part : completed) {
                 checksums.add(part.getContentSha1());
             }
-            final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(status.getVersion(), checksums.toArray(new String[checksums.size()]));
+            final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(status.getVersionId(), checksums.toArray(new String[checksums.size()]));
             if(log.isInfoEnabled()) {
                 log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
             }
@@ -232,7 +232,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 status.setNonces(overall.getNonces());
                 status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
                 status.setSegment(true);
-                status.setVersion(overall.getVersion());
+                status.setVersionId(overall.getVersionId());
                 status.setPart(partNumber);
                 return (B2UploadPartResponse) B2LargeUploadService.super.upload(file, local, throttle, listener, status, overall, new StreamProgress() {
                     @Override
