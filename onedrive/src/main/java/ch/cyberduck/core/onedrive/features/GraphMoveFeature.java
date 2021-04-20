@@ -71,6 +71,7 @@ public class GraphMoveFeature implements Move {
         final DriveItem item = session.toItem(file);
         try {
             Files.patch(item, patchOperation);
+            return renamed.withAttributes(new GraphAttributesFinderFeature(session).toAttributes(item.getMetadata()));
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Cannot rename {0}", e, file);
@@ -78,7 +79,6 @@ public class GraphMoveFeature implements Move {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
         }
-        return renamed.withAttributes(new GraphAttributesFinderFeature(session).find(renamed));
     }
 
     @Override

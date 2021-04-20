@@ -68,7 +68,9 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         new SDSTouchFeature(session, nodeid).touch(copy, new TransferStatus());
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(test, copy));
-        assertNotNull(new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback()).attributes().getVersionId());
+        final Path target = new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
+        assertNotEquals(test.attributes().getVersionId(), target.attributes().getVersionId());
+        assertEquals(target.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(target).getVersionId());
         assertTrue(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(copy));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -83,7 +85,9 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final Path copy = new Path(new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus()), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertFalse(feature.isSupported(test, copy));
-        assertNotNull(new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback()).attributes().getVersionId());
+        final Path target = new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
+        assertNotEquals(test.attributes().getVersionId(), target.attributes().getVersionId());
+        assertEquals(target.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(target).getVersionId());
         assertTrue(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(copy));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -104,7 +108,9 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         new SDSTouchFeature(session, nodeid).touch(copy, new TransferStatus());
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(test, copy));
-        assertNotNull(new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback()).attributes().getVersionId());
+        final Path target = new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
+        assertNotEquals(test.attributes().getVersionId(), target.attributes().getVersionId());
+        assertEquals(target.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(target).getVersionId());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new SDSListService(session, nodeid).list(targetFolder, new DisabledListProgressListener());
         assertTrue(find.find(copy));

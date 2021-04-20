@@ -33,7 +33,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -46,10 +46,11 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
             String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path test = new StoregateTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new Path(new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus()), test.getName(), EnumSet.of(Path.Type.file));
-        new StoregateTouchFeature(session, nodeid).touch(copy, new TransferStatus());
+        final TransferStatus status = new TransferStatus();
+        new StoregateTouchFeature(session, nodeid).touch(copy, status);
         final StoregateCopyFeature feature = new StoregateCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(test, copy));
-        assertNull(new StoregateCopyFeature(session, nodeid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback()).attributes().getFileId());
+        assertNotEquals(status.getId(), new StoregateCopyFeature(session, nodeid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback()).attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(copy));
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -62,7 +63,7 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
             String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path test = new StoregateTouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new Path(new StoregateDirectoryFeature(session, fileid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus()), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertNull(new StoregateCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback()).attributes().getFileId());
+        assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback()).attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(copy));
         new StoregateDeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -78,12 +79,13 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
         new StoregateDirectoryFeature(session, fileid).mkdir(sourceFolder, null, new TransferStatus());
         new StoregateDirectoryFeature(session, fileid).mkdir(targetFolder, null, new TransferStatus());
         final Path test = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new StoregateTouchFeature(session, fileid).touch(test, new TransferStatus());
+        final TransferStatus status = new TransferStatus();
+        new StoregateTouchFeature(session, fileid).touch(test, status);
         final Path copy = new Path(targetFolder, test.getName(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, fileid).touch(copy, new TransferStatus());
         final StoregateCopyFeature feature = new StoregateCopyFeature(session, fileid);
         assertTrue(feature.isSupported(test, copy));
-        assertNull(new StoregateCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback()).attributes().getFileId());
+        assertNotEquals(status.getId(), new StoregateCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback()).attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new StoregateListService(session, fileid).list(targetFolder, new DisabledListProgressListener());
         assertTrue(find.find(copy));
@@ -98,10 +100,11 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
         final Path folder = new Path(top, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new StoregateDirectoryFeature(session, fileid).mkdir(folder, null, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new StoregateTouchFeature(session, fileid).touch(test, new TransferStatus());
+        final TransferStatus status = new TransferStatus();
+        new StoregateTouchFeature(session, fileid).touch(test, status);
         final Path test2 = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, fileid).touch(test2, new TransferStatus());
-        assertNull(new StoregateCopyFeature(session, fileid).copy(test, test2, new TransferStatus().exists(true), new DisabledConnectionCallback()).attributes().getFileId());
+        assertNotEquals(status.getId(), new StoregateCopyFeature(session, fileid).copy(test, test2, new TransferStatus().exists(true), new DisabledConnectionCallback()).attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new StoregateListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(find.find(test));
@@ -116,13 +119,14 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
             String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path directory = new StoregateDirectoryFeature(session, fileid).mkdir(new Path(top, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new StoregateTouchFeature(session, fileid).touch(new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final TransferStatus status = new TransferStatus();
+        final Path file = new StoregateTouchFeature(session, fileid).touch(new Path(directory, name, EnumSet.of(Path.Type.file)), status);
         final Path target_parent = new StoregateDirectoryFeature(session, fileid).mkdir(new Path(top, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path target = new Path(target_parent, directory.getName(), EnumSet.of(Path.Type.directory));
         final StoregateCopyFeature feature = new StoregateCopyFeature(session, fileid);
         assertTrue(feature.isSupported(directory, target));
         final Path copy = new StoregateCopyFeature(session, fileid).copy(directory, target, new TransferStatus(), new DisabledConnectionCallback());
-        assertNull(copy.attributes().getFileId());
+        assertNotEquals(status.getId(), copy.attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertTrue(new DefaultFindFeature(session).find(copy));

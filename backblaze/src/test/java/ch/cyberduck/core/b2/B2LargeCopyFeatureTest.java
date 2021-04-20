@@ -37,8 +37,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class B2LargeCopyFeatureTest extends AbstractB2Test {
@@ -56,6 +55,7 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final Path copy = new B2LargeCopyFeature(session, fileid, 5 * 1024L * 1024L, 1).copy(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
             new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        assertNotEquals(test.attributes().getVersionId(), copy.attributes().getVersionId());
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
         final byte[] compare = new byte[content.length];

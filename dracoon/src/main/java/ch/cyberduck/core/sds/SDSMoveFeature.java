@@ -19,7 +19,6 @@ import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.Version;
@@ -82,7 +81,7 @@ public class SDSMoveFeature implements Move {
                     Long.parseLong(nodeid.getVersionId(renamed.getParent(), new DisabledListProgressListener())),
                     StringUtils.EMPTY, null);
                 // Copy original file attributes
-                return renamed.withAttributes(new PathAttributes(renamed.attributes()).withVersionId(file.attributes().getVersionId()));
+                return renamed.withAttributes(file.attributes());
             }
         }
         catch(ApiException e) {

@@ -55,7 +55,6 @@ public class GraphCopyFeature implements Copy {
         if(status.isExists()) {
             new GraphDeleteFeature(session).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
         }
-
         final DriveItem targetItem = session.toFolder(target.getParent());
         copyOperation.copy(targetItem);
         final DriveItem item = session.toItem(source);
