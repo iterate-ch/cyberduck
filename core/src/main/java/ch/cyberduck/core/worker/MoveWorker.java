@@ -30,8 +30,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
@@ -120,6 +122,18 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                         );
                     }
                 }
+                for(Map.Entry<Path, Path> f : result.entrySet()) {
+                    final VersionIdProvider versionIdProvider = session.getFeature(VersionIdProvider.class);
+                    if(versionIdProvider != null) {
+                        versionIdProvider.cache(f.getKey(), null);
+                        versionIdProvider.cache(f.getValue(), null);
+                    }
+                    final FileIdProvider fileIdProvider = session.getFeature(FileIdProvider.class);
+                    if(fileIdProvider != null) {
+                        fileIdProvider.cache(f.getKey(), null);
+                        fileIdProvider.cache(f.getValue(), null);
+                    }
+                }
                 // Find previous folders to be deleted
                 final List<Path> folders = recursive.entrySet().stream()
                     .filter(f -> !feature.isRecursive(f.getKey(), f.getValue()))
@@ -132,8 +146,16 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                     final Delete delete = session.getFeature(Delete.class);
                     for(Path folder : folders) {
                         log.warn(String.format("Delete source directory %s", folder));
-                        delete.delete(Collections.singletonMap(folder,
-                            new TransferStatus().withLockId(this.getLockId(folder))), callback, new Delete.DisabledCallback());
+                        final TransferStatus status = new TransferStatus().withLockId(this.getLockId(folder));
+                        delete.delete(Collections.singletonMap(folder, status), callback, new Delete.DisabledCallback());
+                        final VersionIdProvider versionIdProvider = session.getFeature(VersionIdProvider.class);
+                        if(versionIdProvider != null) {
+                            versionIdProvider.cache(folder, null);
+                        }
+                        final FileIdProvider fileIdProvider = session.getFeature(FileIdProvider.class);
+                        if(fileIdProvider != null) {
+                            fileIdProvider.cache(folder, null);
+                        }
                     }
                 }
             }
