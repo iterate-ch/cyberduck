@@ -3,6 +3,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
@@ -15,6 +16,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -27,7 +29,18 @@ public class GraphFileIdProviderTest extends AbstractOneDriveTest {
         final Path home = new OneDriveHomeFinderService().find();
         final Path path2R = new Path(home, "/2R", EnumSet.of(Path.Type.directory));
         final Path path33 = new Path(home, "/33", EnumSet.of(Path.Type.directory));
-
+        try {
+            new GraphDeleteFeature(session).delete(Collections.singletonList(path2R), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        }
+        catch(NotfoundException e) {
+            //
+        }
+        try {
+            new GraphDeleteFeature(session).delete(Collections.singletonList(path33), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        }
+        catch(NotfoundException e) {
+            //
+        }
         final Directory directoryFeature = new GraphDirectoryFeature(session, new GraphFileIdProvider(session));
         final Path path2RWithId = directoryFeature.mkdir(path2R, null, new TransferStatus());
         assertNotNull(path2RWithId.attributes().getFileId());
