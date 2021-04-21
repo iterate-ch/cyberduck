@@ -26,7 +26,6 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CopyNode;
 import ch.cyberduck.core.sds.io.swagger.client.model.CopyNodesRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +50,7 @@ public class SDSCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final Node node = new NodesApi(session.getClient()).copyNodes(
+            new NodesApi(session.getClient()).copyNodes(
                 new CopyNodesRequest()
                     .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE)
                     .addItemsItem(new CopyNode().id(Long.parseLong(nodeid.getFileid(source, new DisabledListProgressListener()))))
@@ -59,7 +58,7 @@ public class SDSCopyFeature implements Copy {
                 // Target Parent Node ID
                 Long.parseLong(nodeid.getFileid(target.getParent(), new DisabledListProgressListener())),
                 StringUtils.EMPTY, null);
-            return target.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
+            return target.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(target));
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Cannot copy {0}", e, source);

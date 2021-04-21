@@ -19,7 +19,9 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.AbstractSDSTest;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
@@ -35,7 +37,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -62,10 +63,11 @@ public class DefaultCopyFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setExists(true);
         status.setLength(content.length);
-        final OutputStream out = new SDSMultipartWriteFeature(session, nodeid).write(source, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<VersionId> out = new SDSMultipartWriteFeature(session, nodeid).write(source, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
+        source.attributes().setVersionId(out.getStatus().id);
         new DefaultCopyFeature(session).copy(source, target, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         assertTrue(new DefaultFindFeature(session).find(source));
         assertTrue(new DefaultFindFeature(session).find(target));
