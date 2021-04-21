@@ -44,8 +44,7 @@ public class S3MoveFeature implements Move {
     private final PathContainerService containerService;
     private final S3Session session;
     private final S3AccessControlListFeature accessControlListFeature;
-
-    private Delete delete;
+    private final Delete delete;
 
     public S3MoveFeature(final S3Session session) {
         this(session, new S3AccessControlListFeature(session));

@@ -98,7 +98,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         final InputStream in = new S3ReadFeature(session).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
-        new StreamCopier(status, status).transfer(in, new NullOutputStream());
+        new StreamCopier(status, status).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
         assertEquals(content.length, status.getOffset());
         assertEquals(content.length, status.getLength());
         in.close();

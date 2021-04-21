@@ -37,6 +37,6 @@ public class NullLocal extends Local {
 
     @Override
     public OutputStream getOutputStream(boolean append) {
-        return new NullOutputStream();
+        return NullOutputStream.NULL_OUTPUT_STREAM;
     }
 }

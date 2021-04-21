@@ -346,7 +346,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final Path target = new Path(room2, test.getName(), EnumSet.of(Path.Type.file, Path.Type.triplecrypt));
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(test, target));
-        assertNotNull(new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, target, new TransferStatus().length(content.length), new DisabledConnectionCallback() {
+        final Path copy = new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, target, new TransferStatus().length(content.length), new DisabledConnectionCallback() {
             @Override
             public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) {
                 //
@@ -356,12 +356,12 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("eth[oh8uv4Eesij");
             }
-        })
-            .attributes().getVersionId());
+        });
+        assertNotNull(copy.attributes().getVersionId());
         assertTrue(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(target));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(target, new TransferStatus().length(content.length), new DisabledConnectionCallback() {
+        final InputStream stream = new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(copy, new TransferStatus().length(content.length), new DisabledConnectionCallback() {
             @Override
             public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) {
                 //

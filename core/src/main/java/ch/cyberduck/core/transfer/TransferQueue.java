@@ -50,7 +50,10 @@ public final class TransferQueue {
 
     public TransferQueue(final int size) {
         this.permits = size;
-        this.semaphore = new ResizeableSemaphore(size, true);
+        this.semaphore = new ResizeableSemaphore(
+            size == TransferConnectionLimiter.AUTO ?
+                PreferencesFactory.get().getInteger("queue.connections.limit.default") :
+                size, true);
     }
 
     /**

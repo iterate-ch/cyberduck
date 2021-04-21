@@ -119,9 +119,9 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     @Test
     public void testSupport() {
         final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
-        assertFalse(new S3MoveFeature(null).isSupported(c, c));
+        assertFalse(new S3MoveFeature(session).isSupported(c, c));
         final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
-        assertTrue(new S3MoveFeature(null).isSupported(cf, cf));
+        assertTrue(new S3MoveFeature(session).isSupported(cf, cf));
     }
 
     @Test

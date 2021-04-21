@@ -20,6 +20,7 @@ package ch.cyberduck.core.formatter;
 import ch.cyberduck.core.LocaleFactory;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.NumberFormat;
 
 public abstract class AbstractSizeFormatter implements SizeFormatter {
@@ -50,18 +51,18 @@ public abstract class AbstractSizeFormatter implements SizeFormatter {
         StringBuilder formatted = new StringBuilder();
         if(size < mega.multiple()) {
             formatted.append(new BigDecimal(size).divide(new BigDecimal(kilo.multiple()),
-                    1,
-                    BigDecimal.ROUND_HALF_UP).toString()).append(" ").append(kilo.suffix());
+                1,
+                RoundingMode.HALF_UP)).append(" ").append(kilo.suffix());
         }
         else if(size < giga.multiple()) {
             formatted.append(new BigDecimal(size).divide(new BigDecimal(mega.multiple()),
-                    1,
-                    BigDecimal.ROUND_HALF_UP).toString()).append(" ").append(mega.suffix());
+                1,
+                RoundingMode.HALF_UP)).append(" ").append(mega.suffix());
         }
         else {
             formatted.append(new BigDecimal(size).divide(new BigDecimal(giga.multiple()),
-                    1,
-                    BigDecimal.ROUND_HALF_UP).toString()).append(" ").append(giga.suffix());
+                1,
+                RoundingMode.HALF_UP)).append(" ").append(giga.suffix());
         }
         if(plain) {
             formatted.append(" (").append(NumberFormat.getInstance().format(size)).append(" bytes)");

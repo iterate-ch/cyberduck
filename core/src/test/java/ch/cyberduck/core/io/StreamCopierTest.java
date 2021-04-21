@@ -54,7 +54,7 @@ public class StreamCopierTest {
                 received += bytes;
                 assertTrue(received > sent);
             }
-        }).transfer(new NullInputStream(432768L), new NullOutputStream());
+        }).transfer(new NullInputStream(432768L), NullOutputStream.NULL_OUTPUT_STREAM);
         assertTrue(status.isComplete());
         assertEquals(432768L, status.getOffset(), 0L);
     }
@@ -90,7 +90,7 @@ public class StreamCopierTest {
     @Test
     public void testTransferFixedLength() throws Exception {
         final TransferStatus status = new TransferStatus().length(432768L);
-        new StreamCopier(status, status).withLimit(432768L).transfer(new NullInputStream(432768L), new NullOutputStream());
+        new StreamCopier(status, status).withLimit(432768L).transfer(new NullInputStream(432768L), NullOutputStream.NULL_OUTPUT_STREAM);
         assertTrue(status.isComplete());
         assertEquals(432768L, status.getOffset(), 0L);
     }
@@ -98,7 +98,7 @@ public class StreamCopierTest {
     @Test
     public void testTransferFixedLengthIncomplete() throws Exception {
         final TransferStatus status = new TransferStatus().length(432768L);
-        new StreamCopier(status, status).withLimit(432767L).transfer(new NullInputStream(432768L), new NullOutputStream());
+        new StreamCopier(status, status).withLimit(432767L).transfer(new NullInputStream(432768L), NullOutputStream.NULL_OUTPUT_STREAM);
         assertEquals(432767L, status.getOffset(), 0L);
         assertTrue(status.isComplete());
     }
@@ -106,7 +106,7 @@ public class StreamCopierTest {
     @Test
     public void testReadNoEndofStream() throws Exception {
         final TransferStatus status = new TransferStatus().length(432768L);
-        new StreamCopier(status, status).withLimit(432768L).transfer(new NullInputStream(432770L), new NullOutputStream());
+        new StreamCopier(status, status).withLimit(432768L).transfer(new NullInputStream(432770L), NullOutputStream.NULL_OUTPUT_STREAM);
         assertEquals(432768L, status.getOffset(), 0L);
         assertTrue(status.isComplete());
     }
@@ -115,13 +115,13 @@ public class StreamCopierTest {
     public void testSkipInput() throws Exception {
         {
             final TransferStatus status = new TransferStatus();
-            new StreamCopier(status, status).withOffset(1L).transfer(new NullInputStream(432768L), new NullOutputStream());
+            new StreamCopier(status, status).withOffset(1L).transfer(new NullInputStream(432768L), NullOutputStream.NULL_OUTPUT_STREAM);
             assertEquals(432767L, status.getOffset(), 0L);
             assertTrue(status.isComplete());
         }
         {
             final TransferStatus status = new TransferStatus();
-            new StreamCopier(status, status).withOffset(1L).transfer(new NullInputStream(432768L), new NullOutputStream());
+            new StreamCopier(status, status).withOffset(1L).transfer(new NullInputStream(432768L), NullOutputStream.NULL_OUTPUT_STREAM);
             assertEquals(432767L, status.getOffset(), 0L);
             assertTrue(status.isComplete());
         }
@@ -154,7 +154,7 @@ public class StreamCopierTest {
                         public void setComplete() {
 
                         }
-                    }).transfer(new NullInputStream(status.getLength()), new NullOutputStream());
+                    }).transfer(new NullInputStream(status.getLength()), NullOutputStream.NULL_OUTPUT_STREAM);
                 }
                 catch(BackgroundException e) {
                     assertTrue(e instanceof ConnectionCanceledException);

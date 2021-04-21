@@ -109,9 +109,10 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         out.close();
         final TransferStatus upload = new TransferStatus().length(content.length);
         upload.setExists(true);
-        new DefaultUploadFeature<VersionId>(new SDSMultipartWriteFeature(session, nodeid)).upload(
+        final VersionId reply = new DefaultUploadFeature<VersionId>(new SDSMultipartWriteFeature(session, nodeid)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
             new DisabledConnectionCallback());
+        test.attributes().setVersionId(reply.id);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
@@ -142,9 +143,10 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         out.close();
         final TransferStatus upload = new TransferStatus().length(content.length);
         upload.setExists(true);
-        new DefaultUploadFeature<VersionId>(new SDSMultipartWriteFeature(session, nodeid)).upload(
+        final VersionId reply = new DefaultUploadFeature<VersionId>(new SDSMultipartWriteFeature(session, nodeid)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
             new DisabledConnectionCallback());
+        test.attributes().setVersionId(reply.id);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         status.setAppend(true);

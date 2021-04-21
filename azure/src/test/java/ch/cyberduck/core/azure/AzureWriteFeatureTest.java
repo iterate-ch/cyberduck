@@ -1,14 +1,7 @@
 package ch.cyberduck.core.azure;
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -38,18 +31,12 @@ import com.microsoft.azure.storage.blob.BlobType;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class AzureWriteFeatureTest {
+public class AzureWriteFeatureTest extends AbstractAzureTest {
 
     @Test
     public void testWriteOverrideAppendBlob() throws Exception {
         final OperationContext context
             = new OperationContext();
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         status.setMime("text/plain");
         final byte[] content = RandomUtils.nextBytes(513);
@@ -88,13 +75,7 @@ public class AzureWriteFeatureTest {
     @Test
     public void testWriteOverrideBlockBlob() throws Exception {
         final OperationContext context
-                = new OperationContext();
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+            = new OperationContext();
         final TransferStatus status = new TransferStatus();
         status.setMime("text/plain");
         final byte[] content = RandomUtils.nextBytes(513);
