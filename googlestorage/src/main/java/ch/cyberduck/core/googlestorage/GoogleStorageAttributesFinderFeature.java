@@ -18,9 +18,11 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 
 import com.google.api.client.util.DateTime;
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.StorageObject;
 
@@ -52,8 +55,15 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
                     containerService.getContainer(file).getName()).execute());
             }
             else {
-                return this.toAttributes(session.getClient().objects().get(
-                    containerService.getContainer(file).getName(), containerService.getKey(file)).execute());
+                final Storage.Objects.Get request = session.getClient().objects().get(
+                    containerService.getContainer(file).getName(), containerService.getKey(file));
+                if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+                    request.setGeneration(Long.parseLong(file.attributes().getVersionId()));
+                }
+                final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+                    containerService.getContainer(file)
+                ) : VersioningConfiguration.empty();
+                return this.toAttributes(request.execute(), versioning);
             }
         }
         catch(IOException e) {
@@ -74,7 +84,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
         return attributes;
     }
 
-    protected PathAttributes toAttributes(final StorageObject object) {
+    protected PathAttributes toAttributes(final StorageObject object, final VersioningConfiguration versioning) {
         final PathAttributes attributes = new PathAttributes();
         if(object.getSize() != null) {
             attributes.setSize(object.getSize().longValue());
@@ -87,13 +97,13 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
         if(StringUtils.isNotBlank(object.getEtag())) {
             attributes.setETag(object.getEtag());
         }
-        // The content generation of this object. Used for object versioning.
-        // attributes.setVersionId(String.valueOf(object.getGeneration()));
-        // Archived versions of objects have a `timeDeleted` property.
-        // attributes.setDuplicate(object.getTimeDeleted() != null);
-        // if(object.getTimeDeleted() != null) {
-        //     attributes.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-        // }
+        if(versioning.isEnabled()) {
+            // The content generation of this object. Used for object versioning.
+            attributes.setVersionId(String.valueOf(object.getGeneration()));
+            // Noncurrent versions of objects have a timeDeleted property.
+            attributes.setDuplicate(object.getTimeDeleted() != null);
+
+        }
         if(object.getKmsKeyName() != null) {
             attributes.setEncryption(new Encryption.Algorithm("AES256",
                 object.getKmsKeyName()) {

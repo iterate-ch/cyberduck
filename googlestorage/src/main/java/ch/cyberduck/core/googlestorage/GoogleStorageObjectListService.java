@@ -23,8 +23,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -59,6 +61,9 @@ public class GoogleStorageObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {
         try {
             final Path bucket = containerService.getContainer(directory);
+            final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+                containerService.getContainer(directory)
+            ) : VersioningConfiguration.empty();
             final AttributedList<Path> objects = new AttributedList<Path>();
             Objects response;
             long revision = 0L;
@@ -69,7 +74,7 @@ public class GoogleStorageObjectListService implements ListService {
                 response = session.getClient().objects().list(bucket.getName())
                     .setPageToken(page)
                     // lists all versions of an object as distinct results. The default is false
-                    .setVersions(false)
+                    .setVersions(versioning.isEnabled())
                     .setMaxResults((long) chunksize)
                     .setDelimiter(delimiter)
                     .setPrefix(this.createPrefix(directory))
@@ -93,7 +98,7 @@ public class GoogleStorageObjectListService implements ListService {
                         final EnumSet<Path.Type> types = object.getName().endsWith(String.valueOf(Path.DELIMITER))
                             ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                         final Path file;
-                        final PathAttributes attr = attributes.toAttributes(object);
+                        final PathAttributes attr = attributes.toAttributes(object, versioning);
                         attr.setRevision(++revision);
                         // Copy bucket location
                         attr.setRegion(bucket.attributes().getRegion());

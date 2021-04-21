@@ -22,10 +22,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Map;
+
+import com.google.api.services.storage.Storage;
 
 public class GoogleStorageDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(GoogleStorageDeleteFeature.class);
@@ -50,7 +53,11 @@ public class GoogleStorageDeleteFeature implements Delete {
                     log.warn(String.format("Do not attempt to delete placeholder %s", file));
                 }
                 else {
-                    session.getClient().objects().delete(containerService.getContainer(file).getName(), containerService.getKey(file)).execute();
+                    final Storage.Objects.Delete request = session.getClient().objects().delete(containerService.getContainer(file).getName(), containerService.getKey(file));
+                    if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+                        request.setGeneration(Long.parseLong(file.attributes().getVersionId()));
+                    }
+                    request.execute();
                 }
             }
         }
