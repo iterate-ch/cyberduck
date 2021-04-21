@@ -2,15 +2,8 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -30,29 +23,17 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class AzureObjectListServiceTest {
+public class AzureObjectListServiceTest extends AbstractAzureTest {
 
 
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolder() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         new AzureObjectListService(session, null).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
     @Test
     public void testListEmptyFolder() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final Path folder = new AzureDirectoryFeature(session, null).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new AzureObjectListService(session, null).list(folder, new DisabledListProgressListener()).isEmpty());
@@ -62,24 +43,12 @@ public class AzureObjectListServiceTest {
 
     @Test(expected = NotfoundException.class)
     public void testListNotfoundContainer() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final Path container = new Path("notfound-cyberduck", EnumSet.of(Path.Type.volume));
         new AzureObjectListService(session, null).list(container, new DisabledListProgressListener());
     }
 
     @Test
     public void testList() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final Path directory = new AzureDirectoryFeature(session, null).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -95,12 +64,6 @@ public class AzureObjectListServiceTest {
 
     @Test
     public void testListLexicographicSortOrderAssumption() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path directory = new AzureDirectoryFeature(session, null).mkdir(
             new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());

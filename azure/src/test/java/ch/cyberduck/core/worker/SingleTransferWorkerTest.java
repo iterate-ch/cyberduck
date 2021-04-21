@@ -27,6 +27,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.azure.AbstractAzureTest;
 import ch.cyberduck.core.azure.AzureDeleteFeature;
 import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.azure.AzureSession;
@@ -64,7 +65,7 @@ import com.microsoft.azure.storage.OperationContext;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SingleTransferWorkerTest {
+public class SingleTransferWorkerTest extends AbstractAzureTest {
 
     @Test
     public void testDownload() throws Exception {

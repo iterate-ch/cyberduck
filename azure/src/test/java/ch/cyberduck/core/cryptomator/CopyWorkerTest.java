@@ -16,24 +16,19 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.azure.AbstractAzureTest;
 import ch.cyberduck.core.azure.AzureAttributesFinderFeature;
 import ch.cyberduck.core.azure.AzureDeleteFeature;
 import ch.cyberduck.core.azure.AzureDirectoryFeature;
 import ch.cyberduck.core.azure.AzureFindFeature;
-import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.azure.AzureReadFeature;
-import ch.cyberduck.core.azure.AzureSession;
 import ch.cyberduck.core.azure.AzureTouchFeature;
 import ch.cyberduck.core.azure.AzureWriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
@@ -44,7 +39,6 @@ import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
@@ -81,12 +75,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
 
     @Test
     public void testCopyFile() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -113,12 +101,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
 
     @Test
     public void testCopyToDifferentFolderCryptomator() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -144,12 +126,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
     @Test
     public void testCopyToDifferentFolderLongFilenameCryptomator() throws Exception {
         assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final CryptoVault cryptomator = new CryptoVault(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
@@ -173,12 +149,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
 
     @Test
     public void testCopyFolder() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final CryptoVault cryptomator = new CryptoVault(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
@@ -209,12 +179,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
 
     @Test
     public void testCopyFileIntoVault() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -244,12 +208,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
 
     @Test
     public void testCopyDirectoryIntoVault() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -278,12 +236,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
 
     @Test
     public void testCopyFileOutsideVault() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -311,12 +263,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
 
     @Test
     public void testCopyDirectoryOutsideVault() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

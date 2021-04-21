@@ -16,25 +16,19 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.azure.AbstractAzureTest;
 import ch.cyberduck.core.azure.AzureAttributesFinderFeature;
 import ch.cyberduck.core.azure.AzureDeleteFeature;
 import ch.cyberduck.core.azure.AzureFindFeature;
-import ch.cyberduck.core.azure.AzureProtocol;
-import ch.cyberduck.core.azure.AzureSession;
 import ch.cyberduck.core.azure.AzureTouchFeature;
 import ch.cyberduck.core.azure.AzureWriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
@@ -62,12 +56,6 @@ public class AzureTouchFeatureTest extends AbstractAzureTest {
     @Test
     public void testTouchLongFilenameEncrypted() throws Exception {
         assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
@@ -83,12 +71,6 @@ public class AzureTouchFeatureTest extends AbstractAzureTest {
     @Test
     public void testTouchLongFilenameEncryptedDefaultFeature() throws Exception {
         assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));

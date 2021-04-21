@@ -1,13 +1,6 @@
 package ch.cyberduck.core.azure;
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -26,16 +19,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
-public class AzureAttributesFinderFeatureTest {
+public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session, null);
         f.find(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
@@ -43,12 +30,6 @@ public class AzureAttributesFinderFeatureTest {
 
     @Test
     public void testFind() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());

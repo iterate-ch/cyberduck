@@ -1,14 +1,7 @@
 package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
@@ -25,16 +18,10 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class AzureDirectoryFeatureTest {
+public class AzureDirectoryFeatureTest extends AbstractAzureTest {
 
     @Test
     public void testCreateContainer() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final AzureDirectoryFeature feature = new AzureDirectoryFeature(session, null);
         final Path container = feature.mkdir(new Path(new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(container));
@@ -45,12 +32,6 @@ public class AzureDirectoryFeatureTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testCreateContainerInvalidName() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final Path container = new Path("untitled folder", EnumSet.of(Path.Type.directory));
         final AzureDirectoryFeature feature = new AzureDirectoryFeature(session, null);
         assertFalse(feature.isSupported(container.getParent(), container.getName()));
@@ -62,15 +43,9 @@ public class AzureDirectoryFeatureTest {
 
     @Test
     public void testCreatePlaceholder() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final Path container = new Path("/cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path placeholder = new AzureDirectoryFeature(session, null).mkdir(new Path(container, UUID.randomUUID().toString(),
-                EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(placeholder.getType().contains(Path.Type.placeholder));
         assertTrue(new AzureFindFeature(session, null).find(placeholder));
         assertEquals(placeholder.attributes(), new AzureAttributesFinderFeature(session, null).find(placeholder));
