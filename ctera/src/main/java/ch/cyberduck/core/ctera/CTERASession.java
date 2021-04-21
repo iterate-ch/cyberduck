@@ -111,6 +111,7 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
             tokens = CTERATokens.parse(t);
         }
         this.webdavAuthenticate(tokens);
+        host.getCredentials().setToken(tokens.toString());
     }
 
     private void startWebSSOFlow(final CancelCallback cancel, final CTERATokens tokens) throws BackgroundException {
@@ -139,7 +140,6 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
             cancel.verify();
         }
         this.attachDeviceWithActivationCode(activationCode.get(), tokens);
-        host.getCredentials().setToken(tokens.toString());
         host.getCredentials().setSaved(true);
     }
 
