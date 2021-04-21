@@ -89,9 +89,9 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
     @Test
     public void testSupport() {
         final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
-        assertFalse(new SwiftMoveFeature(null).isSupported(c, c));
+        assertFalse(new SwiftMoveFeature(session).isSupported(c, c));
         final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
-        assertTrue(new SwiftMoveFeature(null).isSupported(cf, cf));
+        assertTrue(new SwiftMoveFeature(session).isSupported(cf, cf));
     }
 
     @Test
