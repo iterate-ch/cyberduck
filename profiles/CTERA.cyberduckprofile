@@ -30,9 +30,9 @@
         <key>Hostname Configurable</key>
         <true/>
         <key>Username Configurable</key>
-        <false/>
+        <true/>
         <key>Password Configurable</key>
-        <false/>
+        <true/>
         <key>Anonymous Configurable</key>
         <false/>
         <key>Certificate Configurable</key>
