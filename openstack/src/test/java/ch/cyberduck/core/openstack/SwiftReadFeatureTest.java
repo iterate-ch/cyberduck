@@ -108,7 +108,7 @@ public class SwiftReadFeatureTest extends AbstractSwiftTest {
             "/cdn.cyberduck.ch/2015/03/01/10/3b1d6998c430d58dace0c16e58aaf925.log.gz",
             EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
         assertNotNull(in);
-        new StreamCopier(status, status).transfer(in, new NullOutputStream());
+        new StreamCopier(status, status).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
         assertEquals(182L, status.getOffset());
         assertEquals(182L, status.getLength());
         in.close();
