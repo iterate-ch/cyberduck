@@ -26,7 +26,7 @@ public class DefaultStreamCloserTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testClose() throws Exception {
-        new DefaultStreamCloser().close(new HttpResponseOutputStream<Void>(new NullOutputStream()) {
+        new DefaultStreamCloser().close(new HttpResponseOutputStream<Void>(NullOutputStream.NULL_OUTPUT_STREAM) {
             @Override
             public Void getStatus() throws BackgroundException {
                 throw new InteroperabilityException("d");

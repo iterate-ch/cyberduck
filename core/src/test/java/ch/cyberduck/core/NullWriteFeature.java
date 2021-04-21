@@ -29,7 +29,7 @@ public class NullWriteFeature extends AppendWriteFeature<Void> {
 
     @Override
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
-        return new VoidStatusOutputStream(new NullOutputStream());
+        return new VoidStatusOutputStream(NullOutputStream.NULL_OUTPUT_STREAM);
     }
 
     @Override
