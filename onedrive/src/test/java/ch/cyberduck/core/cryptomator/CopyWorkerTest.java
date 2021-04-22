@@ -87,8 +87,9 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         session.withRegistry(registry);
         final byte[] content = RandomUtils.nextBytes(40500);
         final TransferStatus status = new TransferStatus();
-        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new GraphDeleteFeature(session), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
-        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new GraphWriteFeature(session, new GraphFileIdProvider(session)), cryptomator).write(source, status.withLength(content.length), new DisabledConnectionCallback()));
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new GraphDeleteFeature(session, fileid), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new GraphWriteFeature(session, fileid), cryptomator).write(source, status.withLength(content.length), new DisabledConnectionCallback()));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);

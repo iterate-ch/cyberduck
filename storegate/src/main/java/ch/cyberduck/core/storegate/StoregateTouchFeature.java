@@ -29,9 +29,11 @@ import java.io.IOException;
 
 public class StoregateTouchFeature implements Touch<String> {
 
+    private final StoregateIdProvider fileid;
     private Write<String> writer;
 
     public StoregateTouchFeature(final StoregateSession session, final StoregateIdProvider fileid) {
+        this.fileid = fileid;
         this.writer = new StoregateWriteFeature(session, fileid);
     }
 
@@ -40,9 +42,9 @@ public class StoregateTouchFeature implements Touch<String> {
         try {
             final StatusOutputStream<String> out = writer.write(file, status, new DisabledConnectionCallback());
             out.close();
-            final String fileid = out.getStatus();
-            status.setFileId(fileid);
-            return file.withAttributes(new PathAttributes(file.attributes()).withFileId(fileid));
+            final String id = out.getStatus();
+            fileid.cache(file, id);
+            return file.withAttributes(new PathAttributes(file.attributes()).withFileId(id));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);

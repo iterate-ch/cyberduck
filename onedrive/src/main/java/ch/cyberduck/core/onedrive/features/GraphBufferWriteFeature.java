@@ -42,11 +42,11 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
     private static final Logger log = Logger.getLogger(GraphBufferWriteFeature.class);
 
     private final GraphSession session;
-    private final GraphFileIdProvider idProvider;
+    private final GraphFileIdProvider fileid;
 
-    public GraphBufferWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
+    public GraphBufferWriteFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
-        this.idProvider = idProvider;
+        this.fileid = fileid;
     }
 
     @Override
@@ -65,10 +65,10 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
                     // through StreamCopier when writing to buffer
                     final TransferStatus range = new TransferStatus(status).withLength(buffer.length()).append(false);
                     if(0L == buffer.length()) {
-                        new GraphTouchFeature(session, idProvider).touch(file, new TransferStatus());
+                        new GraphTouchFeature(session, fileid).touch(file, new TransferStatus());
                     }
                     else {
-                        final HttpResponseOutputStream<Void> out = new GraphWriteFeature(session, idProvider).write(file,
+                        final HttpResponseOutputStream<Void> out = new GraphWriteFeature(session, fileid).write(file,
                             range, callback);
                         new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                             @Override

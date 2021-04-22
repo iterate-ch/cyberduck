@@ -60,17 +60,18 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, new GraphFileIdProvider(session))).mkdir(
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        final Path test = cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, fileid)).mkdir(
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertNotNull(test.attributes().getVault());
         final String id = test.attributes().getFileId();
-        final Long timestamp = test.attributes().getModificationDate();
+        final long timestamp = test.attributes().getModificationDate();
         assertNotEquals(-1L, timestamp, 0L);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(test);
         assertEquals(id, attributes.getFileId());
         assertEquals(timestamp, attributes.getModificationDate(), 0L);
-        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -81,13 +82,14 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, new GraphFileIdProvider(session))).mkdir(
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        final Path test = cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, fileid)).mkdir(
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertNotNull(test.attributes().getVault());
         final String id = test.attributes().getFileId();
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(test);
         assertEquals(id, attributes.getFileId());
-        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -38,10 +38,12 @@ public class GraphTouchFeature implements Touch<Void> {
 
     private final GraphSession session;
     private final GraphAttributesFinderFeature attributes;
+    private final GraphFileIdProvider fileid;
 
-    public GraphTouchFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
+    public GraphTouchFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
         this.attributes = new GraphAttributesFinderFeature(session);
+        this.fileid = fileid;
     }
 
     @Override
@@ -51,7 +53,7 @@ public class GraphTouchFeature implements Touch<Void> {
             final DriveItem.Metadata metadata = Files.createFile(folder, URIEncoder.encode(file.getName()),
                 StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
             final PathAttributes attr = attributes.toAttributes(metadata);
-            status.setFileId(attr.getFileId());
+            fileid.cache(file, attr.getFileId());
             return file.withAttributes(attr);
         }
         catch(OneDriveAPIException e) {

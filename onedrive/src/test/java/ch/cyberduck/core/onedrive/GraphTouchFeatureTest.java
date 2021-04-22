@@ -45,33 +45,37 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
     public void testTouch() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
-        new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, status);
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        new GraphTouchFeature(session, fileid).touch(file, status);
         assertEquals(status.getFileId(), new GraphAttributesFinderFeature(session).find(file).getFileId());
-        new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testTouchUmlaut() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), String.format("%sä", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus());
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        new GraphTouchFeature(session, fileid).touch(file, new TransferStatus());
         assertNotNull(new GraphAttributesFinderFeature(session).find(file));
-        new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testTouchEqualSign() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), String.format("%s====", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus());
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        new GraphTouchFeature(session, fileid).touch(file, new TransferStatus());
         assertNotNull(new GraphAttributesFinderFeature(session).find(file));
-        new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testWhitespaceTouch() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final Path file = new Path(new OneDriveHomeFinderService().find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        new GraphTouchFeature(session, fileid).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(new GraphAttributesFinderFeature(session).find(file));
-        new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

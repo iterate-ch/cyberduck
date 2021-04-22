@@ -61,6 +61,7 @@ public class DriveDeleteFeature implements Delete {
                             .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
                     }
                 }
+                fileid.cache(file, null);
             }
             catch(IOException e) {
                 throw new DriveExceptionMappingService().map("Cannot delete {0}", e, file);

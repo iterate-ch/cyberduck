@@ -22,7 +22,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
@@ -66,7 +65,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         return user;
     }
 
-    protected final GraphFileIdProvider fileIdProvider = new GraphFileIdProvider(this);
+    protected final GraphFileIdProvider fileid = new GraphFileIdProvider(this);
 
     protected GraphSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -173,7 +172,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            fileIdProvider.clear();
+            fileid.clear();
         }
     }
 
@@ -181,40 +180,40 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == FileIdProvider.class) {
-            return (T) fileIdProvider;
+            return (T) fileid;
         }
         if(type == AttributesFinder.class) {
             return (T) new GraphAttributesFinderFeature(this);
         }
         if(type == Directory.class) {
-            return (T) new GraphDirectoryFeature(this, fileIdProvider);
+            return (T) new GraphDirectoryFeature(this, fileid);
         }
         if(type == Read.class) {
             return (T) new GraphReadFeature(this);
         }
         if(type == Write.class) {
-            return (T) new GraphWriteFeature(this, fileIdProvider);
+            return (T) new GraphWriteFeature(this, fileid);
         }
         if(type == MultipartWrite.class) {
-            return (T) new GraphBufferWriteFeature(this, fileIdProvider);
+            return (T) new GraphBufferWriteFeature(this, fileid);
         }
         if(type == Delete.class) {
-            return (T) new GraphDeleteFeature(this);
+            return (T) new GraphDeleteFeature(this, fileid);
         }
         if(type == Touch.class) {
-            return (T) new GraphTouchFeature(this, fileIdProvider);
+            return (T) new GraphTouchFeature(this, fileid);
         }
         if(type == Move.class) {
-            return (T) new GraphMoveFeature(this, fileIdProvider);
+            return (T) new GraphMoveFeature(this, fileid);
         }
         if(type == Copy.class) {
-            return (T) new GraphCopyFeature(this, fileIdProvider);
+            return (T) new GraphCopyFeature(this, fileid);
         }
         if(type == Find.class) {
             return (T) new GraphFindFeature(this);
         }
         if(type == Search.class) {
-            return (T) new GraphSearchFeature(this, fileIdProvider);
+            return (T) new GraphSearchFeature(this, fileid);
         }
         if(type == Timestamp.class) {
             return (T) new GraphTimestampFeature(this);

@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
@@ -75,7 +76,8 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<Void>(session, new GraphWriteFeature(session, new GraphFileIdProvider(session)), cryptomator);
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<Void>(session, new GraphWriteFeature(session, fileid), cryptomator);
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(content.length)));
@@ -85,13 +87,13 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(test));
-        assertEquals(content.length, new CryptoListService(session, new GraphItemListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getSize());
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new GraphWriteFeature(session, new GraphFileIdProvider(session)), cryptomator).append(test, status).size, 0L);
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new GraphWriteFeature(session, new GraphFileIdProvider(session)), cryptomator).append(test, status).size, 0L);
+        final PathAttributes attributes = new CryptoListService(session, new GraphItemListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes();
+        assertEquals(content.length, attributes.getSize());
+        assertEquals(content.length, new CryptoWriteFeature<>(session, new GraphWriteFeature(session, fileid), cryptomator).append(test, status.withRemote(attributes)).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new GraphReadFeature(session), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
-        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

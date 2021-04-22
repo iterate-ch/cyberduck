@@ -45,34 +45,34 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testCopy() throws Exception {
         final Path drive = new OneDriveHomeFinderService().find();
-        final GraphFileIdProvider idProvider = new GraphFileIdProvider(session);
-        Path directory = new GraphDirectoryFeature(session, idProvider).mkdir(
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        Path directory = new GraphDirectoryFeature(session, fileid).mkdir(
             new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertNotNull(new GraphAttributesFinderFeature(session).find(directory));
         final TransferStatus status = new TransferStatus();
-        Path file = new GraphTouchFeature(session, idProvider).touch(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.withMime("x-application/cyberduck"));
+        Path file = new GraphTouchFeature(session, fileid).touch(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.withMime("x-application/cyberduck"));
         assertNotNull(new GraphAttributesFinderFeature(session).find(file));
         Path rename = new Path(directory, file.getName(), EnumSet.of(Path.Type.file));
-        final GraphCopyFeature copy = new GraphCopyFeature(session, idProvider);
+        final GraphCopyFeature copy = new GraphCopyFeature(session, fileid);
         assertTrue(copy.isSupported(file, rename));
         final Path target = copy.copy(file, rename, new TransferStatus(), new DisabledConnectionCallback());
         assertNotEquals(status.getFileId(), target.attributes().getFileId());
         assertEquals(target.attributes().getFileId(), new GraphAttributesFinderFeature(session).find(rename).getFileId());
-        new GraphDeleteFeature(session).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testCopyToExistingFile() throws Exception {
-        final GraphFileIdProvider idProvider = new GraphFileIdProvider(session);
-        final Path folder = new GraphDirectoryFeature(session, idProvider).mkdir(
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        final Path folder = new GraphDirectoryFeature(session, fileid).mkdir(
             new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        final Path test = new GraphTouchFeature(session, idProvider).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new GraphTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String target = new AlphanumericRandomStringService().random();
-        final Path copy = new GraphTouchFeature(session, idProvider).touch(new Path(folder, target, EnumSet.of(Path.Type.file)), new TransferStatus());
-        new GraphCopyFeature(session, idProvider).copy(test, new Path(folder, target, EnumSet.of(Path.Type.file)), new TransferStatus().exists(true), new DisabledConnectionCallback());
+        final Path copy = new GraphTouchFeature(session, fileid).touch(new Path(folder, target, EnumSet.of(Path.Type.file)), new TransferStatus());
+        new GraphCopyFeature(session, fileid).copy(test, new Path(folder, target, EnumSet.of(Path.Type.file)), new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new GraphDeleteFeature(session).delete(Arrays.asList(test, new Path(folder, target, EnumSet.of(Path.Type.file))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Arrays.asList(test, new Path(folder, target, EnumSet.of(Path.Type.file))), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

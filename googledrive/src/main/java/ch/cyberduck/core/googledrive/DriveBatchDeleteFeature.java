@@ -73,6 +73,7 @@ public class DriveBatchDeleteFeature implements Delete {
                             .queue(batch, new DeleteBatchCallback<Void>(file, failures, callback));
                     }
                 }
+                fileid.cache(file, null);
             }
             catch(IOException e) {
                 throw new DriveExceptionMappingService().map("Cannot delete {0}", e, file);

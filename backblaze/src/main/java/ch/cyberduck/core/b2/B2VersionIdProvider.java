@@ -90,12 +90,18 @@ public class B2VersionIdProvider implements VersionIdProvider {
         }
     }
 
-    @Override
     public String cache(final Path file, final String id) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Cache %s for file %s", id, file));
         }
-        cache.put(new SimplePathPredicate(file), id);
+        if(null == id) {
+            cache.remove(new SimplePathPredicate(file));
+            file.attributes().setVersionId(null);
+        }
+        else {
+            cache.put(new SimplePathPredicate(file), id);
+            file.attributes().setVersionId(id);
+        }
         return id;
     }
 

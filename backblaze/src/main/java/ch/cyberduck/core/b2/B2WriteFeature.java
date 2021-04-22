@@ -131,6 +131,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                     entity, checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
                     status.getMime(), fileinfo);
                 status.setVersionId(response.getFileId());
+                fileid.cache(file, response.getFileId());
                 return response;
             }
 

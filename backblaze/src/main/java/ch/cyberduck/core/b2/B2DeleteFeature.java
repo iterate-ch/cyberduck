@@ -88,6 +88,7 @@ public class B2DeleteFeature implements Delete {
                         throw new DefaultIOExceptionMappingService().map(e);
                     }
                 }
+                fileid.cache(file, null);
             }
         }
         for(Path file : files.keySet()) {

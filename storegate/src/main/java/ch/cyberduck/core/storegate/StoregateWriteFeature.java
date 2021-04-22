@@ -120,6 +120,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<String> {
                                 final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8),
                                     FileMetadata.class);
                                 status.setFileId(result.getId());
+                                fileid.cache(file, result.getId());
                                 return result.getId();
                             default:
                                 throw new StoregateExceptionMappingService().map(new ApiException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase(), Collections.emptyMap(),

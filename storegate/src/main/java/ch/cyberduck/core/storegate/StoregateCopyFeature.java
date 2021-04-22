@@ -45,6 +45,7 @@ public class StoregateCopyFeature implements Copy {
                 .mode(1); // Overwrite
             final File file = new FilesApi(session.getClient()).filesCopy(
                 fileid.getFileId(source, new DisabledListProgressListener()), copy);
+            fileid.cache(target, file.getId());
             return target.withAttributes(new StoregateAttributesFinderFeature(session, fileid).toAttributes(file));
         }
         catch(ApiException e) {

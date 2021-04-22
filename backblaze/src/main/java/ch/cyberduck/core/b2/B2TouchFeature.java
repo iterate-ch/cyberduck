@@ -48,7 +48,7 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
         final StatusOutputStream<BaseB2Response> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
         final B2FileResponse response = (B2FileResponse) out.getStatus();
-        status.setVersionId(response.getFileId());
+        fileid.cache(file, response.getFileId());
         return file.withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
     }
 

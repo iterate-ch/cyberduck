@@ -64,6 +64,9 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                     if("sha1 did not match data received".equalsIgnoreCase(e.getMessage())) {
                         return new ChecksumException(buffer.toString(), e);
                     }
+                    if("checksum did not match data received".equalsIgnoreCase(e.getMessage())) {
+                        return new ChecksumException(buffer.toString(), e);
+                    }
                 }
                 break;
             case HttpStatus.SC_UNAUTHORIZED:

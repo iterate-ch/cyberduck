@@ -24,10 +24,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -74,16 +72,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
                 status.setAcl(acl.getDefault(EnumSet.of(Path.Type.directory)));
             }
         }
-        final Path result = feature.mkdir(folder, region, status);
-        final VersionIdProvider versionIdProvider = session.getFeature(VersionIdProvider.class);
-        if(versionIdProvider != null) {
-            versionIdProvider.cache(result, status.getVersionId());
-        }
-        final FileIdProvider fileIdProvider = session.getFeature(FileIdProvider.class);
-        if(fileIdProvider != null) {
-            fileIdProvider.cache(result, status.getFileId());
-        }
-        return result;
+        return feature.mkdir(folder, region, status);
     }
 
     @Override

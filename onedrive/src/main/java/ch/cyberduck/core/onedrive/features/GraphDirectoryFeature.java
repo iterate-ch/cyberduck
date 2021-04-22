@@ -35,10 +35,12 @@ public class GraphDirectoryFeature implements Directory<Void> {
 
     private final GraphSession session;
     private final GraphAttributesFinderFeature attributes;
+    private final GraphFileIdProvider fileid;
 
-    public GraphDirectoryFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
+    public GraphDirectoryFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
         this.attributes = new GraphAttributesFinderFeature(session);
+        this.fileid = fileid;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class GraphDirectoryFeature implements Directory<Void> {
         try {
             final DriveItem.Metadata metadata = Files.createFolder(folder, directory.getName());
             final PathAttributes attr = attributes.toAttributes(metadata);
-            status.setFileId(attr.getFileId());
+            fileid.cache(directory, attr.getFileId());
             return directory.withAttributes(attr);
         }
         catch(OneDriveAPIException e) {

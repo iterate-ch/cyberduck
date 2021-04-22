@@ -80,7 +80,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
                 final B2FileResponse response = (B2FileResponse) out.getStatus();
-                status.setVersionId(response.getFileId());
+                fileid.cache(folder, response.getFileId());
                 return folder.withType(type).withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
             }
         }

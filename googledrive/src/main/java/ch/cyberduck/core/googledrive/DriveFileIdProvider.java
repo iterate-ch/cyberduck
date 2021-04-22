@@ -84,12 +84,18 @@ public class DriveFileIdProvider implements FileIdProvider {
         return this.cache(file, found.attributes().getFileId());
     }
 
-    @Override
     public String cache(final Path file, final String id) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Cache %s for file %s", id, file));
         }
-        cache.put(new SimplePathPredicate(file), id);
+        if(null == id) {
+            cache.remove(new SimplePathPredicate(file));
+            file.attributes().setFileId(null);
+        }
+        else {
+            cache.put(new SimplePathPredicate(file), id);
+            file.attributes().setFileId(id);
+        }
         return id;
     }
 

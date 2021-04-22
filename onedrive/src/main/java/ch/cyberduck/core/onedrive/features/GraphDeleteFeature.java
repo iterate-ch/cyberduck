@@ -37,9 +37,11 @@ public class GraphDeleteFeature implements Delete {
     private static final Logger logger = Logger.getLogger(GraphDeleteFeature.class);
 
     private final GraphSession session;
+    private final GraphFileIdProvider fileid;
 
-    public GraphDeleteFeature(GraphSession session) {
+    public GraphDeleteFeature(GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -49,6 +51,7 @@ public class GraphDeleteFeature implements Delete {
             try {
                 final DriveItem item = session.getItem(file);
                 Files.delete(item);
+                fileid.cache(file, null);
             }
             catch(NotfoundException e) {
                 logger.warn(String.format("Cannot delete %s. Not found.", file));

@@ -44,22 +44,24 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testMkdir() throws Exception {
         final TransferStatus status = new TransferStatus();
-        final Path target = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, status);
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        final Path target = new GraphDirectoryFeature(session, fileid).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, status);
         final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(target);
         assertNotNull(attributes.getETag());
         assertEquals(status.getFileId(), attributes.getFileId());
-        new GraphDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testWhitespaceMkdir() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final String name = String.format("%s %s", randomStringService.random(), randomStringService.random());
-        final Path target = new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(new Path(new OneDriveHomeFinderService().find(), name, EnumSet.of(Path.Type.directory)), null, null);
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        final Path target = new GraphDirectoryFeature(session, fileid).mkdir(new Path(new OneDriveHomeFinderService().find(), name, EnumSet.of(Path.Type.directory)), null, null);
         assertEquals(name, target.getName());
         final AttributedList<Path> list = new GraphItemListService(session).list(new OneDriveHomeFinderService().find(), new DisabledListProgressListener());
         assertTrue(list.contains(target));
         assertNotNull(new GraphAttributesFinderFeature(session).find(target).getETag());
-        new GraphDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

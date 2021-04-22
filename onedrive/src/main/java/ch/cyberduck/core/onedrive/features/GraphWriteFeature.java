@@ -51,11 +51,11 @@ public class GraphWriteFeature implements Write<Void> {
         = PreferencesFactory.get();
 
     private final GraphSession session;
-    private final GraphFileIdProvider idProvider;
+    private final GraphFileIdProvider fileid;
 
-    public GraphWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
+    public GraphWriteFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
-        this.idProvider = idProvider;
+        this.fileid = fileid;
     }
 
     @Override
@@ -137,7 +137,9 @@ public class GraphWriteFeature implements Write<Void> {
                             final OneDriveJsonObject response = upload.uploadFragment(header, content);
                             if(response instanceof DriveItem.Metadata) {
                                 log.info(String.format("Completed upload for %s", file));
-                                overall.setFileId(((DriveItem.Metadata) response).getId());
+                                final String id = session.getFileId(((DriveItem.Metadata) response));
+                                overall.setFileId(id);
+                                fileid.cache(file, id);
                             }
                             else {
                                 log.debug(String.format("Uploaded fragment %s for file %s", header, file));
@@ -170,7 +172,7 @@ public class GraphWriteFeature implements Write<Void> {
                     log.warn(String.format("Abort upload session %s with no completed parts", upload));
                     // Use touch feature for empty file upload
                     upload.cancelUpload();
-                    new GraphTouchFeature(session, idProvider).touch(file, new TransferStatus());
+                    new GraphTouchFeature(session, fileid).touch(file, new TransferStatus());
                 }
             }
             catch(BackgroundException e) {

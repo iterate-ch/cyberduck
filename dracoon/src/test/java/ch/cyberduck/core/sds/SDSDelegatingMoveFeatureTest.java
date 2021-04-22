@@ -367,6 +367,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(encrypted, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.directory)), null, new TransferStatus());
         final Path renamed = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
+        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(encrypted, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(encrypted, renamed), new SessionPool.SingleSessionPool(session), PathCache.empty(),
             new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);

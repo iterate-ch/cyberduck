@@ -71,6 +71,8 @@ public class StoregateMoveFeature implements Move {
             try {
                 switch(response.getStatusLine().getStatusCode()) {
                     case HttpStatus.SC_NO_CONTENT:
+                        fileid.cache(file, null);
+                        fileid.cache(renamed, file.attributes().getFileId());
                         return renamed.withAttributes(file.attributes());
                     default:
                         throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));

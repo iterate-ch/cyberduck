@@ -42,8 +42,9 @@ public class GraphPromptUrlProviderTest extends AbstractOneDriveTest {
     @Test
     public void toUrl() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        new GraphTouchFeature(session, fileid).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotEquals(DescriptiveUrl.EMPTY, new GraphPromptUrlProvider(session).toDownloadUrl(file, null, new DisabledPasswordCallback()));
-        new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

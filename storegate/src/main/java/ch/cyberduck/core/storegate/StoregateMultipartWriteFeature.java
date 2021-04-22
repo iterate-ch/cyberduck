@@ -143,6 +143,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
                                     case HttpStatus.SC_CREATED:
                                         final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8), FileMetadata.class);
                                         overall.setFileId(result.getId());
+                                        fileid.cache(file, result.getId());
                                     case HttpStatus.SC_NO_CONTENT:
                                         // Upload complete
                                         offset += content.length;
@@ -195,6 +196,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
                                 final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
                                     FileMetadata.class);
                                 overall.setFileId(result.getId());
+                                fileid.cache(file, result.getId());
                             case HttpStatus.SC_NO_CONTENT:
                                 break;
                             default:

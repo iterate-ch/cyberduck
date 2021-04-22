@@ -78,6 +78,8 @@ public class DriveMoveFeature implements Move {
                     .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                     .execute();
             }
+            fileid.cache(file, null);
+            fileid.cache(renamed, result.getId());
             return renamed.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(result));
         }
         catch(IOException e) {

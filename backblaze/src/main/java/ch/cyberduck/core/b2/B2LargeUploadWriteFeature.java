@@ -209,6 +209,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
                     }
+                    fileid.cache(file, overall.getVersionId());
                 }
             }
             catch(BackgroundException e) {

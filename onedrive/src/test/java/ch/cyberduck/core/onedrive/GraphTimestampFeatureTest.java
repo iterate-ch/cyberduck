@@ -46,24 +46,26 @@ public class GraphTimestampFeatureTest extends AbstractOneDriveTest {
     public void testSetTimestamp() throws Exception {
         final Path drive = new OneDriveHomeFinderService().find();
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session, new GraphFileIdProvider(session)).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        new GraphTouchFeature(session, fileid).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(new GraphAttributesFinderFeature(session).find(file));
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         new GraphTimestampFeature(session).setTimestamp(file, modified);
         assertEquals(modified, new GraphAttributesFinderFeature(session).find(file).getModificationDate());
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
-        new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testSetTimestampDirectory() throws Exception {
         final Path drive = new OneDriveHomeFinderService().find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new GraphDirectoryFeature(session, new GraphFileIdProvider(session)).mkdir(test, null, null);
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        new GraphDirectoryFeature(session, fileid).mkdir(test, null, null);
         assertNotNull(new GraphAttributesFinderFeature(session).find(test));
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         new GraphTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(modified, new GraphAttributesFinderFeature(session).find(test).getModificationDate());
-        new GraphDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

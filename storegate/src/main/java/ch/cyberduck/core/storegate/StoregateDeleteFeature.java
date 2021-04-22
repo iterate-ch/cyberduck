@@ -70,6 +70,7 @@ public class StoregateDeleteFeature implements Delete {
                 finally {
                     EntityUtils.consume(response.getEntity());
                 }
+                fileid.cache(file.getKey(), null);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);

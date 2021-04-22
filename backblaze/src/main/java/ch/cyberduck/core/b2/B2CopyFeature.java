@@ -48,6 +48,7 @@ public class B2CopyFeature implements Copy {
             final B2FileResponse response = session.getClient().copyFile(fileid.getVersionId(source, new DisabledListProgressListener()),
                 fileid.getVersionId(containerService.getContainer(target), new DisabledListProgressListener()),
                 containerService.getKey(target));
+            fileid.cache(target, response.getFileId());
             return target.withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
         }
         catch(B2ApiException e) {

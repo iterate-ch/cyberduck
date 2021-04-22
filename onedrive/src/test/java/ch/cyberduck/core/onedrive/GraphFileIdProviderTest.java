@@ -29,31 +29,32 @@ public class GraphFileIdProviderTest extends AbstractOneDriveTest {
         final Path home = new OneDriveHomeFinderService().find();
         final Path path2R = new Path(home, "/2R", EnumSet.of(Path.Type.directory));
         final Path path33 = new Path(home, "/33", EnumSet.of(Path.Type.directory));
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
         try {
-            new GraphDeleteFeature(session).delete(Collections.singletonList(path2R), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+            new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(path2R), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         }
         catch(NotfoundException e) {
             //
         }
         try {
-            new GraphDeleteFeature(session).delete(Collections.singletonList(path33), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+            new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(path33), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         }
         catch(NotfoundException e) {
             //
         }
-        final Directory directoryFeature = new GraphDirectoryFeature(session, new GraphFileIdProvider(session));
+        final Directory directoryFeature = new GraphDirectoryFeature(session, fileid);
         final Path path2RWithId = directoryFeature.mkdir(path2R, null, new TransferStatus());
         assertNotNull(path2RWithId.attributes().getFileId());
         final Path path33WithId = directoryFeature.mkdir(path33, null, new TransferStatus());
         assertNotNull(path33WithId.attributes().getFileId());
         assertNotEquals(path2RWithId.attributes().getFileId(), path33WithId.attributes().getFileId());
 
-        final GraphFileIdProvider idProvider = new GraphFileIdProvider(session);
+        final GraphFileIdProvider idProvider = fileid;
         final String fileId = idProvider.getFileId(path33, new DisabledListProgressListener());
 
         assertEquals(fileId, path33WithId.attributes().getFileId());
         assertNotEquals(fileId, path2RWithId.attributes().getFileId());
 
-        new GraphDeleteFeature(session).delete(Arrays.asList(path2RWithId, path33WithId), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Arrays.asList(path2RWithId, path33WithId), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

@@ -100,7 +100,7 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         final Path folder = new B2DirectoryFeature(session, fileid).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
-        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
+        final Path test = new Path(folder, name, EnumSet.of(Path.Type.file));
         final OutputStream out = new B2WriteFeature(session, fileid).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus().withLength(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();

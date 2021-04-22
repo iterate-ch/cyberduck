@@ -48,7 +48,6 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
         assertNotEquals(0L, attr.getModificationDate());
         assertEquals(Checksum.NONE, attr.getChecksum());
         assertNull(attr.getETag());
-        assertNull(attr.getFileId());
         assertNotNull(attr.getFileId());
         assertFalse(attr.getPermission().isExecutable());
         assertTrue(attr.getPermission().isReadable());

@@ -73,7 +73,7 @@ public class OneDriveSession extends GraphSession {
         if(file.equals(OneDriveListService.MYFILES_NAME)) {
             return new Drive(getClient()).getRoot();
         }
-        final String versionId = fileIdProvider.getFileId(file, new DisabledListProgressListener());
+        final String versionId = fileid.getFileId(file, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }

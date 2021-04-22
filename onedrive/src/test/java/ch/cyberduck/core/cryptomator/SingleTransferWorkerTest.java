@@ -37,6 +37,7 @@ import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
 import ch.cyberduck.core.onedrive.OneDriveHomeFinderService;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -120,7 +121,8 @@ public class SingleTransferWorkerTest extends AbstractOneDriveTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile1.delete();
         localFile2.delete();
         localDirectory1.delete();

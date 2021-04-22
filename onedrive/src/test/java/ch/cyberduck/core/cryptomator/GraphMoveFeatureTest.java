@@ -66,13 +66,14 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, new GraphFileIdProvider(session))).mkdir(folder, null, new TransferStatus());
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, fileid)).mkdir(folder, null, new TransferStatus());
         final String filename = new AlphanumericRandomStringService().random();
-        final Path file = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session, new GraphFileIdProvider(session))),
-            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session, new GraphFileIdProvider(session)), cryptomator).touch(
+        final Path file = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session, fileid)),
+            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session, fileid), cryptomator).touch(
             new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
-        final Move move = cryptomator.getFeature(session, Move.class, new GraphMoveFeature(session, new GraphFileIdProvider(session)));
+        final Move move = cryptomator.getFeature(session, Move.class, new GraphMoveFeature(session, fileid));
         // rename file
         final Path fileRenamed = move.move(file, new Path(folder, "f1", EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(file.attributes().getFileId(), fileRenamed.attributes().getFileId());
@@ -86,7 +87,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
-        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(
+        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(
             fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

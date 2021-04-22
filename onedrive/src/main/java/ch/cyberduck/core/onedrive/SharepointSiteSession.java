@@ -57,7 +57,7 @@ public class SharepointSiteSession extends AbstractSharepointSession {
             }
             return Site.byPath(hostSite, path);
         }
-        return Site.byId(getClient(), fileIdProvider.getFileId(file, new DisabledListProgressListener()));
+        return Site.byId(getClient(), fileid.getFileId(file, new DisabledListProgressListener()));
     }
 
     @Override

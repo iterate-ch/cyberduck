@@ -140,6 +140,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
                                                 switch(name) {
                                                     case "id":
                                                         status.setFileId(value);
+                                                        fileid.cache(file, value);
                                                         return value;
                                                 }
                                             }

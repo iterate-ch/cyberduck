@@ -35,10 +35,12 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(SDSMultipartWriteFeature.class);
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
     private final SDSUploadService upload;
 
     public SDSMultipartWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
         this.upload = new SDSUploadService(session, nodeid);
     }
 
@@ -68,6 +70,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                     catch(ConflictException e) {
                         status.setVersionId(upload.complete(file, uploadToken, new TransferStatus(status).exists(true)));
                     }
+                    nodeid.cache(file, status.getVersionId());
                 }
                 catch(BackgroundException e) {
                     throw new IOException(e);

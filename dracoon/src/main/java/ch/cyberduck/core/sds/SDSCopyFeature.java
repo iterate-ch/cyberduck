@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
@@ -58,9 +59,10 @@ public class SDSCopyFeature implements Copy {
                 // Target Parent Node ID
                 Long.parseLong(nodeid.getVersionId(target.getParent(), new DisabledListProgressListener())),
                 StringUtils.EMPTY, null);
-            target.attributes().setVersionId(null);
-            target.attributes().setFileId(null);
-            return target.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(target));
+            nodeid.cache(target, null);
+            final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(target);
+            nodeid.cache(target, attributes.getVersionId());
+            return target.withAttributes(attributes);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Cannot copy {0}", e, source);
