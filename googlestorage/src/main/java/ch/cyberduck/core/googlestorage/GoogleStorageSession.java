@@ -143,7 +143,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
             return (T) new GoogleStorageSearchFeature(this);
         }
         if(type == Versioning.class) {
-            return (T) null;
+            return (T) new GoogleStorageVersioningFeature(this);
         }
         if(type == Location.class) {
             return (T) new GoogleStorageLocationFeature(this);
