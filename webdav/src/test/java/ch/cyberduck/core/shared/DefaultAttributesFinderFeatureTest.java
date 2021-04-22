@@ -17,6 +17,7 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.CachingAttributesFinderFeature;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.proxy.Proxy;
@@ -56,7 +58,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDAVTest {
     @Test
     public void testAttributes() throws Exception {
         final PathCache cache = new PathCache(1);
-        final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session);
+        final AttributesFinder f = new CachingAttributesFinderFeature(cache, new DefaultAttributesFinderFeature(session));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(file, new TransferStatus());
