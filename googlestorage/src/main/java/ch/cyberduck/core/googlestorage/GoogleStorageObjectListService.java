@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -46,11 +47,17 @@ public class GoogleStorageObjectListService implements ListService {
     private final GoogleStorageSession session;
     private final GoogleStorageAttributesFinderFeature attributes;
     private final PathContainerService containerService;
+    private final boolean references;
 
     public GoogleStorageObjectListService(final GoogleStorageSession session) {
+        this(session, PreferencesFactory.get().getBoolean("googlestorage.versioning.references.enable"));
+    }
+
+    public GoogleStorageObjectListService(final GoogleStorageSession session, final boolean references) {
         this.session = session;
         this.attributes = new GoogleStorageAttributesFinderFeature(session);
         this.containerService = session.getFeature(PathContainerService.class);
+        this.references = references;
     }
 
     @Override
@@ -106,10 +113,28 @@ public class GoogleStorageObjectListService implements ListService {
                             file = new Path(String.format("%s%s", bucket.getAbsolute(), key), types, attr);
                         }
                         else {
-                            file = new Path(directory, PathNormalizer.name(key), types, attr);
+                            file = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(key), types, attr);
                         }
                         objects.add(file);
                         lastKey = key;
+                    }
+                    if(versioning.isEnabled()) {
+                        if(references) {
+                            for(Path f : objects) {
+                                if(f.attributes().isDuplicate()) {
+                                    final Path latest = objects.find(new LatestVersionPathPredicate(f));
+                                    if(latest != null) {
+                                        // Reference version
+                                        final AttributedList<Path> versions = new AttributedList<>(latest.attributes().getVersions());
+                                        versions.add(f);
+                                        latest.attributes().setVersions(versions);
+                                    }
+                                    else {
+                                        log.warn(String.format("No current version found for %s", f));
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 if(response.getPrefixes() != null) {
@@ -160,8 +185,13 @@ public class GoogleStorageObjectListService implements ListService {
             // of Prefix for your query will be the empty string.
             // In other words, the results will be not be restricted by prefix.
             prefix = containerService.getKey(directory);
-            if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
-                prefix += Path.DELIMITER;
+            if(StringUtils.isBlank(prefix)) {
+                return StringUtils.EMPTY;
+            }
+            if(directory.isDirectory()) {
+                if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
+                    prefix += Path.DELIMITER;
+                }
             }
         }
         return prefix;
@@ -171,5 +201,19 @@ public class GoogleStorageObjectListService implements ListService {
     public ListService withCache(final Cache<Path> cache) {
         attributes.withCache(cache);
         return this;
+    }
+
+    private static final class LatestVersionPathPredicate extends SimplePathPredicate {
+        public LatestVersionPathPredicate(final Path f) {
+            super(f);
+        }
+
+        @Override
+        public boolean test(final Path test) {
+            if(super.test(test)) {
+                return !test.attributes().isDuplicate();
+            }
+            return false;
+        }
     }
 }
