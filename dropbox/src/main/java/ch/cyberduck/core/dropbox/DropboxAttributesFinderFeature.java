@@ -46,21 +46,14 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
+            // Metadata for the root folder is unsupported
             if(file.isRoot()) {
-                try {
-                    // Retrieve he namespace ID for a users home folder and team root folder
-                    final FullAccount account = new DbxUserUsersRequests(session.getClient()).getCurrentAccount();
-                    switch(account.getAccountType()) {
-                        case BUSINESS:
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Set root namespace %s", account.getRootInfo().getRootNamespaceId()));
-                            }
-                            return new PathAttributes().withFileId(account.getRootInfo().getRootNamespaceId());
-                    }
+                // Retrieve he namespace ID for a users home folder and team root folder
+                final FullAccount account = new DbxUserUsersRequests(session.getClient()).getCurrentAccount();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set root namespace %s", account.getRootInfo().getRootNamespaceId()));
                 }
-                catch(DbxException e) {
-                    throw new DropboxExceptionMappingService().map(e);
-                }
+                return new PathAttributes().withFileId(account.getRootInfo().getRootNamespaceId());
             }
             final Metadata metadata = new DbxUserFilesRequests(session.getClient(file)).getMetadata(containerService.getKey(file));
             return this.toAttributes(metadata);
