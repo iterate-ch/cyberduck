@@ -55,6 +55,7 @@ public class GoogleStorageDeleteFeature implements Delete {
                 else {
                     final Storage.Objects.Delete request = session.getClient().objects().delete(containerService.getContainer(file).getName(), containerService.getKey(file));
                     if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+                        // You permanently delete versions of objects by including the generation number in the deletion request
                         request.setGeneration(Long.parseLong(file.attributes().getVersionId()));
                     }
                     request.execute();
