@@ -29,13 +29,5 @@
         <true/>
         <key>Hostname Configurable</key>
         <true/>
-        <key>Username Configurable</key>
-        <true/>
-        <key>Password Configurable</key>
-        <true/>
-        <key>Anonymous Configurable</key>
-        <false/>
-        <key>Certificate Configurable</key>
-        <false/>
     </dict>
 </plist>
