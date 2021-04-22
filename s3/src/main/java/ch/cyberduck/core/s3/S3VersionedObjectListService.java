@@ -141,8 +141,12 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     }
                     final Path f = new Path(directory.isDirectory() ? directory : directory.getParent(),
                         PathNormalizer.name(key), EnumSet.of(Path.Type.file), attributes);
-                    if(references) {
-                        if(attributes.isDuplicate()) {
+                    children.add(f);
+                    lastKey = key;
+                }
+                if(references) {
+                    for(Path f : children) {
+                        if(f.attributes().isDuplicate()) {
                             final Path latest = children.find(new LatestVersionPathPredicate(f));
                             if(latest != null) {
                                 // Reference version
@@ -155,8 +159,6 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                             }
                         }
                     }
-                    children.add(f);
-                    lastKey = key;
                 }
                 final String[] prefixes = chunk.getCommonPrefixes();
                 for(String common : prefixes) {
