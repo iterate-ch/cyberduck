@@ -19,6 +19,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -58,12 +59,14 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
 
     private final Map<Path, Path> files;
     private final SessionPool target;
+    private final Cache<Path> cache;
     private final ProgressListener listener;
     private final ConnectionCallback callback;
 
     public MoveWorker(final Map<Path, Path> files, final SessionPool target, final Cache<Path> cache, final ProgressListener listener, final ConnectionCallback callback) {
         this.files = files;
         this.target = target;
+        this.cache = cache;
         this.listener = listener;
         this.callback = callback;
     }
