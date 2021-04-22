@@ -19,7 +19,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.MultipartWrite;
@@ -55,11 +54,9 @@ public class DefaultCopyFeature implements Copy {
         out = write.write(target, status, callback);
         new StreamCopier(status, status).transfer(in, out);
         final Object reply = out.getStatus();
-        if(reply instanceof VersionId) {
-            return new Path(target.getParent(), target.getName(), target.getType(),
-                new PathAttributes(target.attributes()).withVersionId(((VersionId) reply).id));
-        }
-        return target;
+        return target.withAttributes(new PathAttributes(target.attributes())
+            .withVersionId(status.getVersionId())
+            .withFileId(status.getFileId()));
     }
 
     @Override
