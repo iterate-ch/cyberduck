@@ -57,7 +57,7 @@ public class TouchWorker extends Worker<Path> {
         final TransferStatus status = new TransferStatus()
             .hidden(!SearchFilterFactory.HIDDEN_FILTER.accept(file))
             .exists(false)
-            .length(0L)
+            .withLength(0L)
             .withMime(new MappingMimeTypeService().getMime(file.getName()))
             .withLockId(this.getLockId(file));
         final Encryption encryption = session.getFeature(Encryption.class);

@@ -46,7 +46,6 @@ public class SFTPWriteFeature extends AppendWriteFeature<Void> {
             = PreferencesFactory.get();
 
     public SFTPWriteFeature(final SFTPSession session) {
-        super(session);
         this.session = session;
     }
 

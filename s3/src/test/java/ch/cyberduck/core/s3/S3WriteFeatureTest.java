@@ -6,9 +6,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
@@ -35,49 +33,26 @@ public class S3WriteFeatureTest extends AbstractS3Test {
     @Test
     public void testAppendBelowLimit() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol()));
-        final S3WriteFeature feature = new S3WriteFeature(session, null, new Find() {
-            @Override
-            public boolean find(final Path file) {
-                return true;
-            }
-        }, new AttributesFinder() {
-            @Override
-            public PathAttributes find(final Path file) {
-                return new PathAttributes();
-            }
-        });
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L);
+        final S3WriteFeature feature = new S3WriteFeature(session, null);
+        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         assertFalse(append.append);
     }
 
     @Test
     public void testSize() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol()));
-        final S3WriteFeature feature = new S3WriteFeature(session, null, new Find() {
-            @Override
-            public boolean find(final Path file) {
-                return true;
-            }
-        }, new AttributesFinder() {
-            @Override
-            public PathAttributes find(final Path file) {
-                final PathAttributes attributes = new PathAttributes();
-                attributes.setSize(3L);
-                return attributes;
-            }
-        });
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L);
+        final S3WriteFeature feature = new S3WriteFeature(session, null);
+        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L).withRemote(new PathAttributes().withSize(3L)));
         assertFalse(append.append);
-        assertTrue(append.override);
         assertEquals(3L, append.size, 0L);
     }
 
     @Test
     public void testAppendNoMultipartFound() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), Long.MAX_VALUE).append);
-        assertEquals(Write.notfound, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), Long.MAX_VALUE));
-        assertEquals(Write.notfound, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L));
+        assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(Long.MAX_VALUE)).append);
+        assertEquals(Write.override, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(Long.MAX_VALUE)));
+        assertEquals(Write.override, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L)));
     }
 
     @Test(expected = InteroperabilityException.class)

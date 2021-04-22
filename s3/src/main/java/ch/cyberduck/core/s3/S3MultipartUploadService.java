@@ -239,7 +239,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
                 final TransferStatus status = new TransferStatus()
-                    .length(length)
+                    .withLength(length)
                     .skip(offset)
                     .withParameters(requestParameters);
                 status.setPart(partNumber);

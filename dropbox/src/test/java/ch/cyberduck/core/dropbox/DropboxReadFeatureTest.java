@@ -90,16 +90,16 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
         IOUtils.write(content, out);
         out.close();
         new DefaultUploadFeature<String>(new DropboxWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                new TransferStatus().length(content.length),
-                new DisabledConnectionCallback());
+            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new TransferStatus().withLength(content.length),
+            new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
         final DropboxReadFeature read = new DropboxReadFeature(session);
         assertTrue(read.offset(test));
-        final InputStream in = read.read(test, status.length(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = read.read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

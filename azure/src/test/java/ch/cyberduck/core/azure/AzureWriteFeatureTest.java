@@ -41,7 +41,7 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         status.setMime("text/plain");
         final byte[] content = RandomUtils.nextBytes(513);
         status.setLength(content.length);
-        status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().length(content.length)));
+        status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length)));
         status.setMetadata(Collections.singletonMap("Cache-Control", "public,max-age=86400"));
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -54,14 +54,14 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         final Map<String, String> metadata = new AzureMetadataFeature(session, context).getMetadata(test);
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("public,max-age=86400", metadata.get("Cache-Control"));
-        assertEquals(content.length, new AzureWriteFeature(session, context).append(test, status.getLength()).size, 0L);
+        assertEquals(content.length, new AzureWriteFeature(session, context).append(test, status.withRemote(attributes)).size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new AzureReadFeature(session, context).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
         final OutputStream overwrite = new AzureWriteFeature(session, context).write(test, new TransferStatus().exists(true)
-            .length("overwrite".getBytes(StandardCharsets.UTF_8).length).withMetadata(Collections.singletonMap("Content-Type", "text/plain")), new DisabledConnectionCallback());
+            .withLength("overwrite".getBytes(StandardCharsets.UTF_8).length).withMetadata(Collections.singletonMap("Content-Type", "text/plain")), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus())
             .transfer(new ByteArrayInputStream("overwrite".getBytes(StandardCharsets.UTF_8)), overwrite);
         overwrite.close();
@@ -80,7 +80,7 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         status.setMime("text/plain");
         final byte[] content = RandomUtils.nextBytes(513);
         status.setLength(content.length);
-        status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().length(content.length)));
+        status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length)));
         status.setMetadata(Collections.singletonMap("Cache-Control", "public,max-age=86400"));
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -93,9 +93,8 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         final Map<String, String> metadata = new AzureMetadataFeature(session, context).getMetadata(test);
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("public,max-age=86400", metadata.get("Cache-Control"));
-        final Write.Append append = new AzureWriteFeature(session, context).append(test, status.getLength());
+        final Write.Append append = new AzureWriteFeature(session, context).append(test, status.withRemote(attributes));
         assertFalse(append.append);
-        assertTrue(append.override);
         assertEquals(0L, append.size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new AzureReadFeature(session, context).read(test, new TransferStatus(), new DisabledConnectionCallback());
@@ -103,7 +102,7 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         in.close();
         assertArrayEquals(content, buffer);
         final OutputStream overwrite = new AzureWriteFeature(session, context).write(test, new TransferStatus().exists(true)
-            .length("overwrite".getBytes(StandardCharsets.UTF_8).length).withMetadata(Collections.singletonMap("Content-Type", "text/plain")), new DisabledConnectionCallback());
+            .withLength("overwrite".getBytes(StandardCharsets.UTF_8).length).withMetadata(Collections.singletonMap("Content-Type", "text/plain")), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus())
             .transfer(new ByteArrayInputStream("overwrite".getBytes(StandardCharsets.UTF_8)), overwrite);
         overwrite.close();

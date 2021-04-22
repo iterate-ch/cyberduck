@@ -47,6 +47,6 @@ public class SHA1ChecksumComputeTest {
                 new TransferStatus().skip(1)).hash);
         assertEquals("140f86aae51ab9e1cda9b4254fe98a74eb54c1a1",
             new SHA1ChecksumCompute().compute(IOUtils.toInputStream("_input_", Charset.defaultCharset()),
-                new TransferStatus().skip(1).length(5)).hash);
+                new TransferStatus().skip(1).withLength(5)).hash);
     }
 }

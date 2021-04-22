@@ -17,12 +17,8 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.DefaultStreamCloser;
@@ -48,8 +44,6 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     private static final Logger log = Logger.getLogger(DropboxWriteFeature.class);
 
     private final DropboxSession session;
-    private final Find finder;
-    private final AttributesFinder attributes;
     private final Long chunksize;
 
     private final PathContainerService containerService
@@ -60,24 +54,13 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     public DropboxWriteFeature(final DropboxSession session, final Long chunksize) {
-        this(session, new DropboxFindFeature(session), new DropboxAttributesFinderFeature(session), chunksize);
-    }
-
-    public DropboxWriteFeature(final DropboxSession session, final Find finder, final AttributesFinder attributes, final Long chunksize) {
-        super(finder, attributes);
         this.session = session;
-        this.finder = finder;
-        this.attributes = attributes;
         this.chunksize = chunksize;
     }
 
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        if(finder.find(file)) {
-            final PathAttributes attributes = this.attributes.find(file);
-            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override

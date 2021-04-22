@@ -70,7 +70,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertEquals(0L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
 
-        final TransferStatus append = new TransferStatus().append(true).length(content.length);
+        final TransferStatus append = new TransferStatus().append(true).withLength(content.length);
         new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
             1 * 1024L * 1024L, 1).upload(test, local,
             new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
@@ -123,7 +123,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertEquals(1024L * 1024L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
 
-        final TransferStatus append = new TransferStatus().append(true).length(1024L * 1024L).skip(1024L * 1024L);
+        final TransferStatus append = new TransferStatus().append(true).withLength(1024L * 1024L).skip(1024L * 1024L);
         new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
             1024L * 1024L, 1).upload(test, local,
             new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,

@@ -18,15 +18,11 @@ package ch.cyberduck.core.onedrive.features;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BufferInputStream;
 import ch.cyberduck.core.io.BufferOutputStream;
@@ -47,18 +43,10 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
 
     private final GraphSession session;
     private final GraphFileIdProvider idProvider;
-    private final Find finder;
-    private final AttributesFinder attributes;
 
     public GraphBufferWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
-        this(session, idProvider, new GraphFindFeature(session), new GraphAttributesFinderFeature(session));
-    }
-
-    public GraphBufferWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider, final Find finder, final AttributesFinder attributes) {
         this.session = session;
         this.idProvider = idProvider;
-        this.finder = finder;
-        this.attributes = attributes;
     }
 
     @Override
@@ -75,7 +63,7 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
                 try {
                     // Reset offset in transfer status because data was already streamed
                     // through StreamCopier when writing to buffer
-                    final TransferStatus range = new TransferStatus(status).length(buffer.length()).append(false);
+                    final TransferStatus range = new TransferStatus(status).withLength(buffer.length()).append(false);
                     if(0L == buffer.length()) {
                         new GraphTouchFeature(session, idProvider).touch(file, new TransferStatus());
                     }
@@ -120,12 +108,8 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
     }
 
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        if(finder.find(file)) {
-            final PathAttributes attr = attributes.find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override

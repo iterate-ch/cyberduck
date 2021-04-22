@@ -49,17 +49,17 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         final String name = new AlphanumericRandomStringService().random();
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-        final OutputStream out = new B2WriteFeature(session, fileid).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
-        new StreamCopier(new TransferStatus(), new TransferStatus().length(content.length)).transfer(new ByteArrayInputStream(content), out);
+        final OutputStream out = new B2WriteFeature(session, fileid).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus().withLength(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final Path copy = new B2LargeCopyFeature(session, fileid, 5 * 1024L * 1024L, 1).copy(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
-            new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         assertNotEquals(test.attributes().getVersionId(), copy.attributes().getVersionId());
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new B2ReadFeature(session, fileid).read(copy, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new B2ReadFeature(session, fileid).read(copy, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -76,16 +76,16 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         final String name = new AlphanumericRandomStringService().random();
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-        final OutputStream out = new B2WriteFeature(session, fileid).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
-        new StreamCopier(new TransferStatus(), new TransferStatus().length(content.length)).transfer(new ByteArrayInputStream(content), out);
+        final OutputStream out = new B2WriteFeature(session, fileid).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus().withLength(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final Path copy = new B2LargeCopyFeature(session, fileid, 5 * 1024L * 1024L, 1).copy(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
-            new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new B2ReadFeature(session, fileid).read(copy, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new B2ReadFeature(session, fileid).read(copy, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -101,14 +101,14 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         final String name = new AlphanumericRandomStringService().random();
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-        final OutputStream out = new B2WriteFeature(session, fileid).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
-        new StreamCopier(new TransferStatus(), new TransferStatus().length(content.length)).transfer(new ByteArrayInputStream(content), out);
+        final OutputStream out = new B2WriteFeature(session, fileid).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus().withLength(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();
         final Path copy = new B2TouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new B2FindFeature(session, fileid).find(new Path(folder, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
         new B2LargeCopyFeature(session, fileid, 5 * 1024L * 1024L, 1).copy(test, copy,
-            new TransferStatus().exists(true).length(content.length), new DisabledConnectionCallback());
+            new TransferStatus().exists(true).withLength(content.length), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));

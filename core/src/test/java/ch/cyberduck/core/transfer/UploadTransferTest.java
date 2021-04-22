@@ -57,7 +57,7 @@ public class UploadTransferTest {
         final NullLocal local = new NullLocal("t") {
             @Override
             public AttributedList<Local> list() {
-                AttributedList<Local> l = new AttributedList<Local>();
+                AttributedList<Local> l = new AttributedList<>();
                 l.add(new NullLocal(this.getAbsolute(), "c"));
                 return l;
             }
@@ -73,7 +73,7 @@ public class UploadTransferTest {
         final NullLocal local = new NullLocal("t") {
             @Override
             public AttributedList<Local> list() {
-                AttributedList<Local> l = new AttributedList<Local>();
+                AttributedList<Local> l = new AttributedList<>();
                 l.add(new NullLocal(this.getAbsolute(), "c"));
                 l.add(new NullLocal(this.getAbsolute(), "c.html"));
                 return l;
@@ -101,7 +101,7 @@ public class UploadTransferTest {
         final NullLocal local = new NullLocal("t") {
             @Override
             public AttributedList<Local> list() {
-                AttributedList<Local> l = new AttributedList<Local>();
+                AttributedList<Local> l = new AttributedList<>();
                 l.add(new NullLocal(this.getAbsolute(), "a") {
                     @Override
                     public boolean exists() {
@@ -167,7 +167,7 @@ public class UploadTransferTest {
         final NullLocal local = new NullLocal("t") {
             @Override
             public AttributedList<Local> list() {
-                AttributedList<Local> l = new AttributedList<Local>();
+                AttributedList<Local> l = new AttributedList<>();
                 l.add(new NullLocal(this.getAbsolute(), "a") {
                     @Override
                     public boolean exists() {
@@ -278,7 +278,7 @@ public class UploadTransferTest {
         final Local localDirectory = new Local(System.getProperty("java.io.tmpdir"), "transfer") {
             @Override
             public AttributedList<Local> list() {
-                return new AttributedList<Local>(Collections.singletonList(new Local(this, name)));
+                return new AttributedList<>(Collections.singletonList(new Local(this, name)));
             }
         };
         LocalTouchFactory.get().touch(new Local(localDirectory, name));
@@ -321,7 +321,7 @@ public class UploadTransferTest {
                 if(type.equals(Find.class)) {
                     return (T) new Find() {
                         @Override
-                        public boolean find(final Path f) {
+                        public boolean find(final Path f, final ListProgressListener listener) {
                             return true;
                         }
                     };
@@ -350,7 +350,7 @@ public class UploadTransferTest {
                 if(type.equals(AttributesFinder.class)) {
                     return (T) new AttributesFinder() {
                         @Override
-                        public PathAttributes find(final Path file) {
+                        public PathAttributes find(final Path file, final ListProgressListener listener) {
                             return new PathAttributes();
                         }
                     };
@@ -364,9 +364,9 @@ public class UploadTransferTest {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length) {
+                        public Append append(final Path file, final TransferStatus status) {
                             fail();
-                            return new Write.Append(0L);
+                            return new Write.Append(false);
                         }
 
 

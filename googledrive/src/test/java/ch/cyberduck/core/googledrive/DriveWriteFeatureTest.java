@@ -65,8 +65,8 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             final PathAttributes attributes = new DriveAttributesFinderFeature(session, idProvider).find(test);
             assertEquals(fileid, attributes.getFileId());
             assertEquals(content.length, attributes.getSize());
-            final Write.Append append = new DriveWriteFeature(session, idProvider).append(test, status.getLength());
-            assertTrue(append.override);
+            final Write.Append append = new DriveWriteFeature(session, idProvider).append(test, status.withRemote(new DriveAttributesFinderFeature(session, idProvider).find(test)));
+            assertFalse(append.append);
             assertEquals(content.length, append.size, 0L);
             final byte[] buffer = new byte[content.length];
             final InputStream in = new DriveReadFeature(session, idProvider).read(test, new TransferStatus(), new DisabledConnectionCallback());

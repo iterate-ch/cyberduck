@@ -107,7 +107,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        final TransferStatus upload = new TransferStatus().length(content.length);
+        final TransferStatus upload = new TransferStatus().withLength(content.length);
         upload.setExists(true);
         final VersionId reply = new DefaultUploadFeature<VersionId>(new SDSMultipartWriteFeature(session, nodeid)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
@@ -117,7 +117,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new SDSReadFeature(session, nodeid).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new SDSReadFeature(session, nodeid).read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -141,7 +141,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        final TransferStatus upload = new TransferStatus().length(content.length);
+        final TransferStatus upload = new TransferStatus().withLength(content.length);
         upload.setExists(true);
         final VersionId reply = new DefaultUploadFeature<VersionId>(new SDSMultipartWriteFeature(session, nodeid)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,

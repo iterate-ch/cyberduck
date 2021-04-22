@@ -434,7 +434,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                         // Retry immediately
                                         log.info(String.format("Retry %s with transfer status %s", item, segment));
                                         this.retry(segment
-                                            .length(retry.getLength())
+                                            .withLength(retry.getLength())
                                             .skip(retry.getOffset())
                                             .append(retry.isAppend()));
                                         return;

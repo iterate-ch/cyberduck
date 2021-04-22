@@ -19,13 +19,9 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -49,18 +45,9 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<VersionId>
     private static final Logger log = Logger.getLogger(SDSDirectS3WriteFeature.class);
 
     private final SDSSession session;
-    private final Find finder;
-    private final AttributesFinder attributes;
 
     public SDSDirectS3WriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
-        this(session, new SDSFindFeature(nodeid), new SDSAttributesFinderFeature(session, nodeid));
-    }
-
-    public SDSDirectS3WriteFeature(final SDSSession session, final Find finder, final AttributesFinder attributes) {
-        super(finder, attributes);
         this.session = session;
-        this.finder = finder;
-        this.attributes = attributes;
     }
 
     @Override
@@ -112,12 +99,8 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<VersionId>
     }
 
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        if(finder.find(file)) {
-            final PathAttributes attr = attributes.find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override

@@ -195,7 +195,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertFalse(status.isComplete());
         assertFalse(new S3FindFeature(session).find(test));
 
-        final TransferStatus append = new TransferStatus().append(true).length(2L * 1024L * 1024L).skip(10L * 1024L * 1024L);
+        final TransferStatus append = new TransferStatus().append(true).withLength(2L * 1024L * 1024L).skip(10L * 1024L * 1024L);
         new S3MultipartUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()), 10L * 1024L * 1024L, 1).upload(test, local,
             new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
             new DisabledConnectionCallback());
@@ -257,7 +257,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(0L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
 
-        final TransferStatus append = new TransferStatus().append(true).length(content.length);
+        final TransferStatus append = new TransferStatus().append(true).withLength(content.length);
         new S3MultipartUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()), 10485760L, 1).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), append,

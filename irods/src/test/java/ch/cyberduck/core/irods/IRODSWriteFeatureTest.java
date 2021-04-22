@@ -81,8 +81,8 @@ public class IRODSWriteFeatureTest {
 
         final byte[] content = RandomUtils.nextBytes(68400);
 
-        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).length(content.length), new DisabledConnectionCallback());
-        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().append(false).length(content.length), new DisabledConnectionCallback());
+        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).withLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().append(false).withLength(content.length), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out2);
         // Error code received from iRODS:-23000
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out1);
@@ -130,8 +130,8 @@ public class IRODSWriteFeatureTest {
 
         final byte[] content = RandomUtils.nextBytes(68400);
 
-        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).length(content.length), new DisabledConnectionCallback());
-        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().append(false).length(content.length), new DisabledConnectionCallback());
+        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).withLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().append(false).withLength(content.length), new DisabledConnectionCallback());
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -233,8 +233,7 @@ public class IRODSWriteFeatureTest {
             status.setAppend(false);
             status.setLength(content.length);
 
-            assertFalse(new IRODSWriteFeature(session).append(test, status.getLength()).append);
-            assertEquals(0L, new IRODSWriteFeature(session).append(test, status.getLength()).size, 0L);
+            assertEquals(0L, new IRODSWriteFeature(session).append(test, status).size, 0L);
 
             final StatusOutputStream<Integer> out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
@@ -259,8 +258,8 @@ public class IRODSWriteFeatureTest {
             status.setAppend(false);
             status.setLength(newcontent.length);
 
-            assertTrue(new IRODSWriteFeature(session).append(test, status.getLength()).append);
-            assertEquals(content.length, new IRODSWriteFeature(session).append(test, status.getLength()).size, 0L);
+            assertTrue(new IRODSWriteFeature(session).append(test, status).append);
+            assertEquals(content.length, new IRODSWriteFeature(session).append(test, status).size, 0L);
 
             final StatusOutputStream<Integer> out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
@@ -306,8 +305,7 @@ public class IRODSWriteFeatureTest {
         status.setAppend(true);
         status.setLength(content.length);
 
-        assertFalse(new IRODSWriteFeature(session).append(test, status.getLength()).append);
-        assertEquals(0L, new IRODSWriteFeature(session).append(test, status.getLength()).size, 0L);
+        assertEquals(0L, new IRODSWriteFeature(session).append(test, status).size, 0L);
 
         final OutputStream out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
@@ -332,8 +330,8 @@ public class IRODSWriteFeatureTest {
         status_append.setAppend(true);
         status_append.setLength(content_append.length);
 
-        assertTrue(new IRODSWriteFeature(session).append(test, status_append.getLength()).append);
-        assertEquals(status.getLength(), new IRODSWriteFeature(session).append(test, status_append.getLength()).size, 0L);
+        assertTrue(new IRODSWriteFeature(session).append(test, status_append).append);
+        assertEquals(status.getLength(), new IRODSWriteFeature(session).append(test, status_append).size, 0L);
 
         final OutputStream out_append = new IRODSWriteFeature(session).write(test, status_append, new DisabledConnectionCallback());
         assertNotNull(out_append);

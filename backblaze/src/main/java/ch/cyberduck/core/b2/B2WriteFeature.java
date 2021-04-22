@@ -19,11 +19,8 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -62,24 +59,15 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
-    private final Find finder;
-    private final AttributesFinder attributes;
 
     private final ThreadLocal<B2GetUploadUrlResponse> urls
-        = new ThreadLocal<B2GetUploadUrlResponse>();
+        = new ThreadLocal<>();
 
     private final Preferences preferences = PreferencesFactory.get();
 
     public B2WriteFeature(final B2Session session, final B2VersionIdProvider fileid) {
-        this(session, fileid, new B2FindFeature(session, fileid), new B2AttributesFinderFeature(session, fileid));
-    }
-
-    public B2WriteFeature(final B2Session session, final B2VersionIdProvider fileid, final Find finder, final AttributesFinder attributes) {
-        super(finder, attributes);
         this.session = session;
         this.fileid = fileid;
-        this.finder = finder;
-        this.attributes = attributes;
     }
 
     @Override
@@ -133,7 +121,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                 }
             }
 
-            protected BaseB2Response upload(final B2GetUploadUrlResponse uploadUrl, final AbstractHttpEntity entity, final Checksum checksum) throws B2ApiException, IOException, BackgroundException {
+            protected BaseB2Response upload(final B2GetUploadUrlResponse uploadUrl, final AbstractHttpEntity entity, final Checksum checksum) throws B2ApiException, IOException {
                 final Map<String, String> fileinfo = new HashMap<>(status.getMetadata());
                 if(null != status.getTimestamp()) {
                     fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
@@ -170,8 +158,8 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     }
 
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        if(length >= preferences.getLong("b2.upload.largeobject.threshold")) {
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        if(status.getLength() >= preferences.getLong("b2.upload.largeobject.threshold")) {
             if(preferences.getBoolean("b2.upload.largeobject")) {
                 final B2LargeUploadPartService partService = new B2LargeUploadPartService(session, fileid);
                 final List<B2FileInfoResponse> upload = partService.find(file);
@@ -180,14 +168,10 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                     for(B2UploadPartResponse completed : partService.list(upload.iterator().next().getFileId())) {
                         size += completed.getContentLength();
                     }
-                    return new Append(size);
+                    return new Append(true).withStatus(status).withSize(size);
                 }
             }
         }
-        if(finder.find(file)) {
-            final PathAttributes attr = attributes.find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+        return new Append(false).withStatus(status);
     }
 }

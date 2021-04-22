@@ -127,7 +127,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         assertEquals(0L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
 
-        final TransferStatus append = new TransferStatus().append(true).length(content.length);
+        final TransferStatus append = new TransferStatus().append(true).withLength(content.length);
         service.upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
@@ -177,7 +177,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         assertEquals(100L * 1024L * 1024L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
 
-        final TransferStatus append = new TransferStatus().append(true).length(2L * 1024L * 1024L).skip(100L * 1024L * 1024L);
+        final TransferStatus append = new TransferStatus().append(true).withLength(2L * 1024L * 1024L).skip(100L * 1024L * 1024L);
         new B2LargeUploadService(session, fileid, new B2WriteFeature(session, fileid), 100L * 1024L * 1024L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());

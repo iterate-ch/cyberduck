@@ -19,14 +19,11 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -61,24 +58,14 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     private final PathContainerService containerService;
     private final S3Session session;
     private final S3MultipartService multipartService;
-    private final Find finder;
-    private final AttributesFinder attributes;
 
     public S3WriteFeature(final S3Session session) {
         this(session, new S3DefaultMultipartService(session));
     }
 
     public S3WriteFeature(final S3Session session, final S3MultipartService multipartService) {
-        this(session, multipartService, new S3FindFeature(session), new S3AttributesFinderFeature(session));
-    }
-
-    public S3WriteFeature(final S3Session session, final S3MultipartService multipartService,
-                          final Find finder, final AttributesFinder attributes) {
-        super(finder, attributes);
         this.session = session;
         this.multipartService = multipartService;
-        this.finder = finder;
-        this.attributes = attributes;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -152,8 +139,8 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
      * @return No Content-Range support
      */
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        if(length >= preferences.getLong("s3.upload.multipart.threshold")) {
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        if(status.getLength() >= preferences.getLong("s3.upload.multipart.threshold")) {
             if(preferences.getBoolean("s3.upload.multipart")) {
                 try {
                     final List<MultipartUpload> upload = multipartService.find(file);
@@ -162,7 +149,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                         for(MultipartPart completed : multipartService.list(upload.iterator().next())) {
                             size += completed.getSize();
                         }
-                        return new Append(size);
+                        return new Append(true).withStatus(status).withSize(size);
                     }
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
@@ -170,11 +157,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                 }
             }
         }
-        if(finder.find(file)) {
-            final PathAttributes attr = attributes.find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+        return new Append(false).withStatus(status);
     }
 
     @Override

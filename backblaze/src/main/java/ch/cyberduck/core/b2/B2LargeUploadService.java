@@ -226,7 +226,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             public B2UploadPartResponse call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
-                    .length(length)
+                    .withLength(length)
                     .skip(offset);
                 status.setHeader(overall.getHeader());
                 status.setNonces(overall.getNonces());

@@ -73,7 +73,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         final String nodeId = attributes.getFileId();
         assertNotNull(nodeId);
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -113,7 +113,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         assertNotNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new StoregateReadFeature(session, nodeid).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new StoregateReadFeature(session, nodeid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

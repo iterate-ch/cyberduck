@@ -80,7 +80,7 @@ public class IRODSUploadFeatureTest {
         final Checksum checksumPart2;
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
-            final TransferStatus status = new TransferStatus().length(content.length / 2);
+            final TransferStatus status = new TransferStatus().withLength(content.length / 2);
             checksumPart1 = new IRODSUploadFeature(session).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
@@ -88,7 +88,7 @@ public class IRODSUploadFeatureTest {
             assertEquals(content.length / 2, status.getOffset());
         }
         {
-            final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
+            final TransferStatus status = new TransferStatus().withLength(content.length / 2).skip(content.length / 2).append(true);
             checksumPart2 = new IRODSUploadFeature(session).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
@@ -97,7 +97,7 @@ public class IRODSUploadFeatureTest {
         }
         assertNotEquals(checksumPart1, checksumPart2);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -126,7 +126,7 @@ public class IRODSUploadFeatureTest {
         out.close();
         final Checksum checksum;
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final TransferStatus status = new TransferStatus().length(content.length);
+        final TransferStatus status = new TransferStatus().withLength(content.length);
         final TransferStatus copy = new TransferStatus(status);
         checksum = new IRODSUploadFeature(session).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
@@ -136,7 +136,7 @@ public class IRODSUploadFeatureTest {
         assertEquals(content.length, status.getOffset());
         assertEquals(checksum, new MD5ChecksumCompute().compute(new FileInputStream(local.getAbsolute()), copy));
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -163,7 +163,7 @@ public class IRODSUploadFeatureTest {
         IOUtils.write(content, out);
         out.close();
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final TransferStatus status = new TransferStatus().length(content.length);
+        final TransferStatus status = new TransferStatus().withLength(content.length);
         final Checksum checksum = new IRODSUploadFeature(session).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
                 @Override

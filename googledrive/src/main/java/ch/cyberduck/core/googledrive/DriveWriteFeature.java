@@ -18,10 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -58,28 +55,15 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
-    private final Find finder;
-    private final AttributesFinder attributes;
 
     public DriveWriteFeature(final DriveSession session, final DriveFileIdProvider fileid) {
-        this(session, fileid, new DriveFindFeature(session, fileid), new DriveAttributesFinderFeature(session, fileid));
-    }
-
-    public DriveWriteFeature(final DriveSession session, final DriveFileIdProvider fileid, final Find finder, final AttributesFinder attributes) {
-        super(finder, attributes);
         this.session = session;
         this.fileid = fileid;
-        this.finder = finder;
-        this.attributes = attributes;
     }
 
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        if(finder.find(file)) {
-            final PathAttributes attr = attributes.find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override

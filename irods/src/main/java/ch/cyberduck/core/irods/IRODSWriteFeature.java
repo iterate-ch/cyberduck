@@ -39,7 +39,6 @@ public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
     private final IRODSSession session;
 
     public IRODSWriteFeature(IRODSSession session) {
-        super(new IRODSFindFeature(session), new IRODSAttributesFinderFeature(session));
         this.session = session;
     }
 

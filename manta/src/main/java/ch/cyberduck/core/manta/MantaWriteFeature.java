@@ -17,10 +17,7 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -30,22 +27,14 @@ import java.io.OutputStream;
 public class MantaWriteFeature implements Write<Void> {
 
     private final MantaSession session;
-    private final Find finder;
-    private final AttributesFinder attributes;
 
     public MantaWriteFeature(final MantaSession session) {
-        this(session, new MantaFindFeature(session), new MantaAttributesFinderFeature(session));
-    }
-
-    public MantaWriteFeature(final MantaSession session, final Find finder, final AttributesFinder attributes) {
         this.session = session;
-        this.finder = finder;
-        this.attributes = attributes;
     }
 
     /**
-     * Return an output stream that writes to Manta. {@code putAsOutputStream} requires a thread per call and as
-     * a result is discouraged in the java-manta client documentation.
+     * Return an output stream that writes to Manta. {@code putAsOutputStream} requires a thread per call and as a
+     * result is discouraged in the java-manta client documentation.
      * <p>
      * {@inheritDoc}
      */
@@ -64,12 +53,8 @@ public class MantaWriteFeature implements Write<Void> {
      * Manta does not support raw append operations.
      */
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        if(finder.find(file)) {
-            final PathAttributes attr = attributes.find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override

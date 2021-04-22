@@ -17,12 +17,9 @@ package ch.cyberduck.core.googlestorage;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -61,18 +58,9 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
-    private final Find finder;
-    private final AttributesFinder attributes;
 
     public GoogleStorageWriteFeature(final GoogleStorageSession session) {
-        this(session, new GoogleStorageFindFeature(session), new GoogleStorageAttributesFinderFeature(session));
-    }
-
-    public GoogleStorageWriteFeature(final GoogleStorageSession session, final Find finder, final AttributesFinder attributes) {
-        super(finder, attributes);
         this.session = session;
-        this.finder = finder;
-        this.attributes = attributes;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -174,12 +162,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
     }
 
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        if(finder.find(file)) {
-            final PathAttributes attr = attributes.find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override

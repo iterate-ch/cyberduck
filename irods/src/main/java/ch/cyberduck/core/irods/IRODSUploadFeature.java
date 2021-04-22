@@ -114,11 +114,8 @@ public class IRODSUploadFeature implements Upload<Checksum> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length) throws BackgroundException {
-        if(new IRODSFindFeature(session).find(file)) {
-            return Write.override;
-        }
-        return Write.notfound;
+    public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return Write.override;
     }
 
     @Override

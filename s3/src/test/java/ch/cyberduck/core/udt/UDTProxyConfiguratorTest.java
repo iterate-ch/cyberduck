@@ -264,7 +264,7 @@ public class UDTProxyConfiguratorTest {
 
         assertTrue(tunneled.getFeature(Find.class).find(test));
         assertEquals(status.getLength(), new S3ListService(tunneled).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
-        assertTrue(new S3WriteFeature(tunneled).append(test, status.getLength()).override);
+        assertFalse(new S3WriteFeature(tunneled).append(test, status).append);
         {
             final byte[] buffer = new byte[random.getBytes().length];
             IOUtils.readFully(new S3ReadFeature(tunneled).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
@@ -272,7 +272,7 @@ public class UDTProxyConfiguratorTest {
         }
         {
             final byte[] buffer = new byte[random.getBytes().length - 1];
-            final InputStream in = new S3ReadFeature(tunneled).read(test, new TransferStatus().length(random.getBytes().length).append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new S3ReadFeature(tunneled).read(test, new TransferStatus().withLength(random.getBytes().length).append(true).skip(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[random.getBytes().length - 1];
@@ -307,7 +307,7 @@ public class UDTProxyConfiguratorTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(tunneled).touch(test, new TransferStatus());
         final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
-        final OutputStream out = new S3WriteFeature(tunneled).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final OutputStream out = new S3WriteFeature(tunneled).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();

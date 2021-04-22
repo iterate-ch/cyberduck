@@ -18,13 +18,9 @@ package ch.cyberduck.core.storegate;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
@@ -64,28 +60,15 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<String> {
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
-    private final Find finder;
-    private final AttributesFinder attributes;
 
-    public StoregateWriteFeature(final StoregateSession session, final StoregateIdProvider nodeid) {
-        this(session, nodeid, new StoregateFindFeature(session, nodeid), new StoregateAttributesFinderFeature(session, nodeid));
-    }
-
-    public StoregateWriteFeature(final StoregateSession session, final StoregateIdProvider fileid, final Find finder, final AttributesFinder attributes) {
-        super(finder, attributes);
+    public StoregateWriteFeature(final StoregateSession session, final StoregateIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
-        this.finder = finder;
-        this.attributes = attributes;
     }
 
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        if(finder.find(file)) {
-            final PathAttributes attr = attributes.find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override

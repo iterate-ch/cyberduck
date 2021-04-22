@@ -55,7 +55,7 @@ public class AzureMoveFeature implements Move {
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        final Path copy = new AzureCopyFeature(session, context).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
+        final Path copy = new AzureCopyFeature(session, context).copy(file, renamed, new TransferStatus().withLength(file.attributes().getSize()), connectionCallback);
         delete.delete(Collections.singletonList(file), connectionCallback, callback);
         return copy;
     }

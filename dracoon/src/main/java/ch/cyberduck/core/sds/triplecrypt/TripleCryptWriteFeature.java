@@ -73,8 +73,8 @@ public class TripleCryptWriteFeature implements Write<VersionId> {
     }
 
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        return proxy.append(file, length);
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return proxy.append(file, status);
     }
 
     @Override

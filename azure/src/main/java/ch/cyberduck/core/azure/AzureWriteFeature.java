@@ -25,8 +25,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -66,7 +64,6 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
     private static final Logger log = Logger.getLogger(AzureWriteFeature.class);
 
     private final AzureSession session;
-
     private final OperationContext context;
 
     private final PathContainerService containerService
@@ -82,18 +79,6 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
     }
 
     public AzureWriteFeature(final AzureSession session, final BlobType blobType, final OperationContext context) {
-        super(session);
-        this.session = session;
-        this.blobType = blobType;
-        this.context = context;
-    }
-
-    public AzureWriteFeature(final AzureSession session, final OperationContext context, final Find finder, final AttributesFinder attributes) {
-        this(session, BlobType.valueOf(PreferencesFactory.get().getProperty("azure.upload.blobtype")), context, finder, attributes);
-    }
-
-    public AzureWriteFeature(final AzureSession session, final BlobType blobType, final OperationContext context, final Find finder, final AttributesFinder attributes) {
-        super(finder, attributes);
         this.session = session;
         this.blobType = blobType;
         this.context = context;
@@ -115,16 +100,15 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
     }
 
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        final Append status = super.append(file, length);
-        if(status.append) {
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        final Append append = super.append(file, status);
+        if(append.append) {
             final PathAttributes attr = new AzureAttributesFinderFeature(session, context).find(file);
             if(BlobType.APPEND_BLOB == BlobType.valueOf(attr.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE))) {
-                return status;
+                return append;
             }
-            return Write.override;
         }
-        return Write.notfound;
+        return Write.override;
     }
 
     @Override

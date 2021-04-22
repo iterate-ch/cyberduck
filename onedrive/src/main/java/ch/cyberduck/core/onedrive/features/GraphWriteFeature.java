@@ -18,11 +18,8 @@ package ch.cyberduck.core.onedrive.features;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -55,18 +52,10 @@ public class GraphWriteFeature implements Write<Void> {
 
     private final GraphSession session;
     private final GraphFileIdProvider idProvider;
-    private final Find finder;
-    private final AttributesFinder attributes;
 
     public GraphWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
-        this(session, idProvider, new GraphFindFeature(session), new GraphAttributesFinderFeature(session));
-    }
-
-    public GraphWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider, final Find finder, final AttributesFinder attributes) {
         this.session = session;
         this.idProvider = idProvider;
-        this.finder = finder;
-        this.attributes = attributes;
     }
 
     @Override
@@ -94,12 +83,8 @@ public class GraphWriteFeature implements Write<Void> {
     }
 
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        if(finder.find(file)) {
-            final PathAttributes attributes = this.attributes.find(file);
-            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override

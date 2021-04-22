@@ -330,7 +330,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * @param bytes Transfer content length
      */
-    public TransferStatus length(final long bytes) {
+    public TransferStatus withLength(final long bytes) {
         this.setLength(bytes);
         return this;
     }
@@ -424,13 +424,10 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     /**
      * @param temporary Temporary file to open output stream to
+     * @param finalname Target name
      */
-    public TransferStatus temporary(final Path temporary) {
+    public TransferStatus temporary(final Path temporary, final Path finalname) {
         this.rename.remote = temporary;
-        return this;
-    }
-
-    public TransferStatus withDisplayname(final Path finalname) {
         this.displayname.remote = finalname;
         return this;
     }
@@ -482,8 +479,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return remote;
     }
 
-    public void setRemote(PathAttributes remote) {
-        this.remote = remote;
+    public void setRemote(PathAttributes attributes) {
+        this.remote = attributes;
+    }
+
+    public TransferStatus withRemote(final PathAttributes attributes) {
+        this.setRemote(attributes);
+        return this;
     }
 
     public Permission getPermission() {

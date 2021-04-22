@@ -1,9 +1,11 @@
 package ch.cyberduck.core.ftp;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -40,16 +42,17 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
         final TransferStatus status = new TransferStatus();
         final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
         status.setLength(content.length);
-        final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new FTPWorkdirService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final OutputStream out = new FTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(session.getFeature(Find.class).find(test));
-        assertEquals(content.length, new FTPListService(session, null, TimeZone.getDefault()).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, new FTPWriteFeature(session).append(test, status.getLength()).size, 0L);
+        final PathAttributes attributes = new FTPListService(session, null, TimeZone.getDefault()).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+        assertEquals(content.length, attributes.getSize());
+        assertEquals(content.length, new FTPWriteFeature(session).append(test, status.withRemote(attributes)).size, 0L);
         {
-            final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).transfer(in, buffer);
             in.close();
@@ -57,7 +60,7 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().withLength(content.length).append(true).skip(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];
@@ -70,7 +73,7 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
     @Test
     public void testWriteContentRange() throws Exception {
         final FTPWriteFeature feature = new FTPWriteFeature(session);
-        final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new FTPWorkdirService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(64000);
         {
             final TransferStatus status = new TransferStatus();
@@ -93,7 +96,7 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
-        IOUtils.copy(new FTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
+        IOUtils.copy(new FTPReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(content, out.toByteArray());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -102,7 +105,7 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
     @Ignore
     public void testWriteRangeEndFirst() throws Exception {
         final FTPWriteFeature feature = new FTPWriteFeature(session);
-        final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new FTPWorkdirService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(2048);
         {
             // Write end of file first
@@ -128,7 +131,7 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
-        IOUtils.copy(new FTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
+        IOUtils.copy(new FTPReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(content, out.toByteArray());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
@@ -138,17 +141,15 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
     @Ignore
     @Test(expected = AccessDeniedException.class)
     public void testWriteNotFound() throws Exception {
-        final Path test = new Path(new FTPWorkdirService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new FTPWorkdirService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID(), EnumSet.of(Path.Type.file));
         new FTPWriteFeature(session).write(test, new TransferStatus(), new DisabledConnectionCallback());
     }
 
     @Test
     public void testAppend() throws Exception {
-        assertFalse(new FTPWriteFeature(session).append(
-            new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L).append);
-        final Path f = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path f = new Path(new FTPWorkdirService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(f, new TransferStatus());
-        assertTrue(new FTPWriteFeature(session).append(f, 0L).append);
+        assertTrue(new FTPWriteFeature(session).append(f, new TransferStatus().withLength(0L).withRemote(new FTPAttributesFinderFeature(session).find(f))).append);
         new FTPDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

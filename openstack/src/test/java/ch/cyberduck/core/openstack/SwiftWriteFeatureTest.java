@@ -7,9 +7,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -53,8 +51,8 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         assertTrue(new SwiftFindFeature(session).find(test));
         final PathAttributes attributes = new SwiftListService(session, regionService).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
-        final Write.Append append = new SwiftWriteFeature(session, regionService).append(test, status.getLength());
-        assertTrue(append.override);
+        final Write.Append append = new SwiftWriteFeature(session, regionService).append(test, status.withRemote(attributes));
+        assertFalse(append.append);
         assertEquals(content.length, append.size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
@@ -65,7 +63,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("duck", metadata.get("X-Object-Meta-C"));
-        final OutputStream overwrite = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().length(0L), new DisabledConnectionCallback());
+        final OutputStream overwrite = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().withLength(0L), new DisabledConnectionCallback());
         overwrite.close();
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -82,11 +80,11 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
                 list.set(true);
                 return new AttributedList<Path>(Collections.<Path>emptyList());
             }
-        }, new SwiftSegmentService(session)).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 2L * 1024L * 1024L * 1024L);
+        }, new SwiftSegmentService(session)).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
+            new TransferStatus().withLength(2L * 1024L * 1024L * 1024L));
         assertTrue(list.get());
         assertFalse(append.append);
-        assertFalse(append.override);
-        assertEquals(Write.notfound, append);
+        assertEquals(Write.override, append);
     }
 
     @Test
@@ -107,7 +105,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
                 segment2.attributes().setSize(2L);
                 return new AttributedList<Path>(Arrays.asList(segment1, segment2));
             }
-        }, segments).append(file, 2L * 1024L * 1024L * 1024L);
+        }, segments).append(file, new TransferStatus().withLength(2L * 1024L * 1024L * 1024L));
         assertTrue(append.append);
         assertEquals(3L, append.size, 0L);
         assertTrue(list.get());
@@ -119,7 +117,6 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final AtomicBoolean list = new AtomicBoolean();
-        final AtomicBoolean find = new AtomicBoolean();
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Write.Append append = new SwiftWriteFeature(session, regionService, new SwiftObjectListService(session, regionService) {
             @Override
@@ -127,23 +124,11 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
                 list.set(true);
                 return new AttributedList<Path>(Collections.singletonList(file));
             }
-        }, new SwiftSegmentService(session), new Find() {
-            @Override
-            public boolean find(final Path file) {
-                find.set(true);
-                return true;
-            }
-        }, new AttributesFinder() {
-            @Override
-            public PathAttributes find(final Path file) {
-                return new PathAttributes();
-            }
-        }
-        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L);
+        }, new SwiftSegmentService(session)
+        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
+            new TransferStatus().withLength(1024L));
         assertFalse(append.append);
-        assertTrue(append.override);
         assertFalse(list.get());
-        assertTrue(find.get());
     }
 
     @Test
@@ -152,7 +137,6 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final AtomicBoolean list = new AtomicBoolean();
-        final AtomicBoolean find = new AtomicBoolean();
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Write.Append append = new SwiftWriteFeature(session, regionService, new SwiftObjectListService(session, regionService) {
             @Override
@@ -160,18 +144,11 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
                 list.set(true);
                 return new AttributedList<Path>(Collections.singletonList(file));
             }
-        }, new SwiftSegmentService(session), new Find() {
-            @Override
-            public boolean find(final Path file) {
-                find.set(true);
-                return false;
-            }
-        }
-        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L);
+        }, new SwiftSegmentService(session)
+        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
+            new TransferStatus().withLength(1024L));
         assertFalse(append.append);
-        assertFalse(append.override);
-        assertEquals(Write.notfound, append);
+        assertEquals(Write.override, append);
         assertFalse(list.get());
-        assertTrue(find.get());
     }
 }

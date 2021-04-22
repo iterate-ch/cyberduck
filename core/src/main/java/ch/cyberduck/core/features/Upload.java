@@ -28,7 +28,14 @@ public interface Upload<Reply> {
     Reply upload(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
                  TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 
-    Write.Append append(Path file, Long length) throws BackgroundException;
+    /**
+     * Determine if appending to file is supported
+     *
+     * @param file   File
+     * @param status Transfer status including attributes of file on server and size of file to write
+     * @return True if can append to existing file
+     */
+    Write.Append append(Path file, TransferStatus status) throws BackgroundException;
 
     Upload<Reply> withWriter(Write<Reply> writer);
 }

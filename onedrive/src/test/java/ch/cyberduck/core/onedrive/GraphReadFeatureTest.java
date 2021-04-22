@@ -92,7 +92,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         out.close();
         new DefaultUploadFeature<Void>(new GraphWriteFeature(session, new GraphFileIdProvider(session))).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-            new TransferStatus().length(content.length),
+            new TransferStatus().withLength(content.length),
             new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -100,7 +100,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         status.setOffset(100L);
         final GraphReadFeature read = new GraphReadFeature(session);
         assertTrue(read.offset(test));
-        final InputStream in = read.read(test, status.length(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = read.read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -135,7 +135,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         out.close();
         new DefaultUploadFeature<Void>(new GraphWriteFeature(session, new GraphFileIdProvider(session))).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-            new TransferStatus().length(content.length),
+            new TransferStatus().withLength(content.length),
             new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);

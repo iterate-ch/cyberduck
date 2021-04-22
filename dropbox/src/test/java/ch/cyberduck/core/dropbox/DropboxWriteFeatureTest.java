@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
@@ -57,10 +58,11 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new DropboxFindFeature(session).find(test));
-        assertEquals(content.length, new DropboxListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, write.append(test, status.getLength()).size, 0L);
+        final PathAttributes attributes = new DropboxListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+        assertEquals(content.length, attributes.getSize());
+        assertEquals(content.length, write.append(test, status.withRemote(attributes)).size, 0L);
         {
-            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).transfer(in, buffer);
             in.close();
@@ -68,7 +70,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().withLength(content.length).append(true).skip(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];
@@ -89,10 +91,11 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new DropboxFindFeature(session).find(test));
-        assertEquals(content.length, new DropboxListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, write.append(test, status.getLength()).size, 0L);
+        final PathAttributes attributes = new DropboxListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+        assertEquals(content.length, attributes.getSize());
+        assertEquals(content.length, write.append(test, status.withRemote(attributes)).size, 0L);
         {
-            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).transfer(in, buffer);
             in.close();
@@ -100,7 +103,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().withLength(content.length).append(true).skip(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];

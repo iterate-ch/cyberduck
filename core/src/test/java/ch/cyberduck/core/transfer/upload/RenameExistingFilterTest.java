@@ -96,7 +96,7 @@ public class RenameExistingFilterTest {
         final AtomicInteger moved = new AtomicInteger();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path f) {
+            public boolean find(final Path f, final ListProgressListener listener) {
                 if(f.equals(file)) {
                     found.set(true);
                     return true;
@@ -106,7 +106,7 @@ public class RenameExistingFilterTest {
         };
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) {
+            public PathAttributes find(final Path file, final ListProgressListener listener) {
                 return new PathAttributes();
             }
         };
@@ -148,9 +148,9 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length) {
+                        public Append append(final Path file, final TransferStatus status) {
                             fail();
-                            return new Append(1L);
+                            return new Append(false);
                         }
 
                         @Override
@@ -192,7 +192,7 @@ public class RenameExistingFilterTest {
         final AtomicBoolean moved = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path f) {
+            public boolean find(final Path f, final ListProgressListener listener) {
                 if(f.equals(file)) {
                     found.set(true);
                     return true;
@@ -202,7 +202,7 @@ public class RenameExistingFilterTest {
         };
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) {
+            public PathAttributes find(final Path file, final ListProgressListener listener) {
                 return new PathAttributes();
             }
         };
@@ -236,9 +236,9 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length) {
+                        public Append append(final Path file, final TransferStatus status) {
                             fail();
-                            return new Append(0L);
+                            return new Append(false);
                         }
 
                         @Override

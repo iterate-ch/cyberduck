@@ -62,7 +62,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         final int length = 39865;
         final byte[] content = RandomUtils.nextBytes(length);
         {
-            final TransferStatus status = new TransferStatus().length(content.length);
+            final TransferStatus status = new TransferStatus().withLength(content.length);
             final OutputStream out = new FTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
@@ -86,7 +86,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(test, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(2048);
-        final OutputStream out = new FTPWriteFeature(session).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final OutputStream out = new FTPWriteFeature(session).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -127,7 +127,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
     public void testAbortPartialRead() throws Exception {
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(test, new TransferStatus());
-        final OutputStream out = new FTPWriteFeature(session).write(test, new TransferStatus().length(20L), new DisabledConnectionCallback());
+        final OutputStream out = new FTPWriteFeature(session).write(test, new TransferStatus().withLength(20L), new DisabledConnectionCallback());
         assertNotNull(out);
         final byte[] content = RandomUtils.nextBytes(2048);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);

@@ -18,13 +18,9 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
@@ -53,34 +49,21 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
 
     private final PathContainerService containerService = new DefaultPathContainerService();
     private final SwiftSession session;
-    private final Find finder;
-    private final AttributesFinder attributes;
     private final SwiftSegmentService segmentService;
     private final SwiftRegionService regionService;
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session) {
-        this(session, new SwiftFindFeature(session), new SwiftAttributesFinderFeature(session));
+        this(session, new SwiftRegionService(session));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, new SwiftSegmentService(session, regionService), new SwiftFindFeature(session), new SwiftAttributesFinderFeature(session));
+        this(session, regionService, new SwiftSegmentService(session, regionService));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService, final SwiftSegmentService segmentService) {
-        this(session, regionService, segmentService, new SwiftFindFeature(session), new SwiftAttributesFinderFeature(session));
-    }
-
-    public SwiftLargeUploadWriteFeature(final SwiftSession session, final Find finder, final AttributesFinder attributes) {
-        this(session, new SwiftRegionService(session), new SwiftSegmentService(session), finder, attributes);
-    }
-
-    public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService, final SwiftSegmentService segmentService,
-                                        final Find finder, final AttributesFinder attributes) {
         this.session = session;
         this.regionService = regionService;
         this.segmentService = segmentService;
-        this.finder = finder;
-        this.attributes = attributes;
     }
 
     @Override
@@ -96,12 +79,8 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
     }
 
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        if(finder.find(file)) {
-            final PathAttributes attr = this.attributes.find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override
@@ -137,7 +116,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                 completed.add(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
                     @Override
                     public StorageObject call() throws BackgroundException {
-                        final TransferStatus status = new TransferStatus().length(len);
+                        final TransferStatus status = new TransferStatus().withLength(len);
                         status.setChecksum(SwiftLargeUploadWriteFeature.this.checksum(file, status)
                             .compute(new ByteArrayInputStream(content, off, len), status)
                         );

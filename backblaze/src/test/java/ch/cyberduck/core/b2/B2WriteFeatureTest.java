@@ -39,7 +39,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -75,7 +74,7 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
-        final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
+        final byte[] content = RandomUtils.nextBytes(4);
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setTimestamp(1503654614004L);
@@ -90,8 +89,8 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final PathAttributes attributes = new B2ListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
-        final Write.Append append = new B2WriteFeature(session, fileid).append(test, status.getLength());
-        assertTrue(append.override);
+        final Write.Append append = new B2WriteFeature(session, fileid).append(test, status.withRemote(attributes));
+        assertFalse(append.append);
         assertEquals(content.length, append.size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback());

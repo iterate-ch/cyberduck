@@ -112,8 +112,8 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                         final TransferStatus status = new TransferStatus()
                             .withLockId(this.getLockId(r.getKey()))
                             .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-                            .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).find(r.getValue()))
-                            .length(r.getKey().attributes().getSize());
+                            .exists(session.getFeature(Find.class, new CachingFindFeature(cache, new DefaultFindFeature(session))).find(r.getValue()))
+                            .withLength(r.getKey().attributes().getSize());
                         result.put(r.getKey(), feature.move(r.getKey(), r.getValue(), status,
                             new Delete.Callback() {
                                 @Override

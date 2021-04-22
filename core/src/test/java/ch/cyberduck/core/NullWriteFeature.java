@@ -24,7 +24,7 @@ import org.apache.commons.io.output.NullOutputStream;
 
 public class NullWriteFeature extends AppendWriteFeature<Void> {
     public NullWriteFeature(final Session session) {
-        super(session);
+        super();
     }
 
     @Override

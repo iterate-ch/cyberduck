@@ -22,12 +22,14 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.dav.AbstractDAVTest;
+import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVListService;
@@ -43,7 +45,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.FileHeader;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -84,14 +85,14 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(test));
-        Assert.assertEquals(content.length, new CryptoListService(session, new DAVListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        Assert.assertEquals(content.length, writer.append(test, status.getLength()).size, 0L);
+        assertEquals(content.length, new CryptoListService(session, new DAVListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, writer.append(test, status.withRemote(new CryptoAttributesFeature(session, new DAVAttributesFinderFeature(session), cryptomator).find(test))).size, 0L);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(40000);
             final TransferStatus read = new TransferStatus();
             read.setOffset(23); // offset within chunk
             read.setAppend(true);
-            read.length(40000); // ensure to read at least two chunks
+            read.withLength(40000); // ensure to read at least two chunks
             final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];
@@ -103,7 +104,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
             final TransferStatus read = new TransferStatus();
             read.setOffset(65536); // offset at the beginning of a new chunk
             read.setAppend(true);
-            read.length(40000); // ensure to read at least two chunks
+            read.withLength(40000); // ensure to read at least two chunks
             final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];
@@ -115,7 +116,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
             final TransferStatus read = new TransferStatus();
             read.setOffset(65537); // offset at the beginning+1 of a new chunk
             read.setAppend(true);
-            read.length(40000); // ensure to read at least two chunks
+            read.withLength(40000); // ensure to read at least two chunks
             final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];

@@ -78,7 +78,7 @@ public class MicrosoftIISDAVReadFeatureTest extends AbstractDAVTest {
         out.close();
         new DAVUploadFeature(new DAVWriteFeature(session)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-            new TransferStatus().length(content.length),
+            new TransferStatus().withLength(content.length),
             new DisabledConnectionCallback());
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(test));
         assertEquals(content.length, new MicrosoftIISDAVListService(session, new MicrosoftIISDAVAttributesFinderFeature(session)).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);

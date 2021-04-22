@@ -67,7 +67,7 @@ public class SpectraMultipleDeleteFeatureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1024);
-        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.write(content, out);
         out.close();
         assertTrue(new SpectraFindFeature(session).find(test));

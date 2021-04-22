@@ -57,14 +57,14 @@ public class DefaultUploadFeatureTest extends AbstractSFTPTest {
         out.close();
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
-            final TransferStatus status = new TransferStatus().length(content.length / 2);
+            final TransferStatus status = new TransferStatus().withLength(content.length / 2);
             new DefaultUploadFeature<Void>(new SFTPWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }
         {
-            final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
+            final TransferStatus status = new TransferStatus().withLength(content.length / 2).skip(content.length / 2).append(true);
             new DefaultUploadFeature<Void>(new SFTPWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
@@ -72,7 +72,7 @@ public class DefaultUploadFeatureTest extends AbstractSFTPTest {
         }
         final byte[] buffer = new byte[content.length];
         final Read read = session.getFeature(Read.class);
-        final InputStream in = read.read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream in = read.read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

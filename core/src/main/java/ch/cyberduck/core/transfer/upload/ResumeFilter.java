@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -57,12 +58,12 @@ public class ResumeFilter extends AbstractUploadFilter {
         if(super.accept(file, local, parent)) {
             if(local.isFile()) {
                 if(parent.isExists()) {
-                    final Write.Append append = upload.append(file, local.attributes().getSize());
-                    if(append.override || append.append) {
-                        if(append.size == local.attributes().getSize()) {
-                            if(Checksum.NONE != append.checksum) {
-                                final ChecksumCompute compute = ChecksumComputeFactory.get(append.checksum.algorithm);
-                                if(compute.compute(local.getInputStream(), parent).equals(append.checksum)) {
+                    if(find.find(file)) {
+                        final PathAttributes attributes = attribute.find(file);
+                        if(attributes.getSize() == local.attributes().getSize()) {
+                            if(Checksum.NONE != attributes.getChecksum()) {
+                                final ChecksumCompute compute = ChecksumComputeFactory.get(attributes.getChecksum().algorithm);
+                                if(compute.compute(local.getInputStream(), parent).equals(attributes.getChecksum())) {
                                     if(log.isInfoEnabled()) {
                                         log.info(String.format("Skip file %s with checksum %s", file, local.attributes().getChecksum()));
                                     }
@@ -72,7 +73,7 @@ public class ResumeFilter extends AbstractUploadFilter {
                             }
                             else {
                                 if(log.isInfoEnabled()) {
-                                    log.info(String.format("Skip file %s with remote size %d", file, append.size));
+                                    log.info(String.format("Skip file %s with remote size %d", file, attributes.getSize()));
                                 }
                                 // No need to resume completed transfers
                                 return false;
@@ -90,15 +91,15 @@ public class ResumeFilter extends AbstractUploadFilter {
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent, progress);
         if(file.isFile()) {
-            if(parent.isExists()) {
-                final Write.Append append = upload.append(file, status.getLength());
-                if(append.append && append.size < local.attributes().getSize()) {
+            if(status.isExists()) {
+                final Write.Append append = upload.append(file, status);
+                if(append.append && append.size < status.getLength()) {
                     // Append to existing file
                     status.setAppend(true);
                     status.setLength(status.getLength() - append.size);
                     status.setOffset(append.size);
                     // Disable use of temporary target when resuming upload
-                    status.rename((Path) null);
+                    status.temporary(null, null);
                 }
             }
         }

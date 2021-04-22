@@ -50,8 +50,8 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length) throws BackgroundException {
-        return new B2WriteFeature(session, fileid).append(file, length);
+    public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return writer.append(file, status);
     }
 
     @Override

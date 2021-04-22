@@ -203,7 +203,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             public StorageObject call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
-                    .length(length)
+                    .withLength(length)
                     .skip(offset);
                 status.setHeader(overall.getHeader());
                 status.setNonces(overall.getNonces());

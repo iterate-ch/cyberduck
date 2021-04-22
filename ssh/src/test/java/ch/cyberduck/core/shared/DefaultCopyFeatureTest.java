@@ -58,7 +58,7 @@ public class DefaultCopyFeatureTest extends AbstractSFTPTest {
         new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new SFTPWriteFeature(session)),
             new SFTPAttributesFinderFeature(session)).touch(source, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(524);
-        final TransferStatus status = new TransferStatus().length(content.length);
+        final TransferStatus status = new TransferStatus().withLength(content.length);
         final OutputStream out = new SFTPWriteFeature(session).write(source, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);

@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -32,15 +33,16 @@ public class SwiftFindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return true;
         }
         try {
-            new SwiftAttributesFinderFeature(session).find(file);
+            new SwiftAttributesFinderFeature(session).find(file, listener);
             return true;
         }
         catch(NotfoundException e) {
+            //todo handle incomplete multipart uploads
             return false;
         }
     }

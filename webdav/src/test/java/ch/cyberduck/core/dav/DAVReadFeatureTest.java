@@ -120,13 +120,13 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         out.close();
         new DAVUploadFeature(new DAVWriteFeature(session)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-            new TransferStatus().length(content.length),
+            new TransferStatus().withLength(content.length),
             new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new DAVReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new DAVReadFeature(session).read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -150,7 +150,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         out.close();
         new DAVUploadFeature(new DAVWriteFeature(session)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-            new TransferStatus().length(content.length),
+            new TransferStatus().withLength(content.length),
             new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);

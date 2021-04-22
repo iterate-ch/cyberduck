@@ -54,11 +54,11 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
     }
 
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
         if(nodeid.isEncrypted(file)) {
-            return new TripleCryptWriteFeature(session, nodeid, proxy).append(file, length);
+            return new TripleCryptWriteFeature(session, nodeid, proxy).append(file, status);
         }
-        return proxy.append(file, length);
+        return proxy.append(file, status);
     }
 
     @Override

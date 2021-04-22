@@ -315,7 +315,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
                     .segment(true)
-                    .length(length)
+                    .withLength(length)
                     .skip(offset);
                 status.setUrl(url);
                 status.setPart(partNumber);

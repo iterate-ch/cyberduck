@@ -62,7 +62,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         final byte[] content = new byte[39864];
         new Random().nextBytes(content);
         {
-            final TransferStatus status = new TransferStatus().length(content.length).exists(true);
+            final TransferStatus status = new TransferStatus().withLength(content.length).exists(true);
             final StatusOutputStream<VersionId> out = new SDSMultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
@@ -72,14 +72,14 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
-            final TransferStatus status = new TransferStatus().length(content.length / 2);
+            final TransferStatus status = new TransferStatus().withLength(content.length / 2);
             new DefaultDownloadFeature(new SDSReadFeature(session, nodeid)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }
         {
-            final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true).exists(true);
+            final TransferStatus status = new TransferStatus().withLength(content.length / 2).skip(content.length / 2).append(true).exists(true);
             new DefaultDownloadFeature(new SDSReadFeature(session, nodeid)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
@@ -102,7 +102,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         final byte[] content = new byte[1];
         new Random().nextBytes(content);
         {
-            final TransferStatus status = new TransferStatus().length(content.length);
+            final TransferStatus status = new TransferStatus().withLength(content.length);
             status.setExists(true);
             final HttpResponseOutputStream<VersionId> out = new SDSMultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
@@ -112,7 +112,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
-            final TransferStatus status = new TransferStatus().length(-1L);
+            final TransferStatus status = new TransferStatus().withLength(-1L);
             status.setExists(true);
             new DefaultDownloadFeature(new SDSReadFeature(session, nodeid)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),

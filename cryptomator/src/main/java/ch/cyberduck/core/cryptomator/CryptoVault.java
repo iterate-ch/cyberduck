@@ -287,7 +287,7 @@ public class CryptoVault implements Vault {
                 final KeyFile upgradedMasterKeyFile = cryptor.writeKeysToMasterkeyFile(passphrase, pepper, VAULT_VERSION_DEPRECATED);
                 final Path masterKeyFile = new Path(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
                 final byte[] masterKeyFileContent = upgradedMasterKeyFile.serialize();
-                new ContentWriter(session).write(masterKeyFile, masterKeyFileContent, new TransferStatus().exists(true).length(masterKeyFileContent.length));
+                new ContentWriter(session).write(masterKeyFile, masterKeyFileContent, new TransferStatus().exists(true).withLength(masterKeyFileContent.length));
                 log.warn(String.format("Updated masterkey %s to version %d", masterKeyFile, VAULT_VERSION_DEPRECATED));
                 return KeyFile.parse(upgradedMasterKeyFile.serialize());
             }

@@ -50,12 +50,12 @@ public class SwiftMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         if(containerService.getContainer(file).equals(containerService.getContainer(renamed))) {
             // Either copy complete file contents (small file) or copy manifest (large file)
-            final Path rename = new SwiftDefaultCopyFeature(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
+            final Path rename = new SwiftDefaultCopyFeature(session, regionService).copy(file, renamed, new TransferStatus().withLength(file.attributes().getSize()), connectionCallback);
             new SwiftDeleteFeature(session).delete(Collections.singletonMap(file, status), connectionCallback, callback, false);
             return rename;
         }
         else {
-            final Path copy = new SwiftSegmentCopyService(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
+            final Path copy = new SwiftSegmentCopyService(session, regionService).copy(file, renamed, new TransferStatus().withLength(file.attributes().getSize()), connectionCallback);
             new SwiftDeleteFeature(session).delete(Collections.singletonMap(file, status), connectionCallback, callback);
             return copy;
         }

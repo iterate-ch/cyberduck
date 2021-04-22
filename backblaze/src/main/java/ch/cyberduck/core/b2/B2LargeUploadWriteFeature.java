@@ -19,14 +19,10 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
@@ -66,19 +62,11 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
         = new B2PathContainerService();
 
     private final B2Session session;
-    private final Find finder;
-    private final AttributesFinder attributes;
     private final B2VersionIdProvider fileid;
 
     public B2LargeUploadWriteFeature(final B2Session session, final B2VersionIdProvider fileid) {
-        this(session, fileid, new B2FindFeature(session, fileid), new B2AttributesFinderFeature(session, fileid));
-    }
-
-    public B2LargeUploadWriteFeature(final B2Session session, final B2VersionIdProvider fileid, final Find finder, final AttributesFinder attributes) {
         this.session = session;
         this.fileid = fileid;
-        this.finder = finder;
-        this.attributes = attributes;
     }
 
     @Override
@@ -94,12 +82,8 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
     }
 
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        if(finder.find(file)) {
-            final PathAttributes attr = attributes.find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override
@@ -168,7 +152,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     completed.add(new DefaultRetryCallable<B2UploadPartResponse>(session.getHost(), new BackgroundExceptionCallable<B2UploadPartResponse>() {
                         @Override
                         public B2UploadPartResponse call() throws BackgroundException {
-                            final TransferStatus status = new TransferStatus().length(len);
+                            final TransferStatus status = new TransferStatus().withLength(len);
                             final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);
                             final Checksum checksum = ChecksumComputeFactory.get(HashAlgorithm.sha1)
                                 .compute(new ByteArrayInputStream(content, off, len), status);

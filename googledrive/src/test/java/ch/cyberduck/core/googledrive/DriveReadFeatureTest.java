@@ -73,14 +73,14 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         out.close();
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveUploadFeature(new DriveWriteFeature(session, fileid)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                new TransferStatus().length(content.length),
-                new DisabledConnectionCallback());
+            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new TransferStatus().withLength(content.length),
+            new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new DriveReadFeature(session, fileid).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new DriveReadFeature(session, fileid).read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

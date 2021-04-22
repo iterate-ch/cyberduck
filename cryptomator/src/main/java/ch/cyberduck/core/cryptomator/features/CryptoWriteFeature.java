@@ -18,13 +18,10 @@ package ch.cyberduck.core.cryptomator.features;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoOutputStream;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -36,22 +33,11 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
 
     private final Session<?> session;
     private final Write<Reply> proxy;
-    private final Find finder;
-    private final AttributesFinder attributes;
     private final CryptoVault vault;
 
     public CryptoWriteFeature(final Session<?> session, final Write<Reply> proxy, final CryptoVault vault) {
-        this(session, proxy,
-            new CryptoFindFeature(session, session.getFeature(Find.class), vault),
-            new CryptoAttributesFeature(session, session.getFeature(AttributesFinder.class), vault),
-            vault);
-    }
-
-    public CryptoWriteFeature(final Session<?> session, final Write<Reply> proxy, final Find finder, final AttributesFinder attributes, final CryptoVault vault) {
         this.session = session;
         this.proxy = proxy;
-        this.finder = finder;
-        this.attributes = attributes;
         this.vault = vault;
     }
 
@@ -65,17 +51,17 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
             final StatusOutputStream<Reply> out;
             if(status.getOffset() == 0) {
                 out = proxy.write(encrypted,
-                    new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())).withMime(null), callback);
+                    new TransferStatus(status).withLength(vault.toCiphertextSize(status.getLength())).withMime(null), callback);
                 out.write(status.getHeader().array());
             }
             else {
                 out = proxy.write(encrypted,
                     new TransferStatus(status).
-                        length(vault.toCiphertextSize(status.getLength()) - vault.getFileHeaderCryptor().headerSize()).
+                        withLength(vault.toCiphertextSize(status.getLength()) - vault.getFileHeaderCryptor().headerSize()).
                         skip(vault.toCiphertextSize(status.getOffset())).
                         withMime(null), callback);
             }
-            return new CryptoOutputStream<Reply>(out, vault.getFileContentCryptor(), vault.getFileHeaderCryptor().decryptHeader(status.getHeader()),
+            return new CryptoOutputStream<>(out, vault.getFileContentCryptor(), vault.getFileHeaderCryptor().decryptHeader(status.getHeader()),
                 status.getNonces(), vault.numberOfChunks(status.getOffset()));
         }
         catch(IOException e) {
@@ -84,12 +70,8 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     }
 
     @Override
-    public Append append(final Path file, final Long length) throws BackgroundException {
-        if(finder.find(vault.encrypt(session, file))) {
-            final PathAttributes attributes = this.attributes.find(vault.encrypt(session, file));
-            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override
