@@ -101,7 +101,7 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
         if(StringUtils.isBlank(t)) {
             tokens = new CTERATokens();
             if(this.getPublicInfo().hasWebSSO) {
-                this.startWebSSOFlow(cancel, tokens);
+                this.startWebSSOFlow(cancel, credentials, tokens);
             }
             else {
                 this.startDesktopFlow(prompt, credentials, tokens);
@@ -111,10 +111,10 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
             tokens = CTERATokens.parse(t);
         }
         this.webdavAuthenticate(tokens);
-        host.getCredentials().setToken(tokens.toString());
+        credentials.setToken(tokens.toString());
     }
 
-    private void startWebSSOFlow(final CancelCallback cancel, final CTERATokens tokens) throws BackgroundException {
+    private void startWebSSOFlow(final CancelCallback cancel, final Credentials credentials, final CTERATokens tokens) throws BackgroundException {
         final String url = String.format("%s/ServicesPortal/activate?scheme=%s",
             new HostUrlProvider().withUsername(false).withPath(false).get(host), CTERAProtocol.CTERA_REDIRECT_URI
         );
@@ -140,7 +140,7 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
             cancel.verify();
         }
         this.attachDeviceWithActivationCode(activationCode.get(), tokens);
-        host.getCredentials().setSaved(true);
+        credentials.setSaved(true);
     }
 
     private void startDesktopFlow(final LoginCallback prompt, final Credentials credentials, final CTERATokens tokens) throws BackgroundException {
