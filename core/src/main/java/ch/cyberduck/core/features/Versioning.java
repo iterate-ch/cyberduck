@@ -19,13 +19,10 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
-import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 public interface Versioning {
-
-    Versioning withCache(LRUCache<Path, VersioningConfiguration> cache);
 
     VersioningConfiguration getConfiguration(Path container) throws BackgroundException;
 

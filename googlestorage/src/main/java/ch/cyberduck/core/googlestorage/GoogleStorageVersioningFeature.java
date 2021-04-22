@@ -33,18 +33,11 @@ public class GoogleStorageVersioningFeature implements Versioning {
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
-
-    private LRUCache<Path, VersioningConfiguration> cache = LRUCache.build(10);
+    private final LRUCache<Path, VersioningConfiguration> cache = LRUCache.build(10);
 
     public GoogleStorageVersioningFeature(final GoogleStorageSession session) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
-    }
-
-    @Override
-    public GoogleStorageVersioningFeature withCache(final LRUCache<Path, VersioningConfiguration> cache) {
-        this.cache = cache;
-        return this;
     }
 
     @Override
