@@ -214,7 +214,7 @@ public class SingleTransferWorkerTest {
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
                 return super.filter(source, destination, action, listener).withAttributes(new AttributesFinder() {
                     @Override
-                    public PathAttributes find(final Path file) {
+                    public PathAttributes find(final Path file, final ListProgressListener listener) {
                         return file.attributes();
                     }
                 });

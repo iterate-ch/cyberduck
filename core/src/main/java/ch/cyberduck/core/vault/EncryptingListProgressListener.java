@@ -27,14 +27,14 @@ import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
-public class DecryptingListProgressListener extends IndexedListProgressListener {
-    private static final Logger log = Logger.getLogger(DecryptingListProgressListener.class);
+public class EncryptingListProgressListener extends IndexedListProgressListener {
+    private static final Logger log = Logger.getLogger(EncryptingListProgressListener.class);
 
     private final Session<?> session;
     private final Vault vault;
     private final ListProgressListener delegate;
 
-    public DecryptingListProgressListener(final Session<?> session, final Vault vault, final ListProgressListener delegate) {
+    public EncryptingListProgressListener(final Session<?> session, final Vault vault, final ListProgressListener delegate) {
         this.session = session;
         this.vault = vault;
         this.delegate = delegate;
@@ -43,16 +43,15 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
     @Override
     public void visit(final AttributedList<Path> list, final int index, final Path f) {
         try {
-            f.getType().add(Path.Type.encrypted);
             if(f.attributes().getVersions().isEmpty()) {
-                list.set(index, vault.decrypt(session, f));
+                list.set(index, vault.encrypt(session, f, true));
             }
             else {
                 final AttributedList<Path> versions = new AttributedList<>();
                 for(Path version : f.attributes().getVersions()) {
-                    versions.add(vault.decrypt(session, version));
+                    versions.add(vault.encrypt(session, version, true));
                 }
-                list.set(index, vault.decrypt(session, f).withAttributes(new PathAttributes(f.attributes()).withVersions(versions)));
+                list.set(index, vault.encrypt(session, f, true).withAttributes(new PathAttributes(f.attributes()).withVersions(versions)));
             }
         }
         catch(BackgroundException e) {

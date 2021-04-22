@@ -38,8 +38,7 @@ public class CryptoListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return delegate.list(vault.encrypt(session, directory),
-                new DecryptingListProgressListener(session, vault, listener));
+        return delegate.list(vault.encrypt(session, directory), new DecryptingListProgressListener(session, vault, listener));
     }
 
     @Override

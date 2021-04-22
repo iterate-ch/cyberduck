@@ -29,12 +29,12 @@ public class CachingFindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(cache.isCached(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
             final Path found = list.find(new SimplePathPredicate(file));
             return null != found;
         }
-        return delegate.find(file);
+        return delegate.find(file, new CachingListProgressListener(cache));
     }
 }

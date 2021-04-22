@@ -18,13 +18,12 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.DefaultPathPredicate;
-import ch.cyberduck.core.IndexedListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ListCanceledException;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,29 +39,10 @@ public abstract class ListFilteringFeature {
      * @param file Query
      * @return Null if not found
      */
-    protected Path search(final Path file) throws BackgroundException {
-        try {
-            // Do not decrypt filenames to match with input
-            final AttributedList<Path> list = session._getFeature(ListService.class).list(file.getParent(), new IndexedListProgressListener() {
-                @Override
-                public void message(final String message) {
-                    //
-                }
-
-                @Override
-                public void visit(final AttributedList<Path> list, final int index, final Path f) throws ListCanceledException {
-                    if(new ListFilteringPredicate(session, file).test(f)) {
-                        throw new FilterFoundException(list, f);
-                    }
-                }
-            });
-            // Try to match path only as the version might have changed in the meantime
-            return list.find(new ListFilteringPredicate(session, file));
-        }
-        catch(FilterFoundException e) {
-            // Matching file found
-            return e.getFile();
-        }
+    protected Path search(final Path file, final ListProgressListener listener) throws BackgroundException {
+        final AttributedList<Path> list = session.getFeature(ListService.class).list(file.getParent(), listener);
+        // Try to match path only as the version might have changed in the meantime
+        return list.find(new ListFilteringPredicate(session, file));
     }
 
     private static final class ListFilteringPredicate extends DefaultPathPredicate {
@@ -94,20 +74,6 @@ public abstract class ListFilteringFeature {
                     return new CaseInsensitivePathPredicate(file).test(f);
             }
             return false;
-        }
-    }
-
-    private static final class FilterFoundException extends ListCanceledException {
-        private final Path file;
-
-        public FilterFoundException(final AttributedList<Path> chunk, final Path file) {
-            super(chunk);
-            this.file = file;
-        }
-
-        @Override
-        public Path getFile() {
-            return file;
         }
     }
 }

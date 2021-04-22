@@ -20,7 +20,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultPathPredicate;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -69,7 +69,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
@@ -109,7 +109,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 if(references) {
                     try {
                         // Add references to previous versions
-                        final AttributedList<Path> list = new S3VersionedObjectListService(session, true).list(file, new DisabledListProgressListener());
+                        final AttributedList<Path> list = new S3VersionedObjectListService(session, true).list(file, listener);
                         final Path versioned = list.find(new DefaultPathPredicate(file));
                         if(null != versioned) {
                             attr.setDuplicate(versioned.attributes().isDuplicate());
@@ -150,7 +150,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             if(file.isDirectory()) {
                 // File may be marked as placeholder but not placeholder file exists. Check for common prefix returned.
                 try {
-                    new S3ObjectListService(session).list(file, new DisabledListProgressListener(), containerService.getKey(file), 1);
+                    new S3ObjectListService(session).list(file, listener, containerService.getKey(file), 1);
                 }
                 catch(NotfoundException n) {
                     throw e;

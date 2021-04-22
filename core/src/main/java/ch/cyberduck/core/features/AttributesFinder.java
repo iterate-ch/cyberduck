@@ -15,17 +15,22 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface AttributesFinder {
 
-
     /**
      * Find file attributes
      *
      * @param file File
      */
-    PathAttributes find(Path file) throws BackgroundException;
+    default PathAttributes find(Path file) throws BackgroundException {
+        return this.find(file, new DisabledListProgressListener());
+    }
+
+    PathAttributes find(Path file, ListProgressListener listener) throws BackgroundException;
 }

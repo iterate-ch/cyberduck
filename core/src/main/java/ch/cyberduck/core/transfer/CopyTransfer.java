@@ -22,8 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -141,10 +140,9 @@ public class CopyTransfer extends Transfer {
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
-                final Upload write = destination.getFeature(Upload.class);
                 final Path copy = mapping.get(upload.remote);
-                final Write.Append append = write.append(copy, upload.remote.attributes().getSize());
-                if(append.override || append.append) {
+                final Find find = destination.getFeature(Find.class);
+                if(find.find(copy)) {
                     // Found remote file
                     if(upload.remote.isDirectory()) {
                         // List files in target directory

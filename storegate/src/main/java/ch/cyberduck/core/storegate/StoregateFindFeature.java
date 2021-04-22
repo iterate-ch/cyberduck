@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -31,9 +32,9 @@ public class StoregateFindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            new StoregateAttributesFinderFeature(session, fileid).find(file);
+            new StoregateAttributesFinderFeature(session, fileid).find(file, listener);
             return true;
         }
         catch(NotfoundException e) {

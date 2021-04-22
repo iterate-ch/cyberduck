@@ -15,13 +15,19 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface Find {
 
+    default boolean find(Path file) throws BackgroundException {
+        return this.find(file, new DisabledListProgressListener());
+    }
+
     /**
      * Check for file existence. The default implementation does a directory listing of the parent folder.
      */
-    boolean find(Path file) throws BackgroundException;
+    boolean find(Path file, ListProgressListener listener) throws BackgroundException;
 }

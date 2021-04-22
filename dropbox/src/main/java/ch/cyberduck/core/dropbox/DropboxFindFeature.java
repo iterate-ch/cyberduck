@@ -15,6 +15,7 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -30,12 +31,12 @@ public class DropboxFindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return true;
         }
         try {
-            return new DropboxAttributesFinderFeature(session).find(file) != PathAttributes.EMPTY;
+            return new DropboxAttributesFinderFeature(session).find(file, listener) != PathAttributes.EMPTY;
         }
         catch(NotfoundException e) {
             return false;

@@ -15,6 +15,7 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Find;
 
@@ -27,7 +28,7 @@ public class MantaFindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) {
+    public boolean find(final Path file, final ListProgressListener listener) {
         return session.getClient().existsAndIsAccessible(file.getAbsolute());
     }
 }

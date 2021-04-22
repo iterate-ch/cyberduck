@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
@@ -36,7 +37,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             final FilesApi files = new FilesApi(session.getClient());
             return this.toAttributes(files.filesGet_1(URIEncoder.encode(fileid.getPrefixedPath(file))));

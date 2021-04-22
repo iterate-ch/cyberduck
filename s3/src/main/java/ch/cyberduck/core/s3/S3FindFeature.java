@@ -17,7 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -40,7 +40,7 @@ public class S3FindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return true;
         }
@@ -54,13 +54,13 @@ public class S3FindFeature implements Find {
                 }
             }
             if(file.isFile() || file.isPlaceholder()) {
-                attributes.find(file);
+                attributes.find(file, listener);
                 return true;
             }
             else {
                 // Check for common prefix
                 try {
-                    new S3ObjectListService(session).list(file, new DisabledListProgressListener(), containerService.getKey(file), 1);
+                    new S3ObjectListService(session).list(file, listener, containerService.getKey(file), 1);
                     return true;
                 }
                 catch(NotfoundException e) {
@@ -69,6 +69,7 @@ public class S3FindFeature implements Find {
             }
         }
         catch(NotfoundException e) {
+            //todo handle incomplete multipart uploads
             return false;
         }
         catch(AccessDeniedException e) {

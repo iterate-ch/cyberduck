@@ -18,6 +18,7 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
@@ -35,11 +36,11 @@ public class DefaultAttributesFinderFeature extends ListFilteringFeature impleme
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
-        final Path found = this.search(file);
+        final Path found = this.search(file, listener);
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }

@@ -46,8 +46,8 @@ public class VaultRegistryUploadFeature<Output> implements Upload<Output> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, Upload.class, proxy).append(file, length);
+    public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, Upload.class, proxy).append(file, status);
     }
 
     @Override

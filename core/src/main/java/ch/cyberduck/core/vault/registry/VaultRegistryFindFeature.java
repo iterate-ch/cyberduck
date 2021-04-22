@@ -15,6 +15,7 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -52,13 +53,13 @@ public class VaultRegistryFindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         final Vault vault = registry.find(session, file);
         if(vault.equals(Vault.DISABLED)) {
             if(autodetect) {
                 final Path directory = file.getParent();
                 final Path key = new Path(directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
-                if(proxy.find(key)) {
+                if(proxy.find(key, listener)) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Found master key %s", key));
                     }
@@ -67,8 +68,7 @@ public class VaultRegistryFindFeature implements Find {
                             log.info(String.format("Found vault %s", directory));
                         }
                         return lookup.load(session, directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER).getFeature(session, Find.class, proxy)
-
-                            .find(file);
+                            .find(file, listener);
                     }
                     catch(VaultUnlockCancelException e) {
                         // Continue
@@ -76,7 +76,7 @@ public class VaultRegistryFindFeature implements Find {
                 }
             }
         }
-        return vault.getFeature(session, Find.class, proxy).find(file);
+        return vault.getFeature(session, Find.class, proxy).find(file, listener);
     }
 
     public VaultRegistryFindFeature withAutodetect(final boolean autodetect) {

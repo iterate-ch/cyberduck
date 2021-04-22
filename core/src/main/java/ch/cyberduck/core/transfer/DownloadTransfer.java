@@ -17,21 +17,9 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.filter.DownloadDuplicateFilter;
@@ -70,13 +58,11 @@ public class DownloadTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(DownloadTransfer.class);
 
     private final Filter<Path> filter;
-
     private final Comparator<Path> comparator;
+    private final DownloadSymlinkResolver symlinkResolver;
 
     private Cache<Path> cache
         = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
-
-    private final DownloadSymlinkResolver symlinkResolver;
 
     private DownloadFilterOptions options = new DownloadFilterOptions();
 
@@ -158,25 +144,27 @@ public class DownloadTransfer extends Transfer {
             log.debug(String.format("Filter transfer with action %s and options %s", action, options));
         }
         final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(roots);
+        final AttributesFinder attributes = new CachingAttributesFinderFeature(cache,
+            source.getFeature(AttributesFinder.class));
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, source, options);
+            return new ResumeFilter(resolver, source, options).withAttributes(attributes);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, source, options);
+            return new RenameFilter(resolver, source, options).withAttributes(attributes);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, source, options);
+            return new RenameExistingFilter(resolver, source, options).withAttributes(attributes);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, source, options);
+            return new SkipFilter(resolver, source, options).withAttributes(attributes);
         }
         if(action.equals(TransferAction.trash)) {
-            return new TrashFilter(resolver, source, options);
+            return new TrashFilter(resolver, source, options).withAttributes(attributes);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, source, options, listener);
+            return new CompareFilter(resolver, source, options, listener).withAttributes(attributes);
         }
-        return new OverwriteFilter(resolver, source, options);
+        return new OverwriteFilter(resolver, source, options).withAttributes(attributes);
     }
 
     @Override

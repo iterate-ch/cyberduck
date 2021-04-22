@@ -15,6 +15,7 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
@@ -35,8 +36,8 @@ public class VaultRegistryAttributesFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, AttributesFinder.class, proxy).find(file);
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, AttributesFinder.class, proxy).find(file, listener);
     }
 
     @Override

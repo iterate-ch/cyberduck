@@ -3716,15 +3716,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
         @Override
         public void selectionDidChange(final NSNotification notification) {
-            final List<Path> selected = getSelectedPaths();
             if(quicklook.isOpen()) {
-                updateQuickLookSelection(selected);
+                updateQuickLookSelection(getSelectedPaths());
             }
             if(preferences.getBoolean("browser.info.inspector")) {
                 InfoController c = InfoControllerFactory.get(BrowserController.this);
                 if(null != c) {
                     // Currently open info panel
-                    c.setFiles(selected);
+                    c.setFiles(getSelectedPaths());
                 }
             }
         }

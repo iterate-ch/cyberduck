@@ -18,6 +18,7 @@ package ch.cyberduck.core.dav;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -47,7 +48,7 @@ public class DAVFindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return true;
         }
@@ -69,7 +70,7 @@ public class DAVFindFeature implements Find {
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 // 400 Multiple choices
-                return new DefaultFindFeature(session).find(file);
+                return new DefaultFindFeature(session).find(file, listener);
             }
         }
         catch(AccessDeniedException e) {

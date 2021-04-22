@@ -15,12 +15,14 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.vault.EncryptingListProgressListener;
 
 public class CryptoAttributesFeature implements AttributesFinder {
 
@@ -35,8 +37,9 @@ public class CryptoAttributesFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
-        final PathAttributes attributes = new PathAttributes(delegate.find(vault.encrypt(session, file)));
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+        final PathAttributes attributes = new PathAttributes(delegate.find(vault.encrypt(session, file, true),
+            new EncryptingListProgressListener(session, vault, listener)));
         if(file.isFile()) {
             attributes.setSize(vault.toCleartextSize(attributes.getSize()));
         }

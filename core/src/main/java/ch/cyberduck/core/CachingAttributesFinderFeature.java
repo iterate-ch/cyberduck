@@ -18,6 +18,8 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
+import java.util.Collections;
+
 public class CachingAttributesFinderFeature implements AttributesFinder {
 
     private final Cache<Path> cache;
@@ -29,7 +31,7 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(cache.isCached(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
             final Path found = list.find(new SimplePathPredicate(file));
@@ -37,9 +39,15 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
                 return found.attributes();
             }
         }
-        final PathAttributes attributes = delegate.find(file);
+        final PathAttributes attributes = delegate.find(file, new CachingListProgressListener(cache));
         if(cache != PathCache.empty()) {
-            cache.get(file.getParent()).add(file.withAttributes(attributes));
+            final AttributedList<Path> list = cache.get(file.getParent());
+            if(list == AttributedList.<Path>emptyList()) {
+                cache.put(file.getParent(), new AttributedList<>(Collections.singletonList(file.withAttributes(attributes))));
+            }
+            else {
+                list.add(file.withAttributes(attributes));
+            }
         }
         return attributes;
     }

@@ -17,22 +17,12 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.NullFilter;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -41,6 +31,8 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
@@ -67,7 +59,6 @@ public class UploadTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(UploadTransfer.class);
 
     private final Filter<Local> filter;
-
     private final Comparator<Local> comparator;
 
     private Cache<Path> cache
@@ -150,22 +141,26 @@ public class UploadTransfer extends Transfer {
         if(options.temporary) {
             options.withTemporary(source.getFeature(Write.class).temporary());
         }
+        final Find find = new CachingFindFeature(cache,
+            source.getFeature(Find.class, new DefaultFindFeature(source)));
+        final AttributesFinder attributes = new CachingAttributesFinderFeature(cache,
+            source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, source, options);
+            return new ResumeFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, source, options);
+            return new RenameFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, source, options);
+            return new RenameExistingFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, source, options);
+            return new SkipFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, source, options, listener);
+            return new CompareFilter(resolver, source, options, listener).withFinder(find).withAttributes(attributes);
         }
-        return new OverwriteFilter(resolver, source, options);
+        return new OverwriteFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
     }
 
     @Override
@@ -190,18 +185,19 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
-                final Upload<?> write = source.getFeature(Upload.class);
-                final Write.Append append = write.append(upload.remote, upload.local.attributes().getSize());
-                if(append.override || append.append) {
-                    // Found remote file
-                    if(upload.remote.isDirectory()) {
-                        if(this.list(source, upload.remote, upload.local, listener).isEmpty()) {
-                            // Do not prompt for existing empty directories
-                            continue;
+                if(source.getFeature(Find.class, new CachingFindFeature(cache, new DefaultFindFeature(source))).find(upload.remote)) {
+                    final Find find = destination.getFeature(Find.class);
+                    if(find.find(upload.remote)) {
+                        // Found remote file
+                        if(upload.remote.isDirectory()) {
+                            if(this.list(source, upload.remote, upload.local, listener).isEmpty()) {
+                                // Do not prompt for existing empty directories
+                                continue;
+                            }
                         }
+                        // Prompt user to choose a filter
+                        return prompt.prompt(upload);
                     }
-                    // Prompt user to choose a filter
-                    return prompt.prompt(upload);
                 }
             }
             // No files exist yet therefore it is most straightforward to use the overwrite action

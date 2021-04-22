@@ -16,7 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -47,7 +47,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
@@ -56,7 +56,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         try {
-            final B2FileResponse info = session.getClient().getFileInfo(fileid.getVersionId(file, new DisabledListProgressListener()));
+            final B2FileResponse info = session.getClient().getFileInfo(fileid.getVersionId(file, listener));
             return this.toAttributes(info);
         }
         catch(B2ApiException e) {

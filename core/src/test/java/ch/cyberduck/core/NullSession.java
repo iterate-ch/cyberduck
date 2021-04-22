@@ -35,7 +35,8 @@ public class NullSession extends Session<Void> implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
+        listener.chunk(folder, AttributedList.emptyList());
         return AttributedList.emptyList();
     }
 
