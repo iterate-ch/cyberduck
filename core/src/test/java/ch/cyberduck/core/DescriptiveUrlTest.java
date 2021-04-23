@@ -4,7 +4,8 @@ import org.junit.Test;
 
 import java.net.URI;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class DescriptiveUrlTest {
 
@@ -18,6 +19,6 @@ public class DescriptiveUrlTest {
 
     @Test
     public void testDefault() {
-        assertEquals("Open in Web Browser", new DescriptiveUrl(URI.create("http://me")).getHelp());
+        assertEquals("HTTP URL", new DescriptiveUrl(URI.create("http://me")).getHelp());
     }
 }
