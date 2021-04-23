@@ -18,12 +18,15 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.net.URI;
+import java.text.MessageFormat;
 import java.util.Objects;
 
 public class DescriptiveUrl {
 
-    public static final DescriptiveUrl EMPTY = new DescriptiveUrl(null);
+    public static final DescriptiveUrl EMPTY = new DescriptiveUrl(URI.create(StringUtils.EMPTY));
 
     private final URI url;
     private final Type type;
@@ -49,11 +52,11 @@ public class DescriptiveUrl {
     }
 
     public DescriptiveUrl(final URI url) {
-        this(url, Type.http, LocaleFactory.localizedString("Open in Web Browser"));
+        this(url, Type.http, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), StringUtils.upperCase(url.getScheme())));
     }
 
     public DescriptiveUrl(final URI url, Type type) {
-        this(url, type, LocaleFactory.localizedString("Open in Web Browser"));
+        this(url, type, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), StringUtils.upperCase(url.getScheme())));
     }
 
     public DescriptiveUrl(final URI url, Type type, final String help) {
