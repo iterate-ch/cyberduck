@@ -28,9 +28,11 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
@@ -38,6 +40,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
