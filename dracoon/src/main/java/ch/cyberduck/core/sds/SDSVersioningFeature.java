@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
-import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -76,11 +75,6 @@ public class SDSVersioningFeature implements Versioning {
     @Override
     public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
         return null;
-    }
-
-    @Override
-    public Versioning withCache(final LRUCache<Path, VersioningConfiguration> cache) {
-        return this;
     }
 
 }

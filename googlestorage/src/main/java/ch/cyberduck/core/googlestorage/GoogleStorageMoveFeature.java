@@ -30,18 +30,15 @@ public class GoogleStorageMoveFeature implements Move {
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
 
-    private Delete delete;
-
     public GoogleStorageMoveFeature(final GoogleStorageSession session) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
-        this.delete = new GoogleStorageDeleteFeature(session);
     }
 
     @Override
     public Path move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         final Path copy = new GoogleStorageCopyFeature(session).copy(source, target, status, connectionCallback);
-        delete.delete(Collections.singletonMap(source, status), connectionCallback, callback);
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonMap(source, status), connectionCallback, callback);
         return copy;
     }
 

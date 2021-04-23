@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.ui.browser.SearchFilter;
@@ -59,8 +58,7 @@ public class GoogleStorageSearchFeatureTest extends AbstractGoogleStorageTest {
         final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         bucket.attributes().setRegion("us-east-1");
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new Path(bucket, name, EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(file, new TransferStatus());
+        final Path file = new GoogleStorageTouchFeature(session).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final GoogleStorageSearchFeature feature = new GoogleStorageSearchFeature(session);
         assertTrue(feature.search(bucket, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
         assertTrue(feature.search(bucket, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).contains(file));

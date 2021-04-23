@@ -18,9 +18,12 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -29,9 +32,11 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public class GoogleStorageTouchFeature implements Touch<VersionId> {
 
     private Write<VersionId> writer;
+    private final GoogleStorageSession session;
 
     public GoogleStorageTouchFeature(final GoogleStorageSession session) {
         this.writer = new GoogleStorageWriteFeature(session);
+        this.session = session;
     }
 
     @Override
@@ -39,7 +44,13 @@ public class GoogleStorageTouchFeature implements Touch<VersionId> {
         status.setLength(0L);
         final StatusOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
-        return file.withAttributes(new PathAttributes(file.attributes()).withVersionId(out.getStatus().id));
+        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+            session.getFeature(PathContainerService.class).getContainer(file)
+        ) : VersioningConfiguration.empty();
+        if(versioning.isEnabled()) {
+            return file.withAttributes(new PathAttributes(file.attributes()).withVersionId(out.getStatus().id));
+        }
+        return file;
     }
 
     @Override

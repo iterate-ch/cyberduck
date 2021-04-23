@@ -48,19 +48,12 @@ public class SpectraVersioningFeature implements Versioning {
 
     private final SpectraSession session;
     private final PathContainerService containerService;
-
-    private LRUCache<Path, VersioningConfiguration> cache
+    private final LRUCache<Path, VersioningConfiguration> cache
         = LRUCache.build(10);
 
     public SpectraVersioningFeature(final SpectraSession session) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
-    }
-
-    @Override
-    public Versioning withCache(final LRUCache<Path, VersioningConfiguration> cache) {
-        this.cache = cache;
-        return this;
     }
 
     @Override

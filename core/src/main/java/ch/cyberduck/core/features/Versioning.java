@@ -19,21 +19,53 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
-import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 public interface Versioning {
 
-    Versioning withCache(LRUCache<Path, VersioningConfiguration> cache);
-
+    /**
+     * Read configuration
+     *
+     * @param container Bucket
+     * @return Current configuration
+     * @throws BackgroundException API or network failure
+     */
     VersioningConfiguration getConfiguration(Path container) throws BackgroundException;
 
+    /**
+     * Write configuration
+     *
+     * @param container     Bucket
+     * @param prompt        Prompt for MFA token
+     * @param configuration New configuration
+     * @throws BackgroundException API or network failure
+     */
     void setConfiguration(Path container, PasswordCallback prompt, VersioningConfiguration configuration) throws BackgroundException;
 
+    /**
+     * Restore this version
+     *
+     * @param file File
+     * @throws BackgroundException API or network failure
+     */
     void revert(Path file) throws BackgroundException;
 
+    /**
+     * Determine if version can be restored
+     *
+     * @param file File
+     * @return True if this file version can be reverted
+     */
     boolean isRevertable(Path file);
 
+    /**
+     * Prompt for MFA Authentication Code
+     *
+     * @param mfaSerial Serial number of device
+     * @param callback  Prompt
+     * @return MFA Code entered in prompt
+     * @throws ConnectionCanceledException Prompt dismissed
+     */
     Credentials getToken(String mfaSerial, PasswordCallback callback) throws ConnectionCanceledException;
 }

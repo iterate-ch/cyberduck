@@ -65,7 +65,8 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
     private final boolean references;
 
     public S3VersionedObjectListService(final S3Session session) {
-        this(session, PreferencesFactory.get().getInteger("s3.listing.concurrency"), PreferencesFactory.get().getBoolean("s3.versioning.references.enable"));
+        this(session, PreferencesFactory.get().getInteger("s3.listing.concurrency"),
+            PreferencesFactory.get().getBoolean("s3.versioning.references.enable"));
     }
 
     public S3VersionedObjectListService(final S3Session session, final boolean references) {
@@ -124,7 +125,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     attributes.setRevision(++revision);
                     attributes.setDuplicate(marker.isDeleteMarker() && marker.isLatest() || !marker.isLatest());
                     if(marker.isDeleteMarker()) {
-                        attributes.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                        attributes.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, String.valueOf(true)));
                     }
                     attributes.setModificationDate(marker.getLastModified().getTime());
                     attributes.setRegion(bucket.attributes().getRegion());
@@ -138,9 +139,14 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                             attributes.setStorageClass(object.getStorageClass());
                         }
                     }
-                    final Path f = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(key), EnumSet.of(Path.Type.file), attributes);
-                    if(references) {
-                        if(attributes.isDuplicate()) {
+                    final Path f = new Path(directory.isDirectory() ? directory : directory.getParent(),
+                        PathNormalizer.name(key), EnumSet.of(Path.Type.file), attributes);
+                    children.add(f);
+                    lastKey = key;
+                }
+                if(references) {
+                    for(Path f : children) {
+                        if(f.attributes().isDuplicate()) {
                             final Path latest = children.find(new LatestVersionPathPredicate(f));
                             if(latest != null) {
                                 // Reference version
@@ -153,8 +159,6 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                             }
                         }
                     }
-                    children.add(f);
-                    lastKey = key;
                 }
                 final String[] prefixes = chunk.getCommonPrefixes();
                 for(String common : prefixes) {
@@ -249,7 +253,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         });
     }
 
-    public static final class LatestVersionPathPredicate extends SimplePathPredicate {
+    private static final class LatestVersionPathPredicate extends SimplePathPredicate {
         public LatestVersionPathPredicate(final Path f) {
             super(f);
         }

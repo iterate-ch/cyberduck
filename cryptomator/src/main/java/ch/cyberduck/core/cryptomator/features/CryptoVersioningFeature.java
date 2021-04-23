@@ -20,7 +20,6 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.VersioningConfiguration;
-import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
@@ -36,12 +35,6 @@ public class CryptoVersioningFeature implements Versioning {
         this.session = session;
         this.delegate = delegate;
         this.vault = vault;
-    }
-
-    @Override
-    public Versioning withCache(final LRUCache<Path, VersioningConfiguration> cache) {
-        delegate.withCache(cache);
-        return this;
     }
 
     @Override
