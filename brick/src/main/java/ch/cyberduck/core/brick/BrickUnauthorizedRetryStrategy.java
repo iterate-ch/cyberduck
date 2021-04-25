@@ -17,8 +17,8 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkCollection;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -45,10 +45,12 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
     private final Semaphore semaphore = new Semaphore(1);
     private final HostPasswordStore store = PasswordStoreFactory.get();
     private final BrickSession session;
+    private final LoginCallback prompt;
     private final CancelCallback cancel;
 
-    public BrickUnauthorizedRetryStrategy(final BrickSession session, final CancelCallback cancel) {
+    public BrickUnauthorizedRetryStrategy(final BrickSession session, final LoginCallback prompt, final CancelCallback cancel) {
         this.session = session;
+        this.prompt = prompt;
         this.cancel = cancel;
     }
 
@@ -65,7 +67,7 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                     try {
                         // Blocks until pairing is complete or canceled
                         session.login(ProxyFactory.get().find(new ProxyHostUrlProvider().get(session.getHost())),
-                            new DisabledLoginCallback(), new BackgroundActionRegistryCancelCallback(cancel));
+                            prompt, new BackgroundActionRegistryCancelCallback(cancel));
                         if(session.getHost().getCredentials().isSaved()) {
                             store.save(session.getHost());
                         }
