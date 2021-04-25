@@ -63,20 +63,17 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                         return false;
                     }
                     try {
-                        // Reset credentials to force repairing
-                        final Host bookmark = session.getHost();
-                        final Credentials credentials = bookmark.getCredentials();
-                        credentials.reset();
                         // Blocks until pairing is complete or canceled
-                        session.pair(bookmark, new DisabledConnectionCallback(), new BackgroundActionRegistryCancelCallback(cancel));
-                        if(credentials.isSaved()) {
-                            store.save(bookmark);
+                        session.login(ProxyFactory.get().find(new ProxyHostUrlProvider().get(session.getHost())),
+                            new DisabledLoginCallback(), new BackgroundActionRegistryCancelCallback(cancel));
+                        if(session.getHost().getCredentials().isSaved()) {
+                            store.save(session.getHost());
                         }
                         // Notify changed bookmark
                         final AbstractHostCollection bookmarks = BookmarkCollection.defaultCollection();
                         if(bookmarks.isLoaded()) {
-                            if(bookmarks.contains(bookmark)) {
-                                bookmarks.collectionItemChanged(bookmark);
+                            if(bookmarks.contains(session.getHost())) {
+                                bookmarks.collectionItemChanged(session.getHost());
                             }
                         }
                         return true;
