@@ -17,14 +17,14 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkCollection;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.Host;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.BackgroundActionStateCancelCallback;
@@ -35,11 +35,14 @@ import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
+import java.util.concurrent.Semaphore;
+
 public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRetryStrategy {
     private static final Logger log = Logger.getLogger(BrickUnauthorizedRetryStrategy.class);
 
     private static final int MAX_RETRIES = 1;
 
+    private final Semaphore semaphore = new Semaphore(1);
     private final HostPasswordStore store = PasswordStoreFactory.get();
     private final BrickSession session;
     private final CancelCallback cancel;
@@ -55,6 +58,10 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
             case HttpStatus.SC_UNAUTHORIZED:
                 if(executionCount <= MAX_RETRIES) {
                     // Pairing token no longer valid
+                    if(!semaphore.tryAcquire()) {
+                        log.warn(String.format("Skip pairing because semaphore cannot be aquired for %s", session));
+                        return false;
+                    }
                     try {
                         // Reset credentials to force repairing
                         final Host bookmark = session.getHost();
@@ -72,11 +79,13 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                                 bookmarks.collectionItemChanged(bookmark);
                             }
                         }
-                        credentials.reset();
                         return true;
                     }
                     catch(BackgroundException e) {
                         log.warn(String.format("Failure %s trying to refresh pairing after error response %s", e, response));
+                    }
+                    finally {
+                        semaphore.release();
                     }
                 }
         }
