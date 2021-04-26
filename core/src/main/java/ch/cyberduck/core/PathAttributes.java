@@ -169,27 +169,27 @@ public class PathAttributes extends Attributes implements Serializable {
         created = copy.created;
         owner = copy.owner;
         group = copy.group;
-        permission = copy.permission;
-        acl = copy.acl;
-        checksum = copy.checksum;
+        permission = new Permission(copy.permission);
+        acl = new Acl(copy.acl);
+        checksum = new Checksum(copy.checksum);
         etag = copy.etag;
         storageClass = copy.storageClass;
         encryption = copy.encryption;
         fileId = copy.fileId;
         versionId = copy.versionId;
-        versions = copy.versions;
+        versions = new AttributedList<>(copy.versions);
         lockId = copy.lockId;
         duplicate = copy.duplicate;
         hidden = copy.hidden;
         revision = copy.revision;
         region = copy.region;
         displayname = copy.displayname;
-        link = copy.link;
-        metadata = copy.metadata;
-        custom = copy.custom;
-        vault = copy.vault;
-        decrypted = copy.decrypted;
-        encrypted = copy.encrypted;
+        link = new DescriptiveUrl(copy.link);
+        metadata = new HashMap<>(copy.metadata);
+        custom = new HashMap<>(copy.custom);
+        vault = new Path(copy.vault);
+        decrypted = new Path(copy.decrypted);
+        encrypted = new Path(copy.encrypted);
         directoryId = copy.directoryId;
     }
 
