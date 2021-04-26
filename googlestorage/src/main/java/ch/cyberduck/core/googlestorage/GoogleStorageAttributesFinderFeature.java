@@ -15,10 +15,10 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -74,12 +74,14 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
             else {
                 final Storage.Objects.Get request = session.getClient().objects().get(
                     containerService.getContainer(file).getName(), containerService.getKey(file));
-                if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-                    request.setGeneration(Long.parseLong(file.attributes().getVersionId()));
-                }
                 final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
                     containerService.getContainer(file)
                 ) : VersioningConfiguration.empty();
+                if(versioning.isEnabled()) {
+                    if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+                        request.setGeneration(Long.parseLong(file.attributes().getVersionId()));
+                    }
+                }
                 final PathAttributes attributes = this.toAttributes(request.execute(), versioning);
                 if(versioning.isEnabled()) {
                     if(references) {
