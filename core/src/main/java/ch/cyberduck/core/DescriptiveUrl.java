@@ -65,6 +65,12 @@ public class DescriptiveUrl {
         this.help = help;
     }
 
+    public DescriptiveUrl(final DescriptiveUrl other) {
+        this.url = other.url;
+        this.type = other.type;
+        this.help = other.help;
+    }
+
     public String getUrl() {
         if(null == url) {
             return null;
