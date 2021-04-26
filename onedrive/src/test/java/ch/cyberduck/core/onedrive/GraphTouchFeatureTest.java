@@ -43,11 +43,10 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testTouch() throws Exception {
-        final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final TransferStatus status = new TransferStatus();
         final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
-        new GraphTouchFeature(session, fileid).touch(file, status);
-        assertEquals(status.getFileId(), new GraphAttributesFinderFeature(session).find(file).getFileId());
+        final Path file = new GraphTouchFeature(session, fileid).touch(new Path(new OneDriveHomeFinderService().find(),
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(file.attributes().getFileId(), new GraphAttributesFinderFeature(session).find(file).getFileId());
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

@@ -49,7 +49,7 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
+public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetadata> {
     private static final Logger log = Logger.getLogger(StoregateMultipartWriteFeature.class);
 
     private final StoregateSession session;
@@ -76,14 +76,14 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
     }
 
     @Override
-    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<FileMetadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String location = new StoregateWriteFeature(session, fileid).start(file, status);
         final MultipartOutputStream proxy = new MultipartOutputStream(location, file, status);
-        return new HttpResponseOutputStream<String>(new MemorySegementingOutputStream(proxy,
+        return new HttpResponseOutputStream<FileMetadata>(new MemorySegementingOutputStream(proxy,
             PreferencesFactory.get().getInteger("storegate.upload.multipart.chunksize"))) {
             @Override
-            public String getStatus() {
-                return proxy.getId();
+            public FileMetadata getStatus() {
+                return proxy.getResult();
             }
         };
     }
@@ -94,6 +94,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
         private final AtomicReference<BackgroundException> canceled = new AtomicReference<>();
+        private final AtomicReference<FileMetadata> result = new AtomicReference<>();
 
         private Long offset = 0L;
         private final Long length;
@@ -142,7 +143,6 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
                                     case HttpStatus.SC_OK:
                                     case HttpStatus.SC_CREATED:
                                         final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8), FileMetadata.class);
-                                        overall.setFileId(result.getId());
                                         fileid.cache(file, result.getId());
                                     case HttpStatus.SC_NO_CONTENT:
                                         // Upload complete
@@ -193,10 +193,10 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
                         switch(response.getStatusLine().getStatusCode()) {
                             case HttpStatus.SC_OK:
                             case HttpStatus.SC_CREATED:
-                                final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
+                                final FileMetadata metadata = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
                                     FileMetadata.class);
-                                overall.setFileId(result.getId());
-                                fileid.cache(file, result.getId());
+                                result.set(metadata);
+                                fileid.cache(file, metadata.getId());
                             case HttpStatus.SC_NO_CONTENT:
                                 break;
                             default:
@@ -226,8 +226,8 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
             return sb.toString();
         }
 
-        public String getId() {
-            return overall.getFileId();
+        public FileMetadata getResult() {
+            return result.get();
         }
     }
 }

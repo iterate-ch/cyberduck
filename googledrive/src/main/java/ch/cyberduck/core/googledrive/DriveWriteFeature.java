@@ -139,7 +139,6 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
                                                 final String value = reader.nextString();
                                                 switch(name) {
                                                     case "id":
-                                                        status.setFileId(value);
                                                         fileid.cache(file, value);
                                                         return value;
                                                 }

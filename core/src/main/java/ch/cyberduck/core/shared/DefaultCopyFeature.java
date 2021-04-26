@@ -55,8 +55,8 @@ public class DefaultCopyFeature implements Copy {
         new StreamCopier(status, status).transfer(in, out);
         final Object reply = out.getStatus();
         return target.withAttributes(new PathAttributes(target.attributes())
-            .withVersionId(status.getVersionId())
-            .withFileId(status.getFileId()));
+            .withVersionId(null)
+            .withFileId(null));
     }
 
     @Override

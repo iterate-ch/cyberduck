@@ -138,7 +138,6 @@ public class GraphWriteFeature implements Write<Void> {
                             if(response instanceof DriveItem.Metadata) {
                                 log.info(String.format("Completed upload for %s", file));
                                 final String id = session.getFileId(((DriveItem.Metadata) response));
-                                overall.setFileId(id);
                                 fileid.cache(file, id);
                             }
                             else {

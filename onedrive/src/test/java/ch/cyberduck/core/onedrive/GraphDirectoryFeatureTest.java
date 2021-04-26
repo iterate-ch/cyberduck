@@ -48,7 +48,7 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
         final Path target = new GraphDirectoryFeature(session, fileid).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, status);
         final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(target);
         assertNotNull(attributes.getETag());
-        assertEquals(status.getFileId(), attributes.getFileId());
+        assertEquals(target.attributes().getFileId(), attributes.getFileId());
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
