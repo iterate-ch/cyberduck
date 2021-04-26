@@ -2,7 +2,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -32,19 +31,17 @@ public class S3WriteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testAppendBelowLimit() throws Exception {
-        final S3Session session = new S3Session(new Host(new S3Protocol()));
-        final S3WriteFeature feature = new S3WriteFeature(session, null);
+        final S3WriteFeature feature = new S3WriteFeature(session);
         final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         assertFalse(append.append);
     }
 
     @Test
     public void testSize() throws Exception {
-        final S3Session session = new S3Session(new Host(new S3Protocol()));
-        final S3WriteFeature feature = new S3WriteFeature(session, null);
+        final S3WriteFeature feature = new S3WriteFeature(session);
         final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L).withRemote(new PathAttributes().withSize(3L)));
         assertFalse(append.append);
-        assertEquals(3L, append.size, 0L);
+        assertEquals(0L, append.size, 0L);
     }
 
     @Test

@@ -57,7 +57,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
     @Test
     public void testDeletePlaceholder() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
             new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
@@ -70,7 +70,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         {
-            final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
+            final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
                 new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
             assertTrue(new S3FindFeature(session).find(test));
             assertTrue(new DefaultFindFeature(session).find(test));
@@ -78,7 +78,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
             assertFalse(new S3FindFeature(session).find(test));
         }
         {
-            final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
+            final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
                 new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
             assertTrue(new S3FindFeature(session).find(test));
             assertTrue(new DefaultFindFeature(session).find(test));
@@ -92,7 +92,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
     @Test
     public void testDeleteContainer() throws Exception {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(container, null, new TransferStatus());
+        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(container, null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(container));
         new S3MultipleDeleteFeature(session).delete(Arrays.asList(container,
             new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))), new DisabledLoginCallback(), new Delete.DisabledCallback());

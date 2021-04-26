@@ -57,15 +57,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     private final PathContainerService containerService;
     private final S3Session session;
-    private final S3MultipartService multipartService;
 
     public S3WriteFeature(final S3Session session) {
-        this(session, new S3DefaultMultipartService(session));
-    }
-
-    public S3WriteFeature(final S3Session session, final S3MultipartService multipartService) {
         this.session = session;
-        this.multipartService = multipartService;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -135,29 +129,23 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         return object;
     }
 
-    /**
-     * @return No Content-Range support
-     */
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        if(status.getLength() >= preferences.getLong("s3.upload.multipart.threshold")) {
-            if(preferences.getBoolean("s3.upload.multipart")) {
-                try {
-                    final List<MultipartUpload> upload = multipartService.find(file);
-                    if(!upload.isEmpty()) {
-                        Long size = 0L;
-                        for(MultipartPart completed : multipartService.list(upload.iterator().next())) {
-                            size += completed.getSize();
-                        }
-                        return new Append(true).withStatus(status).withSize(size);
-                    }
+        try {
+            final S3DefaultMultipartService multipartService = new S3DefaultMultipartService(session);
+            final List<MultipartUpload> upload = multipartService.find(file);
+            if(!upload.isEmpty()) {
+                Long size = 0L;
+                for(MultipartPart completed : multipartService.list(upload.iterator().next())) {
+                    size += completed.getSize();
                 }
-                catch(AccessDeniedException | InteroperabilityException e) {
-                    log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
-                }
+                return new Append(true).withStatus(status).withSize(size);
             }
         }
-        return new Append(false).withStatus(status);
+        catch(AccessDeniedException | InteroperabilityException e) {
+            log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
+        }
+        return Write.override;
     }
 
     @Override

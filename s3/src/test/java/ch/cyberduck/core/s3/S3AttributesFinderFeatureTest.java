@@ -82,7 +82,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     @Test
     public void testFindPlaceholder() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertEquals(0L, attributes.getSize());

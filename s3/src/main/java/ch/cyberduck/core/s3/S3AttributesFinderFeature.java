@@ -30,8 +30,10 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -71,10 +73,6 @@ public class S3AttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
-            return PathAttributes.EMPTY;
-        }
-        if(file.getType().contains(Path.Type.upload)) {
-            // Pending multipart upload
             return PathAttributes.EMPTY;
         }
         if(containerService.isContainer(file)) {
@@ -157,6 +155,10 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 }
                 // Common prefix only
                 return PathAttributes.EMPTY;
+            }
+            final Write.Append append = new S3WriteFeature(session).append(file, new TransferStatus());
+            if(append.append) {
+                return new PathAttributes().withSize(append.size);
             }
             throw e;
         }

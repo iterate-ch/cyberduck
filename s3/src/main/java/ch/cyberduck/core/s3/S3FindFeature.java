@@ -69,7 +69,6 @@ public class S3FindFeature implements Find {
             }
         }
         catch(NotfoundException e) {
-            //todo handle incomplete multipart uploads
             return false;
         }
         catch(AccessDeniedException e) {

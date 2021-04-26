@@ -177,7 +177,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     public void testListPlaceholder() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
-        final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
+        final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
             new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
@@ -188,7 +188,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     public void testListPlaceholderTilde() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
-        final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
+        final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
             new Path(container, String.format("%s~", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
@@ -199,7 +199,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     public void testListPlaceholderAtSignSignatureAWS4() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
-        final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
+        final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
             new Path(container, String.format("%s@", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());

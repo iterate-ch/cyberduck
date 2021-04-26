@@ -52,12 +52,12 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         final NullInputStream n = new NullInputStream(1L);
         final S3Session session = new S3Session(new Host(new S3Protocol()));
         assertSame(NullInputStream.class, new S3SingleUploadService(session,
-            new S3WriteFeature(session, new S3DisabledMultipartService())).decorate(n, null).getClass());
+            new S3WriteFeature(session)).decorate(n, null).getClass());
     }
 
     @Test
     public void testUpload() throws Exception {
-        final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
+        final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session));
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -83,7 +83,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
 
     @Test
     public void testUploadSSE() throws Exception {
-        final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
+        final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session));
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -112,7 +112,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
 
     @Test
     public void testUploadWithSHA256Checksum() throws Exception {
-        final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
+        final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session));
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -138,7 +138,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
     public void testUploadInvalidContainer() throws Exception {
-        final S3SingleUploadService m = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
+        final S3SingleUploadService m = new S3SingleUploadService(session, new S3WriteFeature(session));
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());

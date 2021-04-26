@@ -89,7 +89,7 @@ public class S3StorageClassFeatureTest extends AbstractS3Test {
     @Test
     public void testSetClassPlaceholder() throws Exception {
         final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
-        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
             new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final S3StorageClassFeature feature = new S3StorageClassFeature(session);
         assertEquals(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(test));
