@@ -230,7 +230,7 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
         if(this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if(!(o instanceof AttributedList)) {
             return false;
         }
         final AttributedList<?> that = (AttributedList<?>) o;
