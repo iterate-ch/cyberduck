@@ -30,7 +30,9 @@ import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -99,6 +101,11 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
                     }
                     // Common prefix only
                     return PathAttributes.EMPTY;
+                }
+                // Try to find pending large file upload
+                final Write.Append append = new SwiftWriteFeature(session, regionService).append(file, new TransferStatus());
+                if(append.append) {
+                    return new PathAttributes().withSize(append.size);
                 }
                 throw e;
             }

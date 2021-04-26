@@ -1,5 +1,6 @@
 package ch.cyberduck.core.openstack;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
@@ -26,7 +27,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.iterate.openstack.swift.model.StorageObject;
@@ -40,8 +40,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
     public void testAppendNoPartCompleted() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final int length = 2 * 1024 * 1024;
         final byte[] content = RandomUtils.nextBytes(length);
         IOUtils.write(content, local.getOutputStream(false));
@@ -92,8 +92,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
     public void testAppendSecondPart() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final String name = UUID.randomUUID().toString();
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final String name = new AlphanumericRandomStringService().random();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final int length = 2 * 1024 * 1024;
         final byte[] content = RandomUtils.nextBytes(length);
@@ -101,9 +101,11 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
+        final SwiftRegionService regionService = new SwiftRegionService(session);
+        final SwiftLargeObjectUploadFeature feature = new SwiftLargeObjectUploadFeature(session, regionService, new SwiftWriteFeature(session, regionService),
+            1024L * 1024L, 1);
         try {
-            new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
-                1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
+            feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
                 long count;
 
                 @Override
@@ -122,18 +124,22 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertTrue(interrupt.get());
         assertEquals(1024L * 1024L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
+        assertEquals(0, new SwiftSegmentService(session, regionService).list(test).size());
+        assertTrue(feature.append(test, status).append);
+        assertTrue(new SwiftFindFeature(session).find(test));
+        assertEquals(1 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize(), 0L);
 
         final TransferStatus append = new TransferStatus().append(true).withLength(1024L * 1024L).skip(1024L * 1024L);
-        new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
-            1024L * 1024L, 1).upload(test, local,
+        feature.upload(test, local,
             new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
             new DisabledLoginCallback());
         assertEquals(2 * 1024L * 1024L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(2 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize(), 0L);
+        assertEquals(2, new SwiftSegmentService(session, regionService).list(test).size());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -145,8 +151,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
     public void testUpload() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Path test = new Path(container, new AlphanumericRandomStringService().random() + ".txt", EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
 
         // Each segment, except the last, must be larger than 1048576 bytes.
         //2MB + 1

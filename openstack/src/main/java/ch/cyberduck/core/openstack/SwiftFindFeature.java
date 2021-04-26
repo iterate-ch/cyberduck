@@ -42,7 +42,6 @@ public class SwiftFindFeature implements Find {
             return true;
         }
         catch(NotfoundException e) {
-            //todo handle incomplete multipart uploads
             return false;
         }
     }

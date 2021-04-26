@@ -58,22 +58,10 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
         = PreferencesFactory.get();
 
     private final SwiftSession session;
-    private final SwiftSegmentService segmentService;
-    private final SwiftObjectListService listService;
     private final SwiftRegionService regionService;
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService,
-            new SwiftObjectListService(session, regionService),
-            new SwiftSegmentService(session, regionService)
-        );
-    }
-
-    public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
-                             final SwiftObjectListService listService, final SwiftSegmentService segmentService) {
         this.session = session;
-        this.listService = listService;
-        this.segmentService = segmentService;
         this.regionService = regionService;
     }
 
@@ -120,26 +108,22 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
 
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        if(status.getLength() >= preferences.getLong("openstack.upload.largeobject.threshold")) {
-            if(preferences.getBoolean("openstack.upload.largeobject")) {
-                final List<Path> segments;
-                long size = 0L;
-                try {
-                    segments = listService.list(segmentService.getSegmentsDirectory(file, status.getLength()), new DisabledListProgressListener()).toList();
-                    if(segments.isEmpty()) {
-                        return Write.override;
-                    }
-                }
-                catch(NotfoundException e) {
-                    return Write.override;
-                }
-                for(Path segment : segments) {
-                    size += segment.attributes().getSize();
-                }
-                return new Append(true).withStatus(status).withSize(size);
+        final List<Path> segments;
+        long size = 0L;
+        try {
+            segments = new SwiftObjectListService(session, regionService).list(new SwiftSegmentService(session, regionService)
+                .getSegmentsDirectory(file, status.getLength()), new DisabledListProgressListener()).toList();
+            if(segments.isEmpty()) {
+                return Write.override;
             }
         }
-        return new Append(false).withStatus(status);
+        catch(NotfoundException e) {
+            return Write.override;
+        }
+        for(Path segment : segments) {
+            size += segment.attributes().getSize();
+        }
+        return new Append(true).withStatus(status).withSize(size);
     }
 
     @Override
