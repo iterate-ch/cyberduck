@@ -34,7 +34,7 @@ import java.util.function.Predicate;
 public class AttributedList<E extends Referenceable> implements Iterable<E> {
     private static final Logger log = Logger.getLogger(AttributedList.class);
 
-    private static final AttributedList EMPTY = new AttributedList() {
+    public static final AttributedList EMPTY = new AttributedList() {
         @Override
         public boolean add(final Referenceable o) {
             throw new UnsupportedOperationException();
