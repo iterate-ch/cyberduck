@@ -169,7 +169,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final byte[] content = RandomUtils.nextBytes(length);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new GoogleStorageTouchFeature(session).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final TransferStatus status = new TransferStatus().length(content.length);
+        final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final HttpResponseOutputStream<VersionId> out = new GoogleStorageWriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
