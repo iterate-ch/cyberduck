@@ -40,7 +40,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
     public void testMove() throws Exception {
         final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertNotNull(new GoogleStorageTouchFeature(session).touch(test, new TransferStatus().withMetadata(Collections.singletonMap("cyberduck", "set"))).attributes().getVersionId());
+        new GoogleStorageTouchFeature(session).touch(test, new TransferStatus().withMetadata(Collections.singletonMap("cyberduck", "set")));
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertFalse(new GoogleStorageMetadataFeature(session).getMetadata(test).isEmpty());
         final Path renamed = new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -69,9 +69,9 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
     @Test
     public void testSupport() {
         final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
-        assertFalse(new GoogleStorageMoveFeature(null).isSupported(c, c));
+        assertFalse(new GoogleStorageMoveFeature(session).isSupported(c, c));
         final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
-        assertTrue(new GoogleStorageMoveFeature(null).isSupported(cf, cf));
+        assertTrue(new GoogleStorageMoveFeature(session).isSupported(cf, cf));
     }
 
     @Test

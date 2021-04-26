@@ -22,8 +22,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -69,7 +71,13 @@ public class GoogleStorageDirectoryFeature implements Directory<VersionId> {
                 final StatusOutputStream<VersionId> out = writer.write(new Path(folder.getParent(), folder.getName(), type,
                     new PathAttributes(folder.attributes())), status, new DisabledConnectionCallback());
                 new DefaultStreamCloser().close(out);
-                return folder.withType(type).withAttributes(folder.attributes().withVersionId(out.getStatus().id));
+                final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+                    session.getFeature(PathContainerService.class).getContainer(folder)
+                ) : VersioningConfiguration.empty();
+                if(versioning.isEnabled()) {
+                    return folder.withType(type).withAttributes(folder.attributes().withVersionId(out.getStatus().id));
+                }
+                return folder;
             }
         }
         catch(IOException e) {

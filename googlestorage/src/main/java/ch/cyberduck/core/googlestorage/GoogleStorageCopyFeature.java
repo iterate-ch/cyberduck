@@ -18,10 +18,13 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -44,8 +47,11 @@ public class GoogleStorageCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final StorageObject storageObject = session.getClient().objects().get(
-                containerService.getContainer(source).getName(), containerService.getKey(source)).execute();
+            final Storage.Objects.Get request = session.getClient().objects().get(containerService.getContainer(source).getName(), containerService.getKey(source));
+            if(StringUtils.isNotBlank(source.attributes().getVersionId())) {
+                request.setGeneration(Long.parseLong(source.attributes().getVersionId()));
+            }
+            final StorageObject storageObject = request.execute();
             final Storage.Objects.Rewrite rewrite = session.getClient().objects().rewrite(containerService.getContainer(source).getName(), containerService.getKey(source),
                 containerService.getContainer(target).getName(), containerService.getKey(target), storageObject);
             final RewriteResponse response = rewrite.execute();
@@ -54,7 +60,10 @@ public class GoogleStorageCopyFeature implements Copy {
             while(!rewrite.setRewriteToken(response.getRewriteToken()).execute().getDone()) {
                 log.warn(String.format("Pending rewrite for object %s", storageObject));
             }
-            return target.withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(response.getResource()));
+            final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+                containerService.getContainer(target)
+            ) : VersioningConfiguration.empty();
+            return target.withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(response.getResource(), versioning));
         }
         catch(IOException e) {
             throw new GoogleStorageExceptionMappingService().map("Cannot copy {0}", e, source);

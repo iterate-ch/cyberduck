@@ -112,7 +112,6 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                         if(null != versioned) {
                             attr.setDuplicate(versioned.attributes().isDuplicate());
                             attr.setVersions(versioned.attributes().getVersions());
-                            return attr;
                         }
                     }
                     catch(InteroperabilityException | AccessDeniedException e) {
@@ -208,7 +207,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             attributes.setChecksum(Checksum.parse(object.getETag()));
         }
         if(!object.getModifiableMetadata().isEmpty()) {
-            final HashMap<String, String> metadata = new HashMap<String, String>();
+            final HashMap<String, String> metadata = new HashMap<>();
             final Map<String, Object> source = object.getModifiableMetadata();
             for(Map.Entry<String, Object> entry : source.entrySet()) {
                 metadata.put(entry.getKey(), entry.getValue().toString());

@@ -79,9 +79,6 @@ public class GoogleStorageLifecycleFeature implements Lifecycle {
         if(container.isRoot()) {
             return LifecycleConfiguration.empty();
         }
-        if(file.getType().contains(Path.Type.upload)) {
-            return LifecycleConfiguration.empty();
-        }
         try {
             final Bucket.Lifecycle status = session.getClient().buckets().get(container.getName()).execute().getLifecycle();
             if(null != status) {

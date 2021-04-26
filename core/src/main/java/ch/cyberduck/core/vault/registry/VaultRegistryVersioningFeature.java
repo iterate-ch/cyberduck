@@ -20,7 +20,6 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.VersioningConfiguration;
-import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
@@ -37,11 +36,6 @@ public class VaultRegistryVersioningFeature implements Versioning {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
-    }
-
-    @Override
-    public Versioning withCache(final LRUCache<Path, VersioningConfiguration> cache) {
-        return this;
     }
 
     @Override

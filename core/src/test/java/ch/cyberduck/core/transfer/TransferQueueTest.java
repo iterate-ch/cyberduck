@@ -51,7 +51,7 @@ public class TransferQueueTest {
         }).start();
         assertEquals(1, c.getCount());
         queue.remove(d1);
-        assertTrue(c.await(1, TimeUnit.SECONDS));
+        assertTrue(c.await(10, TimeUnit.SECONDS));
         assertEquals(0, c.getCount());
     }
 
@@ -103,9 +103,9 @@ public class TransferQueueTest {
             }
         }).start();
         assertEquals(1, c.getCount());
-        assertFalse(c.await(1, TimeUnit.SECONDS));
+        assertFalse(c.await(10, TimeUnit.SECONDS));
         queue.resize(2);
-        assertTrue(c.await(1, TimeUnit.SECONDS));
+        assertTrue(c.await(10, TimeUnit.SECONDS));
         assertTrue(set.get());
     }
 
@@ -116,7 +116,7 @@ public class TransferQueueTest {
         final DownloadTransfer d2 = new DownloadTransfer(new Host(new TestProtocol()), new Path("/t2", EnumSet.of(Path.Type.directory)), null);
         final DownloadTransfer d3 = new DownloadTransfer(new Host(new TestProtocol()), new Path("/t3", EnumSet.of(Path.Type.directory)), null);
         queue.add(d1, new DisabledProgressListener());
-        final CountDownLatch c = new CountDownLatch(1);
+        final CountDownLatch c = new CountDownLatch(2);
         final AtomicBoolean set1 = new AtomicBoolean();
         final AtomicBoolean set2 = new AtomicBoolean();
         new Thread(new Runnable() {
@@ -142,14 +142,15 @@ public class TransferQueueTest {
                         set2.set(true);
                     }
                 });
+                c.countDown();
             }
         }).start();
-        assertEquals(1, c.getCount());
-        assertFalse(c.await(1, TimeUnit.SECONDS));
+        assertEquals(2, c.getCount());
+        assertFalse(c.await(10, TimeUnit.SECONDS));
         assertTrue(set1.get());
         assertTrue(set2.get());
-        queue.resize(2);
-        assertTrue(c.await(1, TimeUnit.SECONDS));
+        queue.resize(3);
+        assertTrue(c.await(10, TimeUnit.SECONDS));
         assertEquals(0, c.getCount());
     }
 
@@ -174,11 +175,11 @@ public class TransferQueueTest {
                 c.countDown();
             }
         }).start();
-        assertFalse(c.await(1, TimeUnit.SECONDS));
+        assertFalse(c.await(10, TimeUnit.SECONDS));
         assertEquals(1, c.getCount());
         assertTrue(set.get());
         queue.remove(d2);
-        assertTrue(c.await(1, TimeUnit.SECONDS));
+        assertTrue(c.await(10, TimeUnit.SECONDS));
         assertEquals(0, c.getCount());
     }
 }

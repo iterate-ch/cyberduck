@@ -46,19 +46,13 @@ public class S3VersioningFeature implements Versioning {
     private final PathContainerService containerService;
     private final S3AccessControlListFeature accessControlListFeature;
 
-    private LRUCache<Path, VersioningConfiguration> cache
+    private final LRUCache<Path, VersioningConfiguration> cache
         = LRUCache.build(10);
 
     public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
         this.accessControlListFeature = accessControlListFeature;
         this.containerService = session.getFeature(PathContainerService.class);
-    }
-
-    @Override
-    public S3VersioningFeature withCache(final LRUCache<Path, VersioningConfiguration> cache) {
-        this.cache = cache;
-        return this;
     }
 
     @Override
