@@ -70,7 +70,7 @@ public class B2ObjectListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            final AttributedList<Path> objects = new AttributedList<Path>();
+            final AttributedList<Path> objects = new AttributedList<>();
             Marker marker;
             if(containerService.isContainer(directory)) {
                 marker = new Marker(null, null);
@@ -91,7 +91,7 @@ public class B2ObjectListService implements ListService {
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
                     containerId,
                     marker.nextFilename, marker.nextFileId, chunksize,
-                    containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), String.valueOf(Path.DELIMITER)),
+                    containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), Path.DELIMITER),
                     String.valueOf(Path.DELIMITER));
                 marker = this.parse(directory, objects, response, revisions);
                 if(null == marker.nextFileId) {

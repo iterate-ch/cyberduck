@@ -57,10 +57,10 @@ public class B2FindFeature implements Find {
             }
             else {
                 try {
-                    return null != fileid.getVersionId(file, listener);
+                    new B2AttributesFinderFeature(session, fileid).find(file, listener);
+                    return true;
                 }
                 catch(NotfoundException e) {
-                    //todo handle incomplete multipart uploads
                     return false;
                 }
             }
@@ -73,5 +73,4 @@ public class B2FindFeature implements Find {
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }
-
 }

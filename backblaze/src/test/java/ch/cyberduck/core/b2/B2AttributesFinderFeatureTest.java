@@ -45,7 +45,9 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
             fileid.getVersionId(bucket, new DisabledListProgressListener()),
             file.getName(), null, Collections.emptyMap());
-        assertSame(PathAttributes.EMPTY, new B2AttributesFinderFeature(session, fileid).find(file));
+        final PathAttributes attributes = new B2AttributesFinderFeature(session, fileid).find(file);
+        assertNotSame(PathAttributes.EMPTY, attributes);
+        assertEquals(0L, attributes.getSize());
         final Path found = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).find(
             new SimplePathPredicate(file));
         assertTrue(found.getType().contains(Path.Type.upload));

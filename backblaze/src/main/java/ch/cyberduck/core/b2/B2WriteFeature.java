@@ -160,18 +160,14 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
 
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        if(status.getLength() >= preferences.getLong("b2.upload.largeobject.threshold")) {
-            if(preferences.getBoolean("b2.upload.largeobject")) {
-                final B2LargeUploadPartService partService = new B2LargeUploadPartService(session, fileid);
-                final List<B2FileInfoResponse> upload = partService.find(file);
-                if(!upload.isEmpty()) {
-                    Long size = 0L;
-                    for(B2UploadPartResponse completed : partService.list(upload.iterator().next().getFileId())) {
-                        size += completed.getContentLength();
-                    }
-                    return new Append(true).withStatus(status).withSize(size);
-                }
+        final B2LargeUploadPartService partService = new B2LargeUploadPartService(session, fileid);
+        final List<B2FileInfoResponse> upload = partService.find(file);
+        if(!upload.isEmpty()) {
+            Long size = 0L;
+            for(B2UploadPartResponse completed : partService.list(upload.iterator().next().getFileId())) {
+                size += completed.getContentLength();
             }
+            return new Append(true).withStatus(status).withSize(size);
         }
         return new Append(false).withStatus(status);
     }
