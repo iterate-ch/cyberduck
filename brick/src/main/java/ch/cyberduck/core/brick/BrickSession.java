@@ -51,15 +51,12 @@ import org.apache.log4j.Logger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class BrickSession extends DAVSession {
     private static final Logger log = Logger.getLogger(BrickSession.class);
-
-    private final Semaphore semaphore = new Semaphore(1);
 
     public BrickSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -69,7 +66,7 @@ public class BrickSession extends DAVSession {
     public DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
-        configuration.setServiceUnavailableRetryStrategy(new BrickUnauthorizedRetryStrategy(this, cancel));
+        configuration.setServiceUnavailableRetryStrategy(new BrickUnauthorizedRetryStrategy(this, prompt, cancel));
         return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
 
@@ -91,67 +88,58 @@ public class BrickSession extends DAVSession {
     }
 
     public Credentials pair(final Host bookmark, final ConnectionCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        if(!semaphore.tryAcquire()) {
-            log.warn(String.format("Skip pairing because semaphore cannot be aquired for %s", bookmark));
-            throw new LoginCanceledException();
+        final String token = new BrickCredentialsConfigurator().configure(host).getToken();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Attempt pairing with token %s", token));
         }
-        try {
-            final String token = new BrickCredentialsConfigurator().configure(host).getToken();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Attempt pairing with token %s", token));
+        final BrickPairingSchedulerFeature scheduler = new BrickPairingSchedulerFeature(this, token, bookmark, cancel);
+        // Operate in background until canceled
+        final ConnectionCallback lock = new DisabledConnectionCallback() {
+            final CountDownLatch lock = new CountDownLatch(1);
+
+            @Override
+            public void close(final String input) {
+                prompt.close(input);
+                // Continue with login
+                lock.countDown();
             }
-            final BrickPairingSchedulerFeature scheduler = new BrickPairingSchedulerFeature(this, token, bookmark, cancel);
-            // Operate in background until canceled
-            final ConnectionCallback lock = new DisabledConnectionCallback() {
-                final CountDownLatch lock = new CountDownLatch(1);
 
-                @Override
-                public void close(final String input) {
-                    prompt.close(input);
-                    // Continue with login
-                    lock.countDown();
-                }
-
-                @Override
-                public void warn(final Host bookmark, final String title, final String message,
-                                 final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
-                    prompt.warn(bookmark, title, message, defaultButton, cancelButton, preference);
-                    try {
-                        if(!BrowserLauncherFactory.get().open(
-                            String.format("%s/login_from_desktop?pairing_key=%s&platform=%s&computer=%s",
-                                new HostUrlProvider().withUsername(false).withPath(false).get(host),
-                                token,
-                                URIEncoder.encode(new PreferencesUseragentProvider().get()), URIEncoder.encode(InetAddress.getLocalHost().getHostName()))
-                        )) {
-                            throw new LoginCanceledException();
-                        }
-                    }
-                    catch(UnknownHostException e) {
-                        throw new ConnectionCanceledException(e);
-                    }
-                    final long timeout = PreferencesFactory.get().getLong("brick.pairing.interrupt.ms");
-                    final long start = System.currentTimeMillis();
-                    // Wait for status response from pairing scheduler
-                    while(!Uninterruptibles.awaitUninterruptibly(lock, PreferencesFactory.get().getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS)) {
-                        cancel.verify();
-                        if(System.currentTimeMillis() - start > timeout) {
-                            throw new ConnectionCanceledException(String.format("Interrupt wait for pairing key after %d", timeout));
-                        }
+            @Override
+            public void warn(final Host bookmark, final String title, final String message,
+                             final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
+                prompt.warn(bookmark, title, message, defaultButton, cancelButton, preference);
+                try {
+                    if(!BrowserLauncherFactory.get().open(
+                        String.format("%s/login_from_desktop?pairing_key=%s&platform=%s&computer=%s",
+                            new HostUrlProvider().withUsername(false).withPath(false).get(host),
+                            token,
+                            URIEncoder.encode(new PreferencesUseragentProvider().get()), URIEncoder.encode(InetAddress.getLocalHost().getHostName()))
+                    )) {
+                        throw new LoginCanceledException();
                     }
                 }
-            };
-            // Poll for pairing key until canceled
-            scheduler.repeat(lock);
-            // Await reply
-            lock.warn(bookmark, String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-                LocaleFactory.localizedString("The desktop application session has expired or been revoked.", "Brick"),
-                LocaleFactory.localizedString("Open in Web Browser"), LocaleFactory.localizedString("Cancel"), null);
-            // Not canceled
-            scheduler.shutdown();
-        }
-        finally {
-            semaphore.release();
-        }
+                catch(UnknownHostException e) {
+                    throw new ConnectionCanceledException(e);
+                }
+                final long timeout = PreferencesFactory.get().getLong("brick.pairing.interrupt.ms");
+                final long start = System.currentTimeMillis();
+                // Wait for status response from pairing scheduler
+                while(!Uninterruptibles.awaitUninterruptibly(lock, PreferencesFactory.get().getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS)) {
+                    cancel.verify();
+                    if(System.currentTimeMillis() - start > timeout) {
+                        throw new ConnectionCanceledException(String.format("Interrupt wait for pairing key after %d", timeout));
+                    }
+                }
+            }
+        };
+        // Poll for pairing key until canceled
+        scheduler.repeat(lock);
+        // Await reply
+        lock.warn(bookmark, String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
+            LocaleFactory.localizedString("The desktop application session has expired or been revoked.", "Brick"),
+            LocaleFactory.localizedString("Open in Web Browser"), LocaleFactory.localizedString("Cancel"), null);
+        // Not canceled
+        scheduler.shutdown();
         // When connect attempt is interrupted will throw connection cancel failure
         cancel.verify();
         return bookmark.getCredentials();
