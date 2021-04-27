@@ -55,13 +55,14 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
         final String directoryId = random.random();
         final Path encrypt = vault.encrypt(session, folder, directoryId, false);
         // Create metadata file for directory
-        final Path metadataFolder = new Path(session._getFeature(Directory.class).mkdir(vault.encrypt(session, folder, true), region, new TransferStatus()),
+        final Path directoryMetadataFolder = vault.encrypt(session, folder, true);
+        final Path directoryMetadataFile = new Path(session._getFeature(Directory.class).mkdir(directoryMetadataFolder, region, new TransferStatus()),
             CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE,
             EnumSet.of(Path.Type.file));
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Write metadata %s for folder %s", metadataFolder, folder));
+            log.debug(String.format("Write metadata %s for folder %s", directoryMetadataFile, folder));
         }
-        new ContentWriter(session).write(metadataFolder, directoryId.getBytes(StandardCharsets.UTF_8));
+        new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(StandardCharsets.UTF_8));
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
             session._getFeature(Directory.class).mkdir(intermediate, region, new TransferStatus());
@@ -76,8 +77,8 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
         target.attributes().setDecrypted(folder);
         // Make reference of encrypted path in attributes of decrypted file point to metadata file
         final Path decrypt = vault.decrypt(session, vault.encrypt(session, target, true));
-        decrypt.attributes().setFileId(target.attributes().getFileId());
-        decrypt.attributes().setVersionId(target.attributes().getVersionId());
+        decrypt.attributes().setFileId(directoryMetadataFolder.attributes().getFileId());
+        decrypt.attributes().setVersionId(directoryMetadataFolder.attributes().getVersionId());
         return decrypt;
     }
 
