@@ -62,7 +62,7 @@ public class SingleTransferWorkerTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testDownload() throws Exception {
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local localFile = TemporaryFileServiceFactory.get().create(test);
         {
@@ -81,7 +81,6 @@ public class SingleTransferWorkerTest extends AbstractGoogleStorageTest {
         out.close();
         final String versionId = String.valueOf(out.getStatus().id);
         assertNotNull(versionId);
-
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override

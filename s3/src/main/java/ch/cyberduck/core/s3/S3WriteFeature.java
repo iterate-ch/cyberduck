@@ -76,7 +76,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Saved object %s with checksum %s", file, object.getETag()));
                     }
-                    status.setVersionId(object.getVersionId());
+                    file.attributes().setVersionId(object.getVersionId());
                 }
                 catch(ServiceException e) {
                     throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);

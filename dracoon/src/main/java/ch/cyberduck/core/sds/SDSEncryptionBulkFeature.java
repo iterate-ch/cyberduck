@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -88,13 +87,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                             final Path file = entry.getKey().remote;
                             final Path container = new DefaultPathContainerService().getContainer(file);
                             if(rooms.get(container)) {
-                                final TransferStatus status = entry.getValue();
-                                if(null != status.getVersionId()) {
-                                    background.operate(session, callback, file.withAttributes(new PathAttributes(file.attributes()).withVersionId(status.getVersionId())));
-                                }
-                                else {
-                                    log.warn(String.format("Missing fileid in transfer status %s for file %s", status, file));
-                                }
+                                background.operate(session, callback, file);
                             }
                         }
                     }

@@ -83,9 +83,8 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertNotNull(status.getVersionId());
-        assertEquals(status.getVersionId(), fileid.getVersionId(test, new DisabledListProgressListener()));
-        test.attributes().setVersionId(status.getVersionId());
+        assertNotNull(test.attributes().getVersionId());
+        assertEquals(test.attributes().getVersionId(), fileid.getVersionId(test, new DisabledListProgressListener()));
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final PathAttributes attributes = new B2ListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());

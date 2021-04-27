@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds.triplecrypt;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -36,21 +35,21 @@ import com.dracoon.sdk.crypto.error.CryptoSystemException;
 import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-public class TripleCryptWriteFeature implements Write<VersionId> {
+public class TripleCryptWriteFeature implements Write<Void> {
     private static final Logger log = Logger.getLogger(TripleCryptWriteFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
-    private final Write<VersionId> proxy;
+    private final Write<Void> proxy;
 
-    public TripleCryptWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<VersionId> proxy) {
+    public TripleCryptWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Void> proxy) {
         this.session = session;
         this.nodeid = nodeid;
         this.proxy = proxy;
     }
 
     @Override
-    public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
             if(log.isDebugEnabled()) {

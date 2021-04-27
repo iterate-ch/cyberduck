@@ -21,8 +21,9 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2DeleteFeature;
-import ch.cyberduck.core.b2.B2VersionIdProvider;
+import ch.cyberduck.core.b2.B2FindFeature;
 import ch.cyberduck.core.b2.B2TouchFeature;
+import ch.cyberduck.core.b2.B2VersionIdProvider;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -36,6 +37,7 @@ import java.util.EnumSet;
 import synapticloop.b2.response.B2StartLargeFileResponse;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class DefaultAttributesFinderFeatureTest extends AbstractB2Test {
@@ -58,7 +60,10 @@ public class DefaultAttributesFinderFeatureTest extends AbstractB2Test {
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
             new B2VersionIdProvider(session).getVersionId(bucket, new DisabledListProgressListener()),
             file.getName(), null, Collections.emptyMap());
-        assertNotNull(new DefaultAttributesFinderFeature(session).find(file));
+        file.attributes().setVersionId(startResponse.getFileId());
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        assertTrue(new B2FindFeature(session, fileid).find(file));
+        assertTrue(new DefaultFindFeature(session).find(file));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
     }
 }

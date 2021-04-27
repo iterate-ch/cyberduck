@@ -198,7 +198,7 @@ public class UDTProxyConfiguratorTest {
         IOUtils.write(content, out);
         out.close();
         status.setLength(content.length);
-        final Path test = new Path(new Path("container", EnumSet.of(Path.Type.volume)),
+        final Path test = new Path(new Path("container", EnumSet.of(Path.Type.volume, Path.Type.directory)),
             UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Upload upload = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled));
         try {

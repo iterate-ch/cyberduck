@@ -40,7 +40,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeleteFile() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
@@ -50,7 +50,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeletePlaceholder() throws Exception {
-        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(container,
             String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
@@ -63,7 +63,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeleteVersionedPlaceholder() throws Exception {
-        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final String name = new AlphanumericRandomStringService().random();
         {
             final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
@@ -86,7 +86,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
     @Ignore
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundKey() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

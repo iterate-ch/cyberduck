@@ -19,6 +19,7 @@ import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.Version;
@@ -63,8 +64,8 @@ public class SDSMoveFeature implements Move {
             if(containerService.isContainer(file)) {
                 final Node node = new NodesApi(session.getClient()).updateRoom(
                     new UpdateRoomRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
-                nodeid.cache(file, null);
                 nodeid.cache(renamed, file.attributes().getVersionId());
+                nodeid.cache(file, null);
                 return renamed.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
             }
             else {
@@ -82,10 +83,10 @@ public class SDSMoveFeature implements Move {
                         .keepShareLinks(PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep")),
                     Long.parseLong(nodeid.getVersionId(renamed.getParent(), new DisabledListProgressListener())),
                     StringUtils.EMPTY, null);
-                nodeid.cache(file, null);
                 nodeid.cache(renamed, file.attributes().getVersionId());
+                nodeid.cache(file, null);
                 // Copy original file attributes
-                return renamed.withAttributes(file.attributes());
+                return renamed.withAttributes(new PathAttributes(file.attributes()).withVersionId(String.valueOf(nodeId)));
             }
         }
         catch(ApiException e) {

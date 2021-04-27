@@ -17,11 +17,11 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.http.VoidHttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
+public class SDSMultipartWriteFeature implements MultipartWrite<Void> {
     private static final Logger log = Logger.getLogger(SDSMultipartWriteFeature.class);
 
     private final SDSSession session;
@@ -45,16 +45,11 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     }
 
     @Override
-    public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String uploadToken = upload.start(file, status);
         final MultipartUploadTokenOutputStream proxy = new MultipartUploadTokenOutputStream(session, file, status, uploadToken);
-        return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy, PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
+        return new VoidHttpResponseOutputStream(new MemorySegementingOutputStream(proxy, PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
             private final AtomicBoolean close = new AtomicBoolean();
-
-            @Override
-            public VersionId getStatus() {
-                return proxy.getVersionId();
-            }
 
             @Override
             public void close() throws IOException {
@@ -65,12 +60,11 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                     }
                     super.close();
                     try {
-                        status.setVersionId(upload.complete(file, uploadToken, status));
+                        upload.complete(file, uploadToken, status);
                     }
                     catch(ConflictException e) {
-                        status.setVersionId(upload.complete(file, uploadToken, new TransferStatus(status).exists(true)));
+                        upload.complete(file, uploadToken, new TransferStatus(status).exists(true));
                     }
-                    nodeid.cache(file, status.getVersionId());
                 }
                 catch(BackgroundException e) {
                     throw new IOException(e);

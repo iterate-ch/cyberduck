@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -48,7 +47,8 @@ import java.util.EnumSet;
 import java.util.Random;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class DefaultDownloadFeatureTest extends AbstractSDSTest {
@@ -63,12 +63,10 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().withLength(content.length).exists(true);
-            final StatusOutputStream<VersionId> out = new SDSMultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Void> out = new SDSMultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
-            assertNotEquals(test.attributes().getVersionId(), out.getStatus().id);
-            test.attributes().setVersionId(out.getStatus().id);
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
@@ -104,11 +102,10 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         {
             final TransferStatus status = new TransferStatus().withLength(content.length);
             status.setExists(true);
-            final HttpResponseOutputStream<VersionId> out = new SDSMultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<Void> out = new SDSMultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
-            test.attributes().setVersionId(out.getStatus().id);
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {

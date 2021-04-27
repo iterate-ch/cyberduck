@@ -4,7 +4,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.MultipartWrite;
@@ -38,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
+public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> {
     private static final Logger log = Logger.getLogger(S3MultipartWriteFeature.class);
 
     private final Preferences preferences
@@ -53,7 +52,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
     }
 
     @Override
-    public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<MultipartUpload> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final S3Object object = new S3WriteFeature(session)
             .getDetails(file, status);
         // ID for the initiated multipart upload.
@@ -70,11 +69,11 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
         }
         final MultipartOutputStream proxy = new MultipartOutputStream(multipart, file, status);
-        return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
+        return new HttpResponseOutputStream<MultipartUpload>(new MemorySegementingOutputStream(proxy,
             preferences.getInteger("s3.upload.multipart.size"))) {
             @Override
-            public VersionId getStatus() {
-                return proxy.getVersionId();
+            public MultipartUpload getStatus() {
+                return multipart;
             }
         };
     }
@@ -111,10 +110,6 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
             this.multipart = multipart;
             this.file = file;
             this.overall = status;
-        }
-
-        public VersionId getVersionId() {
-            return new VersionId(overall.getVersionId());
         }
 
         @Override
@@ -175,7 +170,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
                 if(completed.isEmpty()) {
                     log.warn(String.format("Abort multipart upload %s with no completed parts", multipart));
                     session.getClient().multipartAbortUpload(multipart);
-                    overall.setVersionId(new S3TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId());
+                    new S3TouchFeature(session).touch(file, new TransferStatus());
                 }
                 else {
                     final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
@@ -183,7 +178,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
                         log.debug(String.format("Completed multipart upload for %s with checksum %s",
                             complete.getObjectKey(), complete.getEtag()));
                     }
-                    overall.setVersionId(complete.getVersionId());
+                    file.attributes().setVersionId(complete.getVersionId());
                     if(file.getType().contains(Path.Type.encrypted)) {
                         log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                     }

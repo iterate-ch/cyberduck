@@ -32,19 +32,10 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class GoogleStorageVersioningFeatureTest extends AbstractGoogleStorageTest {
-
-    @Test
-    public void testGetConfigurationDisabled() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
-        final VersioningConfiguration configuration = new GoogleStorageVersioningFeature(session).getConfiguration(container);
-        assertNotNull(configuration);
-        assertFalse(configuration.isEnabled());
-        assertFalse(configuration.isMultifactor());
-    }
 
     @Test
     public void testSetConfiguration() throws Exception {

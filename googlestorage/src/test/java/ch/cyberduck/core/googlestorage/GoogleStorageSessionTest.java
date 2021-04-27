@@ -41,7 +41,8 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
@@ -143,7 +144,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testFeatures() {
-        assertNull(session.getFeature(Versioning.class));
+        assertNotNull(session.getFeature(Versioning.class));
         assertNotNull(session.getFeature(AclPermission.class));
         assertNotNull(session.getFeature(Lifecycle.class));
         assertNotNull(session.getFeature(DistributionConfiguration.class));

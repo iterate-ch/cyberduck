@@ -28,7 +28,7 @@ public class S3TransferAccelerationServiceTest extends AbstractS3Test {
 
     @Test
     public void getStatus() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3TransferAccelerationService service = new S3TransferAccelerationService(session);
         service.getStatus(container);
     }

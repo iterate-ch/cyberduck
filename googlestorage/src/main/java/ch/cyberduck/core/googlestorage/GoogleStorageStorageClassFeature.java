@@ -29,6 +29,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.google.api.services.storage.model.Bucket;
+import com.google.api.services.storage.model.RewriteResponse;
 import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageStorageClassFeature implements Redundancy {
@@ -72,10 +73,11 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
                 ).execute();
             }
             else {
-                session.getClient().objects().rewrite(containerService.getContainer(file).getName(),
+                final RewriteResponse response = session.getClient().objects().rewrite(containerService.getContainer(file).getName(),
                     containerService.getKey(file), containerService.getContainer(file).getName(), containerService.getKey(file),
                     new StorageObject().setStorageClass(redundancy)
                 ).execute();
+                file.attributes().setVersionId(String.valueOf(response.getResource().getGeneration()));
             }
         }
         catch(IOException e) {

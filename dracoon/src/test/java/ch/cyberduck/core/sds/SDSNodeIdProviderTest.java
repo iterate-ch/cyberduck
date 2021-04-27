@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -79,14 +78,13 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         status.setLength(content.length);
         status.setExists(true);
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Void> out = writer.write(file, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        final VersionId versionIdWrite = out.getStatus();
-        assertNotNull(versionIdWrite);
-        assertNotEquals(versionIdTouch, versionIdWrite);
+        assertNotNull(file.attributes().getVersionId());
+        assertNotEquals(versionIdTouch, file.attributes().getVersionId());
         nodeid.clear();
-        assertEquals(versionIdWrite.toString(), nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener(), 1));
+        assertEquals(file.attributes().getVersionId(), nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener(), 1));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

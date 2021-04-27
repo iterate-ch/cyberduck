@@ -29,13 +29,13 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     @Test
     public void testFile() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), "h"));
-        assertFalse(new S3TouchFeature(session).isSupported(new Path("/", EnumSet.of(Path.Type.volume)), StringUtils.EMPTY));
-        assertTrue(new S3TouchFeature(session).isSupported(new Path(new Path("/", EnumSet.of(Path.Type.volume)), "/container", EnumSet.of(Path.Type.volume)), StringUtils.EMPTY));
+        assertFalse(new S3TouchFeature(session).isSupported(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)), StringUtils.EMPTY));
+        assertTrue(new S3TouchFeature(session).isSupported(new Path(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)), "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), StringUtils.EMPTY));
     }
 
     @Test
     public void testTouch() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new S3TouchFeature(session).touch(
             new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
         assertNull(test.attributes().getVersionId());
@@ -50,7 +50,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
 
     @Test
     public void testTouchCarriageReturnKey() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new S3TouchFeature(session).touch(
             new Path(container, String.format("%s\n-\r", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
         assertNull(test.attributes().getVersionId());
@@ -66,7 +66,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
 
     @Test
     public void testTouchUriEncoding() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new S3TouchFeature(session).touch(
             new Path(container, String.format("%s-+*~@([", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
         assertNull(test.attributes().getVersionId());
@@ -95,16 +95,16 @@ public class S3TouchFeatureTest extends AbstractS3Test {
             new PathAttributes(file.attributes()).withVersionId(version1))));
         assertTrue(new S3FindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
             new PathAttributes(file.attributes()).withVersionId(version2))));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(new Path(file).withAttributes(PathAttributes.EMPTY)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         // Versioned files are not deleted but with delete marker added
         assertTrue(new DefaultFindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
             new PathAttributes(file.attributes()).withVersionId(version1))));
         assertTrue(new DefaultFindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
             new PathAttributes(file.attributes()).withVersionId(version2))));
-        assertTrue((new S3FindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(version1)))));
-        assertTrue((new S3FindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(version2)))));
+        assertTrue(new S3FindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
+            new PathAttributes(file.attributes()).withVersionId(version1))));
+        assertTrue(new S3FindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
+            new PathAttributes(file.attributes()).withVersionId(version2))));
     }
 
     @Test(expected = AccessDeniedException.class)

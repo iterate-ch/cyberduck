@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -76,11 +75,8 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSMultipartWriteFeature(session, nodeid));
-        final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
-        assertNotNull(out);
+        final StatusOutputStream<Void> out = writer.write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        final VersionId version = out.getStatus();
-        assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature();
@@ -93,7 +89,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         assertFalse(processed.isEmpty());
         boolean found = false;
         for(UserFileKeySetRequest p : processed) {
-            if(p.getFileId().equals(Long.parseLong(version.id))) {
+            if(p.getFileId().equals(Long.parseLong(test.attributes().getVersionId()))) {
                 found = true;
                 break;
             }
@@ -143,10 +139,8 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSMultipartWriteFeature(session, nodeid));
-        final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
-        assertNotNull(out);
+        final StatusOutputStream<Void> out = writer.write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        final VersionId version = out.getStatus();
         // Start migration
         session.unlockTripleCryptKeyPair(new DisabledLoginCallback() {
             @Override
@@ -156,7 +150,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         }, session.userAccount(), UserKeyPair.Version.RSA4096);
         keyPairs = userApi.requestUserKeyPairs(null, null);
         assertEquals(2, keyPairs.size());
-        final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(Long.parseLong(version.id), null, null);
+        final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(Long.parseLong(test.attributes().getVersionId()), null, null);
         final EncryptedFileKey encFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(key);
         assertEquals(EncryptedFileKey.Version.RSA2048_AES256GCM, encFileKey.getVersion());
         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature();
@@ -169,7 +163,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         assertFalse(processed.isEmpty());
         boolean found = false;
         for(UserFileKeySetRequest p : processed) {
-            if(p.getFileId().equals(Long.parseLong(version.id))) {
+            if(p.getFileId().equals(Long.parseLong(test.attributes().getVersionId()))) {
                 found = true;
                 break;
             }

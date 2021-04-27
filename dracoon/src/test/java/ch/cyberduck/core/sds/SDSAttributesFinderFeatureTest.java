@@ -21,10 +21,9 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -141,20 +140,19 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         final PathAttributes previous = f.find(folder, 1);
         assertNotEquals(-1L, previous.getRevision().longValue());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String initialVersion = test.attributes().getVersionId();
         assertEquals(test.getParent(), folder);
         assertTrue(new SDSFindFeature(nodeid).find(test));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Void> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        final VersionId version = out.getStatus();
-        assertNotNull(version);
-        assertNotEquals(version.id, test.attributes().getVersionId());
-        final PathAttributes updated = new SDSAttributesFinderFeature(session, nodeid, true).find(
-            new Path(test.getParent(), test.getName(), test.getType(), new PathAttributes().withVersionId(version.id)), 1);
+        assertNotNull(test.attributes().getVersionId());
+        assertNotEquals(initialVersion, test.attributes().getVersionId());
+        final PathAttributes updated = new SDSAttributesFinderFeature(session, nodeid, true).find(test, 1);
         assertFalse(updated.getVersions().isEmpty());
         assertEquals(previous.getModificationDate(), new SDSAttributesFinderFeature(session, nodeid).find(folder, 1).getModificationDate());
         // Branch version is changing with background task only

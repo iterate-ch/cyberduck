@@ -18,11 +18,9 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -31,12 +29,12 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-public class SDSTouchFeature implements Touch<VersionId> {
+public class SDSTouchFeature implements Touch<Void> {
     private static final Logger log = Logger.getLogger(SDSTouchFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
-    private Write<VersionId> writer;
+    private Write<Void> writer;
 
     public SDSTouchFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
@@ -50,10 +48,8 @@ public class SDSTouchFeature implements Touch<VersionId> {
             if(nodeid.isEncrypted(file)) {
                 status.setFilekey(nodeid.getFileKey());
             }
-            final StatusOutputStream<VersionId> out = writer.write(file, status.complete(), new DisabledConnectionCallback());
-            out.close();
-            nodeid.cache(file, out.getStatus().id);
-            return file.withAttributes(file.attributes().withVersionId(out.getStatus().id));
+            writer.write(file, status.complete(), new DisabledConnectionCallback()).close();
+            return file;
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
@@ -106,7 +102,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
     }
 
     @Override
-    public Touch<VersionId> withWriter(final Write<VersionId> writer) {
+    public Touch<Void> withWriter(final Write<Void> writer) {
         this.writer = writer;
         return this;
     }

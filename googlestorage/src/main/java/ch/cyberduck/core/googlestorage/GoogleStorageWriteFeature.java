@@ -125,9 +125,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                                             final String value = reader.nextString();
                                             switch(name) {
                                                 case "generation":
-                                                    final VersionId version = new VersionId(value);
-                                                    status.setVersionId(value);
-                                                    return version;
+                                                    file.attributes().setVersionId(value);
+                                                    return new VersionId(value);
                                             }
                                         }
                                         reader.endObject();

@@ -19,13 +19,13 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<VersionId> {
+public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Void> {
     private static final Logger log = Logger.getLogger(SDSDirectS3WriteFeature.class);
 
     private final SDSSession session;
@@ -51,10 +51,10 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<VersionId>
     }
 
     @Override
-    public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return this.write(file, status, new DelayedHttpEntityCallable<VersionId>() {
+    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        return this.write(file, status, new DelayedHttpEntityCallable<Void>() {
             @Override
-            public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
+            public Void call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final HttpPut request = new HttpPut(status.getUrl());
                     request.setEntity(entity);
@@ -69,10 +69,13 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<VersionId>
                                     if(log.isInfoEnabled()) {
                                         log.info(String.format("Received response %s for part number %d", response, status.getPart()));
                                     }
-                                    return new VersionId(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"'));
+                                    status.setChecksum(Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"')));
+                                    return null;
                                 }
-                                log.error(String.format("Missing ETag in response %s", response));
-                                throw new InteroperabilityException(response.getStatusLine().getReasonPhrase());
+                                else {
+                                    log.error(String.format("Missing ETag in response %s", response));
+                                    throw new InteroperabilityException(response.getStatusLine().getReasonPhrase());
+                                }
                             default:
                                 EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                                 throw new DefaultHttpResponseExceptionMappingService().map(

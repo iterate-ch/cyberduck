@@ -51,7 +51,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.lang3.RandomUtils;
-import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -76,7 +75,7 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
 
     @Test
     public void testDownloadVersioned() throws Exception {
-        final Path home = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path home = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local localFile = TemporaryFileServiceFactory.get().create(test);
         {
@@ -93,9 +92,8 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        final String versionId = ((S3Object) out.getStatus()).getVersionId();
-        assertEquals(versionId, new S3AttributesFinderFeature(session).find(test).getVersionId());
-        assertEquals(versionId, new DefaultAttributesFinderFeature(session).find(test).getVersionId());
+        assertEquals(test.attributes().getVersionId(), new S3AttributesFinderFeature(session).find(test).getVersionId());
+        assertEquals(test.attributes().getVersionId(), new DefaultAttributesFinderFeature(session).find(test).getVersionId());
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
@@ -108,8 +106,6 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
         }.run(session));
         byte[] compare = new byte[content.length];
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
-        test.attributes().setVersionId(versionId);
-        assertEquals(versionId, new DefaultAttributesFinderFeature(session).find(test).getVersionId());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile.delete();
         session.close();
@@ -160,7 +156,7 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
         };
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path home = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
         final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());

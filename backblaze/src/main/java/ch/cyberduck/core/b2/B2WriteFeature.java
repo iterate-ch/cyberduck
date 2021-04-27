@@ -82,8 +82,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                 try {
                     final Checksum checksum = status.getChecksum();
                     if(status.isSegment()) {
-                        final B2GetUploadPartUrlResponse uploadUrl
-                            = session.getClient().getUploadPartUrl(status.getVersionId());
+                        final B2GetUploadPartUrlResponse uploadUrl = session.getClient().getUploadPartUrl(status.getParameters().get("fileId"));
                         return session.getClient().uploadLargeFilePart(uploadUrl, status.getPart(), entity, checksum.hash);
                     }
                     else {
@@ -130,7 +129,6 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                     containerService.getKey(file),
                     entity, checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
                     status.getMime(), fileinfo);
-                status.setVersionId(response.getFileId());
                 fileid.cache(file, response.getFileId());
                 return response;
             }

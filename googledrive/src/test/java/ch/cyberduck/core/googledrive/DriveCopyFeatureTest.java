@@ -46,7 +46,7 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
         new DriveTouchFeature(session, fileid).touch(test, status);
         final Path copy = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path target = new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
-        assertNotEquals(status.getFileId(), target.attributes().getFileId());
+        assertNotEquals(test.attributes().getVersionId(), target.attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
@@ -64,7 +64,7 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
         final TransferStatus status = new TransferStatus();
         new DriveTouchFeature(session, fileid).touch(copy, status);
         final Path target = new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
-        assertNotEquals(status.getFileId(), target.attributes().getFileId());
+        assertNotEquals(test.attributes().getVersionId(), target.attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));

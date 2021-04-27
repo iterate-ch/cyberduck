@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpRange;
@@ -145,9 +144,5 @@ public class MultipartUploadTokenOutputStream extends OutputStream {
         sb.append(", length=").append(length);
         sb.append('}');
         return sb.toString();
-    }
-
-    public VersionId getVersionId() {
-        return new VersionId(overall.getVersionId());
     }
 }

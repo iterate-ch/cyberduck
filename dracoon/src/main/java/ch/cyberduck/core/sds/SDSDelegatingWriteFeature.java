@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
@@ -28,21 +27,21 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
-public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
+public class SDSDelegatingWriteFeature implements MultipartWrite<Void> {
     private static final Logger log = Logger.getLogger(SDSDelegatingWriteFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
-    private final Write<VersionId> proxy;
+    private final Write<Void> proxy;
 
-    public SDSDelegatingWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<VersionId> proxy) {
+    public SDSDelegatingWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Void> proxy) {
         this.session = session;
         this.nodeid = nodeid;
         this.proxy = proxy;
     }
 
     @Override
-    public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(nodeid.isEncrypted(file)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Return encrypting writer for %s", file));
