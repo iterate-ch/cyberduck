@@ -39,6 +39,7 @@ import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.comparator.TimestampComparator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -183,7 +184,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                 // Version with no duplicate flag first
                 final int duplicate = Boolean.compare(!p1.attributes().isDuplicate(), !p2.attributes().isDuplicate());
                 if(0 == duplicate) {
-                    return p1.attributes().getVersionId().compareTo(p2.attributes().getVersionId());
+                    return StringUtils.compare(p1.attributes().getVersionId(), p2.attributes().getVersionId());
                 }
                 return duplicate;
 
