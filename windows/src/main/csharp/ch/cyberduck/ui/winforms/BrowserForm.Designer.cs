@@ -2672,12 +2672,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnRegion.DisplayIndex = 10;
             this.treeColumnRegion.IsEditable = false;
             this.treeColumnRegion.IsVisible = false;
-            this.treeColumnRegion.Text = "Storage Class";
+            this.treeColumnRegion.Text = "Region";
             // 
             // treeColumnStorageClass
             // 
             this.treeColumnStorageClass.CellPadding = null;
-            // 
+            this.treeColumnStorageClass.DisplayIndex = 8;
+            this.treeColumnStorageClass.IsEditable = false;
+            this.treeColumnStorageClass.IsVisible = false;
+            this.treeColumnStorageClass.Text = "Storage Class";
+            //
             // treeColumnVersion
             // 
             this.treeColumnVersion.CellPadding = null;
