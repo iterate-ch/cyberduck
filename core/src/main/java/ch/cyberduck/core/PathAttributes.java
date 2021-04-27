@@ -187,9 +187,9 @@ public class PathAttributes extends Attributes implements Serializable {
         link = DescriptiveUrl.EMPTY == copy.link ? DescriptiveUrl.EMPTY : new DescriptiveUrl(copy.link);
         metadata = new HashMap<>(copy.metadata);
         custom = new HashMap<>(copy.custom);
-        vault = null == copy.vault ? null : new Path(copy.vault);
-        decrypted = null == copy.decrypted ? null : new Path(copy.decrypted);
-        encrypted = null == copy.encrypted ? null : new Path(copy.encrypted);
+        vault = copy.vault;
+        decrypted = copy.decrypted;
+        encrypted = copy.encrypted;
         directoryId = copy.directoryId;
     }
 
