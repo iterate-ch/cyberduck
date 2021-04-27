@@ -30,7 +30,9 @@ import ch.cyberduck.core.googledrive.DriveAttributesFinderFeature;
 import ch.cyberduck.core.googledrive.DriveDeleteFeature;
 import ch.cyberduck.core.googledrive.DriveDirectoryFeature;
 import ch.cyberduck.core.googledrive.DriveFileIdProvider;
+import ch.cyberduck.core.googledrive.DriveFindFeature;
 import ch.cyberduck.core.googledrive.DriveHomeFinderService;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -65,9 +67,12 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final String versionId = test.attributes().getFileId();
         assertNotNull(versionId);
+        // Assert both filename and file id matches
+        assertTrue(new CryptoFindFeature(session, new DriveFindFeature(session, fileid), cryptomator).find(test));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new DriveAttributesFinderFeature(session, fileid), cryptomator).find(test);
         assertEquals(versionId, attributes.getFileId());
+        assertEquals(attributes, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

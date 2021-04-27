@@ -113,7 +113,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         assertNotNull(fileId);
         final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test);
         assertEquals(fileId, attributes.getFileId());
-        assertNotEquals(fileId, cryptomator.encrypt(session, test, true).attributes().getFileId());
+        assertEquals(fileId, cryptomator.encrypt(session, test, true).attributes().getFileId());
         cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, idProvider)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -150,7 +150,8 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider idProvider = new DriveFileIdProvider(session);
-        assertNotEquals(new CryptoFileIdProvider(session, idProvider, cryptomator).getFileId(vault, new DisabledListProgressListener()), idProvider.getFileId(vault, new DisabledListProgressListener()));
+        assertEquals(new CryptoFileIdProvider(session, idProvider, cryptomator).getFileId(vault, new DisabledListProgressListener()),
+            idProvider.getFileId(vault, new DisabledListProgressListener()));
         final Path test = cryptomator.getFeature(session, Directory.class, new DriveDirectoryFeature(session, idProvider)).mkdir(
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final String fileId = test.attributes().getFileId();
@@ -160,7 +161,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         assertEquals(fileId, new CryptoFileIdProvider(session, idProvider, cryptomator).getFileId(found, new DisabledListProgressListener()));
         final Cache<Path> cache = new PathCache(1);
         final AttributedList<Path> list = new AttributedList<>();
-        list.add(found);
+        list.add(test);
         cache.put(vault, list);
         final PathAttributes attributes = new CachingAttributesFinderFeature(cache, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator)).find(test);
         assertEquals(fileId, attributes.getFileId());
