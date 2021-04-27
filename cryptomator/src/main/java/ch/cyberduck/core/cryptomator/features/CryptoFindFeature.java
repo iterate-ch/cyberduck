@@ -21,7 +21,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.vault.EncryptingListProgressListener;
 
 public class CryptoFindFeature implements Find {
 
@@ -37,8 +36,7 @@ public class CryptoFindFeature implements Find {
 
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return delegate.find(vault.encrypt(session, file, true),
-            new EncryptingListProgressListener(session, vault, listener));
+        return delegate.find(vault.encrypt(session, file, true), listener);
     }
 
     @Override
