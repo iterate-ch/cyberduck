@@ -181,7 +181,12 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
             final int result = super.compareFirst(p1, p2);
             if(0 == result) {
                 // Version with no duplicate flag first
-                return Boolean.compare(!p1.attributes().isDuplicate(), !p2.attributes().isDuplicate());
+                final int duplicate = Boolean.compare(!p1.attributes().isDuplicate(), !p2.attributes().isDuplicate());
+                if(0 == duplicate) {
+                    return p1.attributes().getVersionId().compareTo(p2.attributes().getVersionId());
+                }
+                return duplicate;
+
             }
             return result;
         }
