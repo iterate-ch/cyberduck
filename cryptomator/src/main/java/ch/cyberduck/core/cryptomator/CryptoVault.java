@@ -385,7 +385,7 @@ public class CryptoVault implements Vault {
             }
             final PathAttributes attributes = new PathAttributes(file.attributes());
             attributes.setDirectoryId(null);
-            if(metadata) {
+            if(!metadata) {
                 // The directory is different from the metadata file used to resolve the actual folder
                 attributes.setVersionId(null);
                 attributes.setFileId(null);
