@@ -24,7 +24,6 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.onedrive.features.GraphBufferWriteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
-import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -48,7 +47,6 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWrite() throws Exception {
-        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
         final GraphBufferWriteFeature feature = new GraphBufferWriteFeature(session, fileid);
         final Path container = new OneDriveHomeFinderService().find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024);
@@ -77,7 +75,6 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWriteOverwrite() throws Exception {
-        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
         final GraphBufferWriteFeature feature = new GraphBufferWriteFeature(session, fileid);
         final Path container = new OneDriveHomeFinderService().find();
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -123,7 +120,6 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWriteUnknownLength() throws Exception {
-        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
         final GraphBufferWriteFeature feature = new GraphBufferWriteFeature(session, fileid);
         final Path container = new OneDriveHomeFinderService().find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
@@ -148,7 +144,6 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWriteZeroLength() throws Exception {
-        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
         final GraphBufferWriteFeature feature = new GraphBufferWriteFeature(session, fileid);
         final Path container = new OneDriveHomeFinderService().find();
         final byte[] content = RandomUtils.nextBytes(0);

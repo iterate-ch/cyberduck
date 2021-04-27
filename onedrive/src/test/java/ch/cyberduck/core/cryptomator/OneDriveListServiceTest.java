@@ -32,7 +32,6 @@ import ch.cyberduck.core.onedrive.GraphItemListService;
 import ch.cyberduck.core.onedrive.OneDriveHomeFinderService;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
-import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
@@ -65,7 +64,6 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new GraphItemListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
-        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session, fileid)),
             new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session, fileid), cryptomator).touch(test, new TransferStatus());
         assertEquals(new SimplePathPredicate(test), new SimplePathPredicate(new CryptoListService(session, new GraphItemListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0)));
@@ -86,7 +84,6 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, listService, cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
-        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session, fileid)),
             new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session, fileid), cryptomator).touch(test, new TransferStatus());
         assertEquals(new SimplePathPredicate(test), new SimplePathPredicate(new CryptoListService(session, listService, cryptomator).list(vault, new DisabledListProgressListener()).get(0)));

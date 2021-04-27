@@ -24,7 +24,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
-import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -49,7 +48,6 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testFindFile() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
         new GraphTouchFeature(session, fileid).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(file);
         assertNotNull(attributes);
@@ -66,7 +64,6 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testFindDirectory() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
         new GraphDirectoryFeature(session, fileid).mkdir(file, null, new TransferStatus());
         final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(file);
         assertNotNull(attributes);

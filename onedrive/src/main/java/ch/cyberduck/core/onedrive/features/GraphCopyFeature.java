@@ -66,7 +66,6 @@ public class GraphCopyFeature implements Copy {
                 statusObject.getOperation(),
                 statusObject.getPercentage(),
                 statusObject.getStatus())));
-            target.attributes().setVersionId(null);
             target.attributes().setFileId(null);
             final PathAttributes attr = attributes.find(target);
             fileid.cache(target, attr.getFileId());

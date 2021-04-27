@@ -29,7 +29,6 @@ public class GraphFileIdProviderTest extends AbstractOneDriveTest {
         final Path home = new OneDriveHomeFinderService().find();
         final Path path2R = new Path(home, "/2R", EnumSet.of(Path.Type.directory));
         final Path path33 = new Path(home, "/33", EnumSet.of(Path.Type.directory));
-        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
         try {
             new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(path2R), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         }
