@@ -35,7 +35,7 @@ public class CryptoFileIdProvider implements FileIdProvider {
 
     @Override
     public String getFileId(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return delegate.getFileId(vault.encrypt(session, file), listener);
+        return delegate.getFileId(vault.encrypt(session, file, true), listener);
     }
 
     @Override
