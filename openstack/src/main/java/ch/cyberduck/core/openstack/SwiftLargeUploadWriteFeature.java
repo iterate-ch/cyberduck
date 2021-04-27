@@ -121,7 +121,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                             .compute(new ByteArrayInputStream(content, off, len), status)
                         );
                         // Segment name with left padded segment number
-                        final Path segment = segmentService.getSegment(file, status.getLength(), ++segmentNumber);
+                        final Path segment = segmentService.getSegment(file, ++segmentNumber);
                         final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);
                         final HashMap<String, String> headers = new HashMap<>();
                         final String checksum;

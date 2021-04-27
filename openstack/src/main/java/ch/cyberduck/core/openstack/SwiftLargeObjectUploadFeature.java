@@ -101,7 +101,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         if(status.isAppend()) {
             // Get a lexicographically ordered list of the existing file segments
             try {
-                existingSegments.addAll(listService.list(segmentService.getSegmentsDirectory(file, status.getOffset() + status.getLength()), new DisabledListProgressListener()).toList());
+                existingSegments.addAll(listService.list(segmentService.getSegmentsDirectory(file), new DisabledListProgressListener()).toList());
             }
             catch(NotfoundException e) {
                 // Ignore
@@ -118,7 +118,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
             final long length = Math.min(segmentSize, remaining);
             // Segment name with left padded segment number
-            final Path segment = segmentService.getSegment(file, status.getOffset() + status.getLength(), segmentNumber);
+            final Path segment = segmentService.getSegment(file, segmentNumber);
             if(existingSegments.contains(segment)) {
                 final Path existingSegment = existingSegments.get(existingSegments.indexOf(segment));
                 if(log.isDebugEnabled()) {

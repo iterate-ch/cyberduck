@@ -112,7 +112,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
         long size = 0L;
         try {
             segments = new SwiftObjectListService(session, regionService).list(new SwiftSegmentService(session, regionService)
-                .getSegmentsDirectory(file, status.getLength()), new DisabledListProgressListener()).toList();
+                .getSegmentsDirectory(file), new DisabledListProgressListener()).toList();
             if(segments.isEmpty()) {
                 return Write.override;
             }
