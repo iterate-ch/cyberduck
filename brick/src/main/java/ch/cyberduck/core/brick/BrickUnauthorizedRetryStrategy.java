@@ -17,14 +17,14 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkCollection;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.BackgroundActionStateCancelCallback;
@@ -35,17 +35,22 @@ import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
+import java.util.concurrent.Semaphore;
+
 public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRetryStrategy {
     private static final Logger log = Logger.getLogger(BrickUnauthorizedRetryStrategy.class);
 
     private static final int MAX_RETRIES = 1;
 
+    private final Semaphore semaphore = new Semaphore(1);
     private final HostPasswordStore store = PasswordStoreFactory.get();
     private final BrickSession session;
+    private final LoginCallback prompt;
     private final CancelCallback cancel;
 
-    public BrickUnauthorizedRetryStrategy(final BrickSession session, final CancelCallback cancel) {
+    public BrickUnauthorizedRetryStrategy(final BrickSession session, final LoginCallback prompt, final CancelCallback cancel) {
         this.session = session;
+        this.prompt = prompt;
         this.cancel = cancel;
     }
 
@@ -55,28 +60,31 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
             case HttpStatus.SC_UNAUTHORIZED:
                 if(executionCount <= MAX_RETRIES) {
                     // Pairing token no longer valid
+                    if(!semaphore.tryAcquire()) {
+                        log.warn(String.format("Skip pairing because semaphore cannot be aquired for %s", session));
+                        return false;
+                    }
                     try {
-                        // Reset credentials to force repairing
-                        final Host bookmark = session.getHost();
-                        final Credentials credentials = bookmark.getCredentials();
-                        credentials.reset();
                         // Blocks until pairing is complete or canceled
-                        session.pair(bookmark, new DisabledConnectionCallback(), new BackgroundActionRegistryCancelCallback(cancel));
-                        if(credentials.isSaved()) {
-                            store.save(bookmark);
+                        session.login(ProxyFactory.get().find(new ProxyHostUrlProvider().get(session.getHost())),
+                            prompt, new BackgroundActionRegistryCancelCallback(cancel));
+                        if(session.getHost().getCredentials().isSaved()) {
+                            store.save(session.getHost());
                         }
                         // Notify changed bookmark
                         final AbstractHostCollection bookmarks = BookmarkCollection.defaultCollection();
                         if(bookmarks.isLoaded()) {
-                            if(bookmarks.contains(bookmark)) {
-                                bookmarks.collectionItemChanged(bookmark);
+                            if(bookmarks.contains(session.getHost())) {
+                                bookmarks.collectionItemChanged(session.getHost());
                             }
                         }
-                        credentials.reset();
                         return true;
                     }
                     catch(BackgroundException e) {
                         log.warn(String.format("Failure %s trying to refresh pairing after error response %s", e, response));
+                    }
+                    finally {
+                        semaphore.release();
                     }
                 }
         }
