@@ -100,11 +100,9 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
         final Path p1 = new DriveTouchFeature(session, fileid).touch(test1, new TransferStatus());
         assertEquals(p1.attributes().getFileId(), fileid.getFileId(test1, new DisabledListProgressListener()));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test1), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        cache.remove(p1);
         final Path test2 = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));
         final Path p2 = new DriveTouchFeature(session, fileid).touch(test2, new TransferStatus());
         assertEquals(p2.attributes().getFileId(), fileid.getFileId(test2, new DisabledListProgressListener()));
-        session.getClient().files().delete(p1.attributes().getFileId());
         session.getClient().files().delete(p2.attributes().getFileId());
     }
 
