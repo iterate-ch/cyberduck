@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PromptForm));
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -64,9 +65,6 @@
             // 
             // tableLayoutPanel
             // 
-            this.tableLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel.AutoScroll = true;
             this.tableLayoutPanel.AutoSize = true;
             this.tableLayoutPanel.ColumnCount = 4;
@@ -79,7 +77,9 @@
             this.tableLayoutPanel.Controls.Add(this.cancelButton, 3, 2);
             this.tableLayoutPanel.Controls.Add(this.inputTextBox, 1, 1);
             this.tableLayoutPanel.Controls.Add(this.okButton, 2, 2);
-            this.tableLayoutPanel.Location = new System.Drawing.Point(14, 14);
+            this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.tableLayoutPanel.Name = "tableLayoutPanel";
             this.tableLayoutPanel.RowCount = 3;
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
@@ -91,7 +91,8 @@
             // pictureBox
             // 
             this.pictureBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pictureBox.Location = new System.Drawing.Point(3, 3);
+            this.pictureBox.Location = new System.Drawing.Point(6, 225);
+            this.pictureBox.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.pictureBox.Name = "pictureBox";
             this.tableLayoutPanel.SetRowSpan(this.pictureBox, 2);
             this.pictureBox.Size = new System.Drawing.Size(75, 61);
@@ -114,9 +115,10 @@
             // 
             this.inputTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel.SetColumnSpan(this.inputTextBox, 3);
-            this.inputTextBox.Location = new System.Drawing.Point(84, 39);
+            this.inputTextBox.Location = new System.Drawing.Point(93, 238);
+            this.inputTextBox.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.inputTextBox.Name = "inputTextBox";
-            this.inputTextBox.Size = new System.Drawing.Size(347, 23);
+            this.inputTextBox.Size = new System.Drawing.Size(759, 39);
             this.inputTextBox.TabIndex = 2;
             // 
             // PromptForm
@@ -124,10 +126,12 @@
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(462, 133);
             this.Controls.Add(this.tableLayoutPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Margin = new System.Windows.Forms.Padding(13, 15, 13, 15);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "PromptForm";
