@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -43,10 +44,11 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
     public void testMoveFile() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path test = new DriveTouchFeature(session, fileid).touch(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String id = test.attributes().getFileId();
         final Path folder = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DriveDirectoryFeature(session, fileid).mkdir(folder, null, new TransferStatus());
         final Path target = new DriveMoveFeature(session, fileid).move(test, new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertEquals(test.attributes().getFileId(), target.attributes().getFileId());
+        assertEquals(id, target.attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
         assertFalse(find.find(test));
         assertTrue(find.find(target));
@@ -58,6 +60,7 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path test = new DriveTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String firstVersion = test.attributes().getFileId();
         final Path temp = new DriveTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new DriveMoveFeature(session, fileid).move(temp, test, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(test.attributes().getFileId(), target.attributes().getFileId());
@@ -65,8 +68,7 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         final AttributedList<Path> files = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
         // Replaced file is trashed
         assertEquals(2, files.size());
-        test.attributes().withVersionId("2");
-        assertTrue(files.get(test).attributes().isDuplicate());
+        assertTrue(files.get(new Path(test).withAttributes(new PathAttributes().withVersionId("2").withFileId(firstVersion))).attributes().isDuplicate());
         target.attributes().withVersionId("2");
         assertFalse(files.get(target).attributes().isDuplicate());
         assertTrue(find.find(target));

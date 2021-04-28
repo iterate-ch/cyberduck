@@ -57,8 +57,10 @@ public class DriveMoveFeature implements Move {
                 final File properties = new File();
                 properties.setName(renamed.getName());
                 properties.setMimeType(status.getMime());
-                result = session.getClient().files().update(id, properties).
-                    setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                result = session.getClient().files().update(id, properties)
+                    .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
+                    .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                    .execute();
             }
             if(!file.getParent().equals(renamed.getParent())) {
                 // Retrieve the existing parents to remove
@@ -74,12 +76,12 @@ public class DriveMoveFeature implements Move {
                 result = session.getClient().files().update(id, null)
                     .setAddParents(fileid.getFileId(renamed.getParent(), new DisabledListProgressListener()))
                     .setRemoveParents(previousParents.toString())
-                    .setFields("id,parents")
+                    .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
                     .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                     .execute();
             }
             fileid.cache(file, null);
-            fileid.cache(renamed, result.getId());
+            fileid.cache(renamed, id);
             return renamed.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(result));
         }
         catch(IOException e) {
