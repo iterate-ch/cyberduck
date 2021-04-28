@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -34,13 +33,11 @@ import org.junit.Before;
 
 public class AbstractSDSTest {
 
-    protected final PathCache cache = new PathCache(100);
     protected SDSSession session;
 
     @After
     public void disconnect() throws Exception {
         session.close();
-        cache.clear();
     }
 
     @Before

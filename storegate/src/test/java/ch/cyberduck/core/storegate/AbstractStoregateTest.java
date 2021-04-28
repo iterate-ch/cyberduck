@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
@@ -42,13 +41,11 @@ import static org.junit.Assert.fail;
 
 public class AbstractStoregateTest {
 
-    protected final PathCache cache = new PathCache(100);
     protected StoregateSession session;
 
     @After
     public void disconnect() throws Exception {
         session.close();
-        cache.clear();
     }
 
     @Before
@@ -79,6 +76,16 @@ public class AbstractStoregateTest {
                 return System.getProperties().getProperty("storegate.refreshtoken");
             }
             return null;
+        }
+
+        @Override
+        public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
+            if(user.equals("Storegate (cyberduck) OAuth2 Access Token")) {
+                System.getProperties().setProperty("storegate.accesstoken", password);
+            }
+            if(user.equals("Storegate (cyberduck) OAuth2 Refresh Token")) {
+                System.getProperties().setProperty("storegate.refreshtoken", password);
+            }
         }
     }
 }

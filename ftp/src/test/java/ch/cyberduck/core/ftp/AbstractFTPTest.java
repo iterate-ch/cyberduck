@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
@@ -55,7 +54,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.junit.Assert.fail;
 
 public class AbstractFTPTest {
-    protected final PathCache cache = new PathCache(100);
+
     protected FTPSession session;
 
     private FtpServer server;
@@ -70,8 +69,8 @@ public class AbstractFTPTest {
     public int vaultVersion;
 
     @After
-    public void disconnect() {
-        cache.clear();
+    public void disconnect() throws Exception {
+        session.close();
     }
 
     @Before

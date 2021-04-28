@@ -15,7 +15,20 @@ package ch.cyberduck.core.dav;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.local.FlatTemporaryFileService;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -43,7 +56,6 @@ import static org.junit.Assert.fail;
 
 public class AbstractDAVTest {
 
-    protected final PathCache cache = new PathCache(100);
     protected DAVSession session;
 
     private SimpletonServer server;
@@ -60,7 +72,6 @@ public class AbstractDAVTest {
     @After
     public void disconnect() throws Exception {
         session.close();
-        cache.clear();
     }
 
     @Before
