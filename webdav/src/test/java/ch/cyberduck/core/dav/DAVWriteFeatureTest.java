@@ -5,6 +5,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
@@ -71,6 +72,38 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
         }
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testReplaceContent() throws Exception {
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final HttpUploadFeature upload = new DAVUploadFeature(new DAVWriteFeature(session));
+        {
+            final byte[] content = RandomUtils.nextBytes(100);
+            final OutputStream out = local.getOutputStream(false);
+            IOUtils.write(content, out);
+            out.close();
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
+            upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                new DisabledStreamListener(), status, new DisabledConnectionCallback());
+        }
+        final PathAttributes attr1 = new DAVAttributesFinderFeature(session).find(test);
+        {
+            final byte[] content = RandomUtils.nextBytes(101);
+            final OutputStream out = local.getOutputStream(false);
+            IOUtils.write(content, out);
+            out.close();
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
+            upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                new DisabledStreamListener(), status, new DisabledConnectionCallback());
+        }
+        final PathAttributes attr2 = new DAVAttributesFinderFeature(session).find(test);
+        assertEquals(101L, attr2.getSize());
+        assertNotEquals(attr1.getETag(), attr2.getETag());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
