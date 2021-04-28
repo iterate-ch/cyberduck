@@ -148,7 +148,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
                                         break;
                                     default:
                                         throw new DefaultHttpResponseExceptionMappingService().map(
-                                            new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                            new HttpResponseException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase()));
                                 }
                             }
                             finally {
