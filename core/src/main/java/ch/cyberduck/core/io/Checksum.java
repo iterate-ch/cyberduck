@@ -32,6 +32,11 @@ public final class Checksum {
         this.hash = hash;
     }
 
+    public Checksum(final Checksum other) {
+        this.algorithm = other.algorithm;
+        this.hash = other.hash;
+    }
+
     @Override
     public String toString() {
         return hash;

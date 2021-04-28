@@ -53,6 +53,11 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
         this.addAll(set);
     }
 
+    public Acl(final Acl other) {
+        this.owner = other.owner;
+        this.putAll(other);
+    }
+
     public CanonicalUser getOwner() {
         return owner;
     }
@@ -70,7 +75,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
             this.get(user).addAll(Arrays.asList(permissions));
         }
         else {
-            this.put(user, new HashSet<Acl.Role>(Arrays.asList(permissions)));
+            this.put(user, new HashSet<>(Arrays.asList(permissions)));
         }
     }
 
@@ -84,7 +89,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
      * @return List of users and roles
      */
     public List<UserAndRole> asList() {
-        List<UserAndRole> grants = new ArrayList<UserAndRole>();
+        List<UserAndRole> grants = new ArrayList<>();
         for(Map.Entry<User, Set<Role>> user : this.entrySet()) {
             for(Acl.Role role : user.getValue()) {
                 grants.add(new UserAndRole(user.getKey(), role));

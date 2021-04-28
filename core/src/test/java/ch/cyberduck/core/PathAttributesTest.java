@@ -7,6 +7,7 @@ import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,10 +26,19 @@ public class PathAttributesTest {
         attributes.setVersionId(new AlphanumericRandomStringService().random());
         attributes.setDuplicate(true);
         attributes.setLockId(new AlphanumericRandomStringService().random());
+        attributes.setPermission(new Permission(644));
         final PathAttributes clone = new PathAttributes(attributes);
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
         assertEquals(clone, attributes);
+        attributes.setSize(2L);
+        assertEquals(1L, clone.getSize());
+        attributes.setVersionId("b");
+        assertNotEquals(attributes.getVersionId(), clone.getVersionId());
+        assertEquals(attributes.getPermission(), clone.getPermission());
+        assertNotSame(attributes.getPermission(), clone.getPermission());
+        attributes.setLink(new DescriptiveUrl(URI.create("http://g")));
+        assertEquals(DescriptiveUrl.EMPTY, clone.getLink());
     }
 
     @Test
