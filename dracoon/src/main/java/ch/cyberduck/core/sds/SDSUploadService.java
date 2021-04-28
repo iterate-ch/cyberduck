@@ -87,7 +87,7 @@ public class SDSUploadService {
         }
     }
 
-    public void complete(final Path file, final String uploadToken, final TransferStatus status) throws BackgroundException {
+    public Node complete(final Path file, final String uploadToken, final TransferStatus status) throws BackgroundException {
         try {
             final CompleteUploadRequest body = new CompleteUploadRequest()
                 .keepShareLinks(status.isExists() ? PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep") : false)
@@ -118,6 +118,7 @@ public class SDSUploadService {
                 }
             }
             nodeid.cache(file, String.valueOf(upload.getId()));
+            return upload;
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);

@@ -30,6 +30,7 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
@@ -75,7 +76,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSMultipartWriteFeature(session, nodeid));
-        final StatusOutputStream<Void> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
@@ -139,7 +140,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSMultipartWriteFeature(session, nodeid));
-        final StatusOutputStream<Void> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         // Start migration
         session.unlockTripleCryptKeyPair(new DisabledLoginCallback() {

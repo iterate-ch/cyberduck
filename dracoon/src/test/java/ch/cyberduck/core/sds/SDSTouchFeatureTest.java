@@ -28,6 +28,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -131,7 +132,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         status.setLength(2L);
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<Void> out = writer.write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         PathAttributes attr;
         final long timestamp = System.currentTimeMillis();

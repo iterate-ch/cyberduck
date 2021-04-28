@@ -26,6 +26,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -74,7 +75,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<Void> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Node> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         // Unknown length in status
@@ -170,7 +171,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<Void> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Node> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         final CountingInputStream in = new CountingInputStream(new SDSReadFeature(session, nodeid).read(test, status, new DisabledConnectionCallback()));

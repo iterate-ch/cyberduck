@@ -22,8 +22,9 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -78,7 +79,7 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         status.setLength(content.length);
         status.setExists(true);
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<Void> out = writer.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(file, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(file.attributes().getVersionId());

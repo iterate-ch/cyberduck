@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -33,6 +32,7 @@ import ch.cyberduck.core.sds.SDSMultipartWriteFeature;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSReadFeature;
 import ch.cyberduck.core.sds.SDSTouchFeature;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -63,7 +63,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().withLength(content.length).exists(true);
-            final StatusOutputStream<Void> out = new SDSMultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = new SDSMultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -102,7 +102,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         {
             final TransferStatus status = new TransferStatus().withLength(content.length);
             status.setExists(true);
-            final HttpResponseOutputStream<Void> out = new SDSMultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = new SDSMultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();

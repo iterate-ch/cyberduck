@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -147,7 +148,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final StatusOutputStream<Void> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(test.attributes().getVersionId());

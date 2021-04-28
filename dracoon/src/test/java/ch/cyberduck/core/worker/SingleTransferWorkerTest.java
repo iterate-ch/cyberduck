@@ -48,6 +48,7 @@ import ch.cyberduck.core.sds.SDSMultipartWriteFeature;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.sds.SDSSession;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -96,14 +97,14 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-            final StatusOutputStream<Void> out = new SDSMultipartWriteFeature(session, fileid).write(test, writeStatus, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = new SDSMultipartWriteFeature(session, fileid).write(test, writeStatus, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
         final byte[] content = RandomUtils.nextBytes(39864);
         final TransferStatus writeStatus = new TransferStatus().exists(true).withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-        final StatusOutputStream<Void> out = new SDSMultipartWriteFeature(session, fileid).write(test, writeStatus, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = new SDSMultipartWriteFeature(session, fileid).write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -149,13 +150,13 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
                     return (T) new DefaultUploadFeature(
                         new SDSMultipartWriteFeature(this, fileid) {
                             @Override
-                            public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                                final HttpResponseOutputStream<Void> proxy = super.write(file, status, callback);
+                            public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                                final HttpResponseOutputStream<Node> proxy = super.write(file, status, callback);
                                 if(failed.get()) {
                                     // Second attempt successful
                                     return proxy;
                                 }
-                                return new HttpResponseOutputStream<Void>(new CountingOutputStream(proxy) {
+                                return new HttpResponseOutputStream<Node>(new CountingOutputStream(proxy) {
                                     @Override
                                     protected void afterWrite(final int n) throws IOException {
                                         super.afterWrite(n);
@@ -168,7 +169,7 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
                                     }
                                 }) {
                                     @Override
-                                    public Void getStatus() throws BackgroundException {
+                                    public Node getStatus() throws BackgroundException {
                                         return proxy.getStatus();
                                     }
                                 };
@@ -223,13 +224,13 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
                     return (T) new DefaultUploadFeature(
                         new SDSMultipartWriteFeature(this, fileid) {
                             @Override
-                            public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                                final HttpResponseOutputStream<Void> proxy = super.write(file, status, callback);
+                            public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                                final HttpResponseOutputStream<Node> proxy = super.write(file, status, callback);
                                 if(failed.get()) {
                                     // Second attempt successful
                                     return proxy;
                                 }
-                                return new HttpResponseOutputStream<Void>(new CountingOutputStream(proxy) {
+                                return new HttpResponseOutputStream<Node>(new CountingOutputStream(proxy) {
                                     @Override
                                     public void close() throws IOException {
                                         if(!failed.get()) {
@@ -240,7 +241,7 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
                                     }
                                 }) {
                                     @Override
-                                    public Void getStatus() throws BackgroundException {
+                                    public Node getStatus() throws BackgroundException {
                                         return proxy.getStatus();
                                     }
                                 };

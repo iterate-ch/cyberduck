@@ -24,11 +24,13 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public class SDSDelegatingCopyFeature implements Copy {
 
+    private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
     private final SDSCopyFeature proxy;
     private final DefaultCopyFeature copy;
 
     public SDSDelegatingCopyFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSCopyFeature proxy) {
+        this.session = session;
         this.nodeid = nodeid;
         this.proxy = proxy;
         this.copy = new DefaultCopyFeature(session);
@@ -44,7 +46,8 @@ public class SDSDelegatingCopyFeature implements Copy {
             // File key must be set for new upload
             status.setFilekey(nodeid.getFileKey());
         }
-        return copy.copy(source, target, status, callback);
+        final Path result = copy.copy(source, target, status, callback);
+        return result.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(result));
     }
 
     @Override

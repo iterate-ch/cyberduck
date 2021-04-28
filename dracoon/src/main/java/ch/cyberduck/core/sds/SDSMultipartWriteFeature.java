@@ -21,35 +21,40 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.http.VoidHttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class SDSMultipartWriteFeature implements MultipartWrite<Void> {
+public class SDSMultipartWriteFeature implements MultipartWrite<Node> {
     private static final Logger log = Logger.getLogger(SDSMultipartWriteFeature.class);
 
     private final SDSSession session;
-    private final SDSNodeIdProvider nodeid;
     private final SDSUploadService upload;
 
     public SDSMultipartWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
-        this.nodeid = nodeid;
         this.upload = new SDSUploadService(session, nodeid);
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String uploadToken = upload.start(file, status);
         final MultipartUploadTokenOutputStream proxy = new MultipartUploadTokenOutputStream(session, file, status, uploadToken);
-        return new VoidHttpResponseOutputStream(new MemorySegementingOutputStream(proxy, PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
+        return new HttpResponseOutputStream<Node>(new MemorySegementingOutputStream(proxy, PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
             private final AtomicBoolean close = new AtomicBoolean();
+            private final AtomicReference<Node> node = new AtomicReference<>();
+
+            @Override
+            public Node getStatus() {
+                return node.get();
+            }
 
             @Override
             public void close() throws IOException {
@@ -60,10 +65,10 @@ public class SDSMultipartWriteFeature implements MultipartWrite<Void> {
                     }
                     super.close();
                     try {
-                        upload.complete(file, uploadToken, status);
+                        node.set(upload.complete(file, uploadToken, status));
                     }
                     catch(ConflictException e) {
-                        upload.complete(file, uploadToken, new TransferStatus(status).exists(true));
+                        node.set(upload.complete(file, uploadToken, new TransferStatus(status).exists(true)));
                     }
                 }
                 catch(BackgroundException e) {

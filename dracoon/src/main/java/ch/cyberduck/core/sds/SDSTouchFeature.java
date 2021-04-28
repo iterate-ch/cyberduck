@@ -21,7 +21,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,12 +31,12 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-public class SDSTouchFeature implements Touch<Void> {
+public class SDSTouchFeature implements Touch<Node> {
     private static final Logger log = Logger.getLogger(SDSTouchFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
-    private Write<Void> writer;
+    private Write<Node> writer;
 
     public SDSTouchFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
@@ -48,8 +50,10 @@ public class SDSTouchFeature implements Touch<Void> {
             if(nodeid.isEncrypted(file)) {
                 status.setFilekey(nodeid.getFileKey());
             }
-            writer.write(file, status.complete(), new DisabledConnectionCallback()).close();
-            return file;
+            final StatusOutputStream<Node> writer = this.writer.write(file, status.complete(), new DisabledConnectionCallback());
+            writer.close();
+            final Node node = writer.getStatus();
+            return file.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
@@ -102,7 +106,7 @@ public class SDSTouchFeature implements Touch<Void> {
     }
 
     @Override
-    public Touch<Void> withWriter(final Write<Void> writer) {
+    public Touch<Node> withWriter(final Write<Node> writer) {
         this.writer = writer;
         return this;
     }
