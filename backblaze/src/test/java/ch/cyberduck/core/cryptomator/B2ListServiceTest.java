@@ -20,19 +20,16 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
-import ch.cyberduck.core.b2.B2VersionIdProvider;
 import ch.cyberduck.core.b2.B2ListService;
+import ch.cyberduck.core.b2.B2VersionIdProvider;
 import ch.cyberduck.core.b2.B2WriteFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoVersionIdProvider;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoVersionIdProvider;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
@@ -72,25 +69,6 @@ public class B2ListServiceTest extends AbstractB2Test {
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         test.attributes().setVersionId(new CryptoVersionIdProvider(session, fileid, cryptomator).getVersionId(test, new DisabledListProgressListener()));
         assertEquals(test, new CryptoListService(session, new B2ListService(session, fileid), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
-        cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-    }
-
-    @Test
-    public void testListCryptomatorCached() throws Exception {
-        final PathCache cache = new PathCache(Integer.MAX_VALUE);
-        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final ListService listService = session._getFeature(ListService.class);
-        final Path home = new Path("test-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        cache.put(home, listService.list(home, new DisabledListProgressListener()));
-        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertTrue(new CryptoListService(session, listService, cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
-        new CryptoTouchFeature<BaseB2Response>(session, new DefaultTouchFeature<BaseB2Response>(new DefaultUploadFeature<>(new B2WriteFeature(session, fileid)),
-            new B2AttributesFinderFeature(session, fileid)), new B2WriteFeature(session, fileid), cryptomator).touch(test, new TransferStatus());
-        assertEquals(new SimplePathPredicate(test), new SimplePathPredicate(new CryptoListService(session, listService, cryptomator).list(vault, new DisabledListProgressListener()).get(0)));
         cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

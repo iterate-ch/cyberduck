@@ -20,9 +20,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
@@ -67,26 +65,6 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session, fileid)),
             new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session, fileid), cryptomator).touch(test, new TransferStatus());
         assertEquals(new SimplePathPredicate(test), new SimplePathPredicate(new CryptoListService(session, new GraphItemListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0)));
-        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-    }
-
-    @Test
-    public void testListCryptomatorCached() throws Exception {
-        final PathCache cache = new PathCache(Integer.MAX_VALUE);
-        final Path home = new OneDriveHomeFinderService().find();
-        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final ListService listService = session._getFeature(ListService.class);
-
-        cache.put(home, listService.list(home, new DisabledListProgressListener()));
-
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        assertTrue(new CryptoListService(session, listService, cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
-        new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session, fileid)),
-            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session, fileid), cryptomator).touch(test, new TransferStatus());
-        assertEquals(new SimplePathPredicate(test), new SimplePathPredicate(new CryptoListService(session, listService, cryptomator).list(vault, new DisabledListProgressListener()).get(0)));
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
