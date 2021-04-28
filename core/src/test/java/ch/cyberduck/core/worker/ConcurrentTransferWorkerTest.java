@@ -148,8 +148,7 @@ public class ConcurrentTransferWorkerTest {
             list.add(new TransferItem(new Path("/t" + i, EnumSet.of(Path.Type.file)), new NullLocal("/t" + i)));
         }
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
-        final Transfer t = new DownloadTransfer(host, list
-        ) {
+        final Transfer t = new DownloadTransfer(host, list) {
 
             @Override
             public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,

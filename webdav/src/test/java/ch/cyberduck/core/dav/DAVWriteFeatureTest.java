@@ -74,6 +74,38 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     }
 
     @Test
+    public void testReplaceContent() throws Exception {
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final HttpUploadFeature upload = new DAVUploadFeature(new DAVWriteFeature(session));
+        {
+            final byte[] content = RandomUtils.nextBytes(100);
+            final OutputStream out = local.getOutputStream(false);
+            IOUtils.write(content, out);
+            out.close();
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
+            upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                new DisabledStreamListener(), status, new DisabledConnectionCallback());
+        }
+        final PathAttributes attr1 = new DAVAttributesFinderFeature(session).find(test);
+        {
+            final byte[] content = RandomUtils.nextBytes(101);
+            final OutputStream out = local.getOutputStream(false);
+            IOUtils.write(content, out);
+            out.close();
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
+            upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                new DisabledStreamListener(), status, new DisabledConnectionCallback());
+        }
+        final PathAttributes attr2 = new DAVAttributesFinderFeature(session).find(test);
+        assertEquals(101L, attr2.getSize());
+        assertNotEquals(attr1.getETag(), attr2.getETag());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testWriteContentRange() throws Exception {
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

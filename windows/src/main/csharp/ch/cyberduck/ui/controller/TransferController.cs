@@ -303,7 +303,7 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (IProgressView selectedTransfer in View.SelectedTransfers)
             {
                 Transfer transfer = GetTransferFromView(selectedTransfer);
-                if (validate(transfer))
+                if (transfer != null && validate(transfer))
                 {
                     return true;
                 }
