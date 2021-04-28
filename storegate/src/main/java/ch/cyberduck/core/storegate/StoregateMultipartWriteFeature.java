@@ -142,8 +142,9 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
                                 switch(response.getStatusLine().getStatusCode()) {
                                     case HttpStatus.SC_OK:
                                     case HttpStatus.SC_CREATED:
-                                        final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8), FileMetadata.class);
-                                        fileid.cache(file, result.getId());
+                                        final FileMetadata metadata = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8), FileMetadata.class);
+                                        result.set(metadata);
+                                        fileid.cache(file, metadata.getId());
                                     case HttpStatus.SC_NO_CONTENT:
                                         // Upload complete
                                         offset += content.length;

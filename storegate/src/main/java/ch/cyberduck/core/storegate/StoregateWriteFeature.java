@@ -55,7 +55,7 @@ import java.util.Collections;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
-public class StoregateWriteFeature extends AbstractHttpWriteFeature<String> {
+public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata> {
     private static final Logger log = Logger.getLogger(StoregateWriteFeature.class);
 
     private final StoregateSession session;
@@ -82,10 +82,10 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     @Override
-    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
+    public HttpResponseOutputStream<FileMetadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DelayedHttpEntityCallable<FileMetadata> command = new DelayedHttpEntityCallable<FileMetadata>() {
             @Override
-            public String call(final AbstractHttpEntity entity) throws BackgroundException {
+            public FileMetadata call(final AbstractHttpEntity entity) throws BackgroundException {
                 // Initiate a resumable upload
                 String location;
                 try {
@@ -120,7 +120,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<String> {
                                 final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8),
                                     FileMetadata.class);
                                 fileid.cache(file, result.getId());
-                                return result.getId();
+                                return result;
                             default:
                                 throw new StoregateExceptionMappingService().map(new ApiException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                     EntityUtils.toString(putResponse.getEntity())));

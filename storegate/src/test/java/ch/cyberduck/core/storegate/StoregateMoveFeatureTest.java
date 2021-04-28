@@ -46,9 +46,10 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final TransferStatus status = new TransferStatus();
         final Path test = new StoregateTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        final String fileid = test.attributes().getFileId();
         final Path target = new StoregateMoveFeature(session, nodeid).move(test, new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertEquals(test.attributes().getFileId(), target.attributes().getFileId());
-        assertEquals(test.attributes().getFileId(), new StoregateAttributesFinderFeature(session, nodeid).find(target).getFileId());
+        assertEquals(fileid, target.attributes().getFileId());
+        assertEquals(fileid, new StoregateAttributesFinderFeature(session, nodeid).find(target).getFileId());
         assertFalse(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
@@ -62,9 +63,10 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new StoregateTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String fileid = test.attributes().getFileId();
         final String lockId = new StoregateLockFeature(session, nodeid).lock(test);
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertEquals(new StoregateAttributesFinderFeature(session, nodeid).find(test).getFileId(),
+        assertEquals(fileid,
             new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus().withLockId(lockId), new Delete.DisabledCallback(), new DisabledConnectionCallback()).attributes().getFileId());
         assertFalse(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(target));

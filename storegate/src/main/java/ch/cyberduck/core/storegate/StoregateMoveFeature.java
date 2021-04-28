@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -71,9 +72,10 @@ public class StoregateMoveFeature implements Move {
             try {
                 switch(response.getStatusLine().getStatusCode()) {
                     case HttpStatus.SC_NO_CONTENT:
+                        final PathAttributes attr = new PathAttributes(file.attributes());
                         fileid.cache(file, null);
                         fileid.cache(renamed, file.attributes().getFileId());
-                        return renamed.withAttributes(file.attributes());
+                        return renamed.withAttributes(attr);
                     default:
                         throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                 }

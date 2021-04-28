@@ -118,8 +118,8 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
             }
         };
         status.setLength(content.length);
-        final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<String> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StoregateMultipartWriteFeature writer = new StoregateMultipartWriteFeature(session, nodeid);
+        final HttpResponseOutputStream<FileMetadata> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertFalse(new DefaultFindFeature(session).find(test));
