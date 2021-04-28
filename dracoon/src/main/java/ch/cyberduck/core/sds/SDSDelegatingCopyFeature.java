@@ -47,6 +47,7 @@ public class SDSDelegatingCopyFeature implements Copy {
             status.setFilekey(nodeid.getFileKey());
         }
         final Path result = copy.copy(source, target, status, callback);
+        nodeid.cache(target, null);
         return result.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(result));
     }
 
