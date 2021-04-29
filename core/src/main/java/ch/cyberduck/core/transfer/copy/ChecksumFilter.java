@@ -22,8 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
@@ -49,13 +47,11 @@ public class ChecksumFilter extends AbstractCopyFilter {
         final Path target = files.get(source);
         if(source.isFile()) {
             if(parent.isExists()) {
-                final PathAttributes sourceAttributes = sourceSession.getFeature(AttributesFinder.class).find(source);
-                if(destinationSession.getFeature(Find.class).find(target)) {
-                    final PathAttributes targetAttributes = destinationSession.getFeature(AttributesFinder.class).find(target);
-                    // Compare source with target attributes
-                    if(targetAttributes.getSize() == sourceAttributes.getSize()) {
+                if(find.find(target)) {
+                    if(Checksum.NONE != source.attributes().getChecksum()) {
+                        final PathAttributes targetAttributes = attribute.find(target);
                         if(Checksum.NONE != targetAttributes.getChecksum()) {
-                            if(Objects.equals(sourceAttributes.getChecksum(), targetAttributes.getChecksum())) {
+                            if(Objects.equals(source.attributes().getChecksum(), targetAttributes.getChecksum())) {
                                 if(log.isInfoEnabled()) {
                                     log.info(String.format("Skip file %s with checksum %s", source, targetAttributes.getChecksum()));
                                 }

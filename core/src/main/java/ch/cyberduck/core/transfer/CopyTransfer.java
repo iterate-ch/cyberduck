@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
@@ -27,7 +28,9 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.copy.ChecksumFilter;
 import ch.cyberduck.core.transfer.copy.OverwriteFilter;
 
@@ -44,8 +47,10 @@ public class CopyTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(CopyTransfer.class);
 
     private final Filter<Path> filter = new NullFilter<Path>();
-
     private final Comparator<Path> comparator = new NullComparator<Path>();
+
+    private Cache<Path> cache
+        = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     /**
      * Temporary mapping for source to destination files
@@ -166,10 +171,14 @@ public class CopyTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
+        final Find find = new CachingFindFeature(cache,
+            destination.getFeature(Find.class, new DefaultFindFeature(destination)));
+        final AttributesFinder attributes = new CachingAttributesFinderFeature(cache,
+            destination.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(destination)));
         if(action.equals(TransferAction.comparison)) {
-            return new ChecksumFilter(source, destination, mapping);
+            return new ChecksumFilter(source, destination, mapping).withFinder(find).withAttributes(attributes);
         }
-        return new OverwriteFilter(source, destination, mapping);
+        return new OverwriteFilter(source, destination, mapping).withFinder(find).withAttributes(attributes);
     }
 
     @Override
