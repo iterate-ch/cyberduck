@@ -193,7 +193,7 @@ public class SpectraObjectListServiceTest {
         new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(folder, null, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1000);
-        final TransferStatus status = new TransferStatus().length(content.length);
+        final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         // Allocate
         final SpectraBulkService bulk = new SpectraBulkService(session);

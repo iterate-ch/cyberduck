@@ -17,6 +17,7 @@ package ch.cyberduck.core.onedrive.features;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -34,10 +35,12 @@ public class GraphDirectoryFeature implements Directory<Void> {
 
     private final GraphSession session;
     private final GraphAttributesFinderFeature attributes;
+    private final GraphFileIdProvider fileid;
 
-    public GraphDirectoryFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
+    public GraphDirectoryFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
-        this.attributes = new GraphAttributesFinderFeature(session, idProvider);
+        this.attributes = new GraphAttributesFinderFeature(session);
+        this.fileid = fileid;
     }
 
     @Override
@@ -45,7 +48,9 @@ public class GraphDirectoryFeature implements Directory<Void> {
         final DriveItem folder = session.getItem(directory.getParent());
         try {
             final DriveItem.Metadata metadata = Files.createFolder(folder, directory.getName());
-            return directory.withAttributes(attributes.toAttributes(metadata));
+            final PathAttributes attr = attributes.toAttributes(metadata);
+            fileid.cache(directory, attr.getFileId());
+            return directory.withAttributes(attr);
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Cannot create folder {0}", e, directory);

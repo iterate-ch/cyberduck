@@ -113,7 +113,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 if(log.isInfoEnabled()) {
                     log.info("No pending multipart upload found");
                 }
-                final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService())
+                final S3Object object = new S3WriteFeature(session)
                     .getDetails(file, status);
                 // ID for the initiated multipart upload.
                 multipart = session.getClient().multipartStartUpload(containerService.getContainer(file).getName(), object);
@@ -239,7 +239,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
                 final TransferStatus status = new TransferStatus()
-                    .length(length)
+                    .withLength(length)
                     .skip(offset)
                     .withParameters(requestParameters);
                 status.setPart(partNumber);

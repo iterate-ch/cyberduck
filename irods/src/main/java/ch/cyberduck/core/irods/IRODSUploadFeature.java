@@ -17,7 +17,6 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -33,7 +32,6 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -116,11 +114,8 @@ public class IRODSUploadFeature implements Upload<Checksum> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(new DefaultFindFeature(session).withCache(cache).find(file)) {
-            return Write.override;
-        }
-        return Write.notfound;
+    public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return Write.override;
     }
 
     @Override

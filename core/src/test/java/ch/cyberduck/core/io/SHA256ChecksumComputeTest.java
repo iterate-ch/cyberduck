@@ -46,6 +46,6 @@ public class SHA256ChecksumComputeTest {
                 new TransferStatus().skip(1)).hash);
         assertEquals("c96c6d5be8d08a12e7b5cdc1b207fa6b2430974c86803d8891675e76fd992c20",
             new SHA256ChecksumCompute().compute(IOUtils.toInputStream("_input_", Charset.defaultCharset()),
-                new TransferStatus().skip(1).length(5)).hash);
+                new TransferStatus().skip(1).withLength(5)).hash);
     }
 }

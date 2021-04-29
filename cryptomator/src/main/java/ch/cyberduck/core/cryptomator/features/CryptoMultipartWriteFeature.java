@@ -28,6 +28,6 @@ public class CryptoMultipartWriteFeature<Reply> extends CryptoWriteFeature<Reply
     }
 
     public CryptoMultipartWriteFeature(final Session<?> session, final Write<Reply> delegate, final Find finder, final AttributesFinder attributes, final CryptoVault vault) {
-        super(session, delegate, finder, attributes, vault);
+        super(session, delegate, vault);
     }
 }

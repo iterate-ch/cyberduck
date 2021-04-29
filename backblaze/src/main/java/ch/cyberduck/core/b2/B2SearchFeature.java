@@ -16,13 +16,11 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -43,11 +41,9 @@ public class B2SearchFeature implements Search {
         = new DefaultPathContainerService();
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
 
-    private Cache<Path> cache = PathCache.empty();
-
-    public B2SearchFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2SearchFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -71,7 +67,7 @@ public class B2SearchFeature implements Search {
                 String startFilename = prefix;
                 do {
                     final B2ListFilesResponse response = session.getClient().listFileNames(
-                        fileid.withCache(cache).getFileid(container, listener),
+                        fileid.getVersionId(container, listener),
                         startFilename,
                         PreferencesFactory.get().getInteger("b2.listing.chunksize"),
                         prefix, null);
@@ -98,11 +94,5 @@ public class B2SearchFeature implements Search {
     @Override
     public boolean isRecursive() {
         return false;
-    }
-
-    @Override
-    public Search withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return this;
     }
 }

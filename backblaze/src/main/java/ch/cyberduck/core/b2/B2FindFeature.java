@@ -15,9 +15,8 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,15 +37,15 @@ public class B2FindFeature implements Find {
         = new B2PathContainerService();
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
 
-    public B2FindFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2FindFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
                 final List<B2BucketResponse> buckets = session.getClient().listBuckets();
@@ -58,7 +57,8 @@ public class B2FindFeature implements Find {
             }
             else {
                 try {
-                    return null != fileid.getFileid(file, new DisabledListProgressListener());
+                    new B2AttributesFinderFeature(session, fileid).find(file, listener);
+                    return true;
                 }
                 catch(NotfoundException e) {
                     return false;
@@ -72,11 +72,5 @@ public class B2FindFeature implements Find {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
-    }
-
-    @Override
-    public Find withCache(final Cache<Path> cache) {
-        fileid.withCache(cache);
-        return this;
     }
 }

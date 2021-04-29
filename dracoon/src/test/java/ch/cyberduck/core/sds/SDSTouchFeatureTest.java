@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
@@ -29,6 +28,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -51,7 +51,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testSupported() {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), StringUtils.EMPTY));
         assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), StringUtils.EMPTY));
         assertFalse(new SDSTouchFeature(session, nodeid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), StringUtils.EMPTY));
@@ -60,7 +60,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
     @Test(expected = BackgroundException.class)
     public void testTouchFileRoot() throws Exception {
         try {
-            final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+            final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
             new SDSTouchFeature(session, nodeid).touch(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
@@ -71,7 +71,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testInvalidName() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         try {
@@ -88,7 +88,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testInvalidCharacter() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         try {
@@ -105,7 +105,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testTouch() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(
@@ -118,7 +118,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testQuota() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final UpdateRoomRequest updateRoomRequest = new UpdateRoomRequest();
@@ -132,8 +132,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         status.setLength(2L);
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
-        assertNotNull(out);
+        final HttpResponseOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         PathAttributes attr;
         final long timestamp = System.currentTimeMillis();

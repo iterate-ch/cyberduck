@@ -18,29 +18,35 @@ package ch.cyberduck.core.storegate;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
-public class StoregateTouchFeature implements Touch<String> {
+public class StoregateTouchFeature implements Touch<FileMetadata> {
 
-    private Write<String> writer;
+    private final StoregateSession session;
+    private final StoregateIdProvider fileid;
+    private Write<FileMetadata> writer;
 
     public StoregateTouchFeature(final StoregateSession session, final StoregateIdProvider fileid) {
+        this.session = session;
+        this.fileid = fileid;
         this.writer = new StoregateWriteFeature(session, fileid);
     }
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final StatusOutputStream<String> out = writer.write(file, status, new DisabledConnectionCallback());
+            final StatusOutputStream<FileMetadata> out = writer.write(file, status, new DisabledConnectionCallback());
             out.close();
-            return file.withAttributes(new PathAttributes(file.attributes()).withFileId(out.getStatus()));
+            final FileMetadata metadata = out.getStatus();
+            fileid.cache(file, metadata.getId());
+            return file.withAttributes(new StoregateAttributesFinderFeature(session, fileid).toAttributes(metadata));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
@@ -48,7 +54,7 @@ public class StoregateTouchFeature implements Touch<String> {
     }
 
     @Override
-    public Touch<String> withWriter(final Write<String> writer) {
+    public Touch<FileMetadata> withWriter(final Write<FileMetadata> writer) {
         this.writer = writer;
         return this;
     }

@@ -22,28 +22,18 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
-import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.google.api.client.json.Json.MEDIA_TYPE;
+import com.google.api.client.http.HttpHeaders;
+import com.google.api.services.storage.Storage;
 
 public class GoogleStorageReadFeature implements Read {
     private static final Logger log = Logger.getLogger(GoogleStorageReadFeature.class);
@@ -67,19 +57,16 @@ public class GoogleStorageReadFeature implements Read {
             if(0L == status.getLength()) {
                 return new NullInputStream(0L);
             }
-            final StringBuilder uri = new StringBuilder(String.format("%sstorage/v1/b/%s/o/%s?alt=media",
-                session.getClient().getRootUrl(), containerService.getContainer(file).getName(),
-                GoogleStorageUriEncoder.encode(containerService.getKey(file))));
+            final Storage.Objects.Get request = session.getClient().objects().get(
+                containerService.getContainer(file).getName(), containerService.getKey(file));
             final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
                 containerService.getContainer(file)
             ) : VersioningConfiguration.empty();
             if(versioning.isEnabled()) {
                 if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-                    uri.append(String.format("?generation=%s", file.attributes().getVersionId()));
+                    request.setGeneration(Long.parseLong(file.attributes().getVersionId()));
                 }
             }
-            final HttpUriRequest request = new HttpGet(uri.toString());
-            request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 final String header;
@@ -92,20 +79,12 @@ public class GoogleStorageReadFeature implements Read {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Add range header %s for file %s", header, file));
                 }
-                request.addHeader(new BasicHeader(HttpHeaders.RANGE, header));
+                final HttpHeaders headers = request.getRequestHeaders();
+                headers.setRange(header);
                 // Disable compression
-                request.addHeader(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
+                headers.setAcceptEncoding("identity");
             }
-            final HttpClient client = session.getHttpClient();
-            final HttpResponse response = client.execute(request);
-            switch(response.getStatusLine().getStatusCode()) {
-                case HttpStatus.SC_OK:
-                case HttpStatus.SC_PARTIAL_CONTENT:
-                    return new HttpMethodReleaseInputStream(response);
-                default:
-                    throw new DefaultHttpResponseExceptionMappingService().map(
-                        new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
-            }
+            return request.executeMediaAsInputStream();
         }
         catch(IOException e) {
             throw new GoogleStorageExceptionMappingService().map("Download {0} failed", e, file);

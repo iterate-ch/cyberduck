@@ -38,7 +38,7 @@ public class S3TouchFeature implements Touch<StorageObject> {
 
     public S3TouchFeature(final S3Session session) {
         this.session = session;
-        this.writer = new S3WriteFeature(session, new S3DisabledMultipartService());
+        this.writer = new S3WriteFeature(session);
     }
 
     @Override

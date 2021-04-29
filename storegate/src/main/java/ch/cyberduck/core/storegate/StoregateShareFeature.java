@@ -56,7 +56,7 @@ public class StoregateShareFeature implements PromptUrlProvider<Void, Void> {
         try {
             final Host bookmark = session.getHost();
             final CreateFileShareRequest request = new CreateFileShareRequest()
-                .fileId(fileid.getFileid(file, new DisabledListProgressListener()));
+                .fileId(fileid.getFileId(file, new DisabledListProgressListener()));
             try {
                 request.setPassword(callback.prompt(bookmark,
                     LocaleFactory.localizedString("Passphrase", "Cryptomator"),
@@ -79,7 +79,7 @@ public class StoregateShareFeature implements PromptUrlProvider<Void, Void> {
         try {
             final Host bookmark = session.getHost();
             final CreateFileShareRequest request = new CreateFileShareRequest()
-                .fileId(fileid.getFileid(file, new DisabledListProgressListener()))
+                .fileId(fileid.getFileId(file, new DisabledListProgressListener()))
                 .allowUpload(true);
             try {
                 request.setPassword(callback.prompt(bookmark,

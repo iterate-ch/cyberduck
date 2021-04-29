@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 public class MantaFindFeatureTest extends AbstractMantaTest {
 
     @Test
-    public void testFindFileNotFound() {
+    public void testFindFileNotFound() throws Exception {
         final MantaFindFeature f = new MantaFindFeature(session);
         assertFalse(f.find(new Path(
             new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountPrivateRoot(),
@@ -40,7 +40,7 @@ public class MantaFindFeatureTest extends AbstractMantaTest {
     }
 
     @Test
-    public void testFindPrivate() {
+    public void testFindPrivate() throws Exception {
         final MantaFindFeature f = new MantaFindFeature(session);
         assertTrue(f.find(new Path(
             new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountRoot(),
@@ -49,7 +49,7 @@ public class MantaFindFeatureTest extends AbstractMantaTest {
     }
 
     @Test
-    public void testFindPublic() {
+    public void testFindPublic() throws Exception {
         final MantaFindFeature f = new MantaFindFeature(session);
         assertTrue(f.find(new Path(
             new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountRoot(),

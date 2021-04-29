@@ -38,7 +38,7 @@ public class StoregateTimestampFeatureTest extends AbstractStoregateTest {
 
     @Test
     public void testSetTimestamp() throws Exception {
-        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(
             String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path file = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -53,7 +53,7 @@ public class StoregateTimestampFeatureTest extends AbstractStoregateTest {
 
     @Test
     public void testSetTimestampDirectory() throws Exception {
-        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(
             String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

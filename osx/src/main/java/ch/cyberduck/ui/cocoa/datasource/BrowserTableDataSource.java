@@ -655,7 +655,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         try {
                             LocalTouchFactory.get().touch(file);
                             if(options.icon) {
-                                IconServiceFactory.get().set(file, new TransferStatus().length(0L));
+                                IconServiceFactory.get().set(file, new TransferStatus().withLength(0L));
                             }
                         }
                         catch(AccessDeniedException e) {

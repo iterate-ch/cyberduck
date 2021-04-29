@@ -30,9 +30,9 @@ public class B2MetadataFeature implements Headers {
     public static final String X_BZ_INFO_LARGE_FILE_SHA1 = "large_file_sha1";
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
 
-    public B2MetadataFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2MetadataFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }

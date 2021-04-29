@@ -15,51 +15,49 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathRelativizer;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.FileIdProvider;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
-public class StoregateIdProvider implements IdProvider {
+public class StoregateIdProvider implements FileIdProvider {
+    private static final Logger log = Logger.getLogger(StoregateIdProvider.class);
 
     private final StoregateSession session;
-
-    private Cache<Path> cache = PathCache.empty();
+    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));
 
     public StoregateIdProvider(final StoregateSession session) {
         this.session = session;
     }
 
     @Override
-    public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public String getFileId(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             if(StringUtils.isNotBlank(file.attributes().getFileId())) {
                 return file.attributes().getFileId();
             }
-            if(cache.isCached(file.getParent())) {
-                final AttributedList<Path> list = cache.get(file.getParent());
-                final Path found = list.find(new SimplePathPredicate(file));
-                if(null != found) {
-                    if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                        return this.set(file, found.attributes().getVersionId());
-                    }
+            if(cache.contains(new SimplePathPredicate(file))) {
+                final String cached = cache.get(new SimplePathPredicate(file));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Return cached fileid %s for file %s", cached, file));
                 }
+                return cached;
             }
             final String id = new FilesApi(session.getClient()).filesGet_1(URIEncoder.encode(this.getPrefixedPath(file))).getId();
-            this.set(file, id);
+            this.cache(file, id);
             return id;
         }
         catch(ApiException e) {
@@ -67,20 +65,28 @@ public class StoregateIdProvider implements IdProvider {
         }
     }
 
-    protected String set(final Path file, final String id) {
-        file.attributes().setVersionId(id);
+    public String cache(final Path file, final String id) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Cache %s for file %s", id, file));
+        }
+        if(null == id) {
+            cache.remove(new SimplePathPredicate(file));
+            file.attributes().setFileId(null);
+        }
+        else {
+            cache.put(new SimplePathPredicate(file), id);
+            file.attributes().setFileId(id);
+        }
         return id;
     }
 
     @Override
-    public StoregateIdProvider withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return this;
+    public void clear() {
+        cache.clear();
     }
 
     /**
-     * Mapping of path "/Home/mduck" to "My files"
-     * Mapping of path "/Common" to "Common files"
+     * Mapping of path "/Home/mduck" to "My files" Mapping of path "/Common" to "Common files"
      */
     protected String getPrefixedPath(final Path file) {
         final PathContainerService service = new DefaultPathContainerService();

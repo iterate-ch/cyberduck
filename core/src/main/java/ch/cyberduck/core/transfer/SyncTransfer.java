@@ -89,8 +89,8 @@ public class SyncTransfer extends Transfer {
     }
 
     private void init() {
-        upload = new UploadTransfer(host, roots).withCache(cache);
-        download = new DownloadTransfer(host, roots).withCache(cache);
+        upload = new UploadTransfer(host, roots);
+        download = new DownloadTransfer(host, roots);
     }
 
     @Override
@@ -158,12 +158,12 @@ public class SyncTransfer extends Transfer {
         // Set chosen action (upload, download, mirror) from prompt
         return new SynchronizationPathFilter(
             comparison = new CachingComparisonServiceFilter(
-                new ComparisonServiceFilter(source, source.getHost().getTimezone(), listener).withCache(cache)
+                new ComparisonServiceFilter(source, source.getHost().getTimezone(), listener)
             ).withCache(comparisons),
             download.filter(source, destination, TransferAction.overwrite, listener),
             upload.filter(source, destination, TransferAction.overwrite, listener),
             action
-        ).withCache(cache);
+        );
     }
 
     @Override
@@ -191,7 +191,7 @@ public class SyncTransfer extends Transfer {
             log.debug(String.format("Children for %s", directory));
         }
         final Set<TransferItem> children = new HashSet<TransferItem>();
-        final Find finder = session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache);
+        final Find finder = session.getFeature(Find.class, new DefaultFindFeature(session));
         if(finder.find(directory)) {
             children.addAll(download.list(session, directory, local, listener));
         }

@@ -83,7 +83,7 @@ public class OneDriveSession extends GraphSession {
                 return new Drive(user.asDirectoryObject()).getRoot();
             }
         }
-        final String versionId = fileIdProvider.getFileid(file, new DisabledListProgressListener());
+        final String versionId = fileid.getFileId(file, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }
@@ -144,7 +144,7 @@ public class OneDriveSession extends GraphSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new OneDriveListService(this, fileIdProvider);
+            return (T) new OneDriveListService(this);
         }
         if(type == UrlProvider.class) {
             return (T) new OneDriveUrlProvider();

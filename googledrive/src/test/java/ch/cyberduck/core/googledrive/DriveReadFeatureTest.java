@@ -52,13 +52,13 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testAppend() {
-        assertTrue(new DriveReadFeature(null, new DriveFileidProvider(session).withCache(cache)).offset(new Path("/", EnumSet.of(Path.Type.file))));
+        assertTrue(new DriveReadFeature(null, new DriveFileIdProvider(session)).offset(new Path("/", EnumSet.of(Path.Type.file))));
     }
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
-        new DriveReadFeature(session, new DriveFileidProvider(session).withCache(cache)).read(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new DriveReadFeature(session, new DriveFileIdProvider(session)).read(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
@@ -71,16 +71,16 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveUploadFeature(new DriveWriteFeature(session, fileid)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                new TransferStatus().length(content.length),
-                new DisabledConnectionCallback());
+            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new TransferStatus().withLength(content.length),
+            new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new DriveReadFeature(session, fileid).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new DriveReadFeature(session, fileid).read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -93,7 +93,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testReadWhitespace() throws Exception {
-        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path file = new DriveTouchFeature(session, fileid).touch(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("t %s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(0, new DriveAttributesFinderFeature(session, fileid).find(file).getSize());
         final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(file, new TransferStatus(), new DisabledConnectionCallback()));
@@ -104,7 +104,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testReadPath() throws Exception {
-        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path file = new DriveTouchFeature(session, fileid).touch(new Path(directory, String.format("t %s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(0, new DriveAttributesFinderFeature(session, fileid).find(file).getSize());
@@ -116,7 +116,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testReadEmpty() throws Exception {
-        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path file = new DriveTouchFeature(session, fileid).touch(new Path(directory, String.format("t %s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(0, new DriveAttributesFinderFeature(session, fileid).find(file).getSize());
@@ -128,7 +128,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testReadCloseReleaseEntity() throws Exception {
-        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus writeStatus = new TransferStatus();

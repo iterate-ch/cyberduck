@@ -37,7 +37,7 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
 
     @Test
     public void testFind() throws Exception {
-        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
@@ -48,7 +48,6 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
         assertNotEquals(0L, attr.getModificationDate());
         assertEquals(Checksum.NONE, attr.getChecksum());
         assertNull(attr.getETag());
-        assertNull(attr.getVersionId());
         assertNotNull(attr.getFileId());
         assertFalse(attr.getPermission().isExecutable());
         assertTrue(attr.getPermission().isReadable());

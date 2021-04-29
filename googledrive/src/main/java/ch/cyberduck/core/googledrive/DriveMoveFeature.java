@@ -34,11 +34,11 @@ import com.google.api.services.drive.model.File;
 public class DriveMoveFeature implements Move {
 
     private final DriveSession session;
-    private final DriveFileidProvider fileid;
+    private final DriveFileIdProvider fileid;
 
     private Delete delete;
 
-    public DriveMoveFeature(final DriveSession session, final DriveFileidProvider fileid) {
+    public DriveMoveFeature(final DriveSession session, final DriveFileIdProvider fileid) {
         this.session = session;
         this.delete = new DriveDeleteFeature(session, fileid);
         this.fileid = fileid;
@@ -50,15 +50,17 @@ public class DriveMoveFeature implements Move {
             if(status.isExists()) {
                 delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
-            final String id = fileid.getFileid(file, new DisabledListProgressListener());
+            final String id = fileid.getFileId(file, new DisabledListProgressListener());
             File result = null;
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 // Rename title
                 final File properties = new File();
                 properties.setName(renamed.getName());
                 properties.setMimeType(status.getMime());
-                result = session.getClient().files().update(id, properties).
-                    setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                result = session.getClient().files().update(id, properties)
+                    .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
+                    .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                    .execute();
             }
             if(!file.getParent().equals(renamed.getParent())) {
                 // Retrieve the existing parents to remove
@@ -72,12 +74,14 @@ public class DriveMoveFeature implements Move {
                 }
                 // Move the file to the new folder
                 result = session.getClient().files().update(id, null)
-                    .setAddParents(fileid.getFileid(renamed.getParent(), new DisabledListProgressListener()))
+                    .setAddParents(fileid.getFileId(renamed.getParent(), new DisabledListProgressListener()))
                     .setRemoveParents(previousParents.toString())
-                    .setFields("id,parents")
+                    .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
                     .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                     .execute();
             }
+            fileid.cache(file, null);
+            fileid.cache(renamed, id);
             return renamed.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(result));
         }
         catch(IOException e) {

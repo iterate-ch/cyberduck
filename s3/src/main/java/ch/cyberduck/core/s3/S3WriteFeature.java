@@ -17,17 +17,13 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -38,8 +34,6 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -63,25 +57,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     private final PathContainerService containerService;
     private final S3Session session;
-    private final S3MultipartService multipartService;
-    private final Find finder;
-    private final AttributesFinder attributes;
 
     public S3WriteFeature(final S3Session session) {
-        this(session, new S3DefaultMultipartService(session));
-    }
-
-    public S3WriteFeature(final S3Session session, final S3MultipartService multipartService) {
-        this(session, multipartService, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
-    }
-
-    public S3WriteFeature(final S3Session session, final S3MultipartService multipartService,
-                          final Find finder, final AttributesFinder attributes) {
-        super(finder, attributes);
         this.session = session;
-        this.multipartService = multipartService;
-        this.finder = finder;
-        this.attributes = attributes;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -98,6 +76,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Saved object %s with checksum %s", file, object.getETag()));
                     }
+                    file.attributes().setVersionId(object.getVersionId());
                 }
                 catch(ServiceException e) {
                     throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
@@ -150,33 +129,23 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         return object;
     }
 
-    /**
-     * @return No Content-Range support
-     */
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(length >= preferences.getLong("s3.upload.multipart.threshold")) {
-            if(preferences.getBoolean("s3.upload.multipart")) {
-                try {
-                    final List<MultipartUpload> upload = multipartService.find(file);
-                    if(!upload.isEmpty()) {
-                        Long size = 0L;
-                        for(MultipartPart completed : multipartService.list(upload.iterator().next())) {
-                            size += completed.getSize();
-                        }
-                        return new Append(size);
-                    }
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        try {
+            final S3DefaultMultipartService multipartService = new S3DefaultMultipartService(session);
+            final List<MultipartUpload> upload = multipartService.find(file);
+            if(!upload.isEmpty()) {
+                Long size = 0L;
+                for(MultipartPart completed : multipartService.list(upload.iterator().next())) {
+                    size += completed.getSize();
                 }
-                catch(AccessDeniedException | InteroperabilityException e) {
-                    log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
-                }
+                return new Append(true).withStatus(status).withSize(size);
             }
         }
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
+        catch(AccessDeniedException | InteroperabilityException e) {
+            log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
         }
-        return Write.notfound;
+        return Write.override;
     }
 
     @Override

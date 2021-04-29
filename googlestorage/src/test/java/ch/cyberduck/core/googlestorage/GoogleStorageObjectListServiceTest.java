@@ -47,7 +47,6 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
                 assertNotEquals(-1L, p.attributes().getModificationDate());
                 assertNotEquals(-1L, p.attributes().getSize());
                 assertNotNull(p.attributes().getETag());
-                assertFalse(p.attributes().isDuplicate());
             }
         }
     }

@@ -82,7 +82,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     @Test
     public void testFindPlaceholder() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertEquals(0L, attributes.getSize());
@@ -92,15 +92,14 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
 
     @Test
     public void testVersioningReadAttributesDeleteMarker() throws Exception {
-        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
-        final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Path testWithVersionId = new S3TouchFeature(session).touch(test, new TransferStatus());
+        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path testWithVersionId = new S3TouchFeature(session).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes attr = new S3AttributesFinderFeature(session).find(testWithVersionId);
         final String versionId = attr.getVersionId();
         assertNotNull(versionId);
         assertEquals(testWithVersionId.attributes().getVersionId(), versionId);
         assertFalse(attr.isDuplicate());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         {
             final PathAttributes marker = new S3AttributesFinderFeature(session).find(testWithVersionId);
             for(Path version : marker.getVersions()) {
@@ -112,7 +111,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
             assertEquals(versionId, marker.getVersionId());
         }
         {
-            final PathAttributes marker = new S3AttributesFinderFeature(session).find(test);
+            final PathAttributes marker = new S3AttributesFinderFeature(session).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY));
             for(Path version : marker.getVersions()) {
                 assertTrue(version.attributes().isDuplicate());
             }
@@ -132,7 +131,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
             assertEquals(versionId, marker.getVersionId());
         }
         {
-            final PathAttributes marker = new S3AttributesFinderFeature(session, true).find(test);
+            final PathAttributes marker = new S3AttributesFinderFeature(session, true).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY));
             for(Path version : marker.getVersions()) {
                 assertTrue(version.attributes().isDuplicate());
             }
@@ -145,7 +144,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
 
     @Test
     public void testPreviousVersionReferences() throws Exception {
-        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new S3TouchFeature(session).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String versionId = new S3AttributesFinderFeature(session).find(test).getVersionId();
         assertEquals(test.attributes().getVersionId(), versionId);
@@ -156,13 +155,10 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new S3AttributesFinderFeature(session, true).find(test).getVersions().isEmpty());
-        final Path update = new Path(bucket, test.getName(), test.getType(),
-            new PathAttributes().withVersionId(out.getStatus().getServiceMetadata("version-id").toString()));
-        final PathAttributes attributes = new S3AttributesFinderFeature(session, true).find(update);
+        final PathAttributes attributes = new S3AttributesFinderFeature(session, true).find(test);
         final AttributedList<Path> versions = attributes.getVersions();
         assertFalse(versions.isEmpty());
-        assertEquals(test, versions.get(0));
+        assertEquals(new Path(test).withAttributes(new PathAttributes(test.attributes()).withVersionId(versionId)), versions.get(0));
         for(Path version : versions) {
             assertTrue(version.attributes().isDuplicate());
         }

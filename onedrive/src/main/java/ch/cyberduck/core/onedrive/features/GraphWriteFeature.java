@@ -15,15 +15,11 @@ package ch.cyberduck.core.onedrive.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -32,8 +28,6 @@ import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -41,6 +35,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveJsonObject;
 import org.nuxeo.onedrive.client.UploadSession;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
@@ -56,27 +51,18 @@ public class GraphWriteFeature implements Write<Void> {
         = PreferencesFactory.get();
 
     private final GraphSession session;
-    private final GraphFileIdProvider idProvider;
-    private final Find finder;
-    private final AttributesFinder attributes;
+    private final GraphFileIdProvider fileid;
 
-    public GraphWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
-        this(session, idProvider, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
-    }
-
-    public GraphWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider, final Find finder, final AttributesFinder attributes) {
+    public GraphWriteFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
-        this.idProvider = idProvider;
-        this.finder = finder;
-        this.attributes = attributes;
+        this.fileid = fileid;
     }
 
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final DriveItem folder = session.getItem(file.getParent());
-            final DriveItem oneDriveFile = new DriveItem(folder,
-                URIEncoder.encode(file.getName()));
+            final DriveItem oneDriveFile = new DriveItem(folder, URIEncoder.encode(file.getName()));
             final UploadSession upload = Files.createUploadSession(oneDriveFile);
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, status);
             final int partsize = preferences.getInteger("onedrive.upload.multipart.partsize.minimum")
@@ -97,12 +83,8 @@ public class GraphWriteFeature implements Write<Void> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override
@@ -152,8 +134,11 @@ public class GraphWriteFeature implements Write<Void> {
                     @Override
                     public Void call() throws BackgroundException {
                         try {
-                            if(upload.uploadFragment(header, content) instanceof DriveItem.Metadata) {
+                            final OneDriveJsonObject response = upload.uploadFragment(header, content);
+                            if(response instanceof DriveItem.Metadata) {
                                 log.info(String.format("Completed upload for %s", file));
+                                final String id = session.getFileId(((DriveItem.Metadata) response));
+                                fileid.cache(file, id);
                             }
                             else {
                                 log.debug(String.format("Uploaded fragment %s for file %s", header, file));
@@ -186,7 +171,7 @@ public class GraphWriteFeature implements Write<Void> {
                     log.warn(String.format("Abort upload session %s with no completed parts", upload));
                     // Use touch feature for empty file upload
                     upload.cancelUpload();
-                    new GraphTouchFeature(session, idProvider).touch(file, new TransferStatus());
+                    new GraphTouchFeature(session, fileid).touch(file, new TransferStatus());
                 }
             }
             catch(BackgroundException e) {

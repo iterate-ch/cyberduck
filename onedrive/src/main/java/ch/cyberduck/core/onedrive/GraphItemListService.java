@@ -15,11 +15,8 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -33,23 +30,15 @@ public class GraphItemListService extends AbstractItemListService {
     private static final Logger log = Logger.getLogger(GraphItemListService.class);
 
     private final GraphSession session;
-    private final IdProvider idProvider;
 
-    public GraphItemListService(final GraphSession session, final IdProvider idProvider) {
-        super(new GraphAttributesFinderFeature(session, idProvider));
+    public GraphItemListService(final GraphSession session) {
+        super(new GraphAttributesFinderFeature(session));
         this.session = session;
-        this.idProvider = idProvider;
     }
 
     @Override
     protected Iterator<DriveItem.Metadata> getIterator(final Path directory) throws BackgroundException {
         final DriveItem folder = session.getItem(directory);
         return Files.getFiles(folder, PreferencesFactory.get().getInteger("onedrive.listing.chunksize"));
-    }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        idProvider.withCache(cache);
-        return this;
     }
 }

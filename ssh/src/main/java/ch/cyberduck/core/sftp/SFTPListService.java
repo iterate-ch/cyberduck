@@ -18,7 +18,6 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -86,12 +85,6 @@ public class SFTPListService implements ListService {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
-    }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        attributes.withCache(cache);
-        return this;
     }
 
     protected boolean post(final Path file) throws BackgroundException {

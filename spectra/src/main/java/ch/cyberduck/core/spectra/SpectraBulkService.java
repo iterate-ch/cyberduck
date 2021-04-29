@@ -14,7 +14,6 @@
 
 package ch.cyberduck.core.spectra;
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -91,11 +90,6 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     @Override
     public Bulk<Set<UUID>> withDelete(final Delete delete) {
         this.delete = delete;
-        return this;
-    }
-
-    @Override
-    public Bulk<Set<UUID>> withCache(final Cache<Path> cache) {
         return this;
     }
 

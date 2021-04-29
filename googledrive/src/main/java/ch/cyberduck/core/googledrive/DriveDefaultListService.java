@@ -21,19 +21,19 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 public class DriveDefaultListService extends AbstractDriveListService {
 
-    private final DriveFileidProvider fileid;
+    private final DriveFileIdProvider fileid;
 
-    public DriveDefaultListService(final DriveSession session, final DriveFileidProvider fileid) {
+    public DriveDefaultListService(final DriveSession session, final DriveFileIdProvider fileid) {
         super(session, fileid);
         this.fileid = fileid;
     }
 
-    public DriveDefaultListService(final DriveSession session, final DriveFileidProvider fileid, final int pagesize) {
+    public DriveDefaultListService(final DriveSession session, final DriveFileIdProvider fileid, final int pagesize) {
         super(session, fileid, pagesize);
         this.fileid = fileid;
     }
 
     protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return String.format("'%s' in parents", fileid.getFileid(directory, listener));
+        return String.format("'%s' in parents", fileid.getFileId(directory, listener));
     }
 }

@@ -31,10 +31,10 @@ public class B2MoveFeature implements Move {
         = new B2PathContainerService();
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
     private final B2ThresholdCopyFeature proxy;
 
-    public B2MoveFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2MoveFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
         this.proxy = new B2ThresholdCopyFeature(session, fileid);
@@ -42,7 +42,7 @@ public class B2MoveFeature implements Move {
 
     @Override
     public Path move(final Path source, final Path target, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
-        final Path copy = proxy.copy(source, target, status.length(source.attributes().getSize()), callback);
+        final Path copy = proxy.copy(source, target, status.withLength(source.attributes().getSize()), callback);
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(source)), callback, delete);
         return copy;
     }

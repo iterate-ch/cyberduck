@@ -45,9 +45,9 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
         = new B2PathContainerService();
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
 
-    public B2AuthorizedUrlProvider(final B2Session session, final B2FileidProvider fileid) {
+    public B2AuthorizedUrlProvider(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -74,7 +74,7 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
             // Determine expiry time for URL
             final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             expiry.add(Calendar.SECOND, seconds);
-            final String token = session.getClient().getDownloadAuthorization(fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
+            final String token = session.getClient().getDownloadAuthorization(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
                 StringUtils.EMPTY, seconds);
             return new DescriptiveUrl(URI.create(String.format("%s?Authorization=%s", download, token)), DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))

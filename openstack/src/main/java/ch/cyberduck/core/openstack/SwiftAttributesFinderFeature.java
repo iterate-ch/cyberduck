@@ -20,7 +20,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -30,7 +30,9 @@ import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -64,7 +66,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
@@ -92,13 +94,18 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
                 if(file.isDirectory()) {
                     // Directory placeholder file may be missing. Still return empty attributes when we find children
                     try {
-                        new SwiftObjectListService(session).list(file, new DisabledListProgressListener(), containerService.getKey(file));
+                        new SwiftObjectListService(session).list(file, listener, containerService.getKey(file));
                     }
                     catch(NotfoundException n) {
                         throw e;
                     }
                     // Common prefix only
                     return PathAttributes.EMPTY;
+                }
+                // Try to find pending large file upload
+                final Write.Append append = new SwiftWriteFeature(session, regionService).append(file, new TransferStatus());
+                if(append.append) {
+                    return new PathAttributes().withSize(append.size);
                 }
                 throw e;
             }

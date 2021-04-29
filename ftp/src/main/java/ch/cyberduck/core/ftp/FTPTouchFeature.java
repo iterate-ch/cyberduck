@@ -16,14 +16,13 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 
 public class FTPTouchFeature extends DefaultTouchFeature<Integer> {
 
     public FTPTouchFeature(final FTPSession session) {
-        super(new DefaultUploadFeature<>(new FTPWriteFeature(session)), new DefaultAttributesFinderFeature(session));
+        super(new DefaultUploadFeature<>(new FTPWriteFeature(session)), new FTPAttributesFinderFeature(session));
     }
 
     @Override

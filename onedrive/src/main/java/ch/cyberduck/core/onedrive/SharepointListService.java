@@ -20,7 +20,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.features.sharepoint.GroupDrivesListService;
 import ch.cyberduck.core.onedrive.features.sharepoint.GroupListService;
 
@@ -46,8 +45,8 @@ public class SharepointListService extends AbstractSharepointListService {
 
     private final SharepointSession session;
 
-    public SharepointListService(final SharepointSession session, final IdProvider idProvider) {
-        super(session, idProvider);
+    public SharepointListService(final SharepointSession session) {
+        super(session);
         this.session = session;
     }
 

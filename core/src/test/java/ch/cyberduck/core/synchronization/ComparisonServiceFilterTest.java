@@ -3,6 +3,7 @@ package ch.cyberduck.core.synchronization;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
@@ -32,7 +33,7 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean attr = new AtomicBoolean();
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) {
+            public PathAttributes find(final Path file, final ListProgressListener listener) {
                 attr.set(true);
                 return new PathAttributes() {
                     @Override
@@ -44,7 +45,7 @@ public class ComparisonServiceFilterTest {
         };
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) {
+            public boolean find(final Path file, final ListProgressListener listener) {
                 found.set(true);
                 return true;
             }
@@ -77,7 +78,7 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean found = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) {
+            public boolean find(final Path file, final ListProgressListener listener) {
                 found.set(true);
                 return true;
             }
@@ -98,7 +99,7 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean found = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) {
+            public boolean find(final Path file, final ListProgressListener listener) {
                 found.set(true);
                 return false;
             }
@@ -119,7 +120,7 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean found = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) {
+            public boolean find(final Path file, final ListProgressListener listener) {
                 found.set(true);
                 return true;
             }
@@ -141,14 +142,14 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean attr = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) {
+            public boolean find(final Path file, final ListProgressListener listener) {
                 found.set(true);
                 return true;
             }
         };
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) {
+            public PathAttributes find(final Path file, final ListProgressListener listener) {
                 attr.set(true);
                 return new PathAttributes() {
                     @Override

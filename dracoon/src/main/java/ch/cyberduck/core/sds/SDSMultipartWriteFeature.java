@@ -15,58 +15,45 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
+public class SDSMultipartWriteFeature implements MultipartWrite<Node> {
     private static final Logger log = Logger.getLogger(SDSMultipartWriteFeature.class);
 
     private final SDSSession session;
-    private final Find finder;
-    private final AttributesFinder attributes;
     private final SDSUploadService upload;
 
     public SDSMultipartWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
-        this(session, nodeid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
-    }
-
-    public SDSMultipartWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Find finder, final AttributesFinder attributes) {
         this.session = session;
-        this.finder = finder;
-        this.attributes = attributes;
         this.upload = new SDSUploadService(session, nodeid);
     }
 
     @Override
-    public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String uploadToken = upload.start(file, status);
         final MultipartUploadTokenOutputStream proxy = new MultipartUploadTokenOutputStream(session, file, status, uploadToken);
-        return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy, PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
+        return new HttpResponseOutputStream<Node>(new MemorySegementingOutputStream(proxy, PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
             private final AtomicBoolean close = new AtomicBoolean();
+            private final AtomicReference<Node> node = new AtomicReference<>();
 
             @Override
-            public VersionId getStatus() {
-                return proxy.getVersionId();
+            public Node getStatus() {
+                return node.get();
             }
 
             @Override
@@ -78,10 +65,10 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                     }
                     super.close();
                     try {
-                        status.setVersion(upload.complete(file, uploadToken, status));
+                        node.set(upload.complete(file, uploadToken, status));
                     }
                     catch(ConflictException e) {
-                        status.setVersion(upload.complete(file, uploadToken, new TransferStatus(status).exists(true)));
+                        node.set(upload.complete(file, uploadToken, new TransferStatus(status).exists(true)));
                     }
                 }
                 catch(BackgroundException e) {
@@ -108,12 +95,8 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override

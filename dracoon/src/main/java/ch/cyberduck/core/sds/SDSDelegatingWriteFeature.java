@@ -15,36 +15,34 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptOutputStream;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
-public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
+public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
     private static final Logger log = Logger.getLogger(SDSDelegatingWriteFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
-    private final Write<VersionId> proxy;
+    private final Write<Node> proxy;
 
-    public SDSDelegatingWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<VersionId> proxy) {
+    public SDSDelegatingWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Node> proxy) {
         this.session = session;
         this.nodeid = nodeid;
         this.proxy = proxy;
     }
 
     @Override
-    public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(nodeid.isEncrypted(file)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Return encrypting writer for %s", file));
@@ -56,11 +54,11 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
         if(nodeid.isEncrypted(file)) {
-            return new TripleCryptWriteFeature(session, nodeid, proxy).append(file, length, cache);
+            return new TripleCryptWriteFeature(session, nodeid, proxy).append(file, status);
         }
-        return proxy.append(file, length, cache);
+        return proxy.append(file, status);
     }
 
     @Override

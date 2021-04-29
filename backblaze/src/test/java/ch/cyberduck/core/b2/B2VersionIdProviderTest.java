@@ -35,16 +35,16 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class B2FileidProviderTest extends AbstractB2Test {
+public class B2VersionIdProviderTest extends AbstractB2Test {
 
     @Test
     public void getFileIdFile() throws Exception {
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path file = new B2TouchFeature(session, fileid).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotNull(fileid.getFileid(file, new DisabledListProgressListener()));
+        assertNotNull(fileid.getVersionId(file, new DisabledListProgressListener()));
         try {
-            assertNull(fileid.getFileid(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+            assertNull(fileid.getVersionId(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
             fail();
         }
         catch(NotfoundException e) {
@@ -55,16 +55,16 @@ public class B2FileidProviderTest extends AbstractB2Test {
 
     @Test
     public void getFileIdDirectory() throws Exception {
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path folder = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        assertNotNull(fileid.getFileid(folder, new DisabledListProgressListener()));
+        assertNotNull(fileid.getVersionId(folder, new DisabledListProgressListener()));
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(folder, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testFileIdCollision() throws Exception {
-        final B2FileidProvider idProvider = new B2FileidProvider(session);
+        final B2VersionIdProvider idProvider = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, idProvider).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path path2R = new Path(bucket, "2R", EnumSet.of(Path.Type.directory));
         final Path path33 = new Path(bucket, "33", EnumSet.of(Path.Type.directory));
@@ -76,7 +76,7 @@ public class B2FileidProviderTest extends AbstractB2Test {
         assertNotNull(path33WithId.attributes().getVersionId());
         assertNotEquals(path2RWithId.attributes().getVersionId(), path33WithId.attributes().getVersionId());
 
-        final String fileId = idProvider.getFileid(path33, new DisabledListProgressListener());
+        final String fileId = idProvider.getVersionId(path33, new DisabledListProgressListener());
 
         assertEquals(fileId, path33WithId.attributes().getVersionId());
         assertNotEquals(fileId, path2RWithId.attributes().getVersionId());

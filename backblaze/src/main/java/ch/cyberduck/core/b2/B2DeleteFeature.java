@@ -39,9 +39,9 @@ public class B2DeleteFeature implements Delete {
         = new B2PathContainerService();
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
 
-    public B2DeleteFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2DeleteFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -61,7 +61,7 @@ public class B2DeleteFeature implements Delete {
                     // Delete /.bzEmpty if any
                     final String fileid;
                     try {
-                        fileid = this.fileid.getFileid(file, new DisabledListProgressListener());
+                        fileid = this.fileid.getVersionId(file, new DisabledListProgressListener());
                     }
                     catch(NotfoundException e) {
                         log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e, file));
@@ -79,7 +79,7 @@ public class B2DeleteFeature implements Delete {
                 }
                 else if(file.isFile()) {
                     try {
-                        session.getClient().deleteFileVersion(containerService.getKey(file), fileid.getFileid(file, new DisabledListProgressListener()));
+                        session.getClient().deleteFileVersion(containerService.getKey(file), fileid.getVersionId(file, new DisabledListProgressListener()));
                     }
                     catch(B2ApiException e) {
                         throw new B2ExceptionMappingService().map("Cannot delete {0}", e, file);
@@ -88,6 +88,7 @@ public class B2DeleteFeature implements Delete {
                         throw new DefaultIOExceptionMappingService().map(e);
                     }
                 }
+                fileid.cache(file, null);
             }
         }
         for(Path file : files.keySet()) {
@@ -95,7 +96,7 @@ public class B2DeleteFeature implements Delete {
                 if(containerService.isContainer(file)) {
                     callback.delete(file);
                     // Finally delete bucket itself
-                    session.getClient().deleteBucket(fileid.getFileid(file, new DisabledListProgressListener()));
+                    session.getClient().deleteBucket(fileid.getVersionId(file, new DisabledListProgressListener()));
                 }
             }
             catch(B2ApiException e) {

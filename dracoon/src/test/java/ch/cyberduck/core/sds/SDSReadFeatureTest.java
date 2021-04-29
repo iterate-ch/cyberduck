@@ -20,13 +20,13 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -54,7 +54,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         try {
@@ -70,12 +70,12 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus writeStatus = new TransferStatus();
         writeStatus.setLength(content.length);
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<VersionId> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Node> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         // Unknown length in status
@@ -96,7 +96,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testReadRange() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -107,17 +107,16 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        final TransferStatus upload = new TransferStatus().length(content.length);
+        final TransferStatus upload = new TransferStatus().withLength(content.length);
         upload.setExists(true);
-        final VersionId reply = new DefaultUploadFeature<VersionId>(new SDSMultipartWriteFeature(session, nodeid)).upload(
+        new DefaultUploadFeature<>(new SDSMultipartWriteFeature(session, nodeid)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
             new DisabledConnectionCallback());
-        test.attributes().setVersionId(reply.id);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new SDSReadFeature(session, nodeid).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new SDSReadFeature(session, nodeid).read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -130,7 +129,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testReadRangeUnknownLength() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -141,12 +140,11 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        final TransferStatus upload = new TransferStatus().length(content.length);
+        final TransferStatus upload = new TransferStatus().withLength(content.length);
         upload.setExists(true);
-        final VersionId reply = new DefaultUploadFeature<VersionId>(new SDSMultipartWriteFeature(session, nodeid)).upload(
+        new DefaultUploadFeature<>(new SDSMultipartWriteFeature(session, nodeid)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
             new DisabledConnectionCallback());
-        test.attributes().setVersionId(reply.id);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         status.setAppend(true);
@@ -168,12 +166,12 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus writeStatus = new TransferStatus();
         writeStatus.setLength(content.length);
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<VersionId> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Node> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         final CountingInputStream in = new CountingInputStream(new SDSReadFeature(session, nodeid).read(test, status, new DisabledConnectionCallback()));

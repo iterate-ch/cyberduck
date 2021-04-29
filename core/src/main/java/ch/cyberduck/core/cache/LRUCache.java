@@ -119,11 +119,16 @@ public class LRUCache<Key, Value> {
     }
 
     public void put(final Key key, Value value) {
-        if(null == key || null == value) {
+        if(null == key) {
             log.warn(String.format("Discard caching %s=%s", key, value));
             return;
         }
-        delegate.put(key, value);
+        if(null == value) {
+            this.remove(key);
+        }
+        else {
+            delegate.put(key, value);
+        }
     }
 
     public void remove(final Key key) {

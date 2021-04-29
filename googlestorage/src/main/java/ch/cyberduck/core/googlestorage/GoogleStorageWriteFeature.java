@@ -15,15 +15,11 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -32,8 +28,6 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -64,18 +58,9 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
-    private final Find finder;
-    private final AttributesFinder attributes;
 
     public GoogleStorageWriteFeature(final GoogleStorageSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
-    }
-
-    public GoogleStorageWriteFeature(final GoogleStorageSession session, final Find finder, final AttributesFinder attributes) {
-        super(finder, attributes);
         this.session = session;
-        this.finder = finder;
-        this.attributes = attributes;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -140,9 +125,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                                             final String value = reader.nextString();
                                             switch(name) {
                                                 case "generation":
-                                                    final VersionId version = new VersionId(value);
-                                                    status.setVersion(version);
-                                                    return version;
+                                                    file.attributes().setVersionId(value);
+                                                    return new VersionId(value);
                                             }
                                         }
                                         reader.endObject();
@@ -177,12 +161,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override

@@ -18,36 +18,15 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 public abstract class AppendWriteFeature<Reply> implements Write<Reply> {
 
-    private final Find finder;
-    private final AttributesFinder attribute;
-
-    protected AppendWriteFeature(final Session<?> session) {
-        this.finder = session.getFeature(Find.class, new DefaultFindFeature(session));
-        this.attribute = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
-    }
-
-    protected AppendWriteFeature(final Find finder, final AttributesFinder attributes) {
-        this.finder = finder;
-        this.attribute = attributes;
-    }
-
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = attribute.withCache(cache).find(file);
-            return new Append(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(true).withStatus(status);
     }
 }

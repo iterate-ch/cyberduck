@@ -17,8 +17,8 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -70,7 +70,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         return this.find(file, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
     }
 
@@ -88,13 +88,13 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         }
         try {
             if(file.attributes().isDuplicate()) {
-                final DeletedNode node = new NodesApi(session.getClient()).requestDeletedNode(Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())),
+                final DeletedNode node = new NodesApi(session.getClient()).requestDeletedNode(Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())),
                     StringUtils.EMPTY, null);
                 return this.toAttributes(node);
             }
             else {
                 final Node node = new NodesApi(session.getClient()).requestNode(
-                    Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
+                    Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
                 final PathAttributes attr = this.toAttributes(node);
                 if(references) {
                     try {
@@ -119,7 +119,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
             final AttributedList<Path> versions = new AttributedList<>();
             do {
                 nodes = new NodesApi(session.getClient()).requestDeletedNodeVersions(
-                    Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())),
+                    Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())),
                     file.isFile() ? "file" : "folder", file.getName(), StringUtils.EMPTY, null,
                     offset, chunksize, null);
                 for(DeletedNode item : nodes.getItems()) {
@@ -256,9 +256,4 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         return acl;
     }
 
-    @Override
-    public AttributesFinder withCache(final Cache<Path> cache) {
-        nodeid.withCache(cache);
-        return this;
-    }
 }

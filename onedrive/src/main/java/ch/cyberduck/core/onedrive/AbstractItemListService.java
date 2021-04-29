@@ -15,8 +15,6 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
@@ -49,12 +47,6 @@ public abstract class AbstractItemListService extends AbstractListService<DriveI
         }
 
         return new Path(directory, fileName, this.resolveType(metadata), attr);
-    }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        attributes.withCache(cache);
-        return this;
     }
 
     private EnumSet<Path.Type> resolveType(final DriveItem.Metadata metadata) {

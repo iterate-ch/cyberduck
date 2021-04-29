@@ -187,8 +187,11 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(type == UrlProvider.class) {
             return (T) new VaultRegistryUrlProvider(session, (UrlProvider) proxy, this);
         }
-        if(type == IdProvider.class) {
-            return (T) new VaultRegistryIdProvider(session, (IdProvider) proxy, this);
+        if(type == FileIdProvider.class) {
+            return (T) new VaultRegistryFileIdProvider(session, (FileIdProvider) proxy, this);
+        }
+        if(type == VersionIdProvider.class) {
+            return (T) new VaultRegistryVersionIdProvider(session, (VersionIdProvider) proxy, this);
         }
         if(type == Delete.class) {
             return (T) new VaultRegistryDeleteFeature(session, (Delete) proxy, this);

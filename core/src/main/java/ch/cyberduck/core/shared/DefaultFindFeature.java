@@ -18,7 +18,7 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -32,22 +32,16 @@ public class DefaultFindFeature extends ListFilteringFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return true;
         }
         try {
-            final Path found = this.search(file);
+            final Path found = this.search(file, listener);
             return found != null;
         }
         catch(NotfoundException e) {
             return false;
         }
-    }
-
-    @Override
-    public DefaultFindFeature withCache(final Cache<Path> cache) {
-        super.withCache(cache);
-        return this;
     }
 }

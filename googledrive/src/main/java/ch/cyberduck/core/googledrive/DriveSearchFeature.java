@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -27,9 +26,9 @@ import ch.cyberduck.core.features.Search;
 public class DriveSearchFeature implements Search {
 
     private final DriveSession session;
-    private final DriveFileidProvider fileid;
+    private final DriveFileIdProvider fileid;
 
-    public DriveSearchFeature(final DriveSession session, final DriveFileidProvider fileid) {
+    public DriveSearchFeature(final DriveSession session, final DriveFileIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -49,8 +48,4 @@ public class DriveSearchFeature implements Search {
         return true;
     }
 
-    @Override
-    public Search withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

@@ -192,12 +192,13 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     @Override
     protected void logout() {
         client.getHttpClient().close();
+        fileid.clear();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
-        if(type == IdProvider.class) {
+        if(type == FileIdProvider.class) {
             return (T) fileid;
         }
         if(type == ListService.class) {

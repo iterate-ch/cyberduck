@@ -15,7 +15,6 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -45,8 +44,8 @@ public class VaultRegistryWriteFeature<T> implements Write<T> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, Write.class, proxy).append(file, length, cache);
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, Write.class, proxy).append(file, status);
     }
 
     @Override

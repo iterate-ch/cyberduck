@@ -62,7 +62,7 @@ public class TouchWorkerTest extends AbstractS3Test {
         };
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path home = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertEquals(test, new TouchWorker(test).run(session));
     }

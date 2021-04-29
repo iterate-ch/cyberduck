@@ -15,24 +15,17 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.JSON;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
@@ -62,33 +55,20 @@ import java.util.Collections;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
-public class StoregateWriteFeature extends AbstractHttpWriteFeature<String> {
+public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata> {
     private static final Logger log = Logger.getLogger(StoregateWriteFeature.class);
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
-    private final Find finder;
-    private final AttributesFinder attributes;
 
-    public StoregateWriteFeature(final StoregateSession session, final StoregateIdProvider nodeid) {
-        this(session, nodeid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
-    }
-
-    public StoregateWriteFeature(final StoregateSession session, final StoregateIdProvider fileid, final Find finder, final AttributesFinder attributes) {
-        super(finder, attributes);
+    public StoregateWriteFeature(final StoregateSession session, final StoregateIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
-        this.finder = finder;
-        this.attributes = attributes;
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override
@@ -102,10 +82,10 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     @Override
-    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
+    public HttpResponseOutputStream<FileMetadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DelayedHttpEntityCallable<FileMetadata> command = new DelayedHttpEntityCallable<FileMetadata>() {
             @Override
-            public String call(final AbstractHttpEntity entity) throws BackgroundException {
+            public FileMetadata call(final AbstractHttpEntity entity) throws BackgroundException {
                 // Initiate a resumable upload
                 String location;
                 try {
@@ -139,7 +119,8 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<String> {
                             case HttpStatus.SC_CREATED:
                                 final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8),
                                     FileMetadata.class);
-                                return result.getId();
+                                fileid.cache(file, result.getId());
+                                return result;
                             default:
                                 throw new StoregateExceptionMappingService().map(new ApiException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                     EntityUtils.toString(putResponse.getEntity())));
@@ -187,7 +168,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<String> {
                 request.addHeader("X-Lock-Id", status.getLockId().toString());
             }
             meta.setFileName(URIEncoder.encode(file.getName()));
-            meta.setParentId(fileid.getFileid(file.getParent(), new DisabledListProgressListener()));
+            meta.setParentId(fileid.getFileId(file.getParent(), new DisabledListProgressListener()));
             meta.setFileSize(status.getLength() > 0 ? status.getLength() : null);
             meta.setCreated(DateTime.now());
             if(null != status.getTimestamp()) {

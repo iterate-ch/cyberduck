@@ -58,7 +58,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
 
     @Override
     public DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
-        final String versionId = fileIdProvider.getFileid(file, new DisabledListProgressListener());
+        final String versionId = fileid.getFileId(file, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }
@@ -73,7 +73,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
             throw new NotfoundException(String.format("File %s is not in a drive.", file.getAbsolute()));
         }
         final Drive drive;
-        final String driveId = fileIdProvider.getFileid(driveContainer.getContainerPath().get(), new DisabledListProgressListener());
+        final String driveId = fileid.getFileId(driveContainer.getContainerPath().get(), new DisabledListProgressListener());
         final GraphSession.ContainerItem parentContainer = getContainer(driveContainer.getContainerPath().get().getParent());
         if(parentContainer.getCollectionPath().map(p -> SharepointListService.GROUPS_CONTAINER.equals(p.getName())).orElse(false)) {
             drive = new Drive(getGroup(parentContainer.getContainerPath().get()), driveId);

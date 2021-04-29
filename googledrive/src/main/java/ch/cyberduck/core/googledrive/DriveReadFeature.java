@@ -55,9 +55,9 @@ public class DriveReadFeature implements Read {
     private static final Logger log = Logger.getLogger(DriveReadFeature.class);
 
     private final DriveSession session;
-    private final DriveFileidProvider fileid;
+    private final DriveFileIdProvider fileid;
 
-    public DriveReadFeature(final DriveSession session, final DriveFileidProvider fileid) {
+    public DriveReadFeature(final DriveSession session, final DriveFileIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -81,7 +81,7 @@ public class DriveReadFeature implements Read {
         else {
             try {
                 final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsAllDrives=%s",
-                    session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
+                    session.getClient().getRootUrl(), fileid.getFileId(file, new DisabledListProgressListener()),
                     PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
                 return this.read(request, file, status);
             }
@@ -99,7 +99,7 @@ public class DriveReadFeature implements Read {
                 }
                 // Continue with acknowledgeAbuse=true
                 final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsAllDrives=%s&acknowledgeAbuse=true",
-                    session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
+                    session.getClient().getRootUrl(), fileid.getFileId(file, new DisabledListProgressListener()),
                     PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
                 return this.read(request, file, status);
             }

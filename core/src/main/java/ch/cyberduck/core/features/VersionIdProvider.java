@@ -1,4 +1,4 @@
-package ch.cyberduck.core.shared;
+package ch.cyberduck.core.features;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -15,19 +15,26 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.exception.BackgroundException;
 
-public class NullFileidProvider implements IdProvider {
-    @Override
-    public String getFileid(final Path file, final ListProgressListener listener) {
-        return null;
-    }
+/**
+ * Determine an ID for a file for services where API calls take IDs rather than file paths. Implemented for services
+ * where the file id changes when updating file contents.
+ */
+public interface VersionIdProvider {
+    /**
+     * Determine version id for file
+     *
+     * @param file     File
+     * @param listener Progress listener
+     * @return Latest version id for file
+     */
+    String getVersionId(Path file, ListProgressListener listener) throws BackgroundException;
 
-    @Override
-    public IdProvider withCache(final Cache<Path> cache) {
-        return this;
-    }
+    /**
+     * Clear any cached values
+     */
+    void clear();
 }

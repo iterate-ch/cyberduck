@@ -36,7 +36,7 @@ public class DriveTouchFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testTouch() throws Exception {
-        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path test = new DriveTouchFeature(session, fileid).touch(
             new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("x-application/cyberduck"));
         assertEquals("1", test.attributes().getVersionId());

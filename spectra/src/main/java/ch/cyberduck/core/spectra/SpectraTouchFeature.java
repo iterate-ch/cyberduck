@@ -46,7 +46,7 @@ public class SpectraTouchFeature implements Touch {
     public Path touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
         final SpectraBulkService bulk = new SpectraBulkService(session);
         final TransferStatus status = new TransferStatus();
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(file), status.length(0L)), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(file), status.withLength(0L)), new DisabledConnectionCallback());
         final StatusOutputStream<StorageObject> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
         final S3Object metadata = (S3Object) out.getStatus();

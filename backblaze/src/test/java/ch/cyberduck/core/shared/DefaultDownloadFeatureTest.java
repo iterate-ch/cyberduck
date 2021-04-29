@@ -22,9 +22,9 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2DeleteFeature;
-import ch.cyberduck.core.b2.B2FileidProvider;
 import ch.cyberduck.core.b2.B2ReadFeature;
 import ch.cyberduck.core.b2.B2TouchFeature;
+import ch.cyberduck.core.b2.B2VersionIdProvider;
 import ch.cyberduck.core.b2.B2WriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -58,13 +58,13 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
     @Test
     public void testOverwrite() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path test = new B2TouchFeature(session, fileid).touch(
-                new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+            new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final byte[] content = new byte[39864];
         new Random().nextBytes(content);
         {
-            final TransferStatus status = new TransferStatus().length(content.length);
+            final TransferStatus status = new TransferStatus().withLength(content.length);
             final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
@@ -72,7 +72,7 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
             test.attributes().setVersionId(((B2FileResponse) out.getStatus()).getFileId());
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final TransferStatus status = new TransferStatus().length(content.length);
+        final TransferStatus status = new TransferStatus().withLength(content.length);
         new DefaultDownloadFeature(new B2ReadFeature(session, fileid)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
@@ -89,12 +89,12 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
     public void testTransferUnknownSize() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         new B2TouchFeature(session, fileid).touch(test, new TransferStatus());
         final byte[] content = new byte[1];
         new Random().nextBytes(content);
         {
-            final TransferStatus status = new TransferStatus().length(content.length);
+            final TransferStatus status = new TransferStatus().withLength(content.length);
             final OutputStream out = new B2WriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
@@ -102,7 +102,7 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
-            final TransferStatus status = new TransferStatus().length(-1L);
+            final TransferStatus status = new TransferStatus().withLength(-1L);
             new DefaultDownloadFeature(new B2ReadFeature(session, fileid)).download(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,

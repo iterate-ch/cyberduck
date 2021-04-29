@@ -4,12 +4,11 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
 
 public class SharepointSiteListService extends AbstractSharepointListService {
 
-    public SharepointSiteListService(final SharepointSiteSession session, final IdProvider idProvider) {
-        super(session, idProvider);
+    public SharepointSiteListService(final SharepointSiteSession session) {
+        super(session);
     }
 
     @Override

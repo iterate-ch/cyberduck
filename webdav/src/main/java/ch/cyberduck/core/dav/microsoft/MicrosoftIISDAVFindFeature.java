@@ -15,6 +15,7 @@ package ch.cyberduck.core.dav.microsoft;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVSession;
@@ -41,13 +42,13 @@ public class MicrosoftIISDAVFindFeature extends DAVFindFeature {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            return super.find(file);
+            return super.find(file, listener);
         }
         catch(AccessDeniedException e) {
             headers.clear();
-            return super.find(file);
+            return super.find(file, listener);
         }
 
     }

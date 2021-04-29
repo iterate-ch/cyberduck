@@ -2,11 +2,13 @@ package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
@@ -42,7 +44,7 @@ public class OverwriteFilterTest {
         files.put(source, new Path("a", EnumSet.of(Path.Type.directory)));
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) {
+            public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return true;
             }
         };

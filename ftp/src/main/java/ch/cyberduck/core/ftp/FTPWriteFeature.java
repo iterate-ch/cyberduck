@@ -38,7 +38,6 @@ public class FTPWriteFeature extends AppendWriteFeature<Integer> {
     private final FTPSession session;
 
     public FTPWriteFeature(final FTPSession session) {
-        super(session);
         this.session = session;
     }
 

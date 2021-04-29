@@ -27,6 +27,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
@@ -44,6 +45,7 @@ import static org.junit.Assert.fail;
 
 public abstract class AbstractGraphTest {
     private GraphSession session;
+    protected GraphFileIdProvider fileid;
 
     @After
     public void disconnect() throws Exception {
@@ -56,6 +58,7 @@ public abstract class AbstractGraphTest {
         final Profile profile = new ProfilePlistReader(factory).read(profile());
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
         session = session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        fileid = session.fileid;
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {

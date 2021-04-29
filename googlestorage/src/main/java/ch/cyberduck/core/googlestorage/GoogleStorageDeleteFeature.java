@@ -18,8 +18,10 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -54,9 +56,14 @@ public class GoogleStorageDeleteFeature implements Delete {
                 }
                 else {
                     final Storage.Objects.Delete request = session.getClient().objects().delete(containerService.getContainer(file).getName(), containerService.getKey(file));
-                    if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-                        // You permanently delete versions of objects by including the generation number in the deletion request
-                        request.setGeneration(Long.parseLong(file.attributes().getVersionId()));
+                    final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+                        containerService.getContainer(file)
+                    ) : VersioningConfiguration.empty();
+                    if(versioning.isEnabled()) {
+                        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+                            // You permanently delete versions of objects by including the generation number in the deletion request
+                            request.setGeneration(Long.parseLong(file.attributes().getVersionId()));
+                        }
                     }
                     request.execute();
                 }

@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
@@ -44,7 +43,6 @@ import static org.junit.Assert.fail;
 
 public class AbstractDriveTest {
 
-    protected final PathCache cache = new PathCache(100);
     protected DriveSession session;
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
@@ -58,7 +56,6 @@ public class AbstractDriveTest {
     @After
     public void disconnect() throws Exception {
         session.close();
-        cache.clear();
     }
 
     @Before

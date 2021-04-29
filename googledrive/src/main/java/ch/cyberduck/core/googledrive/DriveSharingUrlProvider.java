@@ -30,9 +30,9 @@ import com.google.api.services.drive.model.Permission;
 public class DriveSharingUrlProvider implements PromptUrlProvider {
 
     private final DriveSession session;
-    private final DriveFileidProvider fileid;
+    private final DriveFileIdProvider fileid;
 
-    public DriveSharingUrlProvider(final DriveSession session, final DriveFileidProvider fileid) {
+    public DriveSharingUrlProvider(final DriveSession session, final DriveFileIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -53,7 +53,7 @@ public class DriveSharingUrlProvider implements PromptUrlProvider {
         permission.setRole("reader");
         permission.setType("anyone");
         try {
-            session.getClient().permissions().create(fileid.getFileid(file, new DisabledListProgressListener()), permission)
+            session.getClient().permissions().create(fileid.getFileId(file, new DisabledListProgressListener()), permission)
                 .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
         }
         catch(IOException e) {

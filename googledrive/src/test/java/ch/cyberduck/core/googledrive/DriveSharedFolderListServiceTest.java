@@ -25,14 +25,14 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 @Category(IntegrationTest.class)
 public class DriveSharedFolderListServiceTest extends AbstractDriveTest{
 
     @Test
     public void testList() throws Exception {
-        final AttributedList<Path> list = new DriveSharedFolderListService(session, new DriveFileidProvider(session).withCache(cache))
+        final AttributedList<Path> list = new DriveSharedFolderListService(session, new DriveFileIdProvider(session))
             .list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
     }

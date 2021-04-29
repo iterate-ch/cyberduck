@@ -43,6 +43,6 @@ public class SHA512ChecksumComputeTest {
                 new TransferStatus().skip(1)).hash);
         assertEquals("dc6d6c30f2be9c976d6318c9a534d85e9a1c3f3608321a04b4678ef408124d45d7164f3e562e68c6c0b6c077340a785824017032fddfa924f4cf400e6cbb6adc",
             new SHA512ChecksumCompute().compute(IOUtils.toInputStream("_input_", Charset.defaultCharset()),
-                new TransferStatus().skip(1).length(5)).hash);
+                new TransferStatus().skip(1).withLength(5)).hash);
     }
 }

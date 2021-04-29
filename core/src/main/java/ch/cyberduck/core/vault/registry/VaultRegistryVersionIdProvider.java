@@ -15,35 +15,33 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.vault.VaultRegistry;
 
-public class VaultRegistryIdProvider implements IdProvider {
+public class VaultRegistryVersionIdProvider implements VersionIdProvider {
 
     private final Session<?> session;
-    private final IdProvider proxy;
+    private final VersionIdProvider proxy;
     private final VaultRegistry registry;
 
-    public VaultRegistryIdProvider(final Session<?> session, final IdProvider proxy, final VaultRegistry registry) {
+    public VaultRegistryVersionIdProvider(final Session<?> session, final VersionIdProvider proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
     }
 
     @Override
-    public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, IdProvider.class, proxy).getFileid(file, listener);
+    public String getVersionId(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, VersionIdProvider.class, proxy).getVersionId(file, listener);
     }
 
     @Override
-    public IdProvider withCache(final Cache<Path> cache) {
-        proxy.withCache(cache);
-        return this;
+    public void clear() {
+        //
     }
 
     @Override

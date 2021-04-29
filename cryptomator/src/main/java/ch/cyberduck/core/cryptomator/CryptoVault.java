@@ -287,7 +287,7 @@ public class CryptoVault implements Vault {
                 final KeyFile upgradedMasterKeyFile = cryptor.writeKeysToMasterkeyFile(passphrase, pepper, VAULT_VERSION_DEPRECATED);
                 final Path masterKeyFile = new Path(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
                 final byte[] masterKeyFileContent = upgradedMasterKeyFile.serialize();
-                new ContentWriter(session).write(masterKeyFile, masterKeyFileContent, new TransferStatus().exists(true).length(masterKeyFileContent.length));
+                new ContentWriter(session).write(masterKeyFile, masterKeyFileContent, new TransferStatus().exists(true).withLength(masterKeyFileContent.length));
                 log.warn(String.format("Updated masterkey %s to version %d", masterKeyFile, VAULT_VERSION_DEPRECATED));
                 return KeyFile.parse(upgradedMasterKeyFile.serialize());
             }
@@ -385,7 +385,7 @@ public class CryptoVault implements Vault {
             }
             final PathAttributes attributes = new PathAttributes(file.attributes());
             attributes.setDirectoryId(null);
-            if(metadata) {
+            if(!metadata) {
                 // The directory is different from the metadata file used to resolve the actual folder
                 attributes.setVersionId(null);
                 attributes.setFileId(null);
@@ -568,8 +568,10 @@ public class CryptoVault implements Vault {
             }
             if(type == Directory.class) {
                 return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                    new CryptoDirectoryV6Feature(session, (Directory) delegate, session._getFeature(Write.class), this) :
-                    new CryptoDirectoryV7Feature(session, (Directory) delegate, session._getFeature(Write.class), this));
+                    new CryptoDirectoryV6Feature(session, (Directory) delegate, session._getFeature(Write.class),
+                        session._getFeature(Find.class), this) :
+                    new CryptoDirectoryV7Feature(session, (Directory) delegate, session._getFeature(Write.class),
+                        session._getFeature(Find.class), this));
             }
             if(type == Upload.class) {
                 return (T) new CryptoUploadFeature(session, (Upload) delegate, session._getFeature(Write.class), this);
@@ -601,8 +603,11 @@ public class CryptoVault implements Vault {
             if(type == UrlProvider.class) {
                 return (T) new CryptoUrlProvider(session, (UrlProvider) delegate, this);
             }
-            if(type == IdProvider.class) {
-                return (T) new CryptoIdProvider(session, (IdProvider) delegate, this);
+            if(type == FileIdProvider.class) {
+                return (T) new CryptoFileIdProvider(session, (FileIdProvider) delegate, this);
+            }
+            if(type == VersionIdProvider.class) {
+                return (T) new CryptoVersionIdProvider(session, (VersionIdProvider) delegate, this);
             }
             if(type == Delete.class) {
                 return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?

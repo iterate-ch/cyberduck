@@ -15,7 +15,7 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
+import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
 
 public class StoregateAttributesFinderFeature implements AttributesFinder {
 
@@ -37,7 +38,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             final FilesApi files = new FilesApi(session.getClient());
             return this.toAttributes(files.filesGet_1(URIEncoder.encode(fileid.getPrefixedPath(file))));
@@ -89,13 +90,27 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
         }
         attrs.setPermission(permission);
         attrs.setFileId(f.getId());
-
         return attrs;
     }
 
-    @Override
-    public AttributesFinder withCache(final Cache<Path> cache) {
-        fileid.withCache(cache);
-        return this;
+    public PathAttributes toAttributes(final FileMetadata f) {
+        final PathAttributes attrs = new PathAttributes();
+        if(0 != f.getModified().getMillis()) {
+            attrs.setModificationDate(f.getModified().getMillis());
+        }
+        if(0 != f.getCreated().getMillis()) {
+            attrs.setCreationDate(f.getCreated().getMillis());
+        }
+        attrs.setSize(f.getFileSize());
+        if((f.getFlags() & 4) == 4) {
+            // This item is locked by some user
+            attrs.setLockId(Boolean.TRUE.toString());
+        }
+        if((f.getFlags() & 512) == 512) {
+            // This item is hidden
+            attrs.setHidden(true);
+        }
+        attrs.setFileId(f.getId());
+        return attrs;
     }
 }

@@ -24,10 +24,10 @@ import org.apache.commons.lang3.StringUtils;
 
 public class FileidDriveListService extends AbstractDriveListService {
 
-    private final DriveFileidProvider provider;
+    private final DriveFileIdProvider provider;
     private final Path file;
 
-    public FileidDriveListService(final DriveSession session, final DriveFileidProvider provider, final Path file) {
+    public FileidDriveListService(final DriveSession session, final DriveFileIdProvider provider, final Path file) {
         super(session, provider, 1);
         this.provider = provider;
         this.file = file;
@@ -42,6 +42,6 @@ public class FileidDriveListService extends AbstractDriveListService {
         if(directory.equals(DriveHomeFinderService.SHARED_FOLDER_NAME)) {
             return String.format("name = '%s' and sharedWithMe", escaped);
         }
-        return String.format("name = '%s' and '%s' in parents", escaped, provider.getFileid(directory, new DisabledListProgressListener()));
+        return String.format("name = '%s' and '%s' in parents", escaped, provider.getFileId(directory, new DisabledListProgressListener()));
     }
 }

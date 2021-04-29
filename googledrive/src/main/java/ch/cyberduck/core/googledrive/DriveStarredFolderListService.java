@@ -20,11 +20,11 @@ import ch.cyberduck.core.Path;
 
 public class DriveStarredFolderListService extends AbstractDriveListService {
 
-    public DriveStarredFolderListService(final DriveSession session, final DriveFileidProvider fileid) {
+    public DriveStarredFolderListService(final DriveSession session, final DriveFileIdProvider fileid) {
         super(session, fileid);
     }
 
-    public DriveStarredFolderListService(final DriveSession session, final DriveFileidProvider fileid, final int pagesize) {
+    public DriveStarredFolderListService(final DriveSession session, final DriveFileIdProvider fileid, final int pagesize) {
         super(session, fileid, pagesize);
     }
 

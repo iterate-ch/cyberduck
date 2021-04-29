@@ -74,7 +74,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolder() throws Exception {
-        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         new S3ObjectListService(session).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 

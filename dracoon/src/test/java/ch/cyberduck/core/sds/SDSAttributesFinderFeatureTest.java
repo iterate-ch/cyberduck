@@ -15,18 +15,17 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -37,7 +36,6 @@ import org.junit.experimental.categories.Category;
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -46,7 +44,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -61,7 +59,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testFindRoot() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
         final PathAttributes attributes = f.find(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)));
         assertNotEquals(PathAttributes.EMPTY, attributes);
@@ -70,7 +68,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testFindFile() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -94,7 +92,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testFindDirectory() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
@@ -119,7 +117,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testFindRoom() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(room);
@@ -135,7 +133,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testVersioning() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
@@ -143,20 +141,19 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         final PathAttributes previous = f.find(folder, 1);
         assertNotEquals(-1L, previous.getRevision().longValue());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String initialVersion = test.attributes().getVersionId();
         assertEquals(test.getParent(), folder);
         assertTrue(new SDSFindFeature(nodeid).find(test));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        final VersionId version = out.getStatus();
-        assertNotNull(version);
-        assertNotEquals(version.id, test.attributes().getVersionId());
-        final PathAttributes updated = new SDSAttributesFinderFeature(session, nodeid, true).find(
-            new Path(test.getParent(), test.getName(), test.getType(), new PathAttributes().withVersionId(version.id)), 1);
+        assertNotNull(test.attributes().getVersionId());
+        assertNotEquals(initialVersion, test.attributes().getVersionId());
+        final PathAttributes updated = new SDSAttributesFinderFeature(session, nodeid, true).find(test, 1);
         assertFalse(updated.getVersions().isEmpty());
         assertEquals(previous.getModificationDate(), new SDSAttributesFinderFeature(session, nodeid).find(folder, 1).getModificationDate());
         // Branch version is changing with background task only

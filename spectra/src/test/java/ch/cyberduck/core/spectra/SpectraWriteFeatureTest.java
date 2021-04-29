@@ -21,9 +21,9 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
@@ -74,7 +74,7 @@ public class SpectraWriteFeatureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1000);
-        final TransferStatus status = new TransferStatus().length(content.length);
+        final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         // Allocate
         final SpectraBulkService bulk = new SpectraBulkService(session);
@@ -118,7 +118,7 @@ public class SpectraWriteFeatureTest {
         new SpectraTouchFeature(session).touch(test, new TransferStatus());
         // Replace content
         final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
-        final TransferStatus status = new TransferStatus().length(content.length);
+        final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status.exists(true)), new DisabledConnectionCallback());
@@ -138,23 +138,33 @@ public class SpectraWriteFeatureTest {
                 return Scheme.http;
             }
         }), new DisabledX509TrustManager(),
-            new DefaultX509KeyManager());
-        final SpectraWriteFeature feature = new SpectraWriteFeature(session, new Find() {
+            new DefaultX509KeyManager()) {
             @Override
-            public boolean find(final Path file) {
-                return true;
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Find.class) {
+                    return (T) new Find() {
+                        @Override
+                        public boolean find(final Path file, final ListProgressListener listener) {
+                            return true;
+                        }
+                    };
+                }
+                if(type == AttributesFinder.class) {
+                    return (T) new AttributesFinder() {
+                        @Override
+                        public PathAttributes find(final Path file, final ListProgressListener listener) {
+                            final PathAttributes attributes = new PathAttributes();
+                            attributes.setSize(3L);
+                            return attributes;
+                        }
+                    };
+                }
+                return super._getFeature(type);
             }
-        }, new AttributesFinder() {
-            @Override
-            public PathAttributes find(final Path file) {
-                final PathAttributes attributes = new PathAttributes();
-                attributes.setSize(3L);
-                return attributes;
-            }
-        });
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty());
+        };
+        final SpectraWriteFeature feature = new SpectraWriteFeature(session);
+        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L).withRemote(new PathAttributes().withSize(3L)));
         assertFalse(append.append);
-        assertTrue(append.override);
         assertEquals(3L, append.size, 0L);
     }
 
@@ -178,7 +188,7 @@ public class SpectraWriteFeatureTest {
         final SpectraBulkService bulk = new SpectraBulkService(session);
         {
             final byte[] content1 = RandomUtils.nextBytes(1000);
-            final TransferStatus status = new TransferStatus().length(content1.length);
+            final TransferStatus status = new TransferStatus().withLength(content1.length);
             status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content1), status));
             bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
             final OutputStream out = new SpectraWriteFeature(session).write(test, status, new DisabledConnectionCallback());
@@ -195,7 +205,7 @@ public class SpectraWriteFeatureTest {
         }
         {
             final byte[] content2 = RandomUtils.nextBytes(1000);
-            final TransferStatus status = new TransferStatus().length(content2.length);
+            final TransferStatus status = new TransferStatus().withLength(content2.length);
             // Overwrite
             bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status.exists(true)), new DisabledConnectionCallback());
             final OutputStream out = new SpectraWriteFeature(session).write(test, status.exists(true), new DisabledConnectionCallback());

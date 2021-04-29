@@ -18,7 +18,6 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -57,8 +56,8 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        return writer.append(file, length, cache);
+    public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return writer.append(file, status);
     }
 
     @Override

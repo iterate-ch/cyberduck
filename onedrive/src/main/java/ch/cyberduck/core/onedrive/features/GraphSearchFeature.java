@@ -16,7 +16,6 @@ package ch.cyberduck.core.onedrive.features;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -39,9 +38,9 @@ public class GraphSearchFeature implements Search {
     private final GraphSession session;
     private final GraphAttributesFinderFeature attributes;
 
-    public GraphSearchFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
+    public GraphSearchFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
-        this.attributes = new GraphAttributesFinderFeature(session, idProvider);
+        this.attributes = new GraphAttributesFinderFeature(session);
     }
 
     @Override
@@ -73,8 +72,4 @@ public class GraphSearchFeature implements Search {
         return true;
     }
 
-    @Override
-    public Search withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

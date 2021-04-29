@@ -16,7 +16,6 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -56,13 +55,13 @@ public class B2ObjectListService implements ListService {
     private final B2Session session;
 
     private final int chunksize;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
 
-    public B2ObjectListService(final B2Session session, final B2FileidProvider fileid) {
+    public B2ObjectListService(final B2Session session, final B2VersionIdProvider fileid) {
         this(session, fileid, PreferencesFactory.get().getInteger("b2.listing.chunksize"));
     }
 
-    public B2ObjectListService(final B2Session session, final B2FileidProvider fileid, final int chunksize) {
+    public B2ObjectListService(final B2Session session, final B2VersionIdProvider fileid, final int chunksize) {
         this.session = session;
         this.fileid = fileid;
         this.chunksize = chunksize;
@@ -71,7 +70,7 @@ public class B2ObjectListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            final AttributedList<Path> objects = new AttributedList<Path>();
+            final AttributedList<Path> objects = new AttributedList<>();
             Marker marker;
             if(containerService.isContainer(directory)) {
                 marker = new Marker(null, null);
@@ -79,7 +78,7 @@ public class B2ObjectListService implements ListService {
             else {
                 marker = new Marker(String.format("%s%s", containerService.getKey(directory), Path.DELIMITER), null);
             }
-            final String containerId = fileid.getFileid(containerService.getContainer(directory), new DisabledListProgressListener());
+            final String containerId = fileid.getVersionId(containerService.getContainer(directory), new DisabledListProgressListener());
             // Seen placeholders
             final Map<String, Long> revisions = new HashMap<>();
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
@@ -92,7 +91,7 @@ public class B2ObjectListService implements ListService {
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
                     containerId,
                     marker.nextFilename, marker.nextFileId, chunksize,
-                    containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), String.valueOf(Path.DELIMITER)),
+                    containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), Path.DELIMITER),
                     String.valueOf(Path.DELIMITER));
                 marker = this.parse(directory, objects, response, revisions);
                 if(null == marker.nextFileId) {
@@ -203,9 +202,4 @@ public class B2ObjectListService implements ListService {
         }
     }
 
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        fileid.withCache(cache);
-        return this;
-    }
 }

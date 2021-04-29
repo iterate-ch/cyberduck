@@ -18,12 +18,10 @@ package ch.cyberduck.core.transfer.copy;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -36,7 +34,6 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -53,15 +50,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractCopyFilter.class);
 
     protected final Session<?> sourceSession;
-
     protected final Session<?> destinationSession;
-
-    protected Cache<Path> sourceCache
-            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
-
-    protected final Cache<Path> destinationCache
-            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
-
     protected final Map<Path, Path> files;
 
     private final UploadFilterOptions options;
@@ -79,17 +68,10 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferPathFilter withCache(final Cache<Path> cache) {
-        // With cache from source host
-        this.sourceCache = cache;
-        return this;
-    }
-
-    @Override
     public TransferStatus prepare(final Path source, final Local n, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         // Read remote attributes from source
-        final PathAttributes attributes = sourceSession.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(sourceSession)).withCache(sourceCache).find(source);
+        final PathAttributes attributes = sourceSession.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(sourceSession)).find(source);
         if(source.isFile()) {
             // Content length
             status.setLength(attributes.getSize());
@@ -118,7 +100,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
             // Do not attempt to create a directory that already exists
             final Path target = files.get(source);
             // Look for file in target host
-            if(destinationSession.getFeature(Find.class, new DefaultFindFeature(destinationSession)).withCache(destinationCache).find(target)) {
+            if(destinationSession.getFeature(Find.class, new DefaultFindFeature(destinationSession)).find(target)) {
                 status.setExists(true);
             }
         }

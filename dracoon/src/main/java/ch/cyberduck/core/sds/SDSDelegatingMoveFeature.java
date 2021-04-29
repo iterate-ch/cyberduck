@@ -56,13 +56,13 @@ public class SDSDelegatingMoveFeature implements Move {
         }
         if(nodeid.isEncrypted(source) ^ nodeid.isEncrypted(target)) {
             // Moving into or from an encrypted room
-            final Copy copy = session.getFeature(Copy.class);
+            final Copy copy = new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid));
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Move %s to %s using copy feature %s", source, target, copy));
             }
             final Path c = copy.copy(source, target, status, connectionCallback);
             // Delete source file after copy is complete
-            final Delete delete = session.getFeature(Delete.class);
+            final Delete delete = new SDSDeleteFeature(session, nodeid);
             if(delete.isSupported(source)) {
                 log.warn(String.format("Delete source %s copied to %s", source, target));
                 delete.delete(Collections.singletonMap(source, status), connectionCallback, callback);

@@ -75,14 +75,14 @@ public class SpectraUploadFeatureTest {
         out.close();
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final TransferStatus writeStatus = new TransferStatus().length(content.length);
+        final TransferStatus writeStatus = new TransferStatus().withLength(content.length);
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
         final SpectraUploadFeature upload = new SpectraUploadFeature(new SpectraWriteFeature(session), new SpectraBulkService(session));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 writeStatus, new DisabledConnectionCallback());
         final byte[] buffer = new byte[content.length];
-        final TransferStatus readStatus = new TransferStatus().length(content.length);
+        final TransferStatus readStatus = new TransferStatus().withLength(content.length);
         bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), readStatus), new DisabledConnectionCallback());
         final InputStream in = new SpectraReadFeature(session).read(test, readStatus, new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
@@ -115,7 +115,7 @@ public class SpectraUploadFeatureTest {
             final OutputStream out = local1.getOutputStream(false);
             IOUtils.write(content, out);
             out.close();
-            status1 = new TransferStatus().length(content.length);
+            status1 = new TransferStatus().withLength(content.length);
         }
         final Local local2 = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TransferStatus status2;
@@ -125,7 +125,7 @@ public class SpectraUploadFeatureTest {
             final OutputStream out = local2.getOutputStream(false);
             IOUtils.write(content, out);
             out.close();
-            status2 = new TransferStatus().length(content.length);
+            status2 = new TransferStatus().withLength(content.length);
         }
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test1 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

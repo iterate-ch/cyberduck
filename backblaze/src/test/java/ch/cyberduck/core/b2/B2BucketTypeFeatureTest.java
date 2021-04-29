@@ -37,7 +37,7 @@ public class B2BucketTypeFeatureTest extends AbstractB2Test {
     public void getLocation() throws Exception {
         final Path bucket1 = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path bucket2 = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         new B2DirectoryFeature(session, fileid).mkdir(bucket1, null, new TransferStatus());
         assertEquals("allPrivate", new B2BucketTypeFeature(session, fileid).getLocation(bucket1).getIdentifier());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket1), new DisabledLoginCallback(), new Delete.DisabledCallback());

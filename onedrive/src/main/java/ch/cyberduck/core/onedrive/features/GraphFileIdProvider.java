@@ -16,58 +16,67 @@ package ch.cyberduck.core.onedrive.features;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.onedrive.GraphSession;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
-public class GraphFileIdProvider implements IdProvider {
+public class GraphFileIdProvider implements FileIdProvider {
+    private static final Logger log = Logger.getLogger(GraphFileIdProvider.class);
 
     private final GraphSession session;
-    private Cache<Path> cache = PathCache.empty();
+    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));
 
     public GraphFileIdProvider(final GraphSession session) {
         this.session = session;
     }
 
     @Override
-    public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public String getFileId(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getFileId())) {
             return file.attributes().getFileId();
         }
-        if(cache.isCached(file.getParent())) {
-            final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.find(new SimplePathPredicate(file));
-            if(null != found) {
-                if(StringUtils.isNotBlank(found.attributes().getFileId())) {
-                    return this.set(file, found.attributes().getFileId());
-                }
+        if(cache.contains(new SimplePathPredicate(file))) {
+            final String cached = cache.get(new SimplePathPredicate(file));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return cached fileid %s for file %s", cached, file));
             }
+            return cached;
         }
         final AttributedList<Path> list = session._getFeature(ListService.class).list(file.getParent(), listener);
-        final Path found = list.find(path -> file.getAbsolute().equals(path.getAbsolute()));
+        final Path found = list.find(new SimplePathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
-        return this.set(file, found.attributes().getFileId());
+        return this.cache(file, found.attributes().getFileId());
     }
 
-    protected String set(final Path file, final String id) {
-        file.attributes().setFileId(id);
+    public String cache(final Path file, final String id) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Cache %s for file %s", id, file));
+        }
+        if(null == id) {
+            cache.remove(new SimplePathPredicate(file));
+            file.attributes().setFileId(null);
+        }
+        else {
+            cache.put(new SimplePathPredicate(file), id);
+            file.attributes().setFileId(id);
+        }
         return id;
     }
 
     @Override
-    public IdProvider withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return this;
+    public void clear() {
+        cache.clear();
     }
 }

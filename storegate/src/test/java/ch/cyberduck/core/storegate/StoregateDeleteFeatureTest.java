@@ -39,7 +39,7 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
 
     @Test
     public void testDeleteFile() throws Exception {
-        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
         final Path fileInRoom = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, nodeid).touch(fileInRoom, new TransferStatus());
@@ -50,7 +50,7 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
 
     @Test
     public void testDeleteFileWithLock() throws Exception {
-        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
         final Path fileInRoom = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, nodeid).touch(fileInRoom, new TransferStatus());
@@ -62,7 +62,7 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
 
     @Test
     public void testDeleteFolderRoomWithContent() throws Exception {
-        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(
             String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(room,
@@ -80,6 +80,6 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {
         final Path test = new Path(String.format("/My files/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
-        new StoregateDeleteFeature(session, new StoregateIdProvider(session).withCache(cache)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, new StoregateIdProvider(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

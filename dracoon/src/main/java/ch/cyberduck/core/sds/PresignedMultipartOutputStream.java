@@ -1,7 +1,7 @@
 package ch.cyberduck.core.sds;
 
 /*
- * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -224,7 +223,7 @@ public class PresignedMultipartOutputStream extends OutputStream {
                                         failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
                                         done.countDown();
                                     case "done":
-                                        overall.setVersion(new VersionId(String.valueOf(uploadStatus.getNode().getId())));
+                                        nodeid.cache(file, String.valueOf(uploadStatus.getNode().getId()));
                                         done.countDown();
                                         break;
                                 }
@@ -267,9 +266,5 @@ public class PresignedMultipartOutputStream extends OutputStream {
         sb.append(", offset=").append(offset);
         sb.append('}');
         return sb.toString();
-    }
-
-    public VersionId getVersionId() {
-        return overall.getVersion();
     }
 }

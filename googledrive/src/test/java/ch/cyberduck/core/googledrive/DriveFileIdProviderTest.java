@@ -39,73 +39,76 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DriveFileidProviderTest extends AbstractDriveTest {
+public class DriveFileIdProviderTest extends AbstractDriveTest {
 
     @Test
     public void testGetFileidRoot() throws Exception {
-        assertEquals("root", new DriveFileidProvider(new DriveSession(new Host(new DriveProtocol(), ""), new DisabledX509TrustManager(), new DefaultX509KeyManager()))
-            .getFileid(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
+        assertEquals("root", new DriveFileIdProvider(new DriveSession(new Host(new DriveProtocol(), ""), new DisabledX509TrustManager(), new DefaultX509KeyManager()))
+            .getFileId(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
     }
 
     @Test
     public void testGetFileid() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
-        assertNotNull(new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
-        new DriveDeleteFeature(session, new DriveFileidProvider(session).withCache(cache)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        assertNotNull(fileid.getFileId(test, new DisabledListProgressListener()));
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testGetFileidAccentCharacter() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%sà", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
-        assertNotNull(new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
-        new DriveDeleteFeature(session, new DriveFileidProvider(session).withCache(cache)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        assertNotNull(fileid.getFileId(test, new DisabledListProgressListener()));
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testGetFileidSingleQuoteCharacter() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s'", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
-        assertNotNull(new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
-        new DriveDeleteFeature(session, new DriveFileidProvider(session).withCache(cache)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final DriveFileIdProvider driveFileIdProvider = new DriveFileIdProvider(session);
+        new DriveTouchFeature(session, driveFileIdProvider).touch(test, new TransferStatus());
+        assertNotNull(driveFileIdProvider.getFileId(test, new DisabledListProgressListener()));
+        new DriveDeleteFeature(session, driveFileIdProvider).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testGetFileidBackslashCharacter() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s\\", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
-        assertNotNull(new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
-        new DriveDeleteFeature(session, new DriveFileidProvider(session).withCache(cache)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        assertNotNull(fileid.getFileId(test, new DisabledListProgressListener()));
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testGetFileidDoubleBackslashCharacter() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s\\\\", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
-        assertNotNull(new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
-        new DriveDeleteFeature(session, new DriveFileidProvider(session).withCache(cache)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        assertNotNull(fileid.getFileId(test, new DisabledListProgressListener()));
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testGetFileidSameName() throws Exception {
         final String filename = new AlphanumericRandomStringService().random();
         final Path test1 = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path p1 = new DriveTouchFeature(session, fileid).touch(test1, new TransferStatus());
-        assertEquals(p1.attributes().getFileId(), fileid.getFileid(test1, new DisabledListProgressListener()));
+        assertEquals(p1.attributes().getFileId(), fileid.getFileId(test1, new DisabledListProgressListener()));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test1), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        cache.remove(p1);
         final Path test2 = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));
         final Path p2 = new DriveTouchFeature(session, fileid).touch(test2, new TransferStatus());
-        assertEquals(p2.attributes().getFileId(), fileid.getFileid(test2, new DisabledListProgressListener()));
-        session.getClient().files().delete(p1.attributes().getFileId());
+        assertEquals(p2.attributes().getFileId(), fileid.getFileId(test2, new DisabledListProgressListener()));
         session.getClient().files().delete(p2.attributes().getFileId());
     }
 
     @Test
     public void testFileIdCollision() throws Exception {
-        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
             new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
 
@@ -119,7 +122,7 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
         assertNotNull(path33WithId.attributes().getFileId());
         assertNotEquals(path2RWithId.attributes().getFileId(), path33WithId.attributes().getFileId());
 
-        final String fileId = fileid.getFileid(path33, new DisabledListProgressListener());
+        final String fileId = fileid.getFileId(path33, new DisabledListProgressListener());
 
         assertEquals(fileId, path33WithId.attributes().getFileId());
         assertNotEquals(fileId, path2RWithId.attributes().getFileId());

@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -70,7 +69,7 @@ public class SDSListService implements ListService {
             NodeList nodes;
             do {
                 nodes = new NodesApi(session.getClient()).requestNodes(null, 0,
-                    Long.parseLong(nodeid.getFileid(directory, new DisabledListProgressListener())),
+                    Long.parseLong(nodeid.getVersionId(directory, new DisabledListProgressListener())),
                     false, null, "name:asc", offset, chunksize, StringUtils.EMPTY);
                 for(Node node : nodes.getItems()) {
                     final PathAttributes attributes = feature.toAttributes(node);
@@ -99,9 +98,4 @@ public class SDSListService implements ListService {
         return children;
     }
 
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        nodeid.withCache(cache);
-        return this;
-    }
 }

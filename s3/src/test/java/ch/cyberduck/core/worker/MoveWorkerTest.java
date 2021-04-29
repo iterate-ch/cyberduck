@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.pool.SessionPool;
@@ -90,32 +91,25 @@ public class MoveWorkerTest extends AbstractS3Test {
     @Test
     public void testMoveVersionedDirectory() throws Exception {
         final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-
         final Path sourceDirectory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket,
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path targetDirectory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket,
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-
-        Path test = new Path(sourceDirectory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3TouchFeature touch = new S3TouchFeature(session);
-        touch.touch(test, new TransferStatus());
+        Path test = touch.touch(new Path(sourceDirectory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session);
-        delete.delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        test.attributes().setVersionId(null);
+        delete.delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session).find(test));
         test = touch.touch(test, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
-
         final S3VersionedObjectListService list = new S3VersionedObjectListService(session);
         final AttributedList<Path> versioned = list.list(sourceDirectory, new DisabledListProgressListener());
-
         final Map<Path, Path> files = new HashMap<>();
         for(Path source : versioned) {
             files.put(source, new Path(targetDirectory, source.getName(), source.getType(), source.attributes()));
         }
-        final Map<Path, Path> result = new MoveWorker(files, new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()
-        ).run(session);
+        final Map<Path, Path> result = new MoveWorker(files, new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
         assertEquals(3, result.size());
         for(Map.Entry<Path, Path> entry : result.entrySet()) {
             assertFalse(new S3FindFeature(session).find(entry.getKey()));

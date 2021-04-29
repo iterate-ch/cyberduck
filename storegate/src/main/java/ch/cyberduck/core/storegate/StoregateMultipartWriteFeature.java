@@ -15,22 +15,15 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.JSON;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
@@ -56,32 +49,20 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
+public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetadata> {
     private static final Logger log = Logger.getLogger(StoregateMultipartWriteFeature.class);
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
-    private final Find finder;
-    private final AttributesFinder attributes;
 
-    public StoregateMultipartWriteFeature(final StoregateSession session, final StoregateIdProvider nodeid) {
-        this(session, nodeid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
-    }
-
-    public StoregateMultipartWriteFeature(final StoregateSession session, final StoregateIdProvider fileid, final Find finder, final AttributesFinder attributes) {
+    public StoregateMultipartWriteFeature(final StoregateSession session, final StoregateIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
-        this.finder = finder;
-        this.attributes = attributes;
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override
@@ -95,14 +76,14 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
     }
 
     @Override
-    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<FileMetadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String location = new StoregateWriteFeature(session, fileid).start(file, status);
         final MultipartOutputStream proxy = new MultipartOutputStream(location, file, status);
-        return new HttpResponseOutputStream<String>(new MemorySegementingOutputStream(proxy,
+        return new HttpResponseOutputStream<FileMetadata>(new MemorySegementingOutputStream(proxy,
             PreferencesFactory.get().getInteger("storegate.upload.multipart.chunksize"))) {
             @Override
-            public String getStatus() {
-                return proxy.getId();
+            public FileMetadata getStatus() {
+                return proxy.getResult();
             }
         };
     }
@@ -113,6 +94,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
         private final AtomicReference<BackgroundException> canceled = new AtomicReference<>();
+        private final AtomicReference<FileMetadata> result = new AtomicReference<>();
 
         private Long offset = 0L;
         private final Long length;
@@ -160,8 +142,9 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
                                 switch(response.getStatusLine().getStatusCode()) {
                                     case HttpStatus.SC_OK:
                                     case HttpStatus.SC_CREATED:
-                                        final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8), FileMetadata.class);
-                                        overall.setId(result.getId());
+                                        final FileMetadata metadata = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8), FileMetadata.class);
+                                        result.set(metadata);
+                                        fileid.cache(file, metadata.getId());
                                     case HttpStatus.SC_NO_CONTENT:
                                         // Upload complete
                                         offset += content.length;
@@ -211,9 +194,10 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
                         switch(response.getStatusLine().getStatusCode()) {
                             case HttpStatus.SC_OK:
                             case HttpStatus.SC_CREATED:
-                                final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
+                                final FileMetadata metadata = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
                                     FileMetadata.class);
-                                overall.setId(result.getId());
+                                result.set(metadata);
+                                fileid.cache(file, metadata.getId());
                             case HttpStatus.SC_NO_CONTENT:
                                 break;
                             default:
@@ -243,8 +227,8 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<String> {
             return sb.toString();
         }
 
-        public String getId() {
-            return overall.getId();
+        public FileMetadata getResult() {
+            return result.get();
         }
     }
 }

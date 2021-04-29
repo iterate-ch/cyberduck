@@ -20,7 +20,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -38,23 +37,23 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
         final Path directory = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new SharepointListService(session, new GraphFileIdProvider(session)).list(directory, new DisabledListProgressListener());
+        new SharepointListService(session).list(directory, new DisabledListProgressListener());
     }
 
     @Test
     public void testListRoot() throws Exception {
-        final AttributedList<Path> list = new SharepointListService(session, new GraphFileIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new SharepointListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertEquals(2, list.size());
     }
 
     @Test
     public void testListDefault() throws Exception {
-        new SharepointListService(session, new GraphFileIdProvider(session)).list(SharepointListService.DEFAULT_NAME, new DisabledListProgressListener());
+        new SharepointListService(session).list(SharepointListService.DEFAULT_NAME, new DisabledListProgressListener());
     }
 
     @Test
     public void testListGroups() throws Exception {
-        new SharepointListService(session, new GraphFileIdProvider(session)).list(SharepointListService.GROUPS_NAME, new DisabledListProgressListener());
+        new SharepointListService(session).list(SharepointListService.GROUPS_NAME, new DisabledListProgressListener());
     }
 }

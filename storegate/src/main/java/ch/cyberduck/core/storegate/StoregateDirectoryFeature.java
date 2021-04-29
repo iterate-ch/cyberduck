@@ -43,8 +43,9 @@ public class StoregateDirectoryFeature implements Directory<VersionId> {
             final FilesApi files = new FilesApi(session.getClient());
             final CreateFolderRequest request = new CreateFolderRequest();
             request.setName(folder.getName());
-            request.setParentID(fileid.getFileid(folder.getParent(), new DisabledListProgressListener()));
+            request.setParentID(fileid.getFileId(folder.getParent(), new DisabledListProgressListener()));
             final File f = files.filesCreateFolder(request);
+            fileid.cache(folder, f.getId());
             return folder.withAttributes(new StoregateAttributesFinderFeature(session, fileid).toAttributes(f));
         }
         catch(ApiException e) {

@@ -16,12 +16,10 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -31,35 +29,18 @@ public class DefaultSearchFeature implements Search {
 
     private final Session<?> session;
 
-    private Cache<Path> cache
-            = PathCache.empty();
-
     public DefaultSearchFeature(final Session<?> session) {
         this.session = session;
     }
 
     @Override
     public AttributedList<Path> search(final Path workdir, final Filter<Path> filter, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> list;
-        if(!cache.isCached(workdir)) {
-            list = session.getFeature(ListService.class).list(workdir, new SearchListProgressListener(filter, listener)).filter(filter);
-        }
-        else {
-            list = cache.get(workdir).filter(filter);
-        }
-        listener.chunk(workdir, list);
-        return list;
+        return session.getFeature(ListService.class).list(workdir, new SearchListProgressListener(filter, listener)).filter(filter);
     }
 
     @Override
     public boolean isRecursive() {
         return false;
-    }
-
-    @Override
-    public Search withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return this;
     }
 
     private static final class SearchListProgressListener implements ListProgressListener {

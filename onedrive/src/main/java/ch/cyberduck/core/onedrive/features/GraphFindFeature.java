@@ -15,7 +15,7 @@ package ch.cyberduck.core.onedrive.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -26,27 +26,19 @@ import ch.cyberduck.core.onedrive.GraphSession;
 public class GraphFindFeature implements Find {
 
     private final GraphSession session;
-    private final GraphFileIdProvider idProvider;
 
-    public GraphFindFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
+    public GraphFindFeature(final GraphSession session) {
         this.session = session;
-        this.idProvider = idProvider;
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            new GraphAttributesFinderFeature(session, idProvider).find(file);
+            new GraphAttributesFinderFeature(session).find(file, listener);
             return true;
         }
         catch(NotfoundException | InteroperabilityException e) {
             return false;
         }
-    }
-
-    @Override
-    public Find withCache(final Cache<Path> cache) {
-        idProvider.withCache(cache);
-        return this;
     }
 }

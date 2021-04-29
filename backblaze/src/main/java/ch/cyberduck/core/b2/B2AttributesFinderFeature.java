@@ -15,14 +15,15 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,29 +41,29 @@ import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED
 public class B2AttributesFinderFeature implements AttributesFinder {
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
 
-    public B2AttributesFinderFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2AttributesFinderFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
-        if(file.getType().contains(Path.Type.upload)) {
-            // Pending large file upload
-            return PathAttributes.EMPTY;
-        }
         try {
-            final B2FileResponse info = session.getClient().getFileInfo(fileid.getFileid(file, new DisabledListProgressListener()));
+            final B2FileResponse info = session.getClient().getFileInfo(fileid.getVersionId(file, listener));
             return this.toAttributes(info);
         }
         catch(B2ApiException e) {
             if(StringUtils.equals("file_state_none", e.getMessage())) {
                 // Pending large file upload
+                final Write.Append append = new B2WriteFeature(session, fileid).append(file, new TransferStatus());
+                if(append.append) {
+                    return new PathAttributes().withSize(append.size);
+                }
                 return PathAttributes.EMPTY;
             }
             throw new B2ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -95,10 +96,5 @@ public class B2AttributesFinderFeature implements AttributesFinder {
         return attributes;
     }
 
-    @Override
-    public AttributesFinder withCache(final Cache<Path> cache) {
-        fileid.withCache(cache);
-        return this;
-    }
 }
 

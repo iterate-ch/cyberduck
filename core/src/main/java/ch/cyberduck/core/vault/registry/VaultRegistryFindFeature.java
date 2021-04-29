@@ -15,9 +15,8 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
@@ -46,8 +45,6 @@ public class VaultRegistryFindFeature implements Find {
     private boolean autodetect = preferences.getBoolean("cryptomator.vault.autodetect")
         && preferences.getBoolean("cryptomator.enable");
 
-    private Cache<Path> cache = PathCache.empty();
-
     public VaultRegistryFindFeature(final Session<?> session, final Find proxy, final VaultRegistry registry, final VaultLookupListener lookup) {
         this.session = session;
         this.proxy = proxy;
@@ -56,13 +53,13 @@ public class VaultRegistryFindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         final Vault vault = registry.find(session, file);
         if(vault.equals(Vault.DISABLED)) {
             if(autodetect) {
                 final Path directory = file.getParent();
                 final Path key = new Path(directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
-                if(proxy.withCache(cache).find(key)) {
+                if(proxy.find(key, listener)) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Found master key %s", key));
                     }
@@ -71,8 +68,7 @@ public class VaultRegistryFindFeature implements Find {
                             log.info(String.format("Found vault %s", directory));
                         }
                         return lookup.load(session, directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER).getFeature(session, Find.class, proxy)
-                            .withCache(cache)
-                            .find(file);
+                            .find(file, listener);
                     }
                     catch(VaultUnlockCancelException e) {
                         // Continue
@@ -80,15 +76,7 @@ public class VaultRegistryFindFeature implements Find {
                 }
             }
         }
-        return vault.getFeature(session, Find.class, proxy)
-            .withCache(cache)
-            .find(file);
-    }
-
-    @Override
-    public Find withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return this;
+        return vault.getFeature(session, Find.class, proxy).find(file, listener);
     }
 
     public VaultRegistryFindFeature withAutodetect(final boolean autodetect) {

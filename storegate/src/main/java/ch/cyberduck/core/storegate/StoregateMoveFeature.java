@@ -58,10 +58,10 @@ public class StoregateMoveFeature implements Move {
             final StoregateApiClient client = session.getClient();
             final MoveFileRequest move = new MoveFileRequest()
                 .name(renamed.getName())
-                .parentID(fileid.getFileid(renamed.getParent(), new DisabledListProgressListener()))
+                .parentID(fileid.getFileId(renamed.getParent(), new DisabledListProgressListener()))
                 .mode(1); // Overwrite
             final HttpEntityEnclosingRequestBase request;
-            request = new HttpPost(String.format("%s/v4/files/%s/move", client.getBasePath(), fileid.getFileid(file, new DisabledListProgressListener())));
+            request = new HttpPost(String.format("%s/v4/files/%s/move", client.getBasePath(), fileid.getFileId(file, new DisabledListProgressListener())));
             if(status.getLockId() != null) {
                 request.addHeader("X-Lock-Id", status.getLockId().toString());
             }
@@ -72,7 +72,10 @@ public class StoregateMoveFeature implements Move {
             try {
                 switch(response.getStatusLine().getStatusCode()) {
                     case HttpStatus.SC_NO_CONTENT:
-                        return renamed;
+                        final PathAttributes attr = new PathAttributes(file.attributes());
+                        fileid.cache(file, null);
+                        fileid.cache(renamed, file.attributes().getFileId());
+                        return renamed.withAttributes(attr);
                     default:
                         throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                 }

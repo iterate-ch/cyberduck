@@ -121,18 +121,18 @@ public class SwiftSegmentService {
         }
     }
 
-    public Path getSegmentsDirectory(final Path file, final Long size) {
-        return new Path(file.getParent(), String.format("%s%s/%d", prefix, file.getName(), size), EnumSet.of(Path.Type.directory));
+    public Path getSegmentsDirectory(final Path file) {
+        return new Path(file.getParent(), String.format("%s%s", prefix, file.getName()), EnumSet.of(Path.Type.directory));
     }
 
-    public Path getSegment(final Path file, final Long size, int segmentNumber) {
-        return new Path(this.getSegmentsDirectory(file, size), String.format("%08d", segmentNumber), EnumSet.of(Path.Type.file));
+    public Path getSegment(final Path file, int segmentNumber) {
+        return new Path(this.getSegmentsDirectory(file), String.format("%08d", segmentNumber), EnumSet.of(Path.Type.file));
     }
 
     /**
-     * Create the appropriate manifest structure for a static large object (SLO).
-     * The number of object segments is limited to a configurable amount, default 1000. Each segment,
-     * except for the final one, must be at least 1 megabyte (configurable).
+     * Create the appropriate manifest structure for a static large object (SLO). The number of object segments is
+     * limited to a configurable amount, default 1000. Each segment, except for the final one, must be at least 1
+     * megabyte (configurable).
      *
      * @param objects Ordered list of segments
      * @return ETag returned by the simple upload total size of segment uploaded path of segment

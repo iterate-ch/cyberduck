@@ -15,26 +15,19 @@ package ch.cyberduck.core.onedrive.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BufferInputStream;
 import ch.cyberduck.core.io.BufferOutputStream;
 import ch.cyberduck.core.io.FileBuffer;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
@@ -49,19 +42,11 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
     private static final Logger log = Logger.getLogger(GraphBufferWriteFeature.class);
 
     private final GraphSession session;
-    private final GraphFileIdProvider idProvider;
-    private final Find finder;
-    private final AttributesFinder attributes;
+    private final GraphFileIdProvider fileid;
 
-    public GraphBufferWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
-        this(session, idProvider, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
-    }
-
-    public GraphBufferWriteFeature(final GraphSession session, final GraphFileIdProvider idProvider, final Find finder, final AttributesFinder attributes) {
+    public GraphBufferWriteFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
-        this.idProvider = idProvider;
-        this.finder = finder;
-        this.attributes = attributes;
+        this.fileid = fileid;
     }
 
     @Override
@@ -78,12 +63,12 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
                 try {
                     // Reset offset in transfer status because data was already streamed
                     // through StreamCopier when writing to buffer
-                    final TransferStatus range = new TransferStatus(status).length(buffer.length()).append(false);
+                    final TransferStatus range = new TransferStatus(status).withLength(buffer.length()).append(false);
                     if(0L == buffer.length()) {
-                        new GraphTouchFeature(session, idProvider).touch(file, new TransferStatus());
+                        new GraphTouchFeature(session, fileid).touch(file, new TransferStatus());
                     }
                     else {
-                        final HttpResponseOutputStream<Void> out = new GraphWriteFeature(session, idProvider).write(file,
+                        final HttpResponseOutputStream<Void> out = new GraphWriteFeature(session, fileid).write(file,
                             range, callback);
                         new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                             @Override
@@ -123,12 +108,8 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 
     @Override

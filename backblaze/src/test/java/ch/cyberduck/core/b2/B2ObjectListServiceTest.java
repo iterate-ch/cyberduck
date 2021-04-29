@@ -51,14 +51,14 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
 
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolder() throws Exception {
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         new B2ObjectListService(session, fileid).list(new Path(bucket, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
     @Test
     public void testListEmptyFolder() throws Exception {
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new B2ObjectListService(session, fileid).list(folder, new DisabledListProgressListener()).isEmpty());
@@ -67,14 +67,14 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
 
     @Test(expected = NotfoundException.class)
     public void testListNotfoundContainer() throws Exception {
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new Path("notfound-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
     }
 
     @Test
     public void testList() throws Exception {
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(
             new Path(String.format("test-%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path file = new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -95,7 +95,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
 
     @Test
     public void testListChunking() throws Exception {
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(
             new Path(String.format("test-%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path file1 = new B2TouchFeature(session, fileid).touch(new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -109,7 +109,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
 
     @Test
     public void testListRevisions() throws Exception {
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(String.format("test-%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final String name = new AsciiRandomStringService().random();
         final Path file1 = new Path(bucket, name, EnumSet.of(Path.Type.file));
@@ -161,7 +161,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
 
     @Test
     public void testListFolder() throws Exception {
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(
             new Path(String.format("test-%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path folder1 = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
@@ -186,7 +186,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
     @Test
     public void testDisplayFolderInBucketMissingPlaceholder() throws Exception {
         final Path bucket = new Path(String.format("test-%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         new B2DirectoryFeature(session, fileid).mkdir(bucket, null, new TransferStatus());
         final Path folder1 = new Path(bucket, "1-d", EnumSet.of(Path.Type.directory));
         final Path file1 = new Path(folder1, "2-f", EnumSet.of(Path.Type.file));
@@ -202,7 +202,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
     @Test
     public void testDisplayFolderInFolderMissingPlaceholder() throws Exception {
         final Path bucket = new Path(String.format("test-%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         new B2DirectoryFeature(session, fileid).mkdir(bucket, null, new TransferStatus());
         final Path folder1 = new Path(bucket, "1-d", EnumSet.of(Path.Type.directory));
         final Path folder2 = new Path(folder1, "2-d", EnumSet.of(Path.Type.directory));
@@ -221,7 +221,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
     @Test
     public void testIdenticalNamingFileFolder() throws Exception {
         final Path bucket = new Path(String.format("test-%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         new B2DirectoryFeature(session, fileid).mkdir(bucket, null, new TransferStatus());
         final String name = new AsciiRandomStringService().random();
         final Path folder1 = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
@@ -235,7 +235,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
 
     @Test
     public void testListLexicographicSortOrderAssumption() throws Exception {
-        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path directory = new B2DirectoryFeature(session, fileid).mkdir(
             new Path(String.format("test-%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         assertTrue(new B2ObjectListService(session, fileid).list(directory, new DisabledListProgressListener()).isEmpty());

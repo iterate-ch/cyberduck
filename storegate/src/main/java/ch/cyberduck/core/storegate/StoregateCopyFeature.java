@@ -41,10 +41,11 @@ public class StoregateCopyFeature implements Copy {
         try {
             final CopyFileRequest copy = new CopyFileRequest()
                 .name(target.getName())
-                .parentID(fileid.getFileid(target.getParent(), new DisabledListProgressListener()))
+                .parentID(fileid.getFileId(target.getParent(), new DisabledListProgressListener()))
                 .mode(1); // Overwrite
             final File file = new FilesApi(session.getClient()).filesCopy(
-                fileid.getFileid(source, new DisabledListProgressListener()), copy);
+                fileid.getFileId(source, new DisabledListProgressListener()), copy);
+            fileid.cache(target, file.getId());
             return target.withAttributes(new StoregateAttributesFinderFeature(session, fileid).toAttributes(file));
         }
         catch(ApiException e) {

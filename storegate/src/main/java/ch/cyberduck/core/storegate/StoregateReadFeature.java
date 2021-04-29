@@ -54,7 +54,7 @@ public class StoregateReadFeature implements Read {
         try {
             final StoregateApiClient client = session.getClient();
             final HttpUriRequest request = new HttpGet(String.format("%s/v4/download/files/%s?stream=true", client.getBasePath(),
-                fileid.getFileid(file, new DisabledListProgressListener())));
+                fileid.getFileId(file, new DisabledListProgressListener())));
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 final String header;

@@ -17,10 +17,9 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -37,9 +36,7 @@ import org.apache.log4j.Logger;
 public class ResumeFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(ResumeFilter.class);
 
-    private final Upload upload;
-
-    private Cache<Path> cache = PathCache.empty();
+    private final Upload<?> upload;
 
     public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions());
@@ -51,15 +48,9 @@ public class ResumeFilter extends AbstractUploadFilter {
     }
 
     public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
-                        final UploadFilterOptions options, final Upload upload) {
+                        final UploadFilterOptions options, final Upload<?> upload) {
         super(symlinkResolver, session, options);
         this.upload = upload;
-    }
-
-    @Override
-    public AbstractUploadFilter withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return super.withCache(cache);
     }
 
     @Override
@@ -67,12 +58,12 @@ public class ResumeFilter extends AbstractUploadFilter {
         if(super.accept(file, local, parent)) {
             if(local.isFile()) {
                 if(parent.isExists()) {
-                    final Write.Append append = upload.append(file, local.attributes().getSize(), cache);
-                    if(append.override || append.append) {
-                        if(append.size == local.attributes().getSize()) {
-                            if(Checksum.NONE != append.checksum) {
-                                final ChecksumCompute compute = ChecksumComputeFactory.get(append.checksum.algorithm);
-                                if(compute.compute(local.getInputStream(), parent).equals(append.checksum)) {
+                    if(find.find(file)) {
+                        final PathAttributes attributes = attribute.find(file);
+                        if(attributes.getSize() == local.attributes().getSize()) {
+                            if(Checksum.NONE != attributes.getChecksum()) {
+                                final ChecksumCompute compute = ChecksumComputeFactory.get(attributes.getChecksum().algorithm);
+                                if(compute.compute(local.getInputStream(), parent).equals(attributes.getChecksum())) {
                                     if(log.isInfoEnabled()) {
                                         log.info(String.format("Skip file %s with checksum %s", file, local.attributes().getChecksum()));
                                     }
@@ -82,7 +73,7 @@ public class ResumeFilter extends AbstractUploadFilter {
                             }
                             else {
                                 if(log.isInfoEnabled()) {
-                                    log.info(String.format("Skip file %s with remote size %d", file, append.size));
+                                    log.info(String.format("Skip file %s with remote size %d", file, attributes.getSize()));
                                 }
                                 // No need to resume completed transfers
                                 return false;
@@ -100,15 +91,15 @@ public class ResumeFilter extends AbstractUploadFilter {
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent, progress);
         if(file.isFile()) {
-            if(parent.isExists()) {
-                final Write.Append append = upload.append(file, status.getLength(), cache);
-                if(append.append && append.size < local.attributes().getSize()) {
+            if(status.isExists()) {
+                final Write.Append append = upload.append(file, status);
+                if(append.append && append.size < status.getLength()) {
                     // Append to existing file
                     status.setAppend(true);
                     status.setLength(status.getLength() - append.size);
                     status.setOffset(append.size);
                     // Disable use of temporary target when resuming upload
-                    status.rename((Path) null);
+                    status.temporary(null, null);
                 }
             }
         }

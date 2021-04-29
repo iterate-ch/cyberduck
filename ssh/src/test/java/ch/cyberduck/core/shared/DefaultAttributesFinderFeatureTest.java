@@ -2,11 +2,13 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.CachingAttributesFinderFeature;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
@@ -36,7 +38,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractSFTPTest {
     @Test
     public void testAttributes() throws Exception {
         final PathCache cache = new PathCache(1);
-        final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session).withCache(cache);
+        final AttributesFinder f = new CachingAttributesFinderFeature(cache, new DefaultAttributesFinderFeature(session));
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path file = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(file, new TransferStatus());

@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -25,9 +24,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 public class DriveListService implements ListService {
 
     private final DriveSession session;
-    private final DriveFileidProvider fileid;
+    private final DriveFileIdProvider fileid;
 
-    public DriveListService(final DriveSession session, final DriveFileidProvider fileid) {
+    public DriveListService(final DriveSession session, final DriveFileIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -53,9 +52,4 @@ public class DriveListService implements ListService {
         }
     }
 
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        fileid.withCache(cache);
-        return this;
-    }
 }

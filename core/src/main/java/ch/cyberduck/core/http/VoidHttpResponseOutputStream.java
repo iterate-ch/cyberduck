@@ -1,12 +1,12 @@
-package ch.cyberduck.core.features;
+package ch.cyberduck.core.http;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -15,13 +15,17 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-public interface IdProvider {
-    String getFileid(Path file, ListProgressListener listener) throws BackgroundException;
+import java.io.OutputStream;
 
-    IdProvider withCache(Cache<Path> cache);
+public class VoidHttpResponseOutputStream extends HttpResponseOutputStream<Void> {
+    public VoidHttpResponseOutputStream(final OutputStream proxy) {
+        super(proxy);
+    }
+
+    @Override
+    public Void getStatus() throws BackgroundException {
+        return null;
+    }
 }

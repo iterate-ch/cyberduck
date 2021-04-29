@@ -278,6 +278,11 @@ public class PathAttributes extends Attributes implements Serializable {
         this.size = size;
     }
 
+    public PathAttributes withSize(final long size) {
+        this.setSize(size);
+        return this;
+    }
+
     public long getQuota() {
         return quota;
     }

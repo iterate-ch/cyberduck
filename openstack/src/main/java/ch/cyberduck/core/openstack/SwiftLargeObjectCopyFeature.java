@@ -70,7 +70,7 @@ public class SwiftLargeObjectCopyFeature implements Copy {
     public Path copy(final Path source, final List<Path> sourceParts, final Path target, final TransferStatus status,
                      final ConnectionCallback callback) throws BackgroundException {
         final List<Path> completed = new ArrayList<>();
-        final Path copySegmentsDirectory = segmentService.getSegmentsDirectory(target, status.getLength());
+        final Path copySegmentsDirectory = segmentService.getSegmentsDirectory(target);
         for(final Path copyPart : sourceParts) {
             final Path destination = new Path(copySegmentsDirectory, copyPart.getName(), copyPart.getType());
             try {

@@ -36,11 +36,11 @@ public class DriveSearchListService extends AbstractDriveListService {
     private static final String DEFAULT_FIELDS = String.format("files(%s,parents),nextPageToken", DriveAttributesFinderFeature.DEFAULT_FIELDS);
 
     private final DriveSession session;
-    private final DriveFileidProvider fileid;
+    private final DriveFileIdProvider fileid;
     private final DriveAttributesFinderFeature attributes;
     private final String query;
 
-    public DriveSearchListService(final DriveSession session, final DriveFileidProvider fileid, final String query) {
+    public DriveSearchListService(final DriveSession session, final DriveFileIdProvider fileid, final String query) {
         super(session, fileid, PreferencesFactory.get().getInteger("googledrive.list.limit"), DEFAULT_FIELDS);
         this.session = session;
         this.fileid = fileid;
@@ -59,7 +59,7 @@ public class DriveSearchListService extends AbstractDriveListService {
         try {
             // Parent may not be current working directory when searching recursively
             final Set<Path> tree = new HashSet<>();
-            final String workdirId = session.getClient().files().get(fileid.getFileid(directory, new DisabledListProgressListener()))
+            final String workdirId = session.getClient().files().get(fileid.getFileId(directory, new DisabledListProgressListener()))
                 .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute().getId();
             for(String parentid : f.getParents()) {
                 tree.addAll(this.parents(directory, workdirId, parentid, new ArrayDeque<>()));

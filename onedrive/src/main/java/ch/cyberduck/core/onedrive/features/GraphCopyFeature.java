@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive.features;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -40,10 +41,12 @@ public class GraphCopyFeature implements Copy {
 
     private final GraphSession session;
     private final GraphAttributesFinderFeature attributes;
+    private final GraphFileIdProvider fileid;
 
-    public GraphCopyFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
+    public GraphCopyFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
-        this.attributes = new GraphAttributesFinderFeature(session, idProvider);
+        this.attributes = new GraphAttributesFinderFeature(session);
+        this.fileid = fileid;
     }
 
     @Override
@@ -53,9 +56,8 @@ public class GraphCopyFeature implements Copy {
             copyOperation.rename(target.getName());
         }
         if(status.isExists()) {
-            new GraphDeleteFeature(session).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
+            new GraphDeleteFeature(session, fileid).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
         }
-
         final DriveItem targetItem = session.getItem(target.getParent());
         copyOperation.copy(targetItem);
         final DriveItem item = session.getItem(source);
@@ -64,9 +66,10 @@ public class GraphCopyFeature implements Copy {
                 statusObject.getOperation(),
                 statusObject.getPercentage(),
                 statusObject.getStatus())));
-            target.attributes().setVersionId(null);
             target.attributes().setFileId(null);
-            return target.withAttributes(attributes.find(target));
+            final PathAttributes attr = attributes.find(target);
+            fileid.cache(target, attr.getFileId());
+            return target.withAttributes(attr);
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Cannot copy {0}", e, source);

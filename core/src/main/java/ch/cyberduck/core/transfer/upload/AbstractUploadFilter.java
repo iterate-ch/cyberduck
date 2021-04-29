@@ -17,7 +17,19 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.MappingMimeTypeService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -63,7 +75,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     protected Find find;
     protected AttributesFinder attribute;
-    protected Cache<Path> cache = PathCache.empty();
     protected UploadFilterOptions options;
 
     public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
@@ -73,12 +84,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         this.options = options;
         this.find = session.getFeature(Find.class, new DefaultFindFeature(session));
         this.attribute = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
-    }
-
-    @Override
-    public AbstractUploadFilter withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return this;
     }
 
     public AbstractUploadFilter withFinder(final Find finder) {
@@ -112,21 +117,21 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             .withLockId(parent.getLockId());
         // Read remote attributes first
         if(parent.isExists()) {
-            if(find.withCache(cache).find(file)) {
+            if(find.find(file)) {
                 status.setExists(true);
                 // Read remote attributes
-                final PathAttributes attributes = attribute.withCache(cache).find(file);
+                final PathAttributes attributes = attribute.find(file);
                 status.setRemote(attributes);
             }
             else {
                 // Look if there is directory or file that clashes with this upload
                 if(file.getType().contains(Path.Type.file)) {
-                    if(find.withCache(cache).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory)))) {
+                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory)))) {
                         throw new AccessDeniedException(String.format("Cannot replace folder %s with file %s", file.getAbsolute(), local.getName()));
                     }
                 }
                 if(file.getType().contains(Path.Type.directory)) {
-                    if(find.withCache(cache).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.file)))) {
+                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.file)))) {
                         throw new AccessDeniedException(String.format("Cannot replace file %s with folder %s", file.getAbsolute(), local.getName()));
                     }
                 }
@@ -155,8 +160,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Set temporary filename %s", renamed));
                     }
-                    status.temporary(renamed);
-                    status.withDisplayname(file);
+                    status.temporary(renamed, file);
                 }
             }
             status.withMime(new MappingMimeTypeService().getMime(file.getName()));
@@ -342,7 +346,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
             if(file.isFile()) {
-                if(this.options.temporary) {
+                if(status.getDisplayname().remote != null) {
                     final Move move = session.getFeature(Move.class);
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Rename file %s to %s", file, status.getDisplayname().remote));

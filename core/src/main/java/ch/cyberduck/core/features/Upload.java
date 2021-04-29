@@ -15,7 +15,6 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -29,7 +28,14 @@ public interface Upload<Reply> {
     Reply upload(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
                  TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 
-    Write.Append append(Path file, Long length, Cache<Path> cache) throws BackgroundException;
+    /**
+     * Determine if appending to file is supported
+     *
+     * @param file   File
+     * @param status Transfer status including attributes of file on server and size of file to write
+     * @return True if can append to existing file
+     */
+    Write.Append append(Path file, TransferStatus status) throws BackgroundException;
 
     Upload<Reply> withWriter(Write<Reply> writer);
 }

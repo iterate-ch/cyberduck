@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive.features;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -41,20 +42,18 @@ public class GraphMoveFeature implements Move {
 
     private final GraphSession session;
     private final Delete delete;
-    private final GraphFileIdProvider idProvider;
+    private final GraphFileIdProvider fileid;
 
-    public GraphMoveFeature(final GraphSession session, final GraphFileIdProvider idProvider) {
+    public GraphMoveFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
-        this.delete = new GraphDeleteFeature(session);
-        this.idProvider = idProvider;
+        this.delete = new GraphDeleteFeature(session, fileid);
+        this.fileid = fileid;
     }
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         if(status.isExists()) {
             delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
-            // Reset file ID for non existing file
-            renamed.attributes().setFileId(null);
         }
         final PatchOperation patchOperation = new PatchOperation();
         if(!StringUtils.equals(file.getName(), renamed.getName())) {
@@ -71,6 +70,10 @@ public class GraphMoveFeature implements Move {
         final DriveItem item = session.getItem(file);
         try {
             Files.patch(item, patchOperation);
+            final PathAttributes attributes = new GraphAttributesFinderFeature(session).toAttributes(item.getMetadata());
+            fileid.cache(file, null);
+            fileid.cache(renamed, attributes.getFileId());
+            return renamed.withAttributes(attributes);
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Cannot rename {0}", e, file);
@@ -78,7 +81,6 @@ public class GraphMoveFeature implements Move {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
         }
-        return renamed.withAttributes(new GraphAttributesFinderFeature(session, idProvider).find(renamed));
     }
 
     @Override

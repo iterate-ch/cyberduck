@@ -37,9 +37,9 @@ import synapticloop.b2.response.B2DownloadFileResponse;
 public class B2ReadFeature implements Read {
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
 
-    public B2ReadFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2ReadFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -53,11 +53,11 @@ public class B2ReadFeature implements Read {
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 return session.getClient().downloadFileRangeByIdToStream(
-                    fileid.getFileid(file, new DisabledListProgressListener()),
-                        range.getStart(), range.getEnd()
+                    fileid.getVersionId(file, new DisabledListProgressListener()),
+                    range.getStart(), range.getEnd()
                 );
             }
-            final B2DownloadFileResponse response = session.getClient().downloadFileById(fileid.getFileid(file, new DisabledListProgressListener()));
+            final B2DownloadFileResponse response = session.getClient().downloadFileById(fileid.getVersionId(file, new DisabledListProgressListener()));
             return new HttpMethodReleaseInputStream(response.getResponse());
         }
         catch(B2ApiException e) {

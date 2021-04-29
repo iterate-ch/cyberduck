@@ -40,13 +40,20 @@ public class SearchWorkerTest {
         final AttributedList<Path> root = new AttributedList<>();
         root.add(new Path("/t1.png", EnumSet.of(Path.Type.file)));
         root.add(new Path("/t1.gif", EnumSet.of(Path.Type.file)));
-        root.add(new Path("/folder", EnumSet.of(Path.Type.directory)));
+        final Path folder = new Path("/folder", EnumSet.of(Path.Type.directory));
+        root.add(folder);
         root.add(new Path("/folder2", EnumSet.of(Path.Type.directory)));
         cache.put(new Path("/", EnumSet.of(Path.Type.directory)), root);
-        final AttributedList<Path> folder = new AttributedList<>();
-        folder.add(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.png", EnumSet.of(Path.Type.file)));
-        folder.add(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file)));
-        cache.put(new Path("/folder", EnumSet.of(Path.Type.directory)), folder);
+        final AttributedList<Path> folderContents = new AttributedList<>();
+        folderContents.add(new Path(folder, "/t2.png", EnumSet.of(Path.Type.file)));
+        folderContents.add(new Path(folder, "/t2.gif", EnumSet.of(Path.Type.file)));
+        final Path subfolder = new Path(folder, "/subfolder", EnumSet.of(Path.Type.directory));
+        folderContents.add(subfolder);
+        cache.put(folder, folderContents);
+        final AttributedList<Path> subfolderContents = new AttributedList<>();
+        subfolderContents.add(new Path(subfolder, "t2.png", EnumSet.of(Path.Type.file)));
+        subfolderContents.add(new Path(subfolder, "t2.gif", EnumSet.of(Path.Type.file)));
+        cache.put(subfolder, subfolderContents);
         final SearchWorker search = new SearchWorker(new Path("/", EnumSet.of(Path.Type.directory)),
             new SearchFilter(".png"), cache, new DisabledListProgressListener());
         final AttributedList<Path> found = search.run(new NullSession(new Host(new TestProtocol())));
@@ -54,8 +61,10 @@ public class SearchWorkerTest {
         assertFalse(found.contains(new Path("/t1.gif", EnumSet.of(Path.Type.file))));
         assertFalse(found.contains(new Path("/t2.png", EnumSet.of(Path.Type.file))));
         assertFalse(found.contains(new Path("/t2.gif", EnumSet.of(Path.Type.file))));
-        assertTrue(found.contains(new Path("/folder", EnumSet.of(Path.Type.directory))));
-        assertTrue(found.contains(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.png", EnumSet.of(Path.Type.file))));
+        assertTrue(found.contains(folder));
+        assertTrue(found.contains(new Path(folder, "/t2.png", EnumSet.of(Path.Type.file))));
+        assertTrue(found.contains(subfolder));
+        assertTrue(found.contains(new Path(subfolder, "/t2.png", EnumSet.of(Path.Type.file))));
         assertFalse(found.contains(new Path(new Path("/folder2", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file))));
         assertFalse(found.contains(new Path("/folder2", EnumSet.of(Path.Type.directory))));
     }

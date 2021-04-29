@@ -93,7 +93,10 @@ public class S3MetadataFeature implements Headers {
                     // Set custom key id stored in KMS
                     target.setServerSideEncryptionKmsKeyId(encryption.key);
                 }
-                session.getClient().updateObjectMetadata(containerService.getContainer(file).getName(), target);
+                final Map<String, Object> metadata = session.getClient().updateObjectMetadata(containerService.getContainer(file).getName(), target);
+                if(metadata.containsKey("version-id")) {
+                    file.attributes().setVersionId(metadata.get("version-id").toString());
+                }
             }
             catch(ServiceException e) {
                 final BackgroundException failure = new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, file);

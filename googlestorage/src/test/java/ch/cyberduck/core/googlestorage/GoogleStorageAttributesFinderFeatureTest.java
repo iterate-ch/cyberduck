@@ -63,7 +63,7 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
         final PathAttributes attributes = new GoogleStorageAttributesFinderFeature(session, true).find(update);
         final AttributedList<Path> versions = attributes.getVersions();
         assertFalse(versions.isEmpty());
-        assertEquals(test, versions.get(0));
+        assertEquals(new Path(test).withAttributes(new PathAttributes(test.attributes()).withVersionId(versionId)), versions.get(0));
         for(Path version : versions) {
             assertTrue(version.attributes().isDuplicate());
         }

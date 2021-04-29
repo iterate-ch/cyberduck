@@ -35,9 +35,9 @@ public class B2CopyFeature implements Copy {
         = new B2PathContainerService();
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
 
-    public B2CopyFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2CopyFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -45,9 +45,10 @@ public class B2CopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final B2FileResponse response = session.getClient().copyFile(fileid.getFileid(source, new DisabledListProgressListener()),
-                fileid.getFileid(containerService.getContainer(target), new DisabledListProgressListener()),
+            final B2FileResponse response = session.getClient().copyFile(fileid.getVersionId(source, new DisabledListProgressListener()),
+                fileid.getVersionId(containerService.getContainer(target), new DisabledListProgressListener()),
                 containerService.getKey(target));
+            fileid.cache(target, response.getFileId());
             return target.withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
         }
         catch(B2ApiException e) {

@@ -15,6 +15,7 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -31,7 +32,7 @@ public class NullTransferSession extends NullSession {
         if(type == Find.class) {
             return (T) new DefaultFindFeature(this) {
                 @Override
-                protected Path search(final Path file) {
+                protected Path search(final Path file, final ListProgressListener listener) throws BackgroundException {
                     return file;
                 }
             };
@@ -39,7 +40,7 @@ public class NullTransferSession extends NullSession {
         if(type == AttributesFinder.class) {
             return (T) new DefaultAttributesFinderFeature(this) {
                 @Override
-                public PathAttributes find(final Path file) {
+                public PathAttributes find(final Path file, final ListProgressListener listener) {
                     return file.attributes();
                 }
             };

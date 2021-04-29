@@ -59,17 +59,17 @@ public class B2LargeCopyFeature implements Copy {
         = new B2PathContainerService();
 
     private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2VersionIdProvider fileid;
 
     private final Long partSize;
     private final Integer concurrency;
 
-    public B2LargeCopyFeature(final B2Session session, final B2FileidProvider fileid) {
+    public B2LargeCopyFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this(session, fileid, PreferencesFactory.get().getLong("b2.copy.largeobject.size"),
             PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency"));
     }
 
-    public B2LargeCopyFeature(final B2Session session, final B2FileidProvider fileid, final Long partSize, final Integer concurrency) {
+    public B2LargeCopyFeature(final B2Session session, final B2VersionIdProvider fileid, final Long partSize, final Integer concurrency) {
         this.session = session;
         this.fileid = fileid;
         this.partSize = partSize;
@@ -92,7 +92,7 @@ public class B2LargeCopyFeature implements Copy {
                         break;
                 }
             }
-            final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(fileid.getFileid(containerService.getContainer(target), new DisabledListProgressListener()),
+            final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(target), new DisabledListProgressListener()),
                 containerService.getKey(target), status.getMime(), fileinfo);
             final long size = status.getLength();
             // Submit file segments for concurrent upload
@@ -141,6 +141,7 @@ public class B2LargeCopyFeature implements Copy {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Finished large file upload %s with %d parts", target, completed.size()));
             }
+            fileid.cache(target, response.getFileId());
             return target.withAttributes(new PathAttributes(source.attributes()).withVersionId(response.getFileId()));
         }
         catch(B2ApiException e) {
@@ -167,7 +168,7 @@ public class B2LargeCopyFeature implements Copy {
                 overall.validate();
                 try {
                     HttpRange range = HttpRange.byLength(offset, length);
-                    return session.getClient().copyLargePart(fileid.getFileid(file, new DisabledListProgressListener()), largeFileId, partNumber,
+                    return session.getClient().copyLargePart(fileid.getVersionId(file, new DisabledListProgressListener()), largeFileId, partNumber,
                         String.format("bytes=%d-%d", range.getStart(), range.getEnd()));
                 }
                 catch(B2ApiException e) {

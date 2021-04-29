@@ -49,7 +49,7 @@ public class GlacierTest extends AbstractS3Test {
 
     @Test
     public void testRestore() throws Exception {
-        final Path bucket = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path bucket = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(512);
         final TransferStatus status = new TransferStatus();

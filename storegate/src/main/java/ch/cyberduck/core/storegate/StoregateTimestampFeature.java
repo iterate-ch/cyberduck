@@ -40,7 +40,7 @@ public class StoregateTimestampFeature extends DefaultTimestampFeature {
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final FilesApi files = new FilesApi(session.getClient());
-            files.filesUpdateFile(fileid.getFileid(file, new DisabledListProgressListener()),
+            files.filesUpdateFile(fileid.getFileId(file, new DisabledListProgressListener()),
                 new UpdateFilePropertiesRequest().modified(new DateTime(status.getTimestamp())));
         }
         catch(ApiException e) {

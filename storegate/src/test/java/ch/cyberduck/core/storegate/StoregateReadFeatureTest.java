@@ -27,6 +27,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
+import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -53,7 +54,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
-        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         try {
@@ -69,13 +70,13 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus writeStatus = new TransferStatus();
         writeStatus.setLength(content.length);
-        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<String> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<FileMetadata> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         // Unknown length in status
@@ -96,7 +97,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
 
     @Test
     public void testReadRange() throws Exception {
-        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
@@ -108,7 +109,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        final TransferStatus upload = new TransferStatus().length(content.length);
+        final TransferStatus upload = new TransferStatus().withLength(content.length);
         upload.setExists(true);
         new DefaultUploadFeature<>(new StoregateWriteFeature(session, nodeid)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
@@ -117,7 +118,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new StoregateReadFeature(session, nodeid).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new StoregateReadFeature(session, nodeid).read(test, status.withLength(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -130,7 +131,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
 
     @Test
     public void testReadRangeUnknownLength() throws Exception {
-        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
@@ -142,7 +143,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        final TransferStatus upload = new TransferStatus().length(content.length);
+        final TransferStatus upload = new TransferStatus().withLength(content.length);
         upload.setExists(true);
         new DefaultUploadFeature<>(new StoregateWriteFeature(session, nodeid)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
@@ -168,13 +169,13 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus writeStatus = new TransferStatus();
         writeStatus.setLength(content.length);
-        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<String> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<FileMetadata> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         final CountingInputStream in = new CountingInputStream(new StoregateReadFeature(session, nodeid).read(test, status, new DisabledConnectionCallback()));

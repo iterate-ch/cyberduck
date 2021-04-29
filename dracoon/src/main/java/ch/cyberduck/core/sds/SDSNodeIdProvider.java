@@ -15,18 +15,16 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -48,43 +46,40 @@ import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-public class SDSNodeIdProvider implements IdProvider {
+public class SDSNodeIdProvider implements VersionIdProvider {
     private static final Logger log = Logger.getLogger(SDSNodeIdProvider.class);
 
     private static final UnicodeNormalizer normalizer = new NFCNormalizer();
     private static final String ROOT_NODE_ID = "0";
 
     private final SDSSession session;
-
-    private Cache<Path> cache = PathCache.empty();
+    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));
 
     public SDSNodeIdProvider(final SDSSession session) {
         this.session = session;
     }
 
     @Override
-    public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return this.getFileid(file, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
-    }
-
-    protected String getFileid(final Path file, final ListProgressListener listener, final int chunksize) throws BackgroundException {
+    public String getVersionId(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Return cached node %s for file %s", file.attributes().getVersionId(), file));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return version %s from attributes for file %s", file.attributes().getVersionId(), file));
             }
             return file.attributes().getVersionId();
         }
+        return this.getNodeId(file, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
+    }
+
+    protected String getNodeId(final Path file, final ListProgressListener listener, final int chunksize) throws BackgroundException {
+        if(cache.contains(new SimplePathPredicate(file))) {
+            final String cached = cache.get(new SimplePathPredicate(file));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return cached node %s for file %s", cached, file));
+            }
+            return cached;
+        }
         if(file.isRoot()) {
             return ROOT_NODE_ID;
-        }
-        if(cache.isCached(file.getParent())) {
-            final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.find(new SimplePathPredicate(file));
-            if(null != found) {
-                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    return this.set(file, found.attributes().getVersionId());
-                }
-            }
         }
         try {
             final String type;
@@ -109,7 +104,7 @@ public class SDSNodeIdProvider implements IdProvider {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Return node %s for file %s", node.getId(), file));
                         }
-                        return this.set(file, node.getId().toString());
+                        return this.cache(file, node.getId().toString());
                     }
                 }
                 offset += chunksize;
@@ -122,9 +117,24 @@ public class SDSNodeIdProvider implements IdProvider {
         }
     }
 
-    protected String set(final Path file, final String id) {
-        file.attributes().setVersionId(id);
+    public String cache(final Path file, final String id) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Cache %s for file %s", id, file));
+        }
+        if(null == id) {
+            cache.remove(new SimplePathPredicate(file));
+            file.attributes().setVersionId(null);
+        }
+        else {
+            cache.put(new SimplePathPredicate(file), id);
+            file.attributes().setVersionId(id);
+        }
         return id;
+    }
+
+    @Override
+    public void clear() {
+        cache.clear();
     }
 
     public boolean isEncrypted(final Path file) {
@@ -169,11 +179,5 @@ public class SDSNodeIdProvider implements IdProvider {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         return ByteBuffer.wrap(out.toByteArray());
-    }
-
-    @Override
-    public SDSNodeIdProvider withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return this;
     }
 }

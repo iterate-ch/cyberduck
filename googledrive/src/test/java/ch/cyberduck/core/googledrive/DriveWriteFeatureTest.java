@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -50,7 +49,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
     @Test
     public void testWrite() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final DriveFileidProvider idProvider = new DriveFileidProvider(session).withCache(cache);
+        final DriveFileIdProvider idProvider = new DriveFileIdProvider(session);
         String fileid;
         {
             final TransferStatus status = new TransferStatus();
@@ -66,8 +65,8 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             final PathAttributes attributes = new DriveAttributesFinderFeature(session, idProvider).find(test);
             assertEquals(fileid, attributes.getFileId());
             assertEquals(content.length, attributes.getSize());
-            final Write.Append append = new DriveWriteFeature(session, idProvider).append(test, status.getLength(), PathCache.empty());
-            assertTrue(append.override);
+            final Write.Append append = new DriveWriteFeature(session, idProvider).append(test, status.withRemote(new DriveAttributesFinderFeature(session, idProvider).find(test)));
+            assertFalse(append.append);
             assertEquals(content.length, append.size, 0L);
             final byte[] buffer = new byte[content.length];
             final InputStream in = new DriveReadFeature(session, idProvider).read(test, new TransferStatus(), new DisabledConnectionCallback());
@@ -96,7 +95,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testWritePreviuoslyTrashed() throws Exception {
-        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path test = new DriveTouchFeature(session, fileid).touch(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertTrue(new DriveFindFeature(session, fileid).find(test));

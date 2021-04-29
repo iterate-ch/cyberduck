@@ -60,12 +60,6 @@ public class CompareFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public AbstractDownloadFilter withCache(final Cache<Path> cache) {
-        comparisonService.withCache(cache);
-        return super.withCache(cache);
-    }
-
-    @Override
     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         if(super.accept(file, local, parent)) {
             final Comparison comparison = comparisonService.compare(file, local);

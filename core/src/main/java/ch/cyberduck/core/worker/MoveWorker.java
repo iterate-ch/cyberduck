@@ -19,6 +19,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -38,6 +39,7 @@ import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.comparator.TimestampComparator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -56,15 +58,15 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
 
     private final Map<Path, Path> files;
     private final SessionPool target;
-    private final ProgressListener listener;
     private final Cache<Path> cache;
+    private final ProgressListener listener;
     private final ConnectionCallback callback;
 
     public MoveWorker(final Map<Path, Path> files, final SessionPool target, final Cache<Path> cache, final ProgressListener listener, final ConnectionCallback callback) {
         this.files = files;
         this.target = target;
-        this.listener = listener;
         this.cache = cache;
+        this.listener = listener;
         this.callback = callback;
     }
 
@@ -109,8 +111,8 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                         final TransferStatus status = new TransferStatus()
                             .withLockId(this.getLockId(r.getKey()))
                             .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-                            .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
-                            .length(r.getKey().attributes().getSize());
+                            .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
+                            .withLength(r.getKey().attributes().getSize());
                         result.put(r.getKey(), feature.move(r.getKey(), r.getValue(), status,
                             new Delete.Callback() {
                                 @Override
@@ -134,8 +136,8 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                     final Delete delete = session.getFeature(Delete.class);
                     for(Path folder : folders) {
                         log.warn(String.format("Delete source directory %s", folder));
-                        delete.delete(Collections.singletonMap(folder,
-                            new TransferStatus().withLockId(this.getLockId(folder))), callback, new Delete.DisabledCallback());
+                        final TransferStatus status = new TransferStatus().withLockId(this.getLockId(folder));
+                        delete.delete(Collections.singletonMap(folder, status), callback, new Delete.DisabledCallback());
                     }
                 }
             }
@@ -180,7 +182,12 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
             final int result = super.compareFirst(p1, p2);
             if(0 == result) {
                 // Version with no duplicate flag first
-                return Boolean.compare(!p1.attributes().isDuplicate(), !p2.attributes().isDuplicate());
+                final int duplicate = Boolean.compare(!p1.attributes().isDuplicate(), !p2.attributes().isDuplicate());
+                if(0 == duplicate) {
+                    return StringUtils.compare(p1.attributes().getVersionId(), p2.attributes().getVersionId());
+                }
+                return duplicate;
+
             }
             return result;
         }

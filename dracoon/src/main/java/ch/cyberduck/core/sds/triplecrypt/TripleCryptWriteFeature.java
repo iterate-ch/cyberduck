@@ -15,17 +15,16 @@ package ch.cyberduck.core.sds.triplecrypt;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSSession;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -37,21 +36,21 @@ import com.dracoon.sdk.crypto.error.CryptoSystemException;
 import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-public class TripleCryptWriteFeature implements Write<VersionId> {
+public class TripleCryptWriteFeature implements Write<Node> {
     private static final Logger log = Logger.getLogger(TripleCryptWriteFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
-    private final Write<VersionId> proxy;
+    private final Write<Node> proxy;
 
-    public TripleCryptWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<VersionId> proxy) {
+    public TripleCryptWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Node> proxy) {
         this.session = session;
         this.nodeid = nodeid;
         this.proxy = proxy;
     }
 
     @Override
-    public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
             if(log.isDebugEnabled()) {
@@ -74,8 +73,8 @@ public class TripleCryptWriteFeature implements Write<VersionId> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        return proxy.append(file, length, cache);
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return proxy.append(file, status);
     }
 
     @Override

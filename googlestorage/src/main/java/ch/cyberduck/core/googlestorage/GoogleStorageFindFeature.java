@@ -15,7 +15,7 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -31,12 +31,12 @@ public class GoogleStorageFindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return true;
         }
         try {
-            attributes.find(file);
+            attributes.find(file, listener);
             return true;
         }
         catch(NotfoundException e) {
@@ -48,9 +48,4 @@ public class GoogleStorageFindFeature implements Find {
         }
     }
 
-    @Override
-    public Find withCache(final Cache<Path> cache) {
-        attributes.withCache(cache);
-        return this;
-    }
 }

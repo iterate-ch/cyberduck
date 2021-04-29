@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -89,10 +88,6 @@ public class CryptoBulkFeatureTest {
                 return this;
             }
 
-            @Override
-            public Bulk<Map<TransferItem, TransferStatus>> withCache(final Cache<Path> cache) {
-                return this;
-            }
         }, new Delete() {
             @Override
             public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
@@ -171,10 +166,6 @@ public class CryptoBulkFeatureTest {
                 return this;
             }
 
-            @Override
-            public Bulk<Map<TransferItem, TransferStatus>> withCache(final Cache<Path> cache) {
-                return this;
-            }
         }, new Delete() {
             @Override
             public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {

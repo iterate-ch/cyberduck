@@ -15,14 +15,12 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -37,7 +35,7 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
 
     public CryptoUploadFeature(final Session<?> session, final Upload<Reply> delegate, final Write<Reply> writer, final CryptoVault vault) {
         this.session = session;
-        this.proxy = delegate.withWriter(new CryptoWriteFeature<Reply>(session, writer, vault));
+        this.proxy = delegate.withWriter(new CryptoWriteFeature<>(session, writer, vault));
         this.vault = vault;
     }
 
@@ -47,13 +45,8 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        try {
-            return proxy.append(vault.encrypt(session, file), length, cache);
-        }
-        catch(NotfoundException e) {
-            return Write.notfound;
-        }
+    public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return proxy.append(vault.encrypt(session, file), status);
     }
 
     @Override

@@ -18,18 +18,14 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -40,8 +36,6 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.AbstractHttpEntity;
@@ -64,42 +58,11 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
         = PreferencesFactory.get();
 
     private final SwiftSession session;
-    private final SwiftSegmentService segmentService;
-    private final SwiftObjectListService listService;
-    private final Find finder;
-    private final AttributesFinder attributes;
     private final SwiftRegionService regionService;
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService,
-            new SwiftObjectListService(session, regionService),
-            new SwiftSegmentService(session, regionService),
-            new DefaultFindFeature(session));
-    }
-
-    public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
-                             final SwiftObjectListService listService,
-                             final SwiftSegmentService segmentService) {
-        this(session, regionService, listService, segmentService, new DefaultFindFeature(session));
-    }
-
-    public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
-                             final SwiftObjectListService listService,
-                             final SwiftSegmentService segmentService, final Find finder) {
-        this(session, regionService, listService, segmentService, finder, new DefaultAttributesFinderFeature(session));
-    }
-
-    public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
-                             final SwiftObjectListService listService,
-                             final SwiftSegmentService segmentService,
-                             final Find finder, final AttributesFinder attributes) {
-        super(finder, attributes);
         this.session = session;
-        this.listService = listService;
-        this.segmentService = segmentService;
         this.regionService = regionService;
-        this.finder = finder;
-        this.attributes = attributes;
     }
 
     @Override
@@ -144,31 +107,23 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(length >= preferences.getLong("openstack.upload.largeobject.threshold")) {
-            if(preferences.getBoolean("openstack.upload.largeobject")) {
-                final List<Path> segments;
-                long size = 0L;
-                try {
-                    segments = listService.list(segmentService.getSegmentsDirectory(file, length), new DisabledListProgressListener()).toList();
-                    if(segments.isEmpty()) {
-                        return Write.notfound;
-                    }
-                }
-                catch(NotfoundException e) {
-                    return Write.notfound;
-                }
-                for(Path segment : segments) {
-                    size += segment.attributes().getSize();
-                }
-                return new Append(size);
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        final List<Path> segments;
+        long size = 0L;
+        try {
+            segments = new SwiftObjectListService(session, regionService).list(new SwiftSegmentService(session, regionService)
+                .getSegmentsDirectory(file), new DisabledListProgressListener()).toList();
+            if(segments.isEmpty()) {
+                return Write.override;
             }
         }
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
+        catch(NotfoundException e) {
+            return Write.override;
         }
-        return Write.notfound;
+        for(Path segment : segments) {
+            size += segment.attributes().getSize();
+        }
+        return new Append(true).withStatus(status).withSize(size);
     }
 
     @Override

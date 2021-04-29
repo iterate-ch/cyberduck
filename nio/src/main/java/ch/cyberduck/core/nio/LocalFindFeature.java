@@ -15,6 +15,7 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
@@ -36,7 +37,7 @@ public class LocalFindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(Files.isSymbolicLink(session.toPath(file))) {
             // Do not follow symbolic link to test for file
             return Files.exists(session.toPath(file), LinkOption.NOFOLLOW_LINKS);

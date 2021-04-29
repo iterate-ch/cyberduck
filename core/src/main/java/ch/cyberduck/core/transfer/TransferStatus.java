@@ -23,7 +23,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Encryption;
@@ -182,16 +181,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     private Object lockId;
 
-    /**
-     * Version after write
-     */
-    private VersionId version;
-
-    /**
-     * File Id assigned after write
-     */
-    private String fileid;
-
     public TransferStatus() {
         // Default
     }
@@ -228,8 +217,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.filekey = copy.filekey;
         this.nonces = copy.nonces;
         this.lockId = copy.lockId;
-        this.version = copy.version;
-        this.fileid = copy.fileid;
     }
 
     /**
@@ -331,7 +318,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * @param bytes Transfer content length
      */
-    public TransferStatus length(final long bytes) {
+    public TransferStatus withLength(final long bytes) {
         this.setLength(bytes);
         return this;
     }
@@ -425,13 +412,10 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     /**
      * @param temporary Temporary file to open output stream to
+     * @param finalname Target name
      */
-    public TransferStatus temporary(final Path temporary) {
+    public TransferStatus temporary(final Path temporary, final Path finalname) {
         this.rename.remote = temporary;
-        return this;
-    }
-
-    public TransferStatus withDisplayname(final Path finalname) {
         this.displayname.remote = finalname;
         return this;
     }
@@ -483,8 +467,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return remote;
     }
 
-    public void setRemote(PathAttributes remote) {
-        this.remote = remote;
+    public void setRemote(PathAttributes attributes) {
+        this.remote = attributes;
+    }
+
+    public TransferStatus withRemote(final PathAttributes attributes) {
+        this.setRemote(attributes);
+        return this;
     }
 
     public Permission getPermission() {
@@ -642,32 +631,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
-    public VersionId getVersion() {
-        return version;
-    }
-
-    public void setVersion(final VersionId version) {
-        this.version = version;
-    }
-
-    public TransferStatus withVersion(final VersionId version) {
-        this.version = version;
-        return this;
-    }
-
-    public String getId() {
-        return fileid;
-    }
-
-    public void setId(final String fileid) {
-        this.fileid = fileid;
-    }
-
-    public TransferStatus withId(final String fileid) {
-        this.fileid = fileid;
-        return this;
-    }
-
     @Override
     public boolean equals(final Object o) {
         if(this == o) {
@@ -716,8 +679,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         sb.append(", parameters=").append(parameters);
         sb.append(", metadata=").append(metadata);
         sb.append(", lockId=").append(lockId);
-        sb.append(", version=").append(version);
-        sb.append(", fileid=").append(fileid);
         sb.append('}');
         return sb.toString();
     }

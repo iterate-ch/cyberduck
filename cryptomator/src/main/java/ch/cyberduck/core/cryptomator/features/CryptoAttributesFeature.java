@@ -15,12 +15,10 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoPathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Vault;
@@ -31,8 +29,6 @@ public class CryptoAttributesFeature implements AttributesFinder {
     private final AttributesFinder delegate;
     private final Vault vault;
 
-    private Cache<Path> cache = PathCache.empty();
-
     public CryptoAttributesFeature(final Session<?> session, final AttributesFinder delegate, final Vault cryptomator) {
         this.session = session;
         this.delegate = delegate;
@@ -40,18 +36,12 @@ public class CryptoAttributesFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
-        final PathAttributes attributes = new PathAttributes(delegate.withCache(new CryptoPathCache(cache)).find(vault.encrypt(session, file)));
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+        final PathAttributes attributes = new PathAttributes(delegate.find(vault.encrypt(session, file, true), listener));
         if(file.isFile()) {
             attributes.setSize(vault.toCleartextSize(attributes.getSize()));
         }
         return attributes;
-    }
-
-    @Override
-    public AttributesFinder withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return this;
     }
 
     @Override

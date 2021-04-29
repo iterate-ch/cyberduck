@@ -28,7 +28,6 @@ import ch.cyberduck.core.Header;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
@@ -45,7 +44,6 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
-import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3ListService;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -200,9 +198,9 @@ public class UDTProxyConfiguratorTest {
         IOUtils.write(content, out);
         out.close();
         status.setLength(content.length);
-        final Path test = new Path(new Path("container", EnumSet.of(Path.Type.volume)),
+        final Path test = new Path(new Path("container", EnumSet.of(Path.Type.volume, Path.Type.directory)),
             UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Upload upload = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
+        final Upload upload = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled));
         try {
             upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledConnectionCallback());
@@ -259,13 +257,13 @@ public class UDTProxyConfiguratorTest {
 
         final Path test = new Path(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)),
             UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Upload upload = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
+        final Upload upload = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledConnectionCallback());
 
         assertTrue(tunneled.getFeature(Find.class).find(test));
         assertEquals(status.getLength(), new S3ListService(tunneled).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
-        assertTrue(new S3WriteFeature(tunneled).append(test, status.getLength(), PathCache.empty()).override);
+        assertFalse(new S3WriteFeature(tunneled).append(test, status).append);
         {
             final byte[] buffer = new byte[random.getBytes().length];
             IOUtils.readFully(new S3ReadFeature(tunneled).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
@@ -273,7 +271,7 @@ public class UDTProxyConfiguratorTest {
         }
         {
             final byte[] buffer = new byte[random.getBytes().length - 1];
-            final InputStream in = new S3ReadFeature(tunneled).read(test, new TransferStatus().length(random.getBytes().length).append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new S3ReadFeature(tunneled).read(test, new TransferStatus().withLength(random.getBytes().length).append(true).skip(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[random.getBytes().length - 1];
@@ -308,7 +306,7 @@ public class UDTProxyConfiguratorTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(tunneled).touch(test, new TransferStatus());
         final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
-        final OutputStream out = new S3WriteFeature(tunneled).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final OutputStream out = new S3WriteFeature(tunneled).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();

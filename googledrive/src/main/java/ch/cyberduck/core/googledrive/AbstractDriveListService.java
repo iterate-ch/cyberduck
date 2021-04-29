@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -50,19 +49,17 @@ public abstract class AbstractDriveListService implements ListService {
     private final UrlFileWriter urlFileWriter = UrlFileWriterFactory.get();
     private final String fields;
     private final DriveAttributesFinderFeature attributes;
-    private final DriveFileidProvider fileid;
 
-    public AbstractDriveListService(final DriveSession session, final DriveFileidProvider fileid) {
+    public AbstractDriveListService(final DriveSession session, final DriveFileIdProvider fileid) {
         this(session, fileid, PreferencesFactory.get().getInteger("googledrive.list.limit"));
     }
 
-    public AbstractDriveListService(final DriveSession session, final DriveFileidProvider fileid, final int pagesize) {
+    public AbstractDriveListService(final DriveSession session, final DriveFileIdProvider fileid, final int pagesize) {
         this(session, fileid, pagesize, DEFAULT_FIELDS);
     }
 
-    public AbstractDriveListService(final DriveSession session, final DriveFileidProvider fileid, final int pagesize, final String fields) {
+    public AbstractDriveListService(final DriveSession session, final DriveFileIdProvider fileid, final int pagesize, final String fields) {
         this.session = session;
-        this.fileid = fileid;
         this.pagesize = pagesize;
         this.fields = fields;
         this.attributes = new DriveAttributesFinderFeature(session, fileid);
@@ -152,9 +149,4 @@ public abstract class AbstractDriveListService implements ListService {
 
     protected abstract String query(final Path directory, final ListProgressListener listener) throws BackgroundException;
 
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        fileid.withCache(cache);
-        return this;
-    }
 }

@@ -115,7 +115,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 options = new CreateDownloadShareRequest();
                 log.warn(String.format("Use default share options %s", options));
             }
-            final Long fileid = Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()));
+            final Long fileid = Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener()));
             final Host bookmark = session.getHost();
             if(nodeid.isEncrypted(file)) {
                 // get existing file key associated with the sharing user
@@ -182,7 +182,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
             }
             final Host bookmark = session.getHost();
             final UploadShare share = new SharesApi(session.getClient()).createUploadShare(
-                options.targetId(Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()))), StringUtils.EMPTY, null);
+                options.targetId(Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener()))), StringUtils.EMPTY, null);
             final String help;
             if(null == share.getExpireAt()) {
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));

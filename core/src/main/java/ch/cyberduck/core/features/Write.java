@@ -15,7 +15,6 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -24,6 +23,8 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.util.Objects;
 
 public interface Write<Reply> {
 
@@ -35,14 +36,13 @@ public interface Write<Reply> {
     StatusOutputStream<Reply> write(Path file, TransferStatus status, final ConnectionCallback callback) throws BackgroundException;
 
     /**
-     * Determine if a file exists and we can append to it.
+     * Determine if appending to file is supported
      *
      * @param file   File
-     * @param length Transfer Status
-     * @param cache  Cache
+     * @param status Transfer status including attributes of file on server and size of file to write
      * @return True if can append to existing file
      */
-    Append append(Path file, Long length, Cache<Path> cache) throws BackgroundException;
+    Append append(Path file, TransferStatus status) throws BackgroundException;
 
     /**
      * @return True if temporary upload filename can be used
@@ -60,36 +60,22 @@ public interface Write<Reply> {
 
     final class Append {
         /**
-         * Append to file
+         * Append to existing file is supported
          */
         public final boolean append;
-
-        /**
-         * File exists
-         */
-        public final boolean override;
 
         /**
          * Remote file size
          */
         public Long size = 0L;
 
+        /**
+         * Remote file checksum
+         */
         public Checksum checksum = Checksum.NONE;
 
-        /**
-         * Append
-         *
-         * @param size Remote file size
-         */
-        public Append(final Long size) {
-            this.append = true;
-            this.override = false;
-            this.size = size;
-        }
-
-        public Append(final boolean append, final boolean override) {
+        public Append(final boolean append) {
             this.append = append;
-            this.override = override;
         }
 
         public Append withChecksum(final Checksum checksum) {
@@ -101,15 +87,31 @@ public interface Write<Reply> {
             this.size = size;
             return this;
         }
+
+        public Append withStatus(final TransferStatus status) {
+            return this.withSize(-1L == status.getRemote().getSize() ? 0L : status.getRemote().getSize()).withChecksum(status.getRemote().getChecksum());
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(!(o instanceof Append)) {
+                return false;
+            }
+            final Append append1 = (Append) o;
+            return append == append1.append && Objects.equals(size, append1.size) && Objects.equals(checksum, append1.checksum);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(append, size, checksum);
+        }
     }
 
     /**
      * Existing remote file found
      */
-    Append override = new Append(false, true);
-
-    /**
-     * No file found
-     */
-    Append notfound = new Append(false, false);
+    Append override = new Append(false);
 }

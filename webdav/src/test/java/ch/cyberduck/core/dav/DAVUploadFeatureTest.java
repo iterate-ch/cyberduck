@@ -80,21 +80,21 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         out.close();
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
-            final TransferStatus status = new TransferStatus().length(content.length / 2);
+            final TransferStatus status = new TransferStatus().withLength(content.length / 2);
             new DAVUploadFeature(new DAVWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }
         {
-            final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
+            final TransferStatus status = new TransferStatus().withLength(content.length / 2).skip(content.length / 2).append(true);
             new DAVUploadFeature(new DAVWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

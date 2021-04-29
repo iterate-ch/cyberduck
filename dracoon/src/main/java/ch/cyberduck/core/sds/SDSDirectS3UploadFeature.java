@@ -21,7 +21,6 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -30,7 +29,6 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Buffer;
 import ch.cyberduck.core.io.BufferOutputStream;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.FileBuffer;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -86,7 +84,7 @@ import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.common.util.concurrent.Uninterruptibles;
 
-public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, MessageDigest> {
+public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     private static final Logger log = Logger.getLogger(SDSDirectS3UploadFeature.class);
 
     /**
@@ -100,12 +98,12 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
     private final Long partsize;
     private final Integer concurrency;
 
-    public SDSDirectS3UploadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<VersionId> writer) {
+    public SDSDirectS3UploadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Void> writer) {
         this(session, nodeid, writer, PreferencesFactory.get().getLong("s3.upload.multipart.size"),
             PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
     }
 
-    public SDSDirectS3UploadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<VersionId> writer, final Long partsize, final Integer concurrency) {
+    public SDSDirectS3UploadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Void> writer, final Long partsize, final Integer concurrency) {
         super(writer);
         this.session = session;
         this.nodeid = nodeid;
@@ -114,15 +112,15 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
     }
 
     @Override
-    public VersionId upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                            final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Void upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                       final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
             final CreateFileUploadRequest createFileUploadRequest = new CreateFileUploadRequest()
                 .directS3Upload(true)
                 .timestampModification(status.getTimestamp() == null ? null : new DateTime(status.getTimestamp()))
                 .size(-1 == status.getLength() ? null : status.getLength())
-                .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
+                .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName());
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
                 .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
@@ -239,7 +237,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
                                 break;
                             case "done":
                                 // Set node id in transfer status
-                                status.setVersion(new VersionId(String.valueOf(uploadStatus.getNode().getId())));
+                                nodeid.cache(file, String.valueOf(uploadStatus.getNode().getId()));
                                 done.countDown();
                                 break;
                         }
@@ -257,7 +255,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
             }
             // Mark parent status as complete
             status.setComplete();
-            return status.getVersion();
+            return null;
         }
         catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException | UnknownVersionException e) {
             throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file);
@@ -315,14 +313,14 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
                     .segment(true)
-                    .length(length)
+                    .withLength(length)
                     .skip(offset);
                 status.setUrl(url);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
                 status.setNonces(overall.getNonces());
                 status.setFilekey(overall.getFilekey());
-                final VersionId part = SDSDirectS3UploadFeature.super.upload(
+                SDSDirectS3UploadFeature.super.upload(
                     file, local, throttle, listener, status, overall, new StreamProgress() {
                         @Override
                         public void progress(final long bytes) {
@@ -337,10 +335,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
                         }
                     }, callback);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Received response %s for part number %d", part, partNumber));
+                    log.info(String.format("Received response for part number %d", partNumber));
                 }
-                // ETag from part
-                status.setChecksum(Checksum.parse(part.id));
                 return status;
             }
         }, overall));

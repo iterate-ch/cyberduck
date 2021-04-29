@@ -15,8 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -24,26 +23,20 @@ import ch.cyberduck.core.features.Find;
 
 public class DriveFindFeature implements Find {
 
-    private final DriveFileidProvider fileid;
+    private final DriveFileIdProvider fileid;
 
-    public DriveFindFeature(final DriveSession session, final DriveFileidProvider fileid) {
+    public DriveFindFeature(final DriveSession session, final DriveFileIdProvider fileid) {
         this.fileid = fileid;
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            fileid.getFileid(file, new DisabledListProgressListener());
+            fileid.getFileId(file, listener);
             return true;
         }
         catch(NotfoundException e) {
             return false;
         }
-    }
-
-    @Override
-    public Find withCache(final Cache<Path> cache) {
-        fileid.withCache(cache);
-        return this;
     }
 }

@@ -236,7 +236,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3ThresholdUploadService(this);
         }
         if(type == Directory.class) {
-            return (T) new S3DirectoryFeature(this, new S3WriteFeature(this, new S3DisabledMultipartService()));
+            return (T) new S3DirectoryFeature(this, new S3WriteFeature(this));
         }
         if(type == Move.class) {
             return (T) new S3MoveFeature(this);

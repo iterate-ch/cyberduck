@@ -59,8 +59,7 @@ public class GoogleStorageMetadataFeatureTest extends AbstractGoogleStorageTest 
     @Test
     public void testSetMetadataFileLeaveOtherFeatures() throws Exception {
         final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new GoogleStorageTouchFeature(session).touch(test, new TransferStatus());
+        final Path test = new GoogleStorageTouchFeature(session).touch(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String v = UUID.randomUUID().toString();
         final GoogleStorageStorageClassFeature storage = new GoogleStorageStorageClassFeature(session);
         storage.setClass(test, "NEARLINE");

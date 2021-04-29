@@ -41,12 +41,12 @@ public class DriveSearchListServiceTest extends AbstractDriveTest {
 
     @Test
     public void testQuery() throws Exception {
-        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Drive.Files.Create insert = session.getClient().files().create(new File()
             .setName(name)
-            .setParents(Collections.singletonList(fileid.getFileid(directory, new DisabledListProgressListener()))));
+            .setParents(Collections.singletonList(fileid.getFileId(directory, new DisabledListProgressListener()))));
         final File execute = insert.execute();
         execute.setVersion(1L);
         final Path f1 = new Path(directory, name, EnumSet.of(Path.Type.file), new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));

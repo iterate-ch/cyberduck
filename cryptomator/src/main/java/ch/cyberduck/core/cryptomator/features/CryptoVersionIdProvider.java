@@ -15,40 +15,37 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoPathCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.features.VersionIdProvider;
 
-public class CryptoIdProvider implements IdProvider {
+public class CryptoVersionIdProvider implements VersionIdProvider {
     private final Session<?> session;
-    private final IdProvider delegate;
+    private final VersionIdProvider delegate;
     private final Vault vault;
 
-    public CryptoIdProvider(final Session<?> session, final IdProvider delegate, final Vault vault) {
+    public CryptoVersionIdProvider(final Session<?> session, final VersionIdProvider delegate, final Vault vault) {
         this.session = session;
         this.delegate = delegate;
         this.vault = vault;
     }
 
     @Override
-    public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return delegate.getFileid(vault.encrypt(session, file), listener);
+    public String getVersionId(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return delegate.getVersionId(vault.encrypt(session, file), listener);
     }
 
     @Override
-    public IdProvider withCache(final Cache<Path> cache) {
-        delegate.withCache(new CryptoPathCache(cache));
-        return this;
+    public void clear() {
+        delegate.clear();
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CryptoIdProvider{");
+        final StringBuilder sb = new StringBuilder("CryptoVersionIdProvider{");
         sb.append("delegate=").append(delegate);
         sb.append('}');
         return sb.toString();

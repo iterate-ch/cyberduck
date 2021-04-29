@@ -34,8 +34,7 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
     private final Vault vault;
     private final ListProgressListener delegate;
 
-    public DecryptingListProgressListener(final Session<?> session, final Vault vault,
-                                          final ListProgressListener delegate) {
+    public DecryptingListProgressListener(final Session<?> session, final Vault vault, final ListProgressListener delegate) {
         this.session = session;
         this.vault = vault;
         this.delegate = delegate;

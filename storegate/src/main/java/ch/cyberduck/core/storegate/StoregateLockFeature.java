@@ -43,7 +43,7 @@ public class StoregateLockFeature implements Lock<String> {
             final FileLockRequest request = new FileLockRequest();
             request.setExpire(new DateTime().plusMillis(PreferencesFactory.get().getInteger("storegate.lock.ttl")));
             request.setOwner(session.getHost().getCredentials().getUsername());
-            final FileLock lock = new FileLocksApi(this.session.getClient()).fileLocksCreateLock(fileid.getFileid(file,
+            final FileLock lock = new FileLocksApi(this.session.getClient()).fileLocksCreateLock(fileid.getFileId(file,
                 new DisabledListProgressListener()), request);
             return lock.getLockId();
         }
@@ -55,7 +55,7 @@ public class StoregateLockFeature implements Lock<String> {
     @Override
     public void unlock(final Path file, final String token) throws BackgroundException {
         try {
-            new FileLocksApi(this.session.getClient()).fileLocksDeleteLock(fileid.getFileid(file,
+            new FileLocksApi(this.session.getClient()).fileLocksDeleteLock(fileid.getFileId(file,
                 new DisabledListProgressListener()), token);
         }
         catch(ApiException e) {
