@@ -90,7 +90,7 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                     else {
                         final TransferStatus status = new TransferStatus()
                             .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-                            .exists(session.getFeature(Find.class, new CachingFindFeature(cache, new DefaultFindFeature(session))).find(r.getValue()))
+                            .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
                             .withLength(r.getKey().attributes().getSize());
                         result.put(r.getKey(), copy.copy(r.getKey(), r.getValue(), status, callback));
                     }

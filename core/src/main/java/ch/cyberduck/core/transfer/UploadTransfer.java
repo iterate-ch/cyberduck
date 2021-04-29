@@ -185,7 +185,7 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
-                if(source.getFeature(Find.class, new CachingFindFeature(cache, new DefaultFindFeature(source))).find(upload.remote)) {
+                if(new CachingFindFeature(cache, source.getFeature(Find.class, new DefaultFindFeature(source))).find(upload.remote)) {
                     final Find find = destination.getFeature(Find.class);
                     if(find.find(upload.remote)) {
                         // Found remote file
