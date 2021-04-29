@@ -86,11 +86,14 @@ public class S3UrlProvider implements UrlProvider {
                         break;
                 }
             }
-            // Torrent
-            list.add(new DescriptiveUrl(URI.create(new S3TorrentUrlProvider(session.getHost()).create(
-                containerService.getContainer(file).getName(), containerService.getKey(file))),
-                DescriptiveUrl.Type.torrent,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
+            // Only for AWS
+            if(S3Session.isAwsHostname(session.getHost().getHostname())) {
+                // Torrent
+                list.add(new DescriptiveUrl(URI.create(new S3TorrentUrlProvider(session.getHost()).create(
+                    containerService.getContainer(file).getName(), containerService.getKey(file))),
+                    DescriptiveUrl.Type.torrent,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
+            }
         }
         list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
         if(!file.isRoot()) {
