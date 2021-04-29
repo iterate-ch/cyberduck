@@ -53,7 +53,7 @@ public class GraphFileIdProvider implements FileIdProvider {
             return cached;
         }
         final AttributedList<Path> list = session._getFeature(ListService.class).list(file.getParent(), listener);
-        final Path found = list.find(path -> file.getAbsolute().equals(path.getAbsolute()));
+        final Path found = list.find(new SimplePathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
