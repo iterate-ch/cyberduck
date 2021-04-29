@@ -37,14 +37,16 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
     private static final Logger log = Logger.getLogger(CryptoDirectoryV6Feature.class);
 
     private final Session<?> session;
+    private final Find find;
     private final Directory<Reply> proxy;
     private final CryptoVault vault;
-    private final RandomStringService random
-        = new UUIDRandomStringService();
+    private final RandomStringService random = new UUIDRandomStringService();
 
-    public CryptoDirectoryV6Feature(final Session<?> session, final Directory<Reply> delegate, final Write<Reply> writer, final CryptoVault cryptomator) {
+    public CryptoDirectoryV6Feature(final Session<?> session, final Directory<Reply> delegate,
+                                    final Write<Reply> writer, final Find find, final CryptoVault cryptomator) {
         this.session = session;
-        this.proxy = delegate.withWriter(new CryptoWriteFeature<Reply>(session, writer, cryptomator));
+        this.find = find;
+        this.proxy = delegate.withWriter(new CryptoWriteFeature<>(session, writer, cryptomator));
         this.vault = cryptomator;
     }
 
@@ -59,8 +61,8 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
         }
         new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(StandardCharsets.UTF_8));
         final Path intermediate = encrypt.getParent();
-        if(!session._getFeature(Find.class).find(intermediate)) {
-            session._getFeature(Directory.class).mkdir(intermediate, region, new TransferStatus());
+        if(!find.find(intermediate)) {
+            proxy.mkdir(intermediate, region, new TransferStatus());
         }
         // Write header
         final FileHeader header = vault.getFileHeaderCryptor().create();
