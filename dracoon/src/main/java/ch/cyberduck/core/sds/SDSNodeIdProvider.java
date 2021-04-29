@@ -53,7 +53,7 @@ public class SDSNodeIdProvider implements VersionIdProvider {
     private static final String ROOT_NODE_ID = "0";
 
     private final SDSSession session;
-    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("browser.cache.size"));
+    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));
 
     public SDSNodeIdProvider(final SDSSession session) {
         this.session = session;

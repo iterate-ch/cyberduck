@@ -41,7 +41,7 @@ public class B2VersionIdProvider implements VersionIdProvider {
 
     private final PathContainerService containerService = new B2PathContainerService();
     private final B2Session session;
-    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("browser.cache.size"));
+    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));
 
     public B2VersionIdProvider(final B2Session session) {
         this.session = session;

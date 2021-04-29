@@ -34,7 +34,7 @@ public class GraphFileIdProvider implements FileIdProvider {
     private static final Logger log = Logger.getLogger(GraphFileIdProvider.class);
 
     private final GraphSession session;
-    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("browser.cache.size"));
+    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));
 
     public GraphFileIdProvider(final GraphSession session) {
         this.session = session;

@@ -37,7 +37,7 @@ public class StoregateIdProvider implements FileIdProvider {
     private static final Logger log = Logger.getLogger(StoregateIdProvider.class);
 
     private final StoregateSession session;
-    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("browser.cache.size"));
+    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));
 
     public StoregateIdProvider(final StoregateSession session) {
         this.session = session;
