@@ -237,7 +237,7 @@ public abstract class Preferences implements Locales {
         Security.setProperty("networkaddress.cache.negative.ttl", "5");
 
         final String[] version = StringUtils.split(Version.getSpecification(), '.');
-        if(2 == version.length) {
+        if(version != null && 2 == version.length) {
             this.setDefault("application.version", version[0]);
             this.setDefault("application.revision", version[1]);
         }
