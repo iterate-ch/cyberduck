@@ -149,7 +149,7 @@ public class S3UrlProviderTest {
     public void testToTorrentUrlThirdparty() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), "test-us-east-1-cyberduck",
             new Credentials("anonymous", null)));
-        assertEquals(new DescriptiveUrl(URI.create("http://test-us-east-1-cyberduck/c/test%20f?torrent"), DescriptiveUrl.Type.torrent),
+        assertEquals(DescriptiveUrl.EMPTY,
             new S3UrlProvider(session).toUrl(new Path("/c/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.torrent));
     }
 
