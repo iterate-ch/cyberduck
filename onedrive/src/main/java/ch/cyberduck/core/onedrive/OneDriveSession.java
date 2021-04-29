@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.ItemReference;
+import org.nuxeo.onedrive.client.types.User;
 
 import java.util.Optional;
 
@@ -71,7 +72,16 @@ public class OneDriveSession extends GraphSession {
     @Override
     public DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
         if(file.equals(OneDriveListService.MYFILES_NAME)) {
-            return new Drive(getUser().asDirectoryObject()).getRoot();
+            final User.Metadata user = getUser();
+            // creationType can be non-assigned (Microsoft Account)
+            // or null, Inviation, LocalAccount or EmailVerified.
+            // noinspection OptionalAssignedToNull
+            if(user.getCreationType() == null) {
+                return new Drive(client).getRoot();
+            }
+            else {
+                return new Drive(user.asDirectoryObject()).getRoot();
+            }
         }
         final String versionId = fileIdProvider.getFileid(file, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
