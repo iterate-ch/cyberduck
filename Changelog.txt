@@ -7,6 +7,7 @@ https://cyberduck.io/
 - [Feature] Allow toggling versioning configuration for bucket (Google Storage)
 - [Feature] Display and restore of previous file versions in bucket (Google Storage)
 - [Feature] Support chacha20-poly1305@openssh.com cipher (SFTP) (#8554)
+- [Feature] Share file option to set public-read ACL on file and copy URL (S3, Google Storage)
 - [Bugfix] Tremendously faster uploading folders with many files to vault (Cryptomator, OneDrive, Google Drive, Backblaze B2) (#10849)
 - [Bugfix] Substantially faster uploading folders with many files (OneDrive, Google Drive, Backblaze B2)
 - [Bugfix] Maximum number of simultaneous transfers not handled properly (#11001)
