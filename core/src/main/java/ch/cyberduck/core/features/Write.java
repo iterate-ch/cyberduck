@@ -54,6 +54,13 @@ public interface Write<Reply> {
      */
     boolean random();
 
+    /**
+     * @return True if supporting to set timestamp on upload
+     */
+    default boolean timestamp() {
+        return false;
+    }
+
     default ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return new DisabledChecksumCompute();
     }

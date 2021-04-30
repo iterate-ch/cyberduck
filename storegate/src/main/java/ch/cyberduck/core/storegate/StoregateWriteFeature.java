@@ -82,6 +82,11 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
     }
 
     @Override
+    public boolean timestamp() {
+        return true;
+    }
+
+    @Override
     public HttpResponseOutputStream<FileMetadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final DelayedHttpEntityCallable<FileMetadata> command = new DelayedHttpEntityCallable<FileMetadata>() {
             @Override

@@ -152,6 +152,11 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     }
 
     @Override
+    public boolean timestamp() {
+        return true;
+    }
+
+    @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return ChecksumComputeFactory.get(HashAlgorithm.sha1);
     }

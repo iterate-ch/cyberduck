@@ -108,4 +108,9 @@ public class SDSMultipartWriteFeature implements MultipartWrite<Node> {
     public boolean random() {
         return false;
     }
+
+    @Override
+    public boolean timestamp() {
+        return true;
+    }
 }

@@ -330,16 +330,18 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
             if(status.getTimestamp() != null) {
-                final Timestamp feature = session.getFeature(Timestamp.class);
-                if(feature != null) {
-                    try {
-                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                            file.getName(), UserDateFormatterFactory.get().getShortFormat(status.getTimestamp())));
-                        feature.setTimestamp(file, status);
-                    }
-                    catch(BackgroundException e) {
-                        // Ignore
-                        log.warn(e.getMessage());
+                if(!session.getFeature(Write.class).timestamp()) {
+                    final Timestamp feature = session.getFeature(Timestamp.class);
+                    if(feature != null) {
+                        try {
+                            listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
+                                file.getName(), UserDateFormatterFactory.get().getShortFormat(status.getTimestamp())));
+                            feature.setTimestamp(file, status);
+                        }
+                        catch(BackgroundException e) {
+                            // Ignore
+                            log.warn(e.getMessage());
+                        }
                     }
                 }
             }

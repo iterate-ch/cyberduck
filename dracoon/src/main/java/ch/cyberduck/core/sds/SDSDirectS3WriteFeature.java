@@ -115,4 +115,9 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Void> {
     public boolean random() {
         return false;
     }
+
+    @Override
+    public boolean timestamp() {
+        return true;
+    }
 }

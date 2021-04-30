@@ -91,6 +91,11 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         return false;
     }
 
+    @Override
+    public boolean timestamp() {
+        return true;
+    }
+
     private final class SegmentingUploadProxyOutputStream extends HttpResponseOutputStream<String> {
 
         private final Path file;
