@@ -59,6 +59,11 @@ public class VaultRegistryWriteFeature<T> implements Write<T> {
     }
 
     @Override
+    public boolean timestamp() {
+        return proxy.timestamp();
+    }
+
+    @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         try {
             return registry.find(session, file).getFeature(session, Write.class, proxy).checksum(file, status);

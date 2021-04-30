@@ -85,6 +85,11 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     }
 
     @Override
+    public boolean timestamp() {
+        return proxy.timestamp();
+    }
+
+    @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return new CryptoChecksumCompute(proxy.checksum(file, status), vault);
     }
