@@ -20,6 +20,8 @@ package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.core.LocalFactory;
 
+import org.apache.log4j.Logger;
+
 public final class PreferencesFactory {
     private PreferencesFactory() {
         //
@@ -35,6 +37,13 @@ public final class PreferencesFactory {
         // Apply global configuration
         preferences.setDefaults(LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "default.properties"));
         preferences.configureLogging(preferences.getProperty("logging"));
+        final Logger log = Logger.getLogger(PreferencesFactory.class);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Running version %s.%s (%s)",
+                preferences.getProperty("application.version"),
+                preferences.getProperty("application.revision"),
+                preferences.getProperty("application.hash")));
+        }
     }
 
     public static synchronized Preferences get() {

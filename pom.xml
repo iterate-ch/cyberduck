@@ -400,8 +400,8 @@
                             <index>true</index>
                             <manifestEntries>
                                 <Specification-Vendor>iterate GmbH</Specification-Vendor>
-                                <Specification-Version>${project.version}</Specification-Version>
-                                <Implementation-Version>${git.commitsCount}</Implementation-Version>
+                                <Specification-Version>${project.version}.${git.commitsCount}</Specification-Version>
+                                <Implementation-Version>${git.revision}</Implementation-Version>
                             </manifestEntries>
                         </archive>
                     </configuration>
@@ -448,7 +448,7 @@
                                     <property name="home" value="${main.basedir}" />
                                     <property name="version" value="${project.version}" />
                                     <property name="revision" value="${git.commitsCount}" />
-                                    <property name="git.revision" value="${git.revision}" />
+                                    <property name="hash" value="${git.revision}"/>
                                     <property name="sparkle.feed" value="${sparkle.feed}" />
                                     <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
                                 </target>

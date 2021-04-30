@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.azure.AzureProtocol;
@@ -56,10 +55,7 @@ import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.controller.MainController;
 
-import org.apache.log4j.Logger;
-
 public final class MainApplication {
-    private static final Logger log = Logger.getLogger(MainApplication.class);
 
     static {
         System.err.close();
@@ -116,18 +112,9 @@ public final class MainApplication {
                 new NextcloudProtocol(),
                 new CTERAProtocol()
             );
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Running version %s", NSBundle.mainBundle()
-                    .objectForInfoDictionaryKey("CFBundleVersion").toString()));
-                log.info(String.format("Running Java %s on %s", System
-                    .getProperty("java.version"), System.getProperty("os.arch")));
-                log.info(String.format("Available localizations:%s", preferences.applicationLocales()));
-                log.info(String.format("Native library path:%s", System.getProperty("java.library.path")));
-                log.info(String.format("Using default encoding %s", System.getProperty("file.encoding")));
-            }
             protocols.loadDefaultProfiles();
-            final MainController c = new MainController();
 
+            final MainController c = new MainController();
             // Must implement NSApplicationDelegate protocol
             app.setDelegate(c.id());
             // When the Finder launches an app, using a value of NO for flag allows the app to become active if the user waits for it to launch

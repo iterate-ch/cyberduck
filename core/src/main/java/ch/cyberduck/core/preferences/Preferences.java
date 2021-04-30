@@ -185,7 +185,7 @@ public abstract class Preferences implements Locales {
          * @return The <code>Specification-Version</code> in the JAR manifest.
          */
         public static String getSpecification() {
-            Package pkg = Version.class.getPackage();
+            final Package pkg = Version.class.getPackage();
             return (pkg == null) ? null : pkg.getSpecificationVersion();
         }
 
@@ -193,16 +193,17 @@ public abstract class Preferences implements Locales {
          * @return The <code>Implementation-Version</code> in the JAR manifest.
          */
         public static String getImplementation() {
-            Package pkg = Version.class.getPackage();
+            final Package pkg = Version.class.getPackage();
             return (pkg == null) ? null : pkg.getImplementationVersion();
         }
 
-        /**
-         * A simple main method that prints the version and exits
-         */
-        public static void main(String[] args) {
-            System.out.println("Version: " + getSpecification());
-            System.out.println("Implementation: " + getImplementation());
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Version{");
+            sb.append("version='").append(getSpecification()).append('\'');
+            sb.append(", hash='").append(getImplementation()).append('\'');
+            sb.append('}');
+            return sb.toString();
         }
     }
 
@@ -235,8 +236,12 @@ public abstract class Preferences implements Locales {
         Security.setProperty("networkaddress.cache.ttl", "10");
         Security.setProperty("networkaddress.cache.negative.ttl", "5");
 
-        this.setDefault("application.version", Version.getSpecification());
-        this.setDefault("application.revision", Version.getImplementation());
+        final String[] version = StringUtils.split(Version.getSpecification(), '.');
+        if(version != null && 2 == version.length) {
+            this.setDefault("application.version", version[0]);
+            this.setDefault("application.revision", version[1]);
+        }
+        this.setDefault("application.hash", Version.getImplementation());
 
         this.setDefault("tmp.dir", System.getProperty("java.io.tmpdir"));
 
