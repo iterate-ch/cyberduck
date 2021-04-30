@@ -52,7 +52,9 @@ public interface Write<Reply> {
     /**
      * @return True if supporting random writes with arbitrary offset and length
      */
-    boolean random();
+    default boolean random() {
+        return false;
+    }
 
     /**
      * @return True if supporting to set timestamp on upload

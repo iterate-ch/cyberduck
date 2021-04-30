@@ -157,11 +157,6 @@ public class RenameExistingFilterTest {
                         public boolean temporary() {
                             return true;
                         }
-
-                        @Override
-                        public boolean random() {
-                            return false;
-                        }
                     };
                 }
                 return null;
@@ -244,11 +239,6 @@ public class RenameExistingFilterTest {
                         @Override
                         public boolean temporary() {
                             return true;
-                        }
-
-                        @Override
-                        public boolean random() {
-                            return false;
                         }
                     };
                 }

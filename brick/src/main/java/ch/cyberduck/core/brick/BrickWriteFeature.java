@@ -37,11 +37,6 @@ public class BrickWriteFeature extends DAVWriteFeature {
     }
 
     @Override
-    public boolean random() {
-        return false;
-    }
-
-    @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return Write.override;
     }

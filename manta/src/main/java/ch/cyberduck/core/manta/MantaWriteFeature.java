@@ -61,9 +61,4 @@ public class MantaWriteFeature implements Write<Void> {
     public boolean temporary() {
         return false;
     }
-
-    @Override
-    public boolean random() {
-        return false;
-    }
 }

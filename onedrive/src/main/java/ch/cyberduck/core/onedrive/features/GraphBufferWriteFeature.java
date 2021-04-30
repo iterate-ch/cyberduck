@@ -116,9 +116,4 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
     public boolean temporary() {
         return true;
     }
-
-    @Override
-    public boolean random() {
-        return false;
-    }
 }

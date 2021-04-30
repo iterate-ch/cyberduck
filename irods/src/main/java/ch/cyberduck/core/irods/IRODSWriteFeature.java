@@ -68,11 +68,6 @@ public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
         return false;
     }
 
-    @Override
-    public boolean random() {
-        return false;
-    }
-
     private final class FileDescriptorOutputStream extends StatusOutputStream<Integer> {
         private final Integer handle;
 

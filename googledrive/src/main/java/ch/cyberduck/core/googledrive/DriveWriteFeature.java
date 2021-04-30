@@ -72,11 +72,6 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
     }
 
     @Override
-    public boolean random() {
-        return false;
-    }
-
-    @Override
     public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
             @Override

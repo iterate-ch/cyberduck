@@ -87,11 +87,6 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     @Override
-    public boolean random() {
-        return false;
-    }
-
-    @Override
     public boolean timestamp() {
         return true;
     }

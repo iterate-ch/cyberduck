@@ -36,9 +36,4 @@ public class NullWriteFeature extends AppendWriteFeature<Void> {
     public boolean temporary() {
         return false;
     }
-
-    @Override
-    public boolean random() {
-        return false;
-    }
 }
