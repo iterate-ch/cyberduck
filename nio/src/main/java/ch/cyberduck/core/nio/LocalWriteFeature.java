@@ -75,11 +75,6 @@ public class LocalWriteFeature extends AppendWriteFeature<Void> {
     }
 
     @Override
-    public boolean temporary() {
-        return true;
-    }
-
-    @Override
     public boolean random() {
         return true;
     }

@@ -74,11 +74,6 @@ public class FTPWriteFeature extends AppendWriteFeature<Integer> {
         }
     }
 
-    @Override
-    public boolean temporary() {
-        return true;
-    }
-
     public final class ReadReplyOutputStream extends StatusOutputStream<Integer> {
         private final AtomicBoolean close;
         private final TransferStatus status;

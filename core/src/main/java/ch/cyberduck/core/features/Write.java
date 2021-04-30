@@ -47,7 +47,9 @@ public interface Write<Reply> {
     /**
      * @return True if temporary upload filename can be used
      */
-    boolean temporary();
+    default boolean temporary() {
+        return true;
+    }
 
     /**
      * @return True if supporting random writes with arbitrary offset and length
