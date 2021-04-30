@@ -72,6 +72,11 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
     }
 
     @Override
+    public boolean timestamp() {
+        return proxy.timestamp();
+    }
+
+    @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         if(nodeid.isEncrypted(file)) {
             return new TripleCryptWriteFeature(session, nodeid, proxy).checksum(file, status);
