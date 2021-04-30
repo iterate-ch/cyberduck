@@ -59,14 +59,55 @@
 </p>
 
 <p>
+    <a target="_blank" href="https://trac.cyberduck.io/milestone/7.9.0"><strong>Version 7.9.0</strong></a>
+</p>
+<ul>
+    <li><span class="label label-success">Feature</span> New "Auto" default option for number of connections for
+        transfers
+    </li>
+    <li><span class="label label-success">Feature</span> Increased default to 20 concurrent connections for transfers
+        for protocols other than FTP
+    </li>
+    <li><span class="label label-success">Feature</span> Allow toggling versioning configuration for bucket (Google
+        Storage)
+    </li>
+    <li><span class="label label-success">Feature</span> Display and restore of previous file versions in bucket (Google
+        Storage)
+    </li>
+    <li><span class="label label-success">Feature</span> Support chacha20-poly1305@openssh.com cipher (SFTP) (<a
+        target="_blank" href="https://trac.cyberduck.io/ticket/8554">#8554</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Tremendously faster uploading folders with many files to vault
+        (Cryptomator, OneDrive, Google Drive, Backblaze B2) (<a target="_blank"
+                                                                href="https://trac.cyberduck.io/ticket/10849">#10849</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Substantially faster uploading folders with many files
+        (OneDrive, Google Drive, Backblaze B2)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Maximum number of simultaneous transfers not handled properly
+        (<a target="_blank" href="https://trac.cyberduck.io/ticket/11001">#11001</a>#)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Interoperability with China region operated by 21Vianet
+        (OneDrive, Sharepoint) (<a target="_blank" href="https://trac.cyberduck.io/ticket/11415">#11415</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Support Elliptic Curve (EC) based client certificates for
+        authentication (WebDAV, Windows)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Interoperability with OpenSSH for Windows (SFTP)</li>
+    <li><span class="label label-warning">Bugfix</span> Segmented download fail with longer filenames (Windows)</li>
+    <li><span class="label label-warning">Bugfix</span> Bezel style for popup buttons in window toolbars (macOS)</li>
+</ul>
+
+<p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/7.8.5"><strong>Version 7.8.5</strong></a>
 </p>
 <ul>
     <li><span class="label label-success">Feature</span> Support ED25519 and ECDSA keys in the PuTTY format (SFTP)</li>
-    <li><span class="label label-warning">Bugfix</span> Large increasing memory usage when downloading files with segmeted downloads option (#11151)</li>
-    <li><span class="label label-warning">Bugfix</span> Faster transfer rate with segmented downloads option enabled
-        (SFTP)
+    <li><span class="label label-warning">Bugfix</span> Large increasing memory usage when downloading files with
+        segmeted downloads option (#11151)
     </li>
+    <li><span class="label label-warning">Bugfix</span> Faster transfer rate with segmented downloads option enabled
+    <li><span class="label label-warning">Bugfix</span> Allow revert and restore of multiple files (S3)</li>
 </ul>
 
 <p>
@@ -83,9 +124,12 @@
     <li><span class="label label-warning">Bugfix</span> Failure renaming files (OneDrive, Sharepoint)</li>
     <li><span class="label label-warning">Bugfix</span> Optimize segmented downloads</li>
     <li><span class="label label-warning">Bugfix</span> Allow resume of segmented downloads</li>
-    <li><span class="label label-warning">Bugfix</span> Ignore unavailable regions when listing containers (OpenStack Swift)</li>
+    <li><span class="label label-warning">Bugfix</span> Ignore unavailable regions when listing containers (OpenStack
+        Swift)
+    </li>
     <li><span class="label label-warning">Bugfix</span> Missing default connection profile (Nextcloud & ownCloud)</li>
-    <li><span class="label label-warning">Bugfix</span> Missing default connection profile (Microsoft SharePoint Site)</li>
+    <li><span class="label label-warning">Bugfix</span> Missing default connection profile (Microsoft SharePoint Site)
+    </li>
     <li><span class="label label-warning">Bugfix</span> Missing default connection profile (Files.com)</li>
 </ul>
 

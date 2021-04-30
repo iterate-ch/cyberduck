@@ -1,10 +1,26 @@
 Cyberduck
 https://cyberduck.io/
 
+7.9.0
+- [Feature] New "Auto" default option for number of connections for transfers
+- [Feature] Increased default to 20 concurrent connections for transfers for protocols other than FTP
+- [Feature] Allow toggling versioning configuration for bucket (Google Storage)
+- [Feature] Display and restore of previous file versions in bucket (Google Storage)
+- [Feature] Support chacha20-poly1305@openssh.com cipher (SFTP) (#8554)
+- [Bugfix] Tremendously faster uploading folders with many files to vault (Cryptomator, OneDrive, Google Drive, Backblaze B2) (#10849)
+- [Bugfix] Substantially faster uploading folders with many files (OneDrive, Google Drive, Backblaze B2)
+- [Bugfix] Maximum number of simultaneous transfers not handled properly (#11001)
+- [Bugfix] Interoperability with China region operated by 21Vianet (OneDrive, Sharepoint) (#11415)
+- [Bugfix] Support Elliptic Curve (EC) based client certificates for authentication (WebDAV, Windows)
+- [Bugfix] Interoperability with OpenSSH for Windows (SFTP)
+- [Bugfix] Segmented download fail with longer filenames (Windows)
+- [Bugfix] Bezel style for popup buttons in window toolbars (macOS)
+
 7.8.5
 - [Feature] Support ED25519 and ECDSA keys in the PuTTY format (SFTP)
 - [Bugfix] Large increasing memory usage when downloading files with segmeted downloads option (#11151)
 - [Bugfix] Faster transfer rate with segmented downloads option enabled (SFTP)
+- [Bugfix] Allow revert and restore of multiple files (S3)
 
 7.8.4
 - [Bugfix] Missing log file configuration (Windows)
