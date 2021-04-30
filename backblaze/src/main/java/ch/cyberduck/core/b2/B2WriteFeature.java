@@ -147,8 +147,8 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     }
 
     @Override
-    public boolean random() {
-        return false;
+    public boolean timestamp() {
+        return true;
     }
 
     @Override

@@ -47,12 +47,23 @@ public interface Write<Reply> {
     /**
      * @return True if temporary upload filename can be used
      */
-    boolean temporary();
+    default boolean temporary() {
+        return true;
+    }
 
     /**
      * @return True if supporting random writes with arbitrary offset and length
      */
-    boolean random();
+    default boolean random() {
+        return false;
+    }
+
+    /**
+     * @return True if supporting to set timestamp on upload
+     */
+    default boolean timestamp() {
+        return false;
+    }
 
     default ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return new DisabledChecksumCompute();

@@ -88,11 +88,6 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
         return false;
     }
 
-    @Override
-    public boolean random() {
-        return false;
-    }
-
     private final class LargeUploadOutputStream extends OutputStream {
         private final List<StorageObject> completed = new ArrayList<>();
         private final Path file;

@@ -91,11 +91,6 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<B2StartLargeFil
         return false;
     }
 
-    @Override
-    public boolean random() {
-        return false;
-    }
-
     private final class LargeUploadOutputStream extends OutputStream {
         final List<B2UploadPartResponse> completed = new ArrayList<>();
         private final Path file;

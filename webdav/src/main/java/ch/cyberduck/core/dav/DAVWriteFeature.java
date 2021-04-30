@@ -130,11 +130,6 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
     }
 
     @Override
-    public boolean temporary() {
-        return true;
-    }
-
-    @Override
     public boolean random() {
         return true;
     }

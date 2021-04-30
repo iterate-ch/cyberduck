@@ -111,14 +111,4 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return new Append(false).withStatus(status);
     }
-
-    @Override
-    public boolean temporary() {
-        return true;
-    }
-
-    @Override
-    public boolean random() {
-        return false;
-    }
 }

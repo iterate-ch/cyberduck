@@ -152,16 +152,6 @@ public class RenameExistingFilterTest {
                             fail();
                             return new Append(false);
                         }
-
-                        @Override
-                        public boolean temporary() {
-                            return true;
-                        }
-
-                        @Override
-                        public boolean random() {
-                            return false;
-                        }
                     };
                 }
                 return null;
@@ -239,16 +229,6 @@ public class RenameExistingFilterTest {
                         public Append append(final Path file, final TransferStatus status) {
                             fail();
                             return new Append(false);
-                        }
-
-                        @Override
-                        public boolean temporary() {
-                            return true;
-                        }
-
-                        @Override
-                        public boolean random() {
-                            return false;
                         }
                     };
                 }

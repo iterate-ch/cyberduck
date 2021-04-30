@@ -88,11 +88,6 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
         return false;
     }
 
-    @Override
-    public boolean random() {
-        return false;
-    }
-
     private final class MultipartOutputStream extends OutputStream {
         /**
          * Completed parts

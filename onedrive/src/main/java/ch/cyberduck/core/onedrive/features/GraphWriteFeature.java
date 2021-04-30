@@ -92,11 +92,6 @@ public class GraphWriteFeature implements Write<Void> {
         return false;
     }
 
-    @Override
-    public boolean random() {
-        return false;
-    }
-
     private final class ChunkedOutputStream extends OutputStream {
         private final UploadSession upload;
         private final Path file;

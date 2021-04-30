@@ -369,16 +369,6 @@ public class UploadTransferTest {
                             return new Write.Append(false);
                         }
 
-
-                        @Override
-                        public boolean temporary() {
-                            return true;
-                        }
-
-                        @Override
-                        public boolean random() {
-                            return false;
-                        }
                     };
                 }
                 return super._getFeature(type);
