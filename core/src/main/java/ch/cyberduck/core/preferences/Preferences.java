@@ -181,19 +181,27 @@ public abstract class Preferences implements Locales {
     public abstract void setDefault(String property, String value);
 
     private static final class Version {
+        private final Package pkg;
+
+        public Version() {
+            this(Version.class.getPackage());
+        }
+
+        public Version(final Package pkg) {
+            this.pkg = pkg;
+        }
+
         /**
          * @return The <code>Specification-Version</code> in the JAR manifest.
          */
-        public static String getSpecification() {
-            final Package pkg = Version.class.getPackage();
+        public String getSpecification() {
             return (pkg == null) ? null : pkg.getSpecificationVersion();
         }
 
         /**
          * @return The <code>Implementation-Version</code> in the JAR manifest.
          */
-        public static String getImplementation() {
-            final Package pkg = Version.class.getPackage();
+        public String getImplementation() {
             return (pkg == null) ? null : pkg.getImplementationVersion();
         }
 
@@ -236,12 +244,13 @@ public abstract class Preferences implements Locales {
         Security.setProperty("networkaddress.cache.ttl", "10");
         Security.setProperty("networkaddress.cache.negative.ttl", "5");
 
-        final String[] version = StringUtils.split(Version.getSpecification(), '.');
-        if(version != null && 2 == version.length) {
-            this.setDefault("application.version", version[0]);
-            this.setDefault("application.revision", version[1]);
+        final Version version = new Version();
+        final String[] spec = StringUtils.split(version.getSpecification(), '.');
+        if(spec != null && 2 == spec.length) {
+            this.setDefault("application.version", spec[0]);
+            this.setDefault("application.revision", spec[1]);
         }
-        this.setDefault("application.hash", Version.getImplementation());
+        this.setDefault("application.hash", version.getImplementation());
 
         this.setDefault("tmp.dir", System.getProperty("java.io.tmpdir"));
 
