@@ -180,7 +180,7 @@ public abstract class Preferences implements Locales {
 
     public abstract void setDefault(String property, String value);
 
-    private static final class Version {
+    public static final class Version {
         private final Package pkg;
 
         public Version() {
