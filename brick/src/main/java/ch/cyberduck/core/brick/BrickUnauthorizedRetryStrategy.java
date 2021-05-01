@@ -59,12 +59,16 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_UNAUTHORIZED:
                 if(executionCount <= MAX_RETRIES) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Try to acquire semaphore for %s", session));
+                    }
                     // Pairing token no longer valid
                     if(!semaphore.tryAcquire()) {
                         log.warn(String.format("Skip pairing because semaphore cannot be aquired for %s", session));
                         return false;
                     }
                     try {
+                        log.warn(String.format("Run pairing flow for %s", session));
                         // Blocks until pairing is complete or canceled
                         session.login(ProxyFactory.get().find(new ProxyHostUrlProvider().get(session.getHost())),
                             prompt, new BackgroundActionRegistryCancelCallback(cancel));
@@ -84,6 +88,9 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                         log.warn(String.format("Failure %s trying to refresh pairing after error response %s", e, response));
                     }
                     finally {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Release semaphore for %s", session));
+                        }
                         semaphore.release();
                     }
                 }

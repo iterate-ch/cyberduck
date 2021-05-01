@@ -82,7 +82,7 @@ public class BrickSession extends DAVSession {
         }
         catch(LoginFailureException e) {
             log.warn(String.format("Attempt to obtain new pairing keys for response %s", e));
-            this.pair(host, prompt, cancel);
+            this.pair(host, prompt, cancel).setSaved(true);
             super.login(proxy, prompt, cancel);
         }
     }
