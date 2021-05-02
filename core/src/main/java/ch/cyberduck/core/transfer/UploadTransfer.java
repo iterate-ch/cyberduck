@@ -186,18 +186,15 @@ public class UploadTransfer extends Transfer {
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
                 if(new CachingFindFeature(cache, source.getFeature(Find.class, new DefaultFindFeature(source))).find(upload.remote)) {
-                    final Find find = destination.getFeature(Find.class);
-                    if(find.find(upload.remote)) {
-                        // Found remote file
-                        if(upload.remote.isDirectory()) {
-                            if(this.list(source, upload.remote, upload.local, listener).isEmpty()) {
-                                // Do not prompt for existing empty directories
-                                continue;
-                            }
+                    // Found remote file
+                    if(upload.remote.isDirectory()) {
+                        if(this.list(source, upload.remote, upload.local, listener).isEmpty()) {
+                            // Do not prompt for existing empty directories
+                            continue;
                         }
-                        // Prompt user to choose a filter
-                        return prompt.prompt(upload);
                     }
+                    // Prompt user to choose a filter
+                    return prompt.prompt(upload);
                 }
             }
             // No files exist yet therefore it is most straightforward to use the overwrite action
