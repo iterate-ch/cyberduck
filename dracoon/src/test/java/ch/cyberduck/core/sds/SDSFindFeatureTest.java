@@ -34,11 +34,11 @@ public class SDSFindFeatureTest extends AbstractSDSTest {
     @Test
     public void testFind() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        assertTrue(new SDSFindFeature(nodeid).find(new DefaultHomeFinderService(session).find()));
-        assertFalse(new SDSFindFeature(nodeid).find(
+        assertTrue(new SDSFindFeature(session, nodeid).find(new DefaultHomeFinderService(session).find()));
+        assertFalse(new SDSFindFeature(session, nodeid).find(
             new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
         ));
-        assertFalse(new SDSFindFeature(nodeid).find(
+        assertFalse(new SDSFindFeature(session, nodeid).find(
             new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
         ));
     }
@@ -46,6 +46,6 @@ public class SDSFindFeatureTest extends AbstractSDSTest {
     @Test
     public void testFindRoot() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        assertTrue(new SDSFindFeature(nodeid).find(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertTrue(new SDSFindFeature(session, nodeid).find(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 }

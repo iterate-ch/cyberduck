@@ -94,7 +94,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         }
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
         assertEquals(test.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(test).getVersionId());
         final byte[] compare = new byte[content.length];
         final InputStream stream = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());

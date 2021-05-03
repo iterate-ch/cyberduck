@@ -49,11 +49,11 @@ public class CopyWorkerTest extends AbstractSDSTest {
         final Path source = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(source, new TransferStatus());
-        assertTrue(new SDSFindFeature(nodeid).find(source));
+        assertTrue(new SDSFindFeature(session, nodeid).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new SDSFindFeature(nodeid).find(source));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertTrue(new SDSFindFeature(session, nodeid).find(source));
+        assertTrue(new SDSFindFeature(session, nodeid).find(target));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), PathCache.empty(), new DisabledProgressListener()).run(session);
     }
 
@@ -64,16 +64,16 @@ public class CopyWorkerTest extends AbstractSDSTest {
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path sourceFile = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(sourceFile, new TransferStatus());
-        assertTrue(new SDSFindFeature(nodeid).find(sourceFile));
+        assertTrue(new SDSFindFeature(session, nodeid).find(sourceFile));
         final Path targetFolder = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSDirectoryFeature(session, nodeid).mkdir(targetFolder, null, new TransferStatus());
-        assertTrue(new SDSFindFeature(nodeid).find(targetFolder));
+        assertTrue(new SDSFindFeature(session, nodeid).find(targetFolder));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new SDSFindFeature(nodeid).find(sourceFile));
-        assertTrue(new SDSFindFeature(nodeid).find(targetFile));
+        assertTrue(new SDSFindFeature(session, nodeid).find(sourceFile));
+        assertTrue(new SDSFindFeature(session, nodeid).find(targetFile));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), PathCache.empty(), new DisabledProgressListener()).run(session);
     }
 
@@ -84,16 +84,16 @@ public class CopyWorkerTest extends AbstractSDSTest {
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path sourceFile = new SDSTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new SDSFindFeature(nodeid).find(folder));
-        assertTrue(new SDSFindFeature(nodeid).find(sourceFile));
+        assertTrue(new SDSFindFeature(session, nodeid).find(folder));
+        assertTrue(new SDSFindFeature(session, nodeid).find(sourceFile));
         final Path targetFolder = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new SDSFindFeature(nodeid).find(targetFolder));
+        assertTrue(new SDSFindFeature(session, nodeid).find(targetFolder));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
-        assertTrue(new SDSFindFeature(nodeid).find(targetFile));
-        assertTrue(new SDSFindFeature(nodeid).find(folder));
-        assertTrue(new SDSFindFeature(nodeid).find(sourceFile));
+        assertTrue(new SDSFindFeature(session, nodeid).find(targetFile));
+        assertTrue(new SDSFindFeature(session, nodeid).find(folder));
+        assertTrue(new SDSFindFeature(session, nodeid).find(sourceFile));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), PathCache.empty(), new DisabledProgressListener()).run(session);
     }
 }

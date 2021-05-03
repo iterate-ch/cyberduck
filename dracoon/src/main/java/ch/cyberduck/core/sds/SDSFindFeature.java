@@ -23,16 +23,18 @@ import ch.cyberduck.core.features.Find;
 
 public class SDSFindFeature implements Find {
 
+    private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
 
-    public SDSFindFeature(final SDSNodeIdProvider nodeid) {
+    public SDSFindFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
+        this.session = session;
         this.nodeid = nodeid;
     }
 
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            nodeid.getVersionId(file, listener);
+            new SDSAttributesFinderFeature(session, nodeid).find(file, listener);
             return true;
         }
         catch(NotfoundException e) {
