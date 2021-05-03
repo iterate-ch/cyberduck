@@ -96,12 +96,14 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
                 final Node node = new NodesApi(session.getClient()).requestNode(
                     Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
                 final PathAttributes attr = this.toAttributes(node);
-                if(references) {
-                    try {
-                        attr.setVersions(this.versions(file, chunksize));
-                    }
-                    catch(AccessDeniedException e) {
-                        log.warn(String.format("Ignore failure %s fetching versions for %s", e, file));
+                if(this.toType(node).contains(Path.Type.file)) {
+                    if(references) {
+                        try {
+                            attr.setVersions(this.versions(file, chunksize));
+                        }
+                        catch(AccessDeniedException e) {
+                            log.warn(String.format("Ignore failure %s fetching versions for %s", e, file));
+                        }
                     }
                 }
                 return attr;
