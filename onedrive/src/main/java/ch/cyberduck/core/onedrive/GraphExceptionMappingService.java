@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.client.HttpResponseException;
@@ -41,9 +42,10 @@ public class GraphExceptionMappingService extends AbstractExceptionMappingServic
             switch(failure.getResponseCode()) {
                 case 429:
                     // Rate limit
-                    final Duration delay = Duration.ofMillis(0L);
-                    return new RetriableAccessDeniedException(buffer.toString(), delay);
-
+                    if(failure.getRetry() != null) {
+                        return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(failure.getRetry()));
+                    }
+                    return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(PreferencesFactory.get().getInteger("connection.retry.delay")));
             }
             return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(failure.getResponseCode(), buffer.toString()));
         }
