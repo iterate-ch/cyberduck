@@ -259,6 +259,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browserButton = new System.Windows.Forms.ToolStripButton();
             this.transfersButton = new System.Windows.Forms.ToolStripButton();
             this.editStripButton = new System.Windows.Forms.ToolStripButton();
+            this.profilesButton = new System.Windows.Forms.ToolStripButton();
             this.sftpButton = new System.Windows.Forms.ToolStripButton();
             this.s3Button = new System.Windows.Forms.ToolStripButton();
             this.googleCloudButton = new System.Windows.Forms.ToolStripButton();
@@ -267,6 +268,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cryptomatorButton = new System.Windows.Forms.ToolStripButton();
             this.updateButton = new System.Windows.Forms.ToolStripButton();
             this.languageButton = new System.Windows.Forms.ToolStripButton();
+            this.managedProfilesPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.panelManager.SuspendLayout();
             this.managedGeneralPanel.SuspendLayout();
             this.tableLayoutPanelGeneral.SuspendLayout();
@@ -372,6 +375,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox15.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.toolStrip.SuspendLayout();
+            this.managedProfilesPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // iconList
@@ -401,6 +405,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager.Controls.Add(this.managedTransfersPanel);
             this.panelManager.Controls.Add(this.managedGoogleCloudPanel);
             this.panelManager.Controls.Add(this.managedCryptomatorPanel);
+            this.panelManager.Controls.Add(this.managedProfilesPanel);
             this.panelManager.Location = new System.Drawing.Point(12, 76);
             this.panelManager.Name = "panelManager";
             this.panelManager.SelectedIndex = 10;
@@ -3347,6 +3352,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browserButton,
             this.transfersButton,
             this.editStripButton,
+            this.profilesButton,
             this.sftpButton,
             this.s3Button,
             this.googleCloudButton,
@@ -3409,6 +3415,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editStripButton.Text = "Editor";
             this.editStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.editStripButton.Click += new System.EventHandler(this.editStripButton_Click);
+            // 
+            // profilesButton
+            // 
+            this.profilesButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.profilesButton.Name = "profilesButton";
+            this.profilesButton.Size = new System.Drawing.Size(50, 66);
+            this.profilesButton.Text = "Profiles";
+            this.profilesButton.Click += new System.EventHandler(this.profilesButton_Click);
             // 
             // sftpButton
             // 
@@ -3503,6 +3517,24 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.languageButton.Text = "Language";
             this.languageButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.languageButton.Click += new System.EventHandler(this.languageButton_Click);
+            // 
+            // managedProfilesPanel
+            // 
+            this.managedProfilesPanel.Controls.Add(this.elementHost1);
+            this.managedProfilesPanel.Location = new System.Drawing.Point(0, 0);
+            this.managedProfilesPanel.Name = "managedProfilesPanel";
+            this.managedProfilesPanel.Size = new System.Drawing.Size(654, 479);
+            this.managedProfilesPanel.Text = "managedPanel1";
+            // 
+            // elementHost1
+            // 
+            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.elementHost1.Location = new System.Drawing.Point(0, 0);
+            this.elementHost1.Name = "elementHost1";
+            this.elementHost1.Size = new System.Drawing.Size(654, 479);
+            this.elementHost1.TabIndex = 0;
+            this.elementHost1.Text = "elementHost1";
+            this.elementHost1.Child = null;
             // 
             // PreferencesForm
             // 
@@ -3715,6 +3747,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.flowLayoutPanel1.PerformLayout();
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
+            this.managedProfilesPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -3958,5 +3991,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel49;
         private System.Windows.Forms.ComboBox defaultGoogleACLComboBox;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.ToolStripButton profilesButton;
+        private ManagedPanel managedProfilesPanel;
+        private System.Windows.Forms.Integration.ElementHost elementHost1;
     }
 }

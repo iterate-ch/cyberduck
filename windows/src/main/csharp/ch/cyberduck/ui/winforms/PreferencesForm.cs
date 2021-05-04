@@ -1592,5 +1592,15 @@ namespace Ch.Cyberduck.Ui.Winforms
                 panelManager.SelectedPanel = managedGoogleCloudPanel;
             }
         }
+
+        private void profilesButton_Click(object sender, EventArgs e)
+        {
+            if (!profilesButton.Checked)
+            {
+                DisableAll();
+                profilesButton.Checked = true;
+                panelManager.SelectedPanel = managedTransfersPanel;
+            }
+        }
     }
 }
