@@ -56,7 +56,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setMime("x-application/cyberduck");
-            status.setTimestamp(System.currentTimeMillis());
+            status.setTimestamp(1620113107725L);
             final byte[] content = RandomUtils.nextBytes(2048);
             status.setLength(content.length);
             final HttpResponseOutputStream<String> out = new DriveWriteFeature(session, idProvider).write(test, status, new DisabledConnectionCallback());
@@ -67,6 +67,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             test.attributes().setCustom(Collections.emptyMap());
             final PathAttributes attributes = new DriveAttributesFinderFeature(session, idProvider).find(test);
             assertEquals(fileid, attributes.getFileId());
+            assertEquals(1620113107725L, attributes.getModificationDate());
             assertEquals(content.length, attributes.getSize());
             final Write.Append append = new DriveWriteFeature(session, idProvider).append(test, status.withRemote(new DriveAttributesFinderFeature(session, idProvider).find(test)));
             assertFalse(append.append);
