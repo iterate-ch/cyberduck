@@ -38,8 +38,10 @@ import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -54,6 +56,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setMime("x-application/cyberduck");
+            status.setTimestamp(1620113107725L);
             final byte[] content = RandomUtils.nextBytes(2048);
             status.setLength(content.length);
             final HttpResponseOutputStream<String> out = new DriveWriteFeature(session, idProvider).write(test, status, new DisabledConnectionCallback());
@@ -64,6 +67,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             test.attributes().setCustom(Collections.emptyMap());
             final PathAttributes attributes = new DriveAttributesFinderFeature(session, idProvider).find(test);
             assertEquals(fileid, attributes.getFileId());
+            assertEquals(1620113107725L, attributes.getModificationDate());
             assertEquals(content.length, attributes.getSize());
             final Write.Append append = new DriveWriteFeature(session, idProvider).append(test, status.withRemote(new DriveAttributesFinderFeature(session, idProvider).find(test)));
             assertFalse(append.append);
@@ -79,6 +83,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             // overwrite
             final TransferStatus status = new TransferStatus();
             status.setMime("x-application/cyberduck");
+            status.setTimestamp(System.currentTimeMillis());
             status.setExists(true);
             final byte[] content = RandomUtils.nextBytes(1024);
             status.setLength(content.length);
@@ -96,7 +101,9 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
     @Test
     public void testWritePreviuoslyTrashed() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path test = new DriveTouchFeature(session, fileid).touch(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
+            new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path test = new DriveTouchFeature(session, fileid).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertTrue(new DriveFindFeature(session, fileid).find(test));
         assertTrue(new DriveAttributesFinderFeature(session, fileid).find(test).isDuplicate());
@@ -104,6 +111,6 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultAttributesFinderFeature(session).find(test).isDuplicate());
         new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
