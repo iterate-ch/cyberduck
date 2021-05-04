@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.date.RFC3339DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -46,6 +47,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.TimeZone;
 
 import com.google.gson.stream.JsonReader;
 
@@ -72,6 +74,11 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
     }
 
     @Override
+    public boolean timestamp() {
+        return true;
+    }
+
+    @Override
     public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
             @Override
@@ -92,9 +99,18 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
                     else {
                         request = new HttpPost(String.format("%supload/drive/v3/files?uploadType=resumable&supportsAllDrives=%s",
                             session.getClient().getRootUrl(), PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
-                        request.setEntity(new StringEntity("{\"name\": \""
-                            + file.getName() + "\", \"parents\": [\""
-                            + fileid.getFileId(file.getParent(), new DisabledListProgressListener()) + "\"]}",
+                        final StringBuilder metadata = new StringBuilder("{");
+                        metadata.append(String.format("\"name\":\"%s\"", file.getName()));
+                        if(null != status.getTimestamp()) {
+                            metadata.append(String.format(",\"modifiedTime\":\"%s\"",
+                                new RFC3339DateFormatter().format(status.getTimestamp(), TimeZone.getTimeZone("UTC"))));
+                        }
+                        if(StringUtils.isNotBlank(status.getMime())) {
+                            metadata.append(String.format(",\"mimeType\":\"%s\"", status.getMime()));
+                        }
+                        metadata.append(String.format(",\"parents\":[\"%s\"]", fileid.getFileId(file.getParent(), new DisabledListProgressListener())));
+                        metadata.append("}");
+                        request.setEntity(new StringEntity(metadata.toString(),
                             ContentType.create("application/json", StandardCharsets.UTF_8.name())));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             // Set to the media MIME type of the upload data to be transferred in subsequent requests.
