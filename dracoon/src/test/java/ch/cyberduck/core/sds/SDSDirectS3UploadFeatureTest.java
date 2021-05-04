@@ -66,7 +66,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractS3DirectSDSTest {
         status.setLength(random.length);
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertTrue(new SDSFindFeature(nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(random.length, attributes.getSize());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -89,7 +89,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractS3DirectSDSTest {
         status.setLength(random.length);
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertTrue(new SDSFindFeature(nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(random.length, attributes.getSize());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -112,7 +112,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractS3DirectSDSTest {
         status.setLength(random.length);
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertTrue(new SDSFindFeature(nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(random.length, attributes.getSize());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -136,7 +136,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractS3DirectSDSTest {
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertTrue(new SDSFindFeature(nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(random.length, attributes.getSize());
         final byte[] compare = new byte[random.length];
@@ -170,7 +170,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractS3DirectSDSTest {
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertTrue(new SDSFindFeature(nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(random.length, attributes.getSize());
         final byte[] compare = new byte[random.length];
@@ -204,7 +204,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractS3DirectSDSTest {
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertTrue(new SDSFindFeature(nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(random.length, attributes.getSize());
         final byte[] compare = new byte[random.length];

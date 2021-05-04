@@ -143,7 +143,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String initialVersion = test.attributes().getVersionId();
         assertEquals(test.getParent(), folder);
-        assertTrue(new SDSFindFeature(nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);

@@ -111,7 +111,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(
             new Path(room, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
         assertNotNull(test.attributes().getVersionId());
-        assertTrue(new SDSFindFeature(nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
         assertEquals(test.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(test).getVersionId());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

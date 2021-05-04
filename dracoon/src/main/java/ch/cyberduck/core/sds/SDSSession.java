@@ -623,7 +623,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSTouchFeature(this, nodeid);
         }
         if(type == Find.class) {
-            return (T) new SDSFindFeature(nodeid);
+            return (T) new SDSFindFeature(this, nodeid);
         }
         if(type == AttributesFinder.class) {
             return (T) new SDSAttributesFinderFeature(this, nodeid);

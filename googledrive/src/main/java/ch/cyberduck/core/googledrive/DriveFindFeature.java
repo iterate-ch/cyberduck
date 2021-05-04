@@ -23,16 +23,18 @@ import ch.cyberduck.core.features.Find;
 
 public class DriveFindFeature implements Find {
 
+    private final DriveSession session;
     private final DriveFileIdProvider fileid;
 
     public DriveFindFeature(final DriveSession session, final DriveFileIdProvider fileid) {
+        this.session = session;
         this.fileid = fileid;
     }
 
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            fileid.getFileId(file, listener);
+            new DriveAttributesFinderFeature(session, fileid).find(file, listener);
             return true;
         }
         catch(NotfoundException e) {

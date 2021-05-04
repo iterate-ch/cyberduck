@@ -71,8 +71,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final Path target = new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
         assertNotEquals(test.attributes().getVersionId(), target.attributes().getVersionId());
         assertEquals(target.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(target).getVersionId());
-        assertTrue(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(copy));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(copy));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -88,8 +88,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final Path target = new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
         assertNotEquals(test.attributes().getVersionId(), target.attributes().getVersionId());
         assertEquals(target.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(target).getVersionId());
-        assertTrue(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(copy));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(copy));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -150,9 +150,9 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         assertTrue(feature.isSupported(directory, target));
         final Path copy = new SDSDelegatingCopyFeature(session, nodeid, feature).copy(directory, target, new TransferStatus(), new DisabledConnectionCallback());
         assertNotNull(copy.attributes().getVersionId());
-        assertTrue(new SDSFindFeature(nodeid).find(file));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
-        assertTrue(new SDSFindFeature(nodeid).find(copy));
+        assertTrue(new SDSFindFeature(session, nodeid).find(file));
+        assertTrue(new SDSFindFeature(session, nodeid).find(target));
+        assertTrue(new SDSFindFeature(session, nodeid).find(copy));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -168,8 +168,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(source, target));
         assertNotNull(new SDSDelegatingCopyFeature(session, nodeid, feature).copy(source, target, new TransferStatus(), new DisabledConnectionCallback()).attributes().getVersionId());
-        assertTrue(new SDSFindFeature(nodeid).find(source));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertTrue(new SDSFindFeature(session, nodeid).find(source));
+        assertTrue(new SDSFindFeature(session, nodeid).find(target));
         new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -206,8 +206,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         assertNotNull(copy.attributes().getVersionId());
         assertEquals(copy.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(copy).getVersionId());
         assertFalse(feature.isSupported(test, target));
-        assertTrue(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(copy));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(copy));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new SDSReadFeature(session, nodeid).read(target, new TransferStatus().withLength(content.length), new DisabledConnectionCallback() {
             @Override
@@ -245,8 +245,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertNotNull(new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, target, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()).attributes().getVersionId());
         assertFalse(feature.isSupported(test, target));
-        assertTrue(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(target));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(target, new TransferStatus().withLength(content.length), new DisabledConnectionCallback() {
             @Override
@@ -301,8 +301,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
             }
         }).attributes().getVersionId());
         assertFalse(feature.isSupported(test, target));
-        assertTrue(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(target));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(target, new TransferStatus().withLength(content.length), new DisabledConnectionCallback() {
             @Override
@@ -358,8 +358,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
             }
         });
         assertNotNull(copy.attributes().getVersionId());
-        assertTrue(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertTrue(new SDSFindFeature(session, nodeid).find(test));
+        assertTrue(new SDSFindFeature(session, nodeid).find(target));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(copy, new TransferStatus().withLength(content.length), new DisabledConnectionCallback() {
             @Override
