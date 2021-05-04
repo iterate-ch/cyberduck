@@ -77,15 +77,14 @@ public class OpenSshConfig {
      * Cached entries read out of the configuration file.
      */
     private Map<String, Host> hosts
-            = Collections.emptyMap();
+        = Collections.emptyMap();
 
     /**
      * Obtain the user's configuration data.
      * <p/>
-     * The configuration file is always returned to the caller, even if no file
-     * exists in the user's home directory at the time the call was made. Lookup
-     * requests are cached and are automatically updated if the user modifies
-     * the configuration file since the last time it was cached.
+     * The configuration file is always returned to the caller, even if no file exists in the user's home directory at
+     * the time the call was made. Lookup requests are cached and are automatically updated if the user modifies the
+     * configuration file since the last time it was cached.
      */
     public OpenSshConfig(final Local configuration) {
         this.configuration = configuration;
@@ -95,9 +94,8 @@ public class OpenSshConfig {
     /**
      * Locate the configuration for a specific host request.
      *
-     * @param hostName the name the user has supplied to the SSH tool. This may be a
-     *                 real host name, or it may just be a "Host" block in the
-     *                 configuration file.
+     * @param hostName the name the user has supplied to the SSH tool. This may be a real host name, or it may just be a
+     *                 "Host" block in the configuration file.
      * @return r configuration for the requested name. Never null.
      */
     public Host lookup(final String hostName) {
@@ -235,6 +233,13 @@ public class OpenSshConfig {
                     }
                 }
             }
+            else if("IdentitiesOnly".equalsIgnoreCase(keyword)) {
+                for(final Host c : current) {
+                    if(c.identitiesOnly == null) {
+                        c.identitiesOnly = yesno(dequote(argValue));
+                    }
+                }
+            }
             else if("BatchMode".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.batchMode == null) {
@@ -290,13 +295,11 @@ public class OpenSshConfig {
     /**
      * Configuration of one "Host" block in the configuration file.
      * <p/>
-     * If returned from {@link OpenSshConfig#lookup(String)} some or all of the
-     * properties may not be populated. The properties which are not populated
-     * should be defaulted by the caller.
+     * If returned from {@link OpenSshConfig#lookup(String)} some or all of the properties may not be populated. The
+     * properties which are not populated should be defaulted by the caller.
      * <p/>
-     * When returned from {@link OpenSshConfig#lookup(String)} any wildcard
-     * entries which appear later in the configuration file will have been
-     * already merged into this block.
+     * When returned from {@link OpenSshConfig#lookup(String)} any wildcard entries which appear later in the
+     * configuration file will have been already merged into this block.
      */
     public static class Host {
         boolean patternsApplied;
@@ -307,6 +310,7 @@ public class OpenSshConfig {
         Local identityFile;
         String user;
         String preferredAuthentications;
+        Boolean identitiesOnly;
         Boolean batchMode;
 
         void copyFrom(final Host src) {
@@ -331,6 +335,9 @@ public class OpenSshConfig {
             if(batchMode == null) {
                 batchMode = src.batchMode;
             }
+            if(identitiesOnly == null) {
+                identitiesOnly = src.identitiesOnly;
+            }
         }
 
         /**
@@ -352,8 +359,8 @@ public class OpenSshConfig {
         }
 
         /**
-         * @return path of the private key file to use for authentication; null
-         * if the caller should use default authentication strategies.
+         * @return path of the private key file to use for authentication; null if the caller should use default
+         * authentication strategies.
          */
         public Local getIdentityFile() {
             return identityFile;
@@ -367,16 +374,22 @@ public class OpenSshConfig {
         }
 
         /**
-         * @return the preferred authentication methods, separated by commas if
-         * more than one authentication method is preferred.
+         * @return the preferred authentication methods, separated by commas if more than one authentication method is
+         * preferred.
          */
         public String getPreferredAuthentications() {
             return preferredAuthentications;
         }
 
         /**
-         * @return true if batch (non-interactive) mode is preferred for this
-         * host connection.
+         * @return only use the configured authentication identity and certificate files
+         */
+        public Boolean isIdentitiesOnly() {
+            return identitiesOnly;
+        }
+
+        /**
+         * @return true if batch (non-interactive) mode is preferred for this host connection.
          */
         public boolean isBatchMode() {
             return batchMode != null && batchMode;
@@ -385,12 +398,14 @@ public class OpenSshConfig {
         @Override
         public String toString() {
             final StringBuilder sb = new StringBuilder("Host{");
-            sb.append("hostName='").append(hostName).append('\'');
+            sb.append("patternsApplied=").append(patternsApplied);
+            sb.append(", hostName='").append(hostName).append('\'');
             sb.append(", proxyJump='").append(proxyJump).append('\'');
             sb.append(", port=").append(port);
             sb.append(", identityFile=").append(identityFile);
             sb.append(", user='").append(user).append('\'');
             sb.append(", preferredAuthentications='").append(preferredAuthentications).append('\'');
+            sb.append(", identitiesOnly=").append(identitiesOnly);
             sb.append(", batchMode=").append(batchMode);
             sb.append('}');
             return sb.toString();

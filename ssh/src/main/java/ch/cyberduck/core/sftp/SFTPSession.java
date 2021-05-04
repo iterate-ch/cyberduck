@@ -42,6 +42,7 @@ import ch.cyberduck.core.sftp.auth.SFTPPublicKeyAuthentication;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
+import ch.cyberduck.core.sftp.openssh.OpenSSHIdentitiesOnlyConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHJumpHostConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
@@ -272,13 +273,18 @@ public class SFTPSession extends Session<SSHClient> {
         // Ordered list of preferred authentication methods
         final List<AuthenticationProvider<Boolean>> defaultMethods = new ArrayList<>();
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
-            switch(Factory.Platform.getDefault()) {
-                case windows:
-                    defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
-                    break;
-                default:
-                    defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator()));
-                    break;
+            if(new OpenSSHIdentitiesOnlyConfigurator().isIdentitiesOnly(host.getHostname())) {
+                log.warn("Skip reading keys from SSH agent with IdentitiesOnly configuration");
+            }
+            else {
+                switch(Factory.Platform.getDefault()) {
+                    case windows:
+                        defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
+                        break;
+                    default:
+                        defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator()));
+                        break;
+                }
             }
         }
         defaultMethods.add(new SFTPPublicKeyAuthentication(client));
