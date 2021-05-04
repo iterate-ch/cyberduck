@@ -108,11 +108,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                         result.put(r.getKey(), session.getFeature(Directory.class).mkdir(r.getValue(), r.getKey().attributes().getRegion(), new TransferStatus()));
                     }
                     else {
-                        final TransferStatus status = new TransferStatus()
-                            .withLockId(this.getLockId(r.getKey()))
-                            .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-                            .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
-                            .withLength(r.getKey().attributes().getSize());
+                        final TransferStatus status = this.status(session, r);
                         result.put(r.getKey(), feature.move(r.getKey(), r.getValue(), status,
                             new Delete.Callback() {
                                 @Override
@@ -146,6 +142,14 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
         finally {
             target.release(destination, null);
         }
+    }
+
+    protected TransferStatus status(final Session<?> session, final Map.Entry<Path, Path> r) throws BackgroundException {
+        return new TransferStatus()
+            .withLockId(this.getLockId(r.getKey()))
+            .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
+            .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
+            .withLength(r.getKey().attributes().getSize());
     }
 
     protected String getLockId(final Path file) {

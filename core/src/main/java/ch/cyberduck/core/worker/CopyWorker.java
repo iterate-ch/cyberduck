@@ -88,10 +88,7 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                         result.put(r.getKey(), directory.mkdir(r.getValue(), r.getKey().attributes().getRegion(), new TransferStatus()));
                     }
                     else {
-                        final TransferStatus status = new TransferStatus()
-                            .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-                            .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
-                            .withLength(r.getKey().attributes().getSize());
+                        final TransferStatus status = this.status(session, r);
                         result.put(r.getKey(), copy.copy(r.getKey(), r.getValue(), status, callback));
                     }
                 }
@@ -101,6 +98,13 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
         finally {
             target.release(destination, null);
         }
+    }
+
+    protected TransferStatus status(final Session<?> session, final Map.Entry<Path, Path> entry) throws BackgroundException {
+        return new TransferStatus()
+            .withMime(new MappingMimeTypeService().getMime(entry.getValue().getName()))
+            .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(entry.getValue()))
+            .withLength(entry.getKey().attributes().getSize());
     }
 
     protected Map<Path, Path> compile(final Copy copy, final ListService list, final Path source, final Path target) throws BackgroundException {
