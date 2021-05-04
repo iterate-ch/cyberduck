@@ -173,7 +173,7 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
         return client;
     }
 
-    private final class CommonsHttpResponse extends Response {
+    private static final class CommonsHttpResponse extends Response {
         private final HttpResponse response;
 
         public CommonsHttpResponse(final HttpResponse response) throws IOException {
@@ -199,6 +199,14 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
                 return null;
             }
             return locationHeader.getValue();
+        }
+
+        @Override
+        public String getHeader(final String header) {
+            if(response.containsHeader(header)) {
+                return response.getFirstHeader(header).getValue();
+            }
+            return null;
         }
     }
 

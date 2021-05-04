@@ -19,6 +19,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.http.HttpStatus;
 
@@ -46,7 +47,9 @@ public class GoogleStorageExceptionMappingService extends DefaultIOExceptionMapp
                     this.append(buffer, "domain: " + info.getDomain());
                     this.append(buffer, "reason: " + info.getReason());
                     if("usageLimits".equals(info.getDomain()) && details.getCode() == HttpStatus.SC_FORBIDDEN) {
-                        return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(5), failure);
+                        return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(
+                            PreferencesFactory.get().getInteger("connection.retry.delay")
+                        ), failure);
                     }
                 }
             }
