@@ -20,7 +20,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <CyberduckReference Include="Core;Core.Native;Bonjour;Bonjour.Native;Protocols;Importer;Cryptomator" />
+        <CyberduckReference Include="Core;Core.Native;Core.Refresh;Bonjour;Bonjour.Native;Protocols;Importer;Cryptomator" />
     </ItemGroup>
 
     <ItemGroup>

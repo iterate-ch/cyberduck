@@ -3,16 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ch.cyberduck</groupId>
-        <artifactId>parent</artifactId>
-        <relativePath>../../pom.xml</relativePath>
+        <artifactId>Cyberduck.Core.Native</artifactId>
+        <relativePath>../pom.xml</relativePath>
         <version>8.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>Cyberduck.Core.Native</artifactId>
+    <artifactId>Cyberduck.Core.Refresh</artifactId>
     <packaging>pom</packaging>
-
-    <modules>
-        <module>refresh</module>
-    </modules>
 
     <profiles>
         <profile>
@@ -61,7 +57,7 @@
                                     <artifacts>
                                         <artifact>
                                             <type>dll</type>
-                                            <file>${project.build.directory}/Cyberduck.Core.Native.dll</file>
+                                            <file>${project.build.directory}/Cyberduck.Core.Refresh.dll</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -95,7 +91,7 @@
                                         <property name="home" value="${main.basedir}" />
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
-                                        <property name="hash" value="${git.revision}" />
+                                        <property name="git.revision" value="${git.revision}" />
                                         <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
                                     </target>
                                 </configuration>
@@ -111,7 +107,7 @@
                                         <property name="home" value="${main.basedir}" />
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
-                                        <property name="hash" value="${git.revision}" />
+                                        <property name="git.revision" value="${git.revision}" />
                                         <property name="skip" value="${skipTests}" />
                                         <ant antfile="${project.basedir}/build.xml" target="test" dir="." />
                                     </target>
@@ -124,7 +120,7 @@
             <dependencies>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
-                    <artifactId>Cyberduck.Core</artifactId>
+                    <artifactId>Cyberduck.Protocols</artifactId>
                     <type>dll</type>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
@@ -132,28 +128,4 @@
             </dependencies>
         </profile>
     </profiles>
-
-    <dependencies>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft</groupId>
-            <artifactId>msvcr120</artifactId>
-            <classifier>x86_64</classifier>
-            <type>dll</type>
-            <version>12.00.40649.5</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>nunit</groupId>
-            <artifactId>nunit.framework</artifactId>
-            <classifier>native</classifier>
-            <type>dll</type>
-            <version>2.6.4.14350</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 </project>
