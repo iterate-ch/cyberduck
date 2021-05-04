@@ -16,10 +16,6 @@
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <PropertyGroup>
-        <CustomAfterCentralPackageVersionsTargets>$(MSBuildThisFileDirectory)MSBuildTasks.targets</CustomAfterCentralPackageVersionsTargets>
-    </PropertyGroup>
-
     <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.41" />
 
     <ItemGroup>

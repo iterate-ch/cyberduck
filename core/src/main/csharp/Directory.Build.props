@@ -16,12 +16,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <PropertyGroup>
-        <ParentBuildProps>$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)../', 'Directory.Build.props'))/</ParentBuildProps>
+        <BasePath>$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)../', 'Directory.Build.props'))/</BasePath>
     </PropertyGroup>
-    <Import Project="$(ParentBuildProps)Directory.Build.props" />
-
     <Import Project="$(BasePath)native/Directory.Build.props" />
-
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(ParentBuildProps)../'))" />
 
 </Project>
