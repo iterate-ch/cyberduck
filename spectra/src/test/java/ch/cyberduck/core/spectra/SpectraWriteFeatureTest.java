@@ -21,14 +21,9 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.CRC32ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.proxy.Proxy;
@@ -128,44 +123,6 @@ public class SpectraWriteFeatureTest {
         out.close();
         new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
-    }
-
-    @Test
-    public void testSize() throws Exception {
-        final SpectraSession session = new SpectraSession(new Host(new SpectraProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }), new DisabledX509TrustManager(),
-            new DefaultX509KeyManager()) {
-            @Override
-            public <T> T _getFeature(final Class<T> type) {
-                if(type == Find.class) {
-                    return (T) new Find() {
-                        @Override
-                        public boolean find(final Path file, final ListProgressListener listener) {
-                            return true;
-                        }
-                    };
-                }
-                if(type == AttributesFinder.class) {
-                    return (T) new AttributesFinder() {
-                        @Override
-                        public PathAttributes find(final Path file, final ListProgressListener listener) {
-                            final PathAttributes attributes = new PathAttributes();
-                            attributes.setSize(3L);
-                            return attributes;
-                        }
-                    };
-                }
-                return super._getFeature(type);
-            }
-        };
-        final SpectraWriteFeature feature = new SpectraWriteFeature(session);
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L).withRemote(new PathAttributes().withSize(3L)));
-        assertFalse(append.append);
-        assertEquals(3L, append.size, 0L);
     }
 
     @Test
