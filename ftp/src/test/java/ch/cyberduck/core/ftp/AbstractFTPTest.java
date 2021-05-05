@@ -28,6 +28,7 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -69,8 +70,13 @@ public class AbstractFTPTest {
     public int vaultVersion;
 
     @After
-    public void disconnect() throws Exception {
-        session.close();
+    public void disconnect() {
+        try {
+            session.close();
+        }
+        catch(BackgroundException e) {
+            // Ignore
+        }
     }
 
     @Before
