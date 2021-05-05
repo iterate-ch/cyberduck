@@ -18,12 +18,17 @@ package ch.cyberduck.core.logging;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.helpers.LogLog;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
 
 public class LoggerPrintStream extends PrintStream {
     private static final Logger log = Logger.getLogger(LoggerPrintStream.class);
+
+    static {
+        LogLog.setQuietMode(true);
+    }
 
     private final Level level;
 
