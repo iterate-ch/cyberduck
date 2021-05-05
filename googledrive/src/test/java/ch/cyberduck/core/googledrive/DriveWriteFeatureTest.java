@@ -26,7 +26,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -41,7 +40,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -102,14 +100,16 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
     public void testWritePreviuoslyTrashed() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
-            new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path test = new DriveTouchFeature(session, fileid).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertTrue(new DriveFindFeature(session, fileid).find(test));
         assertTrue(new DriveAttributesFinderFeature(session, fileid).find(test).isDuplicate());
         test.attributes().withVersionId("2");
-        assertTrue(new DefaultFindFeature(session).find(test));
-        assertTrue(new DefaultAttributesFinderFeature(session).find(test).isDuplicate());
+        assertTrue(new DriveFindFeature(session, fileid).find(test));
+        assertTrue(new DriveAttributesFinderFeature(session, fileid).find(test).isDuplicate());
+        // Files with duplicate flag (trashed) are filtered
+        assertFalse(new DefaultFindFeature(session).find(test));
         new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
