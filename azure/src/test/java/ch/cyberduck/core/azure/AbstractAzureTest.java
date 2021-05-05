@@ -26,7 +26,7 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -56,7 +56,7 @@ public class AbstractAzureTest {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
             System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
-        session = new AzureSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
