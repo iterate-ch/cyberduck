@@ -39,16 +39,18 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
     private static final Logger log = Logger.getLogger(CryptoDirectoryV7Feature.class);
 
     private final Session<?> session;
+    private final Write<Reply> writer;
     private final Find find;
-    private final Directory<Reply> proxy;
+    private final Directory<Reply> delegate;
     private final CryptoVault vault;
     private final RandomStringService random = new UUIDRandomStringService();
 
     public CryptoDirectoryV7Feature(final Session<?> session, final Directory<Reply> delegate,
                                     final Write<Reply> writer, final Find find, final CryptoVault cryptomator) {
         this.session = session;
+        this.writer = writer;
         this.find = find;
-        this.proxy = delegate.withWriter(new CryptoWriteFeature<>(session, writer, cryptomator));
+        this.delegate = delegate;
         this.vault = cryptomator;
     }
 
@@ -67,13 +69,13 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
         new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(StandardCharsets.UTF_8));
         final Path intermediate = encrypt.getParent();
         if(!find.find(intermediate)) {
-            proxy.mkdir(intermediate, region, new TransferStatus());
+            delegate.mkdir(intermediate, region, new TransferStatus());
         }
         // Write header
         final FileHeader header = vault.getFileHeaderCryptor().create();
         status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
-        final Path target = proxy.mkdir(encrypt, region, status);
+        final Path target = delegate.withWriter(new CryptoWriteFeature<>(session, writer, vault)).mkdir(encrypt, region, status);
         // Implementation may return new copy of attributes without encryption attributes
         target.attributes().setDirectoryId(directoryId);
         target.attributes().setDecrypted(folder);
@@ -86,7 +88,7 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
 
     @Override
     public boolean isSupported(final Path workdir, final String name) {
-        return proxy.isSupported(workdir, name);
+        return delegate.isSupported(workdir, name);
     }
 
     @Override
@@ -97,7 +99,7 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CryptoDirectoryFeature{");
-        sb.append("proxy=").append(proxy);
+        sb.append("proxy=").append(delegate);
         sb.append('}');
         return sb.toString();
     }
