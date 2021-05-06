@@ -105,7 +105,7 @@
                     class PlistUtility {
                         static parseXmlPlistText(String text) {
                             def parser = new XmlParser(false, false, true)
-                            parser.setProperty(javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD, "all")
+                            parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
 
                             def xml = parser.parseText(text)
 
