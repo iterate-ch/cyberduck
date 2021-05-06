@@ -34,7 +34,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
@@ -351,16 +350,16 @@ public abstract class Transfer implements Serializable {
     /**
      * The actual transfer implementation
      *
-     * @param source             Connection to source server of transfer. May be null.
+     * @param source             Connection to source server of transfer
      * @param destination        Connection to target server of transfer
-     * @param file               Remote
-     * @param local              Local
+     * @param file               Remote file path
+     * @param local              Local file reference
      * @param options            Quarantine option
      * @param overall            Overall transfer status
      * @param segment            Segment transfer status
-     * @param connectionCallback Prompt
-     * @param progressListener   Listener
-     * @param streamListener     Listener
+     * @param connectionCallback Prompt for alerts to user
+     * @param progressListener   Progress messages listener
+     * @param streamListener     Byte count listener
      */
     public abstract void transfer(Session<?> source, Session<?> destination, Path file, Local local,
                                   TransferOptions options, final TransferStatus overall, TransferStatus segment,
