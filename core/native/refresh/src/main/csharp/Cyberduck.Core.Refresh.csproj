@@ -20,5 +20,9 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="ReactiveUI.WPF" />
+    </ItemGroup>
 
 </Project>

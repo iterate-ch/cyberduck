@@ -39,6 +39,14 @@ Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "duck.bundle", "cli\src\main
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cyberduck.Core.Refresh", "core\native\refresh\src\main\csharp\Cyberduck.Core.Refresh.csproj", "{D1286C4A-9D6A-4904-B9AD-CB7688483EDB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B9726AB9-4100-4499-A9CF-78167CC27024}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		global.json = global.json
+		Packages.props = Packages.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

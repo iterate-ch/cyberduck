@@ -20,10 +20,11 @@
         <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.2.0" />
         <PackageReference Update="Microsoft.Toolkit.Uwp.Notifications" Version="2.0.0" />
         <PackageReference Update="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2002-preview" />
-        <PackageReference Update="NUnit.Runners" Version="2.7.0" GeneratePathProperty="true" />
         <PackageReference Update="nunit" Version="2.7.0" />
+        <PackageReference Update="NUnit.Runners" Version="2.7.0" GeneratePathProperty="true" />
         <PackageReference Update="NUnitTestAdapter" Version="2.2.0" />
         <PackageReference Update="ObjectListView.Official" Version="2.9.1" />
+        <PackageReference Update="ReactiveUI.WPF" Version="13.2.18" />
         <PackageReference Update="StructureMap" Version="2.6.1" />
         <PackageReference Update="WindowsAPICodePack-Core" Version="1.1.2" />
         <PackageReference Update="WindowsAPICodePack-Shell" Version="1.1.1" />
