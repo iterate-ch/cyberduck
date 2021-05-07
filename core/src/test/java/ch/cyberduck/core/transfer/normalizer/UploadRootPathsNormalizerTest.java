@@ -30,13 +30,12 @@ public class UploadRootPathsNormalizerTest {
             public boolean isFile() {
                 return false;
             }
-        }, "1"));
-        list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "a" + File.separator + "b"), "2"));
+        }));
+        list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "a" + File.separator + "b")));
         final List<TransferItem> normalized = n.normalize(list);
         assertEquals(1, normalized.size());
         final TransferItem i = normalized.iterator().next();
         assertEquals(new Path("/a", EnumSet.of(Path.Type.directory)), i.remote);
-        assertEquals("1", i.lockId);
     }
 
     @Test

@@ -107,7 +107,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final ConnectionCallback connect,
                                   final NotificationService notification,
                                   final Cache<TransferItem> cache) {
-        this(transfer, options, prompt, meter, error, progress, stream, connect, notification, cache, new ConcurrentHashMap<TransferItem, TransferStatus>());
+        this(transfer, options, prompt, meter, error, progress, stream, connect, notification, cache, new ConcurrentHashMap<>());
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
@@ -214,7 +214,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
 
             // Calculate information about the files in advance to give progress information
             for(TransferItem next : transfer.getRoots()) {
-                this.prepare(next.remote, next.local, new TransferStatus().exists(true).withLockId(next.lockId).withChecksum(next.checksum), action);
+                this.prepare(next.remote, next.local, new TransferStatus().exists(true), action);
             }
             this.await();
             meter.reset();
@@ -299,7 +299,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 // Call recursively for all children
                                 children = transfer.list(source, file, local, new WorkerListProgressListener(AbstractTransferWorker.this, progress));
                                 // Put into cache for later reference when transferring
-                                cache.put(item, new AttributedList<TransferItem>(children));
+                                cache.put(item, new AttributedList<>(children));
                                 // Call recursively
                                 for(TransferItem f : children) {
                                     // Change download path relative to parent local folder
