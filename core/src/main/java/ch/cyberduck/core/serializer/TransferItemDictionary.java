@@ -20,7 +20,6 @@ package ch.cyberduck.core.serializer;
 
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferItem;
 
 public class TransferItemDictionary {
@@ -46,8 +45,6 @@ public class TransferItemDictionary {
         if(localObj != null) {
             item.setLocal(new LocalDictionary(deserializer).deserialize((localObj)));
         }
-        item.setLockId(dict.stringForKey("Lock Id"));
-        item.setChecksum(Checksum.parse(dict.stringForKey("Checksum")));
         return item;
     }
 }
