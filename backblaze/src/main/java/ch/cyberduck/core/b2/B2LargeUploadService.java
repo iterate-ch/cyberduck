@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -29,12 +30,11 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
-import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
+import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
@@ -223,36 +223,25 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
-        return pool.execute(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<B2UploadPartResponse>() {
+        final BytecountStreamListener counter = new BytecountStreamListener(listener);
+        return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<B2UploadPartResponse>() {
             @Override
             public B2UploadPartResponse call() throws BackgroundException {
                 overall.validate();
-                final Map<String, String> requestParameters = new HashMap<>();
-                requestParameters.put("fileId", fileId);
                 final TransferStatus status = new TransferStatus()
                     .withLength(length)
                     .skip(offset);
+                final Map<String, String> requestParameters = new HashMap<>();
+                requestParameters.put("fileId", fileId);
                 status.setParameters(requestParameters);
                 status.setHeader(overall.getHeader());
                 status.setNonces(overall.getNonces());
                 status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
                 status.setSegment(true);
                 status.setPart(partNumber);
-                return (B2UploadPartResponse) B2LargeUploadService.super.upload(file, local, throttle, listener, status, overall, new StreamProgress() {
-                    @Override
-                    public void progress(final long bytes) {
-                        status.progress(bytes);
-                        // Discard sent bytes in overall progress if there is an error reply for segment.
-                        overall.progress(bytes);
-                    }
-
-                    @Override
-                    public void setComplete() {
-                        status.setComplete();
-                    }
-                }, callback);
+                return (B2UploadPartResponse) B2LargeUploadService.super.upload(file, local, throttle, counter, status, overall, status, callback);
             }
-        }, overall));
+        }, overall, counter));
     }
 
     @Override

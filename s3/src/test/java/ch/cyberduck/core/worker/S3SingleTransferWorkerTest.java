@@ -65,13 +65,12 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SingleTransferWorkerTest extends AbstractS3Test {
+public class S3SingleTransferWorkerTest extends AbstractS3Test {
 
     @Test
     public void testDownloadVersioned() throws Exception {
@@ -113,7 +112,7 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
 
     @Test
     public void testTransferredSizeRepeat() throws Exception {
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = new byte[6 * 1024 * 1024]; // Minimum multipart upload size
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
@@ -157,9 +156,9 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
-        final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
+        final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Transfer t = new UploadTransfer(session.getHost(), test, local);
+        final BytecountStreamListener counter = new BytecountStreamListener();
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
@@ -170,7 +169,9 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
 
         }.run(session));
         local.delete();
+        assertTrue(t.isComplete());
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

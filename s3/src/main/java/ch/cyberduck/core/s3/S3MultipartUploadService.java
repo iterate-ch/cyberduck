@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
@@ -34,12 +35,11 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
-import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
+import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -231,17 +231,18 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
-        return pool.execute(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<MultipartPart>() {
+        final BytecountStreamListener counter = new BytecountStreamListener(listener);
+        return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<MultipartPart>() {
             @Override
             public MultipartPart call() throws BackgroundException {
                 overall.validate();
+                final TransferStatus status = new TransferStatus()
+                    .withLength(length)
+                    .skip(offset);
                 final Map<String, String> requestParameters = new HashMap<>();
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
-                final TransferStatus status = new TransferStatus()
-                    .withLength(length)
-                    .skip(offset)
-                    .withParameters(requestParameters);
+                status.setParameters(requestParameters);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
                 status.setNonces(overall.getNonces());
@@ -252,19 +253,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
                 status.setSegment(true);
                 final StorageObject part = S3MultipartUploadService.super.upload(
-                    file, local, throttle, listener, status, overall, new StreamProgress() {
-                        @Override
-                        public void progress(final long bytes) {
-                            status.progress(bytes);
-                            // Discard sent bytes in overall progress if there is an error reply for segment.
-                            overall.progress(bytes);
-                        }
-
-                        @Override
-                        public void setComplete() {
-                            status.setComplete();
-                        }
-                    }, callback);
+                    file, local, throttle, counter, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Received response %s for part number %d", part, partNumber));
                 }
@@ -275,7 +264,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     part.getContentLength());
 
             }
-        }, overall));
+        }, overall, counter));
     }
 
     @Override

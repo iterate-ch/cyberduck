@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
@@ -34,11 +35,10 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
-import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
+import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
@@ -198,7 +198,8 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private Future<StorageObject> submit(final ThreadPool pool, final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final Long offset, final Long length, final ConnectionCallback callback) {
-        return pool.execute(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
+        final BytecountStreamListener counter = new BytecountStreamListener(listener);
+        return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
                 overall.validate();
@@ -210,21 +211,9 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 status.setChecksum(writer.checksum(segment, status).compute(local.getInputStream(), status));
                 status.setSegment(true);
                 return SwiftLargeObjectUploadFeature.super.upload(
-                    segment, local, throttle, listener, status, overall, new StreamProgress() {
-                        @Override
-                        public void progress(final long bytes) {
-                            status.progress(bytes);
-                            // Discard sent bytes in overall progress if there is an error reply for segment.
-                            overall.progress(bytes);
-                        }
-
-                        @Override
-                        public void setComplete() {
-                            status.setComplete();
-                        }
-                    }, callback);
+                    segment, local, throttle, counter, status, overall, status, callback);
             }
-        }, overall));
+        }, overall, counter));
     }
 
     @Override

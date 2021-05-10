@@ -15,7 +15,9 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -23,24 +25,23 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.b2.AbstractB2Test;
-import ch.cyberduck.core.b2.B2AttributesFinderFeature;
-import ch.cyberduck.core.b2.B2DeleteFeature;
-import ch.cyberduck.core.b2.B2VersionIdProvider;
-import ch.cyberduck.core.b2.B2LargeUploadService;
-import ch.cyberduck.core.b2.B2Protocol;
-import ch.cyberduck.core.b2.B2Session;
-import ch.cyberduck.core.b2.B2WriteFeature;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.notification.DisabledNotificationService;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.sftp.AbstractSFTPTest;
+import ch.cyberduck.core.sftp.SFTPAttributesFinderFeature;
+import ch.cyberduck.core.sftp.SFTPDeleteFeature;
+import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
+import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -48,19 +49,18 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.CountingInputStream;
+import org.apache.commons.io.output.CountingOutputStream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
-import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Random;
@@ -71,39 +71,42 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class SingleTransferWorkerTest extends AbstractB2Test {
+public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
 
     @Test
     public void testTransferredSizeRepeat() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[100 * 1024 * 1024 + 1];
+        final byte[] content = new byte[98305];
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
-        final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-            new Credentials(
-                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-            ));
+        final BytecountStreamListener counter = new BytecountStreamListener();
         final AtomicBoolean failed = new AtomicBoolean();
-        final B2Session session = new B2Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
-            final B2LargeUploadService upload = new B2LargeUploadService(this, new B2VersionIdProvider(this), new B2WriteFeature(this, new B2VersionIdProvider(this)),
-                PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
-                PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency")) {
+        final SFTPSession session = new SFTPSession(this.session.getHost(), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
+            final SFTPWriteFeature write = new SFTPWriteFeature(this) {
                 @Override
-                protected InputStream decorate(final InputStream in, final MessageDigest digest) {
+                public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                    final StatusOutputStream<Void> proxy = super.write(file, status, callback);
                     if(failed.get()) {
                         // Second attempt successful
-                        return in;
+                        return proxy;
                     }
-                    return new CountingInputStream(in) {
+                    return new StatusOutputStream<Void>(new CountingOutputStream(proxy) {
                         @Override
-                        protected void beforeRead(final int n) throws IOException {
-                            super.beforeRead(n);
-                            if(this.getByteCount() >= 100L * 1024L * 1024L) {
+                        protected void afterWrite(final int n) throws IOException {
+                            super.afterWrite(n);
+                            if(this.getByteCount() >= 42768L) {
+                                // Buffer size
+                                assertEquals(32768L, counter.getSent());
                                 failed.set(true);
                                 throw new SocketTimeoutException();
                             }
+                        }
+                    }) {
+                        @Override
+                        public Void getStatus() throws BackgroundException {
+                            return proxy.getStatus();
                         }
                     };
                 }
@@ -112,18 +115,21 @@ public class SingleTransferWorkerTest extends AbstractB2Test {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                if(type == Upload.class) {
-                    return (T) upload;
+                if(type == Write.class) {
+                    return (T) write;
                 }
                 return super._getFeature(type);
             }
         };
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
-        final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new Credentials("test", "test");
+            }
+        }, new DisabledCancelCallback());
+        final Path test = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Transfer t = new UploadTransfer(session.getHost(), test, local);
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
@@ -134,10 +140,11 @@ public class SingleTransferWorkerTest extends AbstractB2Test {
 
         }.run(session));
         local.delete();
-        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        assertEquals(content.length, new B2AttributesFinderFeature(session, fileid).find(test).getSize());
+        assertTrue(t.isComplete());
+        assertEquals(content.length, new SFTPAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

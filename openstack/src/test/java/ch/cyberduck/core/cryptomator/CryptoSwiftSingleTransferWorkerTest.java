@@ -15,24 +15,31 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.notification.DisabledNotificationService;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.sftp.AbstractSFTPTest;
-import ch.cyberduck.core.sftp.SFTPAttributesFinderFeature;
-import ch.cyberduck.core.sftp.SFTPDeleteFeature;
-import ch.cyberduck.core.sftp.SFTPFindFeature;
-import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
-import ch.cyberduck.core.sftp.SFTPListService;
-import ch.cyberduck.core.sftp.SFTPReadFeature;
+import ch.cyberduck.core.openstack.AbstractSwiftTest;
+import ch.cyberduck.core.openstack.SwiftDeleteFeature;
+import ch.cyberduck.core.openstack.SwiftFindFeature;
+import ch.cyberduck.core.openstack.SwiftReadFeature;
+import ch.cyberduck.core.openstack.SwiftRegionService;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -42,7 +49,6 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.worker.SingleTransferWorker;
@@ -66,18 +72,14 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
-public class SingleTransferWorkerTest extends AbstractSFTPTest {
+public class CryptoSwiftSingleTransferWorkerTest extends AbstractSwiftTest {
 
     @Test
     public void testUpload() throws Exception {
-        final Path home = new SFTPHomeDirectoryService(session).find();
+        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        StringBuilder directoryname = new StringBuilder();
-        for(int i = 0; i < 10; i++) {
-            directoryname.append(new AlphanumericRandomStringService().random());
-        }
-        final Path dir1 = new Path(vault, directoryname.toString(), EnumSet.of(Path.Type.directory));
-        final Local localDirectory1 = new Local(System.getProperty("java.io.tmpdir"), directoryname.toString());
+        final Path dir1 = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Local localDirectory1 = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         new DefaultLocalDirectoryFeature().mkdir(localDirectory1);
         final byte[] content = RandomUtils.nextBytes(62768);
         final Path file1 = new Path(dir1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -85,7 +87,6 @@ public class SingleTransferWorkerTest extends AbstractSFTPTest {
         final OutputStream out1 = localFile1.getOutputStream(false);
         IOUtils.write(content, out1);
         out1.close();
-        localFile1.attributes().setModificationDate(1513092263154L);
         final Path file2 = new Path(dir1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local localFile2 = new Local(localDirectory1, file2.getName());
         final OutputStream out2 = localFile2.getOutputStream(false);
@@ -93,15 +94,8 @@ public class SingleTransferWorkerTest extends AbstractSFTPTest {
         out2.close();
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("test");
-            }
-        }));
-        PreferencesFactory.get().setProperty("factory.vault.class", CryptoVault.class.getName());
-        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(dir1, localDirectory1)), new NullFilter<>())
-            .withOptions(new UploadFilterOptions().withTimestamp(true));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(dir1, localDirectory1)), new NullFilter<>());
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
@@ -111,26 +105,22 @@ public class SingleTransferWorkerTest extends AbstractSFTPTest {
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
-        assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(dir1));
-        final PathAttributes attributes1 = new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(file1);
-        assertEquals(1513092263000L, attributes1.getModificationDate());
-        assertEquals(1513092263000L, new CryptoListService(session, new SFTPListService(session), cryptomator).list(dir1, new DisabledListProgressListener()).get(file1).attributes().getModificationDate());
-        assertEquals(content.length, attributes1.getSize());
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(dir1));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new SwiftReadFeature(session, new SwiftRegionService(session)), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        final PathAttributes attributes2 = new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(file2);
-        assertEquals(content.length, attributes2.getSize());
+        assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(file2).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new SwiftReadFeature(session, new SwiftRegionService(session)), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new SwiftDeleteFeature(session)).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile1.delete();
         localFile2.delete();
         localDirectory1.delete();

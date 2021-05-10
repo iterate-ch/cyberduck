@@ -72,7 +72,7 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
-public class SingleTransferWorkerTest extends AbstractOneDriveTest {
+public class CryptoOneDriveSingleTransferWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testUpload() throws Exception {

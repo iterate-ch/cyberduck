@@ -33,7 +33,6 @@ import ch.cyberduck.core.io.FileBuffer;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -321,19 +320,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
                 status.setNonces(overall.getNonces());
                 status.setFilekey(overall.getFilekey());
                 SDSDirectS3UploadFeature.super.upload(
-                    file, local, throttle, listener, status, overall, new StreamProgress() {
-                        @Override
-                        public void progress(final long bytes) {
-                            status.progress(bytes);
-                            // Discard sent bytes in overall progress if there is an error reply for segment.
-                            overall.progress(bytes);
-                        }
-
-                        @Override
-                        public void setComplete() {
-                            status.setComplete();
-                        }
-                    }, callback);
+                    file, local, throttle, listener, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Received response for part number %d", partNumber));
                 }

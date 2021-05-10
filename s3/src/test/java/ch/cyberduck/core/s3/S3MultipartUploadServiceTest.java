@@ -157,14 +157,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final byte[] content = RandomUtils.nextBytes(length);
         Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         IOUtils.write(content, local.getOutputStream(false));
-        final AtomicBoolean started = new AtomicBoolean();
-        final TransferStatus status = new TransferStatus() {
-            @Override
-            public void progress(long bytes) {
-                super.progress(bytes);
-                started.set(true);
-            }
-        };
+        final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
@@ -174,10 +167,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
                         return new CountingInputStream(super.getInputStream()) {
                             @Override
                             protected void beforeRead(int n) throws IOException {
-                                if(started.get()) {
-                                    if(this.getByteCount() >= 11L * 1024L * 1024L) {
-                                        throw new IOException();
-                                    }
+                                if(this.getByteCount() >= 11L * 1024L * 1024L) {
+                                    throw new IOException();
                                 }
                             }
                         };
@@ -221,14 +212,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final int length = 32769;
         final byte[] content = RandomUtils.nextBytes(length);
         IOUtils.write(content, local.getOutputStream(false));
-        final AtomicBoolean started = new AtomicBoolean();
-        final TransferStatus status = new TransferStatus() {
-            @Override
-            public void progress(long bytes) {
-                super.progress(bytes);
-                started.set(true);
-            }
-        };
+        final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
@@ -238,10 +222,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
                         return new CountingInputStream(super.getInputStream()) {
                             @Override
                             protected void beforeRead(int n) throws IOException {
-                                if(started.get()) {
-                                    if(this.getByteCount() >= 32768) {
-                                        throw new IOException();
-                                    }
+                                if(this.getByteCount() >= 32768) {
+                                    throw new IOException();
                                 }
                             }
                         };

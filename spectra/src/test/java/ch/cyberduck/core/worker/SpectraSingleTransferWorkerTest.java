@@ -27,14 +27,12 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
@@ -70,19 +68,18 @@ import java.net.SocketTimeoutException;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class SingleTransferWorkerTest {
+public class SpectraSingleTransferWorkerTest {
 
     @Ignore
     @Test(expected = ConflictException.class)
     public void testTransferredSizeRepeat() throws Exception {
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = new byte[98305];
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
@@ -96,6 +93,7 @@ public class SingleTransferWorkerTest {
         }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
             System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
+        final BytecountStreamListener counter = new BytecountStreamListener();
         final AtomicBoolean failed = new AtomicBoolean();
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
             new DefaultX509KeyManager()) {
@@ -114,7 +112,7 @@ public class SingleTransferWorkerTest {
                             if(this.getByteCount() >= 42768L) {
                                 assertTrue(this.getByteCount() < content.length);
                                 // Buffer size
-                                assertEquals(32768L, status.getOffset());
+                                assertEquals(32768L, counter.getSent());
                                 failed.set(true);
                                 throw new SocketTimeoutException();
                             }
@@ -150,8 +148,7 @@ public class SingleTransferWorkerTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
-        final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
+        final Transfer t = new UploadTransfer(session.getHost(), test, local);
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
@@ -162,6 +159,7 @@ public class SingleTransferWorkerTest {
 
         }.run(session));
         local.delete();
+        assertTrue(t.isComplete());
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
         assertEquals(content.length, new SpectraAttributesFinderFeature(session).find(test).getSize());
