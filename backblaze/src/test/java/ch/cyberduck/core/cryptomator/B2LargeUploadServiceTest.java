@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -37,7 +38,6 @@ import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.transfer.Transfer;
@@ -89,8 +89,9 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         writeStatus.setLength(content.length);
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), writeStatus, null);
-        assertEquals((long) content.length, writeStatus.getOffset(), 0L);
+        final BytecountStreamListener counter = new BytecountStreamListener();
+        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), counter, writeStatus, null);
+        assertEquals(content.length, counter.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
         assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(test).getSize());
@@ -124,8 +125,9 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
             new B2WriteFeature(session, fileid), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         IOUtils.write(content, local.getOutputStream(false));
-        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), writeStatus, null);
-        assertEquals((long) content.length, writeStatus.getOffset(), 0L);
+        final BytecountStreamListener counter = new BytecountStreamListener();
+        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), counter, writeStatus, null);
+        assertEquals(content.length, counter.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
         assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(test).getSize());

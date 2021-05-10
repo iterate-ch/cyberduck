@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -83,8 +84,9 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
-        new StreamCopier(new TransferStatus(), progress).transfer(in, out);
-        assertEquals(content.length, progress.getOffset());
+        final BytecountStreamListener listener = new BytecountStreamListener();
+        new StreamCopier(new TransferStatus(), progress).withListener(listener).transfer(in, out);
+        assertEquals(content.length, listener.getSent());
         assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(test));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, new SwiftReadFeature(session, regionService), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());

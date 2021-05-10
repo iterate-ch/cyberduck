@@ -16,6 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -96,8 +97,9 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         final InputStream in = new GoogleStorageReadFeature(session).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
-        new StreamCopier(status, status).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
-        assertEquals(content.length, status.getOffset());
+        final BytecountStreamListener count = new BytecountStreamListener();
+        new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
+        assertEquals(content.length, count.getRecv());
         assertEquals(content.length, status.getLength());
         in.close();
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -133,10 +134,11 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new Path(room, String.format("{%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        final BytecountStreamListener count = new BytecountStreamListener();
         final TransferStatus status = new TransferStatus() {
             @Override
             public void validate() throws ConnectionCanceledException {
-                if(this.getOffset() >= 32768) {
+                if(count.getSent() >= 32768) {
                     throw new TransferCanceledException();
                 }
                 super.validate();
@@ -146,7 +148,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
         final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
-        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        new StreamCopier(status, status).withListener(count).transfer(new ByteArrayInputStream(content), out);
         assertFalse(new DefaultFindFeature(session).find(test));
         out.getStatus();
     }

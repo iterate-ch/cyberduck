@@ -1,5 +1,6 @@
 package ch.cyberduck.core.openstack;
 
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -108,8 +109,9 @@ public class SwiftReadFeatureTest extends AbstractSwiftTest {
             "/cdn.cyberduck.ch/2015/03/01/10/3b1d6998c430d58dace0c16e58aaf925.log.gz",
             EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
         assertNotNull(in);
-        new StreamCopier(status, status).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
-        assertEquals(182L, status.getOffset());
+        final BytecountStreamListener count = new BytecountStreamListener();
+        new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
+        assertEquals(182L, count.getRecv());
         assertEquals(182L, status.getLength());
         in.close();
     }

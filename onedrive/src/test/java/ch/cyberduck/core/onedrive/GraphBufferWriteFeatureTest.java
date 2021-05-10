@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -55,13 +56,14 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
-        new StreamCopier(status, status).transfer(in, out);
+        final BytecountStreamListener count = new BytecountStreamListener();
+        new StreamCopier(status, status).withListener(count).transfer(in, out);
         in.close();
         out.flush();
-        assertEquals(content.length, status.getOffset());
+        assertEquals(content.length, count.getSent());
         assertEquals(content.length, status.getLength());
         out.close();
-        assertEquals(content.length, status.getOffset());
+        assertEquals(content.length, count.getSent());
         assertEquals(content.length, status.getLength());
         assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));

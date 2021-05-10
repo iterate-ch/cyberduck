@@ -18,8 +18,5 @@ package ch.cyberduck.core.io;
  */
 
 public interface StreamProgress {
-
-    void progress(long bytes);
-
     void setComplete();
 }

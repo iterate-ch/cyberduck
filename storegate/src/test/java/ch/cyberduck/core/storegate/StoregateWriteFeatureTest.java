@@ -16,6 +16,7 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -181,10 +182,11 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
 
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new Path(room, String.format("{%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        final BytecountStreamListener listener = new BytecountStreamListener();
         final TransferStatus status = new TransferStatus() {
             @Override
             public void validate() throws ConnectionCanceledException {
-                if(this.getOffset() >= 32768) {
+                if(listener.getSent() >= 32768) {
                     throw new TransferCanceledException();
                 }
                 super.validate();
@@ -194,7 +196,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
         final HttpResponseOutputStream<FileMetadata> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
-        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        new StreamCopier(status, status).withListener(listener).transfer(new ByteArrayInputStream(content), out);
         assertFalse(new DefaultFindFeature(session).find(test));
         out.getStatus();
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledPasswordCallback(), new Delete.DisabledCallback());

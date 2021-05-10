@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -75,8 +76,10 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         final StatusOutputStream out = feature.write(test, writeStatus, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
-        new StreamCopier(new TransferStatus(), progress).transfer(in, out);
-        assertEquals(content.length, progress.getOffset());
+        final BytecountStreamListener count = new BytecountStreamListener();
+        new StreamCopier(new TransferStatus(), progress).withListener(count).transfer(in, out);
+        assertEquals(content.length, count.getSent());
+        assertEquals(content.length, count.getRecv());
         assertNotNull(out.getStatus());
         assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(test));
         final byte[] compare = new byte[content.length];
@@ -85,5 +88,5 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         stream.close();
         assertArrayEquals(content, compare);
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-}
+    }
 }

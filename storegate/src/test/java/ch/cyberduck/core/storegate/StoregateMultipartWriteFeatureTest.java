@@ -16,6 +16,7 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -108,10 +109,11 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new Path(room, String.format("{%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        final BytecountStreamListener listener = new BytecountStreamListener();
         final TransferStatus status = new TransferStatus() {
             @Override
             public void validate() throws ConnectionCanceledException {
-                if(this.getOffset() >= 32768) {
+                if(listener.getSent() >= 32768) {
                     throw new TransferCanceledException();
                 }
                 super.validate();
@@ -121,7 +123,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final StoregateMultipartWriteFeature writer = new StoregateMultipartWriteFeature(session, nodeid);
         final HttpResponseOutputStream<FileMetadata> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
-        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        new StreamCopier(status, status).withListener(listener).transfer(new ByteArrayInputStream(content), out);
         assertFalse(new DefaultFindFeature(session).find(test));
         out.getStatus();
     }

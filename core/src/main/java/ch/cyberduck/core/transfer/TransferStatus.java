@@ -90,7 +90,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private boolean hidden = false;
 
     /**
-     * The number of transferred bytes. Must be less or equals size.
+     * Offset to read from input stream. Must be less or equals size.
      */
     private final AtomicLong offset
         = new AtomicLong(0);
@@ -275,7 +275,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     }
 
     /**
-     * @return Number of bytes transferred
+     * @return Offset to read from
      */
     public long getOffset() {
         return offset.get();
@@ -289,11 +289,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         if(log.isTraceEnabled()) {
             log.trace(String.format("Offset set to %d bytes", bytes));
         }
-    }
-
-    @Override
-    public void progress(final long bytes) {
-        this.setOffset(offset.addAndGet(bytes));
     }
 
     public TransferStatus skip(final long bytes) {
