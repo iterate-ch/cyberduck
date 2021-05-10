@@ -116,7 +116,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, fileid).touch(test, new TransferStatus());
         final GraphReadFeature read = new GraphReadFeature(session);
-        final InputStream in = read.read(test, new TransferStatus().skip(1).append(true), new DisabledConnectionCallback());
+        final InputStream in = read.read(test, new TransferStatus().withOffset(1).append(true), new DisabledConnectionCallback());
         assertNull(in);
     }
 

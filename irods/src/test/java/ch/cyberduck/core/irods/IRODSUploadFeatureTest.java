@@ -17,6 +17,7 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -81,14 +82,15 @@ public class IRODSUploadFeatureTest {
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().withLength(content.length / 2);
+            final BytecountStreamListener count = new BytecountStreamListener();
             checksumPart1 = new IRODSUploadFeature(session).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count,
                 status,
                 new DisabledConnectionCallback());
-            assertEquals(content.length / 2, status.getOffset());
+            assertEquals(content.length / 2, count.getSent());
         }
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length / 2).skip(content.length / 2).append(true);
+            final TransferStatus status = new TransferStatus().withLength(content.length / 2).withOffset(content.length / 2).append(true);
             checksumPart2 = new IRODSUploadFeature(session).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
@@ -128,12 +130,11 @@ public class IRODSUploadFeatureTest {
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().withLength(content.length);
         final TransferStatus copy = new TransferStatus(status);
+        final BytecountStreamListener count = new BytecountStreamListener();
         checksum = new IRODSUploadFeature(session).upload(
-            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-            status,
-            new DisabledConnectionCallback());
+            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
         assertTrue(status.isComplete());
-        assertEquals(content.length, status.getOffset());
+        assertEquals(content.length, count.getSent());
         assertEquals(checksum, new MD5ChecksumCompute().compute(new FileInputStream(local.getAbsolute()), copy));
         final byte[] buffer = new byte[content.length];
         final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());

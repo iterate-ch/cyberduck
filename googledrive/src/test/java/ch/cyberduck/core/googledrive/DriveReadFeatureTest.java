@@ -43,7 +43,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -51,7 +50,7 @@ import static org.junit.Assert.*;
 public class DriveReadFeatureTest extends AbstractDriveTest {
 
     @Test
-    public void testAppend() {
+    public void testAppend() throws Exception {
         assertTrue(new DriveReadFeature(null, new DriveFileIdProvider(session)).offset(new Path("/", EnumSet.of(Path.Type.file))));
     }
 
@@ -63,7 +62,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testReadRange() throws Exception {
-        final String name = "ä-" + UUID.randomUUID().toString();
+        final String name = "ä-" + new AlphanumericRandomStringService().random();
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
@@ -135,7 +134,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         writeStatus.setLength(content.length);
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final Path test = new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveWriteFeature writer = new DriveWriteFeature(session, fileid);
         final HttpResponseOutputStream<String> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);

@@ -17,6 +17,7 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -29,13 +30,13 @@ public class DefaultTransferStatusCallbackListener implements TransferStatusCall
     private static final Logger log = Logger.getLogger(DefaultTransferStatusCallbackListener.class);
 
     private final TransferStatus status;
-    private final StreamListener listener;
+    private final BytecountStreamListener listener;
     private final TransferControlBlock block;
 
     public DefaultTransferStatusCallbackListener(final TransferStatus status, final StreamListener listener,
                                                  final TransferControlBlock block) {
         this.status = status;
-        this.listener = listener;
+        this.listener = new BytecountStreamListener(listener);
         this.block = block;
     }
 
@@ -44,8 +45,7 @@ public class DefaultTransferStatusCallbackListener implements TransferStatusCall
         if(log.isDebugEnabled()) {
             log.debug(String.format("Progress with %s", t));
         }
-        final long bytes = t.getBytesTransfered() - status.getOffset();
-        status.progress(bytes);
+        final long bytes = t.getBytesTransfered() - listener.getSent();
         switch(t.getTransferType()) {
             case GET:
                 listener.recv(bytes);

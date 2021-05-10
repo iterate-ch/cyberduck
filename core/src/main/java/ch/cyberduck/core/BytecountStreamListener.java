@@ -16,11 +16,16 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.io.DelegateStreamListener;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 
 public class BytecountStreamListener extends DelegateStreamListener {
     private long sent = 0L;
     private long recv = 0L;
+
+    public BytecountStreamListener() {
+        super(new DisabledStreamListener());
+    }
 
     public BytecountStreamListener(final StreamListener delegate) {
         super(delegate);

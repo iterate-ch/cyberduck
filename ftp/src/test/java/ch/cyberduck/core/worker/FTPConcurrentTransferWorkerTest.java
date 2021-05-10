@@ -60,27 +60,26 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Ignore
-public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
+public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
 
     @Test
     public void testTransferredSizeRepeat() throws Exception {
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = new byte[98305];
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
         final AtomicBoolean failed = new AtomicBoolean();
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
-        final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Transfer t = new UploadTransfer(session.getHost(), test, local);
+        final BytecountStreamListener counter = new BytecountStreamListener();
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
@@ -113,7 +112,7 @@ public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
                                         super.afterWrite(n);
                                         if(this.getByteCount() >= 42768L) {
                                             // Buffer size
-                                            assertEquals(32768L, status.getOffset());
+                                            assertEquals(32768L, counter.getSent());
                                             failed.set(true);
                                             throw new SocketTimeoutException();
                                         }
@@ -150,7 +149,9 @@ public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
         );
         assertTrue(worker.run(session));
         local.delete();
+        assertTrue(t.isComplete());
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -161,7 +162,7 @@ public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
         final int files = 20;
         final int connections = 2;
         final List<TransferItem> list = new ArrayList<TransferItem>();
-        final Local file = new Local(File.createTempFile(UUID.randomUUID().toString(), "t").getAbsolutePath());
+        final Local file = new Local(File.createTempFile(new AlphanumericRandomStringService().random(), "t").getAbsolutePath());
         for(int i = 1; i <= files; i++) {
             list.add(new TransferItem(new Path(String.format("/t%d", i), EnumSet.of(Path.Type.file)), file));
         }

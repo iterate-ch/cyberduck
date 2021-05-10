@@ -86,9 +86,4 @@ public class SFTPReadFeature implements Read {
         return Integer.min(((int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1),
                 preferences.getInteger("sftp.read.maxunconfirmed"));
     }
-
-    @Override
-    public boolean offset(final Path file) {
-        return true;
-    }
 }

@@ -48,9 +48,9 @@ public class MD5FastChecksumComputeTest {
                 new TransferStatus()).hash);
         assertEquals("a43c1b0aa53a0c908810c06ab1ff3967",
             new MD5FastChecksumCompute().compute(IOUtils.toInputStream("_input", Charset.defaultCharset()),
-                new TransferStatus().skip(1)).hash);
+                new TransferStatus().withOffset(1)).hash);
         assertEquals("a43c1b0aa53a0c908810c06ab1ff3967",
             new MD5FastChecksumCompute().compute(IOUtils.toInputStream("_input_", Charset.defaultCharset()),
-                new TransferStatus().skip(1).withLength(5)).hash);
+                new TransferStatus().withOffset(1).withLength(5)).hash);
     }
 }

@@ -18,8 +18,8 @@ package ch.cyberduck.core.transfer.download;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
@@ -28,31 +28,29 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class IconUpdateSreamListener extends DelegateStreamListener {
+public class IconUpdateStreamListener extends BytecountStreamListener {
 
     private final IconService icon = IconServiceFactory.get();
-    private final TransferStatus overall;
-    private final TransferStatus segment;
+    private final TransferStatus status;
     private final Local file;
 
     // An integer between 0 and 9
     private int step = 0;
 
-    public IconUpdateSreamListener(final StreamListener delegate, final TransferStatus overall, final TransferStatus segment, final Local file) {
+    public IconUpdateStreamListener(final StreamListener delegate, final TransferStatus status, final Local file) {
         super(delegate);
-        this.overall = overall;
-        this.segment = segment;
+        this.status = status;
         this.file = file;
     }
 
     @Override
-    public void recv(final long bytes) {
-        final BigDecimal fraction = new BigDecimal(segment.getOffset()).divide(new BigDecimal(overall.getLength()), 1, RoundingMode.DOWN);
+    public void sent(final long bytes) {
+        super.sent(bytes);
+        final BigDecimal fraction = new BigDecimal(this.getSent()).divide(new BigDecimal(status.getLength()), 1, RoundingMode.DOWN);
         if(fraction.multiply(BigDecimal.TEN).intValue() > step) {
             // Another 10 percent of the file has been transferred
-            icon.set(file, segment);
+            icon.set(file, status);
             step++;
         }
-        super.recv(bytes);
     }
 }

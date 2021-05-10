@@ -15,6 +15,7 @@
 package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -58,8 +59,9 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
             final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             final TransferStatus progress = new TransferStatus();
-            new StreamCopier(new TransferStatus(), progress).transfer(in, out);
-            assertEquals(content.length, progress.getOffset());
+            final BytecountStreamListener count = new BytecountStreamListener();
+            new StreamCopier(new TransferStatus(), progress).withListener(count).transfer(in, out);
+            assertEquals(content.length, count.getSent());
             assertTrue(new SwiftFindFeature(session).find(file));
             final byte[] compare = new byte[content.length];
             final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -75,8 +77,9 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
             final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             final TransferStatus progress = new TransferStatus();
-            new StreamCopier(new TransferStatus(), progress).transfer(in, out);
-            assertEquals(content.length, progress.getOffset());
+            final BytecountStreamListener count = new BytecountStreamListener();
+            new StreamCopier(new TransferStatus(), progress).withListener(count).transfer(in, out);
+            assertEquals(content.length, count.getSent());
             assertTrue(new SwiftFindFeature(session).find(file));
             final byte[] compare = new byte[content.length];
             final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());

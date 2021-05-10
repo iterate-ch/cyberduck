@@ -87,7 +87,7 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
                 new DisabledConnectionCallback());
         }
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length / 2).skip(content.length / 2).append(true);
+            final TransferStatus status = new TransferStatus().withLength(content.length / 2).withOffset(content.length / 2).append(true);
             new DAVUploadFeature(new DAVWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,

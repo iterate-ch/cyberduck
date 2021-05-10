@@ -58,7 +58,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SingleTransferWorkerTest extends AbstractGoogleStorageTest {
+public class GoogleStorageSingleTransferWorkerTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testDownload() throws Exception {

@@ -70,7 +70,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().withLength(content.length).append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().withLength(content.length).append(true).withOffset(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];
@@ -103,7 +103,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().withLength(content.length).append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().withLength(content.length).append(true).withOffset(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];

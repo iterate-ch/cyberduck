@@ -59,7 +59,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         }
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 1);
-            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().append(true).withOffset(1L), new DisabledConnectionCallback());
             new StreamCopier(status, status).transfer(in, buffer);
             final byte[] reference = new byte[content.length - 1];
             System.arraycopy(content, 1, reference, 0, content.length - 1);
@@ -92,7 +92,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         }
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 1);
-            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().append(true).withOffset(1L), new DisabledConnectionCallback());
             new StreamCopier(status, status).transfer(in, buffer);
             final byte[] reference = new byte[content.length - 1];
             System.arraycopy(content, 1, reference, 0, content.length - 1);

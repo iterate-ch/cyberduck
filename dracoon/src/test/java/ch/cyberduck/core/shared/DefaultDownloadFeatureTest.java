@@ -77,7 +77,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
                 new DisabledConnectionCallback());
         }
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length / 2).skip(content.length / 2).append(true).exists(true);
+            final TransferStatus status = new TransferStatus().withLength(content.length / 2).withOffset(content.length / 2).append(true).exists(true);
             new DefaultDownloadFeature(new SDSReadFeature(session, nodeid)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,

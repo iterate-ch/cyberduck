@@ -63,11 +63,6 @@ public class AzureReadFeature implements Read {
     }
 
     @Override
-    public boolean offset(final Path file) {
-        return true;
-    }
-
-    @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())

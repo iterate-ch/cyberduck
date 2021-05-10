@@ -25,7 +25,7 @@ import java.io.InputStream;
 public interface Read {
 
     /**
-     * @param status             Transfer status
+     * @param status   Transfer status
      * @param callback Prompt
      * @return Stream to read from to download file
      */
@@ -35,5 +35,8 @@ public interface Read {
      * @param file File
      * @return True if read with offset is supported
      */
-    boolean offset(Path file) throws BackgroundException;
+    default boolean offset(Path file) throws BackgroundException {
+        return true;
+
+    }
 }

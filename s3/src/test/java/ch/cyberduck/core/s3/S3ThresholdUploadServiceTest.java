@@ -15,6 +15,7 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
@@ -71,9 +72,10 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         status.setLength((long) random.getBytes().length);
         status.setMime("text/plain");
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-            new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
+            count, status, new DisabledLoginCallback());
+        assertEquals(random.getBytes().length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
@@ -102,9 +104,10 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         status.setLength((long) random.getBytes().length);
         status.setMime("text/plain");
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-            new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
+            count, status, new DisabledLoginCallback());
+        assertEquals(random.getBytes().length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);

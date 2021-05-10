@@ -15,6 +15,7 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -24,10 +25,8 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.openstack.SwiftAttributesFinderFeature;
 import ch.cyberduck.core.openstack.SwiftDeleteFeature;
@@ -62,18 +61,17 @@ import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class SingleTransferWorkerTest {
+public class SwiftSingleTransferWorkerTest {
 
     @Test
     public void testTransferredSizeRepeat() throws Exception {
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = new byte[2 * 1024 * 1024];
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
@@ -100,7 +98,7 @@ public class SingleTransferWorkerTest {
                                 @Override
                                 protected void beforeRead(final int n) throws IOException {
                                     super.beforeRead(n);
-                                    if(this.getByteCount() >= 1024L * 1024L) {
+                                    if(this.getByteCount() > 1024L * 1024L) {
                                         failed.set(true);
                                         throw new SocketTimeoutException();
                                     }
@@ -116,9 +114,9 @@ public class SingleTransferWorkerTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
-        final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Transfer t = new UploadTransfer(session.getHost(), test, local);
+        final BytecountStreamListener counter = new BytecountStreamListener();
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
@@ -129,7 +127,9 @@ public class SingleTransferWorkerTest {
 
         }.run(session));
         local.delete();
+        assertTrue(t.isComplete());
         assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

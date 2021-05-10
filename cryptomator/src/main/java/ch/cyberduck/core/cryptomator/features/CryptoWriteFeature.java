@@ -58,7 +58,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 out = proxy.write(encrypted,
                     new TransferStatus(status).
                         withLength(vault.toCiphertextSize(status.getLength()) - vault.getFileHeaderCryptor().headerSize()).
-                        skip(vault.toCiphertextSize(status.getOffset())).
+                        withOffset(vault.toCiphertextSize(status.getOffset())).
                         withMime(null), callback);
             }
             return new CryptoOutputStream<>(out, vault.getFileContentCryptor(), vault.getFileHeaderCryptor().decryptHeader(status.getHeader()),
