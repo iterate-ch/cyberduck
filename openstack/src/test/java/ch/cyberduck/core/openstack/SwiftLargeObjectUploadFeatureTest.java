@@ -11,6 +11,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -51,32 +52,39 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
+        final AtomicBoolean interrupt = new AtomicBoolean();
         final BytecountStreamListener listener = new BytecountStreamListener();
-        new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
-            1 * 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener, status, new DisabledLoginCallback());
-        assertEquals(0L, listener.getSent());
-        assertFalse(status.isComplete());
-
-        final TransferStatus append = new TransferStatus().append(true).withLength(content.length);
-        new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
-            1 * 1024L * 1024L, 1).upload(test, new Local(System.getProperty("java.io.tmpdir"), name) {
+        try {
+            new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
+                1 * 1024L * 1024L, 1).upload(test, new Local(System.getProperty("java.io.tmpdir"), name) {
                 @Override
                 public InputStream getInputStream() throws AccessDeniedException {
                     return new CountingInputStream(super.getInputStream()) {
                         @Override
                         protected void beforeRead(int n) throws IOException {
-                            if(this.getByteCount() >= 32768L) {
+                            if(listener.getSent() >= 32768L) {
                                 throw new IOException();
                             }
                         }
                     };
                 }
-            },
-            new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener, append,
+            }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener, status, new DisabledLoginCallback());
+        }
+        catch(BackgroundException e) {
+            // Expected
+            interrupt.set(true);
+        }
+        assertTrue(interrupt.get());
+        assertEquals(32768L, listener.getSent());
+        assertFalse(status.isComplete());
+
+        final TransferStatus append = new TransferStatus().append(true).withLength(content.length);
+        new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
+            1 * 1024L * 1024L, 1).upload(test, local,
+            new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
             new DisabledLoginCallback());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
-        assertEquals(content.length, listener.getSent());
         assertTrue(append.isComplete());
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
