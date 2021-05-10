@@ -67,7 +67,7 @@ import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
-public class SingleTransferWorkerTest {
+public class CryptoLocalSingleTransferWorkerTest {
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {

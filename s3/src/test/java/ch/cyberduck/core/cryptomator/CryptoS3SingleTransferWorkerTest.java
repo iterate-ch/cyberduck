@@ -30,16 +30,15 @@ import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.ftp.AbstractFTPTest;
-import ch.cyberduck.core.ftp.FTPDeleteFeature;
-import ch.cyberduck.core.ftp.FTPReadFeature;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.notification.DisabledNotificationService;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.S3AttributesFinderFeature;
+import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
+import ch.cyberduck.core.s3.S3FindFeature;
+import ch.cyberduck.core.s3.S3ReadFeature;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -72,11 +71,11 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
-public class SingleTransferWorkerTest extends AbstractFTPTest {
+public class CryptoS3SingleTransferWorkerTest extends AbstractS3Test {
 
     @Test
     public void testUpload() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path dir1 = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Local localDirectory1 = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
@@ -105,22 +104,22 @@ public class SingleTransferWorkerTest extends AbstractFTPTest {
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(dir1));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(file1).getSize());
+        assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(dir1));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new FTPReadFeature(session), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(file2).getSize());
+        assertEquals(content.length, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(file2).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new FTPReadFeature(session), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile1.delete();
         localFile2.delete();
         localDirectory1.delete();

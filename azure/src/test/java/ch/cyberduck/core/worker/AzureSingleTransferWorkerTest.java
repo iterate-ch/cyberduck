@@ -65,7 +65,7 @@ import com.microsoft.azure.storage.OperationContext;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SingleTransferWorkerTest extends AbstractAzureTest {
+public class AzureSingleTransferWorkerTest extends AbstractAzureTest {
 
     @Test
     public void testDownload() throws Exception {
