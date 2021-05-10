@@ -65,7 +65,7 @@ public class DefaultUploadFeatureTest extends AbstractFTPTest {
             assertEquals(new Integer(226), reply);
         }
         {
-            final TransferStatus status = new TransferStatus().withLength(content.length / 2).skip(content.length / 2).append(true);
+            final TransferStatus status = new TransferStatus().withLength(content.length / 2).withOffset(content.length / 2).append(true);
             final Integer reply = new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,

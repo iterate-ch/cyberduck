@@ -271,7 +271,7 @@ public class UDTProxyConfiguratorTest {
         }
         {
             final byte[] buffer = new byte[random.getBytes().length - 1];
-            final InputStream in = new S3ReadFeature(tunneled).read(test, new TransferStatus().withLength(random.getBytes().length).append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new S3ReadFeature(tunneled).read(test, new TransferStatus().withLength(random.getBytes().length).append(true).withOffset(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[random.getBytes().length - 1];

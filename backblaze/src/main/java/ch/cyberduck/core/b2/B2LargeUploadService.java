@@ -230,7 +230,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
                     .withLength(length)
-                    .skip(offset);
+                    .withOffset(offset);
                 final Map<String, String> requestParameters = new HashMap<>();
                 requestParameters.put("fileId", fileId);
                 status.setParameters(requestParameters);

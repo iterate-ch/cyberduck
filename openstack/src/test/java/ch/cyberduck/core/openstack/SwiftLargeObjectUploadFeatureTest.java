@@ -131,7 +131,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(1 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize());
 
-        final TransferStatus append = new TransferStatus().append(true).withLength(1024L * 1024L).skip(1024L * 1024L);
+        final TransferStatus append = new TransferStatus().append(true).withLength(1024L * 1024L).withOffset(1024L * 1024L);
         feature.upload(test, local,
             new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener, append,
             new DisabledLoginCallback());

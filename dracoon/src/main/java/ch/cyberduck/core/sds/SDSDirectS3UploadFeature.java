@@ -313,7 +313,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
                 final TransferStatus status = new TransferStatus()
                     .segment(true)
                     .withLength(length)
-                    .skip(offset);
+                    .withOffset(offset);
                 status.setUrl(url);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());

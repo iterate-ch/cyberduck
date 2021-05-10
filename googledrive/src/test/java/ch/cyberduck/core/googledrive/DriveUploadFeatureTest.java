@@ -70,7 +70,7 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DriveReadFeature(session, fileid).read(test, new TransferStatus().withLength(content.length).append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new DriveReadFeature(session, fileid).read(test, new TransferStatus().withLength(content.length).append(true).withOffset(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             IOUtils.closeQuietly(in);
             final byte[] reference = new byte[content.length - 1];

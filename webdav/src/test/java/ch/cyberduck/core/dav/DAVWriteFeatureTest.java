@@ -64,7 +64,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().withLength(content.length - 1L).append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().withLength(content.length - 1L).append(true).withOffset(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];

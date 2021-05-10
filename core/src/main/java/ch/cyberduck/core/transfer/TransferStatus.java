@@ -291,7 +291,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         }
     }
 
-    public TransferStatus skip(final long bytes) {
+    public TransferStatus withOffset(final long bytes) {
         this.setOffset(bytes);
         return this;
     }
