@@ -24,7 +24,11 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import java.io.IOException;
 import java.net.InetAddress;
 
-public class DefaultInetAddressReachability implements Reachability {
+/**
+ * A typical implementation will use ICMP ECHO REQUESTs if the privilege can be obtained, otherwise it will try to
+ * establish a TCP connection on port 7 (Echo) of the destination host.
+ */
+public class DefaultInetAddressReachability extends DisabledReachability {
 
     private final Preferences preferences
         = PreferencesFactory.get();
@@ -38,29 +42,6 @@ public class DefaultInetAddressReachability implements Reachability {
         }
         catch(IOException e) {
             return false;
-        }
-    }
-
-    @Override
-    public void diagnose(final Host host) {
-        // Not implemented
-    }
-
-    @Override
-    public Monitor monitor(final Host host, final Callback callback) {
-        return new DisabledMonitor();
-    }
-
-    private static class DisabledMonitor implements Monitor {
-        @Override
-        public Monitor start() {
-            return this;
-        }
-
-        @Override
-        public Monitor stop() {
-            return this;
-
         }
     }
 }

@@ -21,7 +21,7 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.date.DefaultUserDateFormatter;
-import ch.cyberduck.core.diagnostics.DefaultInetAddressReachability;
+import ch.cyberduck.core.diagnostics.DisabledReachability;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
 import ch.cyberduck.core.i18n.Locales;
@@ -1352,7 +1352,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("factory.applicationfinder.class", DisabledApplicationFinder.class.getName());
         this.setDefault("factory.applicationlauncher.class", DisabledApplicationLauncher.class.getName());
         this.setDefault("factory.browserlauncher.class", DisabledBrowserLauncher.class.getName());
-        this.setDefault("factory.reachability.class", DefaultInetAddressReachability.class.getName());
+        this.setDefault("factory.reachability.class", DisabledReachability.class.getName());
         this.setDefault("factory.updater.class", DisabledPeriodicUpdater.class.getName());
         this.setDefault("factory.updater.arguments.class", DisabledUpdateCheckerArguments.class.getName());
         this.setDefault("factory.threadpool.class", DefaultThreadPool.class.getName());
