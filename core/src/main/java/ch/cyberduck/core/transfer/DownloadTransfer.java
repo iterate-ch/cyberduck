@@ -35,7 +35,7 @@ import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
 import ch.cyberduck.core.transfer.download.DownloadRegexPriorityComparator;
-import ch.cyberduck.core.transfer.download.IconUpdateSreamListener;
+import ch.cyberduck.core.transfer.download.IconUpdateStreamListener;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.download.RenameExistingFilter;
 import ch.cyberduck.core.transfer.download.RenameFilter;
@@ -261,7 +261,7 @@ public class DownloadTransfer extends Transfer {
             final Download download = source.getFeature(Download.class);
             download.download(file, local, bandwidth, new DownloadStreamListener(this,
                 this.options.icon && segment.getLength() > PreferencesFactory.get().getLong("queue.download.icon.threshold") && !overall.isSegmented() ?
-                    new IconUpdateSreamListener(streamListener, overall, segment, local) : streamListener), segment, connectionCallback);
+                    new IconUpdateStreamListener(streamListener, segment, local) : streamListener), segment, connectionCallback);
         }
         else if(file.isDirectory()) {
             if(!segment.isExists()) {
