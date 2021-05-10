@@ -19,8 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.application.NSApplication;
-import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.b2.B2Protocol;
@@ -45,7 +43,6 @@ import ch.cyberduck.core.onedrive.SharepointSiteProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
@@ -79,10 +76,6 @@ public final class MainApplication {
             // Register factory implementations.
             final Preferences preferences = new ApplicationUserDefaultsPreferences();
             PreferencesFactory.set(preferences);
-
-            if(!Factory.Platform.osversion.matches("10\\.(9|10|11|12|13|14|15).*")) {
-                app.setApplicationIconImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-application-rect.icns"));
-            }
 
             final ProtocolFactory protocols = ProtocolFactory.get();
             protocols.register(
