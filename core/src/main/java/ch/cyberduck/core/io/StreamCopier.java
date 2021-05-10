@@ -17,7 +17,6 @@ package ch.cyberduck.core.io;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -33,20 +32,17 @@ public final class StreamCopier {
     private static final Logger log = Logger.getLogger(StreamCopier.class);
 
     private final StreamCancelation cancel;
-
     private final StreamProgress progress;
 
-    private BytecountStreamListener listener
-            = new BytecountStreamListener(new DisabledStreamListener());
+    private StreamListener listener = new DisabledStreamListener();
 
     /**
      * Buffer size
      */
     private Integer chunksize
-            = PreferencesFactory.get().getInteger("connection.chunksize");
+        = PreferencesFactory.get().getInteger("connection.chunksize");
 
     private Long offset = 0L;
-
     private Long limit = -1L;
 
     public StreamCopier(final StreamCancelation cancel, final StreamProgress progress) {
@@ -60,7 +56,7 @@ public final class StreamCopier {
     }
 
     public StreamCopier withListener(final StreamListener listener) {
-        this.listener = new BytecountStreamListener(listener);
+        this.listener = listener;
         return this;
     }
 
@@ -110,7 +106,6 @@ public final class StreamCopier {
                     else {
                         listener.recv(read);
                         out.write(buffer, 0, read);
-                        progress.progress(read);
                         listener.sent(read);
                         total += read;
                     }
@@ -139,15 +134,6 @@ public final class StreamCopier {
         catch(ConnectionCanceledException e) {
             throw e;
         }
-        catch(Exception e) {
-            // Discard sent bytes if there is an error reply.
-            final long sent = listener.getSent();
-            progress.progress(-sent);
-            listener.sent(-sent);
-            final long recv = listener.getRecv();
-            listener.recv(-recv);
-            throw e;
-        }
         cancel.validate();
     }
 
@@ -159,7 +145,7 @@ public final class StreamCopier {
             }
             if(skipped < offset) {
                 throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
-                        skipped, offset));
+                    skipped, offset));
             }
             return in;
         }

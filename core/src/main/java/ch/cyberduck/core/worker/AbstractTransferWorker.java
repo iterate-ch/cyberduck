@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -375,7 +376,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         status.validate();
                         // Transfer
                         // Do transfer with retry
-                        this.retry(segment);
+                        this.transferSegment(segment);
                         final Session<?> source = borrow(Connection.source);
                         final Session<?> destination = borrow(Connection.destination);
                         try {
@@ -405,22 +406,24 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         return segment;
                     }
 
-                    private void retry(final TransferStatus segment) throws BackgroundException {
+                    private void transferSegment(final TransferStatus segment) throws BackgroundException {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Transfer item %s with status %s", item, segment));
                         }
                         final Session<?> s = borrow(Connection.source);
                         final Session<?> d = borrow(Connection.destination);
+                        final BytecountStreamListener counter = new BytecountStreamListener(stream);
                         try {
                             transfer.transfer(s, d,
                                 segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                 segment.getRename().local != null ? segment.getRename().local : item.local,
-                                options, status, segment, connect, progress, stream);
+                                options, status, segment, connect, progress, counter);
                         }
                         catch(BackgroundException e) {
                             release(s, Connection.source, e);
                             release(d, Connection.destination, e);
-                            log.warn(String.format("Failure transferring %s. %s", item, e));
+                            log.warn(String.format("Failure %s transferring %s", item, e));
+                            // Determine if we should retry depending on failure type
                             if(this.retry(e, progress, new TransferBackgroundActionState(status))) {
                                 final Session<?> source = borrow(Connection.source);
                                 final Session<?> destination = borrow(Connection.destination);
@@ -431,9 +434,13 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                             log.debug(String.format("Retry transfer of %s", item));
                                         }
                                         final TransferStatus retry = filter.prepare(item.remote, item.local, new TransferStatus().exists(true), progress);
+                                        // Add bytes retrieved but not yet counted
+                                        stream.recv(retry.getOffset() - counter.getRecv());
+                                        stream.sent(retry.getOffset() - counter.getSent());
+                                        transfer.addTransferred(retry.getOffset() - counter.getSent());
                                         // Retry immediately
-                                        log.info(String.format("Retry %s with transfer status %s", item, segment));
-                                        this.retry(segment
+                                        log.info(String.format("Retry %s with transfer status %s", item, retry));
+                                        this.transferSegment(segment
                                             .withLength(retry.getLength())
                                             .skip(retry.getOffset())
                                             .append(retry.isAppend()));
