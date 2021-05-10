@@ -72,9 +72,4 @@ public class IRODSReadFeature implements Read {
             throw new IRODSExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
-
-    @Override
-    public boolean offset(final Path file) {
-        return true;
-    }
 }

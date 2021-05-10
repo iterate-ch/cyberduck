@@ -101,11 +101,6 @@ public class DAVReadFeature implements Read {
         }
     }
 
-    @Override
-    public boolean offset(final Path file) {
-        return true;
-    }
-
     public Set<Header> headers() {
         return Collections.emptySet();
     }

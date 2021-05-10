@@ -47,11 +47,6 @@ public class GoogleStorageReadFeature implements Read {
     }
 
     @Override
-    public boolean offset(Path file) {
-        return true;
-    }
-
-    @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(0L == status.getLength()) {

@@ -57,9 +57,4 @@ public class DropboxReadFeature implements Read {
             throw new DropboxExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
-
-    @Override
-    public boolean offset(Path file) {
-        return true;
-    }
 }

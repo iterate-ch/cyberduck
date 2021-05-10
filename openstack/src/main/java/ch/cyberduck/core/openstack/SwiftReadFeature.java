@@ -85,9 +85,4 @@ public class SwiftReadFeature implements Read {
             throw new DefaultIOExceptionMappingService().map(e, file);
         }
     }
-
-    @Override
-    public boolean offset(final Path file) {
-        return true;
-    }
 }

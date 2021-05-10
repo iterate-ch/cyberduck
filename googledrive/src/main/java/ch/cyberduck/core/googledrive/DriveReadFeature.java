@@ -63,11 +63,6 @@ public class DriveReadFeature implements Read {
     }
 
     @Override
-    public boolean offset(Path file) {
-        return true;
-    }
-
-    @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(file.getType().contains(Path.Type.placeholder)) {
             final DescriptiveUrl link = new DriveUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);

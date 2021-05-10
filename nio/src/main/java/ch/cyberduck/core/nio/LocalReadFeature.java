@@ -46,9 +46,4 @@ public class LocalReadFeature implements Read {
             throw new LocalExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
-
-    @Override
-    public boolean offset(final Path file) {
-        return true;
-    }
 }

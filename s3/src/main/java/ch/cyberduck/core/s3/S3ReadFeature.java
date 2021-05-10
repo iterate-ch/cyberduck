@@ -88,9 +88,4 @@ public class S3ReadFeature implements Read {
             throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
-
-    @Override
-    public boolean offset(final Path file) {
-        return true;
-    }
 }
