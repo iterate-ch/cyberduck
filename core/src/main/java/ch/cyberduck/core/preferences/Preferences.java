@@ -582,7 +582,7 @@ public abstract class Preferences implements Locales {
          * Concurrent connections for single transfer and maximum number of concurrent transfers in transfer list
          */
         this.setDefault("queue.connections.limit", String.valueOf(TransferConnectionLimiter.AUTO));
-        this.setDefault("queue.connections.limit.default", String.valueOf(20));
+        this.setDefault("queue.connections.limit.default", String.valueOf(5));
         this.setDefault("queue.connections.limit.ftp", String.valueOf(1));
 
         {
