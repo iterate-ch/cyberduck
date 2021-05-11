@@ -1,14 +1,17 @@
 class Duck < Formula
   desc "Command-line interface for Cyberduck (a multi-protocol file transfer tool)"
   homepage "https://duck.sh/"
-  # check the changelog for the latest stable version: https://cyberduck.io/changelog/
   url "${SOURCE}"
   sha256 "${SOURCE.SHA256}"
   license "GPL-3.0-only"
   head "https://svn.cyberduck.io/trunk/"
 
+  livecheck do
+    url "https://dist.duck.sh/"
+    regex(/href=.*?duck-src[._-]v?(\d+(?:\.\d+)+)\.t/i)
+  end
+
   depends_on "ant" => :build
-  depends_on java: ["1.8", :build]
   depends_on "maven" => :build
   depends_on xcode: :build
 
