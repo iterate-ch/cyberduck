@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -33,9 +34,19 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class LocalAttributesFinderFeatureTest {
+
+    @Test
+    public void testFindRoot() throws Exception {
+        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        final LocalAttributesFinderFeature f = new LocalAttributesFinderFeature(session);
+        assertNotNull(f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertNotEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
 
     @Test
     public void testConvert() throws Exception {

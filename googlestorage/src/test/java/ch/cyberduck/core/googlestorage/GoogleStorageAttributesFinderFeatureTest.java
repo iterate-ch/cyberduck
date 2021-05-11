@@ -44,6 +44,12 @@ import static org.junit.Assert.*;
 public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
+    public void testFindRoot() throws Exception {
+        final GoogleStorageAttributesFinderFeature f = new GoogleStorageAttributesFinderFeature(session);
+        assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
     public void testPreviousVersionReferences() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
         new GoogleStorageVersioningFeature(session).setConfiguration(container, new DisabledPasswordCallback(), new VersioningConfiguration(true));

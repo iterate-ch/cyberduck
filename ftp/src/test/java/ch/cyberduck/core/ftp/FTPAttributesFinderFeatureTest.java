@@ -20,6 +20,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -36,6 +37,12 @@ import static org.junit.Assert.fail;
 
 @Category(IntegrationTest.class)
 public class FTPAttributesFinderFeatureTest extends AbstractFTPTest {
+
+    @Test
+    public void testFindRoot() throws Exception {
+        final FTPAttributesFinderFeature f = new FTPAttributesFinderFeature(session);
+        assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
 
     @Test
     public void testAttributesWrongFiletype() throws Exception {

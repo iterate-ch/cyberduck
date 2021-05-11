@@ -38,6 +38,13 @@ import static org.junit.Assert.*;
 public class B2AttributesFinderFeatureTest extends AbstractB2Test {
 
     @Test
+    public void testFindRoot() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
+        assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
     public void testFindLargeUpload() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

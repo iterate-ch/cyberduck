@@ -34,6 +34,12 @@ import static org.junit.Assert.*;
 public class S3AttributesFinderFeatureTest extends AbstractS3Test {
 
     @Test
+    public void testFindRoot() throws Exception {
+        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session);
+        assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
     public void testFindFileUsEast() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

@@ -21,6 +21,12 @@ import static org.junit.Assert.assertNotNull;
 @Category(IntegrationTest.class)
 public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
 
+    @Test
+    public void testFindRoot() throws Exception {
+        final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session, null);
+        assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
+
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));

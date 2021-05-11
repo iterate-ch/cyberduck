@@ -40,6 +40,12 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
 
+    @Test
+    public void testFindRoot() throws Exception {
+        final GraphAttributesFinderFeature f = new GraphAttributesFinderFeature(session);
+        assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
+
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
         new GraphAttributesFinderFeature(session).find(new Path(new OneDriveHomeFinderService().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));

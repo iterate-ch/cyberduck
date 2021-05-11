@@ -22,11 +22,17 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
 
+    @Test
+    public void testFindRoot() throws Exception {
+        final SwiftAttributesFinderFeature f = new SwiftAttributesFinderFeature(session);
+        assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
+
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, UUID.randomUUID() + ".txt", EnumSet.of(Path.Type.file));
         final SwiftAttributesFinderFeature f = new SwiftAttributesFinderFeature(session);
         f.find(test);
     }
@@ -35,7 +41,7 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
     public void testFind() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final String name = UUID.randomUUID().toString() + ".txt";
+        final String name = UUID.randomUUID() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final SwiftAttributesFinderFeature f = new SwiftAttributesFinderFeature(session);

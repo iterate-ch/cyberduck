@@ -36,6 +36,14 @@ import static org.junit.Assert.*;
 public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest {
 
     @Test
+    public void testFindRoot() throws Exception {
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
+        final StoregateAttributesFinderFeature f = new StoregateAttributesFinderFeature(session, nodeid);
+        assertNotNull(f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertNotEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
     public void testFind() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
