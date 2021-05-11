@@ -2,8 +2,9 @@ Cyberduck
 https://cyberduck.io/
 
 7.9.0
+- [Feature] New Big Sur style application icon (macOS)
 - [Feature] New "Auto" default option for number of connections for transfers
-- [Feature] Increased default to 20 concurrent connections for transfers for protocols other than FTP
+- [Feature] Increased default to 5 concurrent connections for transfers for protocols other than FTP
 - [Feature] Allow toggling versioning configuration for bucket (Google Storage)
 - [Feature] Display and restore of previous file versions in bucket (Google Storage)
 - [Feature] Support chacha20-poly1305@openssh.com cipher (SFTP) (#8554)
