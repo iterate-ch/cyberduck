@@ -18,13 +18,16 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -151,6 +154,28 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).withListener(count).transfer(new ByteArrayInputStream(content), out);
         assertFalse(new DefaultFindFeature(session).find(test));
         out.getStatus();
+    }
+
+    @Test
+    public void testWriteParentRoomReplaced() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final String rommname = new AlphanumericRandomStringService().random();
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
+            new Path(rommname, EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final String fileid = nodeid.getNodeId(room, new DisabledListProgressListener(), 1);
+        assertEquals(fileid, room.attributes().getVersionId());
+        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path roomNew = new SDSDirectoryFeature(session, nodeid).mkdir(
+            new Path(rommname, EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        assertNotEquals(fileid, roomNew.attributes().getVersionId());
+        final TransferStatus status = new TransferStatus();
+        status.setLength(0L);
+        final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
+        final HttpResponseOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        out.close();
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(roomNew), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = InteroperabilityException.class)
