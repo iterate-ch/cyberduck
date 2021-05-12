@@ -15,11 +15,13 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -28,7 +30,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import synapticloop.b2.response.B2StartLargeFileResponse;
 
@@ -45,9 +46,28 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
     }
 
     @Test
+    public void testFindDirectory() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
+        final PathAttributes attributes = f.find(directory);
+        assertNotNull(attributes);
+        assertNotEquals(PathAttributes.EMPTY, attributes);
+        // Test wrong type
+        try {
+            f.find(new Path(directory.getAbsolute(), EnumSet.of(Path.Type.file)));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+    }
+
+    @Test
     public void testFindLargeUpload() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
             fileid.getVersionId(bucket, new DisabledListProgressListener()),
