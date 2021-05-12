@@ -24,6 +24,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -84,8 +85,7 @@ public class SFTPAttributesFinderFeature implements AttributesFinder {
                 attributes.setSize(stat.getSize());
         }
         if(0 != stat.getMode().getPermissionsMask()) {
-            if(StringUtils.contains("OpenSSH_for_Windows", session.getClient().getTransport().getServerVersion())) {
-                // Known erroneous bitmask
+            if(this.isServerBlacklisted()) {
                 attributes.setPermission(Permission.EMPTY);
             }
             else {
@@ -105,5 +105,15 @@ public class SFTPAttributesFinderFeature implements AttributesFinder {
             attributes.setAccessedDate(stat.getAtime() * 1000L);
         }
         return attributes;
+    }
+
+    private boolean isServerBlacklisted() {
+        for(String server : PreferencesFactory.get().getList("sftp.permissions.server.blacklist")) {
+            if(StringUtils.contains(server, session.getClient().getTransport().getServerVersion())) {
+                // Known erroneous bitmask
+                return true;
+            }
+        }
+        return false;
     }
 }
