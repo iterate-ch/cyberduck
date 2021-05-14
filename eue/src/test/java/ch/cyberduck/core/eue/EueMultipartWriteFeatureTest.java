@@ -56,6 +56,32 @@ import static org.junit.Assert.*;
 public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
 
     @Test
+    public void testLowerThreshold() throws Exception {
+        // Uploading a file via the Upload Resource, using the chunked upload method, is only allowed for documents bigger than the chunksize (4MiB)
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final EueMultipartWriteFeature feature = new EueMultipartWriteFeature(session, fileid);
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(100072);
+        // Multipart
+        final TransferStatus status = new TransferStatus().withLength(-1L);
+        final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
+        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        assertNotNull(out.getStatus());
+        assertNotNull(out.getStatus().getCdash64());
+        assertEquals(checksum, out.getStatus().getChecksum());
+        assertTrue(new DefaultFindFeature(session).find(file));
+        final byte[] compare = new byte[content.length];
+        final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        IOUtils.readFully(stream, compare);
+        stream.close();
+        assertArrayEquals(content, compare);
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testSmallChunk() throws Exception {
         // Uploading a file via the Upload Resource, using the chunked upload method, is only allowed for documents bigger than the chunksize (4MiB)
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
@@ -63,7 +89,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(512000);
-        final TransferStatus status = new TransferStatus().withLength(512000L);
+        final TransferStatus status = new TransferStatus().withLength(-1L);
         final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
         assertNotNull(out);
@@ -88,7 +114,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         {
             final byte[] content = RandomUtils.nextBytes(8943045);
-            final TransferStatus status = new TransferStatus().withLength(content.length);
+            final TransferStatus status = new TransferStatus().withLength(-1L);
             final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
             final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
             assertNotNull(out);
@@ -107,7 +133,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         // Override
         {
             final byte[] content = RandomUtils.nextBytes(4943045);
-            final TransferStatus status = new TransferStatus().withLength(content.length).exists(true);
+            final TransferStatus status = new TransferStatus().withLength(-1L).exists(true);
             final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
             final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
             assertNotNull(out);
