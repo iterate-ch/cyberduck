@@ -31,6 +31,7 @@ import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.LocalSymlinkFactory;
 import ch.cyberduck.core.local.features.Symlink;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
@@ -145,7 +146,7 @@ public class DownloadTransfer extends Transfer {
         }
         final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(roots);
         final AttributesFinder attributes = new CachingAttributesFinderFeature(cache,
-            source.getFeature(AttributesFinder.class));
+            source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, source, options).withAttributes(attributes);
         }
