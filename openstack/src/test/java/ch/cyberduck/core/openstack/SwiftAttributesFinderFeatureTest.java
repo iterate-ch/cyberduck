@@ -66,7 +66,9 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(container);
-        assertEquals(EnumSet.of(Path.Type.volume, Path.Type.directory), container.getType());
+        assertNotEquals(PathAttributes.EMPTY, attributes);
+        assertNotEquals(-1L, attributes.getSize());
+        assertNotNull(attributes.getRegion());
     }
 
     @Test
