@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 
@@ -49,20 +48,15 @@ public class B2LifecycleFeature implements Lifecycle {
     @Override
     public LifecycleConfiguration getConfiguration(final Path container) throws BackgroundException {
         try {
-            final List<B2BucketResponse> buckets = session.getClient().listBuckets();
-            for(B2BucketResponse response : buckets) {
-                if(response.getBucketName().equals(containerService.getContainer(container).getName())) {
-                    final List<LifecycleRule> lifecycleRules = response.getLifecycleRules();
-                    for(LifecycleRule rule : lifecycleRules) {
-                        return new LifecycleConfiguration(
-                            null == rule.getDaysFromUploadingToHiding() ? null : rule.getDaysFromUploadingToHiding().intValue(),
-                            null,
-                            null == rule.getDaysFromHidingToDeleting() ? null : rule.getDaysFromHidingToDeleting().intValue());
-                    }
-                    return LifecycleConfiguration.empty();
-                }
+            final B2BucketResponse response = session.getClient().listBucket(containerService.getContainer(container).getName());
+            final List<LifecycleRule> lifecycleRules = response.getLifecycleRules();
+            for(LifecycleRule rule : lifecycleRules) {
+                return new LifecycleConfiguration(
+                    null == rule.getDaysFromUploadingToHiding() ? null : rule.getDaysFromUploadingToHiding().intValue(),
+                    null,
+                    null == rule.getDaysFromHidingToDeleting() ? null : rule.getDaysFromHidingToDeleting().intValue());
             }
-            throw new NotfoundException(container.getAbsolute());
+            return LifecycleConfiguration.empty();
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map("Failure to write attributes of {0}", e, container);
