@@ -88,6 +88,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
             final HttpResponseOutputStream<FileMetadata> out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
+            assertEquals(nodeId, out.getStatus().getId());
         }
         test.attributes().setCustom(Collections.emptyMap());
         attributes = new StoregateAttributesFinderFeature(session, nodeid).find(test);
