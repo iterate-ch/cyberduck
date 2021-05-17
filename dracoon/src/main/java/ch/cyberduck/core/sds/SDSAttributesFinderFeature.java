@@ -207,7 +207,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         return type;
     }
 
-    private Permission toPermission(final Node node) throws BackgroundException {
+    protected Permission toPermission(final Node node) throws BackgroundException {
         final Permission permission = new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none);
         if(node.isIsEncrypted() && node.getType() == Node.TypeEnum.FILE) {
             if(null != session.keyPair()) {
@@ -228,10 +228,13 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         if(node.getPermissions().isChange() && node.getPermissions().isDelete()) {
             permission.setUser(permission.getUser().or(Permission.Action.write));
         }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Map node permissions %s to %s", node.getPermissions(), permission));
+        }
         return permission;
     }
 
-    private Acl toAcl(final Node node) {
+    protected Acl toAcl(final Node node) {
         final Acl acl = new Acl();
         final Acl.User user = new Acl.CanonicalUser();
         if(node.getPermissions().isManage()) {
