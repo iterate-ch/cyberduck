@@ -24,33 +24,37 @@ import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.security.AWSCredentials;
 
 public class S3PresignedUrlProvider {
+    private final S3Session session;
+
+    public S3PresignedUrlProvider(final S3Session session) {
+        this.session = session;
+    }
+
     /**
      * Generates a signed URL string that will grant access to an S3 resource (bucket or object) to whoever uses the URL
      * up until the time specified.
      *
-     * @param signature AWS signature version
-     * @param endpoint  Hostname
-     * @param bucket    the name of the bucket to include in the URL, must be a valid bucket name.
-     * @param key       the name of the object to include in the URL, if null only the bucket name is used.
-     * @param method    HTTP method
-     * @param expiry    Milliseconds
+     * @param bucket the name of the bucket to include in the URL, must be a valid bucket name.
+     * @param key    the name of the object to include in the URL, if null only the bucket name is used.
+     * @param method HTTP method
+     * @param expiry Milliseconds
      * @return a URL signed in such a way as to grant access to an S3 resource to whoever uses it.
      */
-    public String create(final S3Protocol.AuthenticationHeaderSignatureVersion signature, final String endpoint, final String user, final String secret,
-                         final String bucket, String region, final String key,
-                         final String method, final long expiry) {
+    public String create(final String secret, final String bucket, String region, final String key, final String method, final long expiry) {
         if(StringUtils.isBlank(region)) {
             // Only for AWS
-            switch(signature) {
+            switch(session.getSignatureVersion()) {
                 case AWS4HMACSHA256:
                     // Region is required for AWS4-HMAC-SHA256 signature
                     region = "us-east-1";
             }
         }
-        return new RestS3Service(new AWSCredentials(StringUtils.strip(user), StringUtils.strip(secret))) {
+        return new RestS3Service(new AWSCredentials(StringUtils.strip(
+            session.getHost().getCredentials().getUsername()
+        ), StringUtils.strip(secret))) {
             @Override
             public String getEndpoint() {
-                return endpoint;
+                return session.getHost().getHostname();
             }
 
             @Override
@@ -58,7 +62,8 @@ public class S3PresignedUrlProvider {
                 //
             }
         }.createSignedUrlUsingSignatureVersion(
-            signature.toString(),
-            region, method, bucket, key, null, null, expiry / 1000, false, true, false);
+            session.getSignatureVersion().toString(),
+            region, method, bucket, key, null, null, expiry / 1000, false, true,
+            session.getClient().getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false));
     }
 }

@@ -170,10 +170,8 @@ public class S3UrlProvider implements UrlProvider {
                     .getRegionForBucketName(containerService.getContainer(file).getName());
             }
         }
-        return new DescriptiveUrl(URI.create(new S3PresignedUrlProvider().create(
-            session.getSignatureVersion(),
-            session.getHost().getHostname(),
-            session.getHost().getCredentials().getUsername(), secret,
+        return new DescriptiveUrl(URI.create(new S3PresignedUrlProvider(session).create(
+            secret,
             containerService.getContainer(file).getName(), region, containerService.getKey(file),
             "GET", expiry.getTimeInMillis())), DescriptiveUrl.Type.signed,
             MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
