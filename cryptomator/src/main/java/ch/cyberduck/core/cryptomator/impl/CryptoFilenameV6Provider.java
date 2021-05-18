@@ -49,7 +49,7 @@ public class CryptoFilenameV6Provider implements CryptoFilename {
     private final Path metadataRoot;
 
     private final LRUCache<String, String> cache = LRUCache.build(
-        PreferencesFactory.get().getLong("browser.cache.size"));
+        PreferencesFactory.get().getLong("cryptomator.cache.size"));
 
     public CryptoFilenameV6Provider(final Path vault) {
         this(vault, DEFAULT_NAME_SHORTENING_THRESHOLD);

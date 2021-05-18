@@ -51,7 +51,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
         = new UUIDRandomStringService();
 
     private final LRUCache<CacheReference<Path>, String> cache = LRUCache.build(
-        PreferencesFactory.get().getInteger("browser.cache.size"));
+        PreferencesFactory.get().getInteger("cryptomator.cache.size"));
 
     public CryptoDirectoryV6Provider(final Path vault, final CryptoVault cryptomator) {
         this.home = vault;

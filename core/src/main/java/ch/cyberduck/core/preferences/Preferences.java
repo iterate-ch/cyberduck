@@ -1122,6 +1122,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("cryptomator.vault.autodetect", String.valueOf(true));
         this.setDefault("cryptomator.vault.masterkey.filename", "masterkey.cryptomator");
         this.setDefault("cryptomator.vault.pepper", "");
+        this.setDefault("cryptomator.cache.size", String.valueOf(1000));
     }
 
     /**
