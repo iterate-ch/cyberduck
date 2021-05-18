@@ -65,6 +65,17 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
     }
 
     @Test
+    public void testFindBucket() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
+        final PathAttributes attributes = f.find(bucket);
+        assertNotNull(attributes);
+        assertNotEquals(PathAttributes.EMPTY, attributes);
+        assertEquals(bucket.attributes().getVersionId(), attributes.getVersionId());
+    }
+
+    @Test
     public void testFindLargeUpload() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

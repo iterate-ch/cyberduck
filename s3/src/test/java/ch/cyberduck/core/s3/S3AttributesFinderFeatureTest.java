@@ -72,6 +72,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     public void testFindBucket() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(container);
+        assertNotEquals(PathAttributes.EMPTY, attributes);
         assertEquals(-1L, attributes.getSize());
         assertNotNull(attributes.getRegion());
         assertEquals(EnumSet.of(Path.Type.directory, Path.Type.volume), container.getType());
