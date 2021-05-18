@@ -36,7 +36,7 @@ public class DriveFileIdProvider implements FileIdProvider {
     private static final Logger log = Logger.getLogger(DriveFileIdProvider.class);
 
     private final DriveSession session;
-    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("browser.cache.size"));
+    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));
 
     public DriveFileIdProvider(final DriveSession session) {
         this.session = session;
