@@ -68,7 +68,6 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
             log.debug(String.format("Cancel background action for transfer %s", transfer));
         }
         super.cancel();
-        queue.remove(transfer);
     }
 
     @Override
