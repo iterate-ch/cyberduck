@@ -15,9 +15,23 @@ package ch.cyberduck.core.exception;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Protocol;
+
+import java.util.Optional;
+
 public class HostParserException extends BackgroundException {
+    private Protocol protocol;
 
     public HostParserException(final String detail) {
         super("Failure parsing URI", detail);
+    }
+
+    public Optional<Protocol> getProtocol() {
+        return Optional.ofNullable(protocol);
+    }
+
+    public HostParserException withProtocol(final Protocol protocol) {
+        this.protocol = protocol;
+        return this;
     }
 }
