@@ -242,8 +242,8 @@ public class BookmarkController extends SheetController implements CollectionLis
             }
             catch(HostParserException e) {
                 e.getProtocol().ifPresent(p -> {
+                    bookmark.setHostname("");
                     bookmark.setProtocol(p);
-                    hostField.setStringValue("");
                 });
                 log.warn(e);
             }
