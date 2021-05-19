@@ -245,11 +245,8 @@ public abstract class Preferences implements Locales {
         Security.setProperty("networkaddress.cache.negative.ttl", "5");
 
         final Version version = new Version();
-        final String[] spec = StringUtils.split(version.getSpecification(), '.');
-        if(spec != null && 2 == spec.length) {
-            this.setDefault("application.version", spec[0]);
-            this.setDefault("application.revision", spec[1]);
-        }
+        this.setDefault("application.version", StringUtils.substringBeforeLast(version.getSpecification(), "."));
+        this.setDefault("application.revision", StringUtils.substringAfterLast(version.getSpecification(), "."));
         this.setDefault("application.hash", version.getImplementation());
 
         this.setDefault("tmp.dir", System.getProperty("java.io.tmpdir"));
