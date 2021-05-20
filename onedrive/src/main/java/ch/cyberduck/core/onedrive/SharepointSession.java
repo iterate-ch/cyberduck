@@ -20,14 +20,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.types.Drive;
-import org.nuxeo.onedrive.client.types.GroupItem;
-import org.nuxeo.onedrive.client.types.Site;
 
 import java.util.Deque;
 

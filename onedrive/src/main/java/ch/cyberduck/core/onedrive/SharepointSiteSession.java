@@ -15,25 +15,19 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.onedrive.features.sharepoint.SharepointSiteAttributesFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.nuxeo.onedrive.client.types.Drive;
-import org.nuxeo.onedrive.client.types.GroupItem;
-import org.nuxeo.onedrive.client.types.Site;
 
 import java.util.Deque;
-import java.util.EnumSet;
 
 import static ch.cyberduck.core.onedrive.SharepointListService.DRIVES_CONTAINER;
 import static ch.cyberduck.core.onedrive.SharepointListService.SITES_CONTAINER;

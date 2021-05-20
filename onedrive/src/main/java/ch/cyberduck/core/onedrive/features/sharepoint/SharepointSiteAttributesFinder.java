@@ -18,7 +18,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.SharepointSiteSession;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 

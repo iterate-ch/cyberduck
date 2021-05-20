@@ -15,9 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -28,8 +26,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.onedrive.features.GraphLockFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -44,7 +40,6 @@ import org.nuxeo.onedrive.client.types.Site;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.EnumSet;
 import java.util.function.Predicate;
 
 public abstract class AbstractSharepointSession extends GraphSession {
