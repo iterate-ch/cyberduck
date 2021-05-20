@@ -49,13 +49,11 @@ public class SharepointSiteSession extends AbstractSharepointSession {
     }
 
     @Override
-    public Site getSite(final Path file) throws BackgroundException {
-        return Site.byId(getClient(), fileid.getFileId(file, new DisabledListProgressListener()));
-    }
+    protected Drive findDrive(final ContainerItem driveContainer) throws BackgroundException {
+        final String driveId = fileid.getFileId(driveContainer.getContainerPath().get(), new DisabledListProgressListener());
+        final Path container = driveContainer.getCollectionPath().get().getParent();
 
-    @Override
-    public GroupItem getGroup(final Path file) throws BackgroundException {
-        return null;
+        return new Drive(getSite(container), driveId);
     }
 
     @Override

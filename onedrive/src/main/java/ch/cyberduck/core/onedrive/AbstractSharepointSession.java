@@ -15,14 +15,21 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.onedrive.features.GraphLockFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -37,24 +44,51 @@ import org.nuxeo.onedrive.client.types.Site;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.EnumSet;
+import java.util.function.Predicate;
 
 public abstract class AbstractSharepointSession extends GraphSession {
     private static final Logger log = Logger.getLogger(SharepointSession.class);
 
+    private final Path home;
+    private final Predicate<Path> homeComparer;
+
+    public Path getHome() {
+        return home;
+    }
+
+    public boolean isHome(final Path home) {
+        return homeComparer.test(home);
+    }
+
     public AbstractSharepointSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
+
+        if(StringUtils.isNotBlank(host.getDefaultPath())) {
+            home = PathNormalizer.compose(Home.ROOT, host.getDefaultPath());
+        }
+        else {
+            home = Home.ROOT;
+        }
+        homeComparer = new SimplePathPredicate(home);
     }
 
     public abstract boolean isSingleSite();
 
-    public abstract Site getSite(final Path file) throws BackgroundException;
+    public Site getSite(final Path file) throws BackgroundException{
+        return Site.byId(client, fileid.getFileId(file, new DisabledListProgressListener()));
+    }
 
-    public abstract GroupItem getGroup(final Path file) throws BackgroundException;
+    public GroupItem getGroup(final Path file) throws BackgroundException {
+        return new GroupItem(client, fileid.getFileId(file, new DisabledListProgressListener()));
+    }
 
     @Override
     public String getFileId(final DriveItem.Metadata metadata) {
         return metadata.getId();
     }
+
+    protected abstract Drive findDrive(GraphSession.ContainerItem container) throws BackgroundException;
 
     @Override
     public DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
@@ -72,25 +106,9 @@ public abstract class AbstractSharepointSession extends GraphSession {
         if(!driveContainer.isDrive()) {
             throw new NotfoundException(String.format("File %s is not in a drive.", file.getAbsolute()));
         }
-        final Drive drive;
-        final String driveId = fileid.getFileId(driveContainer.getContainerPath().get(), new DisabledListProgressListener());
-        final GraphSession.ContainerItem parentContainer = getContainer(driveContainer.getContainerPath().get().getParent());
-        if(parentContainer.getCollectionPath().map(p -> SharepointListService.GROUPS_CONTAINER.equals(p.getName())).orElse(false)) {
-            drive = new Drive(getGroup(parentContainer.getContainerPath().get()), driveId);
-        }
-        else if(parentContainer.getContainerPath().map(p -> SharepointListService.DEFAULT_SITE.equals(p.getName())).orElse(false)) {
-            // Handles /Default-case, which is a site.
-            drive = new Drive(getSite(parentContainer.getContainerPath().get()), driveId);
-        }
-        else {
-            // finds:
-            // Sites/<site name>
-            final GraphSession.ContainerItem containerItem = getContainer(parentContainer.getContainerPath().get());
-            if (containerItem.getCollectionPath().map(p -> SharepointListService.SITES_CONTAINER.equals(p.getName())).orElse(false)) {
-                drive = new Drive(getSite(containerItem.getContainerPath().get()), driveId);
-            } else {
-                throw new NotfoundException(String.format("File %s is not part of any drive.", file.getAbsolute()));
-            }
+        final Drive drive = findDrive(driveContainer);
+        if(drive == null) {
+            throw new NotfoundException(String.format("File %s is not part of any drive.", file.getAbsolute()));
         }
 
         final DriveItem ownItem;
