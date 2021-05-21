@@ -783,7 +783,7 @@ public class MainController extends BundleController implements NSApplication.De
                             upload(bookmark, files, new Path(PathNormalizer.normalize(bookmark.getDefaultPath()), EnumSet.of(Path.Type.directory)));
                         }
                         else {
-                            upload(bookmark, files, destination);
+                            upload(bookmark, files, null == destination ? new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory)) : destination);
                         }
                     }
                 }
