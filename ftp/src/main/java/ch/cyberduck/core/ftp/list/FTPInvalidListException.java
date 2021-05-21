@@ -17,9 +17,9 @@ package ch.cyberduck.core.ftp.list;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 
-public class FTPInvalidListException extends BackgroundException {
+public class FTPInvalidListException extends InteroperabilityException {
     private static final long serialVersionUID = -231465577746623668L;
 
     private final AttributedList<Path> parsed;
