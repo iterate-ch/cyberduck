@@ -1,4 +1,6 @@
-package ch.cyberduck.core.onedrive.features.sharepoint;/*
+package ch.cyberduck.core.onedrive.features.sharepoint;
+
+/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -49,7 +51,7 @@ public class SharepointSiteAttributesFinder extends GraphAttributesFinderFeature
                 site = getSite(file);
             }
             catch(IOException exception) {
-                throw new DefaultIOExceptionMappingService().map("Failure getting configured site.", exception);
+                throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", exception, file);
             }
             return new PathAttributes().withFileId(site.getId());
         }
