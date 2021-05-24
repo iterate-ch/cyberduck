@@ -24,8 +24,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.log4j.Logger;
-import org.nuxeo.onedrive.client.types.GroupItem;
-import org.nuxeo.onedrive.client.types.Site;
+import org.nuxeo.onedrive.client.types.Drive;
 
 import java.util.Deque;
 
@@ -44,13 +43,26 @@ public class SharepointSession extends AbstractSharepointSession {
     }
 
     @Override
-    public Site getSite(final Path file) throws BackgroundException {
-        return Site.byId(getClient(), fileid.getFileId(file, new DisabledListProgressListener()));
-    }
-
-    @Override
-    public GroupItem getGroup(final Path file) throws BackgroundException {
-        return new GroupItem(getClient(), fileid.getFileId(file, new DisabledListProgressListener()));
+    protected Drive findDrive(final ContainerItem driveContainer) throws BackgroundException {
+        final String driveId = fileid.getFileId(driveContainer.getContainerPath().get(), new DisabledListProgressListener());
+        final GraphSession.ContainerItem parentContainer = getContainer(driveContainer.getContainerPath().get().getParent());
+        if(parentContainer.getCollectionPath().map(p -> SharepointListService.GROUPS_CONTAINER.equals(p.getName())).orElse(false)) {
+            return new Drive(getGroup(parentContainer.getContainerPath().get()), driveId);
+        }
+        else if(parentContainer.getContainerPath().map(p -> SharepointListService.DEFAULT_SITE.equals(p.getName())).orElse(false)) {
+            // Handles /Default-case, which is a site.
+            return new Drive(getSite(parentContainer.getContainerPath().get()), driveId);
+        }
+        else {
+            // finds:
+            // Sites/<site name>
+            final GraphSession.ContainerItem containerItem = getContainer(parentContainer.getContainerPath().get());
+            if (containerItem.getCollectionPath().map(p -> SharepointListService.SITES_CONTAINER.equals(p.getName())).orElse(false)) {
+                return new Drive(getSite(containerItem.getContainerPath().get()), driveId);
+            } else {
+                return null;
+            }
+        }
     }
 
     @Override

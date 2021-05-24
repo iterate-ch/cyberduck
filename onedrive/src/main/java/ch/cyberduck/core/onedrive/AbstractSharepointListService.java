@@ -41,7 +41,8 @@ public abstract class AbstractSharepointListService implements ListService {
 
     @Override
     public final AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(directory.isRoot()) {
+        if((!session.isSingleSite() && directory.isRoot())
+            || (session.isSingleSite() && session.isHome(directory))) {
             return getRoot(directory, listener);
         }
 

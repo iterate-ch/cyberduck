@@ -20,12 +20,12 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.onedrive.features.sharepoint.SharepointSiteAttributesFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.commons.lang3.StringUtils;
-import org.nuxeo.onedrive.client.types.GroupItem;
-import org.nuxeo.onedrive.client.types.Site;
+import org.nuxeo.onedrive.client.types.Drive;
 
 import java.util.Deque;
 
@@ -43,25 +43,11 @@ public class SharepointSiteSession extends AbstractSharepointSession {
     }
 
     @Override
-    public Site getSite(final Path file) throws BackgroundException {
-        final Path parent = file.getParent();
-        if(parent.isRoot()) {
-            final Site hostSite = Site.byHostname(getClient(), host.getHostname());
-            String path = host.getDefaultPath();
-            if(StringUtils.isBlank(path) || "/".equals(path)) {
-                return hostSite;
-            }
-            if(!path.startsWith("/")) {
-                path = "/" + path;
-            }
-            return Site.byPath(hostSite, path);
-        }
-        return Site.byId(getClient(), fileid.getFileId(file, new DisabledListProgressListener()));
-    }
+    protected Drive findDrive(final ContainerItem driveContainer) throws BackgroundException {
+        final String driveId = fileid.getFileId(driveContainer.getContainerPath().get(), new DisabledListProgressListener());
+        final Path container = driveContainer.getCollectionPath().get().getParent();
 
-    @Override
-    public GroupItem getGroup(final Path file) throws BackgroundException {
-        return null;
+        return new Drive(getSite(container), driveId);
     }
 
     @Override
@@ -69,6 +55,9 @@ public class SharepointSiteSession extends AbstractSharepointSession {
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
             return (T) new SharepointSiteListService(this);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new SharepointSiteAttributesFinder(this);
         }
         return super._getFeature(type);
     }
