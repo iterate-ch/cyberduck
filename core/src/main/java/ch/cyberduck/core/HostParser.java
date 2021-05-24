@@ -26,6 +26,7 @@ import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 public final class HostParser {
@@ -77,39 +78,59 @@ public final class HostParser {
         return parsed;
     }
 
+    private static <T> T decorate(final T t, final Consumer<T> decorator) {
+        if (decorator != null) {
+            decorator.accept(t);
+        }
+        return t;
+    }
+
     private static Host parse(final ProtocolFactory factory, final Protocol defaultScheme, final String url) throws HostParserException {
         final StringReader reader = new StringReader(url);
-        Value<String> schemeValue = new Value<>();
-        Protocol protocol;
-        if(!parseScheme(reader, schemeValue)
-            || null == schemeValue.getValue()
-            || (protocol = factory.forName(schemeValue.getValue())) == null) {
+        final Protocol parsedProtocol, protocol;
+        if((parsedProtocol = findProtocol(reader, factory)) != null) {
+            protocol = parsedProtocol;
+        }
+        else {
             protocol = defaultScheme;
         }
+        final Consumer<HostParserException> parsedProtocolDecorator = e -> e.withProtocol(parsedProtocol);
         final Host host = new Host(protocol);
         final URITypes uriType = findURIType(reader);
         if(uriType == URITypes.Undefined) {
             // scheme:
             if(StringUtils.isBlank(protocol.getDefaultHostname())) {
-                throw new HostParserException(String.format("Missing hostname in URI %s", url));
+                throw decorate(new HostParserException(String.format("Missing hostname in URI %s", url)), parsedProtocolDecorator);
             }
             return host;
         }
+
         if(uriType == URITypes.Authority) {
             if(host.getProtocol().isHostnameConfigurable()) {
-                parseAuthority(reader, host);
+                parseAuthority(reader, host, parsedProtocolDecorator);
             }
             else {
-                parseRootless(reader, host);
+                parseRootless(reader, host, parsedProtocolDecorator);
             }
         }
         else if(uriType == URITypes.Rootless) {
-            parseRootless(reader, host);
+            parseRootless(reader, host, parsedProtocolDecorator);
         }
         else if(uriType == URITypes.Absolute) {
-            parseAbsolute(reader, host);
+            parseAbsolute(reader, host, parsedProtocolDecorator);
         }
         return host;
+    }
+
+    private static Protocol findProtocol(final StringReader reader, final ProtocolFactory factory) {
+        Value<String> schemeValue = new Value<>();
+        if(!parseScheme(reader, schemeValue)) {
+            return null;
+        }
+        if(schemeValue.getValue() == null) {
+            return null;
+        }
+        return factory.forName(schemeValue.getValue());
     }
 
     static final String URI_SCHEME = "+-.";
@@ -152,13 +173,13 @@ public final class HostParser {
         return true; // valid. Break to return stringbuilder
     }
 
-    static void parseAuthority(final StringReader reader, final Host host) throws HostParserException {
-        parseUserInfo(reader, host);
-        parseHostname(reader, host);
-        parsePath(reader, host, false);
+    static void parseAuthority(final StringReader reader, final Host host, final Consumer<HostParserException> decorator) throws HostParserException {
+        parseUserInfo(reader, host, decorator);
+        parseHostname(reader, host, decorator);
+        parsePath(reader, host, false, decorator);
     }
 
-    static void parseHostname(final StringReader reader, final Host host) throws HostParserException {
+    static void parseHostname(final StringReader reader, final Host host, final Consumer<HostParserException> decorator) throws HostParserException {
         final StringBuilder buffer = new StringBuilder();
 
         boolean isPort = false;
@@ -173,7 +194,7 @@ public final class HostParser {
             if(bracketFlag) {
                 reader.skip(1);
                 if(c == '[') {
-                    throw new HostParserException("Illegal character '[' inside IPv6 address");
+                    throw decorate(new HostParserException("Illegal character '[' inside IPv6 address"), decorator);
                 }
                 else if(c == ']') {
                     bracketFlag = false;
@@ -182,14 +203,14 @@ public final class HostParser {
                     buffer.append(c);
                 }
                 else {
-                    throw new HostParserException(String.format("Illegal character '%s' at %d inside IPv6 address", c, reader.position));
+                    throw decorate(new HostParserException(String.format("Illegal character '%s' at %d inside IPv6 address", c, reader.position)), decorator);
                 }
             }
             else {
                 if(!readPercentEscapedSequence(reader, buffer)) {
                     reader.skip(1);
                     if(c == ']') {
-                        throw new HostParserException("Illegal character ']' outside IPv6 address");
+                        throw decorate(new HostParserException("Illegal character ']' outside IPv6 address"), decorator);
                     }
                     else if(c == '[') {
                         bracketFlag = true;
@@ -205,22 +226,22 @@ public final class HostParser {
             }
         }
         if(bracketFlag) {
-            throw new HostParserException("IPv6 bracket not closed in URI");
+            throw decorate(new HostParserException("IPv6 bracket not closed in URI"), decorator);
         }
         if(buffer.length() == 0) {
             if(StringUtils.isEmpty(host.getHostname())) {
-                throw new HostParserException("Missing hostname in URI");
+                throw decorate(new HostParserException("Missing hostname in URI"), decorator);
             }
         }
         else {
             host.setHostname(buffer.toString());
         }
         if(isPort) {
-            parsePort(reader, host);
+            parsePort(reader, host, decorator);
         }
     }
 
-    static void parsePort(final StringReader reader, final Host host) throws HostParserException {
+    static void parsePort(final StringReader reader, final Host host, final Consumer<HostParserException> decorator) throws HostParserException {
         Integer port = null;
         int tracker = reader.position;
 
@@ -244,31 +265,31 @@ public final class HostParser {
         }
         if(port != null && host.getProtocol().isPortConfigurable()) {
             if(port <= 0 || port >= 65536) {
-                throw new HostParserException(String.format("Port %d is outside allowed range 0-65536", port));
+                throw decorate(new HostParserException(String.format("Port %d is outside allowed range 0-65536", port)), decorator);
             }
 
             host.setPort(port);
         }
     }
 
-    static void parseAbsolute(final StringReader reader, final Host host) {
-        parsePath(reader, host, true);
+    static void parseAbsolute(final StringReader reader, final Host host, final Consumer<HostParserException> decorator) {
+        parsePath(reader, host, true, decorator);
     }
 
-    static void parseRootless(final StringReader reader, final Host host) throws HostParserException {
+    static void parseRootless(final StringReader reader, final Host host, final Consumer<HostParserException> decorator) throws HostParserException {
         // This is not RFC-compliant.
         // * Rootless-path must not include authentication information.
-        final boolean userInfoResult = parseUserInfo(reader, host);
+        final boolean userInfoResult = parseUserInfo(reader, host, decorator);
 
         if(host.getProtocol().isHostnameConfigurable() && StringUtils.isWhitespace(host.getHostname())) {
             // This is not RFC-compliant.
             // We assume for hostconfigurable-empty-hostnames a hostname on first path segment
-            parseHostname(reader, host);
+            parseHostname(reader, host, decorator);
         }
-        parsePath(reader, host, false);
+        parsePath(reader, host, false, decorator);
     }
 
-    static boolean parseUserInfo(final StringReader reader, final Host host) throws HostParserException {
+    static boolean parseUserInfo(final StringReader reader, final Host host, final Consumer<HostParserException> decorator) throws HostParserException {
         int tracker = reader.position;
         final StringBuilder buffer = new StringBuilder();
         final StringBuilder userBuilder = new StringBuilder();
@@ -287,8 +308,9 @@ public final class HostParser {
                     for(int i = 0; i < length; i++) {
                         char t = buffer.charAt(i);
                         if(t == ' ') {
-                            throw new HostParserException(
-                                String.format("Space character in user info part of URL at %d", reader.position));
+                            throw decorate(new HostParserException(
+                                String.format("Space character in user info part of URL at %d", reader.position)),
+                                decorator);
                         }
                         if(t == ':' && passwordBuilder == null) {
                             passwordBuilder = new StringBuilder();
@@ -346,7 +368,7 @@ public final class HostParser {
         return false;
     }
 
-    static void parsePath(final StringReader reader, final Host host, final boolean assumeRoot) {
+    static void parsePath(final StringReader reader, final Host host, final boolean assumeRoot, final Consumer<HostParserException> decorator) {
         final StringBuilder pathBuilder = new StringBuilder();
         if(assumeRoot) {
             if(reader.peek() == '/') {

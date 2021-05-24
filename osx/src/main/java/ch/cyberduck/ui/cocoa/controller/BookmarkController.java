@@ -241,6 +241,10 @@ public class BookmarkController extends SheetController implements CollectionLis
                 bookmark.setDefaultPath(parsed.getDefaultPath());
             }
             catch(HostParserException e) {
+                e.getProtocol().ifPresent(p -> {
+                    bookmark.setHostname("");
+                    bookmark.setProtocol(p);
+                });
                 log.warn(e);
             }
         }
