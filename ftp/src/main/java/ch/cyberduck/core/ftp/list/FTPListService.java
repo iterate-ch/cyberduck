@@ -16,7 +16,6 @@ package ch.cyberduck.core.ftp.list;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -129,7 +128,7 @@ public class FTPListService implements ListService {
                     try {
                         return this.post(directory, implementations.get(Command.mlsd).list(directory, listener), listener);
                     }
-                    catch(InteroperabilityException | FTPInvalidListException e) {
+                    catch(InteroperabilityException e) {
                         this.remove(Command.mlsd);
                     }
                 }
@@ -141,7 +140,7 @@ public class FTPListService implements ListService {
                 try {
                     return this.post(directory, implementations.get(Command.stat).list(directory, listener), listener);
                 }
-                catch(FTPInvalidListException | InteroperabilityException | AccessDeniedException | NotfoundException e) {
+                catch(InteroperabilityException | AccessDeniedException | NotfoundException e) {
                     this.remove(Command.stat);
                 }
             }
@@ -149,11 +148,11 @@ public class FTPListService implements ListService {
                 try {
                     return this.post(directory, implementations.get(Command.lista).list(directory, listener), listener);
                 }
-                catch(InteroperabilityException e) {
-                    this.remove(Command.lista);
-                }
                 catch(FTPInvalidListException e) {
                     // Empty directory listing. #7737
+                }
+                catch(InteroperabilityException e) {
+                    this.remove(Command.lista);
                 }
             }
             try {
