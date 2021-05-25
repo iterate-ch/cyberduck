@@ -254,6 +254,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox15 = new System.Windows.Forms.GroupBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.cryptomatorAutoDetectCheckBox = new System.Windows.Forms.CheckBox();
+            this.managedProfilesPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
+            this.profilesPageHost = new System.Windows.Forms.Integration.ElementHost();
             this.toolStrip = new Ch.Cyberduck.Ui.Winforms.Controls.ClickThroughToolStrip();
             this.generalButton = new System.Windows.Forms.ToolStripButton();
             this.browserButton = new System.Windows.Forms.ToolStripButton();
@@ -268,8 +270,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cryptomatorButton = new System.Windows.Forms.ToolStripButton();
             this.updateButton = new System.Windows.Forms.ToolStripButton();
             this.languageButton = new System.Windows.Forms.ToolStripButton();
-            this.managedProfilesPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
-            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.panelManager.SuspendLayout();
             this.managedGeneralPanel.SuspendLayout();
             this.tableLayoutPanelGeneral.SuspendLayout();
@@ -374,8 +374,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel24.SuspendLayout();
             this.groupBox15.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
-            this.toolStrip.SuspendLayout();
             this.managedProfilesPanel.SuspendLayout();
+            this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // iconList
@@ -3342,6 +3342,25 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cryptomatorAutoDetectCheckBox.UseVisualStyleBackColor = true;
             this.cryptomatorAutoDetectCheckBox.CheckedChanged += new System.EventHandler(this.cryptomatorAutoDetectCheckBox_CheckedChanged);
             // 
+            // managedProfilesPanel
+            // 
+            this.managedProfilesPanel.Controls.Add(this.profilesPageHost);
+            this.managedProfilesPanel.Location = new System.Drawing.Point(0, 0);
+            this.managedProfilesPanel.Name = "managedProfilesPanel";
+            this.managedProfilesPanel.Size = new System.Drawing.Size(0, 0);
+            this.managedProfilesPanel.Text = "managedPanel1";
+            // 
+            // profilesPageHost
+            // 
+            this.profilesPageHost.BackColorTransparent = true;
+            this.profilesPageHost.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.profilesPageHost.Location = new System.Drawing.Point(0, 0);
+            this.profilesPageHost.Name = "profilesPageHost";
+            this.profilesPageHost.Size = new System.Drawing.Size(0, 0);
+            this.profilesPageHost.TabIndex = 0;
+            this.profilesPageHost.Text = "elementHost1";
+            this.profilesPageHost.Child = null;
+            // 
             // toolStrip
             // 
             this.toolStrip.CanOverflow = false;
@@ -3517,24 +3536,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.languageButton.Text = "Language";
             this.languageButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.languageButton.Click += new System.EventHandler(this.languageButton_Click);
-            // 
-            // managedProfilesPanel
-            // 
-            this.managedProfilesPanel.Controls.Add(this.elementHost1);
-            this.managedProfilesPanel.Location = new System.Drawing.Point(0, 0);
-            this.managedProfilesPanel.Name = "managedProfilesPanel";
-            this.managedProfilesPanel.Size = new System.Drawing.Size(654, 479);
-            this.managedProfilesPanel.Text = "managedPanel1";
-            // 
-            // elementHost1
-            // 
-            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.elementHost1.Location = new System.Drawing.Point(0, 0);
-            this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(654, 479);
-            this.elementHost1.TabIndex = 0;
-            this.elementHost1.Text = "elementHost1";
-            this.elementHost1.Child = null;
             // 
             // PreferencesForm
             // 
@@ -3745,9 +3746,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox15.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
+            this.managedProfilesPanel.ResumeLayout(false);
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
-            this.managedProfilesPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -3993,6 +3994,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.ToolStripButton profilesButton;
         private ManagedPanel managedProfilesPanel;
-        private System.Windows.Forms.Integration.ElementHost elementHost1;
+        private System.Windows.Forms.Integration.ElementHost profilesPageHost;
     }
 }

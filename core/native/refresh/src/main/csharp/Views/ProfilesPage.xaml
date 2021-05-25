@@ -5,7 +5,8 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:vm="clr-namespace:Cyberduck.Core.Refresh.ViewModels.Preferences.Pages"
-                        xmlns:local="clr-namespace:Cyberduck.Core.Refresh.Views"
+                        xmlns:local="clr-namespace:Cyberduck.Core.Refresh.Views" 
+                        xmlns:cc="clr-namespace:Cyberduck.Core.Refresh.CustomControls"
                         mc:Ignorable="d"
                         d:DesignHeight="450"
                         d:DesignWidth="800"
@@ -18,7 +19,7 @@
 
         <ListView x:Name="profilesList"
                   Grid.Row="1">
-
+            <cc:ProfileElement />
         </ListView>
     </Grid>
 </rx:ReactiveUserControl>

@@ -16,29 +16,16 @@
 // feedback@cyberduck.io
 //
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.ServiceModel;
-using System.ServiceModel.Description;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.azure;
 using ch.cyberduck.core.b2;
-using ch.cyberduck.core.manta;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.brick;
 using ch.cyberduck.core.ctera;
-using ch.cyberduck.core.nextcloud;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.dropbox;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.googledrive;
 using ch.cyberduck.core.googlestorage;
@@ -46,11 +33,16 @@ using ch.cyberduck.core.hubic;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.irods;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.manta;
+using ch.cyberduck.core.nextcloud;
 using ch.cyberduck.core.nio;
 using ch.cyberduck.core.notification;
+using ch.cyberduck.core.oauth;
 using ch.cyberduck.core.onedrive;
 using ch.cyberduck.core.openstack;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.profiles;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.sds;
 using ch.cyberduck.core.serializer;
@@ -61,25 +53,30 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.updater;
 using ch.cyberduck.core.urlhandler;
-using ch.cyberduck.core.pool;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Core.Contracts;
-using Ch.Cyberduck.Ui.Core.Preferences;
 using Ch.Cyberduck.Ui.Core.UWP;
 using java.util;
 using Microsoft.WindowsAPICodePack.Shell;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using org.apache.log4j;
+using ReactiveUI;
+using Splat;
 using StructureMap;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.ServiceModel;
+using System.ServiceModel.Description;
+using System.Threading;
+using System.Windows.Forms;
 using Windows.Services.Store;
-using ch.cyberduck.core.exception;
 using Application = ch.cyberduck.core.local.Application;
-using ArrayList = System.Collections.ArrayList;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
-using ch.cyberduck.core.oauth;
-using ch.cyberduck.core.profiles;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -94,8 +91,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly Logger Logger = Logger.getLogger(typeof(MainController).FullName);
         private static MainController _application;
         private static JumpList _jumpListManager;
-        private static JumpListCustomCategory bookmarkCategory;
         private static AutoResetEvent applicationShutdown = new AutoResetEvent(true);
+        private static JumpListCustomCategory bookmarkCategory;
         private readonly BaseController _controller = new BaseController();
         private readonly PathKindDetector _detector = new DefaultPathKindDetector();
 
@@ -116,33 +113,18 @@ namespace Ch.Cyberduck.Ui.Controller
         private BrowserController _bc;
 
         private WinSparkle.win_sparkle_can_shutdown_callback_t _canShutdownCallback;
-        private WinSparkle.win_sparkle_shutdown_request_callback_t _shutdownRequestCallback;
-
-        private PeriodicUpdateChecker _updater;
         private ProfilesUpdater _profiles;
+        private WinSparkle.win_sparkle_shutdown_request_callback_t _shutdownRequestCallback;
+        private PeriodicUpdateChecker _updater;
         private ServiceHost serviceHost;
 
-        public static IList<BrowserController> Browsers
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        public MainController(ProtocolFactory protocolFactory)
         {
-            get { return _browsers; }
-        }
+            _application = this;
 
-        public Form ActiveMainForm
-        {
-            get { return MainForm; }
-        }
-
-        public FormCollection OpenForms => System.Windows.Forms.Application.OpenForms;
-
-        internal static MainController Application
-        {
-            get { return _application ?? (_application = new MainController()); }
-        }
-
-        static MainController()
-        {
-            StructureMapBootstrapper.Bootstrap();
-            
             if (!(Debugger.IsAttached || Utils.IsRunningAsUWP))
             {
                 // Add the event handler for handling UI thread exceptions to the event.
@@ -155,27 +137,38 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Add the event handler for handling non-UI thread exceptions to the event.
                 AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
             }
-            //make sure that a language change takes effect after a restart only
-            StartupLanguage = PreferencesFactory.get().getProperty("application.language");
-            ProtocolFactory.get().register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
+
+            // Initialize WindowsFormsSynchronizationContext (sets SynchronizationContext.Current)
+            SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
+
+            protocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
                 new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(), new SharepointSiteProtocol(),
                 new MantaProtocol(), new SDSProtocol(), new StoregateProtocol(), new BrickProtocol(), new NextcloudProtocol(), new CTERAProtocol());
-            ProtocolFactory.get().load();
-        }
+            protocolFactory.load();
 
-        /// <summary>
-        /// Default constructor.
-        /// </summary>
-        public MainController()
-        {
-            // Initialize WindowsFormsSynchronizationContext (sets SynchronizationContext.Current)
-            SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
+            Locator.SetLocator(new StructureMapBootstrapper.SplatDependencyResolver());
+            Locator.CurrentMutable.InitializeSplat();
+            Locator.CurrentMutable.InitializeReactiveUI();
 
             // Execute OnStartup later
             SynchronizationContext.Current.Post(OnStartup, null);
         }
+
+        public static MainController Application => _application;
+
+        public static IList<BrowserController> Browsers
+        {
+            get { return _browsers; }
+        }
+
+        public Form ActiveMainForm
+        {
+            get { return MainForm; }
+        }
+
+        public FormCollection OpenForms => System.Windows.Forms.Application.OpenForms;
 
         /// <summary>
         ///

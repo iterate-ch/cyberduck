@@ -69,6 +69,7 @@
         <PackageReference Include="ExceptionReporter" />
         <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
         <PackageReference Include="Microsoft.Windows.SDK.Contracts" />
+        <PackageReference Include="ReactiveUI.WPF" />
         <PackageReference Include="StructureMap" />
         <PackageReference Include="WindowsAPICodePack-Core" />
         <PackageReference Include="WindowsAPICodePack-Shell" />
