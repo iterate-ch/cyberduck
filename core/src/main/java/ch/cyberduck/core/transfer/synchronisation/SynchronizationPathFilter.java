@@ -18,10 +18,13 @@ package ch.cyberduck.core.transfer.synchronisation;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.synchronization.ComparePathFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -62,21 +65,21 @@ public class SynchronizationPathFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress)
+    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener listener)
         throws BackgroundException {
-        switch(comparison.compare(file, local)) {
+        switch(comparison.compare(file, local, listener)) {
             case remote:
-                return downloadFilter.prepare(file, local, parent, progress);
+                return downloadFilter.prepare(file, local, parent, listener);
             case local:
-                return uploadFilter.prepare(file, local, parent, progress);
+                return uploadFilter.prepare(file, local, parent, listener);
         }
         // Equal comparison. Read attributes from server
-        return uploadFilter.prepare(file, local, parent, progress).exists(true);
+        return uploadFilter.prepare(file, local, parent, listener).exists(true);
     }
 
     @Override
     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
-        switch(comparison.compare(file, local)) {
+        switch(comparison.compare(file, local, new DisabledProgressListener())) {
             case equal:
                 return file.isDirectory();
             case remote:
@@ -106,7 +109,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
 
     @Override
     public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
-        switch(comparison.compare(file, local)) {
+        switch(comparison.compare(file, local, listener)) {
             case remote:
                 downloadFilter.apply(file, local, status, listener);
                 break;
@@ -120,12 +123,26 @@ public class SynchronizationPathFilter implements TransferPathFilter {
     @Override
     public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status,
                          final ProgressListener listener) throws BackgroundException {
-        switch(comparison.compare(file, local)) {
+        switch(comparison.compare(file, local, listener)) {
             case remote:
                 downloadFilter.complete(file, local, options, status, listener);
                 break;
             case local:
                 uploadFilter.complete(file, local, options, status, listener);
         }
+    }
+
+    @Override
+    public TransferPathFilter withFinder(final Find finder) {
+        downloadFilter.withFinder(finder);
+        uploadFilter.withFinder(finder);
+        return this;
+    }
+
+    @Override
+    public TransferPathFilter withAttributes(final AttributesFinder attributes) {
+        downloadFilter.withAttributes(attributes);
+        uploadFilter.withAttributes(attributes);
+        return null;
     }
 }

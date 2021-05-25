@@ -84,13 +84,15 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         this.attribute = session.getFeature(AttributesFinder.class);
     }
 
+    @Override
     public AbstractUploadFilter withFinder(final Find finder) {
         this.find = finder;
         return this;
     }
 
-    public AbstractUploadFilter withAttributes(final AttributesFinder attribute) {
-        this.attribute = attribute;
+    @Override
+    public AbstractUploadFilter withAttributes(final AttributesFinder attributes) {
+        this.attribute = attributes;
         return this;
     }
 

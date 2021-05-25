@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class ComparisonServiceFilterTest {
+public class DefaultComparePathFilterTest {
 
     @Test
     public void testCompareEqualResultFile() throws Exception {
@@ -50,8 +50,8 @@ public class ComparisonServiceFilterTest {
                 return true;
             }
         };
-        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {
-        }, TimeZone.getDefault(), new DisabledProgressListener()).withFinder(find).withAttributes(attributes);
+        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())) {
+        }, TimeZone.getDefault()).withFinder(find).withAttributes(attributes);
         final String path = new AlphanumericRandomStringService().random();
         assertEquals(Comparison.equal, s.compare(new Path(path, EnumSet.of(Path.Type.file)), new NullLocal(path) {
             @Override
@@ -68,7 +68,7 @@ public class ComparisonServiceFilterTest {
             public boolean exists() {
                 return true;
             }
-        }));
+        }, new DisabledProgressListener()));
         assertTrue(found.get());
         assertTrue(attr.get());
     }
@@ -83,14 +83,14 @@ public class ComparisonServiceFilterTest {
                 return true;
             }
         };
-        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {
-        }, TimeZone.getDefault(), new DisabledProgressListener()).withFinder(find);
+        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())) {
+        }, TimeZone.getDefault()).withFinder(find);
         assertEquals(Comparison.equal, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
                 return true;
             }
-        }));
+        }, new DisabledProgressListener()));
         assertTrue(found.get());
     }
 
@@ -104,14 +104,14 @@ public class ComparisonServiceFilterTest {
                 return false;
             }
         };
-        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {
-        }, TimeZone.getDefault(), new DisabledProgressListener()).withFinder(find);
+        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())) {
+        }, TimeZone.getDefault()).withFinder(find);
         assertEquals(Comparison.local, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
                 return true;
             }
-        }));
+        }, new DisabledProgressListener()));
         assertTrue(found.get());
     }
 
@@ -125,14 +125,14 @@ public class ComparisonServiceFilterTest {
                 return true;
             }
         };
-        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {
-        }, TimeZone.getDefault(), new DisabledProgressListener()).withFinder(find);
+        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())) {
+        }, TimeZone.getDefault()).withFinder(find);
         assertEquals(Comparison.remote, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
                 return false;
             }
-        }));
+        }, new DisabledProgressListener()));
         assertTrue(found.get());
     }
 
@@ -174,8 +174,8 @@ public class ComparisonServiceFilterTest {
                 };
             }
         };
-        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {
-        }, TimeZone.getDefault(), new DisabledProgressListener()).withFinder(find).withAttributes(attributes);
+        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())) {
+        }, TimeZone.getDefault()).withFinder(find).withAttributes(attributes);
         assertEquals(Comparison.local, s.compare(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
@@ -201,7 +201,7 @@ public class ComparisonServiceFilterTest {
             public boolean exists() {
                 return true;
             }
-        }));
+        }, new DisabledProgressListener()));
         assertTrue(found.get());
         assertTrue(attr.get());
     }

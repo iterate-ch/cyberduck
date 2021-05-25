@@ -38,11 +38,8 @@ public class TransferPromptListWorker extends Worker<List<TransferItem>> {
     private static final Logger log = Logger.getLogger(TransferPromptListWorker.class);
 
     private final Path directory;
-
     private final Local local;
-
     private final Transfer transfer;
-
     private final ProgressListener listener;
 
     public TransferPromptListWorker(final Transfer transfer, final Path directory, final Local local, final ProgressListener listener) {

@@ -58,7 +58,7 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
 
     @Override
     public Map<TransferItem, TransferStatus> run(final Session<?> session) throws BackgroundException {
-        final Map<TransferItem, TransferStatus> status = new HashMap<TransferItem, TransferStatus>();
+        final Map<TransferItem, TransferStatus> status = new HashMap<>();
         final TransferPathFilter filter = transfer.filter(session, session, action, listener);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter cache %s with filter %s", cache, filter));

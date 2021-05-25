@@ -79,13 +79,15 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
         this.attribute = destination.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(destination));
     }
 
+    @Override
     public AbstractCopyFilter withFinder(final Find finder) {
         this.find = finder;
         return this;
     }
 
-    public AbstractCopyFilter withAttributes(final AttributesFinder attribute) {
-        this.attribute = attribute;
+    @Override
+    public AbstractCopyFilter withAttributes(final AttributesFinder attributes) {
+        this.attribute = attributes;
         return this;
     }
 

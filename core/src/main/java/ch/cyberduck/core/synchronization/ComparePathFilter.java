@@ -19,8 +19,26 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.transfer.TransferItem;
+
+import java.util.Map;
 
 public interface ComparePathFilter {
-    Comparison compare(Path file, Local local) throws BackgroundException;
+    Comparison compare(Path file, Local local, ProgressListener listener) throws BackgroundException;
+
+    default ComparePathFilter withFinder(Find finder) {
+        return this;
+    }
+
+    default ComparePathFilter withAttributes(AttributesFinder attribute) {
+        return this;
+    }
+
+    default ComparePathFilter withCache(Map<TransferItem, Comparison> cache) {
+        return this;
+    }
 }

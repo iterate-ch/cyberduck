@@ -22,6 +22,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Find;
 
 public interface TransferPathFilter {
 
@@ -67,4 +69,9 @@ public interface TransferPathFilter {
      */
     void complete(Path file, Local local, TransferOptions options,
                   TransferStatus status, ProgressListener listener) throws BackgroundException;
+
+    TransferPathFilter withFinder(Find finder);
+
+    TransferPathFilter withAttributes(AttributesFinder attributes);
+
 }

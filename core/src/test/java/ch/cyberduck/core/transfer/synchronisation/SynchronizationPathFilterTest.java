@@ -7,11 +7,12 @@ import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.synchronization.ComparePathFilter;
 import ch.cyberduck.core.synchronization.Comparison;
-import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
+import ch.cyberduck.core.synchronization.DefaultComparePathFilter;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,25 +62,25 @@ public class SynchronizationPathFilterTest {
             }
         };
         final SynchronizationPathFilter mirror = new SynchronizationPathFilter(
-                new ComparisonServiceFilter(session, TimeZone.getDefault(), new DisabledProgressListener()),
-                new OverwriteFilter(new DownloadSymlinkResolver(Collections.<TransferItem>emptyList()), session),
-                new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session),
-                TransferAction.mirror);
+            new DefaultComparePathFilter(session, TimeZone.getDefault()),
+            new OverwriteFilter(new DownloadSymlinkResolver(Collections.<TransferItem>emptyList()), session),
+            new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session),
+            TransferAction.mirror);
         assertTrue(mirror.accept(test, local, new TransferStatus().exists(true)));
         final TransferStatus status = mirror.prepare(test, local, new TransferStatus().exists(true), new DisabledProgressListener());
         assertNotNull(status);
         assertEquals(1L, status.getLength());
         final SynchronizationPathFilter download = new SynchronizationPathFilter(
-                new ComparisonServiceFilter(session, TimeZone.getDefault(), new DisabledProgressListener()),
-                new OverwriteFilter(new DownloadSymlinkResolver(Collections.<TransferItem>emptyList()), session),
-                new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session),
-                TransferAction.download);
+            new DefaultComparePathFilter(session, TimeZone.getDefault()),
+            new OverwriteFilter(new DownloadSymlinkResolver(Collections.<TransferItem>emptyList()), session),
+            new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session),
+            TransferAction.download);
         assertFalse(download.accept(test, local, new TransferStatus().exists(true)));
         final SynchronizationPathFilter upload = new SynchronizationPathFilter(
-                new ComparisonServiceFilter(session, TimeZone.getDefault(), new DisabledProgressListener()),
-                new OverwriteFilter(new DownloadSymlinkResolver(Collections.<TransferItem>emptyList()), session),
-                new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session),
-                TransferAction.upload);
+            new DefaultComparePathFilter(session, TimeZone.getDefault()),
+            new OverwriteFilter(new DownloadSymlinkResolver(Collections.<TransferItem>emptyList()), session),
+            new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session),
+            TransferAction.upload);
         assertTrue(upload.accept(test, local, new TransferStatus().exists(true)));
     }
 
@@ -88,7 +89,7 @@ public class SynchronizationPathFilterTest {
         Session session = new NullSession(new Host(new TestProtocol()));
         final SynchronizationPathFilter mirror = new SynchronizationPathFilter(new ComparePathFilter() {
             @Override
-            public Comparison compare(Path file, Local local) {
+            public Comparison compare(Path file, Local local, final ProgressListener listener) {
                 return Comparison.equal;
             }
         }, new OverwriteFilter(new DownloadSymlinkResolver(Collections.<TransferItem>emptyList()), session),
