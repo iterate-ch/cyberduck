@@ -63,7 +63,7 @@ public class SyncPromptDataSource extends TransferPromptDataSource {
         if(identifier.equals(Column.create.name())) {
             final TransferStatus status = this.getStatus(item);
             if(!status.isExists()) {
-                return IconCacheFactory.<NSImage>get().iconNamed("plus.tiff", 16);
+                return IconCacheFactory.<NSImage>get().iconNamed("NSAddTemplate", 16);
             }
             return null;
         }
