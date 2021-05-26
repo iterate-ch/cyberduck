@@ -42,9 +42,9 @@ public class GraphFileIdProviderTest extends AbstractOneDriveTest {
             //
         }
         final Directory directoryFeature = new GraphDirectoryFeature(session, fileid);
-        final Path path2RWithId = directoryFeature.mkdir(path2R, null, new TransferStatus());
+        final Path path2RWithId = directoryFeature.mkdir(path2R, new TransferStatus());
         assertNotNull(path2RWithId.attributes().getFileId());
-        final Path path33WithId = directoryFeature.mkdir(path33, null, new TransferStatus());
+        final Path path33WithId = directoryFeature.mkdir(path33, new TransferStatus());
         assertNotNull(path33WithId.attributes().getFileId());
         assertNotEquals(path2RWithId.attributes().getFileId(), path33WithId.attributes().getFileId());
 

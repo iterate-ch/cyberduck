@@ -51,7 +51,7 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
     @Test
     public void testFindContainer() throws Exception {
         final Path container = new Path(new AlphanumericRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new AzureDirectoryFeature(session, null).mkdir(container, null, new TransferStatus());
+        new AzureDirectoryFeature(session, null).mkdir(container, new TransferStatus());
         final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session, null);
         final PathAttributes attributes = f.find(container);
         assertNotEquals(PathAttributes.EMPTY, attributes);

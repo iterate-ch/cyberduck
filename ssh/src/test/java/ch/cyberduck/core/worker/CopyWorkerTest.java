@@ -64,7 +64,7 @@ public class CopyWorkerTest extends AbstractSFTPTest {
         assertTrue(new SFTPFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SFTPDirectoryFeature(session).mkdir(targetFolder, null, new TransferStatus());
+        new SFTPDirectoryFeature(session).mkdir(targetFolder, new TransferStatus());
         assertTrue(new SFTPFindFeature(session).find(targetFolder));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
@@ -77,7 +77,7 @@ public class CopyWorkerTest extends AbstractSFTPTest {
     @Test
     public void testCopyDirectory() throws Exception {
         final Path home = new SFTPHomeDirectoryService(session).find();
-        final Path folder = new SFTPDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path folder = new SFTPDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFile = new SFTPTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new SFTPFindFeature(session).find(folder));
         assertTrue(new SFTPFindFeature(session).find(sourceFile));

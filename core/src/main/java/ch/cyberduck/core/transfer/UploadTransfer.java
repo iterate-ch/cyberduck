@@ -255,7 +255,7 @@ public class UploadTransfer extends Transfer {
                     file.getName()));
                 final Directory feature = source.getFeature(Directory.class);
                 final AttributedList<Path> list = new AttributedList<>(cache.get(file.getParent()));
-                list.add(feature.mkdir(file, null, segment));
+                list.add(feature.mkdir(file, segment));
                 cache.put(file.getParent(), list);
                 segment.setComplete();
             }

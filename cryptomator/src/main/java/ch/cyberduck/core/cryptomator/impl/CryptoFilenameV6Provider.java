@@ -92,13 +92,13 @@ public class CryptoFilenameV6Provider implements CryptoFilename {
         final Directory mkdir = session._getFeature(Directory.class);
         final Find find = session._getFeature(Find.class);
         if(!find.find(metadataRoot)) {
-            mkdir.mkdir(metadataRoot, null, new TransferStatus());
+            mkdir.mkdir(metadataRoot, new TransferStatus());
         }
         if(!find.find(firstLevel)) {
-            mkdir.mkdir(firstLevel, null, new TransferStatus());
+            mkdir.mkdir(firstLevel, new TransferStatus());
         }
         if(!find.find(secondLevel)) {
-            mkdir.mkdir(secondLevel, null, new TransferStatus());
+            mkdir.mkdir(secondLevel, new TransferStatus());
         }
         if(!find.find(metadataFile)) {
             new ContentWriter(session).write(metadataFile, longFileNameBytes);

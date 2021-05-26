@@ -55,7 +55,7 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
     public void testListLexicographicSortOrderAssumption() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(
-            new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageObjectListService(session).list(directory, new DisabledListProgressListener()).isEmpty());
         final List<String> files = Arrays.asList(
             "aa", "0a", "a", "AAA", "B", "~$a", ".c"

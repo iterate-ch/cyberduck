@@ -45,7 +45,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         final Move move = new MantaMoveFeature(session);
         final Delete delete = new MantaDeleteFeature(session);
         final AttributesFinder attributesFinder = new MantaAttributesFinderFeature(session);
-        final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), "", new TransferStatus());
+        final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), new TransferStatus());
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         touch.touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(attributesFinder.find(file));
@@ -65,9 +65,9 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         final Move move = new MantaMoveFeature(session);
         final Delete delete = new MantaDeleteFeature(session);
         final AttributesFinder attributesFinder = new MantaAttributesFinderFeature(session);
-        final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), "", new TransferStatus());
+        final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), new TransferStatus());
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        directory.mkdir(targetDirectory, null, null);
+        directory.mkdir(targetDirectory, null);
         assertNotNull(attributesFinder.find(targetDirectory));
         Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
@@ -88,9 +88,9 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         final Move move = new MantaMoveFeature(session);
         final Delete delete = new MantaDeleteFeature(session);
         final AttributesFinder attributesFinder = new MantaAttributesFinderFeature(session);
-        final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), "", new TransferStatus());
+        final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), new TransferStatus());
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        directory.mkdir(targetDirectory, null, null);
+        directory.mkdir(targetDirectory, null);
         assertNotNull(attributesFinder.find(targetDirectory));
         Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));

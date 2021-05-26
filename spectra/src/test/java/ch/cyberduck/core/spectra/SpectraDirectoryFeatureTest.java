@@ -60,7 +60,7 @@ public class SpectraDirectoryFeatureTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final SpectraDirectoryFeature feature = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session));
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        feature.mkdir(test, null, new TransferStatus());
+        feature.mkdir(test, new TransferStatus());
         assertTrue(new SpectraFindFeature(session).find(test));
         new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -95,7 +95,7 @@ public class SpectraDirectoryFeatureTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(b.get());
         assertTrue(new SpectraFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));

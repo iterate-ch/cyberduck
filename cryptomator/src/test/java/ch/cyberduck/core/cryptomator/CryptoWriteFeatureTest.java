@@ -45,7 +45,7 @@ public class CryptoWriteFeatureTest {
                     return (T) new Directory() {
 
                         @Override
-                        public Path mkdir(final Path folder, final String region, final TransferStatus status) {
+                        public Path mkdir(final Path folder, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
                         }

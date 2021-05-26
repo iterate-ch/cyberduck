@@ -48,7 +48,7 @@ public class DropboxListServiceTest extends AbstractDropboxTest {
     public void testFilenameColon() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path file = new DropboxTouchFeature(session).touch(new Path(home, String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path folder = new DropboxDirectoryFeature(session).mkdir(new Path(home, String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path folder = new DropboxDirectoryFeature(session).mkdir(new Path(home, String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new DropboxListService(session).list(home, new DisabledListProgressListener());
         assertNotNull(list);
         assertFalse(list.isEmpty());

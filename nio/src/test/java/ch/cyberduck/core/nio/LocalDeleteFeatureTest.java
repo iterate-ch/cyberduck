@@ -44,7 +44,7 @@ public class LocalDeleteFeatureTest {
         final Path file = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(file, new TransferStatus());
         final Path folder = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new LocalDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        new LocalDirectoryFeature(session).mkdir(folder, new TransferStatus());
         new LocalDeleteFeature(session).delete(new ArrayList<>(Arrays.asList(file, folder)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(Files.exists(session.toPath(file)));
         assertFalse(Files.exists(session.toPath(folder.getAbsolute())));

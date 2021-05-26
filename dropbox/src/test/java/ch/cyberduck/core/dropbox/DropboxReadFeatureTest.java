@@ -117,7 +117,7 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
         final TransferStatus writeStatus = new TransferStatus();
         writeStatus.setLength(content.length);
         final Path directory = new DropboxDirectoryFeature(session).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final DropboxWriteFeature writer = new DropboxWriteFeature(session);
         final HttpResponseOutputStream<String> out = writer.write(test, writeStatus, new DisabledConnectionCallback());

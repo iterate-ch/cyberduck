@@ -55,12 +55,13 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         final String directoryId = random.random();
         final Path encrypt = vault.encrypt(session, folder, directoryId, false);
         // Create metadata file for directory
         final Path directoryMetadataFolder = vault.encrypt(session, folder, true);
-        final Path directoryMetadataFile = new Path(session._getFeature(Directory.class).mkdir(directoryMetadataFolder, region, new TransferStatus()),
+        final Path directoryMetadataFile = new Path(session._getFeature(Directory.class).mkdir(directoryMetadataFolder,
+            new TransferStatus().withRegion(status.getRegion())),
             CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE,
             EnumSet.of(Path.Type.file));
         if(log.isDebugEnabled()) {
@@ -69,13 +70,13 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
         new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(StandardCharsets.UTF_8));
         final Path intermediate = encrypt.getParent();
         if(!find.find(intermediate)) {
-            delegate.mkdir(intermediate, region, new TransferStatus());
+            delegate.mkdir(intermediate, new TransferStatus().withRegion(status.getRegion()));
         }
         // Write header
         final FileHeader header = vault.getFileHeaderCryptor().create();
         status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
-        final Path target = delegate.withWriter(new CryptoWriteFeature<>(session, writer, vault)).mkdir(encrypt, region, status);
+        final Path target = delegate.withWriter(new CryptoWriteFeature<>(session, writer, vault)).mkdir(encrypt, status);
         // Implementation may return new copy of attributes without encryption attributes
         target.attributes().setDirectoryId(directoryId);
         target.attributes().setDecrypted(folder);

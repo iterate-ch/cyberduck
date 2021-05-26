@@ -59,7 +59,7 @@ public class SFTPDirectoryFeatureTest extends AbstractSFTPTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         //        cryptomator.getFeature(session, Directory.class, new SFTPDirectoryFeature(session)).mkdir(test, null, new TransferStatus());
-        cryptomator.getFeature(session, Directory.class, new SFTPDirectoryFeature(session)).mkdir(test, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new SFTPDirectoryFeature(session)).mkdir(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(test));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
 //        cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -75,7 +75,7 @@ public class SFTPDirectoryFeatureTest extends AbstractSFTPTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        cryptomator.getFeature(session, Directory.class, new SFTPDirectoryFeature(session)).mkdir(test, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new SFTPDirectoryFeature(session)).mkdir(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(test));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

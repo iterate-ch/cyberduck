@@ -21,7 +21,6 @@ package ch.cyberduck.core.azure;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -31,6 +30,7 @@ import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URISyntaxException;
@@ -58,7 +58,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             final BlobRequestOptions options = new BlobRequestOptions();
             if(containerService.isContainer(folder)) {
@@ -96,7 +96,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 if(StringUtils.length(name) < 3) {
                     return false;
                 }
-                return StringUtils.isAlphanumeric(StringUtils.removeAll(name, "-"));
+                return StringUtils.isAlphanumeric(RegExUtils.removeAll(name, "-"));
             }
         }
         return true;

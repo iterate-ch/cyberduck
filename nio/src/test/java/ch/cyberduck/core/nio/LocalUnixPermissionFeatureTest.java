@@ -54,7 +54,7 @@ public class LocalUnixPermissionFeatureTest {
             }
             {
                 final Path directory = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-                new LocalDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
+                new LocalDirectoryFeature(session).mkdir(directory, new TransferStatus());
                 new LocalUnixPermissionFeature(session).setUnixPermission(directory, new Permission(666));
                 assertEquals("666", new LocalListService(session).list(workdir, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
                 new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());

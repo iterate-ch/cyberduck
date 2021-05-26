@@ -44,13 +44,13 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
     public void testListDirectory() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final Path placeholder = new SwiftDirectoryFeature(session).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path placeholder = new SwiftDirectoryFeature(session).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path f1 = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
             new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path f2 = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
             new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path d1 = new SwiftDirectoryFeature(session, new SwiftRegionService(session)).mkdir(
-            new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         // Must add file in directory for virtual prefix to be returned in directory listing
         final Path d1f1 = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
             new Path(d1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -66,7 +66,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
     public void testListDotInKey() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final Path placeholder = new SwiftDirectoryFeature(session).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path placeholder = new SwiftDirectoryFeature(session).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
             new Path(placeholder, new AlphanumericRandomStringService().random() + "..", EnumSet.of(Path.Type.file)), new TransferStatus());
         final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener());
@@ -92,9 +92,9 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
     public void testListPlaceholder() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final Path placeholder = new SwiftDirectoryFeature(session).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path placeholder = new SwiftDirectoryFeature(session).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener()).isEmpty());
-        final Path placeholder2 = new SwiftDirectoryFeature(session).mkdir(new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path placeholder2 = new SwiftDirectoryFeature(session).mkdir(new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SwiftObjectListService(session).list(placeholder2, new DisabledListProgressListener()).isEmpty());
         new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, placeholder2), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -105,7 +105,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
         container.attributes().setRegion("IAD");
         final String name = new AlphanumericRandomStringService().random();
         final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
-        new SwiftDirectoryFeature(session).mkdir(placeholder, null, new TransferStatus());
+        new SwiftDirectoryFeature(session).mkdir(placeholder, new TransferStatus());
         final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder.getParent(), new DisabledListProgressListener());
         assertTrue(list.contains(placeholder));
         assertTrue(list.contains(new Path(container, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
@@ -149,7 +149,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
         container.attributes().setRegion("IAD");
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Path directory = new SwiftDirectoryFeature(session, regionService).mkdir(
-            new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SwiftObjectListService(session, regionService).list(directory, new DisabledListProgressListener()).isEmpty());
         final List<String> files = Arrays.asList(
             "aa", "0a", "a", "AAA", "B", "~$a", ".c"

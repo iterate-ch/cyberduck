@@ -70,7 +70,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testFindDirectory() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new GraphDirectoryFeature(session, fileid).mkdir(file, null, new TransferStatus());
+        new GraphDirectoryFeature(session, fileid).mkdir(file, new TransferStatus());
         final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(file);
         assertNotNull(attributes);
         assertNotEquals(-1L, attributes.getSize());

@@ -49,7 +49,7 @@ public class SwiftDistributionConfigurationTest extends AbstractSwiftTest {
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))));
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("ORD");
-        new SwiftDirectoryFeature(session).mkdir(container, "ORD", new TransferStatus());
+        new SwiftDirectoryFeature(session).mkdir(container, new TransferStatus());
         configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginCallback());
         assertTrue(configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback()).isEnabled());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -62,7 +62,7 @@ public class SwiftDistributionConfigurationTest extends AbstractSwiftTest {
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))));
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("ORD");
-        new SwiftDirectoryFeature(session).mkdir(container, "ORD", new TransferStatus());
+        new SwiftDirectoryFeature(session).mkdir(container, new TransferStatus());
         final Distribution config = new Distribution(Distribution.WEBSITE, true);
         config.setIndexDocument("index.html");
         configuration.write(container, config, new DisabledLoginCallback());

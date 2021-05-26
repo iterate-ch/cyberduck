@@ -23,7 +23,7 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
     @Test
     public void testCreateContainer() throws Exception {
         final AzureDirectoryFeature feature = new AzureDirectoryFeature(session, null);
-        final Path container = feature.mkdir(new Path(new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path container = feature.mkdir(new Path(new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(container));
         assertEquals(container.attributes(), new AzureAttributesFinderFeature(session, null).find(container));
         new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -35,7 +35,7 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
         final Path container = new Path("untitled folder", EnumSet.of(Path.Type.directory));
         final AzureDirectoryFeature feature = new AzureDirectoryFeature(session, null);
         assertFalse(feature.isSupported(container.getParent(), container.getName()));
-        feature.mkdir(container, null, new TransferStatus());
+        feature.mkdir(container, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(container));
         new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(container));
@@ -45,7 +45,7 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
     public void testCreatePlaceholder() throws Exception {
         final Path container = new Path("/cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path placeholder = new AzureDirectoryFeature(session, null).mkdir(new Path(container, UUID.randomUUID().toString(),
-            EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(placeholder.getType().contains(Path.Type.placeholder));
         assertTrue(new AzureFindFeature(session, null).find(placeholder));
         assertEquals(placeholder.attributes(), new AzureAttributesFinderFeature(session, null).find(placeholder));

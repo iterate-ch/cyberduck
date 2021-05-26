@@ -49,7 +49,7 @@ public class GraphSearchFeatureTest extends AbstractOneDriveTest {
     public void testSearch() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
         final Path drive = new OneDriveHomeFinderService().find();
-        final Path directory = new GraphDirectoryFeature(session, fileid).mkdir(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path directory = new GraphDirectoryFeature(session, fileid).mkdir(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new GraphTouchFeature(session, fileid).touch(new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final GraphSearchFeature feature = new GraphSearchFeature(session, fileid);
         assertTrue(feature.search(drive, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
@@ -63,7 +63,7 @@ public class GraphSearchFeatureTest extends AbstractOneDriveTest {
         catch(NotfoundException e) {
             //
         }
-        final Path subdir = new GraphDirectoryFeature(session, fileid).mkdir(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path subdir = new GraphDirectoryFeature(session, fileid).mkdir(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNull(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         final Path filesubdir = new GraphTouchFeature(session, fileid).touch(new Path(subdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {

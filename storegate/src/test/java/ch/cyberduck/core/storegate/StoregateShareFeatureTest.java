@@ -38,7 +38,7 @@ public class StoregateShareFeatureTest extends AbstractStoregateTest {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
-                EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+                EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
             new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(new StoregateShareFeature(session, nodeid).toDownloadUrl(test, null, new DisabledPasswordCallback()).getUrl());
@@ -50,7 +50,7 @@ public class StoregateShareFeatureTest extends AbstractStoregateTest {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
-                EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+                EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertNotNull(new StoregateShareFeature(session, nodeid).toUploadUrl(room, null, new DisabledPasswordCallback()).getUrl());
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }

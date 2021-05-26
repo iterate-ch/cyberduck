@@ -78,7 +78,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderService().find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        directory.mkdir(targetDirectory, null, new TransferStatus());
+        directory.mkdir(targetDirectory, new TransferStatus());
         assertNotNull(attributesFinder.find(targetDirectory));
 
         Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -102,7 +102,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderService().find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        directory.mkdir(targetDirectory, null, new TransferStatus());
+        directory.mkdir(targetDirectory, new TransferStatus());
         assertNotNull(attributesFinder.find(targetDirectory));
 
         Path touchedFile = new Path(targetDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -127,7 +127,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderService().find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        directory.mkdir(targetDirectory, null, new TransferStatus());
+        directory.mkdir(targetDirectory, new TransferStatus());
         assertNotNull(attributesFinder.find(targetDirectory));
 
         Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -144,7 +144,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testMoveToExistingFile() throws Exception {
-        final Path folder = new GraphDirectoryFeature(session, fileid).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path folder = new GraphDirectoryFeature(session, fileid).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path test = new GraphTouchFeature(session, fileid).touch(new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path temp = new GraphTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());

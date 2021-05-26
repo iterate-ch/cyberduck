@@ -43,7 +43,7 @@ public class LocalDirectoryFeatureTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path folder = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new LocalDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        new LocalDirectoryFeature(session).mkdir(folder, new TransferStatus());
         assertTrue(Files.exists(session.toPath(folder)));
         new LocalDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(Files.exists(session.toPath(folder)));
@@ -55,8 +55,8 @@ public class LocalDirectoryFeatureTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path folder = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new LocalDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
-        new LocalDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        new LocalDirectoryFeature(session).mkdir(folder, new TransferStatus());
+        new LocalDirectoryFeature(session).mkdir(folder, new TransferStatus());
         new LocalDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -67,7 +67,7 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
     @Test
     public void testMoveDirectory() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DAVDirectoryFeature(session).mkdir(test, null, new TransferStatus());
+        new DAVDirectoryFeature(session).mkdir(test, new TransferStatus());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DAVFindFeature(session).find(test));

@@ -250,7 +250,7 @@ public class CopyTransfer extends Transfer {
         if(source.isDirectory()) {
             if(!segment.isExists()) {
                 final Directory feature = destination.getFeature(Directory.class);
-                feature.mkdir(mapping.get(source), null, segment);
+                feature.mkdir(mapping.get(source), segment);
                 segment.setComplete();
             }
         }

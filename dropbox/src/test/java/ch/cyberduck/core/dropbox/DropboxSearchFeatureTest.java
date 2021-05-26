@@ -62,7 +62,7 @@ public class DropboxSearchFeatureTest extends AbstractDropboxTest {
             //
         }
         final Path subdir = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DropboxDirectoryFeature(session).mkdir(subdir, null, new TransferStatus());
+        new DropboxDirectoryFeature(session).mkdir(subdir, new TransferStatus());
         assertFalse(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
         final Path filesubdir = new DropboxTouchFeature(session).touch(new Path(subdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {

@@ -23,10 +23,9 @@ public interface Directory<Reply> {
 
     /**
      * @param folder Directory
-     * @param region Location
      * @param status Transfer status
      */
-    Path mkdir(Path folder, String region, TransferStatus status) throws BackgroundException;
+    Path mkdir(Path folder, TransferStatus status) throws BackgroundException;
 
     /**
      * @param workdir Working directory in browser

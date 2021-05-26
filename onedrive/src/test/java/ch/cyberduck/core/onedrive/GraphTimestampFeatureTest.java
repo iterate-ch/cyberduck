@@ -58,7 +58,7 @@ public class GraphTimestampFeatureTest extends AbstractOneDriveTest {
     public void testSetTimestampDirectory() throws Exception {
         final Path drive = new OneDriveHomeFinderService().find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new GraphDirectoryFeature(session, fileid).mkdir(test, null, null);
+        new GraphDirectoryFeature(session, fileid).mkdir(test, null);
         assertNotNull(new GraphAttributesFinderFeature(session).find(test));
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         new GraphTimestampFeature(session).setTimestamp(test, modified);

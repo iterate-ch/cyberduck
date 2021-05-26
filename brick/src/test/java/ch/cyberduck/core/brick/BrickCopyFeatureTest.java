@@ -62,7 +62,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
     @Test
     public void testCopyToExistingFile() throws Exception {
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DAVDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        new DAVDirectoryFeature(session).mkdir(folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)), new DAVAttributesFinderFeature(session)).touch(test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -79,7 +79,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         final Path directory = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(directory, name, EnumSet.of(Path.Type.file));
-        new DAVDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
+        new DAVDirectoryFeature(session).mkdir(directory, new TransferStatus());
         new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)), new DAVAttributesFinderFeature(session)).touch(file, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVCopyFeature(session).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback());

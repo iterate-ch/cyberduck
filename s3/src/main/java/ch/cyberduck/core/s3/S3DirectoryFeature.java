@@ -19,7 +19,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -52,10 +51,10 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(folder)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
-            service.create(folder, StringUtils.isBlank(region) ? PreferencesFactory.get().getProperty("s3.location") : region);
+            service.create(folder, StringUtils.isBlank(status.getRegion()) ? PreferencesFactory.get().getProperty("s3.location") : status.getRegion());
             return folder;
         }
         else {

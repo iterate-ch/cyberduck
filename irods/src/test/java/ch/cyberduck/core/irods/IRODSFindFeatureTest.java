@@ -61,7 +61,7 @@ public class IRODSFindFeatureTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        session.getFeature(Directory.class).mkdir(test, null, new TransferStatus());
+        session.getFeature(Directory.class).mkdir(test, new TransferStatus());
         assertTrue(new IRODSFindFeature(session).find(test));
 
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

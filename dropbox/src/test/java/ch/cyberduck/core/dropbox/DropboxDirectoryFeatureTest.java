@@ -39,11 +39,11 @@ public class DropboxDirectoryFeatureTest extends AbstractDropboxTest {
     public void testDirectory() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path level1 = new DropboxDirectoryFeature(session).mkdir(new Path(home,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, null);
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
         assertTrue(new DefaultFindFeature(session).find(level1));
         assertTrue(new DropboxFindFeature(session).find(level1));
         final Path level2 = new DropboxDirectoryFeature(session).mkdir(new Path(level1,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, null);
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
         assertTrue(new DefaultFindFeature(session).find(level2));
         assertTrue(new DropboxFindFeature(session).find(level2));
         new DropboxDeleteFeature(session).delete(Arrays.asList(level1), new DisabledLoginCallback(), new Delete.DisabledCallback());

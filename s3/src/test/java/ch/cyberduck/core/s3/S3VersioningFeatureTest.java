@@ -58,7 +58,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
     @Test
     public void testSetConfiguration() throws Exception {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(container, null, new TransferStatus());
+        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(container, new TransferStatus());
         final Versioning feature = new S3VersioningFeature(session, new S3AccessControlListFeature(session));
         feature.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());

@@ -153,7 +153,7 @@ public class CryptoVault implements Vault {
         if(redundancy != null) {
             status.setStorageClass(redundancy.getDefault());
         }
-        final Path vault = directory.mkdir(home, region, status);
+        final Path vault = directory.mkdir(home, status);
         new ContentWriter(session).write(masterkey, masterKeyFileContent.serialize());
         this.open(KeyFile.parse(masterKeyFileContent.serialize()), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
@@ -162,9 +162,9 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create vault root directory at %s", secondLevel));
         }
-        directory.mkdir(dataDir, region, status);
-        directory.mkdir(firstLevel, region, status);
-        directory.mkdir(secondLevel, region, status);
+        directory.mkdir(dataDir, status);
+        directory.mkdir(firstLevel, status);
+        directory.mkdir(secondLevel, status);
         return vault;
     }
 

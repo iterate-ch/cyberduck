@@ -30,6 +30,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -61,11 +62,11 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
                 final B2BucketResponse response = session.getClient().createBucket(containerService.getContainer(folder).getName(),
-                    null == region ? BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")) : BucketType.valueOf(region));
+                    null == status.getRegion() ? BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")) : BucketType.valueOf(status.getRegion()));
                 switch(response.getBucketType()) {
                     case allPublic:
                         folder.attributes().setAcl(new Acl(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ)));
@@ -109,7 +110,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 if(StringUtils.length(name) < 6) {
                     return false;
                 }
-                return StringUtils.isAlphanumeric(StringUtils.removeAll(name, "-"));
+                return StringUtils.isAlphanumeric(RegExUtils.removeAll(name, "-"));
             }
         }
         return true;

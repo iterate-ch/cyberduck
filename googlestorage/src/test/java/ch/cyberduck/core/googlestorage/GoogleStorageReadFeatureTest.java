@@ -143,7 +143,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final int length = 47;
         final byte[] content = RandomUtils.nextBytes(length);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
@@ -159,7 +159,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
     @Test
     public void testReadEmpty() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new GoogleStorageTouchFeature(session).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(0, new GoogleStorageAttributesFinderFeature(session).find(file).getSize());
         final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session).read(file, new TransferStatus(), new DisabledConnectionCallback()));

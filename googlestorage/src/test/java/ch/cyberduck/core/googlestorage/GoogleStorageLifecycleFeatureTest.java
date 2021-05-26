@@ -44,7 +44,7 @@ public class GoogleStorageLifecycleFeatureTest extends AbstractGoogleStorageTest
     @Test
     public void testSetConfiguration() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageDirectoryFeature(session).mkdir(test, null, new TransferStatus());
+        new GoogleStorageDirectoryFeature(session).mkdir(test, new TransferStatus());
         final GoogleStorageLifecycleFeature feature = new GoogleStorageLifecycleFeature(session);
         assertEquals(LifecycleConfiguration.empty(), feature.getConfiguration(test));
         feature.setConfiguration(test, new LifecycleConfiguration(1, "COLDLINE", 2));

@@ -72,7 +72,7 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path target = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)),
-            null, new TransferStatus());
+            new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -97,7 +97,7 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
     public void testCopyToExistingFile() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path folder = new B2DirectoryFeature(session, fileid).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path folder = new B2DirectoryFeature(session, fileid).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final Path test = new Path(folder, name, EnumSet.of(Path.Type.file));

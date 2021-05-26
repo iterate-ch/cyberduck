@@ -60,7 +60,7 @@ public class SpectraVersioningFeatureTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(bucket, null, new TransferStatus());
+        new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(bucket, new TransferStatus());
         final Versioning feature = new SpectraVersioningFeature(session);
         assertTrue(feature.getConfiguration(bucket).isEnabled());
         new SpectraDeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -83,7 +83,7 @@ public class SpectraVersioningFeatureTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(bucket, null, new TransferStatus());
+        new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(bucket, new TransferStatus());
         final Versioning feature = new SpectraVersioningFeature(session);
         feature.setConfiguration(bucket, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(bucket).isEnabled());

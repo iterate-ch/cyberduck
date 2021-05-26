@@ -81,7 +81,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testEnableVersioningExistingFiles() throws Exception {
         final Path bucket = new S3DirectoryFeature(session, new S3WriteFeature(session))
-            .mkdir(new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), "eu-central-1", new TransferStatus());
+            .mkdir(new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertTrue(new S3FindFeature(session).find(bucket));
         final Path file = new S3TouchFeature(session).touch(new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3WriteFeature feature = new S3WriteFeature(session);
@@ -171,7 +171,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
-            new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new S3VersionedObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
         assertTrue(new S3VersionedObjectListService(session).list(placeholder, new DisabledListProgressListener()).isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -189,7 +189,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testDirectoyPlaceholderNoChildren() throws Exception {
         final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertFalse(hidden(directory, new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener())));
         directory.attributes().setVersionId(null);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -202,7 +202,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testDirectoyPlaceholderWithChildren() throws Exception {
         final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
         final Path child1 = new S3TouchFeature(session).touch(new Path(directory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3VersionedObjectListService(session).list(directory, new DisabledListProgressListener()).contains(child1));

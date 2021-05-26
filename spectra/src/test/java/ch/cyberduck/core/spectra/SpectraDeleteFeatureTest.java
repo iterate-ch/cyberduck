@@ -59,7 +59,7 @@ public class SpectraDeleteFeatureTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("US");
-        new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(container, null, new TransferStatus());
+        new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(container, new TransferStatus());
         assertTrue(new SpectraFindFeature(session).find(container));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

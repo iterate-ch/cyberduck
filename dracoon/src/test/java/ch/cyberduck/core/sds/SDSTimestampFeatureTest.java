@@ -38,7 +38,7 @@ public class SDSTimestampFeatureTest extends AbstractSDSTest {
     public void testWriteTimestamp() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new SDSTimestampFeature(session, nodeid).setTimestamp(test, 1599047952805L);
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);

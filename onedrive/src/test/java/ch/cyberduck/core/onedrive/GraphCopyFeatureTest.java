@@ -45,7 +45,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
     public void testCopy() throws Exception {
         final Path drive = new OneDriveHomeFinderService().find();
         Path directory = new GraphDirectoryFeature(session, fileid).mkdir(
-            new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(new GraphAttributesFinderFeature(session).find(directory));
         final TransferStatus status = new TransferStatus();
         Path file = new GraphTouchFeature(session, fileid).touch(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.withMime("x-application/cyberduck"));
@@ -62,7 +62,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testCopyToExistingFile() throws Exception {
         final Path folder = new GraphDirectoryFeature(session, fileid).mkdir(
-            new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new GraphTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new GraphTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new GraphCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
