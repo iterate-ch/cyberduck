@@ -85,9 +85,11 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                         final Map<Path, Boolean> rooms = this.getRoomEncryptionStatus(files);
                         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
                             final Path file = entry.getKey().remote;
-                            final Path container = new DefaultPathContainerService().getContainer(file);
-                            if(rooms.get(container)) {
-                                background.operate(session, callback, file);
+                            if(file.isFile()) {
+                                final Path container = new DefaultPathContainerService().getContainer(file);
+                                if(rooms.get(container)) {
+                                    background.operate(session, callback, file);
+                                }
                             }
                         }
                     }
