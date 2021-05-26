@@ -15,13 +15,18 @@ package ch.cyberduck.core.shared;/*
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Home;
+
+import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
 
 public class PathAttributesHomeFeature implements Home {
+    private static final Logger log = Logger.getLogger(PathAttributesHomeFeature.class);
 
     private final Home proxy;
     private final AttributesFinder attributes;
@@ -36,7 +41,13 @@ public class PathAttributesHomeFeature implements Home {
     @Override
     public Path find() throws BackgroundException {
         final Path home = proxy.find();
-        // Set correct type from protocol and current attributes from server
-        return home.withAttributes(attributes.find(home)).withType(container.isContainer(home) ? EnumSet.of(Path.Type.volume, Path.Type.directory) : home.getType());
+        try {
+            // Set correct type from protocol and current attributes from server
+            return home.withAttributes(attributes.find(home)).withType(container.isContainer(home) ? EnumSet.of(Path.Type.volume, Path.Type.directory) : home.getType());
+        }
+        catch(AccessDeniedException | InteroperabilityException e) {
+            log.warn(String.format("Failure %s retrieving attributes for %s", e, home));
+            return home;
+        }
     }
 }
