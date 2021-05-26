@@ -40,13 +40,15 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
             }
         }
         final PathAttributes attributes = delegate.find(file, new CachingListProgressListener(cache));
-        if(cache != PathCache.empty()) {
-            final AttributedList<Path> list = cache.get(file.getParent());
-            if(list == AttributedList.<Path>emptyList()) {
-                cache.put(file.getParent(), new AttributedList<>(Collections.singletonList(file.withAttributes(attributes))));
-            }
-            else {
-                list.add(file.withAttributes(attributes));
+        if(!file.isRoot()) {
+            if(cache != PathCache.empty()) {
+                final AttributedList<Path> list = cache.get(file.getParent());
+                if(list == AttributedList.<Path>emptyList()) {
+                    cache.put(file.getParent(), new AttributedList<>(Collections.singletonList(file.withAttributes(attributes))));
+                }
+                else {
+                    list.add(file.withAttributes(attributes));
+                }
             }
         }
         return attributes;

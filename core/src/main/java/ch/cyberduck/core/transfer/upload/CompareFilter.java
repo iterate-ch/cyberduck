@@ -22,8 +22,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.synchronization.Comparison;
-import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
+import ch.cyberduck.core.synchronization.DefaultComparePathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -32,32 +34,44 @@ import org.apache.log4j.Logger;
 public class CompareFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(CompareFilter.class);
 
-    private final ComparisonServiceFilter comparisonService;
+    private final ProgressListener listener;
+    private final DefaultComparePathFilter comparisonService;
 
     public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                          final ProgressListener listener) {
-        this(symlinkResolver, session, new UploadFilterOptions(),
-                new ComparisonServiceFilter(session, session.getHost().getTimezone(), listener));
+        this(symlinkResolver, session, new UploadFilterOptions(), listener);
     }
 
     public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                          final UploadFilterOptions options,
                          final ProgressListener listener) {
-        super(symlinkResolver, session, options);
-        this.comparisonService = new ComparisonServiceFilter(session, session.getHost().getTimezone(), listener);
+        this(symlinkResolver, session, options, listener, new DefaultComparePathFilter(session, session.getHost().getTimezone()));
     }
 
     public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
-                         final UploadFilterOptions options,
-                         final ComparisonServiceFilter comparisonService) {
+                         final UploadFilterOptions options, final ProgressListener listener,
+                         final DefaultComparePathFilter comparisonService) {
         super(symlinkResolver, session, options);
+        this.listener = listener;
         this.comparisonService = comparisonService;
+    }
+
+    @Override
+    public AbstractUploadFilter withFinder(final Find finder) {
+        comparisonService.withFinder(finder);
+        return super.withFinder(finder);
+    }
+
+    @Override
+    public AbstractUploadFilter withAttributes(final AttributesFinder attributes) {
+        comparisonService.withAttributes(attributes);
+        return super.withAttributes(attributes);
     }
 
     @Override
     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         if(super.accept(file, local, parent)) {
-            final Comparison comparison = comparisonService.compare(file, local);
+            final Comparison comparison = comparisonService.compare(file, local, listener);
             switch(comparison) {
                 case local:
                     return true;

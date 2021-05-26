@@ -18,9 +18,11 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CachingAttributesFinderFeature;
+import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
@@ -29,15 +31,17 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.synchronization.CachingComparisonServiceFilter;
+import ch.cyberduck.core.synchronization.CachingComparePathFilter;
 import ch.cyberduck.core.synchronization.Comparison;
-import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
+import ch.cyberduck.core.synchronization.DefaultComparePathFilter;
 import ch.cyberduck.core.transfer.synchronisation.SynchronizationPathFilter;
 
 import org.apache.commons.collections4.map.LRUMap;
@@ -57,23 +61,23 @@ public class SyncTransfer extends Transfer {
     /**
      * The delegate for files to upload
      */
-    private Transfer upload;
-
+    private final Transfer upload;
     /**
      * The delegate for files to download
      */
-    private Transfer download;
-
-    private CachingComparisonServiceFilter comparison;
-
-    private TransferAction action;
-
+    private final Transfer download;
     private final TransferItem item;
+
+    private CachingComparePathFilter comparison;
+    /**
+     * Last selected action to apply on resume
+     */
+    private TransferAction action;
 
     private Cache<Path> cache
         = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
-    private final Map<TransferItem, Comparison> comparisons = Collections.synchronizedMap(new LRUMap<TransferItem, Comparison>(
+    private final Map<TransferItem, Comparison> comparisons = Collections.synchronizedMap(new LRUMap<>(
         PreferencesFactory.get().getInteger("transfer.cache.size")));
 
     public SyncTransfer(final Host host, final TransferItem item) {
@@ -83,25 +87,15 @@ public class SyncTransfer extends Transfer {
     public SyncTransfer(final Host host, final TransferItem item, final TransferAction action) {
         super(host, Collections.singletonList(item),
             new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.upload.bandwidth.bytes")));
-        this.init();
+        this.upload = new UploadTransfer(host, roots).withCache(cache);
+        this.download = new DownloadTransfer(host, roots).withCache(cache);
         this.item = item;
         this.action = action;
-    }
-
-    private void init() {
-        upload = new UploadTransfer(host, roots);
-        download = new DownloadTransfer(host, roots);
     }
 
     @Override
     public Transfer withCache(final Cache<Path> cache) {
         this.cache = cache;
-        // Populate cache for root items. See #8712
-        for(TransferItem root : roots) {
-            if(!root.remote.isRoot()) {
-                cache.put(root.remote.getParent(), new AttributedList<Path>(Collections.singletonList(root.remote)));
-            }
-        }
         upload.withCache(cache);
         download.withCache(cache);
         return this;
@@ -155,13 +149,22 @@ public class SyncTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
+        final Find find = new CachingFindFeature(cache,
+            source.getFeature(Find.class, new DefaultFindFeature(source)));
+        final AttributesFinder attributes = new CachingAttributesFinderFeature(cache,
+            source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         // Set chosen action (upload, download, mirror) from prompt
-        return new SynchronizationPathFilter(
-            comparison = new CachingComparisonServiceFilter(
-                new ComparisonServiceFilter(source, source.getHost().getTimezone(), listener)
-            ).withCache(comparisons),
-            download.filter(source, destination, TransferAction.overwrite, listener),
-            upload.filter(source, destination, TransferAction.overwrite, listener),
+        comparison = new CachingComparePathFilter(new DefaultComparePathFilter(source, host.getTimezone()))
+            .withCache(comparisons)
+            .withAttributes(attributes)
+            .withFinder(find);
+        return new SynchronizationPathFilter(comparison,
+            download.filter(source, destination, TransferAction.overwrite, listener)
+                .withAttributes(attributes)
+                .withFinder(find),
+            upload.filter(source, destination, TransferAction.overwrite, listener)
+                .withAttributes(attributes)
+                .withFinder(find),
             action
         );
     }
@@ -171,7 +174,7 @@ public class SyncTransfer extends Transfer {
         final Map<TransferItem, TransferStatus> downloads = new HashMap<>();
         final Map<TransferItem, TransferStatus> uploads = new HashMap<>();
         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-            switch(comparison.compare(entry.getKey().remote, entry.getKey().local)) {
+            switch(comparison.compare(entry.getKey().remote, entry.getKey().local, new DisabledListProgressListener())) {
                 case remote:
                     downloads.put(entry.getKey(), entry.getValue());
                     break;
@@ -190,15 +193,15 @@ public class SyncTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Children for %s", directory));
         }
-        final Set<TransferItem> children = new HashSet<TransferItem>();
-        final Find finder = session.getFeature(Find.class, new DefaultFindFeature(session));
+        final Set<TransferItem> children = new HashSet<>();
+        final Find finder = new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session)));
         if(finder.find(directory)) {
             children.addAll(download.list(session, directory, local, listener));
         }
         if(local.exists()) {
             children.addAll(upload.list(session, directory, local, listener));
         }
-        return new ArrayList<TransferItem>(children);
+        return new ArrayList<>(children);
     }
 
     @Override
@@ -224,7 +227,7 @@ public class SyncTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
-        switch(comparison.compare(file, local)) {
+        switch(comparison.compare(file, local, progressListener)) {
             case remote:
                 download.transfer(source, destination, file, local, options, overall, segment, connectionCallback, progressListener, streamListener);
                 break;

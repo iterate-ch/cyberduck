@@ -31,12 +31,14 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
+import java.util.Map;
 import java.util.TimeZone;
 
-public class ComparisonServiceFilter implements ComparePathFilter {
+public class DefaultComparePathFilter implements ComparePathFilter {
 
     private Find finder;
     private AttributesFinder attribute;
@@ -44,29 +46,34 @@ public class ComparisonServiceFilter implements ComparePathFilter {
     private final ComparisonService checksum;
     private final ComparisonService size;
     private final ComparisonService timestamp;
-    private final ProgressListener progress;
 
-    public ComparisonServiceFilter(final Session<?> session, final TimeZone tz, final ProgressListener listener) {
+    public DefaultComparePathFilter(final Session<?> session, final TimeZone tz) {
         this.finder = session.getFeature(Find.class, new DefaultFindFeature(session));
         this.attribute = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
         this.timestamp = new TimestampComparisonService(tz);
         this.size = new SizeComparisonService();
         this.checksum = new ChecksumComparisonService();
-        this.progress = listener;
     }
 
-    public ComparisonServiceFilter withFinder(final Find finder) {
+    @Override
+    public ComparePathFilter withFinder(final Find finder) {
         this.finder = finder;
         return this;
     }
 
-    public ComparisonServiceFilter withAttributes(final AttributesFinder attribute) {
+    @Override
+    public ComparePathFilter withAttributes(final AttributesFinder attribute) {
         this.attribute = attribute;
         return this;
     }
 
     @Override
-    public Comparison compare(final Path file, final Local local) throws BackgroundException {
+    public ComparePathFilter withCache(final Map<TransferItem, Comparison> cache) {
+        return this;
+    }
+
+    @Override
+    public Comparison compare(final Path file, final Local local, final ProgressListener listener) throws BackgroundException {
         if(local.exists()) {
             if(finder.find(file)) {
                 if(file.isDirectory()) {
@@ -83,7 +90,7 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                 }
                 if(Checksum.NONE != attributes.getChecksum()) {
                     // MD5/ETag Checksum is supported
-                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
+                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
                     local.attributes().setChecksum(ChecksumComputeFactory.get(attributes.getChecksum().algorithm)
                         .compute(local.getInputStream(), new TransferStatus()));
                     switch(checksum.compare(attributes, local.attributes())) {

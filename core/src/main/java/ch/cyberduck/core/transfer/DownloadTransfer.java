@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Download;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -32,6 +33,7 @@ import ch.cyberduck.core.local.LocalSymlinkFactory;
 import ch.cyberduck.core.local.features.Symlink;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
@@ -145,27 +147,29 @@ public class DownloadTransfer extends Transfer {
             log.debug(String.format("Filter transfer with action %s and options %s", action, options));
         }
         final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(roots);
+        final Find find = new CachingFindFeature(cache,
+            source.getFeature(Find.class, new DefaultFindFeature(source)));
         final AttributesFinder attributes = new CachingAttributesFinderFeature(cache,
             source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, source, options).withAttributes(attributes);
+            return new ResumeFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, source, options).withAttributes(attributes);
+            return new RenameFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, source, options).withAttributes(attributes);
+            return new RenameExistingFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, source, options).withAttributes(attributes);
+            return new SkipFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
         }
         if(action.equals(TransferAction.trash)) {
-            return new TrashFilter(resolver, source, options).withAttributes(attributes);
+            return new TrashFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, source, options, listener).withAttributes(attributes);
+            return new CompareFilter(resolver, source, options, listener).withFinder(find).withAttributes(attributes);
         }
-        return new OverwriteFilter(resolver, source, options).withAttributes(attributes);
+        return new OverwriteFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
     }
 
     @Override

@@ -35,6 +35,7 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
@@ -84,8 +85,14 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         this.attribute = session.getFeature(AttributesFinder.class);
     }
 
-    public AbstractDownloadFilter withAttributes(final AttributesFinder attribute) {
-        this.attribute = attribute;
+    @Override
+    public AbstractDownloadFilter withFinder(final Find finder) {
+        return this;
+    }
+
+    @Override
+    public AbstractDownloadFilter withAttributes(final AttributesFinder attributes) {
+        this.attribute = attributes;
         return this;
     }
 
