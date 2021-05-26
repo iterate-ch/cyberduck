@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.sds.io.swagger.client.model.NodePermissions;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -159,5 +160,45 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         // Branch version is changing with background task only
         // assertNotEquals(previous.getRevision(), new SDSAttributesFinderFeature(session, nodeid).find(folder, 1).getRevision());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testPermissionsFile() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid, true);
+        final Node node = new Node();
+        node.setIsEncrypted(false);
+        node.setType(Node.TypeEnum.FILE);
+        final NodePermissions permissions = new NodePermissions().delete(false).change(false).create(false);
+        node.setPermissions(permissions);
+        f.toPermission(node);
+        permissions.setRead(true);
+        f.toPermission(node);
+        permissions.setChange(true);
+        f.toPermission(node);
+        permissions.setDelete(true);
+        f.toPermission(node);
+        permissions.setCreate(true);
+        f.toPermission(node);
+    }
+
+    @Test
+    public void testPermissionsFolder() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid, true);
+        final Node node = new Node();
+        node.setIsEncrypted(false);
+        node.setType(Node.TypeEnum.FOLDER);
+        final NodePermissions permissions = new NodePermissions().delete(false).change(false).create(false);
+        node.setPermissions(permissions);
+        f.toPermission(node);
+        permissions.setRead(true);
+        f.toPermission(node);
+        permissions.setChange(true);
+        f.toPermission(node);
+        permissions.setDelete(true);
+        f.toPermission(node);
+        permissions.setCreate(true);
+        f.toPermission(node);
     }
 }
