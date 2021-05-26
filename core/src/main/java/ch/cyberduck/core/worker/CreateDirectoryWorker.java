@@ -72,7 +72,8 @@ public class CreateDirectoryWorker extends Worker<Path> {
                 status.setAcl(acl.getDefault(EnumSet.of(Path.Type.directory)));
             }
         }
-        return feature.mkdir(folder, region, status);
+        status.setRegion(region);
+        return feature.mkdir(folder, status);
     }
 
     @Override

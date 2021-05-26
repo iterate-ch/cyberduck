@@ -48,7 +48,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
     @Test
     public void testShareFile() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
             new CreateDownloadShareRequest()
@@ -70,7 +70,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
     @Test
     public void testShareTopLevelRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(room,
             new CreateDownloadShareRequest()
                 .expiration(new ObjectExpiration().enableExpiration(false))
@@ -91,8 +91,8 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
     @Test
     public void testShareSubRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
-        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
+        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
             new CreateDownloadShareRequest()
                 .expiration(new ObjectExpiration().enableExpiration(false))
@@ -113,7 +113,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
     @Test(expected = InteroperabilityException.class)
     public void testToUrlMissingEmailRecipients() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
@@ -136,7 +136,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
     @Test(expected = InteroperabilityException.class)
     public void testToUrlInvalidSMSRecipients() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
@@ -160,7 +160,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
     @Test(expected = InteroperabilityException.class)
     public void testToUrlWeakPassword() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
@@ -183,7 +183,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
     @Test(expected = InteroperabilityException.class)
     public void testToUrlInvalidEmail() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
@@ -205,7 +205,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
     @Test
     public void testToUrlExpiry() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
             new CreateDownloadShareRequest()
@@ -227,7 +227,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
     @Test(expected = InteroperabilityException.class)
     public void testToUrlExpiryInvalidDate() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
             new CreateDownloadShareRequest()
@@ -299,7 +299,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
     @Test
     public void testUploadAccountTopLevelRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toUploadUrl(room,
             new CreateUploadShareRequest()
                 .name(new AlphanumericRandomStringService().random())
@@ -325,7 +325,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
     public void testUploadAccountEncrypted() throws Exception {
         final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.triplecrypt)), null, new TransferStatus());
+        final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.triplecrypt)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toUploadUrl(folder,
             new CreateUploadShareRequest()
                 .name(new AlphanumericRandomStringService().random())
@@ -350,8 +350,8 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
     @Test
     public void testUploadAccountSubRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
-        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
+        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toUploadUrl(test,
             new CreateUploadShareRequest()
                 .name(new AlphanumericRandomStringService().random())

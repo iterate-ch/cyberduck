@@ -60,9 +60,9 @@ public class FTPDirectoryFeatureTest extends AbstractFTPTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(testdirectory, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(testdirectory, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(testdirectory));
-        cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(testdirectory2, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(testdirectory2, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(testdirectory2));
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(testfile2));
         cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(testdirectory2, testdirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -77,7 +77,7 @@ public class FTPDirectoryFeatureTest extends AbstractFTPTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(test, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

@@ -67,7 +67,7 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final SwiftRegionService regionService = new SwiftRegionService(session);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        cryptomator.getFeature(session, Directory.class, new SwiftDirectoryFeature(session, regionService)).mkdir(folder, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new SwiftDirectoryFeature(session, regionService)).mkdir(folder, new TransferStatus());
         new CryptoTouchFeature<StorageObject>(session, new SwiftTouchFeature(session, regionService), new SwiftWriteFeature(session, regionService), cryptomator).touch(file, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         final Move move = cryptomator.getFeature(session, Move.class, new SwiftMoveFeature(session, regionService));

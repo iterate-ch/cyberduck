@@ -181,6 +181,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     private Object lockId;
 
+    /**
+     * Region set in transfer status for folder in transfer
+     */
+    private String region;
+
     public TransferStatus() {
         // Default
     }
@@ -217,6 +222,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.filekey = copy.filekey;
         this.nonces = copy.nonces;
         this.lockId = copy.lockId;
+        this.region = copy.region;
     }
 
     /**
@@ -626,6 +632,19 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(final String region) {
+        this.region = region;
+    }
+
+    public TransferStatus withRegion(final String region) {
+        this.setRegion(region);
+        return this;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if(this == o) {
@@ -674,6 +693,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         sb.append(", parameters=").append(parameters);
         sb.append(", metadata=").append(metadata);
         sb.append(", lockId=").append(lockId);
+        sb.append(", region=").append(region);
         sb.append('}');
         return sb.toString();
     }

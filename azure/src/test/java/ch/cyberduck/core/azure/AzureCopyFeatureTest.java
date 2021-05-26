@@ -81,7 +81,7 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
     public void testCopyToExistingFile() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new AzureDirectoryFeature(session, null).mkdir(folder, null, new TransferStatus());
+        new AzureDirectoryFeature(session, null).mkdir(folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

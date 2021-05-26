@@ -139,7 +139,7 @@ public class SpectraObjectListServiceTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path placeholder = new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-            new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new SpectraObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new SpectraDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -190,7 +190,7 @@ public class SpectraObjectListServiceTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck-versioning", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(folder, null, new TransferStatus());
+        new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1000);
         final TransferStatus status = new TransferStatus().withLength(content.length);

@@ -37,8 +37,8 @@ public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
-        return registry.find(session, folder).getFeature(session, Directory.class, proxy).mkdir(folder, region, status);
+    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+        return registry.find(session, folder).getFeature(session, Directory.class, proxy).mkdir(folder, status);
     }
 
     @Override

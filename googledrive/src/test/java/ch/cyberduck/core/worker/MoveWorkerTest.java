@@ -50,7 +50,7 @@ public class MoveWorkerTest extends AbstractDriveTest {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(
-            new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         final Path file = new DriveTouchFeature(session, fileid).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());

@@ -104,7 +104,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
     @Test
     public void testReadPath() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new DriveTouchFeature(session, fileid).touch(new Path(directory, String.format("t %s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(0, new DriveAttributesFinderFeature(session, fileid).find(file).getSize());
         final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(file, new TransferStatus(), new DisabledConnectionCallback()));
@@ -116,7 +116,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
     @Test
     public void testReadEmpty() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new DriveTouchFeature(session, fileid).touch(new Path(directory, String.format("t %s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(0, new DriveAttributesFinderFeature(session, fileid).find(file).getSize());
         final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(file, new TransferStatus(), new DisabledConnectionCallback()));
@@ -133,7 +133,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         final TransferStatus writeStatus = new TransferStatus();
         writeStatus.setLength(content.length);
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveWriteFeature writer = new DriveWriteFeature(session, fileid);
         final HttpResponseOutputStream<String> out = writer.write(test, writeStatus, new DisabledConnectionCallback());

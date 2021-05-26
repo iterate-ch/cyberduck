@@ -39,7 +39,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
     @Test
     public void testMakeBucket() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageDirectoryFeature(session).mkdir(test, null, new TransferStatus());
+        new GoogleStorageDirectoryFeature(session).mkdir(test, new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -48,7 +48,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
     public void testDirectory() throws Exception {
         final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -58,7 +58,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
     public void testDirectoryWhitespace() throws Exception {
         final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket,
-            String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

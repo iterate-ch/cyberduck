@@ -45,7 +45,7 @@ public class B2DeleteFeatureTest extends AbstractB2Test {
     public void testDelete() throws Exception {
         final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2DirectoryFeature(session, fileid).mkdir(bucket, null, new TransferStatus());
+        new B2DirectoryFeature(session, fileid).mkdir(bucket, new TransferStatus());
         final Path file = new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.file));
         new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(bucket, file), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -54,8 +54,8 @@ public class B2DeleteFeatureTest extends AbstractB2Test {
     @Test
     public void testDeletePlaceholder() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.directory)), new TransferStatus());
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(bucket, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

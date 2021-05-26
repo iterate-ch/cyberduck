@@ -77,7 +77,7 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
         container.attributes().setRegion("IAD");
         final String name = UUID.randomUUID().toString();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.directory));
-        new SwiftDirectoryFeature(session).mkdir(file, null, new TransferStatus());
+        new SwiftDirectoryFeature(session).mkdir(file, new TransferStatus());
         final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(file);
         assertNotNull(attributes.getChecksum().hash);
         // Test wrong type

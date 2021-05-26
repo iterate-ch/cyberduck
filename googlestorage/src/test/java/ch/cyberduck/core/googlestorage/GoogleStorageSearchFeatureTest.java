@@ -67,7 +67,7 @@ public class GoogleStorageSearchFeatureTest extends AbstractGoogleStorageTest {
             assertTrue(result.contains(file));
         }
         assertFalse(feature.search(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new SearchFilter(name), new DisabledListProgressListener()).contains(file));
-        final Path subdir = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path subdir = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertFalse(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
         final Path filesubdir = new GoogleStorageTouchFeature(session).touch(new Path(subdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {

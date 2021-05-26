@@ -66,7 +66,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageDirectoryFeature(session).mkdir(bucket, "US", new TransferStatus());
+        new GoogleStorageDirectoryFeature(session).mkdir(bucket, new TransferStatus());
         configuration.write(bucket, new Distribution(null, Distribution.WEBSITE, true), new DisabledLoginCallback());
         assertTrue(configuration.read(bucket, Distribution.WEBSITE, new DisabledLoginCallback()).isEnabled());
         new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());

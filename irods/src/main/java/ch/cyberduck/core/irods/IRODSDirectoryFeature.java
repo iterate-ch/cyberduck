@@ -36,7 +36,7 @@ public class IRODSDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(folder.getAbsolute());

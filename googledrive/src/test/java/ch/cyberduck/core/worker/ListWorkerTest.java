@@ -52,9 +52,9 @@ public class ListWorkerTest extends AbstractDriveTest {
         final String f2 = new AlphanumericRandomStringService().random();
         final DriveFileIdProvider fileidProvider = new DriveFileIdProvider(session);
         final Path parent = new DriveDirectoryFeature(session, fileidProvider).mkdir(
-            new Path(DriveHomeFinderService.MYDRIVE_FOLDER, f1, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(DriveHomeFinderService.MYDRIVE_FOLDER, f1, EnumSet.of(Path.Type.directory)), new TransferStatus());
         Path folder = new DriveDirectoryFeature(session, fileidProvider).mkdir(
-            new Path(parent, f2, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(parent, f2, EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         {
             // trash folder and recreate it
@@ -62,7 +62,7 @@ public class ListWorkerTest extends AbstractDriveTest {
             final File body = new File();
             body.set("trashed", true);
             session.getClient().files().update(fileid, body).execute();
-            folder = new DriveDirectoryFeature(session, fileidProvider).mkdir(folder, null, new TransferStatus());
+            folder = new DriveDirectoryFeature(session, fileidProvider).mkdir(folder, new TransferStatus());
             final PathCache cache = new PathCache(10);
             final SessionListWorker worker = new SessionListWorker(cache, parent, new DisabledListProgressListener());
             final AttributedList<Path> list = worker.run(session);

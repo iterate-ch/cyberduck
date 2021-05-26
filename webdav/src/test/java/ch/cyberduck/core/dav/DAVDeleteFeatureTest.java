@@ -44,7 +44,7 @@ public class DAVDeleteFeatureTest extends AbstractDAVTest {
     @Test
     public void testDeleteDirectory() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DAVDirectoryFeature(session).mkdir(test, null, new TransferStatus());
+        new DAVDirectoryFeature(session).mkdir(test, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(test));
         new DAVTouchFeature(session).touch(new Path(test, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -43,7 +43,7 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testMkdir() throws Exception {
         final TransferStatus status = new TransferStatus();
-        final Path target = new GraphDirectoryFeature(session, fileid).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, status);
+        final Path target = new GraphDirectoryFeature(session, fileid).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
         final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(target);
         assertNotNull(attributes.getETag());
         assertEquals(target.attributes().getFileId(), attributes.getFileId());
@@ -54,7 +54,7 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
     public void testWhitespaceMkdir() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final String name = String.format("%s %s", randomStringService.random(), randomStringService.random());
-        final Path target = new GraphDirectoryFeature(session, fileid).mkdir(new Path(new OneDriveHomeFinderService().find(), name, EnumSet.of(Path.Type.directory)), null, null);
+        final Path target = new GraphDirectoryFeature(session, fileid).mkdir(new Path(new OneDriveHomeFinderService().find(), name, EnumSet.of(Path.Type.directory)), null);
         assertEquals(name, target.getName());
         final AttributedList<Path> list = new GraphItemListService(session).list(new OneDriveHomeFinderService().find(), new DisabledListProgressListener());
         assertTrue(list.contains(target));

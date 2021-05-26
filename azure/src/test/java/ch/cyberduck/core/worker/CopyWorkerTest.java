@@ -64,7 +64,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session, null).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureDirectoryFeature(session, null).mkdir(targetFolder, null, new TransferStatus());
+        new AzureDirectoryFeature(session, null).mkdir(targetFolder, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(targetFolder));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
@@ -80,7 +80,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureDirectoryFeature(session, null).mkdir(folder, null, new TransferStatus());
+        new AzureDirectoryFeature(session, null).mkdir(folder, new TransferStatus());
         new AzureTouchFeature(session, null).touch(sourceFile, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(folder));
         assertTrue(new AzureFindFeature(session, null).find(sourceFile));

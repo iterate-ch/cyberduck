@@ -40,7 +40,7 @@ public class FTPDirectoryFeatureTest extends AbstractFTPTest {
     @Test
     public void testMakeDirectory() throws Exception {
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new FTPDirectoryFeature(session).mkdir(test, null, new TransferStatus());
+        new FTPDirectoryFeature(session).mkdir(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));

@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -58,7 +57,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
     public void testWriteUnknownContentLength() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
@@ -82,7 +81,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
     public void testReadWrite() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new Path(room, new NFDNormalizer().normalize(String.format("ä%s", new AlphanumericRandomStringService().random())).toString(), EnumSet.of(Path.Type.file));
         {
@@ -134,7 +133,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
     public void testWriteCancel() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new Path(room, String.format("{%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final BytecountStreamListener count = new BytecountStreamListener();
@@ -161,13 +160,13 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final String rommname = new AlphanumericRandomStringService().random();
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(rommname, EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new Path(rommname, EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final String fileid = nodeid.getNodeId(room, new DisabledListProgressListener(), 1);
         assertEquals(fileid, room.attributes().getVersionId());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         final Path roomNew = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(rommname, EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new Path(rommname, EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         assertNotEquals(fileid, roomNew.attributes().getVersionId());
         final TransferStatus status = new TransferStatus();
         status.setLength(0L);
@@ -191,7 +190,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
     public void testWriteZeroSingleByte() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(2);
         final TransferStatus status = new TransferStatus().withLength(content.length);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -208,7 +207,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
     public void testWriteZeroLength() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final TransferStatus status = new TransferStatus();
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);

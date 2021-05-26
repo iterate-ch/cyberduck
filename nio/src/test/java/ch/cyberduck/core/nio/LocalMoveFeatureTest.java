@@ -61,7 +61,7 @@ public class LocalMoveFeatureTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new LocalDirectoryFeature(session).mkdir(test, null, new TransferStatus());
+        new LocalDirectoryFeature(session).mkdir(test, new TransferStatus());
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new LocalFindFeature(session).find(test));

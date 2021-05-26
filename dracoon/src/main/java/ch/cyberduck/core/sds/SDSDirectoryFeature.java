@@ -49,7 +49,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
                 final CreateRoomRequest roomRequest = new CreateRoomRequest();

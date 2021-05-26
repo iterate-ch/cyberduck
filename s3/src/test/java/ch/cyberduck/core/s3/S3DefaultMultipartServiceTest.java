@@ -61,9 +61,9 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
     @Test
     public void testFind() throws Exception {
         final Path container = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
-            new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
-            new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final S3DefaultMultipartService service = new S3DefaultMultipartService(session);
         assertTrue(service.find(container).isEmpty());
         assertTrue(service.find(directory).isEmpty());

@@ -58,12 +58,12 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
                 // Create container at top level
                 session.getClient().createContainer(regionService.lookup(
-                    new SwiftLocationFeature.SwiftRegion(region)), folder.getName());
+                    new SwiftLocationFeature.SwiftRegion(status.getRegion())), folder.getName());
                 return folder.withAttributes(new SwiftAttributesFinderFeature(session, regionService).find(folder));
             }
             else {

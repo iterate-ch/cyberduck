@@ -40,8 +40,8 @@ public class SDSDirectoryFeatureTest extends AbstractSDSTest {
     public void testCreateDirectory() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
-        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
+        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
         new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -53,7 +53,7 @@ public class SDSDirectoryFeatureTest extends AbstractSDSTest {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         assertNotNull(room.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(room));
         new SDSDeleteFeature(session, nodeid).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());

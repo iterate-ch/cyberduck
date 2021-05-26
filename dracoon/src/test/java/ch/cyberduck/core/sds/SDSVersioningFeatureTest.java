@@ -46,7 +46,7 @@ public class SDSVersioningFeatureTest extends AbstractSDSTest {
     public void testRevert() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes initialAttributes = new PathAttributes(test.attributes());

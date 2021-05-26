@@ -63,7 +63,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path test = cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(
-            new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
         final String versionId = test.attributes().getVersionId();
         assertNotNull(versionId);
@@ -85,7 +85,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path test = cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path test = cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

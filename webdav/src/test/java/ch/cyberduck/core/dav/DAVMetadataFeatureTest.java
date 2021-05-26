@@ -94,7 +94,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
     @Ignore
     public void testSetMetadataFolder() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DAVDirectoryFeature(session).mkdir(test, null, new TransferStatus());
+        new DAVDirectoryFeature(session).mkdir(test, new TransferStatus());
         final String v = UUID.randomUUID().toString();
         new DAVMetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
         final Map<String, String> metadata = new DAVMetadataFeature(session).getMetadata(test);

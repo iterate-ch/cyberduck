@@ -57,7 +57,7 @@ public class DriveSearchFeatureTest extends AbstractDriveTest {
     public void testSearchFolder() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path workdir = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path workdir = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new DriveTouchFeature(session, fileid).touch(new Path(workdir, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final DriveSearchFeature feature = new DriveSearchFeature(session, fileid);
         assertTrue(feature.search(workdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
@@ -66,7 +66,7 @@ public class DriveSearchFeatureTest extends AbstractDriveTest {
         final AttributedList<Path> result = feature.search(workdir, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener());
         assertTrue(result.contains(file));
         assertEquals(workdir, result.get(result.indexOf(file)).getParent());
-        final Path subdir = new DriveDirectoryFeature(session, fileid).mkdir(new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path subdir = new DriveDirectoryFeature(session, fileid).mkdir(new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertFalse(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, subdir, workdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -75,7 +75,7 @@ public class DriveSearchFeatureTest extends AbstractDriveTest {
     public void testSearchFolderRecursively() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path workdir = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path workdir = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new DriveTouchFeature(session, fileid).touch(new Path(workdir, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final DriveSearchFeature feature = new DriveSearchFeature(session, fileid);
         assertTrue(feature.search(DriveHomeFinderService.MYDRIVE_FOLDER, new SearchFilter(name), new DisabledListProgressListener()).contains(file));

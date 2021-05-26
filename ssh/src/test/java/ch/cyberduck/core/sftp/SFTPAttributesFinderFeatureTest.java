@@ -27,7 +27,7 @@ public class SFTPAttributesFinderFeatureTest extends AbstractSFTPTest {
     @Test
     public void testFindDirectory() throws Exception {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new SFTPDirectoryFeature(session).mkdir(test, null, new TransferStatus());
+        new SFTPDirectoryFeature(session).mkdir(test, new TransferStatus());
         final SFTPAttributesFinderFeature f = new SFTPAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertNotNull(attributes);

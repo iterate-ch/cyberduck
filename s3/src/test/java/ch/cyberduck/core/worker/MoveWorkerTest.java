@@ -92,9 +92,9 @@ public class MoveWorkerTest extends AbstractS3Test {
     public void testMoveVersionedDirectory() throws Exception {
         final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path sourceDirectory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path targetDirectory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final S3TouchFeature touch = new S3TouchFeature(session);
         Path test = touch.touch(new Path(sourceDirectory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));

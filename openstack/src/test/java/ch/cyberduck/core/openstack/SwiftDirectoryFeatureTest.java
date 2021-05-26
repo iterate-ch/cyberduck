@@ -43,7 +43,7 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
     @Test
     public void testCreateContainer() throws Exception {
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
-        final Path container = feature.mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), "ORD", new TransferStatus());
+        final Path container = feature.mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus().withRegion("ORD"));
         assertTrue(new SwiftFindFeature(session).find(container));
         assertEquals(container.attributes(), new SwiftAttributesFinderFeature(session).find(container));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -69,8 +69,8 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("IAD");
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
-        final Path parent = feature.mkdir(new Path(container, parentname, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        final Path placeholder = feature.mkdir(new Path(parent, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path parent = feature.mkdir(new Path(container, parentname, EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path placeholder = feature.mkdir(new Path(parent, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(put.get());
         assertTrue(new SwiftFindFeature(session).find(placeholder));
         assertTrue(new DefaultFindFeature(session).find(placeholder));

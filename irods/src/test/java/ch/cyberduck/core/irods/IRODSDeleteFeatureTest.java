@@ -61,7 +61,7 @@ public class IRODSDeleteFeatureTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path folder = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new IRODSDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        new IRODSDirectoryFeature(session).mkdir(folder, new TransferStatus());
         final Path file = new Path(folder, "f", EnumSet.of(Path.Type.file));
         new IRODSTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(new IRODSFindFeature(session).find(folder));

@@ -114,7 +114,7 @@ public class CopyWorkerTest extends AbstractDropboxTest {
         new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DefaultUploadFeature<String>(new DropboxWriteFeature(session)),
             new DropboxAttributesFinderFeature(session)), new DropboxWriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
-        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(targetFolder, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(targetFolder, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
@@ -138,7 +138,7 @@ public class CopyWorkerTest extends AbstractDropboxTest {
         new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DefaultUploadFeature<String>(new DropboxWriteFeature(session)),
             new DropboxAttributesFinderFeature(session)), new DropboxWriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
-        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(targetFolder, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(targetFolder, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
@@ -157,7 +157,7 @@ public class CopyWorkerTest extends AbstractDropboxTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(folder, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(folder, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
         new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DefaultUploadFeature<String>(new DropboxWriteFeature(session)),
             new DropboxAttributesFinderFeature(session)), new DropboxWriteFeature(session), cryptomator).touch(file, new TransferStatus());
@@ -191,7 +191,7 @@ public class CopyWorkerTest extends AbstractDropboxTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(encryptedFolder, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(encryptedFolder, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(cleartextFile, encryptedFile), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
@@ -208,7 +208,7 @@ public class CopyWorkerTest extends AbstractDropboxTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(cleartextFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DropboxDirectoryFeature(session).mkdir(cleartextFolder, null, new TransferStatus());
+        new DropboxDirectoryFeature(session).mkdir(cleartextFolder, new TransferStatus());
         new DropboxTouchFeature(session).touch(cleartextFile, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(cleartextFolder));
         assertTrue(new DropboxFindFeature(session).find(cleartextFile));
@@ -234,14 +234,14 @@ public class CopyWorkerTest extends AbstractDropboxTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DropboxDirectoryFeature(session).mkdir(clearFolder, null, new TransferStatus());
+        new DropboxDirectoryFeature(session).mkdir(clearFolder, new TransferStatus());
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(encryptedFolder, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(encryptedFolder, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
         new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DefaultUploadFeature<String>(new DropboxWriteFeature(session)),
             new DropboxAttributesFinderFeature(session)), new DropboxWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());
@@ -266,7 +266,7 @@ public class CopyWorkerTest extends AbstractDropboxTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(encryptedFolder, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(encryptedFolder, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
         new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DefaultUploadFeature<String>(new DropboxWriteFeature(session)),
             new DropboxAttributesFinderFeature(session)), new DropboxWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());

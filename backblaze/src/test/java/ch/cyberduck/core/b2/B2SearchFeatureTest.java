@@ -74,7 +74,7 @@ public class B2SearchFeatureTest extends AbstractB2Test {
         final String name = new AlphanumericRandomStringService().random();
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path workdir = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path workdir = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new B2TouchFeature(session, fileid).touch(new Path(workdir, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final B2SearchFeature feature = new B2SearchFeature(session, fileid);
         assertNotNull(feature.search(workdir, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
@@ -85,7 +85,7 @@ public class B2SearchFeatureTest extends AbstractB2Test {
             assertNotNull(result.find(new SimplePathPredicate(file)));
             assertEquals(workdir, result.get(result.indexOf(file)).getParent());
         }
-        final Path subdir = new B2DirectoryFeature(session, fileid).mkdir(new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path subdir = new B2DirectoryFeature(session, fileid).mkdir(new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNull(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         final Path filesubdir = new B2TouchFeature(session, fileid).touch(new Path(subdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {

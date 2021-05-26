@@ -40,7 +40,7 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
     public void testMkdir() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path test = new DriveDirectoryFeature(session, fileid).mkdir(
-            new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(test.attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(),

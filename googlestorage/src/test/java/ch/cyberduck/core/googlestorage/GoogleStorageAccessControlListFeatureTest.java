@@ -73,7 +73,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     @Test
     public void testReadDirectoryPlaceholder() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
-        final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         assertNotNull(f.getPermission(placeholder));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());

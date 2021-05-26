@@ -61,7 +61,7 @@ public class DropboxDirectoryFeatureTest extends AbstractDropboxTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path test = cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(
-            new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new DropboxAttributesFinderFeature(session), cryptomator).find(test);
         assertEquals(test.attributes().getSize(), attributes.getSize());
@@ -77,7 +77,7 @@ public class DropboxDirectoryFeatureTest extends AbstractDropboxTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(test, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new DropboxDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

@@ -80,7 +80,7 @@ public class MoveWorkerTest {
                     return (T) new Directory<Void>() {
 
                         @Override
-                        public Path mkdir(final Path folder, final String region, final TransferStatus status) {
+                        public Path mkdir(final Path folder, final TransferStatus status) {
                             return folder;
                         }
 

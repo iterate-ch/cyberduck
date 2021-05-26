@@ -66,7 +66,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(folder, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new DropboxDirectoryFeature(session)).mkdir(folder, new TransferStatus());
         new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DropboxUploadFeature(new DropboxWriteFeature(session)),
             new DropboxAttributesFinderFeature(session)), new DropboxWriteFeature(session), cryptomator).touch(file, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));

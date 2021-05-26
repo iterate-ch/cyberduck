@@ -89,7 +89,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(targetFolder, null, new TransferStatus());
+        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(targetFolder, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(targetFolder));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
@@ -105,7 +105,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         final Path home = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(folder, null, new TransferStatus());
+        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(folder, new TransferStatus());
         new S3TouchFeature(session).touch(sourceFile, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(folder));
         assertTrue(new S3FindFeature(session).find(sourceFile));

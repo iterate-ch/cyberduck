@@ -92,7 +92,7 @@ public class SpectraMultipleDeleteFeatureTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-            new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SpectraFindFeature(session).find(test));
         new S3MultipleDeleteFeature(session).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new SpectraFindFeature(session).find(test));

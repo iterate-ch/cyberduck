@@ -73,7 +73,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
     public void testInvalidName() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         try {
             new SDSTouchFeature(session, nodeid).touch(new Path(room, "CON", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
@@ -90,7 +90,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
     public void testInvalidCharacter() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         try {
             new SDSTouchFeature(session, nodeid).touch(new Path(room, "?", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
@@ -107,7 +107,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
     public void testTouch() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(
             new Path(room, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
         assertNotNull(test.attributes().getVersionId());
@@ -120,7 +120,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
     public void testQuota() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final UpdateRoomRequest updateRoomRequest = new UpdateRoomRequest();
         final long quota = 1L + PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize");
         updateRoomRequest.setQuota(quota);

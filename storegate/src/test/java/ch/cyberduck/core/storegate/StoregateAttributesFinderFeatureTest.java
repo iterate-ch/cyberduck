@@ -48,7 +48,7 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
             new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
-                EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+                EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertTrue(room.attributes().getPermission().isExecutable());
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
             new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());

@@ -90,7 +90,7 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
     public void testDownloadVersioned() throws Exception {
         final SDSNodeIdProvider fileid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local localFile = TemporaryFileServiceFactory.get().create(test);
         {
@@ -183,7 +183,7 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
         conn.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         conn.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new SDSDirectoryFeature(conn, fileid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(session.getHost(), test, local);
         assertTrue(new SingleTransferWorker(conn, conn, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -255,7 +255,7 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
         conn.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         conn.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new SDSDirectoryFeature(conn, fileid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(session.getHost(), test, local);
         final BytecountStreamListener counter = new BytecountStreamListener();

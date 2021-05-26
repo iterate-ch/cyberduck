@@ -77,7 +77,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     public void testFindDirectory() throws Exception {
         final Path file = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveDirectoryFeature(session, fileid).mkdir(file, null, new TransferStatus());
+        new DriveDirectoryFeature(session, fileid).mkdir(file, new TransferStatus());
         final PathAttributes attributes = new DriveAttributesFinderFeature(session, fileid).find(file);
         assertNotNull(attributes);
         assertEquals(-1L, attributes.getSize());

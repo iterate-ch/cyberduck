@@ -52,7 +52,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
     public void testDeletePlaceholder() throws Exception {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(container,
-            String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -67,7 +67,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
         final String name = new AlphanumericRandomStringService().random();
         {
             final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
-                new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+                new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
             assertTrue(new S3FindFeature(session).find(test));
             assertTrue(new DefaultFindFeature(session).find(test));
             new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -75,7 +75,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
         }
         {
             final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
-                new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+                new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
             assertTrue(new S3FindFeature(session).find(test));
             assertTrue(new DefaultFindFeature(session).find(test));
             new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -52,12 +52,12 @@ public class GoogleStorageDirectoryFeature implements Directory<VersionId> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final String location, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
                 final Bucket bucket = session.getClient().buckets().insert(session.getHost().getCredentials().getUsername(),
                     new Bucket()
-                        .setLocation(location)
+                        .setLocation(status.getRegion())
                         .setStorageClass(status.getStorageClass())
                         .setName(containerService.getContainer(folder).getName())).execute();
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());

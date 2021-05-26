@@ -52,7 +52,7 @@ public class LocalListServiceTest {
         final Path home = new LocalHomeFinderFeature().find();
         final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new LocalDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
+        new LocalDirectoryFeature(session).mkdir(directory, new TransferStatus());
         new LocalTouchFeature(session).touch(file, new TransferStatus());
         final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(file));

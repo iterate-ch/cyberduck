@@ -53,7 +53,7 @@ public class SFTPListServiceTest extends AbstractSFTPTest {
         new SFTPTouchFeature(session).touch(file, new TransferStatus());
         new SFTPSymlinkFeature(session).symlink(symlinkRelative, file.getName());
         new SFTPSymlinkFeature(session).symlink(symlinkAbsolute, file.getAbsolute());
-        new SFTPDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
+        new SFTPDirectoryFeature(session).mkdir(directory, new TransferStatus());
         final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
         new SFTPUnixPermissionFeature(session).setUnixPermission(file, permission);
 

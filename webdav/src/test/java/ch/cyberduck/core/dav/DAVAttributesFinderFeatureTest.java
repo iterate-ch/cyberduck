@@ -87,7 +87,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
     @Test
     public void testFindDirectory() throws Exception {
         final Path test = new DAVDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(),
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(-1, attributes.getSize());

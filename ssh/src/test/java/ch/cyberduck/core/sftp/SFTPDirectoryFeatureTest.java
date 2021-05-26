@@ -38,7 +38,7 @@ public class SFTPDirectoryFeatureTest extends AbstractSFTPTest {
     @Test
     public void testMakeDirectory() throws Exception {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new SFTPDirectoryFeature(session).mkdir(test, null, new TransferStatus());
+        new SFTPDirectoryFeature(session).mkdir(test, new TransferStatus());
         assertTrue(new SFTPFindFeature(session).find(test));
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

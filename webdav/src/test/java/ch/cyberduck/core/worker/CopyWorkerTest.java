@@ -70,7 +70,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         assertTrue(new DAVFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DAVDirectoryFeature(session).mkdir(targetFolder, null, new TransferStatus());
+        new DAVDirectoryFeature(session).mkdir(targetFolder, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(targetFolder));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
@@ -84,7 +84,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
     @Test
     public void testCopyDirectory() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFile = new DefaultTouchFeature<>(new DAVUploadFeature(new DAVWriteFeature(session)),
             new DAVAttributesFinderFeature(session)).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(folder));

@@ -42,7 +42,7 @@ public class DriveSearchListServiceTest extends AbstractDriveTest {
     @Test
     public void testQuery() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Drive.Files.Create insert = session.getClient().files().create(new File()
             .setName(name)
