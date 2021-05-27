@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+7.9.2
+- [Bugfix] Failure opening application with previous application support directory symbolic link (macOS)
+
 7.9.1
 - [Bugfix] Slow synchronisation of a large folder (#11676)
 - [Bugfix] Slow tranfer when using "compare" option for existing files (#11679)

@@ -22,7 +22,6 @@ import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalSymlinkFactory;
 import ch.cyberduck.core.local.LocalTrashFactory;
@@ -64,36 +63,31 @@ public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDi
                 // You should organize the contents of this directory in the same way that any other Library folder is organized
                 final String application = PreferencesFactory.get().getProperty("application.datafolder.name");
                 final Local folder = new FinderLocal(String.format("%s/Library/Application Support", group.path()), application);
-                try {
-                    final Local previous = new ApplicationSupportDirectoryFinder().find();
-                    if(previous.exists()) {
-                        log.warn(String.format("Migrate application support folder from %s to %s", previous, folder));
-                        // Rename folder recursively
+                final Local previous = new ApplicationSupportDirectoryFinder().find();
+                if(previous.exists() && !previous.isSymbolicLink()) {
+                    log.warn(String.format("Migrate application support folder from %s to %s", previous, folder));
+                    // Rename folder recursively
+                    try {
+                        FileUtils.copyDirectory(new File(previous.getAbsolute()), new File(folder.getAbsolute()));
+                        log.warn(String.format("Move application support folder %s to Trash", previous));
                         try {
-                            FileUtils.copyDirectory(new File(previous.getAbsolute()), new File(folder.getAbsolute()));
-                            log.warn(String.format("Move application support folder %s to Trash", previous));
-                            try {
-                                final Trash trash = LocalTrashFactory.get();
-                                trash.trash(previous);
-                                final Symlink symlink = LocalSymlinkFactory.get();
-                                symlink.symlink(previous, folder.getAbsolute());
-                            }
-                            catch(LocalAccessDeniedException e) {
-                                log.warn(String.format("Failure cleaning up previous application support directory. %s", e.getMessage()));
-                            }
+                            final Trash trash = LocalTrashFactory.get();
+                            trash.trash(previous);
+                            final Symlink symlink = LocalSymlinkFactory.get();
+                            symlink.symlink(previous, folder.getAbsolute());
                         }
-                        catch(IOException e) {
-                            log.warn(String.format("Failure migrating %s to security application group directory %s. %s", previous, folder, e.getMessage()));
+                        catch(AccessDeniedException e) {
+                            log.warn(String.format("Failure cleaning up previous application support directory. %s", e.getMessage()));
                         }
                     }
-                    else {
-                        log.debug(String.format("No previous application support folder found in %s", previous));
+                    catch(IOException e) {
+                        log.warn(String.format("Failure migrating %s to security application group directory %s. %s", previous, folder, e.getMessage()));
                     }
-                    return folder;
                 }
-                catch(AccessDeniedException e) {
-                    log.warn(String.format("Failure creating security application group directory. %s", e.getMessage()));
+                else {
+                    log.debug(String.format("No previous application support folder found in %s", previous));
                 }
+                return folder;
             }
         }
         log.warn("Missing support for security application groups. Default to application support directory");
