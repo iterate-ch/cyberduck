@@ -66,7 +66,7 @@ public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDi
                 final Local folder = new FinderLocal(String.format("%s/Library/Application Support", group.path()), application);
                 try {
                     final Local previous = new ApplicationSupportDirectoryFinder().find();
-                    if(previous.exists()) {
+                    if(previous.exists() && !previous.isSymbolicLink()) {
                         log.warn(String.format("Migrate application support folder from %s to %s", previous, folder));
                         // Rename folder recursively
                         try {
