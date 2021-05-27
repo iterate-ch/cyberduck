@@ -1,6 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
+7.9.1
+- [Bugfix] Slow synchronisation of a large folder (#11676)
+- [Bugfix] Slow tranfer when using "compare" option for existing files (#11679)
+- [Bugfix] Downloads fail with error "The specified key does not exist" (S3) (#11670)
+
 7.9.0
 - [Feature] New Big Sur style application icon (macOS)
 - [Feature] New "Auto" default option for number of connections for transfers
