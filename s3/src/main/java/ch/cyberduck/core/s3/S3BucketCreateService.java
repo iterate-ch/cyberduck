@@ -23,7 +23,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -58,17 +57,6 @@ public class S3BucketCreateService {
         else {
             acl = AccessControlList.REST_CANNED_PRIVATE;
         }
-        try {
-            this.create(bucket, acl, region);
-        }
-        catch(ResolveFailedException e) {
-            log.warn(String.format("Failure %s resolving bucket name. Disable use of DNS bucket names", e));
-            session.getClient().getConfiguration().setProperty("s3service.disable-dns-buckets", String.valueOf(true));
-            this.create(bucket, acl, region);
-        }
-    }
-
-    protected void create(final Path bucket, final AccessControlList acl, final String region) throws BackgroundException {
         try {
             if(StringUtils.isNotBlank(region)) {
                 if(S3Session.isAwsHostname(session.getHost().getHostname())) {

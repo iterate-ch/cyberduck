@@ -24,10 +24,12 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
@@ -59,13 +61,16 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.STSCredentialsConfigurator;
+import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
+import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.AWSSessionCredentials;
 
@@ -218,7 +223,18 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new S3ListService(this);
+            final S3ListService proxy = new S3ListService(this);
+            return (T) new ListService() {
+                @Override
+                public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+                    return new S3PathStyleFallbackAdapter<>(S3Session.this, new BackgroundExceptionCallable<AttributedList<Path>>() {
+                        @Override
+                        public AttributedList<Path> call() throws BackgroundException {
+                            return proxy.list(directory, listener);
+                        }
+                    }).call();
+                }
+            };
         }
         if(type == Read.class) {
             return (T) new S3ReadFeature(this);
@@ -236,7 +252,28 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3ThresholdUploadService(this);
         }
         if(type == Directory.class) {
-            return (T) new S3DirectoryFeature(this, new S3WriteFeature(this));
+            final S3DirectoryFeature proxy = new S3DirectoryFeature(this, new S3WriteFeature(this));
+            return (T) new Directory<StorageObject>() {
+                @Override
+                public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+                    return new S3PathStyleFallbackAdapter<>(S3Session.this, new BackgroundExceptionCallable<Path>() {
+                        @Override
+                        public Path call() throws BackgroundException {
+                            return proxy.mkdir(folder, status);
+                        }
+                    }).call();
+                }
+
+                @Override
+                public boolean isSupported(final Path workdir, final String name) {
+                    return proxy.isSupported(workdir, name);
+                }
+
+                @Override
+                public Directory<StorageObject> withWriter(final Write<StorageObject> writer) {
+                    return proxy.withWriter(writer);
+                }
+            };
         }
         if(type == Move.class) {
             return (T) new S3MoveFeature(this);
@@ -303,7 +340,18 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3FindFeature(this);
         }
         if(type == AttributesFinder.class) {
-            return (T) new S3AttributesFinderFeature(this);
+            final S3AttributesFinderFeature proxy = new S3AttributesFinderFeature(this);
+            return (T) new AttributesFinder() {
+                @Override
+                public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+                    return new S3PathStyleFallbackAdapter<>(S3Session.this, new BackgroundExceptionCallable<PathAttributes>() {
+                        @Override
+                        public PathAttributes call() throws BackgroundException {
+                            return proxy.find(file, listener);
+                        }
+                    }).call();
+                }
+            };
         }
         if(type == TransferAcceleration.class) {
             // Only for AWS. Disable transfer acceleration for AWS GovCloud
