@@ -26,8 +26,10 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 public abstract class ListFilteringFeature {
+    private static final Logger log = Logger.getLogger(ListFilteringFeature.class);
 
     private final Session<?> session;
 
@@ -42,7 +44,18 @@ public abstract class ListFilteringFeature {
     protected Path search(final Path file, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = session._getFeature(ListService.class).list(file.getParent(), listener);
         // Try to match path only as the version might have changed in the meantime
-        return list.find(new ListFilteringPredicate(session, file));
+        final Path found = list.find(new ListFilteringPredicate(session, file));
+        if(null == found) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("File %s not found in directory listing", file));
+            }
+        }
+        else {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return attributes %s for file %s", found.attributes(), file));
+            }
+        }
+        return found;
     }
 
     private static final class ListFilteringPredicate extends DefaultPathPredicate {
