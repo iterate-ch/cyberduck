@@ -20,7 +20,6 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
@@ -31,6 +30,7 @@ import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
@@ -54,45 +54,43 @@ public class GraphReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            try {
-                if(file.getType().contains(Path.Type.placeholder)) {
-                    final DescriptiveUrl link = new OneDriveUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
-                    if(DescriptiveUrl.EMPTY.equals(link)) {
-                        log.warn(String.format("Missing web link for file %s", file));
-                        return new NullInputStream(file.attributes().getSize());
-                    }
-                    // Write web link file
-                    return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
+            if(file.getType().contains(Path.Type.placeholder)) {
+                final DescriptiveUrl link = new OneDriveUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
+                if(DescriptiveUrl.EMPTY.equals(link)) {
+                    log.warn(String.format("Missing web link for file %s", file));
+                    return new NullInputStream(file.attributes().getSize());
                 }
-                else {
-                    final DriveItem target = session.getItem(file);
-                    if(status.isAppend()) {
-                        final HttpRange range = HttpRange.withStatus(status);
-                        final String header;
-                        if(-1 == range.getEnd()) {
-                            header = String.format("%d-", range.getStart());
-                        }
-                        else {
-                            header = String.format("%d-%d", range.getStart(), range.getEnd());
-                        }
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Add range header %s for file %s", header, file));
-                        }
-                        return Files.download(target, header);
+                // Write web link file
+                return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
+            }
+            else {
+                final DriveItem target = session.getItem(file);
+                if(status.isAppend()) {
+                    final HttpRange range = HttpRange.withStatus(status);
+                    final String header;
+                    if(-1 == range.getEnd()) {
+                        header = String.format("%d-", range.getStart());
                     }
-                    return Files.download(target);
+                    else {
+                        header = String.format("%d-%d", range.getStart(), range.getEnd());
+                    }
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Add range header %s for file %s", header, file));
+                    }
+                    return Files.download(target, header);
                 }
-            }
-            catch(OneDriveAPIException e) {
-                throw new GraphExceptionMappingService().map("Download {0} failed", e, file);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
+                return Files.download(target);
             }
         }
-        catch(NotfoundException e) {
-            fileid.cache(file, null);
-            throw e;
+        catch(OneDriveAPIException e) {
+            switch(e.getResponseCode()) {
+                case HttpStatus.SC_NOT_FOUND:
+                    fileid.cache(file, null);
+            }
+            throw new GraphExceptionMappingService().map("Download {0} failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 }
