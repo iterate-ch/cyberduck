@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.TransferAcceleration;
@@ -91,7 +92,7 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
                         log.warn(String.format("Transfer acceleration disabled for %s", bucket));
                     }
                 }
-                catch(InteroperabilityException | AccessDeniedException e) {
+                catch(NotfoundException | InteroperabilityException | AccessDeniedException e) {
                     log.warn(String.format("Ignore failure reading S3 accelerate configuration. %s", e.getMessage()));
                 }
             }
@@ -102,6 +103,9 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
     }
 
     private boolean accelerate(final Path file, final ConnectionCallback prompt) throws BackgroundException {
+        if(containerService.isContainer(file)) {
+            return false;
+        }
         switch(session.getSignatureVersion()) {
             case AWS2:
                 return false;
