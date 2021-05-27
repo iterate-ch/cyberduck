@@ -354,18 +354,18 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             };
         }
         if(type == TransferAcceleration.class) {
-            if(preferences.getBoolean("s3.accelerate.enable")) {
-                // Only for AWS. Disable transfer acceleration for AWS GovCloud
-                if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                    return (T) new S3TransferAccelerationService(this);
-                }
+            // Only for AWS. Disable transfer acceleration for AWS GovCloud
+            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                return (T) new S3TransferAccelerationService(this);
             }
             return null;
         }
         if(type == Bulk.class) {
-            // Only for AWS. Disable transfer acceleration for AWS GovCloud
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3BulkTransferAccelerationFeature(this, new S3TransferAccelerationService(this));
+            if(preferences.getBoolean("s3.accelerate.enable")) {
+                // Only for AWS. Disable transfer acceleration for AWS GovCloud
+                if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                    return (T) new S3BulkTransferAccelerationFeature(this, new S3TransferAccelerationService(this));
+                }
             }
             return (T) new DisabledBulkFeature();
         }
