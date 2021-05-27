@@ -30,6 +30,7 @@ import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
@@ -43,9 +44,11 @@ public class GraphReadFeature implements Read {
     private static final Logger log = Logger.getLogger(GraphReadFeature.class);
 
     private final GraphSession session;
+    private final GraphFileIdProvider fileid;
 
-    public GraphReadFeature(final GraphSession session) {
+    public GraphReadFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -80,6 +83,10 @@ public class GraphReadFeature implements Read {
             }
         }
         catch(OneDriveAPIException e) {
+            switch(e.getResponseCode()) {
+                case HttpStatus.SC_NOT_FOUND:
+                    fileid.cache(file, null);
+            }
             throw new GraphExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(IOException e) {

@@ -189,7 +189,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) new GraphDirectoryFeature(this, fileid);
         }
         if(type == Read.class) {
-            return (T) new GraphReadFeature(this);
+            return (T) new GraphReadFeature(this, fileid);
         }
         if(type == Write.class) {
             return (T) new GraphWriteFeature(this, fileid);
