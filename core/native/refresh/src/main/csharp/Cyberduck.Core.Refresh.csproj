@@ -15,12 +15,12 @@
 
 <Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup>
-    <TargetFramework>net47</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
-  </PropertyGroup>
-    
+    <PropertyGroup>
+        <TargetFramework>net47</TargetFramework>
+        <UseWPF>true</UseWPF>
+        <UseWindowsForms>true</UseWindowsForms>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="ReactiveUI.WPF" />
     </ItemGroup>
