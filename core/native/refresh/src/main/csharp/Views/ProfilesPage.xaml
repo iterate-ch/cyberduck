@@ -12,13 +12,19 @@
                         d:DesignWidth="800"
                         x:TypeArguments="vm:ProfilesViewModel">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
+        <TextBox Margin="0,7" Padding="2,1" Grid.Column="1" Grid.Row="0" />
         <ListView x:Name="profilesList"
-                  Grid.Row="1">
+                  Grid.Row="1"
+                  Grid.ColumnSpan="2">
             <cc:ProfileElement />
         </ListView>
     </Grid>
