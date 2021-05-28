@@ -19,7 +19,26 @@
     <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.41" />
 
     <ItemGroup>
-        <Reference Include="@(CyberduckReference->'Cyberduck.%(Identity)')">
+        <CyberduckReference Update="Core.Native">
+            <ProjectPath>$(CyberduckDir)core\src\main\csharp\Cyberduck.Core.Native.csproj</ProjectPath>
+        </CyberduckReference>
+        <CyberduckReference Update="Core.Refresh">
+            <ProjectPath>$(CyberduckDir)core\native\refresh\src\main\csharp\Cyberduck.Core.Refresh.csproj</ProjectPath>
+        </CyberduckReference>
+        <CyberduckReference Update="Bonjour.Native">
+            <ProjectPath>$(CyberduckDir)bonjour\src\main\csharp\Cyberduck.Bonjour.Native.csproj</ProjectPath>
+        </CyberduckReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <CyberduckProjectReferences Include="@(CyberduckReference->HasMetadata('ProjectPath'))" Condition=" $(BuildingInsideVisualStudio) " />
+        <CyberduckLibraryReferences Include="@(CyberduckReference)" />
+        <CyberduckLibraryReferences Remove="@(CyberduckProjectReferences)" />
+
+        <ProjectReference Include="@(CyberduckProjectReferences->'%(ProjectPath)')">
+            <Name>Cyberduck.%(Identity)</Name>
+        </ProjectReference>
+        <Reference Include="@(CyberduckLibraryReferences->'Cyberduck.%(Identity)')">
             <HintPath>$(TargetBuildDir)%(Identity).dll</HintPath>
         </Reference>
     </ItemGroup>

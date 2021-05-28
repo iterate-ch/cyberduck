@@ -34,7 +34,9 @@
     </PropertyGroup>
 
     <ItemDefinitionGroup>
-        <CyberduckReference />
+        <CyberduckReference>
+            <ProjectPath />
+        </CyberduckReference>
     </ItemDefinitionGroup>
 
     <ItemGroup>
