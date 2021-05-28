@@ -31,7 +31,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <CyberduckProjectReferences Include="@(CyberduckReference->HasMetadata('ProjectPath'))" Condition=" $(BuildingInsideVisualStudio) " />
+        <CyberduckProjectReferences Include="@(CyberduckReference->HasMetadata('ProjectPath'))" Condition=" '$(BuildingInsideVisualStudio)'=='True' " />
         <CyberduckLibraryReferences Include="@(CyberduckReference)" />
         <CyberduckLibraryReferences Remove="@(CyberduckProjectReferences)" />
 
