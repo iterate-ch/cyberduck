@@ -56,7 +56,6 @@ public class SharepointListService extends AbstractSharepointListService {
             final Site site = Site.byId(session.getClient(), "root");
             final Site.Metadata metadata = site.getMetadata();
             final EnumSet<Path.Type> type = EnumSet.copyOf(DEFAULT_NAME.getType());
-            type.add(Path.Type.symboliclink);
             final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new PathAttributes().withFileId(metadata.getId()));
             path.setSymlinkTarget(
                 new Path(SITES_NAME, metadata.getSiteCollection().getHostname(), SITES_NAME.getType(),
