@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -38,7 +39,7 @@ public class SharepointListService extends AbstractSharepointListService {
     public static final String GROUPS_CONTAINER = "Groups";
     public static final String SITES_CONTAINER = "Sites";
 
-    public static final Path DEFAULT_NAME = new Path("/" + DEFAULT_SITE, EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory));
+    public static final Path DEFAULT_NAME = new Path("/" + DEFAULT_SITE, EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory, Path.Type.symboliclink));
     public static final Path DRIVES_NAME = new Path("/" + DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
     public static final Path GROUPS_NAME = new Path("/" + GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
     public static final Path SITES_NAME = new Path("/" + SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
@@ -55,7 +56,6 @@ public class SharepointListService extends AbstractSharepointListService {
             final Site site = Site.byId(session.getClient(), "root");
             final Site.Metadata metadata = site.getMetadata();
             final EnumSet<Path.Type> type = EnumSet.copyOf(DEFAULT_NAME.getType());
-            type.add(Path.Type.symboliclink);
             final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new PathAttributes().withFileId(metadata.getId()));
             path.setSymlinkTarget(
                 new Path(SITES_NAME, metadata.getSiteCollection().getHostname(), SITES_NAME.getType(),

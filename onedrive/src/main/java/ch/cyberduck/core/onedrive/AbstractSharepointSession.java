@@ -35,6 +35,7 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.GroupItem;
+import org.nuxeo.onedrive.client.types.ItemReference;
 import org.nuxeo.onedrive.client.types.Site;
 
 import java.io.IOException;
@@ -80,6 +81,10 @@ public abstract class AbstractSharepointSession extends GraphSession {
 
     @Override
     public String getFileId(final DriveItem.Metadata metadata) {
+        final ItemReference parent = metadata.getParentReference();
+        if (StringUtils.isAllBlank(parent.getId(), parent.getPath())) {
+            return parent.getDriveId();
+        }
         return metadata.getId();
     }
 
