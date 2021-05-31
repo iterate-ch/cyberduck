@@ -20,11 +20,11 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.PathAttributesHomeFeature;
+import ch.cyberduck.core.shared.RootPathContainerService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -61,7 +61,7 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
         final ListService list = new SharepointListService(session);
         final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, "Drives", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path drive = drives.get(0);
-        new PathAttributesHomeFeature(() -> drive, session.getFeature(AttributesFinder.class), session.getFeature(PathContainerService.class)).find();
+        new PathAttributesHomeFeature(() -> drive, new GraphAttributesFinderFeature(session), new RootPathContainerService()).find();
         list.list(drive, new DisabledListProgressListener());
     }
 
