@@ -91,13 +91,14 @@ public class CTERASession extends DAVSession {
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
         if(StringUtils.isBlank(credentials.getToken())) {
-            final CTERATokens tokens;
+            final AttachDeviceResponse response;
             if(this.getPublicInfo().hasWebSSO) {
-                tokens = this.startWebSSOFlow(cancel, credentials);
+                response = this.startWebSSOFlow(cancel, credentials);
             }
             else {
-                tokens = this.startDesktopFlow(prompt, credentials);
+                response = this.startDesktopFlow(prompt, credentials);
             }
+            final CTERATokens tokens = new CTERATokens(response.deviceUID, response.sharedSecret);
             authentication.setTokens(tokens);
             credentials.setToken(tokens.toString());
             credentials.setSaved(true);
@@ -108,7 +109,7 @@ public class CTERASession extends DAVSession {
         authentication.authenticate();
     }
 
-    private CTERATokens startWebSSOFlow(final CancelCallback cancel, final Credentials credentials) throws BackgroundException {
+    private AttachDeviceResponse startWebSSOFlow(final CancelCallback cancel, final Credentials credentials) throws BackgroundException {
         final String url = String.format("%s/ServicesPortal/activate?scheme=%s",
             new HostUrlProvider().withUsername(false).withPath(false).get(host), CTERAProtocol.CTERA_REDIRECT_URI
         );
@@ -136,7 +137,7 @@ public class CTERASession extends DAVSession {
         return this.attachDeviceWithActivationCode(activationCode.get());
     }
 
-    private CTERATokens startDesktopFlow(final LoginCallback prompt, final Credentials credentials) throws BackgroundException {
+    private AttachDeviceResponse startDesktopFlow(final LoginCallback prompt, final Credentials credentials) throws BackgroundException {
         if(StringUtils.isNotBlank(credentials.getUsername()) &&
             StringUtils.isNotBlank(credentials.getPassword())) {
             try {
@@ -166,7 +167,7 @@ public class CTERASession extends DAVSession {
     }
 
 
-    private CTERATokens attachDeviceWithActivationCode(final String activationCode) throws BackgroundException {
+    private AttachDeviceResponse attachDeviceWithActivationCode(final String activationCode) throws BackgroundException {
         final HttpPost attach = new HttpPost("/ServicesPortal/public/users?format=jsonext");
         try {
             attach.setEntity(
@@ -183,7 +184,7 @@ public class CTERASession extends DAVSession {
         }
     }
 
-    private CTERATokens attachDeviceWithUsernamePassword(final String username, final String password) throws BackgroundException {
+    private AttachDeviceResponse attachDeviceWithUsernamePassword(final String username, final String password) throws BackgroundException {
         final HttpPost attach = new HttpPost(String.format("/ServicesPortal/public/users/%s?format=jsonext", username));
         try {
             attach.setEntity(
@@ -200,7 +201,7 @@ public class CTERASession extends DAVSession {
         }
     }
 
-    private CTERATokens attachDevice(final HttpPost attach) throws IOException, BackgroundException {
+    private AttachDeviceResponse attachDevice(final HttpPost attach) throws IOException, BackgroundException {
         final AttachDeviceResponse response;
         AtomicReference<Attachment> error = new AtomicReference<>();
         try {
@@ -244,7 +245,7 @@ public class CTERASession extends DAVSession {
             }
             throw e;
         }
-        return new CTERATokens(response.deviceUID, response.sharedSecret);
+        return response;
     }
 
     private PublicInfo getPublicInfo() throws BackgroundException {
