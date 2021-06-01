@@ -22,7 +22,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <CyberduckReference Include="Core;Core.Native" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="ReactiveUI.WPF" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="@(IKVMReferences)" />
     </ItemGroup>
 
 </Project>
