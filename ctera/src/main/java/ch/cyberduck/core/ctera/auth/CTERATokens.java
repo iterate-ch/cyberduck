@@ -16,44 +16,33 @@ package ch.cyberduck.core.ctera.auth;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 public class CTERATokens {
-
     private static final Logger log = Logger.getLogger(CTERATokens.class);
 
-    private String deviceId;
-    private String sharedSecret;
+    public static CTERATokens EMPTY = new CTERATokens(StringUtils.EMPTY, StringUtils.EMPTY);
 
-    public static CTERATokens parse(final String token) throws BackgroundException {
-        final String[] t = token.split(":");
-        if(t.length < 2) {
-            log.error("Unable to parse token");
-            throw new LoginCanceledException();
-        }
-        return new CTERATokens().
-            setDeviceId(t[0]).
-            setSharedSecret(t[1]);
+    private final String deviceId;
+    private final String sharedSecret;
+
+    public CTERATokens(final String deviceId, final String sharedSecret) {
+        this.deviceId = deviceId;
+        this.sharedSecret = sharedSecret;
     }
 
     public String getDeviceId() {
         return deviceId;
     }
 
-    public CTERATokens setDeviceId(final String deviceId) {
-        this.deviceId = deviceId;
-        return this;
-    }
-
     public String getSharedSecret() {
         return sharedSecret;
     }
 
-    public CTERATokens setSharedSecret(final String sharedSecret) {
-        this.sharedSecret = sharedSecret;
-        return this;
+    public static CTERATokens parse(final String token) throws BackgroundException {
+        return new CTERATokens(StringUtils.substringBefore(token, ':'), StringUtils.substringAfter(token, ':'));
     }
 
     @Override
