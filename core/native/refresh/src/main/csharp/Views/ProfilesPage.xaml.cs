@@ -15,6 +15,8 @@ namespace Cyberduck.Core.Refresh.Views
 
             this.WhenActivated(d =>
             {
+                d(this.OneWayBind(ViewModel, x => x.Profiles, x => x.profilesList.ItemsSource));
+
                 d(this.WhenAnyValue(x => x.ViewModel.LoadProfiles).Select(x => x.Execute()).Subscribe());
             });
         }
