@@ -94,13 +94,13 @@ public class CTERASession extends DAVSession {
             final AttachDeviceResponse response;
             if(this.getPublicInfo().hasWebSSO) {
                 response = this.startWebSSOFlow(cancel, credentials);
+                credentials.setUsername(response.deviceName);
             }
             else {
                 response = this.startDesktopFlow(prompt, credentials);
             }
             final CTERATokens tokens = new CTERATokens(response.deviceUID, response.sharedSecret);
             authentication.setTokens(tokens);
-            credentials.setUsername(response.deviceName);
             credentials.setToken(tokens.toString());
             credentials.setSaved(true);
         }
@@ -139,8 +139,7 @@ public class CTERASession extends DAVSession {
     }
 
     private AttachDeviceResponse startDesktopFlow(final LoginCallback prompt, final Credentials credentials) throws BackgroundException {
-        if(StringUtils.isNotBlank(credentials.getUsername()) &&
-            StringUtils.isNotBlank(credentials.getPassword())) {
+        if(StringUtils.isNotBlank(credentials.getUsername()) && StringUtils.isNotBlank(credentials.getPassword())) {
             try {
                 return this.attachDeviceWithUsernamePassword(credentials.getUsername(), credentials.getPassword());
             }
