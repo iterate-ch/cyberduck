@@ -34,8 +34,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class CTERASessionTest {
@@ -67,6 +66,7 @@ public class CTERASessionTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertEquals(System.getProperty("ctera.user"), host.getCredentials().getUsername());
         new DAVListService(session).list(new Path(host.getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 }

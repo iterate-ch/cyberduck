@@ -45,19 +45,15 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ServiceUnavailableRetryStrategy;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -74,13 +70,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.util.concurrent.Uninterruptibles;
 
-public class CTERASession extends DAVSession implements ServiceUnavailableRetryStrategy {
+public class CTERASession extends DAVSession {
     private static final Logger log = Logger.getLogger(CTERASession.class);
 
-    private static final String SAML_LOCATION = "https://myapps.microsoft.com/signin/CTERA/e8e5145e-4fac-412e-b87b-fbfc26123827";
-    private static final int MAX_RETRIES = 1;
-
-    private CTERATokens tokens;
+    private final CTERAAuthenticationHandler authentication = new CTERAAuthenticationHandler(this);
 
     public CTERASession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -90,31 +83,34 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
     public DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
-        configuration.setServiceUnavailableRetryStrategy(this);
+        configuration.setServiceUnavailableRetryStrategy(authentication);
         return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
-        final String t = credentials.getToken();
-        if(StringUtils.isBlank(t)) {
-            tokens = new CTERATokens();
+        if(StringUtils.isBlank(credentials.getToken())) {
+            final AttachDeviceResponse response;
             if(this.getPublicInfo().hasWebSSO) {
-                this.startWebSSOFlow(cancel, credentials, tokens);
+                response = this.startWebSSOFlow(cancel, credentials);
+                credentials.setUsername(response.deviceName);
             }
             else {
-                this.startDesktopFlow(prompt, credentials, tokens);
+                response = this.startDesktopFlow(prompt, credentials);
             }
+            final CTERATokens tokens = new CTERATokens(response.deviceUID, response.sharedSecret);
+            authentication.setTokens(tokens);
+            credentials.setToken(tokens.toString());
+            credentials.setSaved(true);
         }
         else {
-            tokens = CTERATokens.parse(t);
+            authentication.setTokens(CTERATokens.parse(credentials.getToken()));
         }
-        this.webdavAuthenticate(tokens);
-        credentials.setToken(tokens.toString());
+        authentication.authenticate();
     }
 
-    private void startWebSSOFlow(final CancelCallback cancel, final Credentials credentials, final CTERATokens tokens) throws BackgroundException {
+    private AttachDeviceResponse startWebSSOFlow(final CancelCallback cancel, final Credentials credentials) throws BackgroundException {
         final String url = String.format("%s/ServicesPortal/activate?scheme=%s",
             new HostUrlProvider().withUsername(false).withPath(false).get(host), CTERAProtocol.CTERA_REDIRECT_URI
         );
@@ -139,24 +135,22 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
         while(!Uninterruptibles.awaitUninterruptibly(signal, 500, TimeUnit.MILLISECONDS)) {
             cancel.verify();
         }
-        this.attachDeviceWithActivationCode(activationCode.get(), tokens);
-        credentials.setSaved(true);
+        return this.attachDeviceWithActivationCode(activationCode.get());
     }
 
-    private void startDesktopFlow(final LoginCallback prompt, final Credentials credentials, final CTERATokens tokens) throws BackgroundException {
-        if(StringUtils.isNotBlank(credentials.getUsername()) &&
-            StringUtils.isNotBlank(credentials.getPassword())) {
+    private AttachDeviceResponse startDesktopFlow(final LoginCallback prompt, final Credentials credentials) throws BackgroundException {
+        if(StringUtils.isNotBlank(credentials.getUsername()) && StringUtils.isNotBlank(credentials.getPassword())) {
             try {
-                this.attachDeviceWithUsernamePassword(credentials.getUsername(), credentials.getPassword(), tokens);
+                return this.attachDeviceWithUsernamePassword(credentials.getUsername(), credentials.getPassword());
             }
             catch(LoginFailureException e) {
                 this.prompt(prompt, credentials);
-                this.startDesktopFlow(prompt, credentials, tokens);
+                return this.startDesktopFlow(prompt, credentials);
             }
         }
         else {
             this.prompt(prompt, credentials);
-            this.startDesktopFlow(prompt, credentials, tokens);
+            return this.startDesktopFlow(prompt, credentials);
         }
     }
 
@@ -173,7 +167,7 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
     }
 
 
-    private void attachDeviceWithActivationCode(final String activationCode, final CTERATokens tokens) throws BackgroundException {
+    private AttachDeviceResponse attachDeviceWithActivationCode(final String activationCode) throws BackgroundException {
         final HttpPost attach = new HttpPost("/ServicesPortal/public/users?format=jsonext");
         try {
             attach.setEntity(
@@ -183,14 +177,14 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
                     ContentType.create("application/xml", StandardCharsets.UTF_8.name()
                     )
                 ));
-            this.attachDevice(attach, tokens);
+            return this.attachDevice(attach);
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
         }
     }
 
-    private void attachDeviceWithUsernamePassword(final String username, final String password, final CTERATokens tokens) throws BackgroundException {
+    private AttachDeviceResponse attachDeviceWithUsernamePassword(final String username, final String password) throws BackgroundException {
         final HttpPost attach = new HttpPost(String.format("/ServicesPortal/public/users/%s?format=jsonext", username));
         try {
             attach.setEntity(
@@ -200,14 +194,14 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
                     ContentType.create("application/xml", StandardCharsets.UTF_8.name()
                     )
                 ));
-            this.attachDevice(attach, tokens);
+            return this.attachDevice(attach);
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
         }
     }
 
-    private void attachDevice(final HttpPost attach, final CTERATokens tokens) throws IOException, BackgroundException {
+    private AttachDeviceResponse attachDevice(final HttpPost attach) throws IOException, BackgroundException {
         final AttachDeviceResponse response;
         AtomicReference<Attachment> error = new AtomicReference<>();
         try {
@@ -251,38 +245,7 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
             }
             throw e;
         }
-        tokens.
-            setSharedSecret(response.sharedSecret).
-            setDeviceId(response.deviceUID);
-    }
-
-    private void webdavAuthenticate(final CTERATokens tokens) throws BackgroundException {
-        final HttpPost login = new HttpPost("/ServicesPortal/api/login?format=jsonext");
-        try {
-            login.setEntity(
-                new StringEntity(String.format("j_username=device%%5c%s&j_password=%s", tokens.getDeviceId(), tokens.getSharedSecret()),
-                    ContentType.APPLICATION_FORM_URLENCODED
-                )
-            );
-            client.execute(login, new AbstractResponseHandler<Void>() {
-                @Override
-                public Void handleResponse(final HttpResponse response) throws IOException {
-                    final Header header = response.getFirstHeader("Set-Cookie");
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Received cookie %s", header.getValue()));
-                    }
-                    return super.handleResponse(response);
-                }
-
-                @Override
-                public Void handleEntity(final HttpEntity entity) {
-                    return null;
-                }
-            });
-        }
-        catch(IOException e) {
-            throw new HttpExceptionMappingService().map(e);
-        }
+        return response;
     }
 
     private PublicInfo getPublicInfo() throws BackgroundException {
@@ -299,35 +262,6 @@ public class CTERASession extends DAVSession implements ServiceUnavailableRetryS
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
         }
-    }
-
-    @Override
-    public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
-        switch(response.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_MOVED_TEMPORARILY:
-                final Header l = response.getFirstHeader(HttpHeaders.LOCATION);
-                if(StringUtils.startsWith(l.getValue(), SAML_LOCATION)) {
-                    if(executionCount <= MAX_RETRIES) {
-                        try {
-                            log.info(String.format("Attempt to refresh cookie for failure %s", response));
-                            webdavAuthenticate(tokens);
-                        }
-                        catch(BackgroundException e) {
-                            log.error(String.format("Failure refreshing cookie. %s", e));
-                            return false;
-                        }
-                        // Try again
-                        return true;
-                    }
-                    break;
-                }
-        }
-        return false;
-    }
-
-    @Override
-    public long getRetryInterval() {
-        return 0L;
     }
 
     private static Attachment getAttachment(final String activationCode, final String password, final String hostname, final String mac) {

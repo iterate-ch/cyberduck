@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class AttachDeviceResponse {
+    public String deviceName;
     public String deviceUID;
     public String sharedSecret;
 }
