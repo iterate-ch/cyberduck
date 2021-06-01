@@ -18,6 +18,7 @@
 
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.profiles;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core.Contracts;
@@ -37,6 +38,9 @@ namespace Ch.Cyberduck.Ui
         {
             ObjectFactory.Initialize(x =>
             {
+                x.ForConcreteType<BaseController>();
+                x.Forward<BaseController, ch.cyberduck.core.Controller>();
+
                 x.For<Preferences>().Use(() => PreferencesFactory.get());
                 x.For<ProtocolFactory>().Use(() => ProtocolFactory.get());
 
@@ -59,6 +63,8 @@ namespace Ch.Cyberduck.Ui
                 x.For<IProgressView>().Use<TransferControl>();
                 x.For<ICommandView>().Use<CommandForm>();
                 x.For<IDonationController>().Use<DonationController>();
+                x.For<LocalProfilesFinder>().Use(() => new LocalProfilesFinder());
+                x.For<PeriodicProfilesUpdater>().Use(ctx => new PeriodicProfilesUpdater(ctx.GetInstance<ch.cyberduck.core.Controller>()));
 
                 // Singletons
                 x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
