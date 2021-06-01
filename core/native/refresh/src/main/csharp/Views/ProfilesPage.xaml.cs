@@ -1,5 +1,7 @@
 ﻿using Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
 using ReactiveUI;
+using System;
+using System.Reactive.Linq;
 
 namespace Cyberduck.Core.Refresh.Views
 {
@@ -13,6 +15,7 @@ namespace Cyberduck.Core.Refresh.Views
 
             this.WhenActivated(d =>
             {
+                d(this.WhenAnyValue(x => x.ViewModel.LoadProfiles).Select(x => x.Execute()).Subscribe());
             });
         }
     }
