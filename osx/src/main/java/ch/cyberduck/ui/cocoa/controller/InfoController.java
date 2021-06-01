@@ -120,12 +120,12 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Grant editing model.
      */
-    private final List<Acl.UserAndRole> acl = new ArrayList<Acl.UserAndRole>();
+    private final List<Acl.UserAndRole> acl = new ArrayList<>();
     /**
      * Custom HTTP headers for REST protocols
      */
     private final List<Header> metadata
-        = new ArrayList<Header>();
+        = new ArrayList<>();
 
     @Outlet
     private NSTextField filenameField;
@@ -215,8 +215,6 @@ public class InfoController extends ToolbarWindowController {
     private NSTextField distributionUrlField;
     @Outlet
     private NSTextField distributionCnameUrlField;
-    @Outlet
-    private NSTextField aclUrlField;
     @Outlet
     private NSTableView aclTable;
     @Delegate
@@ -624,8 +622,8 @@ public class InfoController extends ToolbarWindowController {
     public void storageClassPopupClicked(final NSPopUpButton sender) {
         if(this.toggleS3Settings(false)) {
             final String redundancy = sender.selectedItem().representedObject();
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session,
-                    new WriteRedundancyWorker(files, redundancy, new PromptRecursiveCallback<String>(this), controller) {
+            controller.background(new WorkerBackgroundAction<>(controller, session,
+                    new WriteRedundancyWorker(files, redundancy, new PromptRecursiveCallback<>(this), controller) {
                         @Override
                         public void cleanup(final Boolean v) {
                             toggleS3Settings(true);
@@ -649,8 +647,8 @@ public class InfoController extends ToolbarWindowController {
         final String algorithm = sender.selectedItem().representedObject();
         if(null != algorithm && this.toggleS3Settings(false)) {
             final Encryption.Algorithm encryption = Encryption.Algorithm.fromString(algorithm);
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session,
-                    new WriteEncryptionWorker(files, encryption, new PromptRecursiveCallback<Encryption.Algorithm>(this), controller) {
+            controller.background(new WorkerBackgroundAction<>(controller, session,
+                    new WriteEncryptionWorker(files, encryption, new PromptRecursiveCallback<>(this), controller) {
                         @Override
                         public void cleanup(final Boolean v) {
                             toggleS3Settings(true);
@@ -674,7 +672,7 @@ public class InfoController extends ToolbarWindowController {
                 bucketLoggingButton.state() == NSCell.NSOnState,
                 null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
             );
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, new WriteLoggingWorker(files, configuration) {
+            controller.background(new WorkerBackgroundAction<>(controller, session, new WriteLoggingWorker(files, configuration) {
                 @Override
                 public void cleanup(final Boolean result) {
                     toggleS3Settings(true);
@@ -709,7 +707,7 @@ public class InfoController extends ToolbarWindowController {
             final VersioningConfiguration configuration = new VersioningConfiguration(
                 bucketVersioningButton.state() == NSCell.NSOnState,
                 bucketMfaButton.state() == NSCell.NSOnState);
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, new WriteVersioningWorker(files, prompt, configuration) {
+            controller.background(new WorkerBackgroundAction<>(controller, session, new WriteVersioningWorker(files, prompt, configuration) {
                 @Override
                 public void cleanup(final Boolean result) {
                     toggleS3Settings(true);
@@ -737,7 +735,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketTransferAccelerationButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session,
+            controller.background(new WorkerBackgroundAction<>(controller, session,
                     new WriteTransferAccelerationWorker(files, bucketTransferAccelerationButton.state() == NSCell.NSOnState) {
                         @Override
                         public void cleanup(final Boolean done) {
@@ -789,7 +787,7 @@ public class InfoController extends ToolbarWindowController {
                 lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
                 S3Object.STORAGE_CLASS_GLACIER,
                 lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null);
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, new WriteLifecycleWorker(files, configuration) {
+            controller.background(new WorkerBackgroundAction<>(controller, session, new WriteLifecycleWorker(files, configuration) {
                 @Override
                 public void cleanup(final Boolean result) {
                     toggleS3Settings(true);
@@ -827,12 +825,6 @@ public class InfoController extends ToolbarWindowController {
         this.distributionCnameUrlField = t;
         this.distributionCnameUrlField.setAllowsEditingTextAttributes(true);
         this.distributionCnameUrlField.setSelectable(true);
-    }
-
-    public void setAclUrlField(NSTextField t) {
-        this.aclUrlField = t;
-        this.aclUrlField.setAllowsEditingTextAttributes(true);
-        this.aclUrlField.setSelectable(true);
     }
 
     /**
@@ -998,7 +990,7 @@ public class InfoController extends ToolbarWindowController {
      * @param update The acl to insert.
      */
     private void addAclItem(Acl.UserAndRole update) {
-        List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>(acl);
+        List<Acl.UserAndRole> updated = new ArrayList<>(acl);
         final int index = updated.size();
         updated.add(index, update);
         this.setAcl(updated);
@@ -1021,9 +1013,9 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void aclRemoveButtonClicked(ID sender) {
-        List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>(acl);
+        List<Acl.UserAndRole> updated = new ArrayList<>(acl);
         NSIndexSet iterator = aclTable.selectedRowIndexes();
-        List<Acl.UserAndRole> remove = new ArrayList<Acl.UserAndRole>();
+        List<Acl.UserAndRole> remove = new ArrayList<>();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             remove.add(updated.get(index.intValue()));
         }
@@ -1034,8 +1026,8 @@ public class InfoController extends ToolbarWindowController {
 
     private void aclInputDidEndEditing() {
         if(this.toggleAclSettings(false)) {
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session,
-                    new WriteAclWorker(files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), new PromptRecursiveCallback<Acl>(this), controller) {
+            controller.background(new WorkerBackgroundAction<>(controller, session,
+                    new WriteAclWorker(files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), new PromptRecursiveCallback<>(this), controller) {
                         @Override
                         public void cleanup(final Boolean v) {
                             toggleAclSettings(true);
@@ -1259,7 +1251,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private void addMetadataItem(String name, String value, boolean selectValue) {
         int row = metadata.size();
-        List<Header> updated = new ArrayList<Header>(metadata);
+        List<Header> updated = new ArrayList<>(metadata);
         updated.add(row, new Header(name, value));
         this.setMetadata(updated);
         metadataTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
@@ -1278,9 +1270,9 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void metadataRemoveButtonClicked(ID sender) {
-        List<Header> updated = new ArrayList<Header>(metadata);
+        List<Header> updated = new ArrayList<>(metadata);
         NSIndexSet iterator = metadataTable.selectedRowIndexes();
-        List<Header> remove = new ArrayList<Header>();
+        List<Header> remove = new ArrayList<>();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             remove.add(updated.get(index.intValue()));
         }
@@ -1291,12 +1283,12 @@ public class InfoController extends ToolbarWindowController {
 
     private void metadataInputDidEndEditing() {
         if(toggleMetadataSettings(false)) {
-            final Map<String, String> update = new HashMap<String, String>();
+            final Map<String, String> update = new HashMap<>();
             for(Header header : metadata) {
                 update.put(header.getName(), header.getValue());
             }
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session,
-                    new WriteMetadataWorker(files, update, new PromptRecursiveCallback<String>(this), controller) {
+            controller.background(new WorkerBackgroundAction<>(controller, session,
+                    new WriteMetadataWorker(files, update, new PromptRecursiveCallback<>(this), controller) {
                         @Override
                         public void cleanup(final Boolean v) {
                             toggleMetadataSettings(true);
@@ -1501,7 +1493,7 @@ public class InfoController extends ToolbarWindowController {
         permissionsField.setStringValue(LocaleFactory.localizedString("Unknown"));
         // Disable Apply button and start progress indicator
         if(this.togglePermissionSettings(false)) {
-            controller.background(new WorkerBackgroundAction<PermissionOverwrite>(controller, session,
+            controller.background(new WorkerBackgroundAction<>(controller, session,
                 new ReadPermissionWorker(files) {
                     @Override
                     public void cleanup(final PermissionOverwrite permissions) {
@@ -1598,7 +1590,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initSize() {
         if(this.toggleSizeSettings(false)) {
-            controller.background(new WorkerBackgroundAction<Long>(controller, session,
+            controller.background(new WorkerBackgroundAction<>(controller, session,
                 new ReadSizeWorker(files) {
                     @Override
                     public void cleanup(final Long size) {
@@ -1716,9 +1708,9 @@ public class InfoController extends ToolbarWindowController {
                 LoggingConfiguration logging;
                 VersioningConfiguration versioning;
                 // Available encryption keys in KMS
-                Set<Encryption.Algorithm> managedEncryptionKeys = new HashSet<Encryption.Algorithm>();
-                final Set<Encryption.Algorithm> selectedEncryptionKeys = new HashSet<Encryption.Algorithm>();
-                final Set<String> selectedStorageClasses = new HashSet<String>();
+                Set<Encryption.Algorithm> managedEncryptionKeys = new HashSet<>();
+                final Set<Encryption.Algorithm> selectedEncryptionKeys = new HashSet<>();
+                final Set<String> selectedStorageClasses = new HashSet<>();
                 LifecycleConfiguration lifecycle;
                 Boolean transferAcceleration;
 
@@ -1918,11 +1910,11 @@ public class InfoController extends ToolbarWindowController {
     private void initMetadata() {
         this.setMetadata(Collections.emptyList());
         if(this.toggleMetadataSettings(false)) {
-            controller.background(new WorkerBackgroundAction<Map<String, String>>(controller, session,
+            controller.background(new WorkerBackgroundAction<>(controller, session,
                 new ReadMetadataWorker(files) {
                     @Override
                     public void cleanup(final Map<String, String> updated) {
-                        final List<Header> m = new ArrayList<Header>();
+                        final List<Header> m = new ArrayList<>();
                         if(updated != null) {
                             for(Map.Entry<String, String> key : updated.entrySet()) {
                                 m.add(new Header(key.getKey(), key.getValue()));
@@ -1941,7 +1933,6 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initAcl() {
         this.setAcl(Collections.emptyList());
-        aclUrlField.setStringValue(LocaleFactory.localizedString("None"));
         if(this.toggleAclSettings(false)) {
             final AclPermission feature = session.getFeature(AclPermission.class);
             aclAddButton.removeAllItems();
@@ -1957,22 +1948,7 @@ public class InfoController extends ToolbarWindowController {
             for(Acl.Role permission : feature.getAvailableAclRoles(files)) {
                 aclPermissionCellPrototype.addItemWithObjectValue(NSString.stringWithString(permission.getName()));
             }
-            if(this.numberOfFiles() > 1) {
-                aclUrlField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
-                aclUrlField.setToolTip(StringUtils.EMPTY);
-            }
-            else {
-                for(Path file : files) {
-                    if(file.isFile()) {
-                        final DescriptiveUrl authenticated = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.authenticated);
-                        if(!authenticated.equals(DescriptiveUrl.EMPTY)) {
-                            aclUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(authenticated));
-                            aclUrlField.setToolTip(authenticated.getHelp());
-                        }
-                    }
-                }
-            }
-            controller.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, session,
+            controller.background(new WorkerBackgroundAction<>(controller, session,
                 new ReadAclWorker(files) {
                     @Override
                     public void cleanup(final List<Acl.UserAndRole> updated) {
@@ -2004,8 +1980,8 @@ public class InfoController extends ToolbarWindowController {
         }
         else {
             if(this.togglePermissionSettings(false)) {
-                controller.background(new WorkerBackgroundAction<Boolean>(controller, session,
-                        new WritePermissionWorker(files, permission, new BooleanRecursiveCallback<Permission>(false), controller) {
+                controller.background(new WorkerBackgroundAction<>(controller, session,
+                        new WritePermissionWorker(files, permission, new BooleanRecursiveCallback<>(false), controller) {
                             @Override
                             public void cleanup(final Boolean done) {
                                 togglePermissionSettings(true);
@@ -2044,8 +2020,8 @@ public class InfoController extends ToolbarWindowController {
         }
         else {
             if(this.togglePermissionSettings(false)) {
-                controller.background(new WorkerBackgroundAction<Boolean>(controller, session,
-                        new WritePermissionWorker(files, permission, new PromptRecursiveCallback<Permission>(this), controller) {
+                controller.background(new WorkerBackgroundAction<>(controller, session,
+                        new WritePermissionWorker(files, permission, new PromptRecursiveCallback<>(this), controller) {
                             @Override
                             public void cleanup(final Boolean done) {
                                 togglePermissionSettings(true);
@@ -2068,8 +2044,8 @@ public class InfoController extends ToolbarWindowController {
             new PermissionOverwrite.Action(groupr.state() == NSCell.NSOnState, groupw.state() == NSCell.NSOnState, groupx.state() == NSCell.NSOnState),
             new PermissionOverwrite.Action(otherr.state() == NSCell.NSOnState, otherw.state() == NSCell.NSOnState, otherx.state() == NSCell.NSOnState));
         if(this.togglePermissionSettings(false)) {
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session,
-                    new WritePermissionWorker(files, permission, new BooleanRecursiveCallback<Permission>(false), controller) {
+            controller.background(new WorkerBackgroundAction<>(controller, session,
+                    new WritePermissionWorker(files, permission, new BooleanRecursiveCallback<>(false), controller) {
                         @Override
                         public void cleanup(final Boolean done) {
                             togglePermissionSettings(true);
@@ -2162,7 +2138,7 @@ public class InfoController extends ToolbarWindowController {
     public void distributionInvalidateObjectsButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
             final Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, new DistributionPurgeWorker(files, prompt, method) {
+            controller.background(new WorkerBackgroundAction<>(controller, session, new DistributionPurgeWorker(files, prompt, method) {
                 @Override
                 public void cleanup(final Boolean result) {
                     // Refresh the current distribution status
@@ -2189,7 +2165,7 @@ public class InfoController extends ToolbarWindowController {
             configuration.setLogging(distributionLoggingButton.state() == NSCell.NSOnState);
             configuration.setLoggingContainer(distributionLoggingPopup.selectedItem().representedObject());
             configuration.setCNAMEs(StringUtils.split(distributionCnameField.stringValue()));
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, new WriteDistributionWorker(files, prompt, configuration) {
+            controller.background(new WorkerBackgroundAction<>(controller, session, new WriteDistributionWorker(files, prompt, configuration) {
                 @Override
                 public void cleanup(final Boolean result) {
                     // Refresh the current distribution status
@@ -2205,7 +2181,7 @@ public class InfoController extends ToolbarWindowController {
             final Path file = this.getSelected();
             final Distribution.Method method
                 = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-            controller.background(new WorkerBackgroundAction<Distribution>(controller, session, new ReadDistributionWorker(files, prompt, method) {
+            controller.background(new WorkerBackgroundAction<>(controller, session, new ReadDistributionWorker(files, prompt, method) {
                 @Override
                 public void cleanup(final Distribution distribution) {
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
@@ -2308,7 +2284,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void calculateSizeButtonClicked(final ID sender) {
         if(this.toggleSizeSettings(false)) {
-            controller.background(new WorkerBackgroundAction<Long>(controller, session,
+            controller.background(new WorkerBackgroundAction<>(controller, session,
                 new CalculateSizeWorker(files, controller) {
                     @Override
                     public void cleanup(final Long size) {
