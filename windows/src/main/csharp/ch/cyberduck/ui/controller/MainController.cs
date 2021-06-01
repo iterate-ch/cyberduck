@@ -93,7 +93,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private static JumpList _jumpListManager;
         private static AutoResetEvent applicationShutdown = new AutoResetEvent(true);
         private static JumpListCustomCategory bookmarkCategory;
-        private readonly BaseController _controller = new BaseController();
+        private readonly BaseController _controller;
         private readonly PathKindDetector _detector = new DefaultPathKindDetector();
 
         /// <summary>
@@ -121,9 +121,11 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <summary>
         /// Default constructor.
         /// </summary>
-        public MainController(ProtocolFactory protocolFactory)
+        public MainController(ProtocolFactory protocolFactory, BaseController controller, PeriodicProfilesUpdater profiles)
         {
             _application = this;
+            _controller = controller;
+            _profiles = profiles;
 
             if (!(Debugger.IsAttached || Utils.IsRunningAsUWP))
             {
@@ -392,15 +394,15 @@ namespace Ch.Cyberduck.Ui.Controller
             // Dummy implementation.
         }
 
+        void ICyberduck.NewInstance()
+        {
+            NewBrowser();
+        }
+
         void ICyberduck.OAuth(string state, string code)
         {
             var oauth = OAuth2TokenListenerRegistry.get();
             oauth.notify(state, code);
-        }
-
-        void ICyberduck.NewInstance()
-        {
-            NewBrowser();
         }
 
         void ICyberduck.QuickConnect(string arg)
@@ -436,7 +438,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     NewBrowser().Mount(h);
                 }
             }
-            catch(HostParserException e)
+            catch (HostParserException e)
             {
                 Logger.warn(e.getDetail());
             }
@@ -836,8 +838,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
             }
-            if (PreferencesFactory.get().getBoolean("profiles.discovery.updater.enable")) {
-                _profiles = new PeriodicProfilesUpdater(_controller);
+            if (PreferencesFactory.get().getBoolean("profiles.discovery.updater.enable"))
+            {
                 // Synchronize and register timer
                 _profiles.register();
             }
