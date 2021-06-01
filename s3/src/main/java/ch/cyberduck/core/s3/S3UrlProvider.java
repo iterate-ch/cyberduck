@@ -70,17 +70,17 @@ public class S3UrlProvider implements UrlProvider {
                 // X-Amz-Expires must be less than a week (in seconds); that is, the given X-Amz-Expires must be less
                 // than 604800 seconds
                 // In one hour
-                list.add(this.sign(file, (int) TimeUnit.HOURS.toSeconds(1)));
+                list.add(this.toSignedUrl(file, (int) TimeUnit.HOURS.toSeconds(1)));
                 // Default signed URL expiring in 24 hours.
-                list.add(this.sign(file, (int) TimeUnit.SECONDS.toSeconds(PreferencesFactory.get().getInteger("s3.url.expire.seconds"))));
+                list.add(this.toSignedUrl(file, (int) TimeUnit.SECONDS.toSeconds(PreferencesFactory.get().getInteger("s3.url.expire.seconds"))));
                 // 1 Week
-                list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(7)));
+                list.add(this.toSignedUrl(file, (int) TimeUnit.DAYS.toSeconds(7)));
                 switch(session.getSignatureVersion()) {
                     case AWS2:
                         // 1 Month
-                        list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(30)));
+                        list.add(this.toSignedUrl(file, (int) TimeUnit.DAYS.toSeconds(30)));
                         // 1 Year
-                        list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(365)));
+                        list.add(this.toSignedUrl(file, (int) TimeUnit.DAYS.toSeconds(365)));
                         break;
                     case AWS4HMACSHA256:
                         break;
@@ -147,14 +147,13 @@ public class S3UrlProvider implements UrlProvider {
     }
 
     /**
-     * Query string authentication. Query string authentication is useful for giving HTTP or
-     * browser access to resources that would normally require authentication. The signature in the query
-     * string secures the request.
+     * Query string authentication. Query string authentication is useful for giving HTTP or browser access to resources
+     * that would normally require authentication. The signature in the query string secures the request.
      *
      * @param seconds Expire in n seconds from now in default timezone
      * @return A signed URL with a limited validity over time.
      */
-    protected DescriptiveUrl sign(final Path file, final int seconds) {
+    protected DescriptiveUrl toSignedUrl(final Path file, final int seconds) {
         // Determine expiry time for URL
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.SECOND, seconds);
