@@ -100,6 +100,7 @@ public class CTERASession extends DAVSession {
             }
             final CTERATokens tokens = new CTERATokens(response.deviceUID, response.sharedSecret);
             authentication.setTokens(tokens);
+            credentials.setUsername(response.deviceName);
             credentials.setToken(tokens.toString());
             credentials.setSaved(true);
         }
