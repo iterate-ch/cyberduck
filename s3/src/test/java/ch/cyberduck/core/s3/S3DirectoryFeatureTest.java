@@ -30,11 +30,13 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -122,9 +124,19 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
             new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
         final String name = String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());
-        final Path bucket = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
-            new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path bucket = new S3PathStyleFallbackAdapter<>(session, new BackgroundExceptionCallable<Path>() {
+            @Override
+            public Path call() throws BackgroundException {
+                return new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
+                    new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+            }
+        }).call();
+        final Path test = new S3PathStyleFallbackAdapter<>(session, new BackgroundExceptionCallable<Path>() {
+            @Override
+            public Path call() throws BackgroundException {
+                return new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
+            }
+        }).call();
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
         assertNotNull(new S3AttributesFinderFeature(session).find(test));
