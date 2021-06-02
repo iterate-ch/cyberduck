@@ -51,6 +51,8 @@ public class CTERASessionTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertEquals("mountainduck@cterasendbox1.onmicrosoft.com", host.getCredentials().getUsername());
+        assertTrue(host.getCredentials().isSaved());
         new DAVListService(session).list(new Path(host.getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
