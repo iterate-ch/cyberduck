@@ -94,7 +94,7 @@ public class CTERASession extends DAVSession {
             final AttachDeviceResponse response;
             if(this.getPublicInfo().hasWebSSO) {
                 response = this.startWebSSOFlow(cancel, credentials);
-                credentials.setUsername(response.deviceName);
+                credentials.setUsername(response.deviceUID);
             }
             else {
                 response = this.startDesktopFlow(prompt, credentials);
