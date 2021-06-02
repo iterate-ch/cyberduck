@@ -9,13 +9,13 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Locale;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -30,9 +30,9 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
-        final Path container = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path(StringUtils.lowerCase(new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session, null);
-        f.find(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+        f.find(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
