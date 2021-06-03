@@ -163,13 +163,13 @@ public class MoveWorkerTest extends AbstractFTPTest {
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folderRenamed));
         try {
-            new CryptoListService(session, new FTPListService(session, null, TimeZone.getDefault()), cryptomator).list(folder, new DisabledListProgressListener());
+            new CryptoListService(session, new FTPListService(session, null, TimeZone.getDefault()), new DefaultFindFeature(session), cryptomator).list(folder, new DisabledListProgressListener());
             fail();
         }
         catch(NotfoundException e) {
             //
         }
-        assertEquals(1, new CryptoListService(session, new FTPListService(session, null, TimeZone.getDefault()), cryptomator).list(folderRenamed, new DisabledListProgressListener()).size());
+        assertEquals(1, new CryptoListService(session, new FTPListService(session, null, TimeZone.getDefault()), new DefaultFindFeature(session), cryptomator).list(folderRenamed, new DisabledListProgressListener()).size());
         cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(
             new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file)), folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

@@ -172,13 +172,13 @@ public class MoveWorkerTest extends AbstractSFTPTest {
         new MoveWorker(Collections.singletonMap(folder, folderRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
         assertFalse(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(folder));
         try {
-            new CryptoListService(session, new SFTPListService(session), cryptomator).list(folder, new DisabledListProgressListener());
+            new CryptoListService(session, new SFTPListService(session), new SFTPFindFeature(session), cryptomator).list(folder, new DisabledListProgressListener());
             fail();
         }
         catch(NotfoundException e) {
             //
         }
-        assertEquals(1, new CryptoListService(session, new SFTPListService(session), cryptomator).list(folderRenamed, new DisabledListProgressListener()).size());
+        assertEquals(1, new CryptoListService(session, new SFTPListService(session), new SFTPFindFeature(session), cryptomator).list(folderRenamed, new DisabledListProgressListener()).size());
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));

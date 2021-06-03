@@ -91,7 +91,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(test));
-        assertEquals(content.length, new CryptoListService(session, new SFTPListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new CryptoListService(session, new SFTPListService(session), new SFTPFindFeature(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, writer.append(test, status.withRemote(new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(test))).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -122,7 +122,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(test));
-        final Path found = new CryptoListService(session, new SFTPListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test);
+        final Path found = new CryptoListService(session, new SFTPListService(session), new SFTPFindFeature(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test);
         final Cache<Path> cache = new PathCache(1);
         final AttributedList<Path> list = new AttributedList<>();
         list.add(found);

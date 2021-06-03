@@ -29,6 +29,7 @@ import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.dropbox.DropboxDeleteFeature;
 import ch.cyberduck.core.dropbox.DropboxDirectoryFeature;
+import ch.cyberduck.core.dropbox.DropboxFindFeature;
 import ch.cyberduck.core.dropbox.DropboxListService;
 import ch.cyberduck.core.dropbox.DropboxTouchFeature;
 import ch.cyberduck.core.dropbox.DropboxWriteFeature;
@@ -147,13 +148,13 @@ public class MoveWorkerTest extends AbstractDropboxTest {
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folderRenamed));
         try {
-            new CryptoListService(session, new DropboxListService(session), cryptomator).list(folder, new DisabledListProgressListener());
+            new CryptoListService(session, new DropboxListService(session), new DropboxFindFeature(session), cryptomator).list(folder, new DisabledListProgressListener());
             fail();
         }
         catch(NotfoundException e) {
             //
         }
-        assertEquals(1, new CryptoListService(session, new DropboxListService(session), cryptomator).list(folderRenamed, new DisabledListProgressListener()).size());
+        assertEquals(1, new CryptoListService(session, new DropboxListService(session), new DropboxFindFeature(session), cryptomator).list(folderRenamed, new DisabledListProgressListener()).size());
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
         cryptomator.getFeature(session, Delete.class, new DropboxDeleteFeature(session)).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

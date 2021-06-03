@@ -85,7 +85,7 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         out.close();
         final OperationContext context = new OperationContext();
         assertTrue(new CryptoFindFeature(session, new AzureFindFeature(session, context), cryptomator).find(test));
-        final PathAttributes attributes = new CryptoListService(session, new AzureListService(session, context), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+        final PathAttributes attributes = new CryptoListService(session, new AzureListService(session, context), new AzureFindFeature(session, null), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
         assertEquals(content.length, new CryptoWriteFeature<>(session, new AzureWriteFeature(session, context), cryptomator).append(test, status.withRemote(attributes)).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

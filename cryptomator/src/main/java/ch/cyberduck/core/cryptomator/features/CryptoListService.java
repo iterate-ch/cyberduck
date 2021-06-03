@@ -21,6 +21,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.vault.DecryptingListProgressListener;
 
@@ -28,17 +29,19 @@ public class CryptoListService implements ListService {
 
     private final Session<?> session;
     private final ListService delegate;
+    private final Find find;
     private final Vault vault;
 
-    public CryptoListService(final Session<?> session, final ListService delegate, final Vault vault) {
+    public CryptoListService(final Session<?> session, final ListService delegate, final Find find, final Vault vault) {
         this.session = session;
         this.delegate = delegate;
+        this.find = find;
         this.vault = vault;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return delegate.list(vault.encrypt(session, directory), new DecryptingListProgressListener(session, vault, listener));
+        return delegate.list(vault.encrypt(session, directory), new DecryptingListProgressListener(session, find, vault, listener));
     }
 
     @Override

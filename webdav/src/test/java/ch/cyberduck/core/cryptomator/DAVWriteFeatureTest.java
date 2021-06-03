@@ -85,7 +85,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(test));
-        assertEquals(content.length, new CryptoListService(session, new DAVListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new CryptoListService(session, new DAVListService(session), new DAVFindFeature(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, new CryptoWriteFeature<>(session, new DAVWriteFeature(session, true), cryptomator).append(test, status
             .withRemote(new CryptoAttributesFeature(session, new DAVAttributesFinderFeature(session), cryptomator).find(test))).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

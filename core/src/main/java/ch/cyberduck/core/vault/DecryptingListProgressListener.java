@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
@@ -32,10 +33,12 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
 
     private final Session<?> session;
     private final Vault vault;
+    private final Find find;
     private final ListProgressListener delegate;
 
-    public DecryptingListProgressListener(final Session<?> session, final Vault vault, final ListProgressListener delegate) {
+    public DecryptingListProgressListener(final Session<?> session, final Find find, final Vault vault, final ListProgressListener delegate) {
         this.session = session;
+        this.find = find;
         this.vault = vault;
         this.delegate = delegate;
     }
@@ -53,6 +56,9 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
                     versions.add(vault.decrypt(session, version));
                 }
                 list.set(index, vault.decrypt(session, f).withAttributes(new PathAttributes(f.attributes()).withVersions(versions)));
+            }
+            if (find != null && list.get(index).isDirectory() && !find.find(vault.encrypt(session, list.get(index)))) {
+                list.remove(index);
             }
         }
         catch(BackgroundException e) {

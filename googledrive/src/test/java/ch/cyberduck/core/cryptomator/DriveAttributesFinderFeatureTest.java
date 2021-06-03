@@ -38,6 +38,7 @@ import ch.cyberduck.core.googledrive.DriveAttributesFinderFeature;
 import ch.cyberduck.core.googledrive.DriveDeleteFeature;
 import ch.cyberduck.core.googledrive.DriveDirectoryFeature;
 import ch.cyberduck.core.googledrive.DriveFileIdProvider;
+import ch.cyberduck.core.googledrive.DriveFindFeature;
 import ch.cyberduck.core.googledrive.DriveHomeFinderService;
 import ch.cyberduck.core.googledrive.DriveListService;
 import ch.cyberduck.core.googledrive.DriveWriteFeature;
@@ -128,7 +129,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final DriveFileIdProvider idProvider = new DriveFileIdProvider(session);
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DefaultUploadFeature<>(new DriveWriteFeature(session, idProvider)), new DriveAttributesFinderFeature(session, idProvider)), new DriveWriteFeature(session, idProvider), cryptomator).touch(
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path found = new CryptoListService(session, new DriveListService(session, idProvider), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
+        final Path found = new CryptoListService(session, new DriveListService(session, idProvider), new DriveFindFeature(session, idProvider), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
         assertEquals(0L, found.attributes().getSize());
         final Cache<Path> cache = new PathCache(1);
         final AttributedList<Path> list = new AttributedList<>();
@@ -156,7 +157,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String fileId = test.attributes().getFileId();
         assertNotNull(fileId);
-        final Path found = new CryptoListService(session, new DriveListService(session, idProvider), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
+        final Path found = new CryptoListService(session, new DriveListService(session, idProvider), new DriveFindFeature(session, idProvider), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
         assertNull(found.attributes().getFileId());
         assertEquals(fileId, new CryptoFileIdProvider(session, idProvider, cryptomator).getFileId(found, new DisabledListProgressListener()));
         final Cache<Path> cache = new PathCache(1);

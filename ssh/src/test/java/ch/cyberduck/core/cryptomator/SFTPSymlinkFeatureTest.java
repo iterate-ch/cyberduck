@@ -72,7 +72,7 @@ public class SFTPSymlinkFeatureTest extends AbstractSFTPTest {
         new CryptoSymlinkFeature(session, new SFTPSymlinkFeature(session), cryptomator).symlink(link, target.getName());
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(link));
         assertEquals(EnumSet.of(Path.Type.file, Path.Type.symboliclink, Path.Type.decrypted),
-            new CryptoListService(session, new SFTPListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(link).getType());
+            new CryptoListService(session, new SFTPListService(session), new SFTPFindFeature(session), cryptomator).list(vault, new DisabledListProgressListener()).get(link).getType());
         cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Collections.singletonList(link), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(link));
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(target));

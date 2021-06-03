@@ -26,6 +26,7 @@ import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.dav.AbstractDAVTest;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
+import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVListService;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.dav.DAVWriteFeature;
@@ -60,10 +61,10 @@ public class DAVListServiceTest extends AbstractDAVTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        assertTrue(new CryptoListService(session, new DAVListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
+        assertTrue(new CryptoListService(session, new DAVListService(session), new DAVFindFeature(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)),
             new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(test, new TransferStatus());
-        assertEquals(test, new CryptoListService(session, new DAVListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
+        assertEquals(test, new CryptoListService(session, new DAVListService(session), new DAVFindFeature(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

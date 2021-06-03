@@ -89,7 +89,7 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
         out.close();
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         final PathAttributes attr = new CryptoAttributesFeature(session, new FTPAttributesFinderFeature(session), cryptomator).find(test);
-        assertEquals(content.length, new CryptoListService(session, new FTPListService(session, null, TimeZone.getDefault()), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new CryptoListService(session, new FTPListService(session, null, TimeZone.getDefault()), new DefaultFindFeature(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, new CryptoWriteFeature<>(session, new FTPWriteFeature(session), cryptomator).append(test, status.withRemote(attr)).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new FTPReadFeature(session), cryptomator).read(test, new TransferStatus(), new DisabledConnectionCallback());

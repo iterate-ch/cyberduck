@@ -560,7 +560,7 @@ public class CryptoVault implements Vault {
     public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
         if(this.isUnlocked()) {
             if(type == ListService.class) {
-                return (T) new CryptoListService(session, (ListService) delegate, this);
+                return (T) new CryptoListService(session, (ListService) delegate, session._getFeature(Find.class), this);
             }
             if(type == Touch.class) {
                 // Use default touch feature because touch with remote implementation will not add encrypted file header

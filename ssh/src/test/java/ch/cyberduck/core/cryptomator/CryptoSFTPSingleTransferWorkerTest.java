@@ -114,7 +114,7 @@ public class CryptoSFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(dir1));
         final PathAttributes attributes1 = new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(file1);
         assertEquals(1513092263000L, attributes1.getModificationDate());
-        assertEquals(1513092263000L, new CryptoListService(session, new SFTPListService(session), cryptomator).list(dir1, new DisabledListProgressListener()).get(file1).attributes().getModificationDate());
+        assertEquals(1513092263000L, new CryptoListService(session, new SFTPListService(session), new SFTPFindFeature(session), cryptomator).list(dir1, new DisabledListProgressListener()).get(file1).attributes().getModificationDate());
         assertEquals(content.length, attributes1.getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

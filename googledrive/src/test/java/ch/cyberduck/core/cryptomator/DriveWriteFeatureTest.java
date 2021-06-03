@@ -130,7 +130,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new CryptoFindFeature(session, new DriveFindFeature(session, fileid), cryptomator).find(test));
-        final Path found = new CryptoListService(session, new DriveListService(session, fileid), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
+        final Path found = new CryptoListService(session, new DriveListService(session, fileid), new DriveFindFeature(session, fileid), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
         final String fileId = found.attributes().getFileId();
         assertNotNull(fileId);
         final Cache<Path> cache = new PathCache(1);
