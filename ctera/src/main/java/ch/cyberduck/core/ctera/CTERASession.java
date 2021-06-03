@@ -28,6 +28,7 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.ctera.auth.CTERATokens;
 import ch.cyberduck.core.ctera.model.AttachDeviceResponse;
 import ch.cyberduck.core.ctera.model.Attachment;
+import ch.cyberduck.core.ctera.model.PortalSession;
 import ch.cyberduck.core.ctera.model.PublicInfo;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVRedirectStrategy;
@@ -94,20 +95,24 @@ public class CTERASession extends DAVSession {
             final AttachDeviceResponse response;
             if(this.getPublicInfo().hasWebSSO) {
                 response = this.startWebSSOFlow(cancel, credentials);
-                credentials.setUsername(response.deviceUID);
             }
             else {
                 response = this.startDesktopFlow(prompt, credentials);
             }
             final CTERATokens tokens = new CTERATokens(response.deviceUID, response.sharedSecret);
             authentication.setTokens(tokens);
+            authentication.authenticate();
             credentials.setToken(tokens.toString());
             credentials.setSaved(true);
         }
         else {
             authentication.setTokens(CTERATokens.parse(credentials.getToken()));
+            authentication.authenticate();
         }
-        authentication.authenticate();
+        if(StringUtils.isBlank(credentials.getUsername())) {
+            credentials.setUsername(this.getCurrentSession().username);
+            credentials.setSaved(true);
+        }
     }
 
     private AttachDeviceResponse startWebSSOFlow(final CancelCallback cancel, final Credentials credentials) throws BackgroundException {
@@ -256,6 +261,22 @@ public class CTERASession extends DAVSession {
                 public PublicInfo handleEntity(final HttpEntity entity) throws IOException {
                     ObjectMapper mapper = new ObjectMapper();
                     return mapper.readValue(entity.getContent(), PublicInfo.class);
+                }
+            });
+        }
+        catch(IOException e) {
+            throw new HttpExceptionMappingService().map(e);
+        }
+    }
+
+    private PortalSession getCurrentSession() throws BackgroundException {
+        final HttpGet request = new HttpGet("/ServicesPortal/api/currentSession?format=jsonext");
+        try {
+            return client.execute(request, new AbstractResponseHandler<PortalSession>() {
+                @Override
+                public PortalSession handleEntity(final HttpEntity entity) throws IOException {
+                    ObjectMapper mapper = new ObjectMapper();
+                    return mapper.readValue(entity.getContent(), PortalSession.class);
                 }
             });
         }
