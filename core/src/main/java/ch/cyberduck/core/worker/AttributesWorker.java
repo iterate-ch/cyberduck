@@ -13,6 +13,8 @@ package ch.cyberduck.core.worker;/*
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CachingAttributesFinderFeature;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -27,9 +29,11 @@ import java.text.MessageFormat;
 public class AttributesWorker extends Worker<PathAttributes> {
     private static final Logger log = Logger.getLogger(AttributesWorker.class.getName());
 
+    private final Cache<Path> cache;
     private final Path file;
 
-    public AttributesWorker(final Path file) {
+    public AttributesWorker(final Cache<Path> cache, final Path file) {
+        this.cache = cache;
         this.file = file;
     }
 
@@ -38,7 +42,7 @@ public class AttributesWorker extends Worker<PathAttributes> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Read latest attributes for file %s", file));
         }
-        final AttributesFinder find = session.getFeature(AttributesFinder.class);
+        final AttributesFinder find = new CachingAttributesFinderFeature(cache, session.getFeature(AttributesFinder.class));
         final PathAttributes attr = find.find(file);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Return %s for file %s", attr, file));
