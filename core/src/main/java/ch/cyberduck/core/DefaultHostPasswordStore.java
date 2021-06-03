@@ -209,7 +209,8 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         if(credentials.isTokenAuthentication()) {
             this.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-                bookmark.getHostname(), bookmark.getProtocol().getTokenPlaceholder(), credentials.getToken());
+                bookmark.getHostname(), StringUtils.isEmpty(credentials.getUsername()) ?
+                    bookmark.getProtocol().getTokenPlaceholder() : credentials.getUsername(), credentials.getToken());
         }
         if(credentials.isOAuthAuthentication()) {
             final String prefix = this.getOAuthPrefix(bookmark);
