@@ -56,7 +56,7 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
             }
         }
         catch(BackgroundException e) {
-            log.error(String.format("Failure decrypting %s. %s", f, e));
+            log.error(String.format("Failure %s decrypting %s", e, f));
             list.remove(index);
         }
     }

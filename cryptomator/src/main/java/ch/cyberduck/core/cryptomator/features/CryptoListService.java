@@ -21,10 +21,14 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.vault.DecryptingListProgressListener;
 
+import org.apache.log4j.Logger;
+
 public class CryptoListService implements ListService {
+    private static final Logger log = Logger.getLogger(CryptoListService.class);
 
     private final Session<?> session;
     private final ListService delegate;
@@ -38,7 +42,14 @@ public class CryptoListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return delegate.list(vault.encrypt(session, directory), new DecryptingListProgressListener(session, vault, listener));
+        final Path target = vault.encrypt(session, directory);
+        try {
+            return delegate.list(target, new DecryptingListProgressListener(session, vault, listener));
+        }
+        catch(NotfoundException e) {
+            log.error(String.format("Failure %s listing directory %s at %s", e, directory, target));
+            return AttributedList.emptyList();
+        }
     }
 
     @Override

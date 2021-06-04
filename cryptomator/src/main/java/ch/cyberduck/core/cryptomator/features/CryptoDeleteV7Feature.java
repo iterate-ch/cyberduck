@@ -24,6 +24,7 @@ import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -81,7 +82,12 @@ public class CryptoDeleteV7Feature implements Delete {
             }
         }
         if(!encrypted.isEmpty()) {
-            proxy.delete(encrypted, prompt, callback);
+            try {
+                proxy.delete(encrypted, prompt, callback);
+            }
+            catch(NotfoundException e) {
+                log.error(String.format("Failure %s deleting file %s", e, encrypted));
+            }
         }
         for(Path f : files.keySet()) {
             if(f.equals(vault.getHome())) {
