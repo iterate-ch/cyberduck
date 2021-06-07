@@ -10,15 +10,22 @@ WM_VSCROLL
 CLSID_DragDropHelper
 
 // Types
-FD_FLAGS
 CLSCTX
 DROPDESCRIPTION
 DVASPECT
+FD_FLAGS
 FORMATETC
-IDropTargetHelper
 TYMED
+
+// Interfaces
+IDropTargetHelper
+IInitializeWithWindow
+IObjectArray
+IVirtualDesktopManager
 
 // Methods
 CoCreateInstance
+GetForegroundWindow
+GetWindowThreadProcessId
 HideCaret
 RegisterClipboardFormat

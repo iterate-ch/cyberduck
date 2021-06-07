@@ -8,6 +8,8 @@ using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk;
+using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.PInvoke;
 
 // Based on http://stackoverflow.com/a/32417530, Windows 10 SDK and github project VirtualDesktop
 
@@ -262,14 +264,6 @@ namespace Ch.Cyberduck.Ui.Core.VirtualDesktop.Windows1803
             return new Desktop(DesktopManager.VirtualDesktopManagerInternal.FindDesktop(ref id));
         }
 
-        // Get handle of active window
-        [DllImport("user32.dll")]
-        public static extern IntPtr GetForegroundWindow();
-
-        // Get process id to window handle
-        [DllImport("user32.dll")]
-        public static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
-
         public static bool IsApplicationPinned(IntPtr hWnd)
         { // Returns true if application for window <hWnd> is pinned to all desktops
             if (hWnd == IntPtr.Zero) throw new ArgumentNullException();
@@ -413,7 +407,7 @@ namespace Ch.Cyberduck.Ui.Core.VirtualDesktop.Windows1803
             var currentDesktop = DesktopManager.VirtualDesktopManagerInternal.GetCurrentDesktop();
             var id = currentDesktop.GetId();
 
-            DesktopManager.VirtualDesktopManager.MoveWindowToDesktop(handle, ref id);
+            DesktopManager.VirtualDesktopManager.MoveWindowToDesktop(handle, id);
         }
     }
 
@@ -456,10 +450,9 @@ namespace Ch.Cyberduck.Ui.Core.VirtualDesktop.Windows1803
             if (index < 0 || index >= count) throw new ArgumentOutOfRangeException("index");
             IObjectArray desktops;
             VirtualDesktopManagerInternal.GetDesktops(out desktops);
-            object objdesktop;
-            desktops.GetAt(index, typeof(IVirtualDesktop).GUID, out objdesktop);
+            IVirtualDesktop objdesktop = desktops.GetAt<IVirtualDesktop>(index);
             Marshal.ReleaseComObject(desktops);
-            return (IVirtualDesktop)objdesktop;
+            return objdesktop;
         }
 
         internal static int GetDesktopIndex(IVirtualDesktop desktop)
@@ -468,11 +461,11 @@ namespace Ch.Cyberduck.Ui.Core.VirtualDesktop.Windows1803
             Guid IdSearch = desktop.GetId();
             IObjectArray desktops;
             VirtualDesktopManagerInternal.GetDesktops(out desktops);
-            object objdesktop;
+            IVirtualDesktop objdesktop;
             for (int i = 0; i < VirtualDesktopManagerInternal.GetCount(); i++)
             {
-                desktops.GetAt(i, typeof(IVirtualDesktop).GUID, out objdesktop);
-                if (IdSearch.CompareTo(((IVirtualDesktop)objdesktop).GetId()) == 0)
+                objdesktop = desktops.GetAt<IVirtualDesktop>(i);
+                if (IdSearch.CompareTo(objdesktop.GetId()) == 0)
                 {
                     index = i;
                     break;

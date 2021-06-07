@@ -26,33 +26,11 @@ namespace Ch.Cyberduck.Ui.Core.VirtualDesktop
 
     [ComImport]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [Guid("92CA9DCD-5622-4BBA-A805-5E9F541BD8C9")]
-    internal interface IObjectArray
-    {
-        void GetCount(out int count);
-
-        void GetAt(int index, ref Guid iid, [MarshalAs(UnmanagedType.Interface)]out object obj);
-    }
-
-    [ComImport]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [Guid("6D5140C1-7436-11CE-8034-00AA006009FA")]
     internal interface IServiceProvider10
     {
         [return: MarshalAs(UnmanagedType.IUnknown)]
         object QueryService(ref Guid service, ref Guid riid);
-    }
-
-    [ComImport]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [Guid("A5CD92FF-29BE-454C-8D04-D82879FB3F1B")]
-    internal interface IVirtualDesktopManager
-    {
-        bool IsWindowOnCurrentVirtualDesktop(IntPtr topLevelWindow);
-
-        Guid GetWindowDesktopId(IntPtr topLevelWindow);
-
-        void MoveWindowToDesktop(IntPtr topLevelWindow, ref Guid desktopId);
     }
 
     [StructLayout(LayoutKind.Sequential)]

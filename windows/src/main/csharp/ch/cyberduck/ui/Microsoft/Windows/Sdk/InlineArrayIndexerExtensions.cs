@@ -2,7 +2,7 @@
 
 namespace Ch.Cyberduck.Ui.Microsoft.Windows.Sdk
 {
-    public static partial class InlineArrayIndexerExtensions
+    public static partial class FriendlyOverloadExtensions
     {
         public unsafe static Span<ushort> AsSpan(this in DROPDESCRIPTION.__ushort_260 @this)
         {
