@@ -1,13 +1,15 @@
 ﻿// Constants
+CLSID_DragDropHelper
 ECM_FIRST
 MA_ACTIVATE
 MA_ACTIVATEANDEAT
 SB_BOTTOM
 TO_ADVANCEDTYPOGRAPHY
+WM_HSCROLL
 WM_MOUSEACTIVATE
+WM_PAINT
 WM_USER
 WM_VSCROLL
-CLSID_DragDropHelper
 
 // Types
 CLSCTX
@@ -25,7 +27,11 @@ IVirtualDesktopManager
 
 // Methods
 CoCreateInstance
+DeleteObject
 GetForegroundWindow
 GetWindowThreadProcessId
 HideCaret
+LoadLibrary
 RegisterClipboardFormat
+SetMenuInfo
+SetMenuItemInfo

@@ -23,6 +23,9 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
+using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Constants;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -31,15 +34,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
     /// </summary>
     public class ListViewControls : ObjectListView
     {
-        // ListView messages
-        private const int LVM_FIRST = 0x1000;
-        private const int LVM_GETCOLUMNORDERARRAY = (LVM_FIRST + 59);
-
-        // Windows Messages
-        private const int WM_HSCROLL = 0x114;
-        private const int WM_PAINT = 0x000F;
-        private const int WM_VSCROLL = 0x115;
-
         private readonly ArrayList _embeddedControls = new ArrayList();
 
         public ListViewControls()
@@ -63,19 +57,16 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             }
         }
 
-        [DllImport("user32.dll")]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wPar, IntPtr lPar);
-
         /// <summary>
         /// Retrieve the order in which columns appear
         /// </summary>
         /// <returns>Current display order of column indices</returns>
         protected int[] GetColumnOrder()
         {
-            IntPtr lPar = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (int))*Columns.Count);
+            IntPtr lPar = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(int)) * Columns.Count);
 
-            IntPtr res = SendMessage(Handle, LVM_GETCOLUMNORDERARRAY, new IntPtr(Columns.Count), lPar);
-            if (res.ToInt32() == 0) // Something went wrong
+            LRESULT res = SendMessage(Handle, LVM_GETCOLUMNORDERARRAY, (nuint)Columns.Count, lPar);
+            if (res == 0) // Something went wrong
             {
                 Marshal.FreeHGlobal(lPar);
                 return null;
@@ -193,7 +184,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             bool found = false;
             for (int i = 0; i < _embeddedControls.Count; i++)
             {
-                EmbeddedControl ec = (EmbeddedControl) _embeddedControls[i];
+                EmbeddedControl ec = (EmbeddedControl)_embeddedControls[i];
                 if (ec.Control == c)
                 {
                     c.Click -= _embeddedControl_Click;
@@ -203,7 +194,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
                 }
                 if (found && i < _embeddedControls.Count)
                 {
-                    ec = (EmbeddedControl) _embeddedControls[i];
+                    ec = (EmbeddedControl)_embeddedControls[i];
                     ec.Row--;
                 }
             }
@@ -226,7 +217,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
 
         protected override void WndProc(ref Message m)
         {
-            switch (m.Msg)
+            switch ((uint)m.Msg)
             {
                 case WM_HSCROLL:
                 case WM_VSCROLL:
