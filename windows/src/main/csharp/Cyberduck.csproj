@@ -70,7 +70,6 @@
         <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
         <PackageReference Include="Microsoft.Windows.CsWin32" />
         <PackageReference Include="Microsoft.Windows.SDK.Contracts" />
-        <PackageReference Include="Microsoft.Windows.Sdk.Win32Metadata" />
         <PackageReference Include="StructureMap" />
         <PackageReference Include="WindowsAPICodePack-Core" />
         <PackageReference Include="WindowsAPICodePack-Shell" />

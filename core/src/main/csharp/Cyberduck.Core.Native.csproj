@@ -38,7 +38,6 @@
         <PackageReference Include="ExceptionReporter " />
         <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
         <PackageReference Include="Microsoft.Windows.CsWin32" />
-        <PackageReference Include="Microsoft.Windows.Sdk.Win32Metadata" />
         <PackageReference Include="Microsoft.Windows.SDK.Contracts" />
     </ItemGroup>
 
