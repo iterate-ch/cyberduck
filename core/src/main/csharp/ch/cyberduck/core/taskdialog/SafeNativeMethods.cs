@@ -1,6 +1,9 @@
 ﻿using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Constants;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.GetWindowLongPtr_nIndex;
 using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.WINDOWS_EX_STYLE;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.WINDOWS_STYLE;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.SetWindowPos_uFlags;
 
 namespace Ch.Cyberduck.Core.TaskDialog
 {
@@ -20,9 +23,9 @@ namespace Ch.Cyberduck.Core.TaskDialog
             int style = GetWindowLong(handle, GWL_STYLE);
 
             if (showCloseButton)
-                SetWindowLong(handle, GWL_STYLE, (int)(style & WS_SYSMENU));
+                SetWindowLong(handle, GWL_STYLE, style & (int)WS_SYSMENU);
             else
-                SetWindowLong(handle, GWL_STYLE, (int)(style & ~WS_SYSMENU));
+                SetWindowLong(handle, GWL_STYLE, style & ~(int)WS_SYSMENU);
         }
 
         /// <summary>
@@ -33,15 +36,14 @@ namespace Ch.Cyberduck.Core.TaskDialog
         public static void SetWindowIconVisibility(HWND handle, bool showIcon)
         {
             // Change the extended window style
+            int extendedStyle = GetWindowLong(handle, GWL_EXSTYLE);
             if (showIcon)
             {
-                int extendedStyle = GetWindowLong(handle, GWL_EXSTYLE);
-                SetWindowLong(handle, GWL_EXSTYLE, extendedStyle | ~WS_EX_DLGMODALFRAME);
+                SetWindowLong(handle, GWL_EXSTYLE, extendedStyle | ~(int)WS_EX_DLGMODALFRAME);
             }
             else
             {
-                int extendedStyle = GetWindowLong(handle, GWL_EXSTYLE);
-                SetWindowLong(handle, GWL_EXSTYLE, extendedStyle | WS_EX_DLGMODALFRAME);
+                SetWindowLong(handle, GWL_EXSTYLE, extendedStyle | (int)WS_EX_DLGMODALFRAME);
             }
 
             // Update the window's non-client area to reflect the changes

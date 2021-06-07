@@ -5,8 +5,9 @@ using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Constants;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk._TASKDIALOG_FLAGS;
 using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.TASKDIALOG_NOTIFICATIONS;
 
 namespace Ch.Cyberduck.Core.TaskDialog
 {
@@ -54,50 +55,60 @@ namespace Ch.Cyberduck.Core.TaskDialog
         /// a Cancel-like button in it.
         /// </remarks>
         public bool AllowDialogCancellation;
+
         /// <summary>
         /// A callback that receives messages from the Task Dialog when
         /// various events occur.
         /// </summary>
         public TaskDialogCallback Callback;
+
         /// <summary>
         /// Reference object that is passed to the callback.
         /// </summary>
         public object CallbackData;
+
         /// <summary>
         /// Command links. These override any custom buttons, but can be used with
         /// radio and common buttons.
         /// </summary>
         public string[] CommandLinks;
+
         /// <summary>
         /// Standard push buttons.
         /// </summary>
         public TaskDialogCommonButtons CommonButtons;
+
         /// <summary>
         /// Supplemental text that expands on the principal text.
         /// </summary>
         public string Content;
+
         /// <summary>
         /// Buttons that are not from the set of standard buttons. Use an
         /// ampersand to denote an access key. These are ignored if CommandLinks
         /// are also defined. These will be appended after any defined common buttons.
         /// </summary>
         public string[] CustomButtons;
+
         /// <summary>
         /// A small 16x16 icon that signifies the purpose of the footer text,
         /// using a custom Icon resource. If defined <see cref="FooterIcon"/>
         /// will be ignored.
         /// </summary>
         public Icon CustomFooterIcon;
+
         /// <summary>
         /// A large 32x32 icon that signifies the purpose of the dialog, using
         /// a custom Icon resource. If defined <see cref="MainIcon"/> will be
         /// ignored.
         /// </summary>
         public Icon CustomMainIcon;
+
         /// <summary>
         /// Zero-based index of the button to have focus by default.
         /// </summary>
         public int? DefaultButtonIndex;
+
         /// <summary>
         /// Indicates that the task dialog's callback is to be called
         /// approximately every 200 milliseconds.
@@ -108,47 +119,57 @@ namespace Ch.Cyberduck.Core.TaskDialog
         /// time to complete, etc.
         /// </remarks>
         public bool EnableCallbackTimer;
+
         /// <summary>
         /// Indicates that the expanded info should be displayed when the
         /// dialog is initially displayed.
         /// </summary>
         public bool ExpandedByDefault;
+
         /// <summary>
         /// Extra text that will be hidden by default.
         /// </summary>
         public string ExpandedInfo;
+
         /// <summary>
         /// Indicates that the expanded info should be displayed at the bottom
         /// of the dialog's footer area instead of immediately after the
         /// dialog's content.
         /// </summary>
         public bool ExpandToFooter;
+
         /// <summary>
         /// A small 16x16 icon that signifies the purpose of the footer text,
         /// using one of the built-in system icons.
         /// </summary>
         public TaskDialogIcon FooterIcon;
+
         /// <summary>
         /// Additional footer text.
         /// </summary>
         public string FooterText;
+
         /// <summary>
         /// A large 32x32 icon that signifies the purpose of the dialog, using
         /// one of the built-in system icons.
         /// </summary>
         public TaskDialogIcon MainIcon;
+
         /// <summary>
         /// Principal text.
         /// </summary>
         public string MainInstruction;
+
         /// <summary>
         /// The owner window of the task dialog box.
         /// </summary>
         public IntPtr Owner;
+
         /// <summary>
         /// Application-defined options for the user.
         /// </summary>
         public string[] RadioButtons;
+
         /// <summary>
         /// Indicates that an Marquee Progress Bar is to be displayed.
         /// </summary>
@@ -157,6 +178,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
         /// timer to control the dialog at custom intervals.
         /// </remarks>
         public bool ShowMarqueeProgressBar;
+
         /// <summary>
         /// Indicates that a Progress Bar is to be displayed.
         /// </summary>
@@ -166,15 +188,18 @@ namespace Ch.Cyberduck.Core.TaskDialog
         /// control the dialog at custom intervals.
         /// </remarks>
         public bool ShowProgressBar;
+
         /// <summary>
         /// Caption of the window.
         /// </summary>
         public string Title;
+
         /// <summary>
         /// Indicates that the verification checkbox in the dialog is checked
         /// when the dialog is initially displayed.
         /// </summary>
         public bool VerificationByDefault;
+
         /// <summary>
         /// Text accompanied by a checkbox, typically for user feedback such as
         /// Do-not-show-this-dialog-again options.
@@ -756,13 +781,14 @@ namespace Ch.Cyberduck.Core.TaskDialog
 
         private unsafe static HRESULT Handler(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam, nint lpRefData)
         {
+            var notification = (TASKDIALOG_NOTIFICATIONS)msg;
             ref var contextData = ref Unsafe.AsRef<CallbackContext>((void*)lpRefData);
             TaskDialogNotificationArgs args = new()
             {
                 TaskDialog = new TaskDialogData() { HWND = hwnd },
-                Notification = (TaskDialogNotification)msg
+                Notification = notification
             };
-            switch (msg)
+            switch (notification)
             {
                 case TDN_BUTTON_CLICKED:
                 case TDN_RADIO_BUTTON_CLICKED:
@@ -805,13 +831,14 @@ namespace Ch.Cyberduck.Core.TaskDialog
 
         private unsafe static TaskDialogResult ShowTaskDialog(TaskDialogOptions options)
         {
-            static void SetIfNotEmpty(in PWSTR field, string value)
+            static void SetIfNotEmpty(in PCWSTR field, string value)
             {
                 if (!string.IsNullOrWhiteSpace(value))
                 {
                     Unsafe.AsRef(field) = value;
                 }
             }
+
             static IDisposable CreateRadioButtons(
                 string[] radioButtons,
                 in int nDefaultRadioButton,
@@ -885,7 +912,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
                 return pool;
             }
 
-            TASKDIALOGCONFIG tdc = new() { cbSize = (uint)sizeof(TASKDIALOGCONFIG) };
+            TASKDIALOGCONFIG tdc = new() { cbSize = (uint)Marshal.SizeOf<TASKDIALOGCONFIG>() };
             SetIfNotEmpty(tdc.pszWindowTitle, options.Title);
             SetIfNotEmpty(tdc.pszMainInstruction, options.MainInstruction);
             SetIfNotEmpty(tdc.pszContent, options.Content);
@@ -895,7 +922,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             SetIfNotEmpty(tdc.pszExpandedControlText, "Hide details");
             SetIfNotEmpty(tdc.pszCollapsedControlText, "Show details");
 
-            TaskDialogFlags flags = default;
+            _TASKDIALOG_FLAGS flags = default;
             using var buttonMemory = CreateButtons(
                 options.CommandLinks,
                 options.CustomButtons,
@@ -922,47 +949,47 @@ namespace Ch.Cyberduck.Core.TaskDialog
             if (options.CustomMainIcon != null)
             {
                 tdc.Anonymous1.hMainIcon = (HICON)options.CustomMainIcon.Handle;
-                flags |= TaskDialogFlags.UseHIconMain;
+                flags |= TDF_USE_HICON_MAIN;
             }
             tdc.Anonymous2.pszFooterIcon = (char*)(int)options.FooterIcon;
             if (options.CustomFooterIcon != null)
             {
                 tdc.Anonymous2.hFooterIcon = (HICON)options.CustomMainIcon.Handle;
-                flags |= TaskDialogFlags.UseHIconFooter;
+                flags |= TDF_USE_HICON_FOOTER;
             }
             if (DetectHyperlinks(options.Content, options.ExpandedInfo, options.FooterText))
             {
-                flags |= TaskDialogFlags.EnableHyperlinks;
+                flags |= TDF_ENABLE_HYPERLINKS;
             }
             if (options.AllowDialogCancellation || (options.CommonButtons & (TaskDialogCommonButtons.Close | TaskDialogCommonButtons.Cancel)) > 0)
             {
-                flags |= TaskDialogFlags.AllowDialogCancellation;
+                flags |= TDF_ALLOW_DIALOG_CANCELLATION;
             }
             if (options.EnableCallbackTimer)
             {
-                flags |= TaskDialogFlags.CallbackTimer;
+                flags |= TDF_CALLBACK_TIMER;
             }
             if (options.ExpandedByDefault)
             {
-                flags |= TaskDialogFlags.ExpandedByDefault;
+                flags |= TDF_EXPANDED_BY_DEFAULT;
             }
             if (options.ExpandToFooter)
             {
-                flags |= TaskDialogFlags.ExpandFooterArea;
+                flags |= TDF_EXPAND_FOOTER_AREA;
             }
-            flags |= TaskDialogFlags.PositionRelativeToWindow;
+            flags |= TDF_POSITION_RELATIVE_TO_WINDOW;
 
             if (options.ShowProgressBar)
             {
-                flags |= TaskDialogFlags.ShowProgressBar;
+                flags |= TDF_SHOW_PROGRESS_BAR;
             }
             if (options.ShowMarqueeProgressBar)
             {
-                flags |= TaskDialogFlags.ShowMarqueeProgressBar;
+                flags |= TDF_SHOW_MARQUEE_PROGRESS_BAR;
             }
             if (options.VerificationByDefault)
             {
-                flags |= TaskDialogFlags.VerificationFlagChecked;
+                flags |= TDF_VERIFICATION_FLAG_CHECKED;
             }
             tdc.dwFlags = (int)flags;
 
@@ -976,7 +1003,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
                     CommonButtons = options.CommonButtons,
                     Callback = options.Callback
                 };
-                tdc.pfCallback = Marshal.GetFunctionPointerForDelegate(callback);
+                tdc.pfCallback = callback;
                 tdc.lpCallbackData = (nint)Unsafe.AsPointer(ref context);
             }
 
@@ -1056,7 +1083,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
         /// <summary>
         /// Gets what the TaskDialog callback is a notification of.
         /// </summary>
-        public TaskDialogNotification Notification { get; internal set; }
+        public TASKDIALOG_NOTIFICATIONS Notification { get; internal set; }
 
         public ITaskDialog TaskDialog { get; internal set; }
 

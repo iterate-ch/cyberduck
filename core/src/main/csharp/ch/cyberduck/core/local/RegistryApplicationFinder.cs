@@ -225,15 +225,15 @@ namespace Ch.Cyberduck.Core.Local
             try
             {
                 AssocCreate<IQueryAssociations>(CLSID_QueryAssociations, out var qa);
-                qa->Init(ASSOCF_INIT_DEFAULTTOSTAR, extension, null, (HWND)0);
+                qa.Init(ASSOCF_INIT_DEFAULTTOSTAR, extension, null, (HWND)0);
 
                 uint size = 0;
-                qa->GetString(ASSOCF_NOTRUNCATE, ASSOCSTR_COMMAND, verb, (char*)0, ref size);
+                qa.GetString(ASSOCF_NOTRUNCATE, ASSOCSTR_COMMAND, verb, (char*)0, ref size);
 
                 // GetString assumes null-terminated string. C#-Strings are null-terminated.
                 // Excludes last char.
                 var cmd = new string(char.MinValue, (int)size - 1);
-                qa->GetString(ASSOCF_NOTRUNCATE, ASSOCSTR_COMMAND, verb, cmd, ref size);
+                qa.GetString(ASSOCF_NOTRUNCATE, ASSOCSTR_COMMAND, verb, cmd, ref size);
 
                 if (Utils.IsBlank(cmd))
                 {

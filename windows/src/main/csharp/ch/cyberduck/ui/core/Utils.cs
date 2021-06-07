@@ -23,6 +23,7 @@ using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.TASKDIALOG_NOTIFICATIONS;
 
 namespace Ch.Cyberduck.Ui.Core
 {
@@ -48,7 +49,7 @@ namespace Ch.Cyberduck.Ui.Core
                 {
                     switch (args.Notification)
                     {
-                        case TaskDialogNotification.HyperlinkClicked:
+                        case TDN_HYPERLINK_CLICKED:
                             BrowserLauncherFactory.get().open(args.Hyperlink);
                             return true;
                     }
@@ -98,7 +99,7 @@ namespace Ch.Cyberduck.Ui.Core
                 {
                     switch (args.Notification)
                     {
-                        case TaskDialogNotification.HyperlinkClicked:
+                        case TDN_HYPERLINK_CLICKED:
                             BrowserLauncherFactory.get().open(args.Hyperlink);
                             return true;
                     }

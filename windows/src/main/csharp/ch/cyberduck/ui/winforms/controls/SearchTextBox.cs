@@ -24,7 +24,8 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms.Controls.Design;
 using ch.cyberduck.core;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Constants;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.WINDOWS_STYLE;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.WINDOWS_EX_STYLE;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -104,11 +105,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             get
             {
                 CreateParams createParams = base.CreateParams;
-                createParams.ExStyle |= WS_EX_CONTROLPARENT;
-                createParams.ExStyle &= ~WS_EX_CLIENTEDGE;
+                createParams.ExStyle |= (int)WS_EX_CONTROLPARENT;
+                createParams.ExStyle &= ~(int)WS_EX_CLIENTEDGE;
 
                 // make sure WS_BORDER is present in the style
-                createParams.Style |= unchecked((int)WS_BORDER);
+                createParams.Style |= (int)WS_BORDER;
 
                 return createParams;
             }

@@ -35,9 +35,9 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             ReadOnly = true;
             //set the BackColor back to White since ReadOnly=true makes the background grey
             BackColor = Color.White;
-            SendMessage((HWND)Handle, EM_SETTYPOGRAPHYOPTIONS,
+            SendMessage(Handle, EM_SETTYPOGRAPHYOPTIONS,
                                       TO_ADVANCEDTYPOGRAPHY,
-                                      TO_ADVANCEDTYPOGRAPHY);
+                                      (int)TO_ADVANCEDTYPOGRAPHY);
         }
 
         protected override CreateParams CreateParams

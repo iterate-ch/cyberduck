@@ -1,8 +1,14 @@
 ﻿using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using System;
 using System.Drawing;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Constants;
 using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.SetWindowPos_uFlags;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.TASKDIALOG_ELEMENTS;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.TASKDIALOG_ICON_ELEMENTS;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.TASKDIALOG_MESSAGES;
 
 namespace Ch.Cyberduck.Core.TaskDialog
 {
@@ -76,7 +82,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             var handle = args.GetHWND();
             // TDM_CLICK_VERIFICATION = WM_USER+113, // wParam = 0 (unchecked), 1 (checked), lParam = 1 (set key focus)
             SendMessage(handle, TDM_CLICK_VERIFICATION,
-                checkedState ? 1 : 0,
+                checkedState ? 1u : 0,
                 setKeyboardFocusToCheckBox ? 1 : 0);
         }
 
@@ -273,7 +279,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
 
             // TDM_SET_MARQUEE_PROGRESS_BAR        = WM_USER+103, // wParam = 0 (nonMarque) wParam != 0 (Marquee)
             return SendMessage(handle, TDM_SET_MARQUEE_PROGRESS_BAR,
-                marquee ? 1 : 0, 0) != 0;
+                marquee ? 1u : 0, 0) != 0;
 
             // Future: get more detailed error from and throw.
         }
@@ -289,7 +295,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
 
             // TDM_SET_PROGRESS_BAR_MARQUEE        = WM_USER+107, // wParam = 0 (stop marquee), wParam != 0 (start marquee), lparam = speed (milliseconds between repaints)
             SendMessage(handle, TDM_SET_PROGRESS_BAR_MARQUEE,
-                startMarquee ? 1 : 0, speed);
+                startMarquee ? 1u : 0, speed);
         }
 
         /// <summary>
@@ -320,7 +326,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             // #define MAKELPARAM(l, h)      ((LPARAM)(DWORD)MAKELONG(l, h))
             // #define MAKELONG(a, b)      ((LONG)(((WORD)(((DWORD_PTR)(a)) & 0xffff)) | ((DWORD)((WORD)(((DWORD_PTR)(b)) & 0xffff))) << 16))
             return SendMessage(handle, TDM_SET_PROGRESS_BAR_RANGE,
-                0, (int)minRange | maxRange << 16) != 0;
+                default(nuint), (int)minRange | maxRange << 16) != 0;
 
             // Return value is actually prior range.
         }
@@ -335,8 +341,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             var handle = args.GetHWND();
 
             // TDM_SET_PROGRESS_BAR_STATE          = WM_USER+104, // wParam = new progress state
-            return SendMessage(handle, TDM_SET_PROGRESS_BAR_STATE,
-                (uint)newState, 0) != 0;
+            return SendMessage(handle, TDM_SET_PROGRESS_BAR_STATE, newState, default) != 0;
 
             // Future: get more detailed error from and throw.
         }
@@ -416,7 +421,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
 
             // TDM_UPDATE_ICON = WM_USER+116  // wParam = icon element (TASKDIALOG_ICON_ELEMENTS), lParam = new icon (hIcon if TDF_USE_HICON_* was set, PCWSTR otherwise)
             SendMessage(handle, TDM_UPDATE_ICON,
-                TDIE_ICON_FOOTER, (int)icon);
+                TDIE_ICON_FOOTER, icon);
         }
 
         /// <summary>
@@ -476,5 +481,20 @@ namespace Ch.Cyberduck.Core.TaskDialog
         }
 
         private static HWND GetHWND(this TaskDialogNotificationArgs args) => args.TaskDialog is TaskDialogData data ? data.HWND : throw new ArgumentException(nameof(args));
+
+        private unsafe static LRESULT SendMessage(HWND handle, TASKDIALOG_MESSAGES Msg, nuint wParam, nint lParam)
+            => PInvoke.SendMessage(handle, (uint)Msg, (WPARAM)wParam, (LPARAM)lParam);
+
+        private unsafe static LRESULT SendMessage(HWND handle, TASKDIALOG_MESSAGES Msg, TASKDIALOG_ELEMENTS wParam, string lParam)
+            => PInvoke.SendMessage(handle, (uint)Msg, (WPARAM)(nuint)wParam, lParam);
+        
+        private unsafe static LRESULT SendMessage(HWND handle, TASKDIALOG_MESSAGES Msg, TaskDialogProgressBarState wParam, LPARAM lParam)
+            => PInvoke.SendMessage(handle, (uint)Msg, (WPARAM)(nuint)wParam, lParam);
+
+        private unsafe static LRESULT SendMessage(HWND handle, TASKDIALOG_MESSAGES Msg, TASKDIALOG_ICON_ELEMENTS wParam, nint lParam)
+            => PInvoke.SendMessage(handle, (uint)Msg, (WPARAM)(nuint)wParam, (LPARAM)lParam);
+
+        private unsafe static LRESULT SendMessage(HWND handle, TASKDIALOG_MESSAGES Msg, TASKDIALOG_ICON_ELEMENTS wParam, TaskDialogIcon lParam)
+            => SendMessage(handle, Msg, wParam, (LPARAM)(nint)lParam);
     }
 }

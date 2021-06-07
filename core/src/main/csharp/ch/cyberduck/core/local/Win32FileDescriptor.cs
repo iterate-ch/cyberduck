@@ -56,7 +56,7 @@ namespace Ch.Cyberduck.Core.Local
             var fileInfo = new SHFILEINFOW();
             if (SHGetFileInfo(extension, 0, fileInfo, SHGFI_TYPENAME | SHGFI_USEFILEATTRIBUTES) != 0)
             {
-                return new string((char*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(fileInfo.szTypeName)));
+                return new string((char*)Unsafe.AsPointer(ref Unsafe.AsRef(fileInfo.szTypeName)));
             }
             return null;
         }

@@ -31,6 +31,7 @@ using java.security.cert;
 using java.util;
 using org.apache.log4j;
 using X509Certificate = java.security.cert.X509Certificate;
+using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.TASKDIALOG_NOTIFICATIONS;
 
 namespace Ch.Cyberduck.Core
 {
@@ -150,7 +151,7 @@ namespace Ch.Cyberduck.Core
                         {
                             switch (args.Notification)
                             {
-                                case TaskDialogNotification.ButtonClicked:
+                                case TDN_BUTTON_CLICKED:
                                     if (args.ButtonIndex == 2)
                                     {
                                         X509Certificate2UI.DisplayCertificate(serverCert);

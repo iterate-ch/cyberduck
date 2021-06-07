@@ -54,13 +54,14 @@ namespace Ch.Cyberduck.Ui.Core.Resources
                 flags |= SHGFI_LARGEICON;
             }
 
-            using var hIcon = new HICONHandle().With(shfi.hIcon);
             if (SHGetFileInfo(filename, FILE_ATTRIBUTE_NORMAL, shfi, flags) == 0)
             {
                 return null;
             }
-
-            return CloneIcon(hIcon.Value);
+            using (shfi.hIcon)
+            {
+                return CloneIcon(shfi.hIcon);
+            }
         }
 
         private static Icon GetFileIconFromName(string filename, bool isFolder, IconSize size, bool linkOverlay)
@@ -92,13 +93,14 @@ namespace Ch.Cyberduck.Ui.Core.Resources
                 fileAttributes = FILE_ATTRIBUTE_NORMAL;
             }
 
-            using var hIcon = new HICONHandle().With(shfi.hIcon);
             if (SHGetFileInfo(filename, fileAttributes, shfi, flags) == 0)
             {
                 return null;
             }
-
-            return CloneIcon(hIcon.Value);
+            using (shfi.hIcon)
+            {
+                return CloneIcon(shfi.hIcon);
+            }
         }
 
         /// <summary>
@@ -129,14 +131,16 @@ namespace Ch.Cyberduck.Ui.Core.Resources
 
             // Get the folder icon
 
-            using var hIcon = new HICONHandle().With(shfi.hIcon);
             nuint hSuccess = SHGetFileInfo("_unknown", FILE_ATTRIBUTE_DIRECTORY, shfi, flags);
             if (hSuccess == 0)
             {
                 return null;
             }
 
-            return CloneIcon(hIcon.Value);
+            using (shfi.hIcon)
+            {
+                return CloneIcon(shfi.hIcon);
+            }
         }
     }
 }

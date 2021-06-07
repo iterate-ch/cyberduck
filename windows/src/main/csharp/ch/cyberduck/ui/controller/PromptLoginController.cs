@@ -24,6 +24,7 @@ using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp.openssh;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Core.Resources;
 using org.apache.log4j;

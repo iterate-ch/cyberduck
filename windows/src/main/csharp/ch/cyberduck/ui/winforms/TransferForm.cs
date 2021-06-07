@@ -392,9 +392,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         }
 
         public static void ScrollToBottom(RichTextBox richTextBox)
-        {
-            SendMessage(richTextBox.Handle, WM_VSCROLL, SB_BOTTOM, 0);
-        }
+            => SendMessage(richTextBox.Handle, WM_VSCROLL, SB_BOTTOM, default);
 
         private void ConfigureToolbarMenu(ToolStripMenuItem menuItem, ToolStripButton button, String property)
         {
