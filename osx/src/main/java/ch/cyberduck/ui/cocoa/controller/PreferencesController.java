@@ -2171,6 +2171,49 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSPopUpButton cannedAclPopup;
+
+    public void setCannedAclPopup(NSPopUpButton b) {
+        this.cannedAclPopup = b;
+        this.cannedAclPopup.setAutoenablesItems(false);
+        this.cannedAclPopup.removeAllItems();
+
+        this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("private", "S3"));
+        this.cannedAclPopup.lastItem().setRepresentedObject("private");
+        this.cannedAclPopup.lastItem().setToolTip(LocaleFactory.localizedString("Owner gets FULL_CONTROL. No one else has access rights (default)", "S3"));
+
+        this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("public-read", "S3"));
+        this.cannedAclPopup.lastItem().setRepresentedObject("public-read");
+        this.cannedAclPopup.lastItem().setToolTip(LocaleFactory.localizedString("Owner gets FULL_CONTROL. The AllUsers group gets READ access", "S3"));
+
+        this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("public-read-write", "S3"));
+        this.cannedAclPopup.lastItem().setRepresentedObject("public-read-write");
+        this.cannedAclPopup.lastItem().setToolTip(LocaleFactory.localizedString("Owner gets FULL_CONTROL. The AllUsers group gets READ and WRITE access. Granting this on a bucket is generally not recommended", "S3"));
+
+        this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("authenticated-read", "S3"));
+        this.cannedAclPopup.lastItem().setRepresentedObject("authenticated-read");
+        this.cannedAclPopup.lastItem().setToolTip(LocaleFactory.localizedString("Owner gets FULL_CONTROL. The AuthenticatedUsers group gets READ access", "S3"));
+
+        this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("bucket-owner-read", "S3"));
+        this.cannedAclPopup.lastItem().setRepresentedObject("bucket-owner-read");
+        this.cannedAclPopup.lastItem().setToolTip(LocaleFactory.localizedString("Object owner gets FULL_CONTROL. Bucket owner gets READ access. If you specify this canned ACL when creating a bucket, Amazon S3 ignores it", "S3"));
+
+        this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("bucket-owner-full-control", "S3"));
+        this.cannedAclPopup.lastItem().setRepresentedObject("bucket-owner-full-control");
+        this.cannedAclPopup.lastItem().setToolTip(LocaleFactory.localizedString("Both the object owner and the bucket owner get FULL_CONTROL over the object. If you specify this canned ACL when creating a bucket, Amazon S3 ignores it", "S3"));
+
+        this.cannedAclPopup.setTarget(this.id());
+        this.cannedAclPopup.setAction(Foundation.selector("cannedAclPopupClicked:"));
+
+        this.cannedAclPopup.selectItemAtIndex(this.cannedAclPopup.indexOfItemWithRepresentedObject(preferences.getProperty("s3.acl.default")));
+    }
+
+    @Action
+    public void cannedAclPopupClicked(NSPopUpButton sender) {
+        preferences.setProperty("s3.acl.default", sender.selectedItem().representedObject());
+    }
+
+    @Outlet
     private NSPopUpButton languagePopup;
 
     public void setLanguagePopup(NSPopUpButton b) {
