@@ -689,8 +689,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("s3.endpoint.format.ipv4", "s3.%s.amazonaws.com");
         this.setDefault("s3.endpoint.format.ipv6", "s3.dualstack.%s.amazonaws.com");
 
-        //this.setDefault("s3.bucket.acl.default", "public-read");
-        this.setDefault("s3.bucket.acl.default", "private");
+        this.setDefault("s3.acl.default", "private");
 
         /*
           Default redundancy level
@@ -752,6 +751,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("googlestorage.listing.chunksize", String.valueOf(1000));
         this.setDefault("googlestorage.metadata.default", StringUtils.EMPTY);
         this.setDefault("googlestorage.storage.class", "STANDARD");
+        this.setDefault("googlestorage.acl.default", "private");
         /*
          * Reference previous versions in file attributes
          */

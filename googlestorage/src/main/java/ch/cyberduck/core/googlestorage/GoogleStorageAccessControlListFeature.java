@@ -16,6 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -23,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +33,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
 import com.google.api.services.storage.model.Bucket;
@@ -49,6 +52,16 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
     public GoogleStorageAccessControlListFeature(final GoogleStorageSession session) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
+    }
+
+    @Override
+    public Acl getDefault(final EnumSet<Path.Type> type) {
+        return Acl.toAcl(PreferencesFactory.get().getProperty("googlestorage.acl.default"));
+    }
+
+    @Override
+    public Acl getDefault(final Local file) {
+        return Acl.toAcl(PreferencesFactory.get().getProperty("googlestorage.acl.default"));
     }
 
     @Override

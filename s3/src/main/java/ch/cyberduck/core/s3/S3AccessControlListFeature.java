@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -26,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.apache.log4j.Logger;
@@ -40,6 +42,7 @@ import org.jets3t.service.model.S3Owner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
 public class S3AccessControlListFeature extends DefaultAclFeature implements AclPermission {
@@ -51,6 +54,16 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     public S3AccessControlListFeature(final S3Session session) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
+    }
+
+    @Override
+    public Acl getDefault(final Local file) {
+        return Acl.toAcl(PreferencesFactory.get().getProperty("s3.acl.default"));
+    }
+
+    @Override
+    public Acl getDefault(final EnumSet<Path.Type> type) {
+        return Acl.toAcl(PreferencesFactory.get().getProperty("s3.acl.default"));
     }
 
     @Override
@@ -169,14 +182,6 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                 log.warn(String.format("Unsupported user %s", userAndRole.getUser()));
             }
         }
-        if(log.isDebugEnabled()) {
-            try {
-                log.debug(list.toXml());
-            }
-            catch(ServiceException e) {
-                log.error(e.getMessage());
-            }
-        }
         return list;
     }
 
@@ -185,15 +190,19 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
      * @return Editable ACL
      */
     protected Acl convert(final AccessControlList list) {
-        if(log.isDebugEnabled()) {
-            try {
-                log.debug(list.toXml());
-            }
-            catch(ServiceException e) {
-                log.error(e.getMessage());
-            }
+        if(AccessControlList.REST_CANNED_PRIVATE == list) {
+            return Acl.CANNED_PRIVATE;
         }
-        Acl acl = new Acl();
+        if(AccessControlList.REST_CANNED_PUBLIC_READ == list) {
+            return Acl.CANNED_PUBLIC_READ;
+        }
+        if(AccessControlList.REST_CANNED_PUBLIC_READ_WRITE == list) {
+            return Acl.CANNED_PUBLIC_READ_WRITE;
+        }
+        if(AccessControlList.REST_CANNED_AUTHENTICATED_READ == list) {
+            return Acl.CANNED_AUTHENTICATED_READ;
+        }
+        final Acl acl = new Acl();
         acl.setOwner(new Acl.CanonicalUser(list.getOwner().getId(), list.getOwner().getDisplayName()));
         for(GrantAndPermission grant : list.getGrantAndPermissions()) {
             Acl.Role role = new Acl.Role(grant.getPermission().toString());

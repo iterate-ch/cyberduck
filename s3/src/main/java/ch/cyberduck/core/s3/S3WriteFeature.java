@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -125,6 +126,13 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         object.setServerSideEncryptionKmsKeyId(encryption.key);
         for(Map.Entry<String, String> m : status.getMetadata().entrySet()) {
             object.addMetadata(m.getKey(), m.getValue());
+        }
+        if(!Acl.EMPTY.equals(status.getAcl())) {
+            if(status.getAcl().isCanned()) {
+                object.setAcl(new S3AccessControlListFeature(session).convert(status.getAcl()));
+                // Reset in status to skip setting ACL in upload filter already applied as canned ACL
+                status.setAcl(Acl.EMPTY);
+            }
         }
         return object;
     }

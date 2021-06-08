@@ -23,6 +23,7 @@ import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,9 +36,64 @@ import java.util.Objects;
 import java.util.Set;
 
 public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Serializable {
-    private static final long serialVersionUID = 372192161904802600L;
+    private static final Logger log = Logger.getLogger(Acl.class);
 
     public static final Acl EMPTY = new Acl();
+
+    /**
+     * A pre-canned REST ACL to set an object's permissions to Private (only owner can read/write)
+     */
+    public static final Acl CANNED_PRIVATE = new Acl();
+
+    /**
+     * A pre-canned REST ACL to set an object's permissions to Public Read (anyone can read, only owner can write)
+     */
+    public static final Acl CANNED_PUBLIC_READ = new Acl(
+        new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))
+    );
+
+    /**
+     * A pre-canned REST ACL to set an object's permissions to Public Read and Write (anyone can read/write)
+     */
+    public static final Acl CANNED_PUBLIC_READ_WRITE = new Acl(
+        new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ)),
+        new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.WRITE))
+    );
+
+    /**
+     * A pre-canned REST ACL to set an object's permissions to Authenticated Read (authenticated Amazon users can read,
+     * only owner can write)
+     */
+    public static final Acl CANNED_AUTHENTICATED_READ = new Acl(
+        new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ))
+    );
+
+    public static final Acl CANNED_BUCKET_OWNER_FULLCONTROL = new Acl();
+    public static final Acl CANNED_BUCKET_OWNER_READ = new Acl();
+
+    /**
+     * @param identifier Canned ACL identifier string
+     * @return Static ACL that can be set as request parameter
+     */
+    public static Acl toAcl(final String identifier) {
+        switch(identifier) {
+            case "private":
+                return Acl.CANNED_PRIVATE;
+            case "public-read":
+                return Acl.CANNED_PUBLIC_READ;
+            case "public-read-write":
+                return Acl.CANNED_PUBLIC_READ_WRITE;
+            case "authenticated-read":
+                return Acl.CANNED_AUTHENTICATED_READ;
+            case "bucket-owner-full-control":
+                return Acl.CANNED_BUCKET_OWNER_FULLCONTROL;
+            case "bucket-owner-read":
+                return Acl.CANNED_BUCKET_OWNER_READ;
+        }
+        log.warn(String.format("Unknown canned ACL identifier %s", identifier));
+        // Default to private
+        return Acl.CANNED_PRIVATE;
+    }
 
     private transient CanonicalUser owner;
 
@@ -58,11 +114,19 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
         this.putAll(other);
     }
 
+    public boolean isCanned() {
+        return CANNED_PRIVATE.equals(this)
+            || CANNED_PUBLIC_READ_WRITE.equals(this)
+            || CANNED_PUBLIC_READ.equals(this)
+            || CANNED_AUTHENTICATED_READ.equals(this)
+            || CANNED_BUCKET_OWNER_FULLCONTROL.equals(this);
+    }
+
     public CanonicalUser getOwner() {
         return owner;
     }
 
-    public void setOwner(CanonicalUser owner) {
+    public void setOwner(final CanonicalUser owner) {
         this.owner = owner;
     }
 
@@ -70,7 +134,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
      * @param user        Grantee
      * @param permissions Permissions
      */
-    public void addAll(Acl.User user, Acl.Role... permissions) {
+    public void addAll(final Acl.User user, final Acl.Role... permissions) {
         if(this.containsKey(user)) {
             this.get(user).addAll(Arrays.asList(permissions));
         }
@@ -79,7 +143,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
         }
     }
 
-    public void addAll(Acl.UserAndRole... set) {
+    public void addAll(final Acl.UserAndRole... set) {
         for(Acl.UserAndRole userAndRole : set) {
             this.addAll(userAndRole.getUser(), userAndRole.getRole());
         }

@@ -1,5 +1,7 @@
 package ch.cyberduck.core.s3;
 
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -13,6 +15,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.text.RandomStringGenerator;
 import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
@@ -28,6 +31,24 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class S3WriteFeatureTest extends AbstractS3Test {
+
+    @Test
+    public void testWritePublicReadCannedAcl() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = RandomUtils.nextBytes(1033);
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        status.setLength(content.length);
+        status.setAcl(Acl.CANNED_PUBLIC_READ);
+        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new S3AccessControlListFeature(session)
+            .getPermission(test).asList().contains(new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 
     @Test
     public void testAppendBelowLimit() throws Exception {
