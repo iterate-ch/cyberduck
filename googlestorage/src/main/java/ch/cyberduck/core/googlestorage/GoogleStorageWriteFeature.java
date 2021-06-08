@@ -80,19 +80,19 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                             if(Acl.CANNED_PRIVATE.equals(status.getAcl())) {
                                 uri.append("private");
                             }
-                            if(Acl.CANNED_PUBLIC_READ.equals(status.getAcl())) {
+                            else if(Acl.CANNED_PUBLIC_READ.equals(status.getAcl())) {
                                 uri.append("publicRead");
                             }
-                            if(Acl.CANNED_PUBLIC_READ_WRITE.equals(status.getAcl())) {
+                            else if(Acl.CANNED_PUBLIC_READ_WRITE.equals(status.getAcl())) {
                                 uri.append("publicReadWrite");
                             }
-                            if(Acl.CANNED_AUTHENTICATED_READ.equals(status.getAcl())) {
+                            else if(Acl.CANNED_AUTHENTICATED_READ.equals(status.getAcl())) {
                                 uri.append("authenticatedRead");
                             }
-                            if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(status.getAcl())) {
+                            else if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(status.getAcl())) {
                                 uri.append("bucketOwnerFullControl");
                             }
-                            if(Acl.CANNED_BUCKET_OWNER_READ.equals(status.getAcl())) {
+                            else if(Acl.CANNED_BUCKET_OWNER_READ.equals(status.getAcl())) {
                                 uri.append("bucketOwnerRead");
                             }
                             // Reset in status to skip setting ACL in upload filter already applied as canned ACL
