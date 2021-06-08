@@ -34,7 +34,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.BucketAccessControl;
@@ -45,6 +47,15 @@ import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageAccessControlListFeature extends DefaultAclFeature implements AclPermission {
     private static final Logger log = Logger.getLogger(GoogleStorageAccessControlListFeature.class);
+
+    public static final Set<? extends Acl> CANNED_LIST = new LinkedHashSet<>(Arrays.asList(
+        Acl.CANNED_PRIVATE,
+        Acl.CANNED_PUBLIC_READ,
+        Acl.CANNED_PUBLIC_READ_WRITE,
+        Acl.CANNED_BUCKET_OWNER_READ,
+        Acl.CANNED_BUCKET_OWNER_FULLCONTROL,
+        Acl.CANNED_AUTHENTICATED_READ)
+    );
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
