@@ -752,6 +752,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("googlestorage.metadata.default", StringUtils.EMPTY);
         this.setDefault("googlestorage.storage.class", "STANDARD");
         this.setDefault("googlestorage.acl.default", "private");
+        this.setDefault("googlestorage.location", "us");
         /*
          * Reference previous versions in file attributes
          */
