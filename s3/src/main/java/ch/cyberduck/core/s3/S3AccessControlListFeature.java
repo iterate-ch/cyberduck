@@ -43,10 +43,21 @@ import org.jets3t.service.model.S3Owner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class S3AccessControlListFeature extends DefaultAclFeature implements AclPermission {
     private static final Logger log = Logger.getLogger(S3AccessControlListFeature.class);
+
+    public static final Set<? extends Acl> CANNED_LIST = new LinkedHashSet<>(Arrays.asList(
+        Acl.CANNED_PRIVATE,
+        Acl.CANNED_PUBLIC_READ,
+        Acl.CANNED_PUBLIC_READ_WRITE,
+        Acl.CANNED_BUCKET_OWNER_READ,
+        Acl.CANNED_BUCKET_OWNER_FULLCONTROL,
+        Acl.CANNED_AUTHENTICATED_READ)
+    );
 
     private final S3Session session;
     private final PathContainerService containerService;
@@ -144,6 +155,34 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     protected AccessControlList convert(final Acl acl) {
         if(Acl.EMPTY.equals(acl)) {
             return null;
+        }
+        if(Acl.CANNED_PRIVATE.equals(acl)) {
+            return AccessControlList.REST_CANNED_PRIVATE;
+        }
+        if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(acl)) {
+            return new AccessControlList() {
+                @Override
+                public String getValueForRESTHeaderACL() {
+                    return "bucket-owner-full-control";
+                }
+            };
+        }
+        if(Acl.CANNED_BUCKET_OWNER_READ.equals(acl)) {
+            return new AccessControlList() {
+                @Override
+                public String getValueForRESTHeaderACL() {
+                    return "bucket-owner-read";
+                }
+            };
+        }
+        if(Acl.CANNED_AUTHENTICATED_READ.equals(acl)) {
+            return AccessControlList.REST_CANNED_AUTHENTICATED_READ;
+        }
+        if(Acl.CANNED_PUBLIC_READ.equals(acl)) {
+            return AccessControlList.REST_CANNED_PUBLIC_READ;
+        }
+        if(Acl.CANNED_PUBLIC_READ_WRITE.equals(acl)) {
+            return AccessControlList.REST_CANNED_PUBLIC_READ_WRITE;
         }
         final AccessControlList list = new AccessControlList();
         final Acl.CanonicalUser owner = acl.getOwner();
