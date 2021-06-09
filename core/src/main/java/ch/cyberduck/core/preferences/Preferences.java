@@ -471,6 +471,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("queue.copy.reload.action", TransferAction.callback.name());
 
         this.setDefault("queue.upload.permissions.change", String.valueOf(false));
+        this.setDefault("queue.upload.acl.change", String.valueOf(true));
         this.setDefault("queue.upload.permissions.default", String.valueOf(false));
         this.setDefault("queue.upload.permissions.file.default", String.valueOf(644));
         this.setDefault("queue.upload.permissions.folder.default", String.valueOf(755));

@@ -48,7 +48,7 @@ public final class UploadFilterOptions {
         // Defaults
         final Preferences preferences = PreferencesFactory.get();
         permissions = preferences.getBoolean("queue.upload.permissions.change");
-        acl = preferences.getBoolean("queue.upload.permissions.change");
+        acl = preferences.getBoolean("queue.upload.acl.change");
         timestamp = preferences.getBoolean("queue.upload.timestamp.change");
         temporary = preferences.getBoolean("queue.upload.file.temporary");
         metadata = preferences.getBoolean("queue.upload.file.metadata.change");
