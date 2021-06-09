@@ -172,7 +172,7 @@ public class S3VersioningFeature implements Versioning {
                 catch(AccessDeniedException | InteroperabilityException e) {
                     log.warn(String.format("Ignore failure %s", e));
                 }
-                destination.setAcl(accessControlListFeature.convert(acl));
+                destination.setAcl(accessControlListFeature.toAcl(acl));
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
                     containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
                 if(file.getParent().attributes().getCustom().containsKey(S3VersionedObjectListService.KEY_DELETE_MARKER)) {

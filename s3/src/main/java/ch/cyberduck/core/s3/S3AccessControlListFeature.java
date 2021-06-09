@@ -38,7 +38,7 @@ import org.jets3t.service.acl.EmailAddressGrantee;
 import org.jets3t.service.acl.GrantAndPermission;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.acl.Permission;
-import org.jets3t.service.model.S3Owner;
+import org.jets3t.service.model.StorageOwner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,10 +88,10 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                 // bucket's existing ACL already allows write access by the anonymous user.
                 // In general, you can only access the ACL of a bucket if the ACL already in place
                 // for that bucket (in S3) allows you to do so.
-                return this.convert(session.getClient().getBucketAcl(containerService.getContainer(file).getName()));
+                return this.toAcl(session.getClient().getBucketAcl(containerService.getContainer(file).getName()));
             }
             else if(file.isFile() || file.isPlaceholder()) {
-                return this.convert(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
+                return this.toAcl(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
                     containerService.getContainer(file).getName(), containerService.getKey(file)));
             }
             return Acl.EMPTY;
@@ -115,22 +115,16 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     @Override
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
         try {
-            final Path container = containerService.getContainer(file);
-            if(null == acl.getOwner()) {
-                // Read owner from cache
-                acl.setOwner(file.attributes().getAcl().getOwner());
-            }
-            if(null == acl.getOwner()) {
-                // Read owner from bucket
-                final Acl permission = this.getPermission(container);
-                acl.setOwner(permission.getOwner());
-            }
+            // Read owner from bucket
+            final StorageOwner owner = session.getClient().getBucketAcl(containerService.getContainer(file).getName()).getOwner();
+            final AccessControlList list = this.toAcl(acl);
+            list.setOwner(owner);
             if(containerService.isContainer(file)) {
-                session.getClient().putBucketAcl(container.getName(), this.convert(acl));
+                session.getClient().putBucketAcl(containerService.getContainer(file).getName(), list);
             }
             else {
                 if(file.isFile() || file.isPlaceholder()) {
-                    session.getClient().putObjectAcl(container.getName(), containerService.getKey(file), this.convert(acl));
+                    session.getClient().putObjectAcl(containerService.getContainer(file).getName(), containerService.getKey(file), list);
                 }
             }
         }
@@ -152,7 +146,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
      * @param acl Edited ACL
      * @return ACL to write to server
      */
-    protected AccessControlList convert(final Acl acl) {
+    protected AccessControlList toAcl(final Acl acl) {
         if(Acl.EMPTY.equals(acl)) {
             return null;
         }
@@ -185,11 +179,6 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             return AccessControlList.REST_CANNED_PUBLIC_READ_WRITE;
         }
         final AccessControlList list = new AccessControlList();
-        final Acl.CanonicalUser owner = acl.getOwner();
-        if(null != owner) {
-            list.setOwner(new S3Owner(owner.getIdentifier(), owner.getDisplayName()));
-            list.grantPermission(new CanonicalGrantee(owner.getIdentifier()), Permission.PERMISSION_FULL_CONTROL);
-        }
         for(Acl.UserAndRole userAndRole : acl.asList()) {
             if(!userAndRole.isValid()) {
                 continue;
@@ -228,7 +217,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
      * @param list ACL from server
      * @return Editable ACL
      */
-    protected Acl convert(final AccessControlList list) {
+    protected Acl toAcl(final AccessControlList list) {
         if(AccessControlList.REST_CANNED_PRIVATE == list) {
             return Acl.CANNED_PRIVATE;
         }
@@ -241,8 +230,8 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
         if(AccessControlList.REST_CANNED_AUTHENTICATED_READ == list) {
             return Acl.CANNED_AUTHENTICATED_READ;
         }
-        final Acl acl = new Acl();
-        acl.setOwner(new Acl.CanonicalUser(list.getOwner().getId(), list.getOwner().getDisplayName()));
+        final Acl acl = new Acl(new Acl.CanonicalUser(list.getOwner().getId(), list.getOwner().getDisplayName()),
+            new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString()));
         for(GrantAndPermission grant : list.getGrantAndPermissions()) {
             Acl.Role role = new Acl.Role(grant.getPermission().toString());
             if(grant.getGrantee() instanceof CanonicalGrantee) {
