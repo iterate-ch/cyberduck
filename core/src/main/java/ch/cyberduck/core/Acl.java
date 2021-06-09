@@ -39,37 +39,25 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
     private static final Logger log = Logger.getLogger(Acl.class);
 
     public static final Acl EMPTY = new Acl();
-
     /**
      * A pre-canned REST ACL to set an object's permissions to Private (only owner can read/write)
      */
-    public static final Acl CANNED_PRIVATE = new Acl();
-
+    public static final Acl CANNED_PRIVATE = new Acl("private");
     /**
      * A pre-canned REST ACL to set an object's permissions to Public Read (anyone can read, only owner can write)
      */
-    public static final Acl CANNED_PUBLIC_READ = new Acl(
-        new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))
-    );
-
+    public static final Acl CANNED_PUBLIC_READ = new Acl("public-read");
     /**
      * A pre-canned REST ACL to set an object's permissions to Public Read and Write (anyone can read/write)
      */
-    public static final Acl CANNED_PUBLIC_READ_WRITE = new Acl(
-        new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ)),
-        new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.WRITE))
-    );
-
+    public static final Acl CANNED_PUBLIC_READ_WRITE = new Acl("public-read-write");
     /**
      * A pre-canned REST ACL to set an object's permissions to Authenticated Read (authenticated Amazon users can read,
      * only owner can write)
      */
-    public static final Acl CANNED_AUTHENTICATED_READ = new Acl(
-        new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ))
-    );
-
-    public static final Acl CANNED_BUCKET_OWNER_FULLCONTROL = new Acl();
-    public static final Acl CANNED_BUCKET_OWNER_READ = new Acl();
+    public static final Acl CANNED_AUTHENTICATED_READ = new Acl("authenticated-read");
+    public static final Acl CANNED_BUCKET_OWNER_FULLCONTROL = new Acl("bucket-owner-full-control");
+    public static final Acl CANNED_BUCKET_OWNER_READ = new Acl("bucket-owner-read");
 
     /**
      * @param identifier Canned ACL identifier string
@@ -80,8 +68,6 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
             case "private":
                 return Acl.CANNED_PRIVATE;
             case "public-read":
-                return Acl.CANNED_PUBLIC_READ;
-            case "public-read-write":
                 return Acl.CANNED_PUBLIC_READ_WRITE;
             case "authenticated-read":
                 return Acl.CANNED_AUTHENTICATED_READ;
@@ -91,27 +77,31 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
                 return Acl.CANNED_BUCKET_OWNER_READ;
         }
         log.warn(String.format("Unknown canned ACL identifier %s", identifier));
-        // Default to private
-        return Acl.CANNED_PRIVATE;
+        return Acl.EMPTY;
     }
 
-    private transient CanonicalUser owner;
+    /**
+     * Canned ACL identifier
+     */
+    private final String canned;
 
-    public Acl() {
-        super();
+    public Acl(final String canned) {
+        this.canned = canned;
     }
 
     public Acl(Acl.User user, Acl.Role... permissions) {
         this.addAll(user, permissions);
+        this.canned = StringUtils.EMPTY;
     }
 
     public Acl(Acl.UserAndRole... set) {
         this.addAll(set);
+        this.canned = StringUtils.EMPTY;
     }
 
     public Acl(final Acl other) {
-        this.owner = other.owner;
         this.putAll(other);
+        this.canned = other.canned;
     }
 
     public boolean isCanned() {
@@ -119,15 +109,12 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
             || CANNED_PUBLIC_READ_WRITE.equals(this)
             || CANNED_PUBLIC_READ.equals(this)
             || CANNED_AUTHENTICATED_READ.equals(this)
-            || CANNED_BUCKET_OWNER_FULLCONTROL.equals(this);
+            || CANNED_BUCKET_OWNER_FULLCONTROL.equals(this)
+            || CANNED_BUCKET_OWNER_READ.equals(this);
     }
 
-    public CanonicalUser getOwner() {
-        return owner;
-    }
-
-    public void setOwner(final CanonicalUser owner) {
-        this.owner = owner;
+    public String getCannedString() {
+        return canned;
     }
 
     /**
@@ -535,5 +522,25 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
             final Deserializer dict = deserializer.create(serialized);
             return new Role(dict.stringForKey("Name"));
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof Acl)) {
+            return false;
+        }
+        if(!super.equals(o)) {
+            return false;
+        }
+        final Acl acl = (Acl) o;
+        return Objects.equals(canned, acl.canned);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), canned);
     }
 }
