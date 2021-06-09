@@ -1,0 +1,13 @@
+﻿<Project>
+    <PropertyGroup>
+        <i18n_gen_dll>${TargetPath}i18n-gen.dll</i18n_gen_dll>
+    </PropertyGroup>
+
+    <UsingTask TaskName="ResourceGenTask"
+               AssemblyFile="$(i18n_gen_dll)"
+               TaskFactory="TaskHostFactory" />
+
+    <ItemGroup>
+        <ProjectReference Include="${ProjectPath}i18n-gen.csproj" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+</Project>
