@@ -92,9 +92,13 @@ namespace Ch.Cyberduck.Ui.Controller
         bool UploadSkip { set; get; }
         string UploadSkipRegex { set; get; }
         bool UploadSkipRegexEnabled { set; }
-        string DefaultBucketLocation { set; get; }
-        string DefaultStorageClass { set; get; }
+        string DefaultS3BucketLocation { set; get; }
+        string DefaultGoogleBucketLocation { set; get; }
+        string DefaultS3StorageClass { set; get; }
+        string DefaultGoogleStorageClass { set; get; }
         string DefaultEncryption { set; get; }
+        string DefaultS3ACL { set; get; }
+        string DefaultGoogleACL { set; get; }
         float DefaultDownloadThrottle { set; get; }
         float DefaultUploadThrottle { set; get; }
         int ConnectionTimeout { set; get; }
@@ -181,9 +185,13 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler UploadSkipChangedEvent;
         event VoidHandler UploadSkipRegexChangedEvent;
         event VoidHandler UploadSkipRegexDefaultEvent;
-        event VoidHandler DefaultBucketLocationChangedEvent;
-        event VoidHandler DefaultStorageClassChangedEvent;
+        event VoidHandler DefaultS3BucketLocationChangedEvent;
+        event VoidHandler DefaultGoogleBucketLocationChangedEvent;
+        event VoidHandler DefaultS3StorageClassChangedEvent;
+        event VoidHandler DefaultGoogleStorageClassChangedEvent;
         event VoidHandler DefaultEncryptionChangedEvent;
+        event VoidHandler DefaultS3ACLChangedEvent;
+        event VoidHandler DefaultGoogleACLChangedEvent;
         event VoidHandler DefaultDownloadThrottleChangedEvent;
         event VoidHandler DefaultUploadThrottleChangedEvent;
         event VoidHandler ConnectionTimeoutChangedEvent;
@@ -200,9 +208,13 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateDuplicateUploadActions(List<string> actions);
         void PopulateChmodDownloadTypes(List<string> types);
         void PopulateChmodUploadTypes(List<string> types);
-        void PopulateDefaultBucketLocations(IList<KeyValuePair<string, string>> locations);
-        void PopulateDefaultStorageClasses(IList<KeyValuePair<string, string>> classes);
+        void PopulateDefaultS3BucketLocations(IList<KeyValuePair<string, string>> locations);
+        void PopulateDefaultGoogleBucketLocations(IList<KeyValuePair<string, string>> locations);
+        void PopulateDefaultS3StorageClasses(IList<KeyValuePair<string, string>> classes);
+        void PopulateDefaultGoogleStorageClasses(IList<KeyValuePair<string, string>> classes);
         void PopulateDefaultEncryption(IList<KeyValuePair<string, string>> algorithms);
+        void PopulateDefaultS3ACL(IList<KeyValuePair<string, string>> acls);
+        void PopulateDefaultGoogleACL(IList<KeyValuePair<string, string>> acls);
         void PopulateDefaultDownloadThrottleList(IList<KeyValuePair<float, string>> throttles);
         void PopulateDefaultUploadThrottleList(IList<KeyValuePair<float, string>> throttles);
         void PopulateUpdateFeeds(IList<KeyValuePair<string, string>> feeds);

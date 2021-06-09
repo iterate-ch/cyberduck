@@ -624,16 +624,31 @@ namespace Ch.Cyberduck.Ui.Winforms
             uploadSkipRegexRichTextbox.SelectionColor = Color.Black;
         }
 
-        public string DefaultBucketLocation
+        public string DefaultS3BucketLocation
         {
             get { return (string) defaultBucketLocationCombobox.SelectedValue; }
             set { defaultBucketLocationCombobox.SelectedValue = value; }
+        }
+        public string DefaultGoogleBucketLocation
+        {
+            get { return (string) defaultGoogleLocationComboBox.SelectedValue; }
+            set { defaultGoogleLocationComboBox.SelectedValue = value; }
         }
 
         public string DefaultEncryption
         {
             get { return (string) defaultEncryptionComboBox.SelectedValue; }
             set { defaultEncryptionComboBox.SelectedValue = value; }
+        }
+        public string DefaultS3ACL
+        {
+            get { return (string) defaultACLComboBox.SelectedValue; }
+            set { defaultACLComboBox.SelectedValue = value; }
+        }
+        public string DefaultGoogleACL
+        {
+            get { return (string) defaultGoogleACLComboBox.SelectedValue; }
+            set { defaultGoogleACLComboBox.SelectedValue = value; }
         }
 
         public float DefaultDownloadThrottle
@@ -761,14 +776,18 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler UploadSkipChangedEvent = delegate { };
         public event VoidHandler UploadSkipRegexChangedEvent = delegate { };
         public event VoidHandler UploadSkipRegexDefaultEvent = delegate { };
-        public event VoidHandler DefaultBucketLocationChangedEvent = delegate { };
+        public event VoidHandler DefaultS3BucketLocationChangedEvent = delegate { };
+        public event VoidHandler DefaultGoogleBucketLocationChangedEvent = delegate { };
         public event VoidHandler DefaultEncryptionChangedEvent = delegate { };
+        public event VoidHandler DefaultS3ACLChangedEvent = delegate { };
+        public event VoidHandler DefaultGoogleACLChangedEvent = delegate { };
         public event VoidHandler DefaultDownloadThrottleChangedEvent = delegate { };
         public event VoidHandler DefaultUploadThrottleChangedEvent = delegate { };
         public event VoidHandler ConnectionTimeoutChangedEvent = delegate { };
         public event VoidHandler RetryDelayChangedEvent = delegate { };
         public event VoidHandler RetriesChangedEvent = delegate { };
-        public event VoidHandler DefaultStorageClassChangedEvent = delegate { };
+        public event VoidHandler DefaultS3StorageClassChangedEvent = delegate { };
+        public event VoidHandler DefaultGoogleStorageClassChangedEvent = delegate { };
         public event VoidHandler LocaleChanged = delegate { };
         public event VoidHandler UploadWithTemporaryFilenameChangedEvent = delegate { };
         public event VoidHandler UpdateFeedChangedEvent = delegate { };
@@ -790,10 +809,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { bookmarkSizeComboBox.SelectedValue = value; }
         }
 
-        public string DefaultStorageClass
+        public string DefaultS3StorageClass
         {
             get { return (string) defaultStorageClassComboBox.SelectedValue; }
             set { defaultStorageClassComboBox.SelectedValue = value; }
+        }
+        public string DefaultGoogleStorageClass
+        {
+            get { return (string) defaultGoogleStorageClassComboBox.SelectedValue; }
+            set { defaultGoogleStorageClassComboBox.SelectedValue = value; }
         }
 
         public void PopulateBookmarks(List<KeyValueIconTriple<Host, string>> bookmarks)
@@ -872,18 +896,30 @@ namespace Ch.Cyberduck.Ui.Winforms
             chmodUploadTypeCombobox.DataSource = types;
         }
 
-        public void PopulateDefaultBucketLocations(IList<KeyValuePair<string, string>> locations)
+        public void PopulateDefaultS3BucketLocations(IList<KeyValuePair<string, string>> locations)
         {
             defaultBucketLocationCombobox.DataSource = locations;
             defaultBucketLocationCombobox.ValueMember = "Key";
             defaultBucketLocationCombobox.DisplayMember = "Value";
         }
+        public void PopulateDefaultGoogleBucketLocations(IList<KeyValuePair<string, string>> locations)
+        {
+            defaultGoogleLocationComboBox.DataSource = locations;
+            defaultGoogleLocationComboBox.ValueMember = "Key";
+            defaultGoogleLocationComboBox.DisplayMember = "Value";
+        }
 
-        public void PopulateDefaultStorageClasses(IList<KeyValuePair<string, string>> classes)
+        public void PopulateDefaultS3StorageClasses(IList<KeyValuePair<string, string>> classes)
         {
             defaultStorageClassComboBox.DataSource = classes;
             defaultStorageClassComboBox.ValueMember = "Key";
             defaultStorageClassComboBox.DisplayMember = "Value";
+        }
+        public void PopulateDefaultGoogleStorageClasses(IList<KeyValuePair<string, string>> classes)
+        {
+            defaultGoogleStorageClassComboBox.DataSource = classes;
+            defaultGoogleStorageClassComboBox.ValueMember = "Key";
+            defaultGoogleStorageClassComboBox.DisplayMember = "Value";
         }
 
         public void PopulateDefaultEncryption(IList<KeyValuePair<string, string>> algorithms)
@@ -891,6 +927,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             defaultEncryptionComboBox.DataSource = algorithms;
             defaultEncryptionComboBox.ValueMember = "Key";
             defaultEncryptionComboBox.DisplayMember = "Value";
+        }
+
+        public void PopulateDefaultS3ACL(IList<KeyValuePair<string, string>> acls)
+        {
+            defaultACLComboBox.DataSource = acls;
+            defaultACLComboBox.ValueMember = "Key";
+            defaultACLComboBox.DisplayMember = "Value";
+        }
+        public void PopulateDefaultGoogleACL(IList<KeyValuePair<string, string>> acls)
+        {
+            defaultGoogleACLComboBox.DataSource = acls;
+            defaultGoogleACLComboBox.ValueMember = "Key";
+            defaultGoogleACLComboBox.DisplayMember = "Value";
         }
 
         public void PopulateDefaultDownloadThrottleList(IList<KeyValuePair<float, string>> throttles)
@@ -1284,7 +1333,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void defaultBucketLocationCombobox_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            DefaultBucketLocationChangedEvent();
+            DefaultS3BucketLocationChangedEvent();
         }
 
         private void bandwidthButton_Click(object sender, EventArgs e)
@@ -1354,7 +1403,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void defaultStorageClassComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            DefaultStorageClassChangedEvent();
+            DefaultS3StorageClassChangedEvent();
         }
 
         private void updateButton_Click(object sender, EventArgs e)
@@ -1509,6 +1558,36 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void segmentedDownloadsCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             SegmentedDownloadsChangedEvent();
+        }
+
+        private void defaultACLComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            DefaultS3ACLChangedEvent();
+        }
+
+        private void defaultGoogleLocationComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            DefaultGoogleBucketLocationChangedEvent();
+        }
+
+        private void defaultGoogleStorageClassComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            DefaultGoogleStorageClassChangedEvent();
+        }
+
+        private void defaultGoogleACLComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            DefaultGoogleACLChangedEvent();
+        }
+
+        private void googleCloudButton_Click(object sender, EventArgs e)
+        {
+            if (!googleCloudButton.Checked)
+            {
+                DisableAll();
+                googleCloudButton.Checked = true;
+                panelManager.SelectedPanel = managedGoogleCloudPanel;
+            }
         }
     }
 }

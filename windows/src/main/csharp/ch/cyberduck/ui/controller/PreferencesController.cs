@@ -32,10 +32,10 @@ using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using Ch.Cyberduck.Core.Date;
+using ch.cyberduck.core.googlestorage;
 using java.util;
 using java.util.regex;
 using org.apache.log4j;
-using org.jets3t.service.model;
 using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -142,9 +142,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
             #region S3
 
-            View.DefaultBucketLocationChangedEvent += View_DefaultBucketLocationChangedEvent;
-            View.DefaultStorageClassChangedEvent += View_DefaultStorageClassChangedEvent;
+            View.DefaultS3BucketLocationChangedEvent += View_DefaultS3BucketLocationChangedEvent;
+            View.DefaultS3StorageClassChangedEvent += View_DefaultS3StorageClassChangedEvent;
             View.DefaultEncryptionChangedEvent += View_DefaultEncryptionChangedEvent;
+            View.DefaultS3ACLChangedEvent += View_DefaultS3ACLChangedEvent;
+
+            #endregion
+
+            #region Google Storage
+
+            View.DefaultGoogleBucketLocationChangedEvent += View_DefaultGoogleBucketLocationChangedEvent;
+            View.DefaultGoogleStorageClassChangedEvent += View_DefaultGoogleStorageClassChangedEvent;
+            View.DefaultGoogleACLChangedEvent += View_DefaultGoogleACLChangedEvent;
 
             #endregion
 
@@ -249,6 +258,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             PreferencesFactory.get().setProperty("s3.encryption.algorithm", View.DefaultEncryption);
         }
+        private void View_DefaultS3ACLChangedEvent()
+        {
+            PreferencesFactory.get().setProperty("s3.acl.default", View.DefaultS3ACL);
+        }
+        private void View_DefaultGoogleACLChangedEvent()
+        {
+            PreferencesFactory.get().setProperty("googlestorage.acl.default", View.DefaultGoogleACL);
+        }
 
         private void View_AlwaysUseDefaultEditorChangedEvent()
         {
@@ -320,9 +337,13 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private void View_DefaultStorageClassChangedEvent()
+        private void View_DefaultS3StorageClassChangedEvent()
         {
-            PreferencesFactory.get().setProperty("s3.storage.class", View.DefaultStorageClass);
+            PreferencesFactory.get().setProperty("s3.storage.class", View.DefaultS3StorageClass);
+        }
+        private void View_DefaultGoogleStorageClassChangedEvent()
+        {
+            PreferencesFactory.get().setProperty("googlestorage.storage.class", View.DefaultGoogleStorageClass);
         }
 
         private void View_RetriesChangedEvent()
@@ -350,9 +371,13 @@ namespace Ch.Cyberduck.Ui.Controller
             PreferencesFactory.get().setProperty("queue.download.bandwidth.bytes", View.DefaultDownloadThrottle);
         }
 
-        private void View_DefaultBucketLocationChangedEvent()
+        private void View_DefaultS3BucketLocationChangedEvent()
         {
-            PreferencesFactory.get().setProperty("s3.location", View.DefaultBucketLocation);
+            PreferencesFactory.get().setProperty("s3.location", View.DefaultS3BucketLocation);
+        }
+        private void View_DefaultGoogleBucketLocationChangedEvent()
+        {
+            PreferencesFactory.get().setProperty("googlestorage.location", View.DefaultGoogleBucketLocation);
         }
 
         private void View_UploadSkipRegexDefaultEvent()
@@ -988,13 +1013,26 @@ namespace Ch.Cyberduck.Ui.Controller
 
             #region S3
 
-            PopulateDefaultBucketLocations();
-            View.DefaultBucketLocation = PreferencesFactory.get().getProperty("s3.location");
-            PopulateDefaultStorageClasses();
-            View.DefaultStorageClass = PreferencesFactory.get().getProperty("s3.storage.class");
+            PopulateDefaultS3BucketLocations();
+            View.DefaultS3BucketLocation = PreferencesFactory.get().getProperty("s3.location");
+            PopulateDefaultS3StorageClasses();
+            View.DefaultS3StorageClass = PreferencesFactory.get().getProperty("s3.storage.class");
             PopulateDefaultEncryption();
             String algorithm = PreferencesFactory.get().getProperty("s3.encryption.algorithm");
             View.DefaultEncryption = Utils.IsNotBlank(algorithm) ? algorithm : Encryption.Algorithm.NONE.ToString();
+            PopulateDefaultS3ACL();
+            View.DefaultS3ACL = PreferencesFactory.get().getProperty("s3.acl.default");
+
+            #endregion
+
+            #region Google Storage
+
+            PopulateDefaultGoogleBucketLocations();
+            View.DefaultGoogleBucketLocation = PreferencesFactory.get().getProperty("googlestorage.location");
+            PopulateDefaultGoogleStorageClasses();
+            View.DefaultGoogleStorageClass = PreferencesFactory.get().getProperty("googlestorage.storage.class");
+            PopulateDefaultGoogleACL();
+            View.DefaultGoogleACL = PreferencesFactory.get().getProperty("googlestorage.acl.default");
 
             #endregion
 
@@ -1057,6 +1095,29 @@ namespace Ch.Cyberduck.Ui.Controller
             View.PopulateDefaultEncryption(algorithms);
         }
 
+        private void PopulateDefaultS3ACL()
+        {
+            var canned = Utils.ConvertFromJavaList<Acl>(S3AccessControlListFeature.CANNED_LIST);
+            IList<KeyValuePair<string, string>> acls = new List<KeyValuePair<string, string>>();
+            foreach (var acl in canned)
+            {
+                acls.Add(new KeyValuePair<string, string>(acl.getCannedString(),
+                    LocaleFactory.localizedString(acl.getCannedString(), "S3")));
+            }
+            View.PopulateDefaultS3ACL(acls);
+        }
+        private void PopulateDefaultGoogleACL()
+        {
+            var canned = Utils.ConvertFromJavaList<Acl>(GoogleStorageAccessControlListFeature.CANNED_LIST);
+            IList<KeyValuePair<string, string>> acls = new List<KeyValuePair<string, string>>();
+            foreach (var acl in canned)
+            {
+                acls.Add(new KeyValuePair<string, string>(acl.getCannedString(),
+                    LocaleFactory.localizedString(acl.getCannedString(), "S3")));
+            }
+            View.PopulateDefaultGoogleACL(acls);
+        }
+
         private void PopulateFeeds()
         {
             IList<KeyValuePair<string, string>> feeds = new List<KeyValuePair<string, string>>();
@@ -1116,7 +1177,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.PopulateDefaultDownloadThrottleList(list);
         }
 
-        private void PopulateDefaultBucketLocations()
+        private void PopulateDefaultS3BucketLocations()
         {
             IList<KeyValuePair<string, string>> defaultBucketLocations = new List<KeyValuePair<string, string>>();
             Set locations = new S3Protocol().getRegions();
@@ -1127,10 +1188,24 @@ namespace Ch.Cyberduck.Ui.Controller
                 defaultBucketLocations.Add(new KeyValuePair<string, string>(location.getIdentifier(),
                     location.toString()));
             }
-            View.PopulateDefaultBucketLocations(defaultBucketLocations);
+            View.PopulateDefaultS3BucketLocations(defaultBucketLocations);
         }
 
-        private void PopulateDefaultStorageClasses()
+        private void PopulateDefaultGoogleBucketLocations()
+        {
+            IList<KeyValuePair<string, string>> defaultBucketLocations = new List<KeyValuePair<string, string>>();
+            Set locations = new GoogleStorageProtocol().getRegions();
+            Iterator iter = locations.iterator();
+            while (iter.hasNext())
+            {
+                Location.Name location = (Location.Name) iter.next();
+                defaultBucketLocations.Add(new KeyValuePair<string, string>(location.getIdentifier(),
+                    location.toString()));
+            }
+            View.PopulateDefaultGoogleBucketLocations(defaultBucketLocations);
+        }
+
+        private void PopulateDefaultS3StorageClasses()
         {
             IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
             Iterator iter = S3StorageClassFeature.STORAGE_CLASS_LIST.iterator();
@@ -1140,7 +1215,18 @@ namespace Ch.Cyberduck.Ui.Controller
                 storageClasses.Add(new KeyValuePair<string, string>(s,
                     LocaleFactory.localizedString(s, "S3")));
             }
-            View.PopulateDefaultStorageClasses(storageClasses);
+            View.PopulateDefaultS3StorageClasses(storageClasses);
+        }
+        private void PopulateDefaultGoogleStorageClasses()
+        {
+            IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
+            Iterator iter = GoogleStorageStorageClassFeature.STORAGE_CLASS_LIST.iterator();
+            while (iter.hasNext())
+            {
+                string s = (string) iter.next();
+                storageClasses.Add(new KeyValuePair<string, string>(s, s));
+            }
+            View.PopulateDefaultGoogleStorageClasses(storageClasses);
         }
 
         private void PopulateChmodTypes()
