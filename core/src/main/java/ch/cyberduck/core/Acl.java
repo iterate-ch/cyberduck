@@ -64,17 +64,23 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
      * @return Static ACL that can be set as request parameter
      */
     public static Acl toAcl(final String identifier) {
-        switch(identifier) {
-            case "private":
-                return Acl.CANNED_PRIVATE;
-            case "public-read":
-                return Acl.CANNED_PUBLIC_READ_WRITE;
-            case "authenticated-read":
-                return Acl.CANNED_AUTHENTICATED_READ;
-            case "bucket-owner-full-control":
-                return Acl.CANNED_BUCKET_OWNER_FULLCONTROL;
-            case "bucket-owner-read":
-                return Acl.CANNED_BUCKET_OWNER_READ;
+        if(CANNED_PRIVATE.getCannedString().equals(identifier)) {
+            return Acl.CANNED_PRIVATE;
+        }
+        if(CANNED_PUBLIC_READ.getCannedString().equals(identifier)) {
+            return Acl.CANNED_PUBLIC_READ;
+        }
+        if(CANNED_PUBLIC_READ_WRITE.getCannedString().equals(identifier)) {
+            return Acl.CANNED_PUBLIC_READ_WRITE;
+        }
+        if(CANNED_AUTHENTICATED_READ.getCannedString().equals(identifier)) {
+            return Acl.CANNED_AUTHENTICATED_READ;
+        }
+        if(CANNED_BUCKET_OWNER_FULLCONTROL.getCannedString().equals(identifier)) {
+            return Acl.CANNED_BUCKET_OWNER_FULLCONTROL;
+        }
+        if(CANNED_BUCKET_OWNER_READ.getCannedString().equals(identifier)) {
+            return Acl.CANNED_BUCKET_OWNER_READ;
         }
         log.warn(String.format("Unknown canned ACL identifier %s", identifier));
         return Acl.EMPTY;
