@@ -34,6 +34,9 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.googlestorage.GoogleStorageAccessControlListFeature;
+import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
+import ch.cyberduck.core.googlestorage.GoogleStorageStorageClassFeature;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
@@ -41,6 +44,7 @@ import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3StorageClassFeature;
@@ -96,6 +100,8 @@ public class PreferencesController extends ToolbarWindowController {
     @Outlet
     protected NSView panelS3;
     @Outlet
+    protected NSView panelGoogleStorage;
+    @Outlet
     protected NSView panelBandwidth;
     @Outlet
     protected NSView panelAdvanced;
@@ -128,6 +134,10 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void setPanelS3(NSView v) {
         this.panelS3 = v;
+    }
+
+    public void setPanelGoogleStorage(final NSView v) {
+        this.panelGoogleStorage = v;
     }
 
     public void setPanelTransfer(NSView v) {
@@ -171,6 +181,7 @@ public class PreferencesController extends ToolbarWindowController {
         views.put(new Label(PreferencesToolbarItem.ftp.name(), PreferencesToolbarItem.ftp.label()), panelFTP);
         views.put(new Label(PreferencesToolbarItem.sftp.name(), PreferencesToolbarItem.sftp.label()), panelSFTP);
         views.put(new Label(PreferencesToolbarItem.s3.name(), PreferencesToolbarItem.s3.label()), panelS3);
+        views.put(new Label(PreferencesToolbarItem.googlestorage.name(), PreferencesToolbarItem.googlestorage.label()), panelGoogleStorage);
         views.put(new Label(PreferencesToolbarItem.bandwidth.name(), PreferencesToolbarItem.bandwidth.label()), panelBandwidth);
         views.put(new Label(PreferencesToolbarItem.connection.name(), PreferencesToolbarItem.connection.label()), panelAdvanced);
         views.put(new Label(PreferencesToolbarItem.cryptomator.name(), PreferencesToolbarItem.cryptomator.label()), panelCryptomator);
@@ -212,6 +223,12 @@ public class PreferencesController extends ToolbarWindowController {
             @Override
             public String label() {
                 return LocaleFactory.localizedString(StringUtils.upperCase(this.name()), "Preferences");
+            }
+        },
+        googlestorage {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(new GoogleStorageProtocol().getName(), "Preferences");
             }
         },
         bandwidth,
@@ -2177,31 +2194,10 @@ public class PreferencesController extends ToolbarWindowController {
         this.cannedAclPopup = b;
         this.cannedAclPopup.setAutoenablesItems(false);
         this.cannedAclPopup.removeAllItems();
-
-        this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("private", "S3"));
-        this.cannedAclPopup.lastItem().setRepresentedObject("private");
-        this.cannedAclPopup.lastItem().setToolTip(LocaleFactory.localizedString("Owner gets FULL_CONTROL. No one else has access rights (default)", "S3"));
-
-        this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("public-read", "S3"));
-        this.cannedAclPopup.lastItem().setRepresentedObject("public-read");
-        this.cannedAclPopup.lastItem().setToolTip(LocaleFactory.localizedString("Owner gets FULL_CONTROL. The AllUsers group gets READ access", "S3"));
-
-        this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("public-read-write", "S3"));
-        this.cannedAclPopup.lastItem().setRepresentedObject("public-read-write");
-        this.cannedAclPopup.lastItem().setToolTip(LocaleFactory.localizedString("Owner gets FULL_CONTROL. The AllUsers group gets READ and WRITE access. Granting this on a bucket is generally not recommended", "S3"));
-
-        this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("authenticated-read", "S3"));
-        this.cannedAclPopup.lastItem().setRepresentedObject("authenticated-read");
-        this.cannedAclPopup.lastItem().setToolTip(LocaleFactory.localizedString("Owner gets FULL_CONTROL. The AuthenticatedUsers group gets READ access", "S3"));
-
-        this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("bucket-owner-read", "S3"));
-        this.cannedAclPopup.lastItem().setRepresentedObject("bucket-owner-read");
-        this.cannedAclPopup.lastItem().setToolTip(LocaleFactory.localizedString("Object owner gets FULL_CONTROL. Bucket owner gets READ access. If you specify this canned ACL when creating a bucket, Amazon S3 ignores it", "S3"));
-
-        this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("bucket-owner-full-control", "S3"));
-        this.cannedAclPopup.lastItem().setRepresentedObject("bucket-owner-full-control");
-        this.cannedAclPopup.lastItem().setToolTip(LocaleFactory.localizedString("Both the object owner and the bucket owner get FULL_CONTROL over the object. If you specify this canned ACL when creating a bucket, Amazon S3 ignores it", "S3"));
-
+        for(Acl acl : S3AccessControlListFeature.CANNED_LIST) {
+            this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString(acl.getCannedString(), "S3"));
+            this.cannedAclPopup.lastItem().setRepresentedObject(acl.getCannedString());
+        }
         this.cannedAclPopup.setTarget(this.id());
         this.cannedAclPopup.setAction(Foundation.selector("cannedAclPopupClicked:"));
 
@@ -2211,6 +2207,70 @@ public class PreferencesController extends ToolbarWindowController {
     @Action
     public void cannedAclPopupClicked(NSPopUpButton sender) {
         preferences.setProperty("s3.acl.default", sender.selectedItem().representedObject());
+    }
+
+    @Outlet
+    private NSPopUpButton defaultBucketLocationGoogleStorage;
+
+    public void setDefaultBucketLocationGoogleStorage(NSPopUpButton b) {
+        this.defaultBucketLocationGoogleStorage = b;
+        this.defaultBucketLocationGoogleStorage.setAutoenablesItems(false);
+        this.defaultBucketLocationGoogleStorage.removeAllItems();
+        for(Location.Name location : new GoogleStorageProtocol().getRegions()) {
+            this.defaultBucketLocationGoogleStorage.addItemWithTitle(location.toString());
+            this.defaultBucketLocationGoogleStorage.lastItem().setRepresentedObject(location.getIdentifier());
+        }
+        this.defaultBucketLocationGoogleStorage.setTarget(this.id());
+        this.defaultBucketLocationGoogleStorage.setAction(Foundation.selector("defaultBucketLocationGoogleStorageClicked:"));
+        this.defaultBucketLocationGoogleStorage.selectItemWithTitle(LocaleFactory.localizedString(preferences.getProperty("googlestorage.location"), "S3"));
+    }
+
+    @Action
+    public void defaultBucketLocationGoogleStorageClicked(NSPopUpButton sender) {
+        preferences.setProperty("googlestorage.location", sender.selectedItem().representedObject());
+    }
+
+    @Outlet
+    private NSPopUpButton defaultStorageClassPopupGoogleStorage;
+
+    public void setDefaultStorageClassPopupGoogleStorage(NSPopUpButton b) {
+        this.defaultStorageClassPopupGoogleStorage = b;
+        this.defaultStorageClassPopupGoogleStorage.setAutoenablesItems(false);
+        this.defaultStorageClassPopupGoogleStorage.removeAllItems();
+        for(String s : GoogleStorageStorageClassFeature.STORAGE_CLASS_LIST) {
+            this.defaultStorageClassPopupGoogleStorage.addItemWithTitle(LocaleFactory.localizedString(s, "S3"));
+            this.defaultStorageClassPopupGoogleStorage.lastItem().setRepresentedObject(s);
+        }
+        this.defaultStorageClassPopupGoogleStorage.setTarget(this.id());
+        this.defaultStorageClassPopupGoogleStorage.setAction(Foundation.selector("defaultStorageClassPopupGoogleStorageClicked:"));
+        this.defaultStorageClassPopupGoogleStorage.selectItemWithTitle(LocaleFactory.localizedString(preferences.getProperty("googlestorage.storage.class"), "S3"));
+    }
+
+    @Action
+    public void defaultStorageClassPopupGoogleStorageClicked(NSPopUpButton sender) {
+        preferences.setProperty("googlestorage.storage.class", sender.selectedItem().representedObject());
+    }
+
+    @Outlet
+    private NSPopUpButton cannedAclPopupGoogleStorage;
+
+    public void setCannedAclPopupGoogleStorage(NSPopUpButton b) {
+        this.cannedAclPopupGoogleStorage = b;
+        this.cannedAclPopupGoogleStorage.setAutoenablesItems(false);
+        this.cannedAclPopupGoogleStorage.removeAllItems();
+        for(Acl acl : GoogleStorageAccessControlListFeature.CANNED_LIST) {
+            this.cannedAclPopupGoogleStorage.addItemWithTitle(LocaleFactory.localizedString(acl.getCannedString(), "S3"));
+            this.cannedAclPopupGoogleStorage.lastItem().setRepresentedObject(acl.getCannedString());
+        }
+        this.cannedAclPopupGoogleStorage.setTarget(this.id());
+        this.cannedAclPopupGoogleStorage.setAction(Foundation.selector("cannedAclPopupGoogleStorageClicked:"));
+
+        this.cannedAclPopupGoogleStorage.selectItemAtIndex(this.cannedAclPopupGoogleStorage.indexOfItemWithRepresentedObject(preferences.getProperty("googlestorage.acl.default")));
+    }
+
+    @Action
+    public void cannedAclPopupGoogleStorageClicked(NSPopUpButton sender) {
+        preferences.setProperty("googlestorage.acl.default", sender.selectedItem().representedObject());
     }
 
     @Outlet
