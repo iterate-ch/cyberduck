@@ -133,11 +133,6 @@ namespace Ch.Cyberduck.Ui.Controller
         string DistributionInvalidationStatus { set; }
         string DistributionInvalidateObjectsTooltip { set; }
         bool DistributionInvalidateObjectsEnabled { set; }
-        bool DistributionAnalyticsCheckbox { set; get; }
-        bool DistributionAnalyticsCheckboxEnabled { set; }
-        string DistributionAnalyticsSetupUrl { set; }
-        bool DistributionAnalyticsSetupUrlEnabled { set; }
-
         string BucketLocation { set; }
         string Encryption { set; get; }
         bool EncryptionEnabled { set; get; }

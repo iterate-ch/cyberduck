@@ -65,15 +65,18 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
             throw new ConnectionCanceledException();
         }
         final AttributedList<Path> list;
-        if(cache.isCached(workdir)) {
-            list = cache.get(workdir);
+        if(!search.isRecursive() && cache.isCached(workdir)) {
+            list = new AttributedList<>(cache.get(workdir));
         }
         else {
             // Get filtered list from search
             list = search.search(workdir, new RecursiveSearchFilter(filter), new WorkerListProgressListener(this, listener));
-        }
-        if(search.isRecursive()) {
-            return list;
+            if(search.isRecursive()) {
+                return list;
+            }
+            else {
+                cache.put(workdir, new AttributedList<>(list));
+            }
         }
         final Set<Path> removal = new HashSet<>();
         for(final Path file : list) {
@@ -88,7 +91,6 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
                 }
             }
         }
-        cache.put(workdir, list);
         return list.filter(new NullFilter<Path>() {
             @Override
             public boolean accept(final Path file) {

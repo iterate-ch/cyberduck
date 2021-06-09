@@ -1051,7 +1051,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 enable = !credentials.isAnonymousLogin();
             }
             bool logging = false;
-            bool analytics = false;
             bool versioning = false;
             bool storageclass = false;
             bool encryption = false;
@@ -1142,9 +1141,6 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<string> none = new List<string> { LocaleFactory.localizedString("None") };
             View.PopulateDistributionLogging(none);
             DistributionDeliveryMethodChanged();
-            View.DistributionAnalyticsSetupUrl = LocaleFactory.localizedString("None");
-            View.DistributionAnalyticsSetupUrlEnabled = false;
-            //AttachDistributionHandlers();
         }
 
         private void InitPermissions()
