@@ -1897,11 +1897,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (!parentFound && localParent != parent)
                 {
                     parentFound = true;
-                    localParent = parent;
+                    parent = localParent;
                 }
                 else if (parentFound && localParent != parent)
                 {
-                    localParent = null;
+                    parent = null;
                 }
 
                 return
