@@ -58,7 +58,7 @@ public class WriteAclWorker extends Worker<Boolean> {
     public WriteAclWorker(final List<Path> files,
                           final Acl acl, final boolean recursive,
                           final ProgressListener listener) {
-        this(files, acl, new BooleanRecursiveCallback<Acl>(recursive), listener);
+        this(files, acl, new BooleanRecursiveCallback<>(recursive), listener);
     }
 
     public WriteAclWorker(final List<Path> files,

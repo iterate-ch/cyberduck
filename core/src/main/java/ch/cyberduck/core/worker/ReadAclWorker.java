@@ -50,7 +50,7 @@ public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", feature));
         }
-        final List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>();
+        final List<Acl.UserAndRole> updated = new ArrayList<>();
         for(Path next : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
