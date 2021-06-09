@@ -48,17 +48,24 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.strings" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />
-        <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.strings.1" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />
-        <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.txt" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />
-    </ItemGroup>
-
-    <ItemGroup>
         <None Update="ch\cyberduck\properties\Settings.settings">
             <Generator>SettingsSingleFileGenerator</Generator>
             <LastGenOutput>Settings.Designer.cs</LastGenOutput>
             <CustomToolNamespace>Ch.Cyberduck.Properties</CustomToolNamespace>
         </None>
     </ItemGroup>
+
+    <Import Project="$(CyberduckDir)core\i18n-gen\target\i18n-gen.targets" />
+
+    <Target Name="GenerateI18nResource"
+            BeforeTargets="AssignTargetPaths"
+            DependsOnTargets="ResolveProjectReferences">
+        <ResourceGenTask SourcePath="$(CyberduckDir)i18n\src\main\resources" OutputPath="$(IntermediateOutputPath)">
+            <Output TaskParameter="Resources" ItemName="GeneratedResources" />
+        </ResourceGenTask>
+        <ItemGroup>
+            <EmbeddedResource Include="@(GeneratedResources)" />
+        </ItemGroup>
+    </Target>
 
 </Project>
