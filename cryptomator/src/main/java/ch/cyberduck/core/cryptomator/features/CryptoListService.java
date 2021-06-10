@@ -48,7 +48,7 @@ public class CryptoListService implements ListService {
         }
         catch(NotfoundException e) {
             log.error(String.format("Failure %s listing directory %s at %s", e, directory, target));
-            return AttributedList.emptyList();
+            return new AttributedList<>();
         }
     }
 
