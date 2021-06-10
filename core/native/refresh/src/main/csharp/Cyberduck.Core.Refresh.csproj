@@ -32,5 +32,4 @@
     <ItemGroup>
         <Reference Include="@(IKVMReferences)" />
     </ItemGroup>
-
 </Project>
