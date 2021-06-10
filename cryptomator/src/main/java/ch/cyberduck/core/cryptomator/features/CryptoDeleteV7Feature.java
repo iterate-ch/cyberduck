@@ -32,6 +32,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -53,19 +54,29 @@ public class CryptoDeleteV7Feature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        final List<Path> encrypted = new ArrayList<>();
+        final List<Path> metadataFiles = new ArrayList<>();
         for(Path f : files.keySet()) {
             if(!f.equals(vault.getHome())) {
                 final Path encrypt = vault.encrypt(session, f);
-                encrypted.add(encrypt);
+                try {
+                    proxy.delete(Collections.singletonList(encrypt), prompt, callback);
+                }
+                catch(NotfoundException e) {
+                    if(f.isDirectory()) {
+                        log.error(String.format("Failure %s deleting directory %s", e, encrypt));
+                    }
+                    else {
+                        throw e;
+                    }
+                }
                 final Path metadata = vault.encrypt(session, f, true);
                 if(f.isDirectory()) {
                     final Path metadataFile = new Path(metadata, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file));
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Add metadata file %s", metadataFile));
                     }
-                    encrypted.add(metadataFile);
-                    encrypted.add(metadata);
+                    metadataFiles.add(metadataFile);
+                    metadataFiles.add(metadata);
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Add metadata folder %s", metadata));
                     }
@@ -77,16 +88,16 @@ public class CryptoDeleteV7Feature implements Delete {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Add metadata file %s", metadata));
                     }
-                    encrypted.add(metadataFile);
+                    metadataFiles.add(metadataFile);
                 }
             }
         }
-        if(!encrypted.isEmpty()) {
+        if(!metadataFiles.isEmpty()) {
             try {
-                proxy.delete(encrypted, prompt, callback);
+                proxy.delete(metadataFiles, prompt, callback);
             }
             catch(NotfoundException e) {
-                log.error(String.format("Failure %s deleting file %s", e, encrypted));
+                log.error(String.format("Failure %s deleting file %s", e, metadataFiles));
             }
         }
         for(Path f : files.keySet()) {
