@@ -44,7 +44,7 @@ public class RemoteProfilesFinderTest {
             }
         }));
         final DAVSession session = new DAVSession(new HostParser(protocols).get("https://svn.cyberduck.io/trunk/profiles"), new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final RemoteProfilesFinder finder = new RemoteProfilesFinder(session);
         final List<ProfileDescription> stream = finder.find();
         assertFalse(stream.isEmpty());
