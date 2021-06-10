@@ -11,5 +11,4 @@
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
         <PackageReference Include="Microsoft.Build.Utilities.Core" />
     </ItemGroup>
-
 </Project>
