@@ -19,7 +19,7 @@
 
     <Import Project="$(CyberduckDir)core\i18n-gen\i18n-gen.targets" />
 
-    <Target Name="GenerateI18nResource" BeforeTargets="PrepareResources">
+    <Target Name="GenerateI18nResource" BeforeTargets="PrepareResources" DependsOnTargets="ResolveProjectReferences">
         <ResourceGenTask SourcePath="$(CyberduckDir)i18n\src\main\resources" OutputPath="$(IntermediateOutputPath)">
             <Output TaskParameter="Resources" ItemName="GeneratedResources" />
         </ResourceGenTask>

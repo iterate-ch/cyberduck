@@ -19,7 +19,7 @@
 
     <Import Project="$(CyberduckDir)core\i18n-gen\i18n-gen.targets" />
 
-    <Target Name="GenerateImageResources" BeforeTargets="PrepareResources">
+    <Target Name="GenerateImageResources" BeforeTargets="PrepareResources" DependsOnTargets="ResolveProjectReferences">
         <ItemGroup>
             <Images Include="$(CyberduckDir)img\*.png" />
             <HDPIImages Include="$(CyberduckDir)img\*@2x.png" />
