@@ -12,12 +12,4 @@
         <PackageReference Include="Microsoft.Build.Utilities.Core" />
     </ItemGroup>
 
-    <Target Name="CreateTargets" AfterTargets="CoreCompile">
-        <ItemGroup>
-            <Tokens Include="ProjectPath" ReplacementValue="$(MSBuildThisFileDirectory)" />
-            <Tokens Include="TargetPath" ReplacementValue="$(OutputPath)" />
-        </ItemGroup>
-        <TemplateFile Template="i18n-gen.targets" OutputFileName="$(OutputPath)i18n-gen.targets" Tokens="@(Tokens)" />
-    </Target>
-
 </Project>

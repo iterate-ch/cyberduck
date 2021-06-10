@@ -15,8 +15,16 @@
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <PropertyGroup>
-        <BasePath>$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)../', 'Directory.Build.props'))/</BasePath>
-    </PropertyGroup>
-    <Import Project="$(BasePath)native/Directory.Build.props" />
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)../'))" />
+
+    <Import Project="$(CyberduckDir)core\i18n-gen\i18n-gen.targets" />
+
+    <Target Name="GenerateI18nResource" BeforeTargets="AssignTargetPaths" DependsOnTargets="ResolveProjectReferences">
+        <ResourceGenTask SourcePath="$(CyberduckDir)i18n\src\main\resources" OutputPath="$(IntermediateOutputPath)">
+            <Output TaskParameter="Resources" ItemName="GeneratedResources" />
+        </ResourceGenTask>
+        <ItemGroup>
+            <EmbeddedResource Include="@(GeneratedResources)" />
+        </ItemGroup>
+    </Target>
 </Project>

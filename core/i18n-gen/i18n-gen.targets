@@ -1,6 +1,6 @@
 ﻿<Project>
     <PropertyGroup>
-        <i18n_gen_dll>${TargetPath}i18n-gen.dll</i18n_gen_dll>
+        <i18n_gen_dll>$(CyberduckDir)core\target\i18n-gen.dll</i18n_gen_dll>
     </PropertyGroup>
 
     <UsingTask TaskName="ResourceGenTask"
@@ -8,6 +8,8 @@
                TaskFactory="TaskHostFactory" />
 
     <ItemGroup>
-        <ProjectReference Include="${ProjectPath}i18n-gen.csproj" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="$(MSBuildThisFileDirectory)i18n-gen.csproj"
+                          OutputItemType="Analyzer"
+                          ReferenceOutputAssembly="False" />
     </ItemGroup>
 </Project>
