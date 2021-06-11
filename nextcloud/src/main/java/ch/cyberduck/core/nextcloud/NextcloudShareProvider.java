@@ -70,7 +70,7 @@ public class NextcloudShareProvider implements PromptUrlProvider {
         final Host bookmark = session.getHost();
         final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d",
             bookmark.getHostname(),
-            URIEncoder.encode(StringUtils.substringAfter(file.getAbsolute(), bookmark.getDefaultPath())),
+            URIEncoder.encode(StringUtils.substringAfter(file.getAbsolute(), session.getHost().getProtocol().getDefaultPath())),
             3 // Public link
         ));
         try {
@@ -123,7 +123,7 @@ public class NextcloudShareProvider implements PromptUrlProvider {
         final Host bookmark = session.getHost();
         final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&publicUpload=true",
             bookmark.getHostname(),
-            URIEncoder.encode(StringUtils.substringAfter(file.getAbsolute(), bookmark.getDefaultPath())),
+            URIEncoder.encode(StringUtils.substringAfter(file.getAbsolute(), session.getHost().getProtocol().getDefaultPath())),
             3 // Public link
         ));
         try {
