@@ -39,13 +39,7 @@ public class TildeExpander {
 
     public String expand(final String name) {
         if(name.startsWith(Local.HOME)) {
-            final String expanded = preferences.getProperty("local.user.home") + StringUtils.substring(name, 1);
-            if(log.isDebugEnabled()) {
-                if(!StringUtils.equals(expanded, name)) {
-                    log.debug(String.format("Expanded %s to %s", name, expanded));
-                }
-            }
-            return expanded;
+            return preferences.getProperty("local.user.home") + StringUtils.substring(name, 1);
         }
         return name;
     }
