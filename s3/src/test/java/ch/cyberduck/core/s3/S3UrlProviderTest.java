@@ -133,7 +133,7 @@ public class S3UrlProviderTest {
                 return "k";
             }
         });
-        assertTrue(provider.sign(new Path("/test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
+        assertTrue(provider.toSignedUrl(new Path("/test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
             "https://test-us-east-1-cyberduck.s3.amazonaws.com/test?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential="));
     }
 

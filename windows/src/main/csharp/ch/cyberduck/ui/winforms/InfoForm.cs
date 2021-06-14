@@ -877,29 +877,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler LifecycleDeleteCheckboxChanged = delegate { };
         public event VoidHandler LifecycleDeletePopupChanged = delegate { };
         public event VoidHandler ActiveTabChanged = delegate { };
-        public event VoidHandler BucketAnalyticsCheckboxChanged = delegate { };
-        public event VoidHandler DistributionAnalyticsCheckboxChanged = delegate { };
-
-        public bool DistributionAnalyticsCheckbox
-        {
-            get { return distributionAnalyticsCheckBox.Checked; }
-            set { distributionAnalyticsCheckBox.Checked = value; }
-        }
-
-        public bool DistributionAnalyticsCheckboxEnabled
-        {
-            set { distributionAnalyticsCheckBox.Enabled = value; }
-        }
-
-        public string DistributionAnalyticsSetupUrl
-        {
-            set { distributionAnalyticsSetupUrlLinkLabel.Text = value; }
-        }
-
-        public bool DistributionAnalyticsSetupUrlEnabled
-        {
-            set { distributionAnalyticsSetupUrlLinkLabel.Enabled = value; }
-        }
 
         public bool MetadataTableEnabled
         {
@@ -1311,16 +1288,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void encryptionCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             EncryptionChanged();
-        }
-
-        private void bucketAnalyticsCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            BucketAnalyticsCheckboxChanged();
-        }
-
-        private void distributionAnalyticsCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            DistributionAnalyticsCheckboxChanged();
         }
 
         private void lifecycleTransitionCheckBox_CheckedChanged(object sender, EventArgs e)

@@ -17,18 +17,8 @@ package ch.cyberduck.core.ctera.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-/*
-{
-    "$class":"AttachDeviceRespond",
-    "deviceName": "Test-device",
-    "deviceUID": 00000000000,
-    "lastLogin": "2021-02-03T12:03:00",
-    "sharedSecret": "********************************"
- }
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public final class AttachDeviceResponse {
-    public String deviceName;
-    public String deviceUID;
-    public String sharedSecret;
+public final class PortalSession {
+
+    public String username;
 }

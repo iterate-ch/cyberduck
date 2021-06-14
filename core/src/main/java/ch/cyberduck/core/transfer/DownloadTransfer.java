@@ -150,7 +150,8 @@ public class DownloadTransfer extends Transfer {
         final Find find = new CachingFindFeature(cache,
             source.getFeature(Find.class, new DefaultFindFeature(source)));
         final AttributesFinder attributes = new CachingAttributesFinderFeature(cache,
-            source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
+            new FallbackAttributesFinderFeature(source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)),
+                source.getFeature(AttributesFinder.class)));
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
         }

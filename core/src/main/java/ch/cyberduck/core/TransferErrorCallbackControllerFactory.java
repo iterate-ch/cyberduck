@@ -75,7 +75,9 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
                     // Fail fast when transferring single file
                     throw failure;
                 }
-                return proxy.prompt(item, status, failure, pending);
+                synchronized(proxy) {
+                    return proxy.prompt(item, status, failure, pending);
+                }
             }
         };
     }
