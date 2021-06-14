@@ -96,9 +96,6 @@ namespace Ch.Cyberduck.Ui.Controller
         bool AclAddEnabled { set; }
         bool AclRemoveEnabled { set; }
         bool AclAnimationActive { set; }
-        string AclUrl { set; }
-        bool AclUrlEnabled { set; }
-        string AclUrlTooltip { set; }
 
         bool MetadataTableEnabled { set; }
         bool MetadataAddEnabled { set; }

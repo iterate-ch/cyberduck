@@ -65,7 +65,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             //some font tweaking
             statusLabel.Font = DefaultFontBold;
-            authenticatedLabel.Font = DefaultFontBold;
             AclLabel.Font = DefaultFontBold;
 
             whereLinkLabel.Text = String.Empty;
@@ -587,21 +586,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { aclAnimation.Visible = value; }
         }
 
-        public string AclUrl
-        {
-            set { authenticatedUrlLinkLabel.Text = value; }
-        }
-
-        public bool AclUrlEnabled
-        {
-            set { authenticatedUrlLinkLabel.Enabled = value; }
-        }
-
-        public string AclUrlTooltip
-        {
-            set { toolTip.SetToolTip(authenticatedUrlLinkLabel, value); }
-        }
-
         public event VoidHandler OwnerReadChanged = delegate { };
         public event VoidHandler OwnerWriteChanged = delegate { };
         public event VoidHandler OwnerExecuteChanged = delegate { };
@@ -613,7 +597,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler OtherExecuteChanged = delegate { };
         public event VoidHandler ApplyRecursivePermissions = delegate { };
         public event VoidHandler OctalPermissionsChanged = delegate { };
-
 
         public bool DistributionDefaultRootEnabled
         {
