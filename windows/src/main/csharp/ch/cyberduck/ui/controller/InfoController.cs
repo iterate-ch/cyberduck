@@ -428,35 +428,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private void InitAcl()
         {
             SetAcl(new List<UserAndRoleEntry>());
-            View.AclUrl = LocaleFactory.localizedString("None");
-            View.AclUrlEnabled = false;
             if (ToggleAclSettings(false))
             {
                 PopulateAclUsers();
                 PopulateAclRoles();
-                if (NumberOfFiles > 1)
-                {
-                    View.AclUrl = _multipleFilesString;
-                    View.AclUrlTooltip = null;
-                }
-                else
-                {
-                    foreach (Path file in _files)
-                    {
-                        if (file.isFile())
-                        {
-                            DescriptiveUrl authenticated =
-                                ((UrlProvider)_controller.Session.getFeature(typeof(UrlProvider))).toUrl(file)
-                                    .find(DescriptiveUrl.Type.authenticated);
-                            if (!authenticated.equals(DescriptiveUrl.EMPTY))
-                            {
-                                View.AclUrl = authenticated.getUrl();
-                                View.AclUrlEnabled = true;
-                                View.AclUrlTooltip = authenticated.getHelp();
-                            }
-                        }
-                    }
-                }
                 _controller.Background(new ReadAclBackgroundAction(_controller, this));
             }
         }
