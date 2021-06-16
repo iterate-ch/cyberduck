@@ -12,7 +12,6 @@ import ch.cyberduck.core.proxy.Proxy;
 
 import org.junit.Test;
 
-import java.net.URI;
 import java.util.EnumSet;
 import java.util.Iterator;
 
@@ -135,22 +134,6 @@ public class S3UrlProviderTest {
         });
         assertTrue(provider.toSignedUrl(new Path("/test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
             "https://test-us-east-1-cyberduck.s3.amazonaws.com/test?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential="));
-    }
-
-    @Test
-    public void testToTorrentUrl() {
-        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-            new Credentials("anonymous", null)));
-        assertEquals(new DescriptiveUrl(URI.create("http://test-us-east-1-cyberduck.s3.amazonaws.com/test%20f?torrent"), DescriptiveUrl.Type.torrent),
-            new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.torrent));
-    }
-
-    @Test
-    public void testToTorrentUrlThirdparty() {
-        final S3Session session = new S3Session(new Host(new S3Protocol(), "test-us-east-1-cyberduck",
-            new Credentials("anonymous", null)));
-        assertEquals(DescriptiveUrl.EMPTY,
-            new S3UrlProvider(session).toUrl(new Path("/c/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.torrent));
     }
 
     @Test

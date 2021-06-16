@@ -45,7 +45,6 @@ public class DescriptiveUrl {
         origin,
         cname,
         signed,
-        torrent,
         authenticated,
         analytics,
         encrypted

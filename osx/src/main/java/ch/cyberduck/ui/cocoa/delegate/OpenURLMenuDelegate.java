@@ -49,8 +49,8 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
         final UrlProvider provider = pool.getFeature(UrlProvider.class);
         if(provider != null) {
             list.addAll(provider.toUrl(selected).filter(
-                    DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
-                    DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated, DescriptiveUrl.Type.torrent));
+                DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
+                DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated));
         }
         final DistributionConfiguration feature = pool.getFeature(DistributionConfiguration.class);
         if(feature != null) {

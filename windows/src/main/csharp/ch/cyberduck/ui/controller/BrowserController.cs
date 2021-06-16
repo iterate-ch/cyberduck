@@ -672,7 +672,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 DescriptiveUrlBag urls =
                     ((UrlProvider) Session.getFeature(typeof(UrlProvider))).toUrl(SelectedPath)
                     .filter(DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
-                        DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated, DescriptiveUrl.Type.torrent);
+                        DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated);
                 for (int i = 0; i < urls.size(); i++)
                 {
                     DescriptiveUrl descUrl = (DescriptiveUrl) urls.toArray()[i];
