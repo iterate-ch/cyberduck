@@ -92,10 +92,6 @@ public class DropboxListService implements ListService {
                 type.add(Path.Type.volume);
                 type.add(Path.Type.shared);
             }
-            else if(directory.isRoot()) {
-                // Home folder
-                type.add(Path.Type.volume);
-            }
         }
         else {
             log.warn(String.format("Skip file %s", metadata));
