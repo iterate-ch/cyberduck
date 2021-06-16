@@ -54,8 +54,8 @@ public class CryptoDeleteV7Feature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        final List<Path> metadataFiles = new ArrayList<>();
         for(Path f : files.keySet()) {
+            final List<Path> metadataFiles = new ArrayList<>();
             if(!f.equals(vault.getHome())) {
                 final Path encrypt = vault.encrypt(session, f);
                 try {
@@ -91,13 +91,13 @@ public class CryptoDeleteV7Feature implements Delete {
                     metadataFiles.add(metadataFile);
                 }
             }
-        }
-        if(!metadataFiles.isEmpty()) {
-            try {
-                proxy.delete(metadataFiles, prompt, callback);
-            }
-            catch(NotfoundException e) {
-                log.error(String.format("Failure %s deleting file %s", e, metadataFiles));
+            if(!metadataFiles.isEmpty()) {
+                try {
+                    proxy.delete(metadataFiles, prompt, callback);
+                }
+                catch(NotfoundException e) {
+                    log.error(String.format("Failure %s deleting file %s", e, metadataFiles));
+                }
             }
         }
         for(Path f : files.keySet()) {
