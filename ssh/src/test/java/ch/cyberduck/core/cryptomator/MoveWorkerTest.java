@@ -172,8 +172,7 @@ public class MoveWorkerTest extends AbstractSFTPTest {
         new MoveWorker(Collections.singletonMap(folder, folderRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
         assertFalse(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(folder));
         try {
-            new CryptoListService(session, new SFTPListService(session), cryptomator).list(folder, new DisabledListProgressListener());
-            fail();
+            assertTrue(new CryptoListService(session, new SFTPListService(session), cryptomator).list(folder, new DisabledListProgressListener()).isEmpty());
         }
         catch(NotfoundException e) {
             //
