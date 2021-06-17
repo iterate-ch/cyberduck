@@ -167,8 +167,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         assertFalse(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(folder));
         assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(folderRenamed));
         try {
-            new CryptoListService(session, new S3ListService(session), cryptomator).list(folder, new DisabledListProgressListener());
-            fail();
+            assertTrue(new CryptoListService(session, new S3ListService(session), cryptomator).list(folder, new DisabledListProgressListener()).isEmpty());
         }
         catch(NotfoundException e) {
             //
