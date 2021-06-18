@@ -76,7 +76,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
             }
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Cannot create folder {0}", e, folder);
+            throw new SDSExceptionMappingService(nodeid).map("Cannot create folder {0}", e, folder);
         }
     }
 

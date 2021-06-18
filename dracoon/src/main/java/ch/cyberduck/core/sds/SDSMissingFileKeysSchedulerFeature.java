@@ -73,8 +73,9 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
 
     @Override
     public List<UserFileKeySetRequest> operate(final Session<SDSApiClient> client, final PasswordCallback callback, final Path file) throws BackgroundException {
+        final SDSSession session = (SDSSession) client;
+        final SDSNodeIdProvider nodeid = (SDSNodeIdProvider) session.getFeature(VersionIdProvider.class);
         try {
-            final SDSSession session = (SDSSession) client;
             final UserAccountWrapper account = session.userAccount();
             if(!account.isEncryptionEnabled()) {
                 log.warn(String.format("No key pair found in user account %s", account));
@@ -90,9 +91,8 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             if(userKeyPairContainerDeprecated != null) {
                 passphraseDeprecated = triplecrypt.unlock(callback, session.getHost(), TripleCryptConverter.toCryptoUserKeyPair(userKeyPairContainerDeprecated));
             }
-            final VersionIdProvider node = session.getFeature(VersionIdProvider.class);
             // Null when operating from scheduler. File reference is set for post upload.
-            final Long fileId = file != null ? Long.parseLong(node.getVersionId(file, new DisabledListProgressListener())) : null;
+            final Long fileId = file != null ? Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())) : null;
             UserFileKeySetBatchRequest request;
             do {
                 if(log.isDebugEnabled()) {
@@ -136,7 +136,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             return processed;
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map(e);
+            throw new SDSExceptionMappingService(nodeid).map(e);
         }
         catch(CryptoException e) {
             throw new TripleCryptExceptionMappingService().map(e);

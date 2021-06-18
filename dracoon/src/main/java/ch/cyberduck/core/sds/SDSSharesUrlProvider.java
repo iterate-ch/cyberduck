@@ -163,7 +163,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 DescriptiveUrl.Type.signed, help);
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map(e);
+            throw new SDSExceptionMappingService(nodeid).map(e);
         }
         catch(CryptoException e) {
             throw new TripleCryptExceptionMappingService().map(e);
@@ -202,7 +202,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 DescriptiveUrl.Type.signed, help);
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map(e);
+            throw new SDSExceptionMappingService(nodeid).map(e);
         }
     }
 }

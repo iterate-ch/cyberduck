@@ -82,7 +82,7 @@ public class TripleCryptReadFeature implements Read {
             }
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Download {0} failed", e, file);
+            throw new SDSExceptionMappingService(nodeid).map("Download {0} failed", e, file);
         }
         catch(CryptoException e) {
             throw new TripleCryptExceptionMappingService().map("Download {0} failed", e, file);

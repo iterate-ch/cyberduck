@@ -139,7 +139,7 @@ public class PresignedMultipartOutputStream extends OutputStream {
                                         break;
                                     default:
                                         EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-                                        throw new SDSExceptionMappingService().map(
+                                        throw new SDSExceptionMappingService(nodeid).map(
                                             new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                                 EntityUtils.toString(response.getEntity())));
                                 }
@@ -155,7 +155,7 @@ public class PresignedMultipartOutputStream extends OutputStream {
                         }
                     }
                     catch(ApiException e) {
-                        throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
+                        throw new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file);
                     }
                     catch(HttpResponseException e) {
                         throw new DefaultHttpResponseExceptionMappingService().map(e);
@@ -230,7 +230,7 @@ public class PresignedMultipartOutputStream extends OutputStream {
                             }
                             catch(ApiException e) {
                                 done.countDown();
-                                failure.set(new SDSExceptionMappingService().map("Upload {0} failed", e, file));
+                                failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
                             }
                         }
                     }, PreferencesFactory.get().getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
@@ -244,7 +244,7 @@ public class PresignedMultipartOutputStream extends OutputStream {
                     throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file);
                 }
                 catch(ApiException e) {
-                    throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
+                    throw new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file);
                 }
             }
         }

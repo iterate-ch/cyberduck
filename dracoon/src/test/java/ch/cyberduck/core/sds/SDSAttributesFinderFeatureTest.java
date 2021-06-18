@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -139,7 +140,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid, true);
-        final PathAttributes previous = f.find(folder, 1);
+        final PathAttributes previous = f.find(folder, new DisabledListProgressListener(), 1);
         assertNotEquals(-1L, previous.getRevision().longValue());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String initialVersion = test.attributes().getVersionId();
@@ -154,9 +155,9 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(test.attributes().getVersionId());
         assertNotEquals(initialVersion, test.attributes().getVersionId());
-        final PathAttributes updated = new SDSAttributesFinderFeature(session, nodeid, true).find(test, 1);
+        final PathAttributes updated = new SDSAttributesFinderFeature(session, nodeid, true).find(test, new DisabledListProgressListener(), 1);
         assertFalse(updated.getVersions().isEmpty());
-        assertEquals(previous.getModificationDate(), new SDSAttributesFinderFeature(session, nodeid).find(folder, 1).getModificationDate());
+        assertEquals(previous.getModificationDate(), new SDSAttributesFinderFeature(session, nodeid).find(folder, new DisabledListProgressListener(), 1).getModificationDate());
         // Branch version is changing with background task only
         // assertNotEquals(previous.getRevision(), new SDSAttributesFinderFeature(session, nodeid).find(folder, 1).getRevision());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -200,5 +201,20 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         f.toPermission(node);
         permissions.setCreate(true);
         f.toPermission(node);
+    }
+
+    @Test
+    public void testChangedNodeId() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String latestnodeid = test.attributes().getVersionId();
+        assertNotNull(latestnodeid);
+        // Assume previously seen but changed on server
+        nodeid.cache(test, String.valueOf(RandomUtils.nextLong()));
+        final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid, true);
+        assertEquals(latestnodeid, f.find(test).getVersionId());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

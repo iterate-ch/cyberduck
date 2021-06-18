@@ -55,7 +55,7 @@ public class SDSDeleteFeature implements Delete {
                 nodeid.cache(file, null);
             }
             catch(ApiException e) {
-                throw new SDSExceptionMappingService().map("Cannot delete {0}", e, file);
+                throw new SDSExceptionMappingService(nodeid).map("Cannot delete {0}", e, file);
             }
         }
     }

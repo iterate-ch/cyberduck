@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -48,16 +47,16 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
         final String name = String.format("%s%s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());
         final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener(), 1));
+        assertNotNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
         try {
-            assertNull(nodeid.getNodeId(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener(), 1));
+            assertNull(nodeid.getNodeId(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), 1));
             fail();
         }
         catch(NotfoundException e) {
             // Expected
         }
         try {
-            assertNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener(), 1));
+            assertNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.directory)), 1));
             fail();
         }
         catch(NotfoundException e) {
@@ -73,7 +72,7 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final String versionIdTouch = file.attributes().getVersionId();
-        assertEquals(versionIdTouch, nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener(), 1));
+        assertEquals(versionIdTouch, nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -85,7 +84,7 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         assertNotNull(file.attributes().getVersionId());
         assertNotEquals(versionIdTouch, file.attributes().getVersionId());
         nodeid.clear();
-        assertEquals(file.attributes().getVersionId(), nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener(), 1));
+        assertEquals(file.attributes().getVersionId(), nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -95,9 +94,9 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertNotNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener(), 1));
+        assertNotNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.directory)), 1));
         try {
-            assertNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener(), 1));
+            assertNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
             fail();
         }
         catch(NotfoundException e) {
@@ -113,10 +112,10 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(roomname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String subroomname = new AlphanumericRandomStringService().random();
         final Path subroom = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, subroomname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        assertNotNull(nodeid.getNodeId(new Path(roomname, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener(), 1));
-        assertNotNull(nodeid.getNodeId(new Path(room, subroomname, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener(), 1));
+        assertNotNull(nodeid.getNodeId(new Path(roomname, EnumSet.of(Path.Type.directory)), 1));
+        assertNotNull(nodeid.getNodeId(new Path(room, subroomname, EnumSet.of(Path.Type.directory)), 1));
         try {
-            assertNull(nodeid.getNodeId(new Path(room, subroomname, EnumSet.of(Path.Type.file)), new DisabledListProgressListener(), 1));
+            assertNull(nodeid.getNodeId(new Path(room, subroomname, EnumSet.of(Path.Type.file)), 1));
             fail();
         }
         catch(NotfoundException e) {

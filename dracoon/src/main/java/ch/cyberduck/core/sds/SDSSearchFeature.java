@@ -84,7 +84,7 @@ public class SDSSearchFeature implements Search {
             return result;
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, workdir);
+            throw new SDSExceptionMappingService(nodeid).map("Failure to read attributes of {0}", e, workdir);
         }
     }
 
