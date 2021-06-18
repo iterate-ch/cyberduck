@@ -66,7 +66,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
             }
         }
         catch(IOException e) {
-            throw new DriveExceptionMappingService().map("Cannot create folder {0}", e, folder);
+            throw new DriveExceptionMappingService(fileid).map("Cannot create folder {0}", e, folder);
         }
     }
 

@@ -47,7 +47,7 @@ public class DriveTimestampFeature extends DefaultTimestampFeature {
                 setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
         }
         catch(IOException e) {
-            throw new DriveExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+            throw new DriveExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
         }
     }
 }

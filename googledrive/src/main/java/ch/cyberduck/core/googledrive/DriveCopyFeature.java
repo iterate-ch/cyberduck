@@ -49,7 +49,7 @@ public class DriveCopyFeature implements Copy {
             return target.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(copy));
         }
         catch(IOException e) {
-            throw new DriveExceptionMappingService().map("Cannot copy {0}", e, source);
+            throw new DriveExceptionMappingService(fileid).map("Cannot copy {0}", e, source);
         }
     }
 

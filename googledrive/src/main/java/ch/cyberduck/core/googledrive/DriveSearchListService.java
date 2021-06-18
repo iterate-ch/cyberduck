@@ -67,7 +67,7 @@ public class DriveSearchListService extends AbstractDriveListService {
             return tree;
         }
         catch(IOException e) {
-            throw new DriveExceptionMappingService().map("Listing directory failed", e, directory);
+            throw new DriveExceptionMappingService(fileid).map("Listing directory failed", e, directory);
         }
     }
 

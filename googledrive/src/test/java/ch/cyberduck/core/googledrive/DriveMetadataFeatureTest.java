@@ -15,12 +15,15 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -28,7 +31,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DriveMetadataFeatureTest extends AbstractDriveTest {
@@ -43,5 +46,25 @@ public class DriveMetadataFeatureTest extends AbstractDriveTest {
         new DriveMetadataFeature(session, fileid).setMetadata(test, Collections.singletonMap("test", "t"));
         assertEquals(Collections.singletonMap("test", "t"), new DriveMetadataFeature(session, fileid).getMetadata(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testChangedFileId() throws Exception {
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        final Path room = new DriveDirectoryFeature(session, fileid).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new DriveTouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String latestfileid = test.attributes().getFileId();
+        assertNotNull(latestfileid);
+        // Assume previously seen but changed on server
+        fileid.cache(test, String.valueOf(RandomUtils.nextLong()));
+        final DriveMetadataFeature f = new DriveMetadataFeature(session, fileid);
+        try {
+            f.getMetadata(test);
+        }
+        catch(NotfoundException e) {
+            assertNull(test.attributes().getFileId());
+        }
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

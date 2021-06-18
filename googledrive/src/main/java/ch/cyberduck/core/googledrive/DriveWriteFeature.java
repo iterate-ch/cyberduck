@@ -174,7 +174,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
                     return fileid.getFileId(file, new DisabledListProgressListener());
                 }
                 catch(IOException e) {
-                    throw new DriveExceptionMappingService().map("Upload {0} failed", e, file);
+                    throw new DriveExceptionMappingService(fileid).map("Upload {0} failed", e, file);
                 }
             }
 

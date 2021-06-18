@@ -29,7 +29,7 @@ public class DriveQuotaFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testGet() throws Exception {
-        final Quota.Space quota = new DriveQuotaFeature(session).get();
+        final Quota.Space quota = new DriveQuotaFeature(session, new DriveFileIdProvider(session)).get();
         assertNotNull(quota.available);
         assertNotNull(quota.used);
         assertNotEquals(0L, quota.available, 0L);

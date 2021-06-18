@@ -28,9 +28,11 @@ import com.google.api.services.drive.model.About;
 public class DriveQuotaFeature implements Quota {
 
     private final DriveSession session;
+    private final DriveFileIdProvider fileid;
 
-    public DriveQuotaFeature(final DriveSession session) {
+    public DriveQuotaFeature(final DriveSession session, final DriveFileIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class DriveQuotaFeature implements Quota {
             return new Space(used, available);
         }
         catch(IOException e) {
-            throw new DriveExceptionMappingService().map("Failure to read attributes of {0}", e,
+            throw new DriveExceptionMappingService(fileid).map("Failure to read attributes of {0}", e,
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         }
     }

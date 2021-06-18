@@ -45,6 +45,7 @@ public abstract class AbstractDriveListService implements ListService {
     protected static final String DEFAULT_FIELDS = String.format("files(%s),nextPageToken", DriveAttributesFinderFeature.DEFAULT_FIELDS);
 
     private final DriveSession session;
+    private final DriveFileIdProvider fileid;
     private final int pagesize;
     private final UrlFileWriter urlFileWriter = UrlFileWriterFactory.get();
     private final String fields;
@@ -60,6 +61,7 @@ public abstract class AbstractDriveListService implements ListService {
 
     public AbstractDriveListService(final DriveSession session, final DriveFileIdProvider fileid, final int pagesize, final String fields) {
         this.session = session;
+        this.fileid = fileid;
         this.pagesize = pagesize;
         this.fields = fields;
         this.attributes = new DriveAttributesFinderFeature(session, fileid);
@@ -122,7 +124,7 @@ public abstract class AbstractDriveListService implements ListService {
             return children;
         }
         catch(IOException e) {
-            throw new DriveExceptionMappingService().map("Listing directory failed", e, directory);
+            throw new DriveExceptionMappingService(fileid).map("Listing directory failed", e, directory);
         }
     }
 
