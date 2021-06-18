@@ -13,7 +13,7 @@ namespace i18n_gen
         private static readonly Regex FilenameFilter = new("\\.strings(?:\\.1)?$", RegexOptions.Compiled);
         private static readonly Regex StringsRegex = new("^\"?(.*?)\"?\\s*=\\s*\"(.*)\";?$", RegexOptions.Compiled);
 
-        public static IEnumerable<(string Lang, string Table, string Key, string Property, string Value)> sdklyf(string sourcePath) =>
+        public static IEnumerable<(string Lang, string Table, string Key, string Property, string Value)> ParseLines(string sourcePath) =>
             Directory.EnumerateDirectories(sourcePath, "*.lproj")
             .Select(p => (Lang: Path.GetFileNameWithoutExtension(p), Project: p))
             .SelectMany(x => Directory.EnumerateFiles(x.Project).Where((Func<string, bool>)FilenameFilter.IsMatch).Select(s => (
@@ -79,7 +79,7 @@ namespace i18n_gen
 
         private static IEnumerable<(string, string, string)> ReadLines(string path, Regex regex)
         {
-            HashSet<string> skippedProperties = new HashSet<string>();
+            HashSet<string> skippedProperties = new();
             using var reader = new StreamReader(path);
             while (!reader.EndOfStream)
             {

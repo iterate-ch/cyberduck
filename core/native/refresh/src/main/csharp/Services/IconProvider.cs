@@ -1,99 +1,136 @@
 ﻿using ch.cyberduck.core;
+using Ch.Cyberduck.Core;
 using System;
-using System.Collections.Concurrent;
-using System.Drawing;
-using System.Threading;
-using System.Windows.Media.Imaging;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Cyberduck.Core.Refresh.Services
 {
-    public class IconProvider
+    using System.IO;
+
+    public abstract class IconProvider
     {
-        private readonly IconCache cache;
-        private readonly IconResourceProvider iconResources;
-        private readonly ConcurrentDictionary<string, AutoResetEvent> sync = new ConcurrentDictionary<string, AutoResetEvent>();
-
-        public IconProvider(IconCache cache, IconResourceProvider iconResources)
+        public IconProvider(IconCache iconCache)
         {
-            this.cache = cache;
-            this.iconResources = iconResources;
+            IconCache = iconCache;
         }
 
-        public Source ForFile(string filename, bool isFolder, int size)
+        protected IconCache IconCache { get; }
+
+        protected Stream GetStream(string name)
         {
+            if (Path.IsPathRooted(name))
+            {
+                return new FileStream(name, FileMode.Open);
+            }
             return default;
         }
+    }
 
-        public Source GetDisk(Protocol protocol, int size)
+    public abstract class IconProvider<T> : IconProvider
+    {
+        protected IconProvider(IconCache iconCache) : base(iconCache)
         {
-            return default;
         }
 
-        public Source GetIcon(Protocol protocol, int size)
+        protected delegate void CacheIconCallback(IconCache cache, int size, T source);
+
+        protected delegate bool GetCacheIconCallback(IconCache cache, int size);
+
+        protected delegate IEnumerable<T> QueryIconCacheCallback(IconCache cache);
+
+        public T GetDisk(Protocol protocol, int size) => Get(
+            protocol, protocol.disk(), size, "Disk");
+
+        public T GetFileIcon(string filename, bool isFolder, bool large, bool isExecutable)
         {
-            return default;
-        }
-
-        public Source GetResource(string name, int size)
-        {
-            var resource = iconResources.GetResource(name);
-
-            return default;
-        }
-
-        private IDisposable AutoLock(string key)
-        {
-            var @event = sync.GetOrAdd(key, _ => new AutoResetEvent(true));
-            @event.WaitOne();
-            return new SyncKey(@event);
-        }
-
-        public ref struct Source
-        {
-            private readonly Func<BitmapSource> bitmapSourceFactory;
-            private readonly Func<Image> imageFactory;
-
-            public Source(Func<Image> imageFactory, Func<BitmapSource> bitmapSourceFactory)
+            string key = isFolder ? "folder" : isExecutable ? filename : Path.GetExtension(filename);
+            if (IconCache.TryGetIcon("ext", large ? 32 : 16, out T image, key))
             {
-                this.imageFactory = imageFactory;
-                this.bitmapSourceFactory = bitmapSourceFactory;
+                return image;
             }
 
-            public BitmapSource BitmapSource => bitmapSourceFactory();
-
-            public Image Image => imageFactory();
-        }
-
-        private class SyncKey : IDisposable
-        {
-            private readonly AutoResetEvent resetEvent;
-            private bool disposedValue;
-
-            public SyncKey(AutoResetEvent resetEvent)
+            var icons = IconCache.Filter<T>(((object key, string classifier, int _) filter) => Equals("ext", filter.key) && Equals(key, filter.classifier));
+            if (!icons.Any())
             {
-                this.resetEvent = resetEvent;
-            }
+                uint flags = Shell32.SHGFI_ICON | Shell32.SHGFI_USEFILEATTRIBUTES;
+                flags |= large ? Shell32.SHGFI_LARGEICON : Shell32.SHGFI_SMALLICON;
 
-            ~SyncKey()
-            {
-                Dispose(disposing: false);
-            }
+                uint fileAttributes = isFolder ? Shell32.FILE_ATTRIBUTE_DIRECTORY : Shell32.FILE_ATTRIBUTE_NORMAL;
 
-            void IDisposable.Dispose()
-            {
-                Dispose(disposing: true);
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void Dispose(bool disposing)
-            {
-                if (!disposedValue)
+                Shell32.SHFILEINFO shfi = new();
+                try
                 {
-                    resetEvent.Set();
-
-                    disposedValue = true;
+                    IntPtr hSuccess = Shell32.SHGetFileInfo(filename, fileAttributes, ref shfi, (uint)Marshal.SizeOf<Shell32.SHFILEINFO>(), flags);
+                    if (hSuccess == IntPtr.Zero)
+                    {
+                        return default;
+                    }
+                    icons = GetImages(shfi.hIcon, (c, s) => c.TryGetIcon<T>("ext", out _, key), (c, s, i) => c.CacheIcon("ext", s, i, key));
+                }
+                finally
+                {
+                    User32.DestroyIcon(shfi.hIcon);
                 }
             }
+            return FindNearestFit(icons, large ? 32 : 16, (c, s, i) => c.CacheIcon("ext", s, i, key));
         }
+
+        public T GetIcon(Protocol protocol, int size) => Get(
+            protocol, protocol.icon(), size, "Icon", false);
+
+        public T GetResource(string name) => Get(name, name, default);
+
+        public T GetResource(string name, int size) => Get(name, name, size, default);
+
+        protected abstract T FindNearestFit(IEnumerable<T> icons, int size, CacheIconCallback cacheCallback);
+
+        protected T Get(object key, string path, string classifier)
+        {
+            if (IconCache.TryGetIcon(key, out T image, classifier))
+            {
+                return image;
+            }
+            return Get(key, path, 0, classifier, false);
+        }
+
+        protected T Get(object key, string path, int size, string classifier)
+        {
+            if (IconCache.TryGetIcon(key, size, out T image, classifier))
+            {
+                return image;
+            }
+            return Get(key, path, size, classifier, false);
+        }
+
+        protected T Get(object key, string path, int size, string classifier, bool returnDefault)
+        {
+            T image = default;
+            var images = IconCache.Filter<T>(((object key, string classifier, int) f) => Equals(key, f.key) && Equals(classifier, f.classifier));
+            if (!images.Any())
+            {
+                bool isDefault = !IconCache.TryGetIcon<T>(key, out _, classifier);
+                using Stream stream = GetStream(path);
+                images = GetImages(stream, (c, s) => c.TryGetIcon<T>(key, s, out _, classifier), (c, s, i) =>
+                {
+                    if (isDefault)
+                    {
+                        isDefault = false;
+                        if (returnDefault)
+                        {
+                            image = i;
+                        }
+                        IconCache.CacheIcon<T>(key, s, classifier);
+                    }
+                    IconCache.CacheIcon(key, s, i, classifier);
+                });
+            }
+            return image ?? FindNearestFit(images, size, default);
+        }
+
+        protected abstract IEnumerable<T> GetImages(Stream stream, GetCacheIconCallback getCache, CacheIconCallback cacheIcon);
+
+        protected abstract IEnumerable<T> GetImages(IntPtr nativeIcon, GetCacheIconCallback getCache, CacheIconCallback cacheIcon);
     }
 }

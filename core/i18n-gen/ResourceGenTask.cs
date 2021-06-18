@@ -23,7 +23,7 @@ namespace i18n_gen
         {
             HashSet<string> langs = new();
             List<ITaskItem> resources = new();
-            foreach (var lang in CommonResource.sdklyf(SourcePath).GroupBy(x => x.Lang))
+            foreach (var lang in CommonResource.ParseLines(SourcePath).GroupBy(x => x.Lang))
             {
                 langs.Add(lang.Key);
                 var filename = "i18n." + lang.Key + ".resources";

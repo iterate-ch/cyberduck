@@ -17,6 +17,7 @@
 
     <PropertyGroup>
         <TargetFramework>net47</TargetFramework>
+        <LangVersion>9</LangVersion>
         <UseWPF>true</UseWPF>
         <UseWindowsForms>true</UseWindowsForms>
     </PropertyGroup>
