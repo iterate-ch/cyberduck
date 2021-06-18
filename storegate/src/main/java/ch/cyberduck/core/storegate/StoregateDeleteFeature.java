@@ -64,7 +64,7 @@ public class StoregateDeleteFeature implements Delete {
                         case HttpStatus.SC_NO_CONTENT:
                             break;
                         default:
-                            throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                            throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                     }
                 }
                 finally {

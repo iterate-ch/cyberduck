@@ -145,7 +145,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
                                         offset += content.length;
                                         break;
                                     default:
-                                        throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                        throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                             EntityUtils.toString(response.getEntity())));
                                 }
                             }
@@ -196,7 +196,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
                             case HttpStatus.SC_NO_CONTENT:
                                 break;
                             default:
-                                throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                     EntityUtils.toString(response.getEntity())));
                         }
                     }

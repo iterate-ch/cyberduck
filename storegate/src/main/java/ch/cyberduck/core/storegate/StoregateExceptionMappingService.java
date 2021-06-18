@@ -18,18 +18,35 @@ package ch.cyberduck.core.storegate;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultSocketExceptionMappingService;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
 import java.net.SocketException;
 
 public class StoregateExceptionMappingService extends AbstractExceptionMappingService<ApiException> {
+
+    private final StoregateIdProvider fileid;
+
+    public StoregateExceptionMappingService(final StoregateIdProvider fileid) {
+        this.fileid = fileid;
+    }
+
+    @Override
+    public BackgroundException map(final String message, final ApiException failure, final Path file) {
+        switch(failure.getCode()) {
+            case HttpStatus.SC_NOT_FOUND:
+                fileid.cache(file, null);
+        }
+        return super.map(message, failure, file);
+    }
 
     @Override
     public BackgroundException map(final ApiException failure) {

@@ -25,9 +25,11 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.AccountStorage;
 public class StoregateQuotaFeature implements Quota {
 
     private final StoregateSession session;
+    private final StoregateIdProvider fileid;
 
-    public StoregateQuotaFeature(final StoregateSession session) {
+    public StoregateQuotaFeature(final StoregateSession session, final StoregateIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class StoregateQuotaFeature implements Quota {
             return new Space(quota.getUsed(), quota.getAvailable());
         }
         catch(ApiException e) {
-            throw new StoregateExceptionMappingService().map("Failure to read attributes of {0}", e,
+            throw new StoregateExceptionMappingService(fileid).map("Failure to read attributes of {0}", e,
                 new DefaultHomeFinderService(session).find());
         }
     }

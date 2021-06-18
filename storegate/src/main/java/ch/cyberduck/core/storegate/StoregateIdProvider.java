@@ -61,7 +61,7 @@ public class StoregateIdProvider implements FileIdProvider {
             return id;
         }
         catch(ApiException e) {
-            throw new StoregateExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw new StoregateExceptionMappingService(this).map("Failure to read attributes of {0}", e, file);
         }
     }
 

@@ -48,7 +48,7 @@ public class StoregateLockFeature implements Lock<String> {
             return lock.getLockId();
         }
         catch(ApiException e) {
-            throw new StoregateExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+            throw new StoregateExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
         }
     }
 
@@ -59,7 +59,7 @@ public class StoregateLockFeature implements Lock<String> {
                 new DisabledListProgressListener()), token);
         }
         catch(ApiException e) {
-            throw new StoregateExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+            throw new StoregateExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
         }
     }
 }

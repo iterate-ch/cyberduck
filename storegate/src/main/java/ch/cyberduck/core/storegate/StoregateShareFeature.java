@@ -70,7 +70,7 @@ public class StoregateShareFeature implements PromptUrlProvider<Void, Void> {
                 new FileSharesApi(session.getClient()).fileSharesPost(request).getUrl()), DescriptiveUrl.Type.signed);
         }
         catch(ApiException e) {
-            throw new StoregateExceptionMappingService().map(e);
+            throw new StoregateExceptionMappingService(fileid).map(e);
         }
     }
 
@@ -94,7 +94,7 @@ public class StoregateShareFeature implements PromptUrlProvider<Void, Void> {
                 new FileSharesApi(session.getClient()).fileSharesPost(request).getUrl()), DescriptiveUrl.Type.signed);
         }
         catch(ApiException e) {
-            throw new StoregateExceptionMappingService().map(e);
+            throw new StoregateExceptionMappingService(fileid).map(e);
         }
     }
 }
