@@ -64,11 +64,11 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path test = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session, fileid)),
-            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session, fileid), cryptomator).touch(
+            new GraphAttributesFinderFeature(session, fileid)), new GraphWriteFeature(session, fileid), cryptomator).touch(
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVault());
-        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(test));
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(test);
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session, fileid), cryptomator).find(test));
+        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, fileid), cryptomator).find(test);
         assertNotNull(attributes.getFileId());
         assertEquals(test.attributes(), attributes);
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -83,11 +83,11 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new GraphWriteFeature(session, fileid)),
-            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session, fileid), cryptomator).touch(
+            new GraphAttributesFinderFeature(session, fileid)), new GraphWriteFeature(session, fileid), cryptomator).touch(
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVault());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(test);
+        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, fileid), cryptomator).find(test);
         assertNotNull(attributes.getFileId());
         assertEquals(test.attributes(), attributes);
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

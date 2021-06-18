@@ -17,6 +17,7 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -26,6 +27,10 @@ import java.util.EnumSet;
 
 public abstract class AbstractDriveListService extends AbstractListService<Drive.Metadata> {
     private static final Logger log = Logger.getLogger(AbstractDriveListService.class);
+
+    public AbstractDriveListService(final GraphFileIdProvider fileid) {
+        super(fileid);
+    }
 
     @Override
     protected Path toPath(final Drive.Metadata metadata, final Path directory) {

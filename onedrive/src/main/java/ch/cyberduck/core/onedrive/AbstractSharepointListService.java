@@ -20,6 +20,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.sharepoint.SiteDrivesListService;
 import ch.cyberduck.core.onedrive.features.sharepoint.SitesListService;
 
@@ -30,9 +31,11 @@ import static ch.cyberduck.core.onedrive.SharepointListService.*;
 public abstract class AbstractSharepointListService implements ListService {
 
     private final AbstractSharepointSession session;
+    private final GraphFileIdProvider fileid;
 
-    public AbstractSharepointListService(final AbstractSharepointSession session) {
+    public AbstractSharepointListService(final AbstractSharepointSession session, final GraphFileIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     public AbstractSharepointSession getSession() {
@@ -58,17 +61,17 @@ public abstract class AbstractSharepointListService implements ListService {
 
         final Optional<ListService> collectionListService = container.getCollectionPath().map(p -> {
             if(SITES_CONTAINER.equals(p.getName())) {
-                return new SitesListService(session);
+                return new SitesListService(session, fileid);
             }
             else if(DRIVES_CONTAINER.equals(p.getName())) {
-                return new SiteDrivesListService(session);
+                return new SiteDrivesListService(session, fileid);
             }
             return null;
         });
         if(collectionListService.isPresent() && (!container.isDefined() || container.isCollectionInContainer())) {
             return collectionListService.get().list(directory, listener);
         }
-        return new GraphItemListService(session).list(directory, listener);
+        return new GraphItemListService(session, fileid).list(directory, listener);
     }
 
     AttributedList<Path> addSiteItems(final Path directory, final ListProgressListener listener) throws BackgroundException {

@@ -20,6 +20,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
@@ -28,6 +29,12 @@ import java.util.Iterator;
 
 public abstract class AbstractListService<T> implements ListService {
     private static final Logger log = Logger.getLogger(AbstractListService.class);
+
+    private final GraphFileIdProvider fileid;
+
+    public AbstractListService(final GraphFileIdProvider fileid) {
+        this.fileid = fileid;
+    }
 
     @Override
     public final AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
@@ -38,7 +45,7 @@ public abstract class AbstractListService<T> implements ListService {
             iterate(children, iterator, directory, filtering);
         }
         catch(OneDriveRuntimeException e) { // this catches iterator.hasNext in iterate()
-            throw new GraphExceptionMappingService().map("Listing directory {0} failed", e.getCause(), directory);
+            throw new GraphExceptionMappingService(fileid).map("Listing directory {0} failed", e.getCause(), directory);
         }
 
         postList(children);

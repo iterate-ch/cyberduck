@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -42,20 +43,20 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testFindRoot() throws Exception {
-        final GraphAttributesFinderFeature f = new GraphAttributesFinderFeature(session);
+        final GraphAttributesFinderFeature f = new GraphAttributesFinderFeature(session, fileid);
         assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        new GraphAttributesFinderFeature(session).find(new Path(new OneDriveHomeFinderService().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+        new GraphAttributesFinderFeature(session, fileid).find(new Path(new OneDriveHomeFinderService().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
     public void testFindFile() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, fileid).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
-        final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(file);
+        final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).find(file);
         assertNotNull(attributes);
         assertNotEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getCreationDate());
@@ -71,7 +72,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
     public void testFindDirectory() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new GraphDirectoryFeature(session, fileid).mkdir(file, new TransferStatus());
-        final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(file);
+        final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).find(file);
         assertNotNull(attributes);
         assertNotEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getCreationDate());
@@ -81,5 +82,21 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotNull(attributes.getLink());
         assertNotNull(attributes.getFileId());
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testChangedFileId() throws Exception {
+        final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
+        final Path drive = new OneDriveHomeFinderService().find();
+        final Path test = new GraphTouchFeature(session, fileid).touch(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String previousnodeid = test.attributes().getFileId();
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final String latestnodeid = new GraphTouchFeature(session, fileid).touch(new Path(drive, test.getName(), EnumSet.of(Path.Type.file)), new TransferStatus()).attributes().getFileId();
+        assertNotNull(latestnodeid);
+        // Assume previously seen but changed on server
+        fileid.cache(test, previousnodeid);
+        final GraphAttributesFinderFeature f = new GraphAttributesFinderFeature(session, fileid);
+        assertEquals(latestnodeid, f.find(test).getFileId());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

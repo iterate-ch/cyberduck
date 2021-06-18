@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
@@ -31,8 +32,8 @@ public class GraphItemListService extends AbstractItemListService {
 
     private final GraphSession session;
 
-    public GraphItemListService(final GraphSession session) {
-        super(new GraphAttributesFinderFeature(session));
+    public GraphItemListService(final GraphSession session, final GraphFileIdProvider fileid) {
+        super(new GraphAttributesFinderFeature(session, fileid), fileid);
         this.session = session;
     }
 

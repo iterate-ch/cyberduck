@@ -69,7 +69,7 @@ public class SharepointSession extends AbstractSharepointSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new SharepointListService(this);
+            return (T) new SharepointListService(this, fileid);
         }
         return super._getFeature(type);
     }

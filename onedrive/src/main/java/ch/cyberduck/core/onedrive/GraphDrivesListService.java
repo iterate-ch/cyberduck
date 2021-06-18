@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.Drives;
@@ -31,7 +32,8 @@ public class GraphDrivesListService extends AbstractDriveListService {
 
     private final GraphSession session;
 
-    public GraphDrivesListService(final GraphSession session) {
+    public GraphDrivesListService(final GraphSession session, final GraphFileIdProvider fileid) {
+        super(fileid);
         this.session = session;
     }
 

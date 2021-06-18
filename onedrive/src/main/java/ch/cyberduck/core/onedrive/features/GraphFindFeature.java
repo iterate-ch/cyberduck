@@ -26,15 +26,17 @@ import ch.cyberduck.core.onedrive.GraphSession;
 public class GraphFindFeature implements Find {
 
     private final GraphSession session;
+    private final GraphFileIdProvider fileid;
 
-    public GraphFindFeature(final GraphSession session) {
+    public GraphFindFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            new GraphAttributesFinderFeature(session).find(file, listener);
+            new GraphAttributesFinderFeature(session, fileid).find(file, listener);
             return true;
         }
         catch(NotfoundException | InteroperabilityException e) {

@@ -32,7 +32,7 @@ public class GraphQuotaFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testQuotaSimple() throws BackgroundException {
         final Home home = new OneDriveHomeFinderService();
-        final Quota quota = new GraphQuotaFeature(session);
+        final Quota quota = new GraphQuotaFeature(session, fileid);
         Quota.Space space = quota.get();
         assertTrue(space.available > 0);
         assertTrue(space.used >= 0);

@@ -30,9 +30,11 @@ import java.io.IOException;
 
 public class GraphLockFeature implements Lock<String> {
     private final GraphSession session;
+    private final GraphFileIdProvider fileid;
 
-    public GraphLockFeature(final GraphSession session) {
+    public GraphLockFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -41,7 +43,7 @@ public class GraphLockFeature implements Lock<String> {
             Files.checkout(session.getItem(file));
         }
         catch(OneDriveAPIException e) {
-            throw new GraphExceptionMappingService().map("Failure to checkout file {0}", e, file);
+            throw new GraphExceptionMappingService(fileid).map("Failure to checkout file {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);
@@ -57,7 +59,7 @@ public class GraphLockFeature implements Lock<String> {
                 new AlphanumericRandomStringService().random()));
         }
         catch(OneDriveAPIException e) {
-            throw new GraphExceptionMappingService().map("Failure to check in file {0}", e, file);
+            throw new GraphExceptionMappingService(fileid).map("Failure to check in file {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);

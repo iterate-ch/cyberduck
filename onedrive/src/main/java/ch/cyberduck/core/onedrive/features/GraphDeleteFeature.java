@@ -57,7 +57,7 @@ public class GraphDeleteFeature implements Delete {
                 logger.warn(String.format("Cannot delete %s. Not found.", file));
             }
             catch(OneDriveAPIException e) {
-                throw new GraphExceptionMappingService().map("Cannot delete {0}", e, file);
+                throw new GraphExceptionMappingService(fileid).map("Cannot delete {0}", e, file);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);

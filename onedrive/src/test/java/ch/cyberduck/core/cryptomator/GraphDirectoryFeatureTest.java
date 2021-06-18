@@ -68,9 +68,9 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
         final long timestamp = test.attributes().getModificationDate();
         assertNotEquals(-1L, timestamp, 0L);
         // Assert both filename and file id matches
-        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session, fileid), cryptomator).find(test));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        assertEquals(id, new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(test).getFileId());
+        assertEquals(id, new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, fileid), cryptomator).find(test).getFileId());
         assertEquals(id, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test).getFileId());
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -88,7 +88,7 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
         assertNotNull(test.attributes().getVault());
         final String id = test.attributes().getFileId();
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(test);
+        final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, fileid), cryptomator).find(test);
         assertEquals(id, attributes.getFileId());
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

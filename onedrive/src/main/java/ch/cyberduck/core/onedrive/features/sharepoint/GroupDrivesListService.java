@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.AbstractDriveListService;
 import ch.cyberduck.core.onedrive.AbstractSharepointSession;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
 import org.nuxeo.onedrive.client.Drives;
 import org.nuxeo.onedrive.client.types.Drive;
@@ -29,7 +30,8 @@ public class GroupDrivesListService extends AbstractDriveListService {
 
     private final AbstractSharepointSession session;
 
-    public GroupDrivesListService(final AbstractSharepointSession session) {
+    public GroupDrivesListService(final AbstractSharepointSession session, final GraphFileIdProvider fileid) {
+        super(fileid);
         this.session = session;
     }
 

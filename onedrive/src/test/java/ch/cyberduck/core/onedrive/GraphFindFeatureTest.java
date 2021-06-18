@@ -32,13 +32,13 @@ public class GraphFindFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testFindFileNotFound() throws Exception {
-        final GraphFindFeature f = new GraphFindFeature(session);
+        final GraphFindFeature f = new GraphFindFeature(session, fileid);
         assertFalse(f.find(new Path(new OneDriveHomeFinderService().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
     }
 
     @Test
     public void testFindDriveNotFound() throws Exception {
-        final GraphFindFeature f = new GraphFindFeature(session);
+        final GraphFindFeature f = new GraphFindFeature(session, fileid);
         assertFalse(f.find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
     }
 }

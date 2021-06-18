@@ -41,32 +41,32 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
         final Path directory = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new SharepointListService(session).list(directory, new DisabledListProgressListener());
+        new SharepointListService(session, fileid).list(directory, new DisabledListProgressListener());
     }
 
     @Test
     public void testListRoot() throws Exception {
-        final AttributedList<Path> list = new SharepointListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new SharepointListService(session, fileid).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertEquals(2, list.size());
     }
 
     @Test
     public void testListDefault() throws Exception {
-        new SharepointListService(session).list(SharepointListService.DEFAULT_NAME, new DisabledListProgressListener());
+        new SharepointListService(session, fileid).list(SharepointListService.DEFAULT_NAME, new DisabledListProgressListener());
     }
 
     @Test
     public void testListDefaultDriveOverwrite() throws Exception {
-        final ListService list = new SharepointListService(session);
+        final ListService list = new SharepointListService(session, fileid);
         final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, "Drives", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path drive = drives.get(0);
-        new PathAttributesHomeFeature(() -> drive, new GraphAttributesFinderFeature(session), new RootPathContainerService()).find();
+        new PathAttributesHomeFeature(() -> drive, new GraphAttributesFinderFeature(session, fileid), new RootPathContainerService()).find();
         list.list(drive, new DisabledListProgressListener());
     }
 
     @Test
     public void testListGroups() throws Exception {
-        new SharepointListService(session).list(SharepointListService.GROUPS_NAME, new DisabledListProgressListener());
+        new SharepointListService(session, fileid).list(SharepointListService.GROUPS_NAME, new DisabledListProgressListener());
     }
 }

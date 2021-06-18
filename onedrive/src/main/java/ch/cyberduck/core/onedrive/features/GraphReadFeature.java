@@ -87,7 +87,7 @@ public class GraphReadFeature implements Read {
                 case HttpStatus.SC_NOT_FOUND:
                     fileid.cache(file, null);
             }
-            throw new GraphExceptionMappingService().map("Download {0} failed", e, file);
+            throw new GraphExceptionMappingService(fileid).map("Download {0} failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);

@@ -127,7 +127,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
                 }
             }
             catch(OneDriveAPIException oneDriveAPIException) {
-                throw new GraphExceptionMappingService().map(oneDriveAPIException);
+                throw new GraphExceptionMappingService(fileid).map(oneDriveAPIException);
             }
             catch(IOException ioException) {
                 throw new DefaultIOExceptionMappingService().map(ioException);
@@ -139,7 +139,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
     @Override
     public <T> T _getFeature(final Class<T> type) {
         if(type == Lock.class) {
-            return (T) new GraphLockFeature(this);
+            return (T) new GraphLockFeature(this, fileid);
         }
         return super._getFeature(type);
     }

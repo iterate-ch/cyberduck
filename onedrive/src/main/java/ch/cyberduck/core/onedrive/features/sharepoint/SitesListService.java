@@ -8,6 +8,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.AbstractListService;
 import ch.cyberduck.core.onedrive.AbstractSharepointSession;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
 import org.nuxeo.onedrive.client.Sites;
 import org.nuxeo.onedrive.client.types.Site;
@@ -24,7 +25,8 @@ import java.util.regex.Pattern;
 public class SitesListService extends AbstractListService<Site.Metadata> {
     private final AbstractSharepointSession session;
 
-    public SitesListService(final AbstractSharepointSession session) {
+    public SitesListService(final AbstractSharepointSession session, final GraphFileIdProvider fileid) {
+        super(fileid);
         this.session = session;
     }
 

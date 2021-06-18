@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.webloc.UrlFileWriter;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
@@ -30,14 +31,14 @@ public abstract class AbstractItemListService extends AbstractListService<DriveI
     private final GraphAttributesFinderFeature attributes;
     private final UrlFileWriter urlFileWriter = UrlFileWriterFactory.get();
 
-    public AbstractItemListService(final GraphAttributesFinderFeature attributes) {
+    public AbstractItemListService(final GraphAttributesFinderFeature attributes, final GraphFileIdProvider fileid) {
+        super(fileid);
         this.attributes = attributes;
     }
 
     @Override
     protected Path toPath(final DriveItem.Metadata metadata, final Path directory) {
         final PathAttributes attr = attributes.toAttributes(metadata);
-
         final String fileName;
         if(metadata.isPackage()) {
             fileName = String.format("%s.%s", PathNormalizer.name(metadata.getName()), urlFileWriter.getExtension());
@@ -45,7 +46,6 @@ public abstract class AbstractItemListService extends AbstractListService<DriveI
         else {
             fileName = metadata.getName();
         }
-
         return new Path(directory, fileName, this.resolveType(metadata), attr);
     }
 

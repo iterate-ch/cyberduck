@@ -105,7 +105,7 @@ public class CryptoOneDriveSingleTransferWorkerTest extends AbstractOneDriveTest
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
-        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(dir1));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session, fileid), cryptomator).find(dir1));
         assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
