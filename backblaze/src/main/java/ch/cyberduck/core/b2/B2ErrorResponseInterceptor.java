@@ -40,13 +40,15 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
     private static final int MAX_RETRIES = 1;
 
     private final B2Session session;
+    private final B2VersionIdProvider fileid;
 
     private String accountId = StringUtils.EMPTY;
     private String applicationKey = StringUtils.EMPTY;
     private String authorizationToken = StringUtils.EMPTY;
 
-    public B2ErrorResponseInterceptor(final B2Session session) {
+    public B2ErrorResponseInterceptor(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -60,7 +62,7 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
                             EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                             failure = new B2ApiException(EntityUtils.toString(response.getEntity()), new HttpResponseException(
                                 response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
-                            if(new B2ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
+                            if(new B2ExceptionMappingService(fileid).map(failure) instanceof ExpiredTokenException) {
                                 //  The authorization token is valid for at most 24 hours.
                                 try {
                                     authorizationToken = session.getClient().authenticate(accountId, applicationKey).getAuthorizationToken();

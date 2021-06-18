@@ -16,6 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
@@ -35,6 +36,21 @@ import synapticloop.b2.exception.B2ApiException;
 public class B2ExceptionMappingService extends AbstractExceptionMappingService<B2ApiException> {
     private static final Logger log = Logger.getLogger(B2ExceptionMappingService.class);
 
+    private final B2VersionIdProvider fileid;
+
+    public B2ExceptionMappingService(final B2VersionIdProvider fileid) {
+        this.fileid = fileid;
+    }
+
+    @Override
+    public BackgroundException map(final String message, final B2ApiException failure, final Path file) {
+        switch(failure.getStatus()) {
+            case HttpStatus.SC_BAD_REQUEST:
+                fileid.cache(file, null);
+        }
+        return super.map(message, failure, file);
+    }
+
     @Override
     public BackgroundException map(final B2ApiException e) {
         final StringBuilder buffer = new StringBuilder();
@@ -42,8 +58,8 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
         switch(e.getStatus()) {
             case HttpStatus.SC_FORBIDDEN:
                 if("cap_exceeded".equalsIgnoreCase(e.getCode())
-                        || "storage_cap_exceeded".equalsIgnoreCase(e.getCode())
-                        || "transaction_cap_exceeded".equalsIgnoreCase(e.getCode())) {// Reached the storage cap that you set
+                    || "storage_cap_exceeded".equalsIgnoreCase(e.getCode())
+                    || "transaction_cap_exceeded".equalsIgnoreCase(e.getCode())) {// Reached the storage cap that you set
                     return new QuotaException(buffer.toString(), e);
                 }
                 break;

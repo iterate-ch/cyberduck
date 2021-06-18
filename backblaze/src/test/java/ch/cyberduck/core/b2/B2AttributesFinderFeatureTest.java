@@ -18,16 +18,20 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -93,5 +97,20 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         new B2ReadFeature(session, fileid).read(found, new TransferStatus(), new DisabledConnectionCallback()).close();
         assertNotNull(fileid.getVersionId(file, new DisabledListProgressListener()));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
+    }
+
+    @Test
+    public void testChangedFileId() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final Path room = new B2DirectoryFeature(session, fileid).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new B2TouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String latestnodeid = test.attributes().getVersionId();
+        assertNotNull(latestnodeid);
+        // Assume previously seen but changed on server
+        fileid.cache(test, String.valueOf(RandomUtils.nextLong()));
+        final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
+        assertEquals(latestnodeid, f.find(test).getVersionId());
+        new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

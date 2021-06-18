@@ -31,7 +31,7 @@ public class B2ListService implements ListService {
     private Path bucket;
 
     public B2ListService(final B2Session session, final B2VersionIdProvider fileid) {
-        buckets = new B2BucketListService(session);
+        buckets = new B2BucketListService(session, fileid);
         objects = new B2ObjectListService(session, fileid);
     }
 
