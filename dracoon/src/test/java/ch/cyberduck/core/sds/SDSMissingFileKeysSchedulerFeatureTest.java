@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -60,6 +61,7 @@ import com.dracoon.sdk.crypto.model.UserKeyPair;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import static ch.cyberduck.core.sds.SDSAttributesFinderFeature.KEY_ENCRYPTED;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -67,11 +69,11 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testMissingKeys() throws Exception {
-        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
+        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume), new PathAttributes().withCustom(KEY_ENCRYPTED, String.valueOf(true)));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
-        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.triplecrypt));
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
@@ -131,11 +133,11 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         userApi.setUserKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(deprecated), null);
         List<UserKeyPairContainer> keyPairs = userApi.requestUserKeyPairs(null, null);
         assertEquals(1, keyPairs.size());
-        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
+        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume), new PathAttributes().withCustom(KEY_ENCRYPTED, String.valueOf(true)));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
-        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.triplecrypt));
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());

@@ -201,9 +201,6 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
             default:
                 type = EnumSet.of(Path.Type.file);
         }
-        if(node.isIsEncrypted()) {
-            type.add(Path.Type.triplecrypt);
-        }
         return type;
     }
 
