@@ -26,9 +26,9 @@ using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using Cyberduck.Core.Refresh.Views;
+using Ch.Cyberduck.Core.Refresh.Views;
 using StructureMap;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 using Application = ch.cyberduck.core.local.Application;
 
 namespace Ch.Cyberduck.Ui.Winforms

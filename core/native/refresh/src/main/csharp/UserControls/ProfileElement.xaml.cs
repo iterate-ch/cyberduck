@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Cyberduck.Core.Refresh.UserControls
+namespace Ch.Cyberduck.Core.Refresh.UserControls
 {
     /// <summary>
     /// Interaktionslogik für ProfileElement.xaml

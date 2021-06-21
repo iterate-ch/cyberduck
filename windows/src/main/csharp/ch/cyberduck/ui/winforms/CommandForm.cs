@@ -20,7 +20,7 @@ using System;
 using System.Drawing;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {

@@ -1,19 +1,21 @@
 ﻿using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace Cyberduck.Core.Refresh.Services
+namespace Ch.Cyberduck.Core.Refresh.Services
 {
     using System.IO;
 
     public abstract class IconProvider
     {
-        public IconProvider(IconCache iconCache)
+        private readonly IIconProviderImageSource imageSource;
+
+        public IconProvider(IconCache iconCache, IIconProviderImageSource imageSource)
         {
             IconCache = iconCache;
+            this.imageSource = imageSource;
         }
 
         protected IconCache IconCache { get; }
@@ -24,13 +26,13 @@ namespace Cyberduck.Core.Refresh.Services
             {
                 return new FileStream(name, FileMode.Open);
             }
-            return default;
+            return imageSource.GetStream(name);
         }
     }
 
     public abstract class IconProvider<T> : IconProvider
     {
-        protected IconProvider(IconCache iconCache) : base(iconCache)
+        protected IconProvider(IconCache iconCache, IIconProviderImageSource imageSource) : base(iconCache, imageSource)
         {
         }
 
@@ -51,28 +53,25 @@ namespace Cyberduck.Core.Refresh.Services
                 return image;
             }
 
-            var icons = IconCache.Filter<T>(((object key, string classifier, int _) filter) => Equals("ext", filter.key) && Equals(key, filter.classifier));
-            if (!icons.Any())
+            IEnumerable<T> icons;
+            uint flags = Shell32.SHGFI_ICON | Shell32.SHGFI_USEFILEATTRIBUTES;
+            flags |= large ? Shell32.SHGFI_LARGEICON : Shell32.SHGFI_SMALLICON;
+
+            uint fileAttributes = isFolder ? Shell32.FILE_ATTRIBUTE_DIRECTORY : Shell32.FILE_ATTRIBUTE_NORMAL;
+
+            Shell32.SHFILEINFO shfi = new();
+            try
             {
-                uint flags = Shell32.SHGFI_ICON | Shell32.SHGFI_USEFILEATTRIBUTES;
-                flags |= large ? Shell32.SHGFI_LARGEICON : Shell32.SHGFI_SMALLICON;
-
-                uint fileAttributes = isFolder ? Shell32.FILE_ATTRIBUTE_DIRECTORY : Shell32.FILE_ATTRIBUTE_NORMAL;
-
-                Shell32.SHFILEINFO shfi = new();
-                try
+                IntPtr hSuccess = Shell32.SHGetFileInfo(isFolder ? "_unknown" : filename, fileAttributes, ref shfi, (uint)Marshal.SizeOf<Shell32.SHFILEINFO>(), flags);
+                if (hSuccess == IntPtr.Zero)
                 {
-                    IntPtr hSuccess = Shell32.SHGetFileInfo(filename, fileAttributes, ref shfi, (uint)Marshal.SizeOf<Shell32.SHFILEINFO>(), flags);
-                    if (hSuccess == IntPtr.Zero)
-                    {
-                        return default;
-                    }
-                    icons = GetImages(shfi.hIcon, (c, s) => c.TryGetIcon<T>("ext", out _, key), (c, s, i) => c.CacheIcon("ext", s, i, key));
+                    return default;
                 }
-                finally
-                {
-                    User32.DestroyIcon(shfi.hIcon);
-                }
+                icons = GetImages(shfi.hIcon, (c, s) => c.TryGetIcon<T>("ext", out _, key), (c, s, i) => c.CacheIcon("ext", s, i, key));
+            }
+            finally
+            {
+                User32.DestroyIcon(shfi.hIcon);
             }
             return FindNearestFit(icons, large ? 32 : 16, (c, s, i) => c.CacheIcon("ext", s, i, key));
         }
@@ -86,14 +85,9 @@ namespace Cyberduck.Core.Refresh.Services
 
         protected abstract T FindNearestFit(IEnumerable<T> icons, int size, CacheIconCallback cacheCallback);
 
-        protected T Get(object key, string path, string classifier)
-        {
-            if (IconCache.TryGetIcon(key, out T image, classifier))
-            {
-                return image;
-            }
-            return Get(key, path, 0, classifier, false);
-        }
+        protected T Get(object key, string path, string classifier) => IconCache.TryGetIcon(key, out T image, classifier)
+            ? image
+            : Get(key, path, 0, classifier, true);
 
         protected T Get(object key, string path, int size, string classifier)
         {
@@ -126,7 +120,7 @@ namespace Cyberduck.Core.Refresh.Services
                     IconCache.CacheIcon(key, s, i, classifier);
                 });
             }
-            return image ?? FindNearestFit(images, size, default);
+            return image ?? FindNearestFit(images, size, (c, s, i) => c.CacheIcon(key, s, i, classifier));
         }
 
         protected abstract IEnumerable<T> GetImages(Stream stream, GetCacheIconCallback getCache, CacheIconCallback cacheIcon);

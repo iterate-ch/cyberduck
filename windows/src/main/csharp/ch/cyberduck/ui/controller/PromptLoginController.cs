@@ -27,7 +27,7 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.TaskDialog;
 using org.apache.log4j;
 using StructureMap;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Controller

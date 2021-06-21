@@ -20,7 +20,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using System.Drawing;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

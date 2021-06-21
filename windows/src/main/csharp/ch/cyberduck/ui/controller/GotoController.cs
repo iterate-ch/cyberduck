@@ -21,7 +21,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

@@ -33,7 +33,7 @@ using Ch.Cyberduck.Ui.Controller.Threading;
 using java.text;
 using org.apache.log4j;
 using StructureMap;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -437,8 +437,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        View.FileIcon = IconCache.IconForPath(transfer.getRoot().remote,
-                            IconCache.IconSize.Large);
+                        View.FileIcon = IconProvider.GetPath(transfer.getRoot().remote, 32);
                     }
                 }
                 else

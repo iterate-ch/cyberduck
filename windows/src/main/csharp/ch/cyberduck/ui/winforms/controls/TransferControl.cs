@@ -22,6 +22,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -153,17 +154,17 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
                     case TransferStatus.InProgress:
                         progressBar.Visible = true;
                         statusLabel.Visible = false;
-                        statusPictureBox.Image = ResourcesBundle.statusYellow;
+                        statusPictureBox.Image = Images.StatusYellow;
                         break;
                     case TransferStatus.Complete:
                         progressBar.Visible = false;
                         statusLabel.Visible = true;
-                        statusPictureBox.Image = ResourcesBundle.statusGreen;
+                        statusPictureBox.Image = Images.StatusGreen;
                         break;
                     case TransferStatus.Incomplete:
                         progressBar.Visible = false;
                         statusLabel.Visible = true;
-                        statusPictureBox.Image = ResourcesBundle.statusRed;
+                        statusPictureBox.Image = Images.StatusRed;
                         break;
                 }
             }
@@ -175,15 +176,15 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             {
                 if (value == TransferDirection.Download)
                 {
-                    directionPictureBox.Image = ResourcesBundle.transfer_download;
+                    directionPictureBox.Image = Images.TransferDownload;
                 }
                 if (value == TransferDirection.Upload)
                 {
-                    directionPictureBox.Image = ResourcesBundle.transfer_upload;
+                    directionPictureBox.Image = Images.TransferUpload;
                 }
                 if (value == TransferDirection.Sync)
                 {
-                    directionPictureBox.Image = ResourcesBundle.sync;
+                    directionPictureBox.Image = Images.Sync;
                 }
             }
         }

@@ -45,7 +45,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 using Application = ch.cyberduck.core.local.Application;
 using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
@@ -1112,7 +1112,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 MenuItem item = mainItem.MenuItems.Add(LocaleFactory.localizedString("Default"));
                 item.Click += delegate { EditEvent(null); };
                 //todo refactor! no direct IconCache access.
-                vistaMenu1.SetImage(item, IconCache.ResizeImage(editToolStripSplitButton.Image, 16));
+                vistaMenu1.SetImage(item, IconProvider.ResizeImageDangerous(editToolStripSplitButton.Image, 16));
                 SetShortcutText(item, editWithToolStripMenuItem, null);
             }
             IList<Application> editors = GetEditorsForSelection();

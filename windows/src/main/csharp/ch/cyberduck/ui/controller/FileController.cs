@@ -21,7 +21,7 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.pool;
 using java.util;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

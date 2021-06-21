@@ -5,16 +5,17 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace Cyberduck.Core.Refresh.Services
+namespace Ch.Cyberduck.Core.Refresh.Services
 {
     public class WpfIconProvider : IconProvider<BitmapSource>
     {
         private readonly ConcurrentDictionary<string, AutoResetEvent> sync = new ConcurrentDictionary<string, AutoResetEvent>();
 
-        public WpfIconProvider(IconCache cache) : base(cache)
+        public WpfIconProvider(IconCache cache, IIconProviderImageSource imageSource) : base(cache, imageSource)
         {
         }
 

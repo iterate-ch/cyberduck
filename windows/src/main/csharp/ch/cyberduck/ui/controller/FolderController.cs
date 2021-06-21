@@ -27,7 +27,7 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.browser;
 using java.util;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

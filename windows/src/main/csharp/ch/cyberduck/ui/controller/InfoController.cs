@@ -47,7 +47,7 @@ using org.apache.commons.lang3;
 using org.apache.log4j;
 using org.jets3t.service.model;
 using StructureMap;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 using Boolean = java.lang.Boolean;
 using Object = System.Object;
 using String = System.String;
@@ -965,7 +965,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    View.FileIcon = IconCache.IconForPath(_files[0], IconCache.IconSize.Large);
+                    View.FileIcon = IconProvider.GetPath(_files[0], 32);
                 }
             }
 

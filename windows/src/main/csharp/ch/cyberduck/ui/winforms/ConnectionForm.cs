@@ -24,7 +24,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.ftp;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {

@@ -13,8 +13,10 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
-namespace Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
+namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 {
+    using ch.cyberduck.core;
+
     public class ProfilesViewModel : ReactiveObject
     {
         private static Logger log = Logger.getLogger(typeof(ProfilesViewModel).FullName);

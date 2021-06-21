@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Cyberduck.Core.Refresh.Services
+namespace Ch.Cyberduck.Core.Refresh.Services
 {
     using System.Collections;
 

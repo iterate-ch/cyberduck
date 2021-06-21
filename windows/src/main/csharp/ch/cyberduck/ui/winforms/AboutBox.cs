@@ -26,7 +26,7 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Winforms

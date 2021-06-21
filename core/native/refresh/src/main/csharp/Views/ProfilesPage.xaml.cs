@@ -1,9 +1,9 @@
-﻿using Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
+﻿using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
 using ReactiveUI;
 using System;
 using System.Reactive.Linq;
 
-namespace Cyberduck.Core.Refresh.Views
+namespace Ch.Cyberduck.Core.Refresh.Views
 {
     public partial class ProfilesPage
     {

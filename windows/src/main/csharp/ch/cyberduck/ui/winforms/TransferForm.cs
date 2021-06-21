@@ -29,7 +29,7 @@ using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {

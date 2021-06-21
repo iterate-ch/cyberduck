@@ -37,7 +37,7 @@ using System.Drawing;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 using Path = System.IO.Path;
 using Timer = System.Threading.Timer;
 using TimeZone = java.util.TimeZone;

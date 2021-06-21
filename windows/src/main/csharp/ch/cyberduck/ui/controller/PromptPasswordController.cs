@@ -22,7 +22,7 @@ using ch.cyberduck.core.vault;
 using ch.cyberduck.core.exception;
 using Ch.Cyberduck.Core;
 using StructureMap;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

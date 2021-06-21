@@ -26,7 +26,7 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
 using java.util;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 using System.Drawing;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -72,7 +72,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return IconProvider.GetDisk(_controller.Session.getHost().getProtocol(), 16);
             }
-            return IconCache.IconForPath(path, IconCache.IconSize.Small);
+            return IconProvider.GetPath(path, 16);
         }
 
         public object GetModified(Path path)

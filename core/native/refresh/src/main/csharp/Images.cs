@@ -1,9 +1,9 @@
-﻿using Cyberduck.Core.Refresh.Services;
+﻿using Ch.Cyberduck.Core.Refresh.Services;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Windows.Media.Imaging;
 
-namespace Cyberduck.Core.Refresh
+namespace Ch.Cyberduck.Core.Refresh
 {
     public class Images
     {
@@ -25,6 +25,10 @@ namespace Cyberduck.Core.Refresh
         public ResourceRef Bookmark => new(this);
 
         public ResourceRef Browser => new(this);
+
+        public ResourceRef Clean => new(this);
+
+        public ResourceRef CleanAll => new(this);
 
         public ResourceRef Connect => new(this);
 
@@ -58,7 +62,11 @@ namespace Cyberduck.Core.Refresh
 
         public ResourceRef Locked => new(this);
 
+        public ResourceRef Log => new(this);
+
         public ResourceRef Multiple => new(this);
+
+        public ResourceRef Open => new(this);
 
         public ResourceRef Pencil => new(this);
 
@@ -72,9 +80,15 @@ namespace Cyberduck.Core.Refresh
 
         public ResourceRef Rendezvous => new(this);
 
+        public ResourceRef Resume => new(this);
+
         public ResourceRef Reveal => new(this);
 
         public ResourceRef S3 => new(this);
+
+        public ResourceRef SearchActive => new(this, "search-active");
+
+        public ResourceRef SearchInactive => new(this, "search-inactive");
 
         public ResourceRef Site => new(this);
 
@@ -88,9 +102,13 @@ namespace Cyberduck.Core.Refresh
 
         public ResourceRef Sync => new(this);
 
+        public ResourceRef ThrobberSmall => new(this, "throbber_small");
+
         public ResourceRef TransferDownload => new(this, "transfer-download");
 
         public ResourceRef TransferUpload => new(this, "transfer-upload");
+
+        public ResourceRef Trash => new(this);
 
         public ResourceRef Turtle => new(this);
 

@@ -30,7 +30,7 @@ using ch.cyberduck.core.worker;
 using Ch.Cyberduck.Core;
 using java.util;
 using org.apache.log4j;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -131,7 +131,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetIcon(TransferItem item)
         {
-            return IconCache.IconForPath(item.remote, IconCache.IconSize.Small);
+            return IconProvider.GetPath(item.remote, 16);
         }
 
         public bool IsSelected(TransferItem item)

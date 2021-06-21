@@ -51,7 +51,7 @@ using java.text;
 using java.util;
 using org.apache.log4j;
 using StructureMap;
-using static Ch.Cyberduck.ImagesHelper;
+using static Ch.Cyberduck.ImageHelper;
 using Application = ch.cyberduck.core.local.Application;
 using Directory = ch.cyberduck.core.features.Directory;
 using Exception = System.Exception;
@@ -2369,7 +2369,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void UpdateOpenIcon()
         {
-            View.OpenIcon = IconCache.GetDefaultBrowserIcon();
+            View.OpenIcon = IconProvider.DefaultBrowser();
         }
 
         private void View_BrowserSelectionChanged()
