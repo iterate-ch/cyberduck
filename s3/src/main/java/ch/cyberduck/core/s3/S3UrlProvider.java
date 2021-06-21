@@ -62,10 +62,14 @@ public class S3UrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        if(file.isFile()) {
-            // Publicly accessible URL of given object
+        if(session.getClient().getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false)) {
+            list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
+        }
+        else {
             list.add(this.toUrl(file, session.getHost().getProtocol().getScheme(), session.getHost().getPort()));
             list.add(this.toUrl(file, Scheme.http, 80));
+        }
+        if(file.isFile()) {
             if(!session.getHost().getCredentials().isAnonymousLogin()) {
                 // X-Amz-Expires must be less than a week (in seconds); that is, the given X-Amz-Expires must be less
                 // than 604800 seconds
@@ -87,15 +91,11 @@ public class S3UrlProvider implements UrlProvider {
                 }
             }
         }
-        list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
-        if(!file.isRoot()) {
-            list.add(new DescriptiveUrl(URI.create(String.format("s3://%s%s",
-                containerService.getContainer(file).getName(),
-                containerService.isContainer(file)
-                    ? "/" : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
-                DescriptiveUrl.Type.provider,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "S3")));
-        }
+        list.add(new DescriptiveUrl(URI.create(String.format("s3://%s%s",
+            containerService.getContainer(file).getName(),
+            file.isRoot() ? Path.DELIMITER : containerService.isContainer(file) ? Path.DELIMITER : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
+            DescriptiveUrl.Type.provider,
+            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "S3")));
         return list;
     }
 
