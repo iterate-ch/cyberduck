@@ -20,6 +20,7 @@
         <LangVersion>9</LangVersion>
         <UseWPF>true</UseWPF>
         <UseWindowsForms>true</UseWindowsForms>
+        <RootNamespace>Ch.Cyberduck.Core.Refresh</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

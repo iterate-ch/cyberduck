@@ -6,6 +6,9 @@
     <UsingTask TaskName="ResourceGenTask"
                AssemblyFile="$(i18n_gen_dll)"
                TaskFactory="TaskHostFactory" />
+    <UsingTask TaskName="ImageDiscoverTask"
+               AssemblyFile="$(i18n_gen_dll)"
+               TaskFactory="TaskHostFactory" />
 
     <ItemGroup>
         <ProjectReference Include="$(MSBuildThisFileDirectory)i18n-gen.csproj"

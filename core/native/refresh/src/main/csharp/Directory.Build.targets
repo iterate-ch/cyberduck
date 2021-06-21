@@ -20,14 +20,11 @@
     <Import Project="$(CyberduckDir)core\i18n-gen\i18n-gen.targets" />
 
     <Target Name="GenerateImageResources" BeforeTargets="PrepareResources" DependsOnTargets="ResolveProjectReferences">
-        <ItemGroup>
-            <Images Include="$(CyberduckDir)img\*.png" />
-            <HDPIImages Include="$(CyberduckDir)img\*@2x.png" />
-            <Images Remove="@(HDPIImages)" />
-        </ItemGroup>
-
+        <ImageDiscoverTask SourcePath="$(CyberduckDir)img\">
+            <Output ItemName="ImageDiscover" TaskParameter="Resources" />
+        </ImageDiscoverTask>
         <ResourcesGenerator
-            ResourceFiles="@(Images)"
+            ResourceFiles="@(ImageDiscover)"
             OutputPath="$(IntermediateOutputPath)"
             OutputResourcesFile="$(IntermediateOutputPath)Images.resources">
 
