@@ -6,13 +6,21 @@ using System.Linq;
 
 namespace Cyberduck.Core.Refresh.Services
 {
+    using ch.cyberduck.core;
+    using Ch.Cyberduck.Core;
     using System.IO;
+    using System.Windows.Forms;
 
     public class WinFormsIconProvider : IconProvider<Bitmap>
     {
-        public WinFormsIconProvider(IconCache iconCache) : base(iconCache)
+        public WinFormsIconProvider(ProtocolFactory protocols, IconCache iconCache) : base(iconCache)
         {
+            BuildProtocolImageList(protocols);
         }
+
+        public ImageList ProtocolList { get; } = new ImageList() { ImageSize = new Size(16, 16), ColorDepth = ColorDepth.Depth32Bit };
+
+        public Bitmap DefaultBrowser() => GetFileIcon(Utils.GetSystemDefaultBrowser(), false, true, true);
 
         protected override Bitmap FindNearestFit(IEnumerable<Bitmap> sources, int size, CacheIconCallback cacheCallback)
         {
@@ -52,7 +60,7 @@ namespace Cyberduck.Core.Refresh.Services
                 for (int i = 0; i < pages; i++)
                 {
                     source.SelectActiveFrame(frameDimension, i);
-                    if (getCache(IconCache, source.Width) != null) continue;
+                    if (getCache(IconCache, source.Width)) continue;
 
                     Bitmap copy = new(source);
                     copy.SetResolution(96, 96);
@@ -74,6 +82,16 @@ namespace Cyberduck.Core.Refresh.Services
         protected override IEnumerable<Bitmap> GetImages(IntPtr nativeIcon, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
         {
             return Enumerable.Empty<Bitmap>();
+        }
+
+        private void BuildProtocolImageList(ProtocolFactory protocols)
+        {
+            var iterator = ProtocolFactory.get().find().iterator();
+            while (iterator.hasNext())
+            {
+                var protocol = (Protocol)iterator.next();
+                ProtocolList.Images.Add(protocol.disk(), GetDisk(protocol, 16));
+            }
         }
     }
 }
