@@ -45,13 +45,13 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
-using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms;
 using java.lang;
 using java.text;
 using java.util;
 using org.apache.log4j;
 using StructureMap;
+using static Ch.Cyberduck.ImagesHelper;
 using Application = ch.cyberduck.core.local.Application;
 using Directory = ch.cyberduck.core.features.Directory;
 using Exception = System.Exception;
@@ -2357,14 +2357,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     string editCommand = app != null ? app.getIdentifier() : null;
                     if (Utils.IsNotBlank(editCommand))
                     {
-                        View.EditIcon = IconCache.GetAppImage(
+                        View.EditIcon = IconProvider.GetFileIcon(
                             WindowsApplicationLauncher.GetExecutableCommand(editCommand),
-                                IconCache.IconSize.Large);
+                            false, true, true);
                         return;
                     }
                 }
             }
-            View.EditIcon = IconCache.IconForName("pencil", 32);
+            View.EditIcon = Images.Pencil.Size(32);
         }
 
         private void UpdateOpenIcon()

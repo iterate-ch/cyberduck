@@ -25,7 +25,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using BrightIdeasSoftware;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Core.Resources;
+using static Ch.Cyberduck.ImagesHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -128,8 +128,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             if (imageSelector is string)
             {
-                return
-                    IconCache.IconForName((string)imageSelector, 0);
+                return Images.Get((string)imageSelector);
             }
             return null;
         }

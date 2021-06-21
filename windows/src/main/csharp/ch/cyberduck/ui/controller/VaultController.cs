@@ -26,9 +26,11 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
 using ch.cyberduck.core.vault;
 using ch.cyberduck.ui.browser;
+using java.security;
+using java.util;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Core.Resources;
-using java.util;
+using static Ch.Cyberduck.ImagesHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -44,7 +46,7 @@ namespace Ch.Cyberduck.Ui.Controller
             _view.ValidateInput += ValidateInputEventHandler;
         }
 
-        public override Image IconView => IconCache.IconForName("cryptomator", 64);
+        public override Image IconView => Images.Cryptomator.Size(64);
 
         private bool ValidateInputEventHandler()
         {

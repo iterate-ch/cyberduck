@@ -39,7 +39,6 @@ using ch.cyberduck.core.worker;
 using ch.cyberduck.core.io;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
-using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using java.lang;
 using java.text;
@@ -48,6 +47,7 @@ using org.apache.commons.lang3;
 using org.apache.log4j;
 using org.jets3t.service.model;
 using StructureMap;
+using static Ch.Cyberduck.ImagesHelper;
 using Boolean = java.lang.Boolean;
 using Object = System.Object;
 using String = System.String;
@@ -192,7 +192,7 @@ namespace Ch.Cyberduck.Ui.Controller
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
             View.ToolbarS3Label = session.getHost().getProtocol().getName();
-            View.ToolbarS3Image = IconCache.GetProtocolIcon(session.getHost().getProtocol(), 32);
+            View.ToolbarS3Image = IconProvider.GetIcon(session.getHost().getProtocol(), 32);
             //ACL or permission view
             View.AclPanel = session.getFeature(typeof(AclPermission)) != null;
             if (anonymous)
@@ -208,7 +208,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (anonymous)
             {
                 View.ToolbarDistributionEnabled = false;
-                View.ToolbarDistributionImage = IconCache.GetProtocolIcon(new S3Protocol(), 32);
+                View.ToolbarDistributionImage = Images.S3.Size(32);
             }
             else
             {
@@ -216,11 +216,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.ToolbarDistributionEnabled = distribution;
                 if (distribution)
                 {
-                    View.ToolbarDistributionImage = IconCache.GetProtocolIcon(session.getHost().getProtocol(), 32);
+                    View.ToolbarDistributionImage = IconProvider.GetIcon(session.getHost().getProtocol(), 32);
                 }
                 else
                 {
-                    View.ToolbarDistributionImage = IconCache.GetProtocolIcon(new S3Protocol(), 32);
+                    View.ToolbarDistributionImage = Images.S3.Size(32);
                 }
             }
             if (anonymous)
@@ -961,7 +961,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 if (count > 1)
                 {
-                    View.FileIcon = IconCache.IconForName("multiple");
+                    View.FileIcon = Images.Multiple;
                 }
                 else
                 {

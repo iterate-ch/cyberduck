@@ -25,9 +25,9 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp.openssh;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.TaskDialog;
-using Ch.Cyberduck.Ui.Core.Resources;
 using org.apache.log4j;
 using StructureMap;
+using static Ch.Cyberduck.ImagesHelper;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly Logger Log = Logger.getLogger(typeof(PromptLoginController).FullName);
         private readonly WindowController _browser;
-        private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
+        private readonly List<string> _keys = new List<string> { LocaleFactory.localizedString("None") };
 
         private readonly HostPasswordStore keychain = PasswordStoreFactory.get();
 
@@ -55,7 +55,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _browser.CommandBox(title, title, message, String.Format("{0}|{1}", continueButton, disconnectButton),
                     false, Utils.IsNotBlank(preference) ? LocaleFactory.localizedString("Don't show again", "Credentials") : null, TaskDialogIcon.Question,
                     ProviderHelpServiceFactory.get().help(bookmark.getProtocol().getScheme()),
-                    delegate(int option, Boolean verificationChecked)
+                    delegate (int option, Boolean verificationChecked)
                     {
                         if (verificationChecked)
                         {
@@ -84,7 +84,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Message = LocaleFactory.localizedString(reason, "Credentials");
             View.Username = username;
             View.SavePasswordState = options.keychain();
-            View.DiskIcon = IconCache.IconForName(options.icon(), 64);
+            View.DiskIcon = Images.Get(options.icon()).Size(64);
 
             InitPrivateKeys();
 

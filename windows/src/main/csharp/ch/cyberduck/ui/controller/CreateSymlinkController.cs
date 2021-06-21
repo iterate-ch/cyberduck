@@ -25,8 +25,8 @@ using ch.cyberduck.core.features;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
-using Ch.Cyberduck.Ui.Core.Resources;
 using java.util;
+using static Ch.Cyberduck.ImagesHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

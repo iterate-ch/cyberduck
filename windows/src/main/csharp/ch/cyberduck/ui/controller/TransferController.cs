@@ -29,11 +29,11 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.TaskDialog;
-using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using java.text;
 using org.apache.log4j;
 using StructureMap;
+using static Ch.Cyberduck.ImagesHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -433,8 +433,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (transfer.getLocal() != null)
                     {
-                        View.FileIcon = IconCache.IconForFilename(transfer.getRoot().local.getAbsolute(),
-                            IconCache.IconSize.Large);
+                        View.FileIcon = IconProvider.GetFileIcon(transfer.getRoot().local.getAbsolute(), false, true, false);
                     }
                     else
                     {
@@ -444,7 +443,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    View.FileIcon = IconCache.IconForName("multiple", 0);
+                    View.FileIcon = Images.Multiple;
                 }
             }
             else
