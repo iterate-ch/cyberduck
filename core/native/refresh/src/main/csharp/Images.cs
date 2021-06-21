@@ -18,11 +18,15 @@ namespace Cyberduck.Core.Refresh
 
         public ResourceRef AddPressed => new(this);
 
+        public ResourceRef Alert => new(this);
+
         public ResourceRef Bandwidth => new(this);
 
         public ResourceRef Bookmark => new(this);
 
         public ResourceRef Browser => new(this);
+
+        public ResourceRef Connect => new(this);
 
         public ResourceRef Connection => new(this);
 
@@ -30,7 +34,13 @@ namespace Cyberduck.Core.Refresh
 
         public ResourceRef Cyberduck => new(this);
 
+        public ResourceRef Delete => new(this);
+
+        public ResourceRef Download => new(this);
+
         public ResourceRef EditPressed => new(this);
+
+        public ResourceRef Eject => new(this);
 
         public ResourceRef FolderPlus => new(this);
 
@@ -40,13 +50,21 @@ namespace Cyberduck.Core.Refresh
 
         public ResourceRef History => new(this);
 
+        public ResourceRef Info => new(this);
+
         public ResourceRef Language => new(this);
+
+        public ResourceRef Locked => new(this);
 
         public ResourceRef Multiple => new(this);
 
         public ResourceRef Pencil => new(this);
 
+        public ResourceRef Plus => new(this);
+
         public ResourceRef Queue => new(this);
+
+        public ResourceRef Reload => new(this);
 
         public ResourceRef RemovePressed => new(this);
 
@@ -64,9 +82,21 @@ namespace Cyberduck.Core.Refresh
 
         public ResourceRef StatusYellow => new(this);
 
+        public ResourceRef Stop => new(this);
+
+        public ResourceRef Sync => new(this);
+
+        public ResourceRef TransferDownload => new(this, "transfer-download");
+
+        public ResourceRef TransferUpload => new(this, "transfer-upload");
+
         public ResourceRef Turtle => new(this);
 
+        public ResourceRef Unlocked => new(this);
+
         public ResourceRef Update => new(this);
+
+        public ResourceRef Upload => new(this);
 
         public ResourceRef Get(string name) => new(this, name);
 
