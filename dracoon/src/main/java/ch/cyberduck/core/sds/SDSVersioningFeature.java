@@ -62,7 +62,7 @@ public class SDSVersioningFeature implements Versioning {
                     .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener()))), StringUtils.EMPTY);
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+            throw new SDSExceptionMappingService(nodeid).map("Failure to write attributes of {0}", e, file);
         }
 
     }

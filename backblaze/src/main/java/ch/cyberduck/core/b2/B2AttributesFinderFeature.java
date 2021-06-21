@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Write;
@@ -69,31 +70,40 @@ public class B2AttributesFinderFeature implements AttributesFinder {
                 return new PathAttributes().withVersionId(info.getBucketId());
             }
             catch(B2ApiException e) {
-                throw new B2ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                throw new B2ExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);
             }
         }
         else {
+            final String id = fileid.getVersionId(file, listener);
             try {
-                final B2FileResponse info = session.getClient().getFileInfo(fileid.getVersionId(file, listener));
-                return this.toAttributes(info);
+                return this.findInfo(file, id);
             }
-            catch(B2ApiException e) {
-                if(StringUtils.equals("file_state_none", e.getMessage())) {
-                    // Pending large file upload
-                    final Write.Append append = new B2WriteFeature(session, fileid).append(file, new TransferStatus());
-                    if(append.append) {
-                        return new PathAttributes().withSize(append.size);
-                    }
-                    return PathAttributes.EMPTY;
+            catch(InteroperabilityException e) {
+                return this.findInfo(file, fileid.getVersionId(file, listener));
+            }
+        }
+    }
+
+    private PathAttributes findInfo(final Path file, final String id) throws BackgroundException {
+        try {
+            return this.toAttributes(session.getClient().getFileInfo(id));
+        }
+        catch(B2ApiException e) {
+            if(StringUtils.equals("file_state_none", e.getMessage())) {
+                // Pending large file upload
+                final Write.Append append = new B2WriteFeature(session, fileid).append(file, new TransferStatus());
+                if(append.append) {
+                    return new PathAttributes().withSize(append.size);
                 }
-                throw new B2ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                return PathAttributes.EMPTY;
             }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
-            }
+            throw new B2ExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 

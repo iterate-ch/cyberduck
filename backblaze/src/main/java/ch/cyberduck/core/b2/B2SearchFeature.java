@@ -55,7 +55,7 @@ public class B2SearchFeature implements Search {
             String prefix = null;
             final AttributedList<Path> containers;
             if(workdir.isRoot()) {
-                containers = new B2BucketListService(session).list(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), listener);
+                containers = new B2BucketListService(session, fileid).list(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), listener);
             }
             else {
                 containers = new AttributedList<>(Collections.singletonList(containerService.getContainer(workdir)));
@@ -84,7 +84,7 @@ public class B2SearchFeature implements Search {
             return list;
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map(e);
+            throw new B2ExceptionMappingService(fileid).map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

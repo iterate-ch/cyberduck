@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.onedrive.SharedWithMeListService;
 
 import java.util.EnumSet;
@@ -34,9 +35,11 @@ public class OneDriveListService implements ListService {
     public static final Path SHARED_NAME = new Path("/Shared", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withFileId(SHARED_ID));
     public static final SimplePathPredicate SHARED_PREDICATE = new SimplePathPredicate(SHARED_NAME);
     private final GraphSession session;
+    private final GraphFileIdProvider fileid;
 
-    public OneDriveListService(final GraphSession session) {
+    public OneDriveListService(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -49,10 +52,10 @@ public class OneDriveListService implements ListService {
             return list;
         }
         else if(SHARED_PREDICATE.test(directory)) {
-            return new SharedWithMeListService(session).list(directory, listener);
+            return new SharedWithMeListService(session, fileid).list(directory, listener);
         }
         else {
-            return new GraphItemListService(session).list(directory, listener);
+            return new GraphItemListService(session, fileid).list(directory, listener);
         }
     }
 

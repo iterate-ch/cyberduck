@@ -52,7 +52,7 @@ public class B2CopyFeature implements Copy {
             return target.withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map("Cannot copy {0}", e, source);
+            throw new B2ExceptionMappingService(fileid).map("Cannot copy {0}", e, source);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

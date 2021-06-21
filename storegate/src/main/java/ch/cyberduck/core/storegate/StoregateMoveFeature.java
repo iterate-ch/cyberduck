@@ -77,7 +77,7 @@ public class StoregateMoveFeature implements Move {
                         fileid.cache(renamed, file.attributes().getFileId());
                         return renamed.withAttributes(attr);
                     default:
-                        throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                        throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                 }
             }
             finally {

@@ -77,7 +77,7 @@ public class SDSListService implements ListService {
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     if(references && node.getCntDeletedVersions() != null && node.getCntDeletedVersions() > 0) {
                         try {
-                            final AttributedList<Path> versions = feature.versions(file, chunksize);
+                            final AttributedList<Path> versions = feature.findDeleted(file, chunksize);
                             children.addAll(versions);
                             attributes.setVersions(versions);
                         }
@@ -93,7 +93,7 @@ public class SDSListService implements ListService {
             while(nodes.getItems().size() == chunksize);
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Listing directory {0} failed", e, directory);
+            throw new SDSExceptionMappingService(nodeid).map("Listing directory {0} failed", e, directory);
         }
         return children;
     }

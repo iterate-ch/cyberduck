@@ -145,7 +145,7 @@ public class B2LargeCopyFeature implements Copy {
             return target.withAttributes(new PathAttributes(source.attributes()).withVersionId(response.getFileId()));
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map("Cannot copy {0}", e, source);
+            throw new B2ExceptionMappingService(fileid).map("Cannot copy {0}", e, source);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -172,7 +172,7 @@ public class B2LargeCopyFeature implements Copy {
                         String.format("bytes=%d-%d", range.getStart(), range.getEnd()));
                 }
                 catch(B2ApiException e) {
-                    throw new B2ExceptionMappingService().map("Cannot copy {0}", e, file);
+                    throw new B2ExceptionMappingService(fileid).map("Cannot copy {0}", e, file);
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);

@@ -64,7 +64,7 @@ public class DriveDeleteFeature implements Delete {
                 fileid.cache(file, null);
             }
             catch(IOException e) {
-                throw new DriveExceptionMappingService().map("Cannot delete {0}", e, file);
+                throw new DriveExceptionMappingService(fileid).map("Cannot delete {0}", e, file);
             }
         }
     }

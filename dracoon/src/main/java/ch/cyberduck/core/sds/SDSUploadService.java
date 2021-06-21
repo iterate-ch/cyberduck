@@ -83,7 +83,7 @@ public class SDSUploadService {
             return new NodesApi(session.getClient()).createFileUploadChannel(body, StringUtils.EMPTY).getToken();
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file);
         }
     }
 
@@ -121,7 +121,7 @@ public class SDSUploadService {
             return upload;
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file);
         }
         catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException | UnknownVersionException e) {
             throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file);
@@ -137,7 +137,7 @@ public class SDSUploadService {
             new UploadsApi(session.getClient()).cancelFileUploadByToken(uploadToken);
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file);
         }
     }
 }

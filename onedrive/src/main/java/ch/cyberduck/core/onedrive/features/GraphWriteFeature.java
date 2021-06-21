@@ -75,7 +75,7 @@ public class GraphWriteFeature implements Write<Void> {
             };
         }
         catch(OneDriveAPIException e) {
-            throw new GraphExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new GraphExceptionMappingService(fileid).map("Upload {0} failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
@@ -140,7 +140,7 @@ public class GraphWriteFeature implements Write<Void> {
                             }
                         }
                         catch(OneDriveAPIException e) {
-                            throw new GraphExceptionMappingService().map("Upload {0} failed", e, file);
+                            throw new GraphExceptionMappingService(fileid).map("Upload {0} failed", e, file);
                         }
                         catch(IOException e) {
                             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);

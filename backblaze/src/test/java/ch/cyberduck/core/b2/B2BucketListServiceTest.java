@@ -32,7 +32,7 @@ public class B2BucketListServiceTest extends AbstractB2Test {
 
     @Test
     public void testList() throws Exception {
-        final AttributedList<Path> list = new B2BucketListService(session).list(
+        final AttributedList<Path> list = new B2BucketListService(session, new B2VersionIdProvider(session)).list(
             new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
     }

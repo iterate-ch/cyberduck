@@ -243,7 +243,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
                     }
                     catch(ApiException e) {
                         done.countDown();
-                        failure.set(new SDSExceptionMappingService().map("Upload {0} failed", e, file));
+                        failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
                     }
                 }
             }, PreferencesFactory.get().getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
@@ -260,7 +260,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
             throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file);
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

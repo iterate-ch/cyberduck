@@ -41,13 +41,15 @@ public class SDSErrorResponseInterceptor extends DisabledServiceUnavailableRetry
     private static final int MAX_RETRIES = 1;
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
     private String user = StringUtils.EMPTY;
     private String password = StringUtils.EMPTY;
     private String token = StringUtils.EMPTY;
 
-    public SDSErrorResponseInterceptor(final SDSSession session) {
+    public SDSErrorResponseInterceptor(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
@@ -61,7 +63,7 @@ public class SDSErrorResponseInterceptor extends DisabledServiceUnavailableRetry
                             EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                             failure = new ApiException(response.getStatusLine().getStatusCode(), Collections.emptyMap(),
                                 EntityUtils.toString(response.getEntity()));
-                            if(new SDSExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
+                            if(new SDSExceptionMappingService(nodeid).map(failure) instanceof ExpiredTokenException) {
                                 // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
                                 try {
                                     token = new AuthApi(session.getClient()).login(new LoginRequest()

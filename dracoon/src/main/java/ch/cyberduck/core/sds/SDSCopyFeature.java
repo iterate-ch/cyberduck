@@ -65,7 +65,7 @@ public class SDSCopyFeature implements Copy {
             return target.withAttributes(attributes);
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Cannot copy {0}", e, source);
+            throw new SDSExceptionMappingService(nodeid).map("Cannot copy {0}", e, source);
         }
     }
 

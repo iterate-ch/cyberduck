@@ -15,12 +15,12 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.sharepoint.GroupDrivesListService;
 import ch.cyberduck.core.onedrive.features.sharepoint.GroupListService;
 
@@ -45,10 +45,12 @@ public class SharepointListService extends AbstractSharepointListService {
     public static final Path SITES_NAME = new Path("/" + SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
 
     private final SharepointSession session;
+    private final GraphFileIdProvider fileid;
 
-    public SharepointListService(final SharepointSession session) {
-        super(session);
+    public SharepointListService(final SharepointSession session, final GraphFileIdProvider fileid) {
+        super(session, fileid);
         this.session = session;
+        this.fileid = fileid;
     }
 
     private Optional<Path> getDefault(final Path directory) {
@@ -95,10 +97,10 @@ public class SharepointListService extends AbstractSharepointListService {
         }
         if(container.getCollectionPath().map(p -> GROUPS_CONTAINER.equals(p.getName())).orElse(false)) {
             if(!container.isDefined()) {
-                return new GroupListService(session).list(directory, listener);
+                return new GroupListService(session, fileid).list(directory, listener);
             }
             else {
-                return new GroupDrivesListService(session).list(directory, listener);
+                return new GroupDrivesListService(session, fileid).list(directory, listener);
             }
         }
         return AttributedList.emptyList();

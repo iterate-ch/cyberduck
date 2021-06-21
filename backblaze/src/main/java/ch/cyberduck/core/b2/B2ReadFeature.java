@@ -70,7 +70,7 @@ public class B2ReadFeature implements Read {
                 case HttpStatus.SC_NOT_FOUND:
                     fileid.cache(file, null);
             }
-            throw new B2ExceptionMappingService().map("Download {0} failed", e, file);
+            throw new B2ExceptionMappingService(fileid).map("Download {0} failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);

@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.SharepointSiteSession;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
 import org.nuxeo.onedrive.client.types.Site;
 
@@ -30,8 +31,8 @@ import java.io.IOException;
 public class SharepointSiteAttributesFinder extends GraphAttributesFinderFeature {
     private final SharepointSiteSession session;
 
-    public SharepointSiteAttributesFinder(final SharepointSiteSession session) {
-        super(session);
+    public SharepointSiteAttributesFinder(final SharepointSiteSession session, final GraphFileIdProvider fileid) {
+        super(session, fileid);
         this.session = session;
     }
 

@@ -55,7 +55,7 @@ public class SDSTimestampFeature extends DefaultTimestampFeature {
                 Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+            throw new SDSExceptionMappingService(nodeid).map("Failure to write attributes of {0}", e, file);
         }
     }
 }

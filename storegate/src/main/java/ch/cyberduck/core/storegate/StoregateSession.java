@@ -156,11 +156,11 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                         break;
                     case HttpStatus.SC_FORBIDDEN:
                         // Insufficient scope
-                        final BackgroundException failure = new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                        final BackgroundException failure = new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                             EntityUtils.toString(response.getEntity())));
                         throw new LoginFailureException(failure.getDetail(), failure);
                     default:
-                        throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                        throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                             EntityUtils.toString(response.getEntity())));
                 }
             }
@@ -178,7 +178,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             roots = new SettingsApi(client).settingsGetRootfolders();
         }
         catch(ApiException e) {
-            throw new StoregateExceptionMappingService().map(e);
+            throw new StoregateExceptionMappingService(fileid).map(e);
         }
         catch(IOException e) {
             new DefaultIOExceptionMappingService().map(e);
@@ -244,7 +244,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             return (T) new StoregateTimestampFeature(this, fileid);
         }
         if(type == Quota.class) {
-            return (T) new StoregateQuotaFeature(this);
+            return (T) new StoregateQuotaFeature(this, fileid);
         }
         return super._getFeature(type);
     }

@@ -17,10 +17,8 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
@@ -36,9 +34,11 @@ import synapticloop.b2.response.B2BucketResponse;
 public class B2BucketListService implements RootListService {
 
     private final B2Session session;
+    private final B2VersionIdProvider fileid;
 
-    public B2BucketListService(final B2Session session) {
+    public B2BucketListService(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class B2BucketListService implements RootListService {
             return buckets;
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map("Listing directory {0} failed", e, directory);
+            throw new B2ExceptionMappingService(fileid).map("Listing directory {0} failed", e, directory);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

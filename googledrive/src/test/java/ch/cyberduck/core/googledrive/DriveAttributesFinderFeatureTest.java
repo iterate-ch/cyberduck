@@ -28,6 +28,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -116,5 +117,20 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         assertNull(list.find(new SimplePathPredicate(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, shortcut.getName(), EnumSet.of(Path.Type.file)))));
         session.getClient().files().delete(shortcut.getId())
             .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+    }
+
+    @Test
+    public void testChangedFileId() throws Exception {
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        final Path room = new DriveDirectoryFeature(session, fileid).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new DriveTouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String latestnodeid = test.attributes().getVersionId();
+        assertNotNull(latestnodeid);
+        // Assume previously seen but changed on server
+        fileid.cache(test, String.valueOf(RandomUtils.nextLong()));
+        final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
+        assertEquals(latestnodeid, f.find(test).getVersionId());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -231,7 +231,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 });
                 break;
             default:
-                retryHandler = new SDSErrorResponseInterceptor(this);
+                retryHandler = new SDSErrorResponseInterceptor(this, nodeid);
                 configuration.setServiceUnavailableRetryStrategy(retryHandler);
                 configuration.addInterceptorLast(retryHandler);
                 break;
@@ -320,7 +320,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             this.unlockTripleCryptKeyPair(prompt, userAccount.get(), requiredKeyPairVersion);
         }
         catch(ApiException e) {
-            log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService().map(e)));
+            log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService(nodeid).map(e)));
         }
     }
 
@@ -337,7 +337,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             log.error("No available key pair algorithm with status required found.");
         }
         catch(ApiException e) {
-            log.warn(String.format("Ignore failure reading key pair version. %s", new SDSExceptionMappingService().map(e)));
+            log.warn(String.format("Ignore failure reading key pair version. %s", new SDSExceptionMappingService(nodeid).map(e)));
         }
         catch(UnknownVersionException e) {
             log.warn(String.format("Ignore failure reading required key pair algorithm. %s", new TripleCryptExceptionMappingService().map(e)));
@@ -426,7 +426,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             throw new TripleCryptExceptionMappingService().map(e);
         }
         catch(ApiException e) {
-            log.warn(String.format("Ignore failure unlocking user key pair. %s", new SDSExceptionMappingService().map(e)));
+            log.warn(String.format("Ignore failure unlocking user key pair. %s", new SDSExceptionMappingService(nodeid).map(e)));
         }
         catch(LoginCanceledException e) {
             log.warn("Ignore cancel unlocking triple crypt private key pair");
@@ -447,7 +447,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 return new AuthApi(client).login(request).getToken();
             }
             catch(ApiException e) {
-                throw new SDSExceptionMappingService().map(e);
+                throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
         catch(PartialLoginFailureException e) {
@@ -472,7 +472,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user info. %s", e.getMessage()));
-                throw new SDSExceptionMappingService().map(e);
+                throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
         return userAccount.get();
@@ -504,7 +504,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 }
                 else {
                     log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
-                    throw new SDSExceptionMappingService().map(e);
+                    throw new SDSExceptionMappingService(nodeid).map(e);
                 }
             }
         }
@@ -521,7 +521,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 // fallback
                 final UserKeyPairContainer keyPairDeprecated = this.keyPairDeprecated();
                 if(null == keyPairDeprecated) {
-                    throw new SDSExceptionMappingService().map(e);
+                    throw new SDSExceptionMappingService(nodeid).map(e);
                 }
                 keyPair.set(keyPairDeprecated);
             }
@@ -536,7 +536,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure %s updating software version", e.getMessage()));
-                throw new SDSExceptionMappingService().map(e);
+                throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
         return softwareVersion.get();
@@ -550,7 +550,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             catch(ApiException e) {
                 // Precondition: Right "Config Read" required.
                 log.warn(String.format("Failure %s reading system defaults", e.getMessage()));
-                throw new SDSExceptionMappingService().map(e);
+                throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
         return systemDefaults.get();
@@ -564,7 +564,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             catch(ApiException e) {
                 // Precondition: Right "Config Read" required.
                 log.warn(String.format("Failure %s reading configuration", e.getMessage()));
-                throw new SDSExceptionMappingService().map(e);
+                throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
         return generalSettingsInfo.get();

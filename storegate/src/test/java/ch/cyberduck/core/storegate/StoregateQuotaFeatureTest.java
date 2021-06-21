@@ -28,7 +28,7 @@ public class StoregateQuotaFeatureTest extends AbstractStoregateTest {
 
     @Test
     public void get() throws Exception {
-        final Quota.Space quota = new StoregateQuotaFeature(session).get();
+        final Quota.Space quota = new StoregateQuotaFeature(session, new StoregateIdProvider(session)).get();
         assertNotNull(quota.available);
         assertNotNull(quota.used);
         assertNotEquals(0L, quota.available, 0L);

@@ -144,7 +144,7 @@ public class OneDriveSession extends GraphSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new OneDriveListService(this);
+            return (T) new OneDriveListService(this, fileid);
         }
         if(type == UrlProvider.class) {
             return (T) new OneDriveUrlProvider();
@@ -158,7 +158,7 @@ public class OneDriveSession extends GraphSession {
             // a null-optional, not for non-present optional.
             //noinspection OptionalAssignedToNull
             if(null != getUser() && null != getUser().getCreationType()) {
-                return (T) new GraphLockFeature(this);
+                return (T) new GraphLockFeature(this, fileid);
             }
         }
         return super._getFeature(type);

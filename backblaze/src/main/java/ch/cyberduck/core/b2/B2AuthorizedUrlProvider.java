@@ -83,7 +83,7 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
             );
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map(e);
+            throw new B2ExceptionMappingService(fileid).map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

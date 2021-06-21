@@ -85,7 +85,7 @@ public class DriveMoveFeature implements Move {
             return renamed.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(result));
         }
         catch(IOException e) {
-            throw new DriveExceptionMappingService().map("Cannot rename {0}", e, file);
+            throw new DriveExceptionMappingService(fileid).map("Cannot rename {0}", e, file);
         }
     }
 

@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -71,10 +72,10 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return this.find(file, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
+        return this.find(file, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
     }
 
-    protected PathAttributes find(final Path file, final int chunksize) throws BackgroundException {
+    protected PathAttributes find(final Path file, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         if(file.isRoot()) {
             // {"code":400,"message":"Bad Request","debugInfo":"Node ID must be positive.","errorCode":-80001}
             final PathAttributes attributes = new PathAttributes();
@@ -86,20 +87,32 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
             }
             return attributes;
         }
+        // Throw failure if looking up file fails
+        final String id = nodeid.getVersionId(file, listener);
+        try {
+            return this.findNode(file, chunksize, id);
+        }
+        catch(NotfoundException e) {
+            // Try with reset cache after failure finding node id
+            return this.findNode(file, chunksize, nodeid.getVersionId(file, listener));
+        }
+    }
+
+    private PathAttributes findNode(final Path file, final int chunksize, final String nodeId) throws BackgroundException {
         try {
             if(file.attributes().isDuplicate()) {
-                final DeletedNode node = new NodesApi(session.getClient()).requestDeletedNode(Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())),
+                final DeletedNode node = new NodesApi(session.getClient()).requestDeletedNode(Long.parseLong(nodeId),
                     StringUtils.EMPTY, null);
                 return this.toAttributes(node);
             }
             else {
                 final Node node = new NodesApi(session.getClient()).requestNode(
-                    Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
+                    Long.parseLong(nodeId), StringUtils.EMPTY, null);
                 final PathAttributes attr = this.toAttributes(node);
                 if(this.toType(node).contains(Path.Type.file)) {
                     if(references) {
                         try {
-                            attr.setVersions(this.versions(file, chunksize));
+                            attr.setVersions(this.findDeleted(file, chunksize));
                         }
                         catch(AccessDeniedException e) {
                             log.warn(String.format("Ignore failure %s fetching versions for %s", e, file));
@@ -110,11 +123,11 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
             }
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw new SDSExceptionMappingService(nodeid).map("Failure to read attributes of {0}", e, file);
         }
     }
 
-    protected AttributedList<Path> versions(final Path file, final int chunksize) throws BackgroundException {
+    protected AttributedList<Path> findDeleted(final Path file, final int chunksize) throws BackgroundException {
         try {
             int offset = 0;
             DeletedNodeVersionsList nodes;
@@ -134,7 +147,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
             return versions;
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw new SDSExceptionMappingService(nodeid).map("Failure to read attributes of {0}", e, file);
         }
     }
 

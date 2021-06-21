@@ -30,7 +30,7 @@ public class SDSExceptionMappingServiceTest {
 
     @Test
     public void testMap() {
-        final BackgroundException e = new SDSExceptionMappingService().map(new ApiException("m", 403, Collections.emptyMap(),
+        final BackgroundException e = new SDSExceptionMappingService(new SDSNodeIdProvider(null)).map(new ApiException("m", 403, Collections.emptyMap(),
             "{\"errorCode\" = -40761}"));
         assertEquals("Error -40761. Please contact your web hosting service provider for assistance.", e.getDetail());
     }

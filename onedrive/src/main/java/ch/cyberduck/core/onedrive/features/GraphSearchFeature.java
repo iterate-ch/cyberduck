@@ -40,7 +40,7 @@ public class GraphSearchFeature implements Search {
 
     public GraphSearchFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
-        this.attributes = new GraphAttributesFinderFeature(session);
+        this.attributes = new GraphAttributesFinderFeature(session, fileid);
     }
 
     @Override

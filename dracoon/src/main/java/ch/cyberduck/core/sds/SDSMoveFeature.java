@@ -90,7 +90,7 @@ public class SDSMoveFeature implements Move {
             }
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Cannot rename {0}", e, file);
+            throw new SDSExceptionMappingService(nodeid).map("Cannot rename {0}", e, file);
         }
     }
 

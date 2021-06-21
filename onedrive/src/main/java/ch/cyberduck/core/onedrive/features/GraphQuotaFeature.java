@@ -32,9 +32,11 @@ import java.io.IOException;
 public class GraphQuotaFeature implements Quota {
 
     private final GraphSession session;
+    private final GraphFileIdProvider fileid;
 
-    public GraphQuotaFeature(final GraphSession session) {
+    public GraphQuotaFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -52,7 +54,7 @@ public class GraphQuotaFeature implements Quota {
             metadata = item.getDrive().getMetadata();
         }
         catch(OneDriveAPIException e) {
-            throw new GraphExceptionMappingService().map("Failure to read attributes of {0}", e, home);
+            throw new GraphExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, home);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, home);

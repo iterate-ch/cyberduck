@@ -34,14 +34,16 @@ public class DriveTeamDrivesListService implements ListService {
     private static final Logger log = Logger.getLogger(DriveTeamDrivesListService.class);
 
     private final DriveSession session;
+    private final DriveFileIdProvider fileid;
     private final int pagesize;
 
-    public DriveTeamDrivesListService(final DriveSession session) {
-        this(session, 100);
+    public DriveTeamDrivesListService(final DriveSession session, final DriveFileIdProvider fileid) {
+        this(session, fileid, 100);
     }
 
-    public DriveTeamDrivesListService(final DriveSession session, final int pagesize) {
+    public DriveTeamDrivesListService(final DriveSession session, final DriveFileIdProvider fileid, final int pagesize) {
         this.session = session;
+        this.fileid = fileid;
         this.pagesize = pagesize;
     }
 
@@ -70,7 +72,7 @@ public class DriveTeamDrivesListService implements ListService {
             return children;
         }
         catch(IOException e) {
-            throw new DriveExceptionMappingService().map("Listing directory failed", e, directory);
+            throw new DriveExceptionMappingService(fileid).map("Listing directory failed", e, directory);
         }
     }
 }

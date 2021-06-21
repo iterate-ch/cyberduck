@@ -122,7 +122,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
                                 fileid.cache(file, result.getId());
                                 return result;
                             default:
-                                throw new StoregateExceptionMappingService().map(new ApiException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                throw new StoregateExceptionMappingService(fileid).map(new ApiException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                     EntityUtils.toString(putResponse.getEntity())));
                         }
                     }
@@ -183,7 +183,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
                     case HttpStatus.SC_OK:
                         break;
                     default:
-                        throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                        throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                             EntityUtils.toString(response.getEntity())));
                 }
             }
@@ -193,7 +193,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
             if(response.containsHeader(HttpHeaders.LOCATION)) {
                 return response.getFirstHeader(HttpHeaders.LOCATION).getValue();
             }
-            throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+            throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                 EntityUtils.toString(response.getEntity())));
         }
         catch(IOException e) {

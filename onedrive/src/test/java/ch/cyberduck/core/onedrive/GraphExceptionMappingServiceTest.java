@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
 import org.junit.Test;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
@@ -30,11 +31,11 @@ public class GraphExceptionMappingServiceTest {
 
     @Test
     public void map() {
-        assertTrue(new GraphExceptionMappingService().map(
-                new OneDriveAPIException("The OneDrive API responded with too many redirects.")) instanceof InteroperabilityException);
-        assertTrue(new GraphExceptionMappingService().map(
-                new OneDriveAPIException("m", 404)) instanceof NotfoundException);
-        assertTrue(new GraphExceptionMappingService().map(
-                new OneDriveAPIException("Couldn't connect to the OneDrive API due to a network error.", new SocketException())) instanceof ConnectionRefusedException);
+        assertTrue(new GraphExceptionMappingService(new GraphFileIdProvider(null)).map(
+            new OneDriveAPIException("The OneDrive API responded with too many redirects.")) instanceof InteroperabilityException);
+        assertTrue(new GraphExceptionMappingService(new GraphFileIdProvider(null)).map(
+            new OneDriveAPIException("m", 404)) instanceof NotfoundException);
+        assertTrue(new GraphExceptionMappingService(new GraphFileIdProvider(null)).map(
+            new OneDriveAPIException("Couldn't connect to the OneDrive API due to a network error.", new SocketException())) instanceof ConnectionRefusedException);
     }
 }

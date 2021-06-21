@@ -44,11 +44,11 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
             return this.toAttributes(files.filesGet_1(URIEncoder.encode(fileid.getPrefixedPath(file))));
         }
         catch(ApiException e) {
-            throw new StoregateExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw new StoregateExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
         }
     }
 
-    public PathAttributes toAttributes(final File f) {
+    protected PathAttributes toAttributes(final File f) {
         final PathAttributes attrs = new PathAttributes();
         if(0 != f.getModified().getMillis()) {
             attrs.setModificationDate(f.getModified().getMillis());
@@ -93,7 +93,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
         return attrs;
     }
 
-    public PathAttributes toAttributes(final FileMetadata f) {
+    protected PathAttributes toAttributes(final FileMetadata f) {
         final PathAttributes attrs = new PathAttributes();
         if(0 != f.getModified().getMillis()) {
             attrs.setModificationDate(f.getModified().getMillis());

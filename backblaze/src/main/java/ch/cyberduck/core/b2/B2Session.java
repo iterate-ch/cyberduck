@@ -57,7 +57,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
     public B2ApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setServiceUnavailableRetryStrategy(retryHandler = new B2ErrorResponseInterceptor(
-            this));
+            this, fileid));
         configuration.addInterceptorLast(retryHandler);
         return new B2ApiClient(configuration.build());
     }
@@ -91,7 +91,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
             retryHandler.setTokens(accountId, applicationKey, response.getAuthorizationToken());
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService().map(e);
+            throw new B2ExceptionMappingService(fileid).map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultSocketExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -45,6 +46,40 @@ import com.google.gson.JsonPrimitive;
 
 public class SDSExceptionMappingService extends AbstractExceptionMappingService<ApiException> {
     private static final Logger log = Logger.getLogger(SDSExceptionMappingService.class);
+
+    private final SDSNodeIdProvider fileid;
+
+    public SDSExceptionMappingService(final SDSNodeIdProvider fileid) {
+        this.fileid = fileid;
+    }
+
+    @Override
+    public BackgroundException map(final String message, final ApiException failure, final Path file) {
+        if(null != failure.getResponseBody()) {
+            try {
+                final JsonObject json = JsonParser.parseReader(new StringReader(failure.getResponseBody())).getAsJsonObject();
+                if(json.has("errorCode")) {
+                    if(json.get("errorCode").isJsonPrimitive()) {
+                        final int errorCode = json.getAsJsonPrimitive("errorCode").getAsInt();
+                        switch(failure.getCode()) {
+                            case HttpStatus.SC_NOT_FOUND:
+                                switch(errorCode) {
+                                    case -41000:
+                                        // Invalidate cache on Node not found
+                                        fileid.cache(file, null);
+                                        break;
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+            catch(JsonParseException e) {
+                // Ignore
+            }
+        }
+        return super.map(message, failure, file);
+    }
 
     @Override
     public BackgroundException map(final ApiException failure) {

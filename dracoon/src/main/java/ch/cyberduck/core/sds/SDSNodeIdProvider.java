@@ -67,10 +67,10 @@ public class SDSNodeIdProvider implements VersionIdProvider {
             }
             return file.attributes().getVersionId();
         }
-        return this.getNodeId(file, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
+        return this.getNodeId(file, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
     }
 
-    protected String getNodeId(final Path file, final ListProgressListener listener, final int chunksize) throws BackgroundException {
+    protected String getNodeId(final Path file, final int chunksize) throws BackgroundException {
         if(cache.contains(new SimplePathPredicate(file))) {
             final String cached = cache.get(new SimplePathPredicate(file));
             if(log.isDebugEnabled()) {
@@ -113,7 +113,7 @@ public class SDSNodeIdProvider implements VersionIdProvider {
             throw new NotfoundException(file.getAbsolute());
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw new SDSExceptionMappingService(this).map("Failure to read attributes of {0}", e, file);
         }
     }
 

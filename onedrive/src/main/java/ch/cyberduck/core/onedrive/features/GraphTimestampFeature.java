@@ -34,10 +34,13 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 
 public class GraphTimestampFeature extends DefaultTimestampFeature {
-    private final GraphSession session;
 
-    public GraphTimestampFeature(final GraphSession session) {
+    private final GraphSession session;
+    private final GraphFileIdProvider fileid;
+
+    public GraphTimestampFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -51,7 +54,7 @@ public class GraphTimestampFeature extends DefaultTimestampFeature {
             Files.patch(item, patchOperation);
         }
         catch(OneDriveAPIException e) {
-            throw new GraphExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+            throw new GraphExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to write attributes of {0}", e, file);

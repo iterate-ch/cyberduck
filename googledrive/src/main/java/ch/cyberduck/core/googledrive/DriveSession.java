@@ -107,7 +107,7 @@ public class DriveSession extends HttpSession<Drive> {
             about = client.about().get().setFields("user").execute();
         }
         catch(IOException e) {
-            throw new DriveExceptionMappingService().map(e);
+            throw new DriveExceptionMappingService(fileid).map(e);
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Authenticated as user %s", about.getUser()));
@@ -173,7 +173,7 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) fileid;
         }
         if(type == Quota.class) {
-            return (T) new DriveQuotaFeature(this);
+            return (T) new DriveQuotaFeature(this, fileid);
         }
         if(type == Timestamp.class) {
             return (T) new DriveTimestampFeature(this, fileid);

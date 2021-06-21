@@ -183,7 +183,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) fileid;
         }
         if(type == AttributesFinder.class) {
-            return (T) new GraphAttributesFinderFeature(this);
+            return (T) new GraphAttributesFinderFeature(this, fileid);
         }
         if(type == Directory.class) {
             return (T) new GraphDirectoryFeature(this, fileid);
@@ -210,16 +210,16 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) new GraphCopyFeature(this, fileid);
         }
         if(type == Find.class) {
-            return (T) new GraphFindFeature(this);
+            return (T) new GraphFindFeature(this, fileid);
         }
         if(type == Search.class) {
             return (T) new GraphSearchFeature(this, fileid);
         }
         if(type == Timestamp.class) {
-            return (T) new GraphTimestampFeature(this);
+            return (T) new GraphTimestampFeature(this, fileid);
         }
         if(type == Quota.class) {
-            return (T) new GraphQuotaFeature(this);
+            return (T) new GraphQuotaFeature(this, fileid);
         }
         if(type == PromptUrlProvider.class) {
             return (T) new GraphPromptUrlProvider(this);

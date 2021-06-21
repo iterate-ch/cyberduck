@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.onedrive.AbstractListService;
 import ch.cyberduck.core.onedrive.SharepointSession;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.Groups;
@@ -33,7 +34,8 @@ public class GroupListService extends AbstractListService<GroupItem.Metadata> {
 
     private final SharepointSession session;
 
-    public GroupListService(final SharepointSession session) {
+    public GroupListService(final SharepointSession session, final GraphFileIdProvider fileid) {
+        super(fileid);
         this.session = session;
     }
 

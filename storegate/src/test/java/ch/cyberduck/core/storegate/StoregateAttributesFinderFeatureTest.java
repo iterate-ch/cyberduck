@@ -16,6 +16,7 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -24,6 +25,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -61,5 +63,21 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
         assertTrue(attr.getPermission().isReadable());
         assertTrue(attr.getPermission().isWritable());
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testChangedNodeId() throws Exception {
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
+        final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
+            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new StoregateTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String latestnodeid = test.attributes().getFileId();
+        assertNotNull(latestnodeid);
+        // Assume previously seen but changed on server
+        nodeid.cache(test, String.valueOf(RandomUtils.nextLong()));
+        final StoregateAttributesFinderFeature f = new StoregateAttributesFinderFeature(session, nodeid);
+        assertEquals(latestnodeid, f.find(test).getFileId());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

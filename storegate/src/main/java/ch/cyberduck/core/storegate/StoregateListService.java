@@ -93,7 +93,7 @@ public class StoregateListService implements ListService {
                 return children;
             }
             catch(ApiException e) {
-                throw new StoregateExceptionMappingService().map("Listing directory {0} failed", e, directory);
+                throw new StoregateExceptionMappingService(fileid).map("Listing directory {0} failed", e, directory);
             }
         }
     }

@@ -45,7 +45,7 @@ public class GraphCopyFeature implements Copy {
 
     public GraphCopyFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
-        this.attributes = new GraphAttributesFinderFeature(session);
+        this.attributes = new GraphAttributesFinderFeature(session, fileid);
         this.fileid = fileid;
     }
 
@@ -72,7 +72,7 @@ public class GraphCopyFeature implements Copy {
             return target.withAttributes(attr);
         }
         catch(OneDriveAPIException e) {
-            throw new GraphExceptionMappingService().map("Cannot copy {0}", e, source);
+            throw new GraphExceptionMappingService(fileid).map("Cannot copy {0}", e, source);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);

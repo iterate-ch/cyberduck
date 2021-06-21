@@ -48,6 +48,7 @@ public class MultipartUploadTokenOutputStream extends OutputStream {
     private static final Logger log = Logger.getLogger(MultipartUploadTokenOutputStream.class);
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
     private final Path file;
     private final TransferStatus overall;
     private final String uploadToken;
@@ -56,8 +57,9 @@ public class MultipartUploadTokenOutputStream extends OutputStream {
     private Long offset = 0L;
     private final Long length;
 
-    public MultipartUploadTokenOutputStream(final SDSSession session, final Path file, final TransferStatus status, final String uploadToken) {
+    public MultipartUploadTokenOutputStream(final SDSSession session, final SDSNodeIdProvider nodeid, final Path file, final TransferStatus status, final String uploadToken) {
         this.session = session;
+        this.nodeid = nodeid;
         this.file = file;
         this.uploadToken = uploadToken;
         this.overall = status;
@@ -107,7 +109,7 @@ public class MultipartUploadTokenOutputStream extends OutputStream {
                                     break;
                                 default:
                                     EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-                                    throw new SDSExceptionMappingService().map(
+                                    throw new SDSExceptionMappingService(nodeid).map(
                                         new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                             EntityUtils.toString(response.getEntity())));
                             }

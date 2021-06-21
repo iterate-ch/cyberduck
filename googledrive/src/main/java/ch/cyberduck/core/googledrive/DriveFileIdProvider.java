@@ -61,7 +61,7 @@ public class DriveFileIdProvider implements FileIdProvider {
             return cached;
         }
         if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
-            final Path found = new DriveTeamDrivesListService(session).list(file.getParent(), listener).find(
+            final Path found = new DriveTeamDrivesListService(session, this).list(file.getParent(), listener).find(
                 new SimplePathPredicate(file)
             );
             if(null == found) {

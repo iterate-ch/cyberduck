@@ -36,10 +36,10 @@ public class OneDriveContainerListServiceTest extends AbstractOneDriveTest {
 
     @Test
     public void testFindDrive() throws Exception {
-        final AttributedList<Path> drives = new GraphDrivesListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        final AttributedList<Path> drives = new GraphDrivesListService(session, fileid).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertFalse(drives.isEmpty());
         for(Path drive : drives) {
-            final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(drive);
+            final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).find(drive);
             assertNotNull(attributes);
             assertNotEquals(-1L, attributes.getSize());
             assertNotEquals(-1L, attributes.getCreationDate());

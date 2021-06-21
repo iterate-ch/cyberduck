@@ -49,7 +49,7 @@ public class StoregateCopyFeature implements Copy {
             return target.withAttributes(new StoregateAttributesFinderFeature(session, fileid).toAttributes(file));
         }
         catch(ApiException e) {
-            throw new StoregateExceptionMappingService().map("Cannot copy {0}", e, source);
+            throw new StoregateExceptionMappingService(fileid).map("Cannot copy {0}", e, source);
         }
     }
 

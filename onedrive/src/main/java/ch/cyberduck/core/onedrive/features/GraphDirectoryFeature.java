@@ -39,7 +39,7 @@ public class GraphDirectoryFeature implements Directory<Void> {
 
     public GraphDirectoryFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
-        this.attributes = new GraphAttributesFinderFeature(session);
+        this.attributes = new GraphAttributesFinderFeature(session, fileid);
         this.fileid = fileid;
     }
 
@@ -53,7 +53,7 @@ public class GraphDirectoryFeature implements Directory<Void> {
             return directory.withAttributes(attr);
         }
         catch(OneDriveAPIException e) {
-            throw new GraphExceptionMappingService().map("Cannot create folder {0}", e, directory);
+            throw new GraphExceptionMappingService(fileid).map("Cannot create folder {0}", e, directory);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, directory);

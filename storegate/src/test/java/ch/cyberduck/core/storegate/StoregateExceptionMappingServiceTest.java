@@ -30,7 +30,7 @@ public class StoregateExceptionMappingServiceTest {
 
     @Test
     public void testDisconnect() {
-        final StoregateExceptionMappingService service = new StoregateExceptionMappingService();
+        final StoregateExceptionMappingService service = new StoregateExceptionMappingService(new StoregateIdProvider(null));
         assertEquals(ConnectionRefusedException.class, service.map(
             new ApiException(new ProcessingException(new SSLException(new SocketException("Operation timed out (Read failed)"))))).getClass());
     }

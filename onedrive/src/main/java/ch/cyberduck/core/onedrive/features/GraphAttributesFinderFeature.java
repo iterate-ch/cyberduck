@@ -21,6 +21,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
@@ -41,9 +42,11 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(GraphAttributesFinderFeature.class);
 
     private final GraphSession session;
+    private final GraphFileIdProvider fileid;
 
-    public GraphAttributesFinderFeature(final GraphSession session) {
+    public GraphAttributesFinderFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -53,11 +56,19 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         }
         final DriveItem item = session.getItem(file);
         try {
-            final DriveItem.Metadata metadata = item.getMetadata();
-            return this.toAttributes(metadata);
+            return this.toAttributes(this.toMetadata(file, item));
+        }
+        catch(NotfoundException e) {
+            return this.toAttributes(this.toMetadata(file, session.getItem(file)));
+        }
+    }
+
+    private DriveItem.Metadata toMetadata(final Path file, final DriveItem item) throws BackgroundException {
+        try {
+            return item.getMetadata();
         }
         catch(OneDriveAPIException e) {
-            throw new GraphExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw new GraphExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);

@@ -42,7 +42,7 @@ public class GraphTouchFeature implements Touch<Void> {
 
     public GraphTouchFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
-        this.attributes = new GraphAttributesFinderFeature(session);
+        this.attributes = new GraphAttributesFinderFeature(session, fileid);
         this.fileid = fileid;
     }
 
@@ -57,7 +57,7 @@ public class GraphTouchFeature implements Touch<Void> {
             return file.withAttributes(attr);
         }
         catch(OneDriveAPIException e) {
-            throw new GraphExceptionMappingService().map("Cannot create {0}", e, file);
+            throw new GraphExceptionMappingService(fileid).map("Cannot create {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
