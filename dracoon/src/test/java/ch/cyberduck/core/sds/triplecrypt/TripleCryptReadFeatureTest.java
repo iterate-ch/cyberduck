@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -51,6 +52,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import static ch.cyberduck.core.sds.SDSAttributesFinderFeature.KEY_ENCRYPTED;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -59,12 +61,12 @@ public class TripleCryptReadFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testPartialRead() throws Exception {
-        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
+        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume), new PathAttributes().withCustom(KEY_ENCRYPTED, String.valueOf(true)));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.triplecrypt));
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSMultipartWriteFeature(session, nodeid));
