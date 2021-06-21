@@ -9,14 +9,17 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class S3UrlProviderTest extends AbstractS3Test {
 
     @Test
