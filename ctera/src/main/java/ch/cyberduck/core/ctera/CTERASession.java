@@ -307,7 +307,7 @@ public class CTERASession extends DAVSession {
         params.setAtt(paramsAttributes);
         final Attachment.Attribute deviceType = new Attachment.Attribute();
         deviceType.setId("deviceType");
-        deviceType.setVal("Mobile");
+        deviceType.setVal("DriveConnect");
         paramsAttributes.add(deviceType);
         final Attachment.Attribute deviceMac = new Attachment.Attribute();
         deviceMac.setId("deviceMac");

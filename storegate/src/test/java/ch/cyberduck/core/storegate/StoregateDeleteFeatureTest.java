@@ -40,7 +40,7 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
     @Test
     public void testDeleteFile() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
-        final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
+        final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path fileInRoom = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, nodeid).touch(fileInRoom, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(fileInRoom));
@@ -51,7 +51,7 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
     @Test
     public void testDeleteFileWithLock() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
-        final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
+        final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path fileInRoom = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, nodeid).touch(fileInRoom, new TransferStatus());
         final String lock = new StoregateLockFeature(session, nodeid).lock(fileInRoom);
@@ -64,7 +64,7 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
     public void testDeleteFolderRoomWithContent() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(
-            String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), new TransferStatus());
+            String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(room,
             new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));

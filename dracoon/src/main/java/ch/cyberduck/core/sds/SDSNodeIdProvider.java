@@ -141,24 +141,14 @@ public class SDSNodeIdProvider implements VersionIdProvider {
         if(file.isRoot()) {
             return false;
         }
-        if(file.getType().contains(Path.Type.triplecrypt)) {
-            return true;
-        }
         if(file.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
             return Boolean.parseBoolean(file.attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED));
         }
         final Path parent = file.getParent();
-        if(parent.getType().contains(Path.Type.triplecrypt)) {
-            // Backward compatibility where flag is missing in room
-            return true;
-        }
         if(parent.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
             return Boolean.parseBoolean(parent.attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED));
         }
         final Path container = new DefaultPathContainerService().getContainer(file);
-        if(container.getType().contains(Path.Type.triplecrypt)) {
-            return true;
-        }
         if(container.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
             return Boolean.parseBoolean(container.attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED));
         }
