@@ -20,7 +20,7 @@ using System;
 using System.Drawing;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Core.Resources;
+using static Ch.Cyberduck.ImagesHelper;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -32,9 +32,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
-            pictureBox.Image =
-                IconCache.GetAppImage(
-                    Environment.ExpandEnvironmentVariables(@"%windir%\system32\cmd.exe"), IconCache.IconSize.Large);
+            pictureBox.Image = IconProvider.GetFileIcon(
+                Environment.ExpandEnvironmentVariables(@"%windir%\system32\cmd.exe"), false, true, true);
         }
 
         public override string[] BundleNames

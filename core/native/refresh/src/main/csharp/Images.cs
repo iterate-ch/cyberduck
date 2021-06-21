@@ -48,6 +48,8 @@ namespace Cyberduck.Core.Refresh
 
         public ResourceRef General => new(this);
 
+        public ResourceRef GoogleStorage => new(this);
+
         public ResourceRef History => new(this);
 
         public ResourceRef Info => new(this);

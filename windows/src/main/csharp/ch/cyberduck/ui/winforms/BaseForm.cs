@@ -27,7 +27,6 @@ using ch.cyberduck.core;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
-using Ch.Cyberduck.Ui.Core.Resources;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -487,24 +486,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (!toLocalize.Equals(cand)) return cand;
             }
             return toLocalize;
-        }
-
-        protected static Bitmap GetIcon(string iconIdentifier)
-        {
-            object obj = IconCache.IconForName(iconIdentifier);
-            return (Bitmap) obj;
-        }
-
-        public ImageList ProtocolIconsImageList()
-        {
-            ImageList images = new ImageList();
-            images.ImageSize = new Size(16, 16);
-            images.ColorDepth = ColorDepth.Depth32Bit;
-            foreach (var icon in IconCache.GetProtocolIcons())
-            {
-                images.Images.Add(icon.Key, icon.Value);
-            }
-            return images;
         }
     }
 }

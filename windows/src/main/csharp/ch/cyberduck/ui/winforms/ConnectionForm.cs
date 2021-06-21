@@ -24,6 +24,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.ftp;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using static Ch.Cyberduck.ImagesHelper;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -38,7 +39,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             //focus nickname
             Load += (sender, args) => textBoxServer.Focus();
 
-            protocol.ICImageList = ProtocolIconsImageList();
+            protocol.ICImageList = IconProvider.ProtocolList;
 
             toggleOptionsLabel.Text = "        " + LocaleFactory.localizedString("More Options", "Bookmark");
             toggleOptionsLabel.ImageIndex = (_expanded ? 1 : 4);
