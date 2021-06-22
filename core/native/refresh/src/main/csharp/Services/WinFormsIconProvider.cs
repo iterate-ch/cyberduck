@@ -4,6 +4,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
+using System.Windows.Media.Imaging;
+using static System.Drawing.Imaging.PixelFormat;
+using static System.Windows.Media.PixelFormats;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
 {
@@ -11,10 +14,23 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
     public class WinFormsIconProvider : IconProvider<Bitmap>
     {
-        public WinFormsIconProvider(ProtocolFactory protocols, IconCache iconCache, IIconProviderImageSource imageSource) : base(iconCache, imageSource)
+        private readonly WpfIconProvider wpfIconProvider;
+
+        public WinFormsIconProvider(WpfIconProvider wpfIconProvider, ProtocolFactory protocols, IconCache iconCache, IIconProviderImageSource imageSource) : base(iconCache)
         {
+            this.wpfIconProvider = wpfIconProvider;
             BuildProtocolImageList(protocols);
         }
+
+        public override Bitmap GetDisk(Protocol protocol, int size)
+            => IconCache.TryGetIcon(protocol, size, out Bitmap image, "Disk")
+            ? image
+            : CacheFromWpfIconProvider(protocol, wpfIconProvider.GetDisk(protocol, size), false, "Disk");
+
+        public override Bitmap GetIcon(Protocol protocol, int size)
+            => IconCache.TryGetIcon(protocol, size, out Bitmap image, "Icon")
+            ? image
+            : CacheFromWpfIconProvider(protocol, wpfIconProvider.GetIcon(protocol, size), false, "Icon");
 
         public ImageList ProtocolList { get; } = new ImageList() { ImageSize = new Size(16, 16), ColorDepth = ColorDepth.Depth32Bit };
 
@@ -91,48 +107,27 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             return baseImage;
         }
 
-        public Bitmap ResizeImageDangerous(Image image, int size) => new Bitmap(image, new Size(size, size));
+        public Bitmap ResizeImageDangerous(Image image, int size) => new(image, new Size(size, size));
 
-        protected override Bitmap FindNearestFit(IEnumerable<Bitmap> sources, int size, CacheIconCallback cacheCallback)
+        protected override Bitmap Get(string name)
+            => IconCache.TryGetIcon(name, out Bitmap image)
+            ? image
+            : CacheFromWpfIconProvider(name, wpfIconProvider.GetResource(name), true);
+
+        protected override Bitmap Get(string name, int size)
+            => IconCache.TryGetIcon(name, size, out Bitmap image)
+            ? image
+            : CacheFromWpfIconProvider(name, wpfIconProvider.GetResource(name, size), false);
+
+        private Bitmap CacheFromWpfIconProvider(object key, BitmapSource bitmapSource, bool isDefault, string classifier = default)
         {
-            var nearestFitWidth = int.MaxValue;
-            Bitmap nearestFit = null;
-
-            foreach (var item in sources)
+            Bitmap bitmap = BitmapFromBitmapSource(bitmapSource);
+            if (isDefault)
             {
-                if (item.Width == size)
-                {
-                    return item;
-                }
-
-                if (item.Width > size && nearestFitWidth > item.Width)
-                {
-                    nearestFitWidth = item.Width;
-                    nearestFit = item;
-                }
+                IconCache.CacheIcon(key, bitmap.Size.Width, classifier);
             }
-            nearestFit = new Bitmap(nearestFit, size, size);
-            cacheCallback(IconCache, size, nearestFit);
-            return nearestFit;
-        }
-
-        protected override IEnumerable<Bitmap> GetImages(Stream stream, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
-        {
-            try
-            {
-                using var icon = new Icon(stream);
-                return GetImages(icon, getCache, cacheIcon);
-            }
-            catch { }
-
-            using var source = Image.FromStream(stream);
-            return GetImages(source, getCache, cacheIcon);
-        }
-
-        protected override IEnumerable<Bitmap> GetImages(IntPtr nativeIcon, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
-        {
-            using var icon = Icon.FromHandle(nativeIcon);
-            return GetImages(icon, getCache, cacheIcon);
+            IconCache.CacheIcon(key, bitmap.Size.Width, bitmap, classifier);
+            return bitmap;
         }
 
         private static Bitmap Overlay(Image original, Image overlay, int size)
@@ -153,40 +148,27 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             }
         }
 
-        private IEnumerable<Bitmap> GetImages(Icon nativeIcon, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
+        private Bitmap BitmapFromBitmapSource(BitmapSource bitmapSource)
         {
-            using var copy = nativeIcon.ToBitmap();
-            return GetImages(copy, getCache, cacheIcon);
+            FormatConvertedBitmap src = new();
+            src.BeginInit();
+            src.Source = bitmapSource;
+            src.DestinationFormat = Bgra32;
+            src.EndInit();
+
+            Bitmap copy = new(src.PixelWidth, src.PixelWidth, Format32bppArgb);
+            var data = copy.LockBits(new Rectangle(default, copy.Size), ImageLockMode.WriteOnly, copy.PixelFormat);
+            src.CopyPixels(default, data.Scan0, data.Height * data.Stride, data.Stride);
+            copy.UnlockBits(data);
+
+            return copy;
         }
 
-        private IEnumerable<Bitmap> GetImages(Image source, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
+        protected override Bitmap Get(IntPtr nativeIcon, CacheIconCallback cacheIcon)
         {
-            List<Bitmap> images = new();
-
-            if (ImageFormat.Tiff.Equals(source.RawFormat) && source is Bitmap fileBitmap)
-            {
-                FrameDimension frameDimension = new(fileBitmap.FrameDimensionsList[0]);
-                var pages = fileBitmap.GetFrameCount(FrameDimension.Page);
-                for (int i = 0; i < pages; i++)
-                {
-                    fileBitmap.SelectActiveFrame(frameDimension, i);
-                    if (getCache(IconCache, fileBitmap.Width)) continue;
-
-                    Bitmap copy = new(fileBitmap);
-                    copy.SetResolution(96, 96);
-                    images.Add(copy);
-                    cacheIcon(IconCache, copy.Width, copy);
-                }
-            }
-            else
-            {
-                Bitmap copy = new(source);
-                copy.SetResolution(96, 96);
-                images.Add(copy);
-                cacheIcon(IconCache, copy.Width, copy);
-            }
-
-            return images;
+            Bitmap bitmap = Bitmap.FromHicon(nativeIcon);
+            cacheIcon(IconCache, bitmap.Size.Width, bitmap);
+            return bitmap;
         }
     }
 }

@@ -69,6 +69,9 @@ namespace Ch.Cyberduck.Ui
 
                 x.ForSingletonOf<IIconProviderImageSource>().Use<CyberduckImageSource>();
 
+                x.ForSingletonOf<WpfIconProvider>();
+                x.ForSingletonOf<WinFormsIconProvider>();
+
                 // Singletons
                 x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
 

@@ -1,25 +1,47 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
 {
+    using System.IO;
+
     public class WpfIconProvider : IconProvider<BitmapSource>
     {
-        private readonly ConcurrentDictionary<string, AutoResetEvent> sync = new ConcurrentDictionary<string, AutoResetEvent>();
+        private readonly IIconProviderImageSource imageSource;
 
-        public WpfIconProvider(IconCache cache, IIconProviderImageSource imageSource) : base(cache, imageSource)
+        public WpfIconProvider(IconCache cache, IIconProviderImageSource imageSource) : base(cache)
         {
+            this.imageSource = imageSource;
         }
 
-        protected override BitmapSource FindNearestFit(IEnumerable<BitmapSource> sources, int size, CacheIconCallback cacheCallback)
+        public override BitmapSource GetDisk(Protocol protocol, int size)
+            => IconCache.TryGetIcon(protocol, size, out BitmapSource image, "Disk")
+            ? image
+            : Get(protocol, protocol.icon(), size, "Disk");
+
+        public override BitmapSource GetIcon(Protocol protocol, int size)
+            => IconCache.TryGetIcon(protocol, size, out BitmapSource image, "Icon")
+            ? image
+            : Get(protocol, protocol.icon(), size, "Icon");
+
+        private Stream GetStream(string name)
+        {
+            if (Path.IsPathRooted(name))
+            {
+                return new FileStream(name, FileMode.Open);
+            }
+            return imageSource.GetStream(name);
+        }
+
+        private BitmapSource FindNearestFit(IEnumerable<BitmapSource> sources, int size, CacheIconCallback cacheCallback)
         {
             var nearestFitWidth = int.MaxValue;
             BitmapSource nearestFit = null;
@@ -42,7 +64,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             return nearestFit;
         }
 
-        protected override IEnumerable<BitmapSource> GetImages(Stream stream, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
+        private IEnumerable<BitmapSource> GetImages(Stream stream, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
         {
             var list = new List<BitmapSource>();
 
@@ -51,7 +73,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             {
                 if (getCache(IconCache, item.PixelWidth)) continue;
 
-                var fixedImage = ResizeImage(item);
+                var fixedImage = FixDPI(item);
                 list.Add(fixedImage);
                 cacheIcon(IconCache, item.PixelWidth, fixedImage);
             }
@@ -59,19 +81,14 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             return list;
         }
 
-        protected override IEnumerable<BitmapSource> GetImages(IntPtr nativeIcon, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
+        protected override BitmapSource Get(IntPtr nativeIcon, CacheIconCallback cacheIcon)
         {
-            return Enumerable.Empty<BitmapSource>();
+            var source = Imaging.CreateBitmapSourceFromHIcon(nativeIcon, default, default);
+            cacheIcon(IconCache, source.PixelWidth, source);
+            return source;
         }
 
-        private IDisposable AutoLock(string key)
-        {
-            var @event = sync.GetOrAdd(key, _ => new AutoResetEvent(true));
-            @event.WaitOne();
-            return new SyncKey(@event);
-        }
-
-        private BitmapSource ResizeImage(BitmapSource source)
+        private BitmapSource FixDPI(BitmapSource source)
         {
             var writeableBitmap = new WriteableBitmap(source.PixelWidth, source.PixelHeight, 96, 96, source.Format, source.Palette);
             var bytesPerPixel = (source.Format.BitsPerPixel + 7) / 8;
@@ -79,7 +96,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             var pixelBuffer = new byte[stride * source.PixelHeight];
             source.CopyPixels(pixelBuffer, stride, 0);
             writeableBitmap.Lock();
-            writeableBitmap.WritePixels(new Int32Rect(0, 0, source.PixelWidth, source.PixelHeight), pixelBuffer, stride, 0);
+            writeableBitmap.WritePixels(new(0, 0, source.PixelHeight, source.PixelHeight), pixelBuffer, stride, 0);
             writeableBitmap.Unlock();
             writeableBitmap.Freeze();
             return writeableBitmap;
@@ -87,53 +104,62 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
         private BitmapSource ResizeImage(BitmapSource source, int size)
         {
-            var rect = new Rect(0, 0, size, size);
-            var group = new DrawingGroup();
+            Rect rect = new(new(size, size));
+            DrawingGroup group = new();
             RenderOptions.SetBitmapScalingMode(group, BitmapScalingMode.Fant);
             group.Children.Add(new ImageDrawing(source, rect));
 
-            var targetVisual = new DrawingVisual();
+            DrawingVisual targetVisual = new();
             using (var context = targetVisual.RenderOpen())
             {
                 context.DrawDrawing(group);
             }
 
-            var resized = new RenderTargetBitmap(size, size, 96, 96, PixelFormats.Default);
+            RenderTargetBitmap resized = new(size, size, 96, 96, PixelFormats.Default);
             resized.Render(targetVisual);
             resized.Freeze();
             return resized;
         }
 
-        private class SyncKey : IDisposable
+        protected override BitmapSource Get(string name, int size)
+            => Get(name, name, size, default);
+
+        protected override BitmapSource Get(string name)
+            => Get(name, name, default);
+
+        private BitmapSource Get(object key, string path, string classifier)
+            => IconCache.TryGetIcon(key, out BitmapSource image, classifier)
+            ? image
+            : Get(key, path, 0, classifier, true);
+
+        private BitmapSource Get(object key, string path, int size, string classifier)
+            => IconCache.TryGetIcon(key, size, out BitmapSource image, classifier)
+            ? image
+            : Get(key, path, size, classifier, false);
+
+        private BitmapSource Get(object key, string path, int size, string classifier, bool returnDefault)
         {
-            private readonly AutoResetEvent resetEvent;
-            private bool disposedValue;
-
-            public SyncKey(AutoResetEvent resetEvent)
+            BitmapSource image = default;
+            var images = IconCache.Filter<BitmapSource>(((object key, string classifier, int) f) => Equals(path, f.key) && Equals(classifier, f.classifier));
+            if (!images.Any())
             {
-                this.resetEvent = resetEvent;
-            }
-
-            ~SyncKey()
-            {
-                Dispose(disposing: false);
-            }
-
-            void IDisposable.Dispose()
-            {
-                Dispose(disposing: true);
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void Dispose(bool disposing)
-            {
-                if (!disposedValue)
+                bool isDefault = !IconCache.TryGetIcon<BitmapSource>(path, out _, classifier);
+                using Stream stream = GetStream(path);
+                images = GetImages(stream, (c, s) => c.TryGetIcon<BitmapSource>(path, s, out _, classifier), (c, s, i) =>
                 {
-                    resetEvent.Set();
-
-                    disposedValue = true;
-                }
+                    if (isDefault)
+                    {
+                        isDefault = false;
+                        if (returnDefault)
+                        {
+                            image = i;
+                        }
+                        IconCache.CacheIcon<BitmapSource>(path, s, classifier);
+                    }
+                    IconCache.CacheIcon(path, s, i, classifier);
+                });
             }
+            return image ?? FindNearestFit(images, size, (c, s, i) => c.CacheIcon(key, s, i, classifier));
         }
     }
 }
