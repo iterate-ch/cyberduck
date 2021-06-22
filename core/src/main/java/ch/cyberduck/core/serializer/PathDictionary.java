@@ -24,10 +24,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
 
 public class PathDictionary {
+    private static final Logger log = Logger.getLogger(PathDictionary.class);
 
     private final DeserializerFactory factory;
 
@@ -44,9 +46,13 @@ public class PathDictionary {
         final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
         final String typeObj = dict.stringForKey("Type");
         if(typeObj != null) {
-            for(String t : StringUtils.splitByWholeSeparator(StringUtils.replaceEach(typeObj,
-                new String[]{"[", "]"}, new String[]{"", ""}), ", ")) {
-                type.add(Path.Type.valueOf(t));
+            for(String t : StringUtils.splitByWholeSeparator(StringUtils.replaceEach(typeObj, new String[]{"[", "]"}, new String[]{"", ""}), ", ")) {
+                try {
+                    type.add(Path.Type.valueOf(t));
+                }
+                catch(IllegalArgumentException e) {
+                    log.warn(String.format("Unknown type %s", t));
+                }
             }
         }
         final Path path;
@@ -56,16 +62,16 @@ public class PathDictionary {
             // Legacy
             final String legacyTypeObj = factory.create(attributesObj).stringForKey("Type");
             if(legacyTypeObj != null) {
-                if((Integer.valueOf(legacyTypeObj) & AbstractPath.Type.file.legacy()) == AbstractPath.Type.file.legacy()) {
+                if((Integer.parseInt(legacyTypeObj) & AbstractPath.Type.file.legacy()) == AbstractPath.Type.file.legacy()) {
                     type.add(AbstractPath.Type.file);
                 }
-                if((Integer.valueOf(legacyTypeObj) & AbstractPath.Type.directory.legacy()) == AbstractPath.Type.directory.legacy()) {
+                if((Integer.parseInt(legacyTypeObj) & AbstractPath.Type.directory.legacy()) == AbstractPath.Type.directory.legacy()) {
                     type.add(AbstractPath.Type.directory);
                 }
-                if((Integer.valueOf(legacyTypeObj) & AbstractPath.Type.symboliclink.legacy()) == AbstractPath.Type.symboliclink.legacy()) {
+                if((Integer.parseInt(legacyTypeObj) & AbstractPath.Type.symboliclink.legacy()) == AbstractPath.Type.symboliclink.legacy()) {
                     type.add(AbstractPath.Type.symboliclink);
                 }
-                if((Integer.valueOf(legacyTypeObj) & AbstractPath.Type.volume.legacy()) == AbstractPath.Type.volume.legacy()) {
+                if((Integer.parseInt(legacyTypeObj) & AbstractPath.Type.volume.legacy()) == AbstractPath.Type.volume.legacy()) {
                     type.add(AbstractPath.Type.volume);
                 }
             }
