@@ -42,7 +42,7 @@ public class SDSDelegatingCopyFeature implements Copy {
             return proxy.copy(source, target, status, callback);
         }
         // Copy between encrypted and unencrypted data room
-        if(nodeid.isEncrypted(target)) {
+        if(SDSNodeIdProvider.isEncrypted(target)) {
             // File key must be set for new upload
             status.setFilekey(nodeid.getFileKey());
         }

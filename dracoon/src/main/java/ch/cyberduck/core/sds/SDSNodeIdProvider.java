@@ -137,7 +137,7 @@ public class SDSNodeIdProvider implements VersionIdProvider {
         cache.clear();
     }
 
-    public boolean isEncrypted(final Path file) {
+    public static boolean isEncrypted(final Path file) {
         if(file.isRoot()) {
             return false;
         }

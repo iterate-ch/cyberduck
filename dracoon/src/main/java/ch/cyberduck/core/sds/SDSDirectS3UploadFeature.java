@@ -131,7 +131,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
             final List<Future<TransferStatus>> parts = new ArrayList<>();
             final Local source;
             final Buffer buffer;
-            if(nodeid.isEncrypted(file)) {
+            if(SDSNodeIdProvider.isEncrypted(file)) {
                 source = TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random());
                 buffer = new FileBuffer(source);
                 final BufferOutputStream temporary = new BufferOutputStream(buffer);
@@ -190,7 +190,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
                     throw new BackgroundException(e.getCause());
                 }
             }
-            if(nodeid.isEncrypted(file)) {
+            if(SDSNodeIdProvider.isEncrypted(file)) {
                 // Delete temporary file
                 buffer.close();
             }

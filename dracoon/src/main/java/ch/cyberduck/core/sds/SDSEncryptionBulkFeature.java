@@ -68,7 +68,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
             if(rooms.containsKey(container)) {
                 continue;
             }
-            rooms.put(container, nodeid.isEncrypted(entry.getKey().remote));
+            rooms.put(container, SDSNodeIdProvider.isEncrypted(entry.getKey().remote));
         }
         return rooms;
     }

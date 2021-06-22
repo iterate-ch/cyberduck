@@ -43,7 +43,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
 
     @Override
     public StatusOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(nodeid.isEncrypted(file)) {
+        if(SDSNodeIdProvider.isEncrypted(file)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Return encrypting writer for %s", file));
             }
@@ -55,7 +55,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
 
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        if(nodeid.isEncrypted(file)) {
+        if(SDSNodeIdProvider.isEncrypted(file)) {
             return new TripleCryptWriteFeature(session, nodeid, proxy).append(file, status);
         }
         return proxy.append(file, status);
@@ -78,7 +78,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        if(nodeid.isEncrypted(file)) {
+        if(SDSNodeIdProvider.isEncrypted(file)) {
             return new TripleCryptWriteFeature(session, nodeid, proxy).checksum(file, status);
         }
         return proxy.checksum(file, status);
