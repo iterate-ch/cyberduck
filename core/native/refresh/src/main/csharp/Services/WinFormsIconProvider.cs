@@ -166,7 +166,8 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
         protected override Bitmap Get(IntPtr nativeIcon, CacheIconCallback cacheIcon)
         {
-            Bitmap bitmap = Bitmap.FromHicon(nativeIcon);
+            using var icon = Icon.FromHandle(nativeIcon);
+            Bitmap bitmap = icon.ToBitmap();
             cacheIcon(IconCache, bitmap.Size.Width, bitmap);
             return bitmap;
         }
