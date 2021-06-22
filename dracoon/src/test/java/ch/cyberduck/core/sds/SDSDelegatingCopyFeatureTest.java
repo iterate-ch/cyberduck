@@ -334,6 +334,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         encrypt.setIsEncrypted(true);
         new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room2,
             new DisabledListProgressListener())), StringUtils.EMPTY, null);
+        room2.attributes().withCustom(KEY_ENCRYPTED, String.valueOf(true));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
