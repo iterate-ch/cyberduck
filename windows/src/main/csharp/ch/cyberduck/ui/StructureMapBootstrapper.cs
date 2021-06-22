@@ -21,10 +21,13 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.profiles;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Refresh.Services;
+using Ch.Cyberduck.Core.Refresh.UserControls;
+using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core.Contracts;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using ReactiveUI;
 using Splat;
 using StructureMap;
 using System;
@@ -71,6 +74,8 @@ namespace Ch.Cyberduck.Ui
 
                 x.ForSingletonOf<WpfIconProvider>();
                 x.ForSingletonOf<WinFormsIconProvider>();
+
+                x.For<IViewFor<ProfileViewModel>>().Use<ProfileElement>();
 
                 // Singletons
                 x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();

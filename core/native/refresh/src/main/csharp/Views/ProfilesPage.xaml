@@ -22,16 +22,6 @@
         <TextBox Margin="0,7" Padding="2,1" Grid.Column="1" Grid.Row="0" />
         <ListView x:Name="profilesList"
                   Grid.Row="1"
-                  Grid.ColumnSpan="2">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel>
-                        <TextBlock Text="{Binding Name}" FontWeight="Heavy" />
-                        <TextBlock Text="{Binding Description}" />
-                    </StackPanel>
-
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                  Grid.ColumnSpan="2" />
     </Grid>
 </rx:ReactiveUserControl>
