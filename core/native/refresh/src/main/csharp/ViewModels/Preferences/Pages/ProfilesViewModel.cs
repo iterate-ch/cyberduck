@@ -1,28 +1,33 @@
-﻿using ch.cyberduck.core.profiles;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using ch.cyberduck.core.profiles;
 using ch.cyberduck.core.serializer.impl.dd;
+using Ch.Cyberduck.Core.Refresh.Models;
+using Ch.Cyberduck.Core.Refresh.Services;
 using DynamicData;
+using DynamicData.Binding;
 using java.util;
 using java.util.concurrent;
 using org.apache.log4j;
 using ReactiveUI;
-using System;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
+using ReactiveUI.Fody.Helpers;
 
 namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 {
     using ch.cyberduck.core;
-    using Ch.Cyberduck.Core.Refresh.Models;
-    using Ch.Cyberduck.Core.Refresh.Services;
-    using System.ComponentModel;
 
     public class ProfilesViewModel : ReactiveObject
     {
         private static Logger log = Logger.getLogger(typeof(ProfilesViewModel).FullName);
 
         private readonly SourceCache<DescribedProfile, ProfileDescription> installed = new(x => x.Description);
-        private readonly SourceCache<DescribedProfile, ProfileDescription> repository = new(x => x.Description);
 
         public ProfilesViewModel(PeriodicProfilesUpdater periodicUpdater, LocalProfilesFinder localFinder, ProtocolFactory protocols, WpfIconProvider iconProvider)
         {
@@ -35,36 +40,84 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                 this.installed.AddOrUpdate(new DescribedProfile(current, (Profile)reader.read(current.getProfile())));
             }
 
-            Func<List, Future> pass = CreateHandler(periodicUpdater, this, reader);
-            LoadProfiles = ReactiveCommand.CreateFromTask(() =>
+            Func<CancellationToken, Task<IEnumerable<DescribedProfile>>> pass = CreateHandler(periodicUpdater, reader, installed);
+            LoadProfiles = ReactiveCommand.CreateFromTask(async (cancel) =>
             {
-                repository.Clear();
-                Future future = pass(installed);
-                return (Task)Task.Run(future.get);
+                Profiles.Clear();
+                try
+                {
+                    Busy = true;
+                    return await pass(cancel);
+                }
+                finally
+                {
+                    Busy = false;
+                }
             });
-            repository.Connect().Transform(x => new ProfileViewModel(x)).ObserveOnDispatcher().Bind(Profiles).Subscribe();
+            LoadProfiles.ToObservableChangeSet()
+                .Filter(this.WhenAnyValue(v => v.FilterText)
+                    .Throttle(TimeSpan.FromMilliseconds(725))
+                    .DistinctUntilChanged()
+                    .Select(Filter))
+                .Sort(SortExpressionComparer<DescribedProfile>.Ascending(x => x.Profile.getDescription()))
+                .Transform(x => new ProfileViewModel(x))
+                .ObserveOnDispatcher()
+                .Bind(Profiles)
+                .Subscribe();
         }
 
-        public ReactiveCommand<Unit, Unit> LoadProfiles { get; }
+        [Reactive]
+        public bool Busy { get; set; }
+
+        [Reactive]
+        public string FilterText { get; set; }
+
+        public ReactiveCommand<Unit, IEnumerable<DescribedProfile>> LoadProfiles { get; }
 
         public BindingList<ProfileViewModel> Profiles { get; } = new();
 
-        private static Func<List, Future> CreateHandler(PeriodicProfilesUpdater updater, ProfilesViewModel model, ProfilePlistReader reader)
+        private static Func<CancellationToken, Task<IEnumerable<DescribedProfile>>> CreateHandler(PeriodicProfilesUpdater updater, ProfilePlistReader reader, List installed)
         {
-            Visitor visitor = new(model, reader);
-            return l => updater.synchronize(l, visitor);
+            Visitor visitor = new(reader);
+            return async (cancel) =>
+            {
+                visitor.Reset();
+                Future future = updater.synchronize(installed, visitor);
+                using (cancel.Register(() => future.cancel(true)))
+                {
+                    await Task.Run(future.get, cancel);
+                }
+                return visitor.List;
+            };
+        }
+
+        private static Func<DescribedProfile, bool> Filter(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return _ => true;
+            }
+            var split = input.Split(' ');
+            bool Filter(string input) => split.Any(s => input.IndexOf(s, StringComparison.OrdinalIgnoreCase) != -1);
+            return p => Filter(p.Profile.getName())
+                || Filter(p.Profile.getDescription())
+                || Filter(p.Profile.getDefaultHostname())
+                || Filter(p.Profile.getProvider());
         }
 
         private class Visitor : ProfilesFinder.Visitor
         {
-            private readonly ProfilesViewModel parent;
             private readonly ProfilePlistReader reader;
+            private readonly ConcurrentDictionary<ProfileDescription, DescribedProfile> repository = new();
 
-            public Visitor(ProfilesViewModel parent, ProfilePlistReader reader)
+            public ICollection<DescribedProfile> List => repository.Values;
+
+            public Visitor(ProfilePlistReader reader)
             {
-                this.parent = parent;
                 this.reader = reader;
             }
+
+            public void Reset() => repository.Clear();
 
             public ProfileDescription visit(ProfileDescription description)
             {
@@ -75,7 +128,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                     {
                         try
                         {
-                            parent.repository.AddOrUpdate(new DescribedProfile(description, (Profile)reader.read(profile)));
+                            repository[description] = new DescribedProfile(description, (Profile)reader.read(profile));
                         }
                         catch (Exception e)
                         {

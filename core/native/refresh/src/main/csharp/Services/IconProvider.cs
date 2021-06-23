@@ -1,8 +1,6 @@
-﻿using ch.cyberduck.core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Runtime.InteropServices;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
 {

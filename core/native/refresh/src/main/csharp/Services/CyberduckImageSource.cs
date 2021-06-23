@@ -25,11 +25,9 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         public Stream GetStream(string name)
         {
             name = name.ToLowerInvariant();
-            if (!resourceNameMap.TryGetValue(Path.GetFileNameWithoutExtension(name), out string stream))
-            {
-                return default;
-            }
-            return resourceManager.GetStream(stream);
+            return resourceNameMap.TryGetValue(Path.GetFileNameWithoutExtension(name), out string stream)
+                ? resourceManager.GetStream(stream)
+                : default;
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using Ch.Cyberduck.Core.Refresh.Services;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Windows.Media.Imaging;
+using Ch.Cyberduck.Core.Refresh.Services;
 
 namespace Ch.Cyberduck.Core.Refresh
 {
