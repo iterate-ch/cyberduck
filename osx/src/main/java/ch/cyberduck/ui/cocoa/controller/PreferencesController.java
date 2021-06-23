@@ -2130,7 +2130,8 @@ public class PreferencesController extends ToolbarWindowController {
         }
         this.defaultBucketLocation.setTarget(this.id());
         this.defaultBucketLocation.setAction(Foundation.selector("defaultBucketLocationClicked:"));
-        this.defaultBucketLocation.selectItemWithTitle(LocaleFactory.localizedString(preferences.getProperty("s3.location"), "S3"));
+        this.defaultBucketLocation.selectItemAtIndex(
+            this.defaultBucketLocation.indexOfItemWithRepresentedObject(preferences.getProperty("s3.location")));
     }
 
     @Action
@@ -2151,7 +2152,8 @@ public class PreferencesController extends ToolbarWindowController {
         }
         this.defaultStorageClassPopup.setTarget(this.id());
         this.defaultStorageClassPopup.setAction(Foundation.selector("defaultStorageClassPopupClicked:"));
-        this.defaultStorageClassPopup.selectItemWithTitle(LocaleFactory.localizedString(preferences.getProperty("s3.storage.class"), "S3"));
+        this.defaultStorageClassPopup.selectItemAtIndex(
+            this.defaultStorageClassPopup.indexOfItemWithRepresentedObject(preferences.getProperty("s3.storage.class")));
     }
 
     @Action
@@ -2178,7 +2180,8 @@ public class PreferencesController extends ToolbarWindowController {
             this.defaultEncryptionPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
         }
         else {
-            this.defaultEncryptionPopup.selectItemAtIndex(this.defaultEncryptionPopup.indexOfItemWithRepresentedObject(preferences.getProperty("s3.encryption.algorithm")));
+            this.defaultEncryptionPopup.selectItemAtIndex(
+                this.defaultEncryptionPopup.indexOfItemWithRepresentedObject(preferences.getProperty("s3.encryption.algorithm")));
         }
     }
 
@@ -2201,7 +2204,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.cannedAclPopup.setTarget(this.id());
         this.cannedAclPopup.setAction(Foundation.selector("cannedAclPopupClicked:"));
 
-        this.cannedAclPopup.selectItemAtIndex(this.cannedAclPopup.indexOfItemWithRepresentedObject(preferences.getProperty("s3.acl.default")));
+        this.cannedAclPopup.selectItemAtIndex(
+            this.cannedAclPopup.indexOfItemWithRepresentedObject(preferences.getProperty("s3.acl.default")));
     }
 
     @Action
@@ -2222,7 +2226,8 @@ public class PreferencesController extends ToolbarWindowController {
         }
         this.defaultBucketLocationGoogleStorage.setTarget(this.id());
         this.defaultBucketLocationGoogleStorage.setAction(Foundation.selector("defaultBucketLocationGoogleStorageClicked:"));
-        this.defaultBucketLocationGoogleStorage.selectItemWithTitle(LocaleFactory.localizedString(preferences.getProperty("googlestorage.location"), "S3"));
+        this.defaultBucketLocationGoogleStorage.selectItemAtIndex(
+            this.defaultBucketLocationGoogleStorage.indexOfItemWithRepresentedObject(preferences.getProperty("googlestorage.location")));
     }
 
     @Action
@@ -2243,7 +2248,8 @@ public class PreferencesController extends ToolbarWindowController {
         }
         this.defaultStorageClassPopupGoogleStorage.setTarget(this.id());
         this.defaultStorageClassPopupGoogleStorage.setAction(Foundation.selector("defaultStorageClassPopupGoogleStorageClicked:"));
-        this.defaultStorageClassPopupGoogleStorage.selectItemWithTitle(LocaleFactory.localizedString(preferences.getProperty("googlestorage.storage.class"), "S3"));
+        this.defaultStorageClassPopupGoogleStorage.selectItemAtIndex(
+            this.defaultStorageClassPopupGoogleStorage.indexOfItemWithRepresentedObject(preferences.getProperty("googlestorage.storage.class")));
     }
 
     @Action
