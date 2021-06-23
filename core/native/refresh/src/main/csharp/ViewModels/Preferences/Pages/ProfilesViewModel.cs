@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using ch.cyberduck.core.profiles;
 using ch.cyberduck.core.serializer.impl.dd;
 using Ch.Cyberduck.Core.Refresh.Models;
-using Ch.Cyberduck.Core.Refresh.Services;
 using DynamicData;
 using DynamicData.Binding;
 using java.util;
@@ -27,9 +26,9 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
     {
         private static Logger log = Logger.getLogger(typeof(ProfilesViewModel).FullName);
 
-        private readonly SourceCache<DescribedProfile, ProfileDescription> installed = new(x => x.Description);
+        private readonly Dictionary<ProfileDescription, DescribedProfile> installed = new();
 
-        public ProfilesViewModel(PeriodicProfilesUpdater periodicUpdater, LocalProfilesFinder localFinder, ProtocolFactory protocols, WpfIconProvider iconProvider)
+        public ProfilesViewModel(PeriodicProfilesUpdater periodicUpdater, LocalProfilesFinder localFinder, ProtocolFactory protocols)
         {
             List installed = localFinder.find();
             ProfilePlistReader reader = new(protocols);
@@ -37,7 +36,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
             while (iterator.hasNext())
             {
                 ProfileDescription current = (ProfileDescription)iterator.next();
-                this.installed.AddOrUpdate(new DescribedProfile(current, (Profile)reader.read(current.getProfile())));
+                this.installed[current] = new DescribedProfile(current, (Profile)reader.read(current.getProfile()));
             }
 
             Func<CancellationToken, Task<IEnumerable<DescribedProfile>>> pass = CreateHandler(periodicUpdater, reader, installed);
@@ -54,16 +53,34 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                     Busy = false;
                 }
             });
-            LoadProfiles.ToObservableChangeSet()
+
+            var profiles = LoadProfiles.ToObservableChangeSet()
+                .Transform(x => new ProfileViewModel(x, this.installed.ContainsKey(x.Description)))
+                .AsObservableList();
+
+            profiles.Connect()
                 .Filter(this.WhenAnyValue(v => v.FilterText)
                     .Throttle(TimeSpan.FromMilliseconds(725))
                     .DistinctUntilChanged()
                     .Select(Filter))
-                .Sort(SortExpressionComparer<DescribedProfile>.Ascending(x => x.Profile.getDescription()))
-                .Transform(x => new ProfileViewModel(x))
+                .Sort(SortExpressionComparer<ProfileViewModel>.Ascending(x => x.Description))
                 .ObserveOnDispatcher()
                 .Bind(Profiles)
                 .Subscribe();
+
+            profiles.Connect()
+                .WhenPropertyChanged(v => v.Installed, false)
+                .Subscribe(p =>
+                {
+                    if (p.Value)
+                    {
+                        protocols.register(p.Sender.ProfileDescription.getProfile());
+                    }
+                    else
+                    {
+                        protocols.unregister(p.Sender.Profile);
+                    }
+                });
         }
 
         [Reactive]
@@ -91,7 +108,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
             };
         }
 
-        private static Func<DescribedProfile, bool> Filter(string input)
+        private static Func<ProfileViewModel, bool> Filter(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
             {
