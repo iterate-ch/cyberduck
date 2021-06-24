@@ -5,6 +5,7 @@
                         xmlns:local="clr-namespace:Ch.Cyberduck.Core.Refresh.Views"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                        xmlns:xaml="clr-namespace:Ch.Cyberduck.Core.Refresh.Xaml"
                         mc:Ignorable="d"
                         d:DesignHeight="450"
                         d:DesignWidth="800">
@@ -20,9 +21,9 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <Label Grid.Column="1"
-                   VerticalContentAlignment="Center"
-                   FontFamily="Segoe UI Symbol">&#xE11A;</Label>
+            <Image x:Name="SearchImage"
+                   Source="{xaml:Icon search-inactive}"
+                   Grid.Column="1" />
             <TextBox x:Name="Search"
                      Margin="0,7"
                      Padding="2,1"
