@@ -61,6 +61,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             editStripButton.Image = IconCache.IconForName("pencil", 32);
             sftpButton.Image = IconCache.IconForName("ftp", 32);
             s3Button.Image = IconCache.IconForName("s3", 32);
+            googleCloudButton.Image = IconCache.IconForName("googlestorage", 32);
             bandwidthButton.Image = IconCache.IconForName("bandwidth", 32);
             connectionButton.Image = IconCache.IconForName("connection", 32);
             cryptomatorButton.Image = IconCache.IconForName("cryptomator", 32);
