@@ -195,7 +195,7 @@
         </File>
       </Component>
       <Component Id="DotNetProjects.Wpf.Extended.Toolkit.dll">
-        <File Source="$(var.cyberduck.TargetDir)/DotNetProjects.Wpf.Extended.Toolkit.dll.dll" KeyPath="yes" Checksum="yes">
+        <File Source="$(var.cyberduck.TargetDir)/DotNetProjects.Wpf.Extended.Toolkit.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_DotNetProjects.Wpf.Extended.Toolkit.dll" Platform="64bit" Priority="3" />
         </File>
       </Component>
