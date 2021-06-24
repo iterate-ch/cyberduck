@@ -3437,10 +3437,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // profilesButton
             // 
+            this.profilesButton.AutoToolTip = false;
+            this.profilesButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.profilesButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.profilesButton.Name = "profilesButton";
             this.profilesButton.Size = new System.Drawing.Size(50, 66);
             this.profilesButton.Text = "Profiles";
+            this.profilesButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.profilesButton.Click += new System.EventHandler(this.profilesButton_Click);
             // 
             // sftpButton
