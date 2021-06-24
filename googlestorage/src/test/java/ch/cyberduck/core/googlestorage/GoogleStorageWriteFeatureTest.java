@@ -15,6 +15,7 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -42,6 +43,24 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
+
+    @Test
+    public void testWritePublicReadCannedAcl() throws Exception {
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = RandomUtils.nextBytes(1033);
+        status.setLength(content.length);
+        status.setAcl(Acl.CANNED_PUBLIC_READ);
+        final HttpResponseOutputStream<VersionId> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        assertNotNull(out.getStatus().id);
+        assertTrue(new GoogleStorageFindFeature(session).find(test));
+        assertTrue(new GoogleStorageAccessControlListFeature(session)
+            .getPermission(test).asList().contains(new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))));
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 
     @Test
     public void testWrite() throws Exception {

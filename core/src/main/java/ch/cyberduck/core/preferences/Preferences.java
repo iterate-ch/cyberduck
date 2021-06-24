@@ -471,6 +471,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("queue.copy.reload.action", TransferAction.callback.name());
 
         this.setDefault("queue.upload.permissions.change", String.valueOf(false));
+        this.setDefault("queue.upload.acl.change", String.valueOf(true));
         this.setDefault("queue.upload.permissions.default", String.valueOf(false));
         this.setDefault("queue.upload.permissions.file.default", String.valueOf(644));
         this.setDefault("queue.upload.permissions.folder.default", String.valueOf(755));
@@ -689,8 +690,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("s3.endpoint.format.ipv4", "s3.%s.amazonaws.com");
         this.setDefault("s3.endpoint.format.ipv6", "s3.dualstack.%s.amazonaws.com");
 
-        //this.setDefault("s3.bucket.acl.default", "public-read");
-        this.setDefault("s3.bucket.acl.default", "private");
+        this.setDefault("s3.acl.default", "private");
 
         /*
           Default redundancy level
@@ -752,6 +752,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("googlestorage.listing.chunksize", String.valueOf(1000));
         this.setDefault("googlestorage.metadata.default", StringUtils.EMPTY);
         this.setDefault("googlestorage.storage.class", "STANDARD");
+        this.setDefault("googlestorage.acl.default", "private");
+        this.setDefault("googlestorage.location", "us");
         /*
          * Reference previous versions in file attributes
          */

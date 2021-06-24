@@ -16,6 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -23,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +33,10 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.BucketAccessControl;
@@ -43,12 +48,31 @@ import com.google.api.services.storage.model.StorageObject;
 public class GoogleStorageAccessControlListFeature extends DefaultAclFeature implements AclPermission {
     private static final Logger log = Logger.getLogger(GoogleStorageAccessControlListFeature.class);
 
+    public static final Set<? extends Acl> CANNED_LIST = new LinkedHashSet<>(Arrays.asList(
+        Acl.CANNED_PRIVATE,
+        Acl.CANNED_PUBLIC_READ,
+        Acl.CANNED_PUBLIC_READ_WRITE,
+        Acl.CANNED_BUCKET_OWNER_READ,
+        Acl.CANNED_BUCKET_OWNER_FULLCONTROL,
+        Acl.CANNED_AUTHENTICATED_READ)
+    );
+
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
 
     public GoogleStorageAccessControlListFeature(final GoogleStorageSession session) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
+    }
+
+    @Override
+    public Acl getDefault(final EnumSet<Path.Type> type) {
+        return Acl.toAcl(PreferencesFactory.get().getProperty("googlestorage.acl.default"));
+    }
+
+    @Override
+    public Acl getDefault(final Local file) {
+        return Acl.toAcl(PreferencesFactory.get().getProperty("googlestorage.acl.default"));
     }
 
     @Override

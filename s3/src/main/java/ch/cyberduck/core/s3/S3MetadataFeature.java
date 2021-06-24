@@ -80,7 +80,7 @@ public class S3MetadataFeature implements Headers {
                     catch(AccessDeniedException | InteroperabilityException e) {
                         log.warn(String.format("Ignore failure %s", e));
                     }
-                    target.setAcl(accessControlListFeature.convert(acl));
+                    target.setAcl(accessControlListFeature.toAcl(acl));
                 }
                 final Redundancy storageClassFeature = session.getFeature(Redundancy.class);
                 if(storageClassFeature != null) {

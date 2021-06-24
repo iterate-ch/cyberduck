@@ -37,6 +37,14 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
     private final GoogleStorageSession session;
     private final PathContainerService containerService;
 
+    public static final LinkedHashSet<String> STORAGE_CLASS_LIST = new LinkedHashSet<>(Arrays.asList(
+        S3Object.STORAGE_CLASS_STANDARD,
+        "MULTI_REGIONAL",
+        "REGIONAL",
+        "NEARLINE",
+        "COLDLINE")
+    );
+
     public GoogleStorageStorageClassFeature(final GoogleStorageSession session) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
@@ -49,13 +57,7 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
 
     @Override
     public Set<String> getClasses() {
-        return new LinkedHashSet<>(Arrays.asList(
-            S3Object.STORAGE_CLASS_STANDARD,
-            "MULTI_REGIONAL",
-            "REGIONAL",
-            "NEARLINE",
-            "COLDLINE")
-        );
+        return STORAGE_CLASS_LIST;
     }
 
     @Override

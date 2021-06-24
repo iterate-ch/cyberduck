@@ -23,6 +23,7 @@ import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,42 +36,98 @@ import java.util.Objects;
 import java.util.Set;
 
 public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Serializable {
-    private static final long serialVersionUID = 372192161904802600L;
+    private static final Logger log = Logger.getLogger(Acl.class);
 
     public static final Acl EMPTY = new Acl();
+    /**
+     * A pre-canned REST ACL to set an object's permissions to Private (only owner can read/write)
+     */
+    public static final Acl CANNED_PRIVATE = new Acl("private");
+    /**
+     * A pre-canned REST ACL to set an object's permissions to Public Read (anyone can read, only owner can write)
+     */
+    public static final Acl CANNED_PUBLIC_READ = new Acl("public-read");
+    /**
+     * A pre-canned REST ACL to set an object's permissions to Public Read and Write (anyone can read/write)
+     */
+    public static final Acl CANNED_PUBLIC_READ_WRITE = new Acl("public-read-write");
+    /**
+     * A pre-canned REST ACL to set an object's permissions to Authenticated Read (authenticated Amazon users can read,
+     * only owner can write)
+     */
+    public static final Acl CANNED_AUTHENTICATED_READ = new Acl("authenticated-read");
+    public static final Acl CANNED_BUCKET_OWNER_FULLCONTROL = new Acl("bucket-owner-full-control");
+    public static final Acl CANNED_BUCKET_OWNER_READ = new Acl("bucket-owner-read");
 
-    private transient CanonicalUser owner;
+    /**
+     * @param identifier Canned ACL identifier string
+     * @return Static ACL that can be set as request parameter
+     */
+    public static Acl toAcl(final String identifier) {
+        if(CANNED_PRIVATE.getCannedString().equals(identifier)) {
+            return Acl.CANNED_PRIVATE;
+        }
+        if(CANNED_PUBLIC_READ.getCannedString().equals(identifier)) {
+            return Acl.CANNED_PUBLIC_READ;
+        }
+        if(CANNED_PUBLIC_READ_WRITE.getCannedString().equals(identifier)) {
+            return Acl.CANNED_PUBLIC_READ_WRITE;
+        }
+        if(CANNED_AUTHENTICATED_READ.getCannedString().equals(identifier)) {
+            return Acl.CANNED_AUTHENTICATED_READ;
+        }
+        if(CANNED_BUCKET_OWNER_FULLCONTROL.getCannedString().equals(identifier)) {
+            return Acl.CANNED_BUCKET_OWNER_FULLCONTROL;
+        }
+        if(CANNED_BUCKET_OWNER_READ.getCannedString().equals(identifier)) {
+            return Acl.CANNED_BUCKET_OWNER_READ;
+        }
+        log.warn(String.format("Unknown canned ACL identifier %s", identifier));
+        return Acl.EMPTY;
+    }
 
-    public Acl() {
-        super();
+    /**
+     * Canned ACL identifier
+     */
+    private final String canned;
+
+    public Acl(final String canned) {
+        this.canned = canned;
     }
 
     public Acl(Acl.User user, Acl.Role... permissions) {
         this.addAll(user, permissions);
+        this.canned = StringUtils.EMPTY;
     }
 
     public Acl(Acl.UserAndRole... set) {
         this.addAll(set);
+        this.canned = StringUtils.EMPTY;
     }
 
     public Acl(final Acl other) {
-        this.owner = other.owner;
         this.putAll(other);
+        this.canned = other.canned;
     }
 
-    public CanonicalUser getOwner() {
-        return owner;
+    public boolean isCanned() {
+        return CANNED_PRIVATE.equals(this)
+            || CANNED_PUBLIC_READ_WRITE.equals(this)
+            || CANNED_PUBLIC_READ.equals(this)
+            || CANNED_AUTHENTICATED_READ.equals(this)
+            || CANNED_BUCKET_OWNER_FULLCONTROL.equals(this)
+            || CANNED_BUCKET_OWNER_READ.equals(this);
     }
 
-    public void setOwner(CanonicalUser owner) {
-        this.owner = owner;
+    public String getCannedString() {
+        return canned;
     }
 
     /**
      * @param user        Grantee
      * @param permissions Permissions
      */
-    public void addAll(Acl.User user, Acl.Role... permissions) {
+    public void addAll(final Acl.User user, final Acl.Role... permissions) {
         if(this.containsKey(user)) {
             this.get(user).addAll(Arrays.asList(permissions));
         }
@@ -79,7 +136,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
         }
     }
 
-    public void addAll(Acl.UserAndRole... set) {
+    public void addAll(final Acl.UserAndRole... set) {
         for(Acl.UserAndRole userAndRole : set) {
             this.addAll(userAndRole.getUser(), userAndRole.getRole());
         }
@@ -471,5 +528,25 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
             final Deserializer dict = deserializer.create(serialized);
             return new Role(dict.stringForKey("Name"));
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof Acl)) {
+            return false;
+        }
+        if(!super.equals(o)) {
+            return false;
+        }
+        final Acl acl = (Acl) o;
+        return Objects.equals(canned, acl.canned);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), canned);
     }
 }

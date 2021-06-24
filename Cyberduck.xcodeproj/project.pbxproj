@@ -37,6 +37,8 @@
 		4723D1DA24C24FE30006CDE3 /* JavaNativeFoundation.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4723D1D524C24FDF0006CDE3 /* JavaNativeFoundation.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4723D1DB24C24FE80006CDE3 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4723D1D524C24FDF0006CDE3 /* JavaNativeFoundation.framework */; };
 		4723D1DC24C24FE80006CDE3 /* JavaNativeFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4723D1D524C24FDF0006CDE3 /* JavaNativeFoundation.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		4724FA4526836D8A00CF289B /* preferences-openstack.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4724FA4426836D8A00CF289B /* preferences-openstack.pdf */; };
+		4724FA4726836D9000CF289B /* preferences-googlestorage.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4724FA4626836D9000CF289B /* preferences-googlestorage.pdf */; };
 		4732BDA813182C7F00CBC46B /* Download.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4732BD8613182C7F00CBC46B /* Download.strings */; };
 		473BF0871892968E0068B4C1 /* azure.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 473BF0851892968E0068B4C1 /* azure.tiff */; };
 		474163C106C4F64100AC0BD2 /* Info.xib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A306C4F64000AC0BD2 /* Info.xib */; };
@@ -534,6 +536,8 @@
 		471F5C2C12AD1B6B0005D323 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = i18n/src/main/resources/sl.lproj/Alert.strings; sourceTree = "<group>"; };
 		471F5C2D12AD1B6B0005D323 /* sk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sk; path = i18n/src/main/resources/sk.lproj/Alert.strings; sourceTree = "<group>"; };
 		4723D1D524C24FDF0006CDE3 /* JavaNativeFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaNativeFoundation.framework; path = core/dylib/target/JavaNativeFoundation.framework; sourceTree = "<group>"; };
+		4724FA4426836D8A00CF289B /* preferences-openstack.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = "preferences-openstack.pdf"; path = "toolbar/preferences-openstack.pdf"; sourceTree = "<group>"; };
+		4724FA4626836D9000CF289B /* preferences-googlestorage.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = "preferences-googlestorage.pdf"; path = "toolbar/preferences-googlestorage.pdf"; sourceTree = "<group>"; };
 		4725396B10F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sr; path = i18n/src/main/resources/sr.lproj/Bookmark.xib; sourceTree = "<group>"; };
 		4725396E10F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sr; path = i18n/src/main/resources/sr.lproj/Browser.xib; sourceTree = "<group>"; };
 		4725397110F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sr; path = i18n/src/main/resources/sr.lproj/Command.xib; sourceTree = "<group>"; };
@@ -2024,6 +2028,8 @@
 				47DE478F2598F2D400B18BCB /* preferences-s3.pdf */,
 				47DE47922598F2D400B18BCB /* preferences-sftp.pdf */,
 				47DE47902598F2D400B18BCB /* preferences-update.pdf */,
+				4724FA4426836D8A00CF289B /* preferences-openstack.pdf */,
+				4724FA4626836D9000CF289B /* preferences-googlestorage.pdf */,
 				47AE90DE1CE61ECF00A85D7B /* actions.pdf */,
 				4749604C1CD75C9700B020C9 /* addbookmark.pdf */,
 				4749604D1CD75C9700B020C9 /* connect.pdf */,
@@ -2382,6 +2388,7 @@
 				476730E816108E1300B28D35 /* notfound.tiff in Resources */,
 				476730E916108E1300B28D35 /* open.tiff in Resources */,
 				476730EA16108E1300B28D35 /* outline.tiff in Resources */,
+				4724FA4726836D9000CF289B /* preferences-googlestorage.pdf in Resources */,
 				476730EB16108E1300B28D35 /* pencil.tiff in Resources */,
 				476730EC16108E1300B28D35 /* permissions.tiff in Resources */,
 				476730ED16108E1300B28D35 /* plus.tiff in Resources */,
@@ -2394,6 +2401,7 @@
 				476730F216108E1300B28D35 /* remove.tiff in Resources */,
 				476730F316108E1300B28D35 /* removePressed.tiff in Resources */,
 				4749607A1CD75C9700B020C9 /* showinfinder.pdf in Resources */,
+				4724FA4526836D8A00CF289B /* preferences-openstack.pdf in Resources */,
 				476730F416108E1300B28D35 /* rendezvous.tiff in Resources */,
 				476730F516108E1300B28D35 /* resume.tiff in Resources */,
 				476730F616108E1300B28D35 /* reveal.tiff in Resources */,

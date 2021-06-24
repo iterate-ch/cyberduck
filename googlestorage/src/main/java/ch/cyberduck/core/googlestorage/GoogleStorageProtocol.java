@@ -31,9 +31,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 public final class GoogleStorageProtocol extends AbstractProtocol {
+
     @Override
     public String getName() {
-        return "Google Cloud Storage";
+        return "Google Storage";
     }
 
     @Override
