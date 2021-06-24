@@ -121,6 +121,11 @@
           <netfx:NativeImage Id="ngen_Cyberduck.Core.Refresh" Platform="64bit" Priority="3" />
         </File>
       </Component>
+      <Component Id="Cyberduck.Core.Refresh">
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Refresh.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Cyberduck.Core.Refresh" Platform="64bit" Priority="3" />
+        </File>
+      </Component>
       <Component Id="Cyberduck.Protocols">
         <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Protocols.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
@@ -180,6 +185,51 @@
       </Component>
       <Component Id="DotNetProjects.Wpf.Extended.Toolkit.dll">
         <File Source="$(var.cyberduck.TargetDir)/DotNetProjects.Wpf.Extended.Toolkit.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="DynamicData">
+        <File Source="$(var.cyberduck.TargetDir)/DynamicData.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_DynamicData" Platform="64bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="Pharmacist.Common">
+        <File Source="$(var.cyberduck.TargetDir)/Pharmacist.Common.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Pharmacist.Common" Platform="64bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ReactiveUI">
+        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ReactiveUI" Platform="64bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ReactiveUI.Events.WPF">
+        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.Events.WPF.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ReactiveUI.Events.WPF" Platform="64bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ReactiveUI.Fody.Helpers">
+        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.Fody.Helpers.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ReactiveUI.Fody.Helpers" Platform="64bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ReactiveUI.Wpf">
+        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.Wpf.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ReactiveUI.Wpf" Platform="64bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="Splat">
+        <File Source="$(var.cyberduck.TargetDir)/Splat.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Splat" Platform="64bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="System.Reactive">
+        <File Source="$(var.cyberduck.TargetDir)/System.Reactive.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_System.Reactive" Platform="64bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="DotNetProjects.Wpf.Extended.Toolkit.dll">
+        <File Source="$(var.cyberduck.TargetDir)/DotNetProjects.Wpf.Extended.Toolkit.dll.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_DotNetProjects.Wpf.Extended.Toolkit.dll" Platform="64bit" Priority="3" />
+        </File>
       </Component>
       <Component Id="ikvm.security">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Security.dll" KeyPath="yes" Checksum="yes"/>
