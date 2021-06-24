@@ -15,6 +15,7 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -43,6 +44,21 @@ public class GoogleStorageLocationFeature implements Location {
         if(container.isRoot()) {
             return unknown;
         }
-        return new Location.Name(new GoogleStorageAttributesFinderFeature(session).find(container).getRegion());
+        return new GoogleStorageRegion(new GoogleStorageAttributesFinderFeature(session).find(container).getRegion());
+    }
+
+    public static final class GoogleStorageRegion extends Name {
+        public GoogleStorageRegion(final String identifier) {
+            super(identifier);
+        }
+
+        @Override
+        public String toString() {
+            final String identifier = getIdentifier();
+            if(null == identifier) {
+                return LocaleFactory.localizedString("Unknown");
+            }
+            return LocaleFactory.localizedString(identifier, "S3");
+        }
     }
 }

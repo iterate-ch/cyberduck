@@ -75,8 +75,10 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
 
     @Override
     public Set<Location.Name> getRegions() {
-        return new HashSet<Location.Name>(Arrays.asList(
-            new Location.Name("us"), new Location.Name("eu"), new Location.Name("asia")
+        return new HashSet<>(Arrays.asList(
+            new GoogleStorageLocationFeature.GoogleStorageRegion("us"),
+            new GoogleStorageLocationFeature.GoogleStorageRegion("eu"),
+            new GoogleStorageLocationFeature.GoogleStorageRegion("asia")
         ));
     }
 
