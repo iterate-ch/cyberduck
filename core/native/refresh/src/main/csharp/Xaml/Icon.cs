@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Markup;
 using Ch.Cyberduck.Core.Refresh.Services;
-using StructureMap;
+using Splat;
 
 namespace Ch.Cyberduck.Core.Refresh.Xaml
 {
@@ -14,7 +14,7 @@ namespace Ch.Cyberduck.Core.Refresh.Xaml
 
         public Icon(string resourceName)
         {
-            icons = ObjectFactory.TryGetInstance<WpfIconProvider>();
+            icons = Locator.Current.GetService<WpfIconProvider>();
             this.resourceName = resourceName;
         }
 
