@@ -77,11 +77,13 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         if(log.isInfoEnabled()) {
             log.info(String.format("Fetching login token from keychain for %s", bookmark));
         }
+        final Credentials credentials = bookmark.getCredentials();
         // Find token named like "Shared Access Signature (SAS) Token"
         final String token;
         try {
             token = this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-                bookmark.getHostname(), bookmark.getProtocol().getTokenPlaceholder());
+                bookmark.getHostname(), StringUtils.isEmpty(credentials.getUsername()) ?
+                    bookmark.getProtocol().getTokenPlaceholder() : String.format("%s (%s)", bookmark.getProtocol().getTokenPlaceholder(), credentials.getUsername()));
         }
         catch(LocalAccessDeniedException e) {
             log.warn(String.format("Failure %s searching in keychain", e));
@@ -210,7 +212,8 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         if(credentials.isTokenAuthentication()) {
             this.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
                 bookmark.getHostname(), StringUtils.isEmpty(credentials.getUsername()) ?
-                    bookmark.getProtocol().getTokenPlaceholder() : credentials.getUsername(), credentials.getToken());
+                    bookmark.getProtocol().getTokenPlaceholder() : String.format("%s (%s)", bookmark.getProtocol().getTokenPlaceholder(), credentials.getUsername()),
+                credentials.getToken());
         }
         if(credentials.isOAuthAuthentication()) {
             final String prefix = this.getOAuthPrefix(bookmark);
@@ -251,7 +254,8 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         if(protocol.isTokenConfigurable()) {
             this.deletePassword(protocol.getScheme(), bookmark.getPort(), bookmark.getHostname(),
-                protocol.getTokenPlaceholder());
+                StringUtils.isEmpty(credentials.getUsername()) ?
+                    protocol.getTokenPlaceholder() : String.format("%s (%s)", protocol.getTokenPlaceholder(), credentials.getUsername()));
         }
         if(protocol.isOAuthConfigurable()) {
             final String prefix = this.getOAuthPrefix(bookmark);

@@ -77,4 +77,9 @@ public class CTERAProtocol extends AbstractProtocol {
     public boolean validate(final Credentials credentials, final LoginOptions options) {
         return super.validate(credentials, new LoginOptions(options).token(false).password(false).user(false));
     }
+
+    @Override
+    public String getTokenPlaceholder() {
+        return "CTERA Token";
+    }
 }
