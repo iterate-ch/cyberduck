@@ -2243,7 +2243,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultStorageClassPopupGoogleStorage.setAutoenablesItems(false);
         this.defaultStorageClassPopupGoogleStorage.removeAllItems();
         for(String s : GoogleStorageStorageClassFeature.STORAGE_CLASS_LIST) {
-            this.defaultStorageClassPopupGoogleStorage.addItemWithTitle(s);
+            this.defaultStorageClassPopupGoogleStorage.addItemWithTitle(LocaleFactory.localizedString(s, "S3"));
             this.defaultStorageClassPopupGoogleStorage.lastItem().setRepresentedObject(s);
         }
         this.defaultStorageClassPopupGoogleStorage.setTarget(this.id());

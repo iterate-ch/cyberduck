@@ -1224,7 +1224,8 @@ namespace Ch.Cyberduck.Ui.Controller
             while (iter.hasNext())
             {
                 string s = (string) iter.next();
-                storageClasses.Add(new KeyValuePair<string, string>(s, s));
+                storageClasses.Add(new KeyValuePair<string, string>(s,
+                    LocaleFactory.localizedString(s, "S3")));
             }
             View.PopulateDefaultGoogleStorageClasses(storageClasses);
         }
