@@ -37,4 +37,13 @@
     <ItemGroup>
         <Reference Include="@(IKVMReferences)" />
     </ItemGroup>
+
+    <ItemGroup>
+        <ImageResource Include="$(CyberduckDir)img\*.png" />
+        <ImageResource Include="$(CyberduckDir)img\*.tiff" />
+        <ImageResource Include="$(CyberduckDir)img\*.ico" />
+        <ImageResource Include="$(CyberduckDir)img\*.gif" />
+        <ImageResource Include="$(CyberduckDir)cyberduck-application.ico" />
+        <ImageResource Include="$(CyberduckDir)cyberduck-document.ico" />
+    </ItemGroup>
 </Project>

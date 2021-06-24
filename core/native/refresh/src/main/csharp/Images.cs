@@ -26,6 +26,10 @@ namespace Ch.Cyberduck.Core.Refresh
 
         public ResourceRef Browser => new(this);
 
+        public ResourceRef CyberduckApplication => new(this, "cyberduck-application");
+
+        public ResourceRef CyberduckDocument => new(this, "cyberduck-document");
+
         public ResourceRef Clean => new(this);
 
         public ResourceRef CleanAll => new(this);
@@ -35,8 +39,6 @@ namespace Ch.Cyberduck.Core.Refresh
         public ResourceRef Connection => new(this);
 
         public ResourceRef Cryptomator => new(this);
-
-        public ResourceRef Cyberduck => new(this);
 
         public ResourceRef Delete => new(this);
 

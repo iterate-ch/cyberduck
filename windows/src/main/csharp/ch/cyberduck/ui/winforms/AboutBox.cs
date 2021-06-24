@@ -149,7 +149,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public virtual Image ApplicationIcon()
         {
-            return Images.Cyberduck.Size(128);
+            return Images.CyberduckApplication.Size(128);
         }
 
         public virtual string Credits()

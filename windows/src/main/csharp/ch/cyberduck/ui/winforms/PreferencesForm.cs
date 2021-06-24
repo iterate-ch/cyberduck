@@ -63,6 +63,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             transfersButton.Image = Images.Queue.Size(32);
             editStripButton.Image = Images.Pencil.Size(32);
             sftpButton.Image = Images.FTP.Size(32);
+            profilesButton.Image = Images.CyberduckDocument.Size(32);
             s3Button.Image = Images.S3.Size(32);
             googleCloudButton.Image = Images.GoogleStorage.Size(32);
             bandwidthButton.Image = Images.Bandwidth.Size(32);

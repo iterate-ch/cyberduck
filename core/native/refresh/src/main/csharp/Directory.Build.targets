@@ -20,7 +20,7 @@
     <Import Project="$(CyberduckDir)core\i18n-gen\i18n-gen.targets" />
 
     <Target Name="GenerateImageResources" BeforeTargets="PrepareResources" DependsOnTargets="ResolveProjectReferences">
-        <ImageDiscoverTask SourcePath="$(CyberduckDir)img\">
+        <ImageDiscoverTask ImageResources="@(ImageResource)">
             <Output ItemName="ImageDiscover" TaskParameter="Resources" />
         </ImageDiscoverTask>
         <ResourcesGenerator
