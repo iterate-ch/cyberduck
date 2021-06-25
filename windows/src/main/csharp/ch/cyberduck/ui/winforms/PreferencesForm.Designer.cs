@@ -3442,6 +3442,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.googleCloudButton.Name = "googleCloudButton";
             this.googleCloudButton.Size = new System.Drawing.Size(127, 66);
             this.googleCloudButton.Text = "Google Cloud Storage";
+            this.googleCloudButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.googleCloudButton.Click += new System.EventHandler(this.googleCloudButton_Click);
             // 
             // bandwidthButton
