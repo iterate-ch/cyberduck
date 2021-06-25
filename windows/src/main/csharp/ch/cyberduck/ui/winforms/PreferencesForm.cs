@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
+using ch.cyberduck.core.googlestorage;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
@@ -71,6 +72,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             connectBookmarkCombobox.ICImageList = ProtocolIconsImageList();
             defaultProtocolCombobox.ICImageList = ProtocolIconsImageList();
 
+            googleCloudButton.Text = new GoogleStorageProtocol().getName();
             showDownloadFolderDialogButton.Text = LocaleFactory.localizedString("Choose") + "…";
             retriesUpDown.Maximum = PreferencesFactory.get().getInteger("connection.retry.max");
 
