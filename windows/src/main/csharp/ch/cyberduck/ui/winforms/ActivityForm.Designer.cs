@@ -88,7 +88,6 @@
             this.ClientSize = new System.Drawing.Size(427, 303);
             this.Controls.Add(this.activitiyListView);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ActivityForm";
             this.Text = "Activity";
             this.SizeChanged += new System.EventHandler(this.ActivityForm_SizeChanged);

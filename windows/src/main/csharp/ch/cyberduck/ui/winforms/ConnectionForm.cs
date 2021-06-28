@@ -39,7 +39,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             //focus nickname
             Load += (sender, args) => textBoxServer.Focus();
 
-            protocol.ICImageList = IconProvider.ProtocolList;
+            alertIcon.Image = Images.TryGet(_ => _.Alert).Size(16);
+            protocol.ICImageList = IconProvider.TryGet(_ => _.ProtocolList);
 
             toggleOptionsLabel.Text = "        " + LocaleFactory.localizedString("More Options", "Bookmark");
             toggleOptionsLabel.ImageIndex = (_expanded ? 1 : 4);

@@ -1,10 +1,8 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using System;
 using System.Collections;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace i18n_gen
 {

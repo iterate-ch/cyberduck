@@ -27,6 +27,7 @@ using ch.cyberduck.core;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -44,6 +45,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             Font = SystemFonts.MessageBoxFont;
 
             InitializeComponent();
+
+            Icon = Images.TryGet(_ => _.CyberduckApplication);
 
             SetStyle(
                 ControlStyles.DoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer,

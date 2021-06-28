@@ -75,6 +75,39 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
+            toolStripProgress.Image = Images.TryGet(_ => _.Throbber);
+
+            deleteBookmarkToolStripButton.Image = Images.TryGet(_ => _.Remove).Size(22);
+            editBookmarkToolStripButton.Image = Images.TryGet(_ => _.Edit).Size(22);
+            newBookmarkToolStripButton.Image = Images.TryGet(_ => _.Add).Size(22);
+
+            historyBackButton.Image = Images.TryGet(_ => _.NavBackward).Size(11);
+            historyForwardButton.Image = Images.TryGet(_ => _.NavForward).Size(11);
+            parentPathButton.Image = Images.TryGet(_ => _.NavUp).Size(11);
+
+            bonjourToolStripMenuItem.Image = Images.TryGet(_ => _.Rendezvous);
+            historyToolStripMenuItem.Image = Images.TryGet(_ => _.History);
+
+            actionToolStripDropDownButton.Image = Images.TryGet(_ => _.Advanced).Size(32);
+            bonjourToolStripButton.Image = Images.TryGet(_ => _.Rendezvous).Size(32);
+            bookmarksToolStripButton.Image = Images.TryGet(_ => _.Bookmarks).Size(32);
+            browserToolStripButton.Image = Images.TryGet(_ => _.Outline).Size(32);
+            cryptomatorToolStripButton.Image = Images.TryGet(_ => _.Cryptomator).Size(32);
+            deleteToolStripButton.Image = Images.TryGet(_ => _.Delete).Size(32);
+            disconnectStripButton.Image = Images.TryGet(_ => _.Eject).Size(32);
+            downloadToolStripButton.Image = Images.TryGet(_ => _.Download).Size(32);
+            editToolStripSplitButton.Image = Images.TryGet(_ => _.Pencil).Size(32);
+            historyToolStripButton.Image = Images.TryGet(_ => _.History).Size(32);
+            infoToolStripButton.Image = Images.TryGet(_ => _.Info).Size(32);
+            logToolStripButton.Image = Images.TryGet(_ => _.Log).Size(32);
+            openConnectionToolStripButton.Image = Images.TryGet(_ => _.Connect).Size(32);
+            openInBrowserToolStripButton.Image = Images.TryGet(_ => _.Browser).Size(32);
+            refreshToolStripButton.Image = Images.TryGet(_ => _.Reload).Size(32);
+            transfersToolStripButton.Image = Images.TryGet(_ => _.Queue).Size(32);
+            uploadToolStripButton.Image = Images.TryGet(_ => _.Upload).Size(32);
+
+            securityToolStripStatusLabel.Image = Images.TryGet(_ => _.Locked);
+
             ToolStripManager.RenderMode = ToolStripManagerRenderMode.System;
 
             BookmarkMenuCollectionListener bookmarkMenuCollectionListener = new BookmarkMenuCollectionListener(this,
@@ -179,9 +212,9 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             UpdateBookmarks();
 
-            newBookmarkToolStripButton.Tag = (Image)Images.AddPressed;
-            editBookmarkToolStripButton.Tag = (Image)Images.EditPressed;
-            deleteBookmarkToolStripButton.Tag = (Image)Images.RemovePressed;
+            newBookmarkToolStripButton.Tag = (Image)Images.AddPressed.Size(22);
+            editBookmarkToolStripButton.Tag = (Image)Images.EditPressed.Size(22);
+            deleteBookmarkToolStripButton.Tag = (Image)Images.RemovePressed.Size(22);
 
             browserToolStripButton.ToolTipText = LocaleFactory.localizedString("Browser", "Preferences");
             bookmarksToolStripButton.ToolTipText = LocaleFactory.localizedString("Bookmarks", "Browser");

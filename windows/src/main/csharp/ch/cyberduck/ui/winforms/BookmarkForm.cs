@@ -36,6 +36,9 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
+            alertIcon.Image = Images.TryGet(_ => _.Alert);
+            buttonWebURL.Image = Images.TryGet(_ => _.Site);
+
             //focus nickname
             Load += (sender, args) => textBoxNickname.Focus();
 
