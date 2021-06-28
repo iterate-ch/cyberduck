@@ -1722,7 +1722,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Default ACL" translatesAutoresizingMaskIntoConstraints="NO" id="413-ca-YoL">
+                <box fixedFrame="YES" title="Förvalt ACL" translatesAutoresizingMaskIntoConstraints="NO" id="413-ca-YoL">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Sgq-Kr-VcS">
@@ -1921,7 +1921,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Default ACL" translatesAutoresizingMaskIntoConstraints="NO" id="y8O-CF-T0G">
+                <box fixedFrame="YES" title="Förvalt ACL" translatesAutoresizingMaskIntoConstraints="NO" id="y8O-CF-T0G">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="wuK-Me-6mi">
