@@ -61,7 +61,7 @@ namespace Ch.Cyberduck.ui.winforms.controls
 
             EnabledChanged += SearchTextBox_EnabledChanged;
 
-            xPictureBox.Image = Images.SearchInactive;
+            xPictureBox.Image = Images.TryGet(_ => _.SearchInactive);
             xPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
             xPictureBox.Click += xPictureBox_Click;
             xPictureBox.Visible = true;
@@ -184,11 +184,11 @@ namespace Ch.Cyberduck.ui.winforms.controls
                     TextChanged(this, e);
                 }
                 //xPictureBox.Visible = false;
-                xPictureBox.Image = Images.SearchInactive;
+                xPictureBox.Image = Images.TryGet(_ => _.SearchInactive);
             }
             else
             {
-                xPictureBox.Image = Images.SearchActive;
+                xPictureBox.Image = Images.TryGet(_ => _.SearchActive);
                 //xPictureBox.Visible = true;
                 if (_currentText != textBox.Text)
                 {
