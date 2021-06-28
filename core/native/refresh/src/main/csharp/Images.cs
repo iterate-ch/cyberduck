@@ -54,6 +54,7 @@ namespace Ch.Cyberduck.Core.Refresh
         public ResourceRef Open => new(this);
         public ResourceRef Outline => new(this);
         public ResourceRef Pencil => new(this);
+        public ResourceRef Permissions => new(this);
         public ResourceRef Plus => new(this);
         public ResourceRef Queue => new(this);
         public ResourceRef Reload => new(this);
@@ -71,6 +72,7 @@ namespace Ch.Cyberduck.Core.Refresh
         public ResourceRef StatusYellow => new(this);
         public ResourceRef Stop => new(this);
         public ResourceRef Sync => new(this);
+        public ResourceRef Throbber => new(this);
         public ResourceRef ThrobberSmall => new(this, "throbber_small");
         public ResourceRef TransferDownload => new(this, "transfer-download");
         public ResourceRef TransferUpload => new(this, "transfer-upload");

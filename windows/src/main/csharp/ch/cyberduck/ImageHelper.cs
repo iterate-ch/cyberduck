@@ -30,37 +30,37 @@ namespace Ch.Cyberduck
         public static Images Images { get; }
 
         [EditorBrowsable(Never)]
-        public static Image Log => Images.Log;
+        public static Image Log => Images.TryGet(_ => _.Log);
 
         [EditorBrowsable(Never)]
-        public static Image Open => Images.Open;
+        public static Image Open => Images.TryGet(_ => _.Open);
 
         [EditorBrowsable(Never)]
-        public static Image Reload => Images.Reload;
+        public static Image Reload => Images.TryGet(_ => _.Reload);
 
         [EditorBrowsable(Never)]
-        public static Image Resume => Images.Resume;
+        public static Image Resume => Images.TryGet(_ => _.Resume);
 
         [EditorBrowsable(Never)]
-        public static Image Reveal => Images.Reveal;
+        public static Image Reveal => Images.TryGet(_ => _.Reveal);
 
         [EditorBrowsable(Never)]
-        public static Image StatusGreen => Images.StatusGreen;
+        public static Image StatusGreen => Images.TryGet(_ => _.StatusGreen);
 
         [EditorBrowsable(Never)]
-        public static Image Stop => Images.Stop;
+        public static Image Stop => Images.TryGet(_ => _.Stop);
 
         [EditorBrowsable(Never)]
-        public static Image ThrobberSmall => Images.ThrobberSmall;
+        public static Image ThrobberSmall => Images.TryGet(_ => _.ThrobberSmall);
 
         [EditorBrowsable(Never)]
-        public static Image TransferDownload => Images.TransferDownload;
+        public static Image TransferDownload => Images.TryGet(_ => _.TransferDownload);
 
         [EditorBrowsable(Never)]
-        public static Image Trash => Images.Trash;
+        public static Image Trash => Images.TryGet(_ => _.Trash);
 
         [EditorBrowsable(Never)]
-        public static Image SearchInactive => Images.SearchInactive;
+        public static Image SearchInactive => Images.TryGet(_ => _.SearchInactive);
 
         public static T TryGet<T>(this WinFormsIconProvider images, Expression<Func<WinFormsIconProvider, T>> expression)
             => expression.Body is MemberExpression member && member.Member is PropertyInfo info && images != null ? (T)info.GetValue(images) : default;
