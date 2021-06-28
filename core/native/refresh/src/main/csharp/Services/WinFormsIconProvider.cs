@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 using static System.Drawing.Imaging.PixelFormat;
@@ -10,29 +13,48 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 {
     using ch.cyberduck.core;
 
-    public class WinFormsIconProvider : IconProvider<Bitmap>
+    public class WinFormsIconProvider : IconProvider<Image>
     {
-        private readonly WpfIconProvider wpfIconProvider;
-
-        public WinFormsIconProvider(WpfIconProvider wpfIconProvider, ProtocolFactory protocols, IconCache iconCache, IIconProviderImageSource imageSource) : base(iconCache)
+        public WinFormsIconProvider(ProtocolFactory protocols, IconCache iconCache, IIconProviderImageSource imageSource) : base(iconCache, imageSource)
         {
-            this.wpfIconProvider = wpfIconProvider;
             BuildProtocolImageList(protocols);
         }
 
-        public override Bitmap GetDisk(Protocol protocol, int size)
-            => IconCache.TryGetIcon(protocol, size, out Bitmap image, "Disk")
+        public override Image GetDisk(Protocol protocol, int size)
+            => IconCache.TryGetIcon(protocol, size, out Image image, "Disk")
             ? image
-            : CacheFromWpfIconProvider(protocol, wpfIconProvider.GetDisk(protocol, size), false, "Disk");
+            : Get(protocol, protocol.disk(), size, "Disk");
 
-        public override Bitmap GetIcon(Protocol protocol, int size)
-            => IconCache.TryGetIcon(protocol, size, out Bitmap image, "Icon")
+        public override Image GetIcon(Protocol protocol, int size)
+            => IconCache.TryGetIcon(protocol, size, out Image image, "Icon")
             ? image
-            : CacheFromWpfIconProvider(protocol, wpfIconProvider.GetIcon(protocol, size), false, "Icon");
+            : Get(protocol, protocol.icon(), size, "Icon");
+
+        protected override Image Get(string name, int size)
+            => Get(name, name, size, default);
+
+        protected override Image Get(string name)
+            => Get(name, name, default);
+
+        private Image Get(object key, string path, string classifier)
+            => IconCache.TryGetIcon(key, out Image image, classifier)
+            ? image
+            : Get(key, path, 0, classifier, true);
+
+        private Image Get(object key, string path, int size, string classifier)
+            => IconCache.TryGetIcon(key, size, out Image image, classifier)
+            ? image
+            : Get(key, path, size, classifier, false);
+
+        private Image Get(object key, string path, int size, string classifier, bool returnDefault)
+        {
+            var images = Get(key, path, classifier, returnDefault, out var image);
+            return image ?? FindNearestFit(images, size, (c, s, i) => c.CacheIcon(key, s, i, classifier));
+        }
 
         public ImageList ProtocolList { get; } = new ImageList() { ImageSize = new Size(16, 16), ColorDepth = ColorDepth.Depth32Bit };
 
-        public Bitmap AliasFolder()
+        public Image AliasFolder()
         {
             if (IconCache.TryGetIcon("path:folder", out Bitmap image, "alias"))
             {
@@ -46,13 +68,13 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             return overlayed;
         }
 
-        public Bitmap DefaultBrowser() => GetFileIcon(Utils.GetSystemDefaultBrowser(), false, true, true);
+        public Image DefaultBrowser() => GetFileIcon(Utils.GetSystemDefaultBrowser(), false, true, true);
 
-        public Bitmap GetPath(Path path, int size)
+        public Image GetPath(Path path, int size)
         {
             string key = "path:" + (path.isDirectory() ? "folder" : path.getExtension());
 
-            Func<(string, Func<int, Bitmap>)> overlayFactory = default;
+            Func<(string, Func<int, Image>)> overlayFactory = default;
             if (path.getType().contains(AbstractPath.Type.decrypted))
             {
                 overlayFactory = () => ("unlocked", (int size) => GetResource("unlockedbadge", size));
@@ -90,8 +112,8 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 }
             }
 
-            (string Class, Func<int, Bitmap> factory) = overlayFactory?.Invoke() ?? default;
-            if (IconCache.TryGetIcon(key, out Bitmap image, Class))
+            (string Class, Func<int, Image> factory) = overlayFactory?.Invoke() ?? default;
+            if (IconCache.TryGetIcon(key, out Image image, Class))
             {
                 return image;
             }
@@ -105,30 +127,9 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             return baseImage;
         }
 
-        public Bitmap ResizeImageDangerous(Image image, int size) => new(image, new Size(size, size));
+        public Image ResizeImageDangerous(Image image, int size) => new Bitmap(image, new Size(size, size));
 
-        protected override Bitmap Get(string name)
-            => IconCache.TryGetIcon(name, out Bitmap image)
-            ? image
-            : CacheFromWpfIconProvider(name, wpfIconProvider.GetResource(name), true);
-
-        protected override Bitmap Get(string name, int size)
-            => IconCache.TryGetIcon(name, size, out Bitmap image)
-            ? image
-            : CacheFromWpfIconProvider(name, wpfIconProvider.GetResource(name, size), false);
-
-        private Bitmap CacheFromWpfIconProvider(object key, BitmapSource bitmapSource, bool isDefault, string classifier = default)
-        {
-            Bitmap bitmap = BitmapFromBitmapSource(bitmapSource);
-            if (isDefault)
-            {
-                IconCache.CacheIcon(key, bitmap.Size.Width, classifier);
-            }
-            IconCache.CacheIcon(key, bitmap.Size.Width, bitmap, classifier);
-            return bitmap;
-        }
-
-        private static Bitmap Overlay(Image original, Image overlay, int size)
+        private static Image Overlay(Image original, Image overlay, int size)
         {
             var surface = new Bitmap(original, new Size(size, size));
             using var graphics = Graphics.FromImage(surface);
@@ -146,27 +147,103 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             }
         }
 
-        private Bitmap BitmapFromBitmapSource(BitmapSource bitmapSource)
+        private IEnumerable<Image> Get(object key, string path, string classifier, bool returnDefault, out Image @default)
         {
-            FormatConvertedBitmap src = new();
-            src.BeginInit();
-            src.Source = bitmapSource;
-            src.DestinationFormat = Bgra32;
-            src.EndInit();
+            Image image = default;
 
-            Bitmap copy = new(src.PixelWidth, src.PixelWidth, Format32bppArgb);
-            var data = copy.LockBits(new Rectangle(default, copy.Size), ImageLockMode.WriteOnly, copy.PixelFormat);
-            src.CopyPixels(default, data.Scan0, data.Height * data.Stride, data.Stride);
-            copy.UnlockBits(data);
+            var images = IconCache.Filter<Image>(((object key, string classifier, int) f) => Equals(key, f.key) && Equals(classifier, f.classifier));
+            if (!images.Any())
+            {
+                bool isDefault = !IconCache.TryGetIcon<Image>(key, out _, classifier);
+                using Stream stream = GetStream(path);
+                images = GetImages(stream, (c, s) => c.TryGetIcon<Image>(key, out _, classifier), (c, s, i) =>
+                {
+                    if (isDefault)
+                    {
+                        isDefault = false;
+                        if (returnDefault)
+                        {
+                            image = i;
+                        }
+                        IconCache.CacheIcon<Image>(key, s, classifier);
+                    }
+                    IconCache.CacheIcon(key, s, i, classifier);
+                });
+            }
 
-            return copy;
+            @default = image;
+            return images;
         }
 
-        protected override Bitmap Get(IntPtr nativeIcon, CacheIconCallback cacheIcon)
+        private Image FindNearestFit(IEnumerable<Image> sources, int size, CacheIconCallback cacheCallback)
+        {
+            var nearest = int.MaxValue;
+            Image nearestFit = null;
+
+            foreach (var item in sources)
+            {
+                int d = size - item.Width;
+                if (d == 0)
+                {
+                    return item;
+                }
+
+                if ((d < 0 && (nearest > 0 || nearest < d)) || (nearest > 0 && d < nearest))
+                {
+                    nearest = d;
+                    nearestFit = item;
+                }
+            }
+            nearestFit = new Bitmap(nearestFit, size, size);
+            cacheCallback(IconCache, size, nearestFit);
+            return nearestFit;
+        }
+
+        private IEnumerable<Image> GetImages(Stream stream, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
+        {
+            using Image source = Image.FromStream(stream);
+
+            if (ImageFormat.Tiff.Equals(source.RawFormat))
+            {
+                List<Image> frames = new();
+
+                FrameDimension frameDimension = new(source.FrameDimensionsList[0]);
+                var pageCount = source.GetFrameCount(FrameDimension.Page);
+                for (int i = 0; i < pageCount; i++)
+                {
+                    source.SelectActiveFrame(frameDimension, i);
+                    if (getCache(IconCache, source.Width)) continue;
+
+                    Bitmap copy = new(source);
+                    copy.SetResolution(96, 96);
+                    frames.Add(copy);
+                    cacheIcon(IconCache, copy.Width, copy);
+                }
+
+                return frames;
+            }
+            else if (ImageFormat.Icon.Equals(source.RawFormat))
+            {
+                stream.Position = 0;
+                using Icon icon = new(stream);
+                Image image = icon.ToBitmap();
+                cacheIcon(IconCache, image.Width, image);
+                return new[] { image };
+            }
+            else
+            {
+                Bitmap copy = new(source);
+                copy.SetResolution(96, 96);
+                cacheIcon(IconCache, copy.Width, copy);
+                return new[] { copy };
+            }
+        }
+
+        protected override Image Get(IntPtr nativeIcon, CacheIconCallback cacheIcon)
         {
             using var icon = Icon.FromHandle(nativeIcon);
-            Bitmap bitmap = icon.ToBitmap();
-            cacheIcon(IconCache, bitmap.Size.Width, bitmap);
+            Image bitmap = icon.ToBitmap();
+            cacheIcon(IconCache, bitmap.Width, bitmap);
             return bitmap;
         }
     }

@@ -8,17 +8,29 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
     public abstract class IconProvider
     {
-        public IconProvider(IconCache iconCache)
+        public IconProvider(IconCache iconCache, IIconProviderImageSource imageSource)
         {
             IconCache = iconCache;
+            ImageSource = imageSource;
         }
 
         protected IconCache IconCache { get; }
+
+        protected IIconProviderImageSource ImageSource { get; }
+
+        protected Stream GetStream(string name)
+        {
+            if (Path.IsPathRooted(name))
+            {
+                return new FileStream(name, FileMode.Open);
+            }
+            return ImageSource.GetStream(name);
+        }
     }
 
     public abstract class IconProvider<T> : IconProvider
     {
-        protected IconProvider(IconCache iconCache) : base(iconCache)
+        protected IconProvider(IconCache iconCache, IIconProviderImageSource imageSource) : base(iconCache, imageSource)
         {
         }
 

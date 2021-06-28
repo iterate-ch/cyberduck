@@ -20,6 +20,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.profiles;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Refresh;
 using Ch.Cyberduck.Core.Refresh.Services;
 using Ch.Cyberduck.Core.Refresh.UserControls;
 using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
@@ -30,13 +31,15 @@ using Ch.Cyberduck.Ui.Winforms.Controls;
 using ReactiveUI;
 using Splat;
 using StructureMap;
+using StructureMap.Configuration.DSL;
+using StructureMap.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Ch.Cyberduck.Ui
 {
-    public sealed class StructureMapBootstrapper
+    public static class StructureMapBootstrapper
     {
         public static void Bootstrap()
         {
@@ -72,8 +75,11 @@ namespace Ch.Cyberduck.Ui
 
                 x.ForSingletonOf<IIconProviderImageSource>().Use<CyberduckImageSource>();
 
-                x.ForSingletonOf<WpfIconProvider>();
-                x.ForSingletonOf<WinFormsIconProvider>();
+                x.ForConcreteSingleton<Images>();
+                x.ForConcreteSingleton<IconCache>();
+                x.ForConcreteSingleton<WpfIconProvider>();
+                x.ForConcreteSingleton<WinFormsIconProvider>();
+                x.ForConcreteSingleton<IconIconProvider>();
 
                 x.For<IViewFor<ProfileViewModel>>().Use<ProfileElement>();
 
@@ -98,6 +104,8 @@ namespace Ch.Cyberduck.Ui
                 }
             });
         }
+
+        public static SmartInstance<T> ForConcreteSingleton<T>(this IRegistry registry) => registry.For<T>().Singleton().Add<T>();
 
         public class SplatDependencyResolver : IDependencyResolver
         {
