@@ -79,6 +79,15 @@ public abstract class AbstractPath {
             }
         },
         /**
+         * File from encrypted data room
+         */
+        triplecrypt {
+            @Override
+            public int legacy() {
+                return 0;
+            }
+        },
+        /**
          * Encrypted file in Cryptomator Vault
          */
         encrypted {
