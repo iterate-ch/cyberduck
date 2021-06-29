@@ -2330,7 +2330,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void createFolderButtonClicked(final ID sender) {
         final Location feature = pool.getFeature(Location.class);
         final FolderController sheet = new FolderController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
-            feature != null ? feature.getLocations() : Collections.emptySet(), new FolderController.Callback() {
+            feature != null ? feature.getLocations() : Collections.emptySet(), feature != null ? feature.getDefault() : Location.unknown, new FolderController.Callback() {
 
             @Override
             public void callback(final Path folder, final String region) {
@@ -2350,7 +2350,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void createEncryptedVaultButtonClicked(final ID sender) {
         final Location feature = pool.getFeature(Location.class);
         final VaultController sheet = new VaultController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
-            feature != null ? feature.getLocations() : Collections.emptySet(), new VaultController.Callback() {
+            feature != null ? feature.getLocations() : Collections.emptySet(), feature != null ? feature.getDefault() : Location.unknown, new VaultController.Callback() {
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool,

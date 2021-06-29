@@ -25,7 +25,6 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -54,7 +53,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(folder)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
-            service.create(folder, StringUtils.isBlank(status.getRegion()) ? PreferencesFactory.get().getProperty("s3.location") : status.getRegion());
+            service.create(folder, StringUtils.isBlank(status.getRegion()) ? new S3LocationFeature(session).getDefault().getIdentifier() : status.getRegion());
             return folder;
         }
         else {

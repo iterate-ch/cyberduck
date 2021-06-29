@@ -36,6 +36,11 @@ public class VaultRegistryLocationFeature implements Location {
     }
 
     @Override
+    public Name getDefault() {
+        return proxy.getDefault();
+    }
+
+    @Override
     public Set<Name> getLocations() {
         return proxy.getLocations();
     }

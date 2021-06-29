@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -48,6 +49,11 @@ public class S3LocationFeature implements Location {
         this.session = session;
         this.cache = cache;
         this.containerService = session.getFeature(PathContainerService.class);
+    }
+
+    @Override
+    public Name getDefault() {
+        return new S3Region(PreferencesFactory.get().getProperty("s3.location"));
     }
 
     @Override

@@ -22,7 +22,6 @@ import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
@@ -37,10 +36,12 @@ public class RegionController extends AlertController {
     private NSPopUpButton regionPopup;
 
     private final Set<Location.Name> regions;
+    private final Location.Name defaultRegion;
     private final RegionController.Callback callback;
 
-    public RegionController(final Set<Location.Name> regions, final RegionController.Callback callback) {
+    public RegionController(final Set<Location.Name> regions, final Location.Name defaultRegion, final Callback callback) {
         this.regions = regions;
+        this.defaultRegion = defaultRegion;
         this.callback = callback;
     }
 
@@ -62,7 +63,7 @@ public class RegionController extends AlertController {
         for(Location.Name region : regions) {
             regionPopup.addItemWithTitle(region.toString());
             regionPopup.itemWithTitle(region.toString()).setRepresentedObject(region.getIdentifier());
-            if(region.getIdentifier().equals(PreferencesFactory.get().getProperty("s3.location"))) {
+            if(region.equals(defaultRegion)) {
                 regionPopup.selectItem(regionPopup.lastItem());
             }
         }
