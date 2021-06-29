@@ -182,7 +182,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
                 assertNotNull(hostname);
-                assertEquals(2, certs.length);
+                assertEquals(3, certs.length);
                 assertEquals("CN=R3,O=Let's Encrypt,C=US", certs[1].getSubjectX500Principal().getName());
                 assertEquals("CN=svn.cyberduck.io", certs[0].getSubjectDN().getName());
                 verified.set(true);
