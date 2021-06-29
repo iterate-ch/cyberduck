@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -71,16 +70,12 @@ public class S3MetadataFeature implements Headers {
             try {
                 final StorageObject target = new StorageObject(containerService.getKey(file));
                 target.replaceAllMetadata(new HashMap<>(status.getMetadata()));
-                // Apply non standard ACL
-                if(accessControlListFeature != null) {
-                    Acl acl = Acl.EMPTY;
-                    try {
-                        acl = accessControlListFeature.getPermission(file);
-                    }
-                    catch(AccessDeniedException | InteroperabilityException e) {
-                        log.warn(String.format("Ignore failure %s", e));
-                    }
-                    target.setAcl(accessControlListFeature.toAcl(acl));
+                try {
+                    // Apply non standard ACL
+                    target.setAcl(accessControlListFeature.toAcl(file, accessControlListFeature.getPermission(file)));
+                }
+                catch(AccessDeniedException | InteroperabilityException e) {
+                    log.warn(String.format("Ignore failure %s", e));
                 }
                 final Redundancy storageClassFeature = session.getFeature(Redundancy.class);
                 if(storageClassFeature != null) {

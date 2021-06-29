@@ -73,9 +73,9 @@ public class S3CopyFeature implements Copy {
             }
         }
         final S3Object destination = new S3WriteFeature(session).getDetails(target, status);
-        destination.setAcl(accessControlListFeature.toAcl(status.getAcl()));
+        destination.setAcl(accessControlListFeature.toAcl(source, status.getAcl()));
         destination.setBucketName(containerService.getContainer(target).getName());
-        destination.replaceAllMetadata(new HashMap<String, Object>(new S3MetadataFeature(session, accessControlListFeature).getMetadata(source)));
+        destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, accessControlListFeature).getMetadata(source)));
         final String version = this.copy(source, destination, status);
         target.attributes().setVersionId(version);
         return target;
@@ -84,7 +84,8 @@ public class S3CopyFeature implements Copy {
     protected String copy(final Path source, final S3Object destination, final TransferStatus status) throws BackgroundException {
         try {
             // Copying object applying the metadata of the original
-            final Map<String, Object> stringObjectMap = session.getClient().copyVersionedObject(source.attributes().getVersionId(), containerService.getContainer(source).getName(),
+            final Map<String, Object> stringObjectMap = session.getClient().copyVersionedObject(source.attributes().getVersionId(),
+                containerService.getContainer(source).getName(),
                 containerService.getKey(source),
                 destination.getBucketName(), destination, false);
             final Map complete = (Map) stringObjectMap.get(Constants.KEY_FOR_COMPLETE_METADATA);

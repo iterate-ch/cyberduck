@@ -38,7 +38,6 @@ import org.jets3t.service.acl.EmailAddressGrantee;
 import org.jets3t.service.acl.GrantAndPermission;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.acl.Permission;
-import org.jets3t.service.model.StorageOwner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,9 +115,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
         try {
             // Read owner from bucket
-            final StorageOwner owner = session.getClient().getBucketAcl(containerService.getContainer(file).getName()).getOwner();
-            final AccessControlList list = this.toAcl(acl);
-            list.setOwner(owner);
+            final AccessControlList list = this.toAcl(file, acl);
             if(containerService.isContainer(file)) {
                 session.getClient().putBucketAcl(containerService.getContainer(file).getName(), list);
             }
@@ -143,10 +140,11 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     /**
      * Convert ACL for writing to service.
      *
-     * @param acl Edited ACL
+     * @param file
+     * @param acl  Edited ACL
      * @return ACL to write to server
      */
-    protected AccessControlList toAcl(final Acl acl) {
+    protected AccessControlList toAcl(final Path file, final Acl acl) throws BackgroundException {
         if(Acl.EMPTY.equals(acl)) {
             return null;
         }
@@ -179,6 +177,12 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             return AccessControlList.REST_CANNED_PUBLIC_READ_WRITE;
         }
         final AccessControlList list = new AccessControlList();
+        try {
+            list.setOwner(session.getClient().getBucketAcl(containerService.getContainer(file).getName()).getOwner());
+        }
+        catch(ServiceException e) {
+            throw new S3ExceptionMappingService().map(e);
+        }
         for(Acl.UserAndRole userAndRole : acl.asList()) {
             if(!userAndRole.isValid()) {
                 continue;
@@ -188,8 +192,8 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                     Permission.parsePermission(userAndRole.getRole().getName()));
             }
             else if(userAndRole.getUser() instanceof Acl.GroupUser) {
-                if(userAndRole.getUser().getIdentifier().equals(GroupGrantee.ALL_USERS.getIdentifier())
-                    || userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
+                // Handle special cases
+                if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
                     list.grantPermission(GroupGrantee.ALL_USERS,
                         Permission.parsePermission(userAndRole.getRole().getName()));
                 }
@@ -198,6 +202,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                         Permission.parsePermission(userAndRole.getRole().getName()));
                 }
                 else {
+                    // Generic mappings
                     list.grantPermission(new GroupGrantee(userAndRole.getUser().getIdentifier()),
                         Permission.parsePermission(userAndRole.getRole().getName()));
                 }
@@ -242,7 +247,17 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                 acl.addAll(new Acl.EmailUser(grant.getGrantee().getIdentifier()), role);
             }
             else if(grant.getGrantee() instanceof GroupGrantee) {
-                acl.addAll(new Acl.GroupUser(grant.getGrantee().getIdentifier()), role);
+                // Handle special cases
+                if(grant.getGrantee().getIdentifier().equals(GroupGrantee.ALL_USERS.getIdentifier())) {
+                    acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), role);
+                }
+                else if(grant.getGrantee().getIdentifier().equals(GroupGrantee.AUTHENTICATED_USERS.getIdentifier())) {
+                    acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), role);
+                }
+                else {
+                    // Generic mappings
+                    acl.addAll(new Acl.GroupUser(grant.getGrantee().getIdentifier()), role);
+                }
             }
         }
         return acl;
