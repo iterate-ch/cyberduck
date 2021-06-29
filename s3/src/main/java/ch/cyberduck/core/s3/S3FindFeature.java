@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.CancellingListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -60,7 +61,7 @@ public class S3FindFeature implements Find {
             else {
                 // Check for common prefix
                 try {
-                    new S3ObjectListService(session).list(file, listener, containerService.getKey(file), 1);
+                    new S3ObjectListService(session).list(file, new CancellingListProgressListener(), containerService.getKey(file), 1);
                     return true;
                 }
                 catch(NotfoundException e) {

@@ -20,8 +20,8 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.CancellingListProgressListener;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListProgressListener;
@@ -192,12 +192,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return;
         }
         try {
-            this.getFeature(ListService.class).list(new DefaultHomeFinderService(this).find(), new DisabledListProgressListener() {
-                @Override
-                public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
-                    throw new ListCanceledException(list);
-                }
-            });
+            this.getFeature(ListService.class).list(new DefaultHomeFinderService(this).find(), new CancellingListProgressListener());
         }
         catch(ListCanceledException e) {
             // Success
@@ -387,4 +382,5 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         return super._getFeature(type);
     }
+
 }

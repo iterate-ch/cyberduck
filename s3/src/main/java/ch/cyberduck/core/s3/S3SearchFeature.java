@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Search;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -39,8 +38,7 @@ public class S3SearchFeature implements Search {
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> objects;
         try {
-            objects = new S3ObjectListService(session).list(workdir, listener, null,
-                PreferencesFactory.get().getInteger("s3.listing.chunksize"));
+            objects = new S3ObjectListService(session).list(workdir, listener, null);
         }
         catch(NotfoundException e) {
             return AttributedList.emptyList();

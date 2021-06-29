@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.CancellingListProgressListener;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
@@ -148,7 +149,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             if(file.isDirectory()) {
                 // File may be marked as placeholder but not placeholder file exists. Check for common prefix returned.
                 try {
-                    new S3ObjectListService(session).list(file, new DisabledListProgressListener(), containerService.getKey(file), 1);
+                    new S3ObjectListService(session).list(file, new CancellingListProgressListener(), containerService.getKey(file), 1);
                 }
                 catch(NotfoundException n) {
                     throw e;
