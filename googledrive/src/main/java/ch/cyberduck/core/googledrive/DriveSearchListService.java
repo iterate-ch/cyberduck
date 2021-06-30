@@ -37,14 +37,12 @@ public class DriveSearchListService extends AbstractDriveListService {
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
-    private final DriveAttributesFinderFeature attributes;
     private final String query;
 
     public DriveSearchListService(final DriveSession session, final DriveFileIdProvider fileid, final String query) {
         super(session, fileid, PreferencesFactory.get().getInteger("googledrive.list.limit"), DEFAULT_FIELDS);
         this.session = session;
         this.fileid = fileid;
-        this.attributes = new DriveAttributesFinderFeature(session, fileid);
         this.query = query;
     }
 
