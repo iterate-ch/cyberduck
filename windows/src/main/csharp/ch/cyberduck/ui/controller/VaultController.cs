@@ -25,11 +25,9 @@ using ch.cyberduck.core.features;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
 using ch.cyberduck.core.vault;
-using ch.cyberduck.core.cryptomator;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Core.Resources;
-using java.security;
 using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -39,7 +37,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly INewVaultPromptView _view;
 
         public VaultController(INewVaultPromptView view, BrowserController browserController,
-            IList<Location.Name> regions) : base(view, browserController, regions)
+            IList<Location.Name> regions, Location.Name defaultRegion) : base(view, browserController, regions, defaultRegion)
         {
             _view = view;
             _view.EnablePassphrase();
@@ -91,7 +89,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly BrowserController _controller;
                 private readonly string _filename;
-                private readonly IList<Path> _files;
                 private readonly Path _folder;
 
                 public InnerCreateVaultWorker(BrowserController controller, Path folder, String filename,
