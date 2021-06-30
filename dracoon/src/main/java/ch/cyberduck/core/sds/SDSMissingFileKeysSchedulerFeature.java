@@ -74,7 +74,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
     @Override
     public List<UserFileKeySetRequest> operate(final Session<SDSApiClient> client, final PasswordCallback callback, final Path file) throws BackgroundException {
         final SDSSession session = (SDSSession) client;
-        final SDSNodeIdProvider nodeid = (SDSNodeIdProvider) session.getFeature(VersionIdProvider.class);
+        final SDSNodeIdProvider nodeid = (SDSNodeIdProvider) session._getFeature(VersionIdProvider.class);
         try {
             final UserAccountWrapper account = session.userAccount();
             if(!account.isEncryptionEnabled()) {
