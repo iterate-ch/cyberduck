@@ -22,7 +22,7 @@
         <key>Vendor</key>
         <string>wasabisys-us-east-2</string>
         <key>Description</key>
-        <string>Wasabi Storage (us-east-2)</string>
+        <string>Wasabi US East 2 (N. Virginia)</string>
         <key>Default Hostname</key>
         <string>s3.us-east-2.wasabisys.com</string>
         <key>Hostname Configurable</key>
