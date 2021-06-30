@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
@@ -36,19 +37,21 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly INewFolderPromptView _view;
 
         public FolderController(INewFolderPromptView view, BrowserController browserController,
-            IList<Location.Name> regions) : base(view, browserController)
+            IList<Location.Name> regions, Location.Name defaultRegion) : base(view, browserController)
         {
             _view = view;
             _regions = regions;
             if (HasLocation())
             {
                 view.RegionsEnabled = true;
-                IList<KeyValuePair<string, string>> r = new List<KeyValuePair<string, string>>();
-                foreach (Location.Name region in regions)
-                {
-                    r.Add(new KeyValuePair<string, string>(region.getIdentifier(), region.toString()));
-                }
+                IList<KeyValuePair<string, string>> r = regions.OrderBy(name => name.ToString())
+                    .Select(l => new KeyValuePair<string, string>(l.getIdentifier(), l.ToString())).ToList();
                 view.PopulateRegions(r);
+
+                if (regions.Contains(defaultRegion))
+                {
+                    view.Region = defaultRegion.getIdentifier();
+                }
             }
         }
 

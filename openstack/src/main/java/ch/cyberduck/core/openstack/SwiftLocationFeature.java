@@ -58,6 +58,11 @@ public class SwiftLocationFeature implements Location {
     }
 
     @Override
+    public Name getDefault() {
+        return Location.unknown;
+    }
+
+    @Override
     public Set<Name> getLocations() {
         final Set<Name> locations = new LinkedHashSet<>();
         if(StringUtils.isNotBlank(session.getHost().getRegion())) {

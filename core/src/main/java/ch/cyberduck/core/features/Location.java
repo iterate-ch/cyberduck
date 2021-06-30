@@ -24,8 +24,21 @@ import java.util.Set;
 
 public interface Location {
 
+    /**
+     * @return Default region for new containers
+     */
+    Name getDefault();
+
+    /**
+     * @return Available regions
+     */
     Set<Name> getLocations();
 
+    /**
+     * @param file File or folder
+     * @return Region of container
+     * @throws BackgroundException Failure determining region
+     */
     Name getLocation(Path file) throws BackgroundException;
 
     class Name {

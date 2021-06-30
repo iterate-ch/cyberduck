@@ -56,12 +56,12 @@ public class VaultController extends FolderController {
     private NSLevelIndicator strengthIndicator;
 
     private final NSNotificationCenter notificationCenter
-            = NSNotificationCenter.defaultCenter();
+        = NSNotificationCenter.defaultCenter();
 
     private final PasswordStrengthValidator passwordStrengthValidator = new PasswordStrengthValidator();
 
-    public VaultController(final Path workdir, final Path selected, final Cache<Path> cache, final Set<Location.Name> regions, final Callback callback) {
-        super(workdir, selected, cache, regions, new FolderController.Callback() {
+    public VaultController(final Path workdir, final Path selected, final Cache<Path> cache, final Set<Location.Name> regions, final Location.Name defaultRegion, final Callback callback) {
+        super(workdir, selected, cache, regions, defaultRegion, new FolderController.Callback() {
             @Override
             public void callback(final Path folder, final String region) {
                 //

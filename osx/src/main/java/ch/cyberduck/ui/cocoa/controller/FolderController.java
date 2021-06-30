@@ -24,7 +24,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
@@ -40,6 +39,7 @@ public class FolderController extends FileController {
     private final Path workdir;
     private final Path selected;
     private final Set<Location.Name> regions;
+    private final Location.Name defaultRegion;
     private final Callback callback;
 
     @Outlet
@@ -47,11 +47,12 @@ public class FolderController extends FileController {
     @Outlet
     private NSPopUpButton regionPopup;
 
-    public FolderController(final Path workdir, final Path selected, final Cache<Path> cache, final Set<Location.Name> regions, final Callback callback) {
+    public FolderController(final Path workdir, final Path selected, final Cache<Path> cache, final Set<Location.Name> regions, final Location.Name defaultRegion, final Callback callback) {
         super(workdir, selected, cache);
         this.workdir = workdir;
         this.selected = selected;
         this.regions = regions;
+        this.defaultRegion = defaultRegion;
         this.callback = callback;
     }
 
@@ -74,7 +75,7 @@ public class FolderController extends FileController {
             regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(region -> {
                 regionPopup.addItemWithTitle(region.toString());
                 regionPopup.itemWithTitle(region.toString()).setRepresentedObject(region.getIdentifier());
-                if(region.getIdentifier().equals(PreferencesFactory.get().getProperty("s3.location"))) {
+                if(region.equals(defaultRegion)) {
                     regionPopup.selectItem(regionPopup.lastItem());
                 }
             });
