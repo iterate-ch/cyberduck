@@ -26,6 +26,11 @@
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
+            <artifactId>jersey</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
             <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -41,6 +46,10 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -54,5 +63,45 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>codegen</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-codegen-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <inputSpec>https://app.files.com/api/rest/v1/swagger_doc.json</inputSpec>
+                                    <language>java</language>
+                                    <output>${project.basedir}</output>
+                                    <modelPackage>ch.cyberduck.core.brick.io.swagger.client.model</modelPackage>
+                                    <apiPackage>ch.cyberduck.core.brick.io.swagger.client.api</apiPackage>
+                                    <configOptions>
+                                        <sourceFolder>src/main/java</sourceFolder>
+                                        <library>jersey2</library>
+                                        <dateLibrary>joda</dateLibrary>
+                                        <java8>true</java8>
+                                    </configOptions>
+                                    <environmentVariables>
+                                        <generateApiTests>false</generateApiTests>
+                                        <generateModelTests>false</generateModelTests>
+                                        <generateApiDocumentation>false</generateApiDocumentation>
+                                        <generateSupportingFiles>false</generateSupportingFiles>
+                                    </environmentVariables>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
 
