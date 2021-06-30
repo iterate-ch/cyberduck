@@ -51,7 +51,7 @@ public class S3BucketCreateService {
             }
         }
         AccessControlList acl;
-        if(PreferencesFactory.get().getProperty("s3.bucket.acl.default").equals("public-read")) {
+        if(preferences.getProperty("s3.acl.default").equals("public-read")) {
             acl = AccessControlList.REST_CANNED_PUBLIC_READ;
         }
         else {

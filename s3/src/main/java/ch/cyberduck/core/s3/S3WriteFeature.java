@@ -96,7 +96,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     /**
      * Add default metadata
      */
-    protected S3Object getDetails(final Path file, final TransferStatus status) {
+    protected S3Object getDetails(final Path file, final TransferStatus status) throws BackgroundException {
         final S3Object object = new S3Object(containerService.getKey(file));
         final String mime = status.getMime();
         if(StringUtils.isNotBlank(mime)) {
@@ -129,7 +129,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         }
         if(!Acl.EMPTY.equals(status.getAcl())) {
             if(status.getAcl().isCanned()) {
-                object.setAcl(new S3AccessControlListFeature(session).toAcl(status.getAcl()));
+                object.setAcl(new S3AccessControlListFeature(session).toAcl(file, status.getAcl()));
                 // Reset in status to skip setting ACL in upload filter already applied as canned ACL
                 status.setAcl(Acl.EMPTY);
             }

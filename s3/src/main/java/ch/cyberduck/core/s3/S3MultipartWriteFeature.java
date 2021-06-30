@@ -130,8 +130,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
                                 break;
                         }
                         status.setSegment(true);
-                        final S3Object part = new S3WriteFeature(session)
-                            .getDetails(file, status);
+                        final S3Object part = new S3WriteFeature(session).getDetails(file, status);
                         try {
                             session.getClient().putObjectWithRequestEntityImpl(
                                 containerService.getContainer(file).getName(), part,

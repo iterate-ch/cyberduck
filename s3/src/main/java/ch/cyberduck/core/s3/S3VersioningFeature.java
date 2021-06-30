@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
@@ -164,15 +163,13 @@ public class S3VersioningFeature implements Versioning {
                 destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
                 // Set custom key id stored in KMS
                 destination.setServerSideEncryptionKmsKeyId(encryption.key);
-                // Apply non standard ACL
-                Acl acl = Acl.EMPTY;
                 try {
-                    acl = accessControlListFeature.getPermission(file);
+                    // Apply non standard ACL
+                    destination.setAcl(accessControlListFeature.toAcl(file, accessControlListFeature.getPermission(file)));
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
                     log.warn(String.format("Ignore failure %s", e));
                 }
-                destination.setAcl(accessControlListFeature.toAcl(acl));
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
                     containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
                 if(file.getParent().attributes().getCustom().containsKey(S3VersionedObjectListService.KEY_DELETE_MARKER)) {
