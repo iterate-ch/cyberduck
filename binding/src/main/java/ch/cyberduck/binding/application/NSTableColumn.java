@@ -164,6 +164,18 @@ public abstract class NSTableColumn extends NSObject {
     public abstract boolean isEditable();
 
     /**
+     * Original signature : <code>void setHidden(BOOL)</code><br>
+     * <i>native declaration : :62</i>
+     */
+    public abstract void setHidden(boolean flag);
+
+    /**
+     * Original signature : <code>BOOL isHidden()</code><br>
+     * <i>native declaration : :63</i>
+     */
+    public abstract boolean isHidden();
+
+    /**
      * Original signature : <code>void sizeToFit()</code><br>
      * <i>native declaration : :64</i>
      */
