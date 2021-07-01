@@ -5,7 +5,9 @@ https://cyberduck.io/
 - [Feature] Preference to set default storage class (Google Storage) (#11521)
 - [Feature] Preference to set default bucket region (Google Storage)
 - [Feature] Preference to set predefined set of grantees and permissions for new files (S3, Google Storage)
-- [Feature] Support to set predefined ACL bucket-owner-full-control (S3, Google Storage)
+- [Feature] Support to set predefined ACL bucket-owner-full-control (S3, Google Storage) (#11697)
+- [Feature] Context menu in browser table header to select columns (macOS) (#11718)
+- [Feature] Allow selection of region when creating new bucket for third party S3 providers
 - [Bugfix] Recursive search yields no results (#11424)
 - [Bugfix] Canceled upload to a vault can result in an undeletable folder (Cryptomator) (#11696)
 - [Bugfix] Updated .NET Framework Installer (Windows)
