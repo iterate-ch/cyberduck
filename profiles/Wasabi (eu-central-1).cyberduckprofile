@@ -22,7 +22,7 @@
         <key>Vendor</key>
         <string>wasabisys-eu-central-1</string>
         <key>Description</key>
-        <string>Wasabi Storage (eu-central-1)</string>
+        <string>Wasabi EU Central 1 (Amsterdam)</string>
         <key>Default Hostname</key>
         <string>s3.eu-central-1.wasabisys.com</string>
         <key>Hostname Configurable</key>

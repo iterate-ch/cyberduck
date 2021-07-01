@@ -20,11 +20,11 @@
         <key>Protocol</key>
         <string>s3</string>
         <key>Vendor</key>
-        <string>wasabisys-us-west-1</string>
+        <string>wasabisys-ap-northeast-1</string>
         <key>Description</key>
-        <string>Wasabi US West 1 (Oregon)</string>
+        <string>Wasabi AP Northeast 1 (Tokyo)</string>
         <key>Default Hostname</key>
-        <string>s3.us-west-1.wasabisys.com</string>
+        <string>s3.ap-northeast-1.wasabisys.com</string>
         <key>Hostname Configurable</key>
         <false/>
         <key>Default Port</key>
@@ -38,10 +38,10 @@
         <key>Authorization</key>
         <string>AWS4HMACSHA256</string>
         <key>Region</key>
-        <string>us-west-1</string>
+        <string>ap-northeast-1</string>
         <key>Regions</key>
         <array>
-            <string>us-west-1</string>
+            <string>ap-northeast-1</string>
         </array>
 		<key>Icon</key>
 		<string>TU0AKgAEAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
