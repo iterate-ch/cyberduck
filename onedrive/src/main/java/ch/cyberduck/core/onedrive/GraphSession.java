@@ -212,9 +212,6 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         if(type == Find.class) {
             return (T) new GraphFindFeature(this, fileid);
         }
-        if(type == Search.class) {
-            return (T) new GraphSearchFeature(this, fileid);
-        }
         if(type == Timestamp.class) {
             return (T) new GraphTimestampFeature(this, fileid);
         }
