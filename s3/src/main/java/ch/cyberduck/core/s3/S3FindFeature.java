@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
@@ -64,6 +65,10 @@ public class S3FindFeature implements Find {
                     new S3ObjectListService(session).list(file, new CancellingListProgressListener(), containerService.getKey(file), 1);
                     return true;
                 }
+                catch(ListCanceledException l) {
+                    // Found common prefix
+                    return true;
+                }
                 catch(NotfoundException e) {
                     throw e;
                 }
@@ -77,5 +82,4 @@ public class S3FindFeature implements Find {
             return true;
         }
     }
-
 }
