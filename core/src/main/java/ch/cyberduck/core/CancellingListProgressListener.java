@@ -21,6 +21,8 @@ public class CancellingListProgressListener extends DisabledListProgressListener
 
     @Override
     public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
-        throw new ListCanceledException(list);
+        if(!list.isEmpty()) {
+            throw new ListCanceledException(list);
+        }
     }
 }
