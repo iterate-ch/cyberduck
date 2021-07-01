@@ -148,7 +148,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         }
         catch(NotfoundException e) {
             if(file.isDirectory()) {
-                // File may be marked as placeholder but not placeholder file exists. Check for common prefix returned.
+                // File may be marked as placeholder but no placeholder file exists. Check for common prefix returned.
                 try {
                     new S3ObjectListService(session).list(file, new CancellingListProgressListener(), containerService.getKey(file), 1);
                 }
