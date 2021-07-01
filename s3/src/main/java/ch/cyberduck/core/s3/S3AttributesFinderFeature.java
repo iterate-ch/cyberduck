@@ -29,6 +29,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
@@ -151,10 +152,14 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 try {
                     new S3ObjectListService(session).list(file, new CancellingListProgressListener(), containerService.getKey(file), 1);
                 }
+                catch(ListCanceledException l) {
+                    // Found common prefix
+                    return PathAttributes.EMPTY;
+                }
                 catch(NotfoundException n) {
                     throw e;
                 }
-                // Common prefix only
+                // Found common prefix
                 return PathAttributes.EMPTY;
             }
             final Write.Append append = new S3WriteFeature(session).append(file, new TransferStatus());
