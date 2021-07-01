@@ -379,8 +379,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
         this.window.setToolbar(toolbar);
-        this._updateBrowserColumns(browserListView, browserListViewDelegate);
-        this._updateBrowserColumns(browserOutlineView, browserOutlineViewDelegate);
+        this._configureBrowserColumns(browserListView, browserListViewDelegate);
+        this._configureBrowserColumns(browserOutlineView, browserOutlineViewDelegate);
         if(LicenseFactory.find().equals(LicenseFactory.EMPTY_LICENSE)) {
             this.addDonateWindowTitle();
         }
@@ -1228,7 +1228,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             protected boolean isTypeSelectSupported() {
                 return true;
             }
-
         }).id());
     }
 
@@ -1318,6 +1317,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }).id());
     }
 
+    @Action
+    public void tableHeaderMenuItemClicked(final NSMenuItem sender) {
+        final boolean enabled = !preferences.getBoolean(String.format("browser.column.%s", sender.representedObject()));
+        sender.setState(enabled ? NSCell.NSOnState : NSCell.NSOffState);
+        preferences.setProperty(String.format("browser.column.%s", sender.representedObject()), enabled);
+        updateBrowserTableColumns();
+    }
+
     protected void _updateBrowserAttributes(NSTableView tableView) {
         tableView.setUsesAlternatingRowBackgroundColors(preferences.getBoolean("browser.alternatingRows"));
         if(preferences.getBoolean("browser.horizontalLines") && preferences.getBoolean("browser.verticalLines")) {
@@ -1346,9 +1353,23 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             NSIndexSet.indexSetWithIndexesInRange(NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(bookmarkTable.numberOfRows()))));
     }
 
+    /**
+     * Set current visible state for all columns in browser
+     */
     private void _updateBrowserColumns(final NSTableView table, final AbstractBrowserTableDelegate delegate) {
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.size.name()));
-        if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.size.name()))) {
+        final NSEnumerator tableColumns = table.tableColumns().objectEnumerator();
+        NSObject next;
+        while((next = tableColumns.nextObject()) != null) {
+            final NSTableColumn c = Rococoa.cast(next, NSTableColumn.class);
+            c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", c.identifier())));
+        }
+    }
+
+    /**
+     * Add table columns to browser
+     */
+    private void _configureBrowserColumns(final NSTableView table, final AbstractBrowserTableDelegate delegate) {
+        {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.size.name());
             c.headerCell().setStringValue(BrowserColumn.size.toString());
             c.setMinWidth(50f);
@@ -1357,10 +1378,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth(150f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
+            c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.size.name())));
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.modified.name()));
-        if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.modified.name()))) {
+        {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.modified.name());
             c.headerCell().setStringValue(BrowserColumn.modified.toString());
             c.setMinWidth(100f);
@@ -1369,10 +1390,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
+            c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.modified.name())));
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.owner.name()));
-        if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.owner.name()))) {
+        {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.owner.name());
             c.headerCell().setStringValue(BrowserColumn.owner.toString());
             c.setMinWidth(50);
@@ -1381,10 +1402,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
+            c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.owner.name())));
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.group.name()));
-        if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.group.name()))) {
+        {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.group.name());
             c.headerCell().setStringValue(BrowserColumn.group.toString());
             c.setMinWidth(50);
@@ -1393,10 +1414,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
+            c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.group.name())));
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.permission.name()));
-        if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.permission.name()))) {
+        {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.permission.name());
             c.headerCell().setStringValue(BrowserColumn.permission.toString());
             c.setMinWidth(100);
@@ -1405,10 +1426,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth(800);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
+            c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.permission.name())));
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.kind.name()));
-        if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.kind.name()))) {
+        {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.kind.name());
             c.headerCell().setStringValue(BrowserColumn.kind.toString());
             c.setMinWidth(50);
@@ -1417,10 +1438,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
+            c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.kind.name())));
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.extension.name()));
-        if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.extension.name()))) {
+        {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.extension.name());
             c.headerCell().setStringValue(BrowserColumn.extension.toString());
             c.setMinWidth(50);
@@ -1429,10 +1450,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
+            c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.extension.name())));
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.region.name()));
-        if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.region.name()))) {
+        {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.region.name());
             c.headerCell().setStringValue(BrowserColumn.region.toString());
             c.setMinWidth(50);
@@ -1441,10 +1462,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
+            c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.region.name())));
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.version.name()));
-        if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.version.name()))) {
+        {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.version.name());
             c.headerCell().setStringValue(BrowserColumn.version.toString());
             c.setMinWidth(50);
@@ -1453,10 +1474,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
+            c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.version.name())));
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.storageclass.name()));
-        if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.storageclass.name()))) {
+        {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.storageclass.name());
             c.headerCell().setStringValue(BrowserColumn.storageclass.toString());
             c.setMinWidth(50);
@@ -1465,6 +1486,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
+            c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.storageclass.name())));
             table.addTableColumn(c);
         }
         NSTableColumn selected = table.tableColumnWithIdentifier(preferences.getProperty("browser.sort.column"));
@@ -1478,8 +1500,19 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             selected
         );
         table.sizeToFit();
-        table.setAutosaveName("browser.autosave");
-        table.setAutosaveTableColumns(true);
+        final NSMenu headerMenu = NSMenu.menu();
+        for(BrowserColumn column : BrowserColumn.values()) {
+            if(BrowserColumn.icon.equals(column)) {
+                continue;
+            }
+            final NSMenuItem item = NSMenuItem.itemWithTitle(column.toString(), Foundation.selector("tableHeaderMenuItemClicked:"), StringUtils.EMPTY);
+            item.setRepresentedObject(column.name());
+            item.setTarget(this.id());
+            item.setEnabled(!BrowserColumn.filename.equals(column));
+            item.setState(preferences.getBoolean(String.format("browser.column.%s", column.name())) ? NSCell.NSOnState : NSCell.NSOffState);
+            headerMenu.addItem(item);
+        }
+        table.headerView().setMenu(headerMenu);
         this.reload();
     }
 
