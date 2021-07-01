@@ -41,7 +41,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
     @Test
     public void testGetConfigurationDisabled() throws Exception {
         final VersioningConfiguration configuration
-            = new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)));
+            = new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertNotNull(configuration);
         assertFalse(configuration.isEnabled());
         assertFalse(configuration.isMultifactor());

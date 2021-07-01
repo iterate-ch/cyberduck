@@ -41,7 +41,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
 
     @Test
     public void testGetMetadataBucket() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(container);
         assertTrue(metadata.isEmpty());
     }
@@ -63,7 +63,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSetMetadataFileLeaveOtherFeatures() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
         final String v = UUID.randomUUID().toString();

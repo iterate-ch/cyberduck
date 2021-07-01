@@ -43,7 +43,7 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
 
     @Test
     public void testFindNotFound() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final List<MultipartUpload> list = new S3DefaultMultipartService(session).find(test);
         assertTrue(list.isEmpty());
@@ -51,7 +51,7 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
 
     @Test
     public void testDelete() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3DefaultMultipartService service = new S3DefaultMultipartService(session);
         for(MultipartUpload multipart : service.find(container)) {
             service.delete(multipart);
@@ -89,7 +89,7 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
 
     @Test
     public void testFindKeyWithSpace() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "t f", EnumSet.of(Path.Type.file));
         final List<MultipartUpload> list = new S3DefaultMultipartService(session).find(test);
         assertTrue(list.isEmpty());

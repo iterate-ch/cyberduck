@@ -58,7 +58,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
     @Test
     public void testUpload() throws Exception {
         final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session));
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
@@ -84,7 +84,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
     @Test
     public void testUploadSSE() throws Exception {
         final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session));
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);

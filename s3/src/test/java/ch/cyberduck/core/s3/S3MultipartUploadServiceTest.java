@@ -41,7 +41,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     @Test
     public void testUploadSinglePart() throws Exception {
         final S3MultipartUploadService service = new S3MultipartUploadService(session, new S3WriteFeature(session), 5 * 1024L, 2);
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = String.format(" %s.txt", UUID.randomUUID().toString());
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
@@ -70,7 +70,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     @Test
     public void testUploadSinglePartEncrypted() throws Exception {
         final S3MultipartUploadService service = new S3MultipartUploadService(session, new S3WriteFeature(session), 5 * 1024L, 2);
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
@@ -113,7 +113,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     public void testMultipleParts() throws Exception {
         // 5L * 1024L * 1024L
         final S3MultipartUploadService m = new S3MultipartUploadService(session, new S3WriteFeature(session), 5242880L, 5);
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 5242881;
@@ -155,7 +155,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
 
     @Test
     public void testAppendSecondPart() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString();
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final int length = 12 * 1024 * 1024;
@@ -211,7 +211,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
 
     @Test
     public void testAppendNoPartCompleted() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         String name = UUID.randomUUID().toString();
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);

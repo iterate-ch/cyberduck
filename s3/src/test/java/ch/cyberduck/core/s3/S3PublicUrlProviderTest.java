@@ -38,7 +38,7 @@ public class S3PublicUrlProviderTest extends AbstractS3Test {
 
     @Test
     public void toDownloadUrl() throws Exception {
-        final Path bucket = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
         final S3PublicUrlProvider provider = new S3PublicUrlProvider(session);

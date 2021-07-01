@@ -25,7 +25,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindNotFound() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3FindFeature f = new S3FindFeature(session);
         assertFalse(f.find(test));
@@ -39,7 +39,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindBucket() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session).find(container));
     }
 
@@ -50,7 +50,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindCommonPrefix() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session).find(container));
         final String prefix = new AlphanumericRandomStringService().random();
         final Path test = new S3TouchFeature(session).touch(

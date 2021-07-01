@@ -135,7 +135,7 @@ public class S3SessionTest extends AbstractS3Test {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
             System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
-        host.setDefaultPath("/test-us-east-1-cyberduck");
+        host.setDefaultPath("/test-eu-west-1-cyberduck");
         final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -219,7 +219,7 @@ public class S3SessionTest extends AbstractS3Test {
 
     @Test
     public void testBucketVirtualHostStyleCustomHost() {
-        final Host host = new Host(new S3Protocol(), "test-us-east-1-cyberduck");
+        final Host host = new Host(new S3Protocol(), "test-eu-central-1-cyberduck");
         assertFalse(new S3Session(host).connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
             .getConfiguration().getBoolProperty("s3service.disable-dns-buckets", true));
     }

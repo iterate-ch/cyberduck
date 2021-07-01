@@ -28,7 +28,7 @@ public class S3BucketListServiceTest extends AbstractS3Test {
         final AttributedList<Path> list = new S3BucketListService(session).list(
             new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertTrue(list.contains(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
     @Test
@@ -36,7 +36,7 @@ public class S3BucketListServiceTest extends AbstractS3Test {
         final AttributedList<Path> list = new S3BucketListService(session).list(
             new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertTrue(list.contains(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
     @Test

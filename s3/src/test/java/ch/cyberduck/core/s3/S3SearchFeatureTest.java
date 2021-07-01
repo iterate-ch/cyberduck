@@ -43,7 +43,7 @@ public class S3SearchFeatureTest extends AbstractS3Test {
     @Test
     public void testSearchInBucket() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
-        final Path bucket = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new S3TouchFeature(session).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3SearchFeature feature = new S3SearchFeature(session);
         assertNotNull(feature.search(bucket, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
@@ -56,7 +56,7 @@ public class S3SearchFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSearchInDirectory() throws Exception {
-        final Path workdir = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path workdir = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         workdir.attributes().setRegion("us-east-1");
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(workdir, name, EnumSet.of(Path.Type.file));

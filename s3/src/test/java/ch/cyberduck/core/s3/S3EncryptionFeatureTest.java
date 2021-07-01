@@ -40,7 +40,7 @@ public class S3EncryptionFeatureTest extends AbstractS3Test {
     @Test
     public void testGetAlgorithms() throws Exception {
         assertEquals(2, new S3EncryptionFeature(session).getKeys(
-            new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledLoginCallback()).size());
+            new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledLoginCallback()).size());
     }
 
     @Test

@@ -46,33 +46,33 @@ public class S3UrlProviderTest extends AbstractS3Test {
 
     @Test
     public void testProviderUriWithKey() {
-        final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck/key",
+        final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session).toUrl(new Path("/test-eu-west-1-cyberduck/key",
             EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.provider).iterator();
-        assertEquals("s3://test-us-east-1-cyberduck/key", provider.next().getUrl());
+        assertEquals("s3://test-eu-west-1-cyberduck/key", provider.next().getUrl());
     }
 
     @Test
     public void testProviderUriRoot() {
-        final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck",
+        final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session).toUrl(new Path("/test-eu-west-1-cyberduck",
             EnumSet.of(Path.Type.directory))).filter(DescriptiveUrl.Type.provider).iterator();
-        assertEquals("s3://test-us-east-1-cyberduck/", provider.next().getUrl());
+        assertEquals("s3://test-eu-west-1-cyberduck/", provider.next().getUrl());
     }
 
     @Test
     public void testHttpUri() {
-        final Iterator<DescriptiveUrl> http = new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck/key",
+        final Iterator<DescriptiveUrl> http = new S3UrlProvider(session).toUrl(new Path("/test-eu-west-1-cyberduck/key",
             EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.http).iterator();
-        assertEquals("https://test-us-east-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
-        assertEquals("http://test-us-east-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
+        assertEquals("https://test-eu-west-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
+        assertEquals("http://test-eu-west-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
     }
 
     @Test
     public void testHttpUriCustomPort() {
         session.getHost().setPort(8443);
-        final Iterator<DescriptiveUrl> http = new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck/key",
+        final Iterator<DescriptiveUrl> http = new S3UrlProvider(session).toUrl(new Path("/test-eu-west-1-cyberduck/key",
             EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.http).iterator();
-        assertEquals("https://test-us-east-1-cyberduck.s3.amazonaws.com:8443/key", http.next().getUrl());
-        assertEquals("http://test-us-east-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
+        assertEquals("https://test-eu-west-1-cyberduck.s3.amazonaws.com:8443/key", http.next().getUrl());
+        assertEquals("http://test-eu-west-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
                 public String findLoginPassword(final Host bookmark) {
                     return "k";
                 }
-            }).toUrl(new Path("/test-us-east-1-cyberduck/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed)
+            }).toUrl(new Path("/test-eu-west-1-cyberduck/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed)
         );
     }
 
@@ -110,7 +110,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
             }
         });
         assertNotNull(
-            provider.toUrl(new Path("/test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed)
+            provider.toUrl(new Path("/test-eu-west-1-cyberduck/test", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed)
         );
     }
 
@@ -122,13 +122,13 @@ public class S3UrlProviderTest extends AbstractS3Test {
                 return "k";
             }
         });
-        assertTrue(provider.toSignedUrl(new Path("/test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
-            "https://test-us-east-1-cyberduck.s3.amazonaws.com/test?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential="));
+        assertTrue(provider.toSignedUrl(new Path("/test-eu-west-1-cyberduck/test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
+            "https://test-eu-west-1-cyberduck.s3.amazonaws.com/test?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential="));
     }
 
     @Test
     public void testPlaceholder() {
         assertTrue(
-            new S3UrlProvider(session).toUrl(new Path("/test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.directory))).filter(DescriptiveUrl.Type.signed).isEmpty());
+            new S3UrlProvider(session).toUrl(new Path("/test-eu-west-1-cyberduck/test", EnumSet.of(Path.Type.directory))).filter(DescriptiveUrl.Type.signed).isEmpty());
     }
 }

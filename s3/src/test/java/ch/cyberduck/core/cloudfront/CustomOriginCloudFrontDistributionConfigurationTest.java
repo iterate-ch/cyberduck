@@ -142,7 +142,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
         final Host bookmark = new Host(new TestProtocol(), "myhost.localdomain");
         final CustomOriginCloudFrontDistributionConfiguration configuration
             = new CustomOriginCloudFrontDistributionConfiguration(bookmark, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         configuration.read(container, Distribution.CUSTOM, new DisabledLoginCallback());
     }
 }
