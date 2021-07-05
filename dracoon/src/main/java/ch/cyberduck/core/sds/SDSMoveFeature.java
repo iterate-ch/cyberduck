@@ -120,15 +120,25 @@ public class SDSMoveFeature implements Move {
         final SDSPermissionsFeature acl = new SDSPermissionsFeature(session, nodeid);
         if(!new SimplePathPredicate(source.getParent()).test(target.getParent())) {
             // Change parent node
-            if(!acl.containsRole(source, SDSPermissionsFeature.CHANGE_ROLE) &&
-                acl.containsRole(source, SDSPermissionsFeature.DELETE_ROLE) &&
-                acl.containsRole(target, SDSPermissionsFeature.CREATE_ROLE)) {
-                log.warn(String.format("Deny move of %s with missing permissions for user", source));
+            if(!acl.containsRole(containerService.getContainer(source), SDSPermissionsFeature.CHANGE_ROLE)) {
+                log.warn(String.format("Deny move of %s to %s changing parent node with missing role %s on data room %s",
+                    source, target, SDSPermissionsFeature.CHANGE_ROLE, containerService.getContainer(source)));
+                return false;
+            }
+            if(!acl.containsRole(containerService.getContainer(source), SDSPermissionsFeature.DELETE_ROLE)) {
+                log.warn(String.format("Deny move of %s to %s changing parent node with missing role %s on data room %s",
+                    source, target, SDSPermissionsFeature.DELETE_ROLE, containerService.getContainer(source)));
+                return false;
+            }
+            if(!acl.containsRole(containerService.getContainer(target), SDSPermissionsFeature.CREATE_ROLE)) {
+                log.warn(String.format("Deny move of %s to %s changing parent node with missing role %s on data room %s",
+                    source, target, SDSPermissionsFeature.CREATE_ROLE, containerService.getContainer(target)));
                 return false;
             }
         }
-        if(!acl.containsRole(source, SDSPermissionsFeature.CHANGE_ROLE)) {
-            log.warn(String.format("Deny move of %s with missing permissions for user", source));
+        if(!acl.containsRole(containerService.getContainer(source), SDSPermissionsFeature.CHANGE_ROLE)) {
+            log.warn(String.format("Deny move of %s to %s with missing permissions for user with missing role %s on data room %s",
+                source, target, SDSPermissionsFeature.CHANGE_ROLE, containerService.getContainer(source)));
             return false;
         }
         if(!StringUtils.equals(source.getName(), target.getName())) {
