@@ -167,6 +167,7 @@
 		478F0DF412FB03DC000FE33C /* update.pem in Resources */ = {isa = PBXBuildFile; fileRef = 478F0DF312FB03DC000FE33C /* update.pem */; };
 		47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
 		4791D0541C282B1100CC7DAB /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4791D0521C2829F300CC7DAB /* Sparkle.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		4792649D2694FAC5005F622E /* preferences-profiles.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4792649C2694FAC5005F622E /* preferences-profiles.pdf */; };
 		479626AF1C98057C00CEBEC0 /* googledrive.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479626AE1C98057C00CEBEC0 /* googledrive.tiff */; };
 		47990FD2195C63AE009EBB7C /* Support.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47990FD0195C63AE009EBB7C /* Support.strings */; };
 		47993F7811699F12000271A8 /* Transfer.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47993F5711699F12000271A8 /* Transfer.strings */; };
@@ -1096,6 +1097,7 @@
 		4790762A0764903900676C18 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = i18n/src/main/resources/cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47911A170B84C4E8001A29AE /* Acknowledgments.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Acknowledgments.rtf; sourceTree = "<group>"; };
 		4791D0521C2829F300CC7DAB /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = osx/target/Sparkle.framework; sourceTree = "<group>"; };
+		4792649C2694FAC5005F622E /* preferences-profiles.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = "preferences-profiles.pdf"; path = "toolbar/preferences-profiles.pdf"; sourceTree = "<group>"; };
 		479626AE1C98057C00CEBEC0 /* googledrive.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = googledrive.tiff; sourceTree = "<group>"; };
 		4796C7271B3317F60042891D /* zh_TW */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_TW; path = i18n/src/main/resources/zh_TW.lproj/Alert.strings; sourceTree = "<group>"; };
 		4796C7281B3317F60042891D /* zh_TW */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_TW; path = i18n/src/main/resources/zh_TW.lproj/Archive.strings; sourceTree = "<group>"; };
@@ -2022,6 +2024,7 @@
 		4749604A1CD75C7200B020C9 /* toolbar */ = {
 			isa = PBXGroup;
 			children = (
+				4792649C2694FAC5005F622E /* preferences-profiles.pdf */,
 				47DE478D2598F2D300B18BCB /* preferences-bandwidth.pdf */,
 				47DE478B2598F2D300B18BCB /* preferences-browser.pdf */,
 				47DE478A2598F2D300B18BCB /* preferences-connection.pdf */,
@@ -2267,6 +2270,7 @@
 				474163C106C4F64100AC0BD2 /* Info.xib in Resources */,
 				4749606A1CD75C9700B020C9 /* filetransfer.pdf in Resources */,
 				474163C206C4F64100AC0BD2 /* Browser.xib in Resources */,
+				4792649D2694FAC5005F622E /* preferences-profiles.pdf in Resources */,
 				47ED775F1CEA1314009EBA0A /* transferstop.pdf in Resources */,
 				47DE47972598F2D400B18BCB /* preferences-browser.pdf in Resources */,
 				47B2EA031E2CF5E1007BE83D /* Transfer.xib in Resources */,
