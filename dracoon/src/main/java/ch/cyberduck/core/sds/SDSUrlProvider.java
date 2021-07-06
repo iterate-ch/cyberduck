@@ -40,7 +40,7 @@ public class SDSUrlProvider implements UrlProvider {
 
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
-        final String nodeid = file.isDirectory() ? file.attributes().getVersionId() : file.getParent().attributes().getVersionId();
+        final String nodeid = file.attributes().getVersionId();
         if(StringUtils.isBlank(nodeid)) {
             return DescriptiveUrlBag.empty();
         }
