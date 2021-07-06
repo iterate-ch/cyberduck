@@ -61,6 +61,12 @@ public class S3LocationFeature implements Location {
         if(StringUtils.isNotBlank(session.getHost().getRegion())) {
             return Collections.singleton(new S3Region(session.getHost().getRegion()));
         }
+        if(!S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
+            if(new S3Protocol().getRegions().equals(session.getHost().getProtocol().getRegions())) {
+                // Return emtpy set for unknown provider
+                return Collections.emptySet();
+            }
+        }
         return session.getHost().getProtocol().getRegions();
     }
 

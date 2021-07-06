@@ -17,29 +17,21 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AsciiRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 
 import static ch.cyberduck.core.features.Location.unknown;
 import static org.junit.Assert.*;
@@ -133,10 +125,18 @@ public class S3LocationFeatureTest extends AbstractS3Test {
 
     @Test
     public void testEmptyThirdPartyProvider() {
-        final Host host = new Host(new S3Protocol(), "mys3", new Credentials(
-            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
+        final Host host = new Host(new S3Protocol(), "mys3");
         final S3Session session = new S3Session(host);
         assertTrue(new S3LocationFeature(session).getLocations().isEmpty());
+    }
+
+    @Test
+    public void testNonEmptyProfile() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+            new Local("../profiles/Wasabi (us-central-1).cyberduckprofile"));
+        final S3Session session = new S3Session(new Host(profile, profile.getDefaultHostname()));
+        assertFalse(new S3LocationFeature(session).getLocations().isEmpty());
+        assertTrue(new S3LocationFeature(session).getLocations().contains(new Location.Name("us-central-1")));
     }
 }
