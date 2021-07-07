@@ -182,7 +182,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             throw new StoregateExceptionMappingService(fileid).map(e);
         }
         catch(IOException e) {
-            new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
