@@ -1,12 +1,12 @@
-package ch.cyberduck.core.sds.provider;
+package ch.cyberduck.core.jersey;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -76,8 +76,8 @@ public class HttpComponentsConnector implements Connector {
             HeaderUtils.checkHeaderChanges(clientHeadersSnapshot, clientRequest.getHeaders(), this.getClass().getName());
 
             final Response.StatusType status = response.getStatusLine().getReasonPhrase() == null
-                    ? Statuses.from(response.getStatusLine().getStatusCode())
-                    : Statuses.from(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+                ? Statuses.from(response.getStatusLine().getStatusCode())
+                : Statuses.from(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
 
             final ClientResponse responseContext = new ClientResponse(status, clientRequest);
             final List<URI> redirectLocations = context.getRedirectLocations();
@@ -124,10 +124,10 @@ public class HttpComponentsConnector implements Connector {
     private HttpUriRequest toUriHttpRequest(final ClientRequest request) {
         final HttpEntity entity = this.getHttpEntity(request);
         return RequestBuilder
-                .create(request.getMethod())
-                .setUri(request.getUri())
-                .setEntity(entity)
-                .build();
+            .create(request.getMethod())
+            .setUri(request.getUri())
+            .setEntity(entity)
+            .build();
     }
 
     private static Map<String, String> writeOutBoundHeaders(final MultivaluedMap<String, Object> headers,
