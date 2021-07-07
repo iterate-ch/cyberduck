@@ -16,20 +16,18 @@
 // feedback@cyberduck.io
 // 
 
+using ch.cyberduck.core;
+using ch.cyberduck.core.features;
+using ch.cyberduck.core.threading;
+using ch.cyberduck.core.vault;
+using ch.cyberduck.core.worker;
+using ch.cyberduck.ui.browser;
+using Ch.Cyberduck.Core;
+using java.util;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using ch.cyberduck.core;
-using ch.cyberduck.core.features;
-using ch.cyberduck.core.threading;
-using ch.cyberduck.core.worker;
-using ch.cyberduck.core.vault;
-using ch.cyberduck.ui.browser;
-using java.security;
-using java.util;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Core.Resources;
 using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
