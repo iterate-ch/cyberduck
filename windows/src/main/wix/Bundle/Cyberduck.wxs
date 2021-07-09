@@ -99,59 +99,37 @@
         <File Source="$(var.cyberduck.TargetDir)/Cyberduck.exe.config" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ExceptionReporter.WinForms">
-        <File Source="$(var.cyberduck.TargetDir)/ExceptionReporter.NET.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ExceptionReporter.WinForms" Platform="64bit" Priority="3" />
-        </File>
+          <File Source="$(var.cyberduck.TargetDir)/ExceptionReporter.NET.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="DotNetZip">
-        <File Source="$(var.cyberduck.TargetDir)/DotNetZip.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_DotNetZip" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/DotNetZip.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="SimpleMapi">
-        <File Source="$(var.cyberduck.TargetDir)/SimpleMapi.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_SimpleMapi" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/SimpleMapi.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="CustomOpenFileFolderDialog">
-        <File Source="$(var.cyberduck.TargetDir)/CustomOpenFileFolderDialog.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_CustomOpenFileFolderDialog" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/CustomOpenFileFolderDialog.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="Cyberduck.Core">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_Cyberduck.Core" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="Cyberduck.Core.Native">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_Cyberduck.Core.Native" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="Cyberduck.Protocols">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Protocols.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_Cyberduck.Protocols" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Protocols.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="Cyberduck.Bonjour">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_Cyberduck.Bonjour" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
         <Component Id="Cyberduck.Bonjour.Native">
-            <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.Native.dll" KeyPath="yes" Checksum="yes">
-                <netfx:NativeImage Id="ngen_Cyberduck.Bonjour.Native" Platform="64bit" Priority="3"/>
-            </File>
+            <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.Native.dll" KeyPath="yes" Checksum="yes"/>
         </Component>
         <Component Id="Cyberduck.Importer">
-            <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Importer.dll" KeyPath="yes" Checksum="yes">
-                <netfx:NativeImage Id="ngen_Cyberduck.Importer" Platform="64bit" Priority="3"/>
-            </File>
+            <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Importer.dll" KeyPath="yes" Checksum="yes"/>
         </Component>
         <Component Id="Cyberduck.Cryptomator">
-            <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes">
-                <netfx:NativeImage Id="ngen_Cyberduck.Cryptomator" Platform="64bit" Priority="3"/>
-            </File>
+            <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes"/>
         </Component>
         <Component Id="WinSparkle">
             <File Source="$(var.cyberduck.TargetDir)/WinSparkle.dll" KeyPath="yes" Checksum="yes"/>
@@ -160,144 +138,88 @@
             <File Source="$(var.cyberduck.TargetDir)/msvcr120.dll" KeyPath="yes" Checksum="yes"/>
         </Component>
         <Component Id="ikvm.beans">
-            <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Beans.dll" KeyPath="yes" Checksum="yes">
-                <netfx:NativeImage Id="ngen_ikvm.beans" Platform="64bit" Priority="3"/>
-            </File>
+            <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Beans.dll" KeyPath="yes" Checksum="yes"/>
         </Component>
         <Component Id="ikvm.core">
-            <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Core.dll" KeyPath="yes" Checksum="yes">
-                <netfx:NativeImage Id="ngen_ikvm.core" Platform="64bit" Priority="3"/>
-            </File>
+            <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Core.dll" KeyPath="yes" Checksum="yes"/>
         </Component>
         <Component Id="ikvm.charsets">
-            <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Charsets.dll" KeyPath="yes" Checksum="yes">
-                <netfx:NativeImage Id="ngen_ikvm.charsets" Platform="64bit" Priority="3"/>
-            </File>
+            <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Charsets.dll" KeyPath="yes" Checksum="yes"/>
         </Component>
         <Component Id="ikvm.localedata">
-            <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Localedata.dll" KeyPath="yes" Checksum="yes">
-                <netfx:NativeImage Id="ngen_ikvm.localedata" Platform="64bit" Priority="3"/>
-            </File>
+            <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Localedata.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.security">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Security.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.security" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Security.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.text">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Text.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.text" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Text.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.util">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Util.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.util" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Util.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.management">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Management.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.management" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Management.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.xml.api">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.API.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.xml.api" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.API.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.xml.bind">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Bind.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.xml.bind" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Bind.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.xml.parse">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Parse.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.xml.parse" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Parse.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.xml.transform">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Transform.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.xml.transform" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.Transform.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.xml.xpath">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.XPath.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.xml.path" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.XML.XPath.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.swingawt">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.SwingAWT.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.swingawt" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.SwingAWT.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.naming">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Naming.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.naming" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Naming.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.remoting">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Remoting.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.remoting" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Remoting.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.runtime">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.Runtime.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.runtime" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.Runtime.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.runtime.jni">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.Runtime.JNI.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.runtime.jni" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.Runtime.JNI.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.jdbc">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Jdbc.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.jdbc" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Jdbc.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.misc" Guid="29564F63-CA76-4944-9022-D705E038DF24">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Misc.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.misc" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Misc.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="Interop.Bonjour">
-        <File Source="$(var.cyberduck.TargetDir)/Interop.Bonjour.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_Interop.Bonjour" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/Interop.Bonjour.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="objectlistview">
-        <File Source="$(var.cyberduck.TargetDir)/ObjectListView.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_objectlistview" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/ObjectListView.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="structuremap">
-        <File Source="$(var.cyberduck.TargetDir)/StructureMap.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_structuremap" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/StructureMap.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="WAPICP">
-        <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_WAPICP" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="WAPICPShell">
-        <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.Shell.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_WAPICPShell" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.Shell.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="MSTKUWPNotifications">
-        <File Source="$(var.cyberduck.TargetDir)/Microsoft.Toolkit.Uwp.Notifications.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_MSTKUWPNotifications" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/Microsoft.Toolkit.Uwp.Notifications.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.native">
-        <File Source="$(var.cyberduck.TargetDir)/ikvm-native-win32-x64.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ikvm.native" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/ikvm-native-win32-x64.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="jnidispatch">
-        <File Source="$(var.cyberduck.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_jnidispatch" Platform="64bit" Priority="3" />
-        </File>
+        <File Source="$(var.cyberduck.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="sunmscapi">
         <File Source="$(var.cyberduck.TargetDir)/sunmscapi.dll" KeyPath="yes" Checksum="yes" />
