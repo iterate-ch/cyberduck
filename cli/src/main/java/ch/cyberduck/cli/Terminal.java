@@ -40,7 +40,6 @@ import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
-import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.logging.LoggerPrintStream;
 import ch.cyberduck.core.manta.MantaProtocol;
@@ -115,11 +114,16 @@ public class Terminal {
     private final ProgressListener progress;
     private final TranscriptListener transcript;
 
-    private final ProtocolFactory protocols = ProtocolFactory.get();
+    private final ProtocolFactory protocols;
     private final CommandLine input;
     private final Options options;
 
     public Terminal(final TerminalPreferences defaults, final Options options, final CommandLine input) {
+        this(ProtocolFactory.get(), defaults, options, input);
+    }
+
+    public Terminal(final ProtocolFactory protocols, final TerminalPreferences defaults, final Options options, final CommandLine input) {
+        this.protocols = protocols;
         this.preferences = defaults.withDefaults(input);
         this.protocols.register(
             new FTPProtocol(),
@@ -250,7 +254,7 @@ public class Terminal {
             TerminalVersionPrinter.print(preferences);
             return Exit.success;
         }
-        if(!new TerminalOptionsInputValidator().validate(input)) {
+        if(!new TerminalOptionsInputValidator(protocols).validate(input)) {
             console.printf("Try '%s' for more options.%n", "duck --help");
             return Exit.failure;
         }
@@ -504,17 +508,13 @@ public class Terminal {
         }
         final Editor editor = factory.create(controller, session, application, remote);
         final CountDownLatch lock = new CountDownLatch(1);
-        final Worker<Transfer> worker = editor.open(new ApplicationQuitCallback() {
-            @Override
-            public void callback() {
-                lock.countDown();
-            }
-        }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor, new DefaultEditorListener.Listener() {
-            @Override
-            public void saved() {
-                //
-            }
-        }));
+        final Worker<Transfer> worker = editor.open(lock::countDown, new DisabledTransferErrorCallback(),
+            new DefaultEditorListener(controller, session, editor, new DefaultEditorListener.Listener() {
+                @Override
+                public void saved() {
+                    //
+                }
+            }));
         final SessionBackgroundAction<Transfer> action = new TerminalBackgroundAction<>(controller, session, worker);
         try {
             this.execute(action);
@@ -568,7 +568,7 @@ public class Terminal {
         }
     }
 
-    private enum Exit {
+    protected enum Exit {
         success,
         failure
     }
