@@ -86,10 +86,11 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                 final List<FileUploadPartEntity> uploadPartEntities = new FileActionsApi(session.getClient())
                     .beginUpload(file.getAbsolute(), new BeginUploadPathBody().ref(ref).part(partNumber));
                 for(FileUploadPartEntity uploadPartEntity : uploadPartEntities) {
+                    final long length = Math.min(Math.max(size / (MAXIMUM_UPLOAD_PARTS - 1), partsize), remaining);
                     parts.add(this.submit(pool, file, local, throttle, listener, status,
-                        uploadPartEntity.getUploadUri(), partNumber, offset, uploadPartEntity.getPartsize(), callback));
-                    remaining -= uploadPartEntity.getPartsize();
-                    offset += uploadPartEntity.getPartsize();
+                        uploadPartEntity.getUploadUri(), partNumber, offset, length, callback));
+                    remaining -= length;
+                    offset += length;
                     ref = uploadPartEntity.getRef();
                 }
             }
