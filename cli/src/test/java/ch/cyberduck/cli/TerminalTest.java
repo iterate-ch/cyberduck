@@ -16,6 +16,7 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -38,7 +39,7 @@ public class TerminalTest {
         final CommandLineParser parser = new DefaultParser();
         final Options options = TerminalOptionsBuilder.options();
         final CommandLine input = parser.parse(options, new String[]{"--download",
-            "https://ftp.gnu.org/gnu/wget/wget-1.19.4.tar.gz", new AlphanumericRandomStringService().random()});
+            "https://ftp.gnu.org/gnu/wget/wget-1.19.4.tar.gz", LocalFactory.get(LocalFactory.get(), new AlphanumericRandomStringService().random()).getAbsolute()});
         final LinuxTerminalPreferences preferences = new LinuxTerminalPreferences();
         preferences.load();
         preferences.setFactories();
