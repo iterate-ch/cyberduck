@@ -9,10 +9,8 @@ namespace Ch.Cyberduck.Core.Refresh.Views
 
     public partial class ProfilesPage
     {
-        public ProfilesPage(ProfilesViewModel viewModel)
+        public ProfilesPage()
         {
-            ViewModel = viewModel;
-
             InitializeComponent();
 
             this.WhenActivated(d =>

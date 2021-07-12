@@ -30,6 +30,7 @@ using Ch.Cyberduck.Core.Refresh.Views;
 using StructureMap;
 using static Ch.Cyberduck.ImageHelper;
 using Application = ch.cyberduck.core.local.Application;
+using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -129,7 +130,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             generalButton_Click(this, EventArgs.Empty);
             toolStrip.Renderer = new FirefoxStyleRenderer();
 
-            profilesPageHost.Child = ObjectFactory.GetInstance<ProfilesPage>();
+            var profilesViewModel = ObjectFactory.GetInstance<ProfilesViewModel>();
+            var profilesPage = ObjectFactory.GetInstance<ProfilesPage>();
+            profilesPage.ViewModel = profilesViewModel;
+            profilesPageHost.Child = profilesPage;
 
             //todo
             CenterToParent();
