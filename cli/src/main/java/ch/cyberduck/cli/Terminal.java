@@ -274,7 +274,14 @@ public class Terminal {
                 new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
                 new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
                 VaultRegistryFactory.create(new TerminalPasswordCallback()));
-            final Path remote = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
+            final Path remote;
+            if(StringUtils.startsWith(new CommandLinePathParser(input).parse(uri).getAbsolute(), TildePathExpander.PREFIX)) {
+                final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
+                remote = new TildePathExpander(home).expand(new CommandLinePathParser(input).parse(uri));
+            }
+            else {
+                remote = new CommandLinePathParser(input).parse(uri);
+            }
             try {
                 // Set remote file attributes of existing file on server
                 remote.withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source, new AttributesWorker(cache, remote))));
