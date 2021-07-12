@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,44 +17,24 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * Show site DNS configuration.
  */
-@ApiModel(description = "Show site DNS configuration.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "Show site DNS configuration.")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class DnsRecordEntity {
-  @JsonProperty("id")
-  private String id = null;
-
   @JsonProperty("domain")
   private String domain = null;
+
+  @JsonProperty("id")
+  private String id = null;
 
   @JsonProperty("rrtype")
   private String rrtype = null;
 
   @JsonProperty("value")
   private String value = null;
-
-  public DnsRecordEntity id(String id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Unique label for DNS record; used by Zapier and other integrations.
-   * @return id
-  **/
-  @ApiModelProperty(example = "customdomain.com-CNAME-site.files.com", value = "Unique label for DNS record; used by Zapier and other integrations.")
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public DnsRecordEntity domain(String domain) {
     this.domain = domain;
@@ -66,13 +45,31 @@ public class DnsRecordEntity {
    * DNS record domain name
    * @return domain
   **/
-  @ApiModelProperty(example = "my-custom-domain.com", value = "DNS record domain name")
+  @Schema(example = "my-custom-domain.com", description = "DNS record domain name")
   public String getDomain() {
     return domain;
   }
 
   public void setDomain(String domain) {
     this.domain = domain;
+  }
+
+  public DnsRecordEntity id(String id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Unique label for DNS record; used by Zapier and other integrations.
+   * @return id
+  **/
+  @Schema(example = "customdomain.com-CNAME-site.files.com", description = "Unique label for DNS record; used by Zapier and other integrations.")
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
   }
 
   public DnsRecordEntity rrtype(String rrtype) {
@@ -84,7 +81,7 @@ public class DnsRecordEntity {
    * DNS record type
    * @return rrtype
   **/
-  @ApiModelProperty(example = "CNAME", value = "DNS record type")
+  @Schema(example = "CNAME", description = "DNS record type")
   public String getRrtype() {
     return rrtype;
   }
@@ -102,7 +99,7 @@ public class DnsRecordEntity {
    * DNS record value
    * @return value
   **/
-  @ApiModelProperty(example = "mysite.files.com", value = "DNS record value")
+  @Schema(example = "mysite.files.com", description = "DNS record value")
   public String getValue() {
     return value;
   }
@@ -121,15 +118,15 @@ public class DnsRecordEntity {
       return false;
     }
     DnsRecordEntity dnsRecordEntity = (DnsRecordEntity) o;
-    return Objects.equals(this.id, dnsRecordEntity.id) &&
-        Objects.equals(this.domain, dnsRecordEntity.domain) &&
+    return Objects.equals(this.domain, dnsRecordEntity.domain) &&
+        Objects.equals(this.id, dnsRecordEntity.id) &&
         Objects.equals(this.rrtype, dnsRecordEntity.rrtype) &&
         Objects.equals(this.value, dnsRecordEntity.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, domain, rrtype, value);
+    return Objects.hash(domain, id, rrtype, value);
   }
 
 
@@ -138,8 +135,8 @@ public class DnsRecordEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class DnsRecordEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    domain: ").append(toIndentedString(domain)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    rrtype: ").append(toIndentedString(rrtype)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("}");
@@ -158,4 +155,3 @@ public class DnsRecordEntity {
   }
 
 }
-

@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,15 +17,14 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * ErrorsEntity
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class ErrorsEntity {
   @JsonProperty("fields")
   private List<String> fields = null;
@@ -51,7 +49,7 @@ public class ErrorsEntity {
    * A list of fields where errors occur
    * @return fields
   **/
-  @ApiModelProperty(example = "[]", value = "A list of fields where errors occur")
+  @Schema(example = "[]", description = "A list of fields where errors occur")
   public List<String> getFields() {
     return fields;
   }
@@ -77,7 +75,7 @@ public class ErrorsEntity {
    * A list of error messages
    * @return messages
   **/
-  @ApiModelProperty(example = "[]", value = "A list of error messages")
+  @Schema(example = "[]", description = "A list of error messages")
   public List<String> getMessages() {
     return messages;
   }
@@ -129,4 +127,3 @@ public class ErrorsEntity {
   }
 
 }
-

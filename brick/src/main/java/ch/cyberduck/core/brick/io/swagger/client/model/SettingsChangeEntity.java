@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,15 +17,13 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.joda.time.DateTime;
-
 /**
  * List Settings Changes
  */
-@ApiModel(description = "List Settings Changes")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Settings Changes")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class SettingsChangeEntity {
   @JsonProperty("change_details")
   private Object changeDetails = null;
@@ -46,7 +43,7 @@ public class SettingsChangeEntity {
    * Specifics on what changed.
    * @return changeDetails
   **/
-  @ApiModelProperty(example = "\"{ domain: [\\\"olddomain.com', \\\"newdomain.com\\\"] }\"", value = "Specifics on what changed.")
+  @Schema(example = "{ domain: [\"olddomain.com', \"newdomain.com\"] }", description = "Specifics on what changed.")
   public Object getChangeDetails() {
     return changeDetails;
   }
@@ -64,7 +61,7 @@ public class SettingsChangeEntity {
    * The time this change was made
    * @return createdAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "The time this change was made")
+  @Schema(example = "2000-01-01T01:00Z", description = "The time this change was made")
   public DateTime getCreatedAt() {
     return createdAt;
   }
@@ -82,7 +79,7 @@ public class SettingsChangeEntity {
    * The user id responsible for this change
    * @return userId
   **/
-  @ApiModelProperty(example = "1", value = "The user id responsible for this change")
+  @Schema(example = "1", description = "The user id responsible for this change")
   public Integer getUserId() {
     return userId;
   }
@@ -136,4 +133,3 @@ public class SettingsChangeEntity {
   }
 
 }
-

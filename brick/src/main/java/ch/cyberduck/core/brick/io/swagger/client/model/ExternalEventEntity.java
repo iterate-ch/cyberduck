@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,33 +17,32 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.joda.time.DateTime;
-
 /**
  * List External Events
  */
-@ApiModel(description = "List External Events")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List External Events")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class ExternalEventEntity {
-  @JsonProperty("id")
-  private Integer id = null;
+  @JsonProperty("body")
+  private String body = null;
+
+  @JsonProperty("body_url")
+  private String bodyUrl = null;
+
+  @JsonProperty("created_at")
+  private DateTime createdAt = null;
 
   /**
    * Type of event being recorded.
    */
   public enum EventTypeEnum {
     LDAP_SYNC("ldap_sync"),
-    
     REMOTE_SERVER_SYNC("remote_server_sync"),
-    
     LOCKOUT("lockout"),
-    
     LDAP_LOGIN("ldap_login"),
-    
     SAML_LOGIN("saml_login"),
-    
     CLIENT_LOG("client_log");
 
     private String value;
@@ -52,7 +50,6 @@ public class ExternalEventEntity {
     EventTypeEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -62,27 +59,27 @@ public class ExternalEventEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static EventTypeEnum fromValue(String value) {
+    public static EventTypeEnum fromValue(String text) {
       for (EventTypeEnum b : EventTypeEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("event_type")
+  }  @JsonProperty("event_type")
   private EventTypeEnum eventType = null;
+
+  @JsonProperty("id")
+  private Integer id = null;
 
   /**
    * Status of event.
    */
   public enum StatusEnum {
     SUCCESS("success"),
-    
     ERROR("error");
 
     private String value;
@@ -90,7 +87,6 @@ public class ExternalEventEntity {
     StatusEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -100,83 +96,18 @@ public class ExternalEventEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static StatusEnum fromValue(String value) {
+    public static StatusEnum fromValue(String text) {
       for (StatusEnum b : StatusEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("status")
+  }  @JsonProperty("status")
   private StatusEnum status = null;
-
-  @JsonProperty("body")
-  private String body = null;
-
-  @JsonProperty("created_at")
-  private DateTime createdAt = null;
-
-  @JsonProperty("body_url")
-  private String bodyUrl = null;
-
-  public ExternalEventEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Event ID
-   * @return id
-  **/
-  @ApiModelProperty(example = "1", value = "Event ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public ExternalEventEntity eventType(EventTypeEnum eventType) {
-    this.eventType = eventType;
-    return this;
-  }
-
-   /**
-   * Type of event being recorded.
-   * @return eventType
-  **/
-  @ApiModelProperty(example = "", value = "Type of event being recorded.")
-  public EventTypeEnum getEventType() {
-    return eventType;
-  }
-
-  public void setEventType(EventTypeEnum eventType) {
-    this.eventType = eventType;
-  }
-
-  public ExternalEventEntity status(StatusEnum status) {
-    this.status = status;
-    return this;
-  }
-
-   /**
-   * Status of event.
-   * @return status
-  **/
-  @ApiModelProperty(example = "", value = "Status of event.")
-  public StatusEnum getStatus() {
-    return status;
-  }
-
-  public void setStatus(StatusEnum status) {
-    this.status = status;
-  }
 
   public ExternalEventEntity body(String body) {
     this.body = body;
@@ -187,31 +118,13 @@ public class ExternalEventEntity {
    * Event body
    * @return body
   **/
-  @ApiModelProperty(example = "", value = "Event body")
+  @Schema(description = "Event body")
   public String getBody() {
     return body;
   }
 
   public void setBody(String body) {
     this.body = body;
-  }
-
-  public ExternalEventEntity createdAt(DateTime createdAt) {
-    this.createdAt = createdAt;
-    return this;
-  }
-
-   /**
-   * External event create date/time
-   * @return createdAt
-  **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "External event create date/time")
-  public DateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(DateTime createdAt) {
-    this.createdAt = createdAt;
   }
 
   public ExternalEventEntity bodyUrl(String bodyUrl) {
@@ -223,13 +136,85 @@ public class ExternalEventEntity {
    * Link to log file.
    * @return bodyUrl
   **/
-  @ApiModelProperty(example = "", value = "Link to log file.")
+  @Schema(description = "Link to log file.")
   public String getBodyUrl() {
     return bodyUrl;
   }
 
   public void setBodyUrl(String bodyUrl) {
     this.bodyUrl = bodyUrl;
+  }
+
+  public ExternalEventEntity createdAt(DateTime createdAt) {
+    this.createdAt = createdAt;
+    return this;
+  }
+
+   /**
+   * External event create date/time
+   * @return createdAt
+  **/
+  @Schema(example = "2000-01-01T01:00Z", description = "External event create date/time")
+  public DateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(DateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public ExternalEventEntity eventType(EventTypeEnum eventType) {
+    this.eventType = eventType;
+    return this;
+  }
+
+   /**
+   * Type of event being recorded.
+   * @return eventType
+  **/
+  @Schema(description = "Type of event being recorded.")
+  public EventTypeEnum getEventType() {
+    return eventType;
+  }
+
+  public void setEventType(EventTypeEnum eventType) {
+    this.eventType = eventType;
+  }
+
+  public ExternalEventEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Event ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "Event ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public ExternalEventEntity status(StatusEnum status) {
+    this.status = status;
+    return this;
+  }
+
+   /**
+   * Status of event.
+   * @return status
+  **/
+  @Schema(description = "Status of event.")
+  public StatusEnum getStatus() {
+    return status;
+  }
+
+  public void setStatus(StatusEnum status) {
+    this.status = status;
   }
 
 
@@ -242,17 +227,17 @@ public class ExternalEventEntity {
       return false;
     }
     ExternalEventEntity externalEventEntity = (ExternalEventEntity) o;
-    return Objects.equals(this.id, externalEventEntity.id) &&
-        Objects.equals(this.eventType, externalEventEntity.eventType) &&
-        Objects.equals(this.status, externalEventEntity.status) &&
-        Objects.equals(this.body, externalEventEntity.body) &&
+    return Objects.equals(this.body, externalEventEntity.body) &&
+        Objects.equals(this.bodyUrl, externalEventEntity.bodyUrl) &&
         Objects.equals(this.createdAt, externalEventEntity.createdAt) &&
-        Objects.equals(this.bodyUrl, externalEventEntity.bodyUrl);
+        Objects.equals(this.eventType, externalEventEntity.eventType) &&
+        Objects.equals(this.id, externalEventEntity.id) &&
+        Objects.equals(this.status, externalEventEntity.status);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, eventType, status, body, createdAt, bodyUrl);
+    return Objects.hash(body, bodyUrl, createdAt, eventType, id, status);
   }
 
 
@@ -261,12 +246,12 @@ public class ExternalEventEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class ExternalEventEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    eventType: ").append(toIndentedString(eventType)).append("\n");
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    body: ").append(toIndentedString(body)).append("\n");
-    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    bodyUrl: ").append(toIndentedString(bodyUrl)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
+    sb.append("    eventType: ").append(toIndentedString(eventType)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -283,4 +268,3 @@ public class ExternalEventEntity {
   }
 
 }
-

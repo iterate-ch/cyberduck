@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,38 +17,18 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * List Message Comment Reactions
  */
-@ApiModel(description = "List Message Comment Reactions")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Message Comment Reactions")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class MessageCommentReactionEntity {
-  @JsonProperty("id")
-  private Integer id = null;
-
   @JsonProperty("emoji")
   private String emoji = null;
 
-  public MessageCommentReactionEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Reaction ID
-   * @return id
-  **/
-  @ApiModelProperty(example = "1", value = "Reaction ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
+  @JsonProperty("id")
+  private Integer id = null;
 
   public MessageCommentReactionEntity emoji(String emoji) {
     this.emoji = emoji;
@@ -60,13 +39,31 @@ public class MessageCommentReactionEntity {
    * Emoji used in the reaction.
    * @return emoji
   **/
-  @ApiModelProperty(example = "👍", value = "Emoji used in the reaction.")
+  @Schema(example = "👍", description = "Emoji used in the reaction.")
   public String getEmoji() {
     return emoji;
   }
 
   public void setEmoji(String emoji) {
     this.emoji = emoji;
+  }
+
+  public MessageCommentReactionEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Reaction ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "Reaction ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
   }
 
 
@@ -79,13 +76,13 @@ public class MessageCommentReactionEntity {
       return false;
     }
     MessageCommentReactionEntity messageCommentReactionEntity = (MessageCommentReactionEntity) o;
-    return Objects.equals(this.id, messageCommentReactionEntity.id) &&
-        Objects.equals(this.emoji, messageCommentReactionEntity.emoji);
+    return Objects.equals(this.emoji, messageCommentReactionEntity.emoji) &&
+        Objects.equals(this.id, messageCommentReactionEntity.id);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, emoji);
+    return Objects.hash(emoji, id);
   }
 
 
@@ -94,8 +91,8 @@ public class MessageCommentReactionEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class MessageCommentReactionEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    emoji: ").append(toIndentedString(emoji)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -112,4 +109,3 @@ public class MessageCommentReactionEntity {
   }
 
 }
-

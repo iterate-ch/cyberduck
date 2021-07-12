@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,27 +17,25 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.joda.time.DateTime;
-
 /**
  * List Api Keys
  */
-@ApiModel(description = "List Api Keys")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Api Keys")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class ApiKeyEntity {
-  @JsonProperty("id")
-  private Integer id = null;
+  @JsonProperty("created_at")
+  private DateTime createdAt = null;
 
   @JsonProperty("descriptive_label")
   private String descriptiveLabel = null;
 
-  @JsonProperty("created_at")
-  private DateTime createdAt = null;
-
   @JsonProperty("expires_at")
   private DateTime expiresAt = null;
+
+  @JsonProperty("id")
+  private Integer id = null;
 
   @JsonProperty("key")
   private String key = null;
@@ -57,13 +54,9 @@ public class ApiKeyEntity {
    */
   public enum PermissionSetEnum {
     NONE("none"),
-    
     FULL("full"),
-    
     DESKTOP_APP("desktop_app"),
-    
     SYNC_APP("sync_app"),
-    
     OFFICE_INTEGRATION("office_integration");
 
     private String value;
@@ -71,7 +64,6 @@ public class ApiKeyEntity {
     PermissionSetEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -81,19 +73,17 @@ public class ApiKeyEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static PermissionSetEnum fromValue(String value) {
+    public static PermissionSetEnum fromValue(String text) {
       for (PermissionSetEnum b : PermissionSetEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("permission_set")
+  }  @JsonProperty("permission_set")
   private PermissionSetEnum permissionSet = null;
 
   @JsonProperty("platform")
@@ -102,22 +92,22 @@ public class ApiKeyEntity {
   @JsonProperty("user_id")
   private Integer userId = null;
 
-  public ApiKeyEntity id(Integer id) {
-    this.id = id;
+  public ApiKeyEntity createdAt(DateTime createdAt) {
+    this.createdAt = createdAt;
     return this;
   }
 
    /**
-   * API Key ID
-   * @return id
+   * Time which API Key was created
+   * @return createdAt
   **/
-  @ApiModelProperty(example = "1", value = "API Key ID")
-  public Integer getId() {
-    return id;
+  @Schema(example = "2000-01-01T01:00Z", description = "Time which API Key was created")
+  public DateTime getCreatedAt() {
+    return createdAt;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
+  public void setCreatedAt(DateTime createdAt) {
+    this.createdAt = createdAt;
   }
 
   public ApiKeyEntity descriptiveLabel(String descriptiveLabel) {
@@ -129,31 +119,13 @@ public class ApiKeyEntity {
    * Unique label that describes this API key.  Useful for external systems where you may have API keys from multiple accounts and want a human-readable label for each key.
    * @return descriptiveLabel
   **/
-  @ApiModelProperty(example = "Site-wide API key for https://site.files.com/ (key ID #1)", value = "Unique label that describes this API key.  Useful for external systems where you may have API keys from multiple accounts and want a human-readable label for each key.")
+  @Schema(example = "Site-wide API key for https://site.files.com/ (key ID #1)", description = "Unique label that describes this API key.  Useful for external systems where you may have API keys from multiple accounts and want a human-readable label for each key.")
   public String getDescriptiveLabel() {
     return descriptiveLabel;
   }
 
   public void setDescriptiveLabel(String descriptiveLabel) {
     this.descriptiveLabel = descriptiveLabel;
-  }
-
-  public ApiKeyEntity createdAt(DateTime createdAt) {
-    this.createdAt = createdAt;
-    return this;
-  }
-
-   /**
-   * Time which API Key was created
-   * @return createdAt
-  **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Time which API Key was created")
-  public DateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(DateTime createdAt) {
-    this.createdAt = createdAt;
   }
 
   public ApiKeyEntity expiresAt(DateTime expiresAt) {
@@ -165,13 +137,31 @@ public class ApiKeyEntity {
    * API Key expiration date
    * @return expiresAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "API Key expiration date")
+  @Schema(example = "2000-01-01T01:00Z", description = "API Key expiration date")
   public DateTime getExpiresAt() {
     return expiresAt;
   }
 
   public void setExpiresAt(DateTime expiresAt) {
     this.expiresAt = expiresAt;
+  }
+
+  public ApiKeyEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * API Key ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "API Key ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public ApiKeyEntity key(String key) {
@@ -183,7 +173,7 @@ public class ApiKeyEntity {
    * API Key actual key string
    * @return key
   **/
-  @ApiModelProperty(example = "[key]", value = "API Key actual key string")
+  @Schema(example = "[key]", description = "API Key actual key string")
   public String getKey() {
     return key;
   }
@@ -198,10 +188,10 @@ public class ApiKeyEntity {
   }
 
    /**
-   * API Key last used - note this value is only updated once per 3 hour period, so the &#39;actual&#39; time of last use may be up to 3 hours later than this timestamp.
+   * API Key last used - note this value is only updated once per 3 hour period, so the &#x27;actual&#x27; time of last use may be up to 3 hours later than this timestamp.
    * @return lastUseAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "API Key last used - note this value is only updated once per 3 hour period, so the 'actual' time of last use may be up to 3 hours later than this timestamp.")
+  @Schema(example = "2000-01-01T01:00Z", description = "API Key last used - note this value is only updated once per 3 hour period, so the 'actual' time of last use may be up to 3 hours later than this timestamp.")
   public DateTime getLastUseAt() {
     return lastUseAt;
   }
@@ -219,7 +209,7 @@ public class ApiKeyEntity {
    * Internal name for the API Key.  For your use.
    * @return name
   **/
-  @ApiModelProperty(example = "My Main API Key", value = "Internal name for the API Key.  For your use.")
+  @Schema(example = "My Main API Key", description = "Internal name for the API Key.  For your use.")
   public String getName() {
     return name;
   }
@@ -237,7 +227,7 @@ public class ApiKeyEntity {
    * Folder path restriction for this api key.
    * @return path
   **/
-  @ApiModelProperty(example = "shared/docs", value = "Folder path restriction for this api key.")
+  @Schema(example = "shared/docs", description = "Folder path restriction for this api key.")
   public String getPath() {
     return path;
   }
@@ -255,7 +245,7 @@ public class ApiKeyEntity {
    * Permissions for this API Key.  Keys with the &#x60;desktop_app&#x60; permission set only have the ability to do the functions provided in our Desktop App (File and Share Link operations).  Additional permission sets may become available in the future, such as for a Site Admin to give a key with no administrator privileges.  If you have ideas for permission sets, please let us know.
    * @return permissionSet
   **/
-  @ApiModelProperty(example = "full", value = "Permissions for this API Key.  Keys with the `desktop_app` permission set only have the ability to do the functions provided in our Desktop App (File and Share Link operations).  Additional permission sets may become available in the future, such as for a Site Admin to give a key with no administrator privileges.  If you have ideas for permission sets, please let us know.")
+  @Schema(example = "full", description = "Permissions for this API Key.  Keys with the `desktop_app` permission set only have the ability to do the functions provided in our Desktop App (File and Share Link operations).  Additional permission sets may become available in the future, such as for a Site Admin to give a key with no administrator privileges.  If you have ideas for permission sets, please let us know.")
   public PermissionSetEnum getPermissionSet() {
     return permissionSet;
   }
@@ -273,7 +263,7 @@ public class ApiKeyEntity {
    * If this API key represents a Desktop app, what platform was it created on?
    * @return platform
   **/
-  @ApiModelProperty(example = "win32", value = "If this API key represents a Desktop app, what platform was it created on?")
+  @Schema(example = "win32", description = "If this API key represents a Desktop app, what platform was it created on?")
   public String getPlatform() {
     return platform;
   }
@@ -291,7 +281,7 @@ public class ApiKeyEntity {
    * User ID for the owner of this API Key.  May be blank for Site-wide API Keys.
    * @return userId
   **/
-  @ApiModelProperty(example = "1", value = "User ID for the owner of this API Key.  May be blank for Site-wide API Keys.")
+  @Schema(example = "1", description = "User ID for the owner of this API Key.  May be blank for Site-wide API Keys.")
   public Integer getUserId() {
     return userId;
   }
@@ -310,10 +300,10 @@ public class ApiKeyEntity {
       return false;
     }
     ApiKeyEntity apiKeyEntity = (ApiKeyEntity) o;
-    return Objects.equals(this.id, apiKeyEntity.id) &&
+    return Objects.equals(this.createdAt, apiKeyEntity.createdAt) &&
         Objects.equals(this.descriptiveLabel, apiKeyEntity.descriptiveLabel) &&
-        Objects.equals(this.createdAt, apiKeyEntity.createdAt) &&
         Objects.equals(this.expiresAt, apiKeyEntity.expiresAt) &&
+        Objects.equals(this.id, apiKeyEntity.id) &&
         Objects.equals(this.key, apiKeyEntity.key) &&
         Objects.equals(this.lastUseAt, apiKeyEntity.lastUseAt) &&
         Objects.equals(this.name, apiKeyEntity.name) &&
@@ -325,7 +315,7 @@ public class ApiKeyEntity {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, descriptiveLabel, createdAt, expiresAt, key, lastUseAt, name, path, permissionSet, platform, userId);
+    return Objects.hash(createdAt, descriptiveLabel, expiresAt, id, key, lastUseAt, name, path, permissionSet, platform, userId);
   }
 
 
@@ -334,10 +324,10 @@ public class ApiKeyEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class ApiKeyEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    descriptiveLabel: ").append(toIndentedString(descriptiveLabel)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
+    sb.append("    descriptiveLabel: ").append(toIndentedString(descriptiveLabel)).append("\n");
     sb.append("    expiresAt: ").append(toIndentedString(expiresAt)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    key: ").append(toIndentedString(key)).append("\n");
     sb.append("    lastUseAt: ").append(toIndentedString(lastUseAt)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
@@ -361,4 +351,3 @@ public class ApiKeyEntity {
   }
 
 }
-

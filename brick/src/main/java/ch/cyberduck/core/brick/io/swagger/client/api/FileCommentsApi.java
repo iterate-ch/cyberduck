@@ -2,21 +2,21 @@ package ch.cyberduck.core.brick.io.swagger.client.api;
 
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.ApiClient;
-import ch.cyberduck.core.brick.io.swagger.client.ApiResponse;
 import ch.cyberduck.core.brick.io.swagger.client.Configuration;
 import ch.cyberduck.core.brick.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
 import ch.cyberduck.core.brick.io.swagger.client.model.FileCommentEntity;
+import ch.cyberduck.core.brick.io.swagger.client.model.FileCommentsBody;
+import ch.cyberduck.core.brick.io.swagger.client.model.FileCommentsIdBody;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
-public class FileCommentsApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")public class FileCommentsApi {
   private ApiClient apiClient;
 
   public FileCommentsApi() {
@@ -42,24 +42,11 @@ public class FileCommentsApi {
    * @throws ApiException if fails to make API call
    */
   public void deleteFileCommentsId(Integer id) throws ApiException {
-
-    deleteFileCommentsIdWithHttpInfo(id);
-  }
-
-  /**
-   * Delete File Comment
-   * Delete File Comment
-   * @param id File Comment ID. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteFileCommentsIdWithHttpInfo(Integer id) throws ApiException {
     Object localVarPostBody = null;
-    
     // verify the required parameter 'id' is set
     if (id == null) {
       throw new ApiException(400, "Missing the required parameter 'id' when calling deleteFileCommentsId");
     }
-    
     // create path and map variables
     String localVarPath = "/file_comments/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
@@ -70,10 +57,9 @@ public class FileCommentsApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    
-    
+
     final String[] localVarAccepts = {
-      "application/json"
+      
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -84,8 +70,7 @@ public class FileCommentsApi {
 
     String[] localVarAuthNames = new String[] {  };
 
-
-    return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * List File Comments by path
@@ -96,27 +81,12 @@ public class FileCommentsApi {
    * @return List&lt;FileCommentEntity&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<FileCommentEntity> listForPath(String path, String cursor, Integer perPage) throws ApiException {
-    return listForPathWithHttpInfo(path, cursor, perPage).getData();
-      }
-
-  /**
-   * List File Comments by path
-   * List File Comments by path
-   * @param path Path to operate on. (required)
-   * @param cursor Used for pagination.  Send a cursor value to resume an existing list from the point at which you left off.  Get a cursor from an existing list via the X-Files-Cursor-Next header. (optional)
-   * @param perPage Number of records to show per page.  (Max: 10,000, 1,000 or less is recommended). (optional)
-   * @return ApiResponse&lt;List&lt;FileCommentEntity&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<FileCommentEntity>> listForPathWithHttpInfo(String path, String cursor, Integer perPage) throws ApiException {
+  public List<FileCommentEntity> fileCommentsListForPath(String path, String cursor, Integer perPage) throws ApiException {
     Object localVarPostBody = null;
-    
     // verify the required parameter 'path' is set
     if (path == null) {
-      throw new ApiException(400, "Missing the required parameter 'path' when calling listForPath");
+      throw new ApiException(400, "Missing the required parameter 'path' when calling fileCommentsListForPath");
     }
-    
     // create path and map variables
     String localVarPath = "/file_comments/files/{path}"
       .replaceAll("\\{" + "path" + "\\}", apiClient.escapeString(path.toString()));
@@ -129,8 +99,7 @@ public class FileCommentsApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "cursor", cursor));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "per_page", perPage));
 
-    
-    
+
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -145,40 +114,25 @@ public class FileCommentsApi {
 
     GenericType<List<FileCommentEntity>> localVarReturnType = new GenericType<List<FileCommentEntity>>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
+  }
   /**
    * Update File Comment
    * Update File Comment
+   * @param body  (required)
    * @param id File Comment ID. (required)
-   * @param body Comment body. (required)
    * @return FileCommentEntity
    * @throws ApiException if fails to make API call
    */
-  public FileCommentEntity patchFileCommentsId(Integer id, String body) throws ApiException {
-    return patchFileCommentsIdWithHttpInfo(id, body).getData();
-      }
-
-  /**
-   * Update File Comment
-   * Update File Comment
-   * @param id File Comment ID. (required)
-   * @param body Comment body. (required)
-   * @return ApiResponse&lt;FileCommentEntity&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<FileCommentEntity> patchFileCommentsIdWithHttpInfo(Integer id, String body) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling patchFileCommentsId");
-    }
-    
+  public FileCommentEntity patchFileCommentsId(FileCommentsIdBody body, Integer id) throws ApiException {
+    Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
       throw new ApiException(400, "Missing the required parameter 'body' when calling patchFileCommentsId");
     }
-    
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling patchFileCommentsId");
+    }
     // create path and map variables
     String localVarPath = "/file_comments/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
@@ -189,9 +143,6 @@ public class FileCommentsApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    
-    if (body != null)
-      localVarFormParams.put("body", body);
 
     final String[] localVarAccepts = {
       "application/json"
@@ -199,7 +150,7 @@ public class FileCommentsApi {
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      "application/json", "application/x-www-form-urlencoded", "multipart/form-data"
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -207,40 +158,20 @@ public class FileCommentsApi {
 
     GenericType<FileCommentEntity> localVarReturnType = new GenericType<FileCommentEntity>() {};
     return apiClient.invokeAPI(localVarPath, "PATCH", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
+  }
   /**
    * Create File Comment
    * Create File Comment
-   * @param body Comment body. (required)
-   * @param path File path. (required)
+   * @param body  (required)
    * @return FileCommentEntity
    * @throws ApiException if fails to make API call
    */
-  public FileCommentEntity postFileComments(String body, String path) throws ApiException {
-    return postFileCommentsWithHttpInfo(body, path).getData();
-      }
-
-  /**
-   * Create File Comment
-   * Create File Comment
-   * @param body Comment body. (required)
-   * @param path File path. (required)
-   * @return ApiResponse&lt;FileCommentEntity&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<FileCommentEntity> postFileCommentsWithHttpInfo(String body, String path) throws ApiException {
-    Object localVarPostBody = null;
-    
+  public FileCommentEntity postFileComments(FileCommentsBody body) throws ApiException {
+    Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
       throw new ApiException(400, "Missing the required parameter 'body' when calling postFileComments");
     }
-    
-    // verify the required parameter 'path' is set
-    if (path == null) {
-      throw new ApiException(400, "Missing the required parameter 'path' when calling postFileComments");
-    }
-    
     // create path and map variables
     String localVarPath = "/file_comments";
 
@@ -250,11 +181,6 @@ public class FileCommentsApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    
-    if (body != null)
-      localVarFormParams.put("body", body);
-if (path != null)
-      localVarFormParams.put("path", path);
 
     final String[] localVarAccepts = {
       "application/json"
@@ -262,7 +188,7 @@ if (path != null)
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      "application/json", "application/x-www-form-urlencoded", "multipart/form-data"
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -270,5 +196,5 @@ if (path != null)
 
     GenericType<FileCommentEntity> localVarReturnType = new GenericType<FileCommentEntity>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
+  }
 }

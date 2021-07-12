@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.auth;
 
 import ch.cyberduck.core.brick.io.swagger.client.Pair;

@@ -2,21 +2,21 @@ package ch.cyberduck.core.brick.io.swagger.client.api;
 
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.ApiClient;
-import ch.cyberduck.core.brick.io.swagger.client.ApiResponse;
 import ch.cyberduck.core.brick.io.swagger.client.Configuration;
 import ch.cyberduck.core.brick.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
 import ch.cyberduck.core.brick.io.swagger.client.model.GroupUserEntity;
+import ch.cyberduck.core.brick.io.swagger.client.model.GroupUsersBody;
+import ch.cyberduck.core.brick.io.swagger.client.model.GroupUsersIdBody;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
-public class GroupUsersApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")public class GroupUsersApi {
   private ApiClient apiClient;
 
   public GroupUsersApi() {
@@ -44,36 +44,19 @@ public class GroupUsersApi {
    * @throws ApiException if fails to make API call
    */
   public void deleteGroupUsersId(Integer id, Integer groupId, Integer userId) throws ApiException {
-
-    deleteGroupUsersIdWithHttpInfo(id, groupId, userId);
-  }
-
-  /**
-   * Delete Group User
-   * Delete Group User
-   * @param id Group User ID. (required)
-   * @param groupId Group ID from which to remove user. (required)
-   * @param userId User ID to remove from group. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteGroupUsersIdWithHttpInfo(Integer id, Integer groupId, Integer userId) throws ApiException {
     Object localVarPostBody = null;
-    
     // verify the required parameter 'id' is set
     if (id == null) {
       throw new ApiException(400, "Missing the required parameter 'id' when calling deleteGroupUsersId");
     }
-    
     // verify the required parameter 'groupId' is set
     if (groupId == null) {
       throw new ApiException(400, "Missing the required parameter 'groupId' when calling deleteGroupUsersId");
     }
-    
     // verify the required parameter 'userId' is set
     if (userId == null) {
       throw new ApiException(400, "Missing the required parameter 'userId' when calling deleteGroupUsersId");
     }
-    
     // create path and map variables
     String localVarPath = "/group_users/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
@@ -86,10 +69,9 @@ public class GroupUsersApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "group_id", groupId));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "user_id", userId));
 
-    
-    
+
     final String[] localVarAccepts = {
-      "application/json"
+      
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -100,8 +82,7 @@ public class GroupUsersApi {
 
     String[] localVarAuthNames = new String[] {  };
 
-
-    return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * List Group Users
@@ -114,22 +95,7 @@ public class GroupUsersApi {
    * @throws ApiException if fails to make API call
    */
   public List<GroupUserEntity> getGroupUsers(Integer userId, String cursor, Integer perPage, Integer groupId) throws ApiException {
-    return getGroupUsersWithHttpInfo(userId, cursor, perPage, groupId).getData();
-      }
-
-  /**
-   * List Group Users
-   * List Group Users
-   * @param userId User ID.  If provided, will return group_users of this user. (optional)
-   * @param cursor Used for pagination.  Send a cursor value to resume an existing list from the point at which you left off.  Get a cursor from an existing list via the X-Files-Cursor-Next header. (optional)
-   * @param perPage Number of records to show per page.  (Max: 10,000, 1,000 or less is recommended). (optional)
-   * @param groupId Group ID.  If provided, will return group_users of this group. (optional)
-   * @return ApiResponse&lt;List&lt;GroupUserEntity&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<GroupUserEntity>> getGroupUsersWithHttpInfo(Integer userId, String cursor, Integer perPage, Integer groupId) throws ApiException {
     Object localVarPostBody = null;
-    
     // create path and map variables
     String localVarPath = "/group_users";
 
@@ -143,8 +109,7 @@ public class GroupUsersApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "per_page", perPage));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "group_id", groupId));
 
-    
-    
+
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -159,49 +124,25 @@ public class GroupUsersApi {
 
     GenericType<List<GroupUserEntity>> localVarReturnType = new GenericType<List<GroupUserEntity>>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
+  }
   /**
    * Update Group User
    * Update Group User
+   * @param body  (required)
    * @param id Group User ID. (required)
-   * @param groupId Group ID to add user to. (required)
-   * @param userId User ID to add to group. (required)
-   * @param admin Is the user a group administrator? (optional)
    * @return GroupUserEntity
    * @throws ApiException if fails to make API call
    */
-  public GroupUserEntity patchGroupUsersId(Integer id, Integer groupId, Integer userId, Boolean admin) throws ApiException {
-    return patchGroupUsersIdWithHttpInfo(id, groupId, userId, admin).getData();
-      }
-
-  /**
-   * Update Group User
-   * Update Group User
-   * @param id Group User ID. (required)
-   * @param groupId Group ID to add user to. (required)
-   * @param userId User ID to add to group. (required)
-   * @param admin Is the user a group administrator? (optional)
-   * @return ApiResponse&lt;GroupUserEntity&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<GroupUserEntity> patchGroupUsersIdWithHttpInfo(Integer id, Integer groupId, Integer userId, Boolean admin) throws ApiException {
-    Object localVarPostBody = null;
-    
+  public GroupUserEntity patchGroupUsersId(GroupUsersIdBody body, Integer id) throws ApiException {
+    Object localVarPostBody = body;
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling patchGroupUsersId");
+    }
     // verify the required parameter 'id' is set
     if (id == null) {
       throw new ApiException(400, "Missing the required parameter 'id' when calling patchGroupUsersId");
     }
-    
-    // verify the required parameter 'groupId' is set
-    if (groupId == null) {
-      throw new ApiException(400, "Missing the required parameter 'groupId' when calling patchGroupUsersId");
-    }
-    
-    // verify the required parameter 'userId' is set
-    if (userId == null) {
-      throw new ApiException(400, "Missing the required parameter 'userId' when calling patchGroupUsersId");
-    }
-    
     // create path and map variables
     String localVarPath = "/group_users/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
@@ -212,13 +153,6 @@ public class GroupUsersApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    
-    if (groupId != null)
-      localVarFormParams.put("group_id", groupId);
-if (userId != null)
-      localVarFormParams.put("user_id", userId);
-if (admin != null)
-      localVarFormParams.put("admin", admin);
 
     final String[] localVarAccepts = {
       "application/json"
@@ -226,7 +160,7 @@ if (admin != null)
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      "application/json", "application/x-www-form-urlencoded", "multipart/form-data"
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -234,42 +168,20 @@ if (admin != null)
 
     GenericType<GroupUserEntity> localVarReturnType = new GenericType<GroupUserEntity>() {};
     return apiClient.invokeAPI(localVarPath, "PATCH", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
+  }
   /**
    * Create Group User
    * Create Group User
-   * @param groupId Group ID to add user to. (required)
-   * @param userId User ID to add to group. (required)
-   * @param admin Is the user a group administrator? (optional)
+   * @param body  (required)
    * @return GroupUserEntity
    * @throws ApiException if fails to make API call
    */
-  public GroupUserEntity postGroupUsers(Integer groupId, Integer userId, Boolean admin) throws ApiException {
-    return postGroupUsersWithHttpInfo(groupId, userId, admin).getData();
-      }
-
-  /**
-   * Create Group User
-   * Create Group User
-   * @param groupId Group ID to add user to. (required)
-   * @param userId User ID to add to group. (required)
-   * @param admin Is the user a group administrator? (optional)
-   * @return ApiResponse&lt;GroupUserEntity&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<GroupUserEntity> postGroupUsersWithHttpInfo(Integer groupId, Integer userId, Boolean admin) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // verify the required parameter 'groupId' is set
-    if (groupId == null) {
-      throw new ApiException(400, "Missing the required parameter 'groupId' when calling postGroupUsers");
+  public GroupUserEntity postGroupUsers(GroupUsersBody body) throws ApiException {
+    Object localVarPostBody = body;
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling postGroupUsers");
     }
-    
-    // verify the required parameter 'userId' is set
-    if (userId == null) {
-      throw new ApiException(400, "Missing the required parameter 'userId' when calling postGroupUsers");
-    }
-    
     // create path and map variables
     String localVarPath = "/group_users";
 
@@ -279,13 +191,6 @@ if (admin != null)
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    
-    if (groupId != null)
-      localVarFormParams.put("group_id", groupId);
-if (userId != null)
-      localVarFormParams.put("user_id", userId);
-if (admin != null)
-      localVarFormParams.put("admin", admin);
 
     final String[] localVarAccepts = {
       "application/json"
@@ -293,7 +198,7 @@ if (admin != null)
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      "application/json", "application/x-www-form-urlencoded", "multipart/form-data"
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -301,5 +206,5 @@ if (admin != null)
 
     GenericType<GroupUserEntity> localVarReturnType = new GenericType<GroupUserEntity>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
+  }
 }

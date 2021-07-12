@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,26 +17,19 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * List Projects
  */
-@ApiModel(description = "List Projects")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Projects")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class ProjectEntity {
-  @JsonProperty("id")
-  private Integer id = null;
-
   /**
    * Global access settings
    */
   public enum GlobalAccessEnum {
     NONE("none"),
-    
     ANYONE_WITH_READ("anyone_with_read"),
-    
     ANYONE_WITH_FULL("anyone_with_full");
 
     private String value;
@@ -45,7 +37,6 @@ public class ProjectEntity {
     GlobalAccessEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -55,38 +46,21 @@ public class ProjectEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static GlobalAccessEnum fromValue(String value) {
+    public static GlobalAccessEnum fromValue(String text) {
       for (GlobalAccessEnum b : GlobalAccessEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("global_access")
+  }  @JsonProperty("global_access")
   private GlobalAccessEnum globalAccess = null;
 
-  public ProjectEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Project ID
-   * @return id
-  **/
-  @ApiModelProperty(example = "1", value = "Project ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
+  @JsonProperty("id")
+  private Integer id = null;
 
   public ProjectEntity globalAccess(GlobalAccessEnum globalAccess) {
     this.globalAccess = globalAccess;
@@ -97,13 +71,31 @@ public class ProjectEntity {
    * Global access settings
    * @return globalAccess
   **/
-  @ApiModelProperty(example = "none", value = "Global access settings")
+  @Schema(example = "none", description = "Global access settings")
   public GlobalAccessEnum getGlobalAccess() {
     return globalAccess;
   }
 
   public void setGlobalAccess(GlobalAccessEnum globalAccess) {
     this.globalAccess = globalAccess;
+  }
+
+  public ProjectEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Project ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "Project ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
   }
 
 
@@ -116,13 +108,13 @@ public class ProjectEntity {
       return false;
     }
     ProjectEntity projectEntity = (ProjectEntity) o;
-    return Objects.equals(this.id, projectEntity.id) &&
-        Objects.equals(this.globalAccess, projectEntity.globalAccess);
+    return Objects.equals(this.globalAccess, projectEntity.globalAccess) &&
+        Objects.equals(this.id, projectEntity.id);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, globalAccess);
+    return Objects.hash(globalAccess, id);
   }
 
 
@@ -131,8 +123,8 @@ public class ProjectEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class ProjectEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    globalAccess: ").append(toIndentedString(globalAccess)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -149,4 +141,3 @@ public class ProjectEntity {
   }
 
 }
-

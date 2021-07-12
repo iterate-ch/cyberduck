@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,26 +17,60 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * Create User Request
  */
-@ApiModel(description = "Create User Request")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "Create User Request")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class UserRequestEntity {
+  @JsonProperty("details")
+  private String details = null;
+
+  @JsonProperty("email")
+  private String email = null;
+
   @JsonProperty("id")
   private Integer id = null;
 
   @JsonProperty("name")
   private String name = null;
 
-  @JsonProperty("email")
-  private String email = null;
+  public UserRequestEntity details(String details) {
+    this.details = details;
+    return this;
+  }
 
-  @JsonProperty("details")
-  private String details = null;
+   /**
+   * Details of the user&#x27;s request
+   * @return details
+  **/
+  @Schema(example = "Changed Departments", description = "Details of the user's request")
+  public String getDetails() {
+    return details;
+  }
+
+  public void setDetails(String details) {
+    this.details = details;
+  }
+
+  public UserRequestEntity email(String email) {
+    this.email = email;
+    return this;
+  }
+
+   /**
+   * User email address
+   * @return email
+  **/
+  @Schema(example = "john.doe@files.com", description = "User email address")
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
   public UserRequestEntity id(Integer id) {
     this.id = id;
@@ -48,7 +81,7 @@ public class UserRequestEntity {
    * ID
    * @return id
   **/
-  @ApiModelProperty(example = "1", value = "ID")
+  @Schema(example = "1", description = "ID")
   public Integer getId() {
     return id;
   }
@@ -63,52 +96,16 @@ public class UserRequestEntity {
   }
 
    /**
-   * User&#39;s full name
+   * User&#x27;s full name
    * @return name
   **/
-  @ApiModelProperty(example = "John Doe", value = "User's full name")
+  @Schema(example = "John Doe", description = "User's full name")
   public String getName() {
     return name;
   }
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public UserRequestEntity email(String email) {
-    this.email = email;
-    return this;
-  }
-
-   /**
-   * User email address
-   * @return email
-  **/
-  @ApiModelProperty(example = "john.doe@files.com", value = "User email address")
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public UserRequestEntity details(String details) {
-    this.details = details;
-    return this;
-  }
-
-   /**
-   * Details of the user&#39;s request
-   * @return details
-  **/
-  @ApiModelProperty(example = "Changed Departments", value = "Details of the user's request")
-  public String getDetails() {
-    return details;
-  }
-
-  public void setDetails(String details) {
-    this.details = details;
   }
 
 
@@ -121,15 +118,15 @@ public class UserRequestEntity {
       return false;
     }
     UserRequestEntity userRequestEntity = (UserRequestEntity) o;
-    return Objects.equals(this.id, userRequestEntity.id) &&
-        Objects.equals(this.name, userRequestEntity.name) &&
+    return Objects.equals(this.details, userRequestEntity.details) &&
         Objects.equals(this.email, userRequestEntity.email) &&
-        Objects.equals(this.details, userRequestEntity.details);
+        Objects.equals(this.id, userRequestEntity.id) &&
+        Objects.equals(this.name, userRequestEntity.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, email, details);
+    return Objects.hash(details, email, id, name);
   }
 
 
@@ -138,10 +135,10 @@ public class UserRequestEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class UserRequestEntity {\n");
     
+    sb.append("    details: ").append(toIndentedString(details)).append("\n");
+    sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    email: ").append(toIndentedString(email)).append("\n");
-    sb.append("    details: ").append(toIndentedString(details)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -158,4 +155,3 @@ public class UserRequestEntity {
   }
 
 }
-

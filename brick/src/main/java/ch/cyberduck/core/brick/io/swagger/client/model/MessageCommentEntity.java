@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -19,41 +18,21 @@ import ch.cyberduck.core.brick.io.swagger.client.model.MessageCommentReactionEnt
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * List Message Comments
  */
-@ApiModel(description = "List Message Comments")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Message Comments")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class MessageCommentEntity {
-  @JsonProperty("id")
-  private Integer id = null;
-
   @JsonProperty("body")
   private String body = null;
 
+  @JsonProperty("id")
+  private Integer id = null;
+
   @JsonProperty("reactions")
   private MessageCommentReactionEntity reactions = null;
-
-  public MessageCommentEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Message Comment ID
-   * @return id
-  **/
-  @ApiModelProperty(example = "1", value = "Message Comment ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
 
   public MessageCommentEntity body(String body) {
     this.body = body;
@@ -64,7 +43,7 @@ public class MessageCommentEntity {
    * Comment body.
    * @return body
   **/
-  @ApiModelProperty(example = "What a great idea, thank you!", value = "Comment body.")
+  @Schema(example = "What a great idea, thank you!", description = "Comment body.")
   public String getBody() {
     return body;
   }
@@ -73,16 +52,34 @@ public class MessageCommentEntity {
     this.body = body;
   }
 
+  public MessageCommentEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Message Comment ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "Message Comment ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
   public MessageCommentEntity reactions(MessageCommentReactionEntity reactions) {
     this.reactions = reactions;
     return this;
   }
 
    /**
-   * Reactions to this comment.
+   * Get reactions
    * @return reactions
   **/
-  @ApiModelProperty(value = "Reactions to this comment.")
+  @Schema(description = "")
   public MessageCommentReactionEntity getReactions() {
     return reactions;
   }
@@ -101,14 +98,14 @@ public class MessageCommentEntity {
       return false;
     }
     MessageCommentEntity messageCommentEntity = (MessageCommentEntity) o;
-    return Objects.equals(this.id, messageCommentEntity.id) &&
-        Objects.equals(this.body, messageCommentEntity.body) &&
+    return Objects.equals(this.body, messageCommentEntity.body) &&
+        Objects.equals(this.id, messageCommentEntity.id) &&
         Objects.equals(this.reactions, messageCommentEntity.reactions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, body, reactions);
+    return Objects.hash(body, id, reactions);
   }
 
 
@@ -117,8 +114,8 @@ public class MessageCommentEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class MessageCommentEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    body: ").append(toIndentedString(body)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    reactions: ").append(toIndentedString(reactions)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -136,4 +133,3 @@ public class MessageCommentEntity {
   }
 
 }
-

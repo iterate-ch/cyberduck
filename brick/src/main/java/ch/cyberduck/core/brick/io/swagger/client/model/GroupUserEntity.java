@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,48 +17,46 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * Create Group User
  */
-@ApiModel(description = "Create Group User")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "Create Group User")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class GroupUserEntity {
-  @JsonProperty("group_name")
-  private String groupName = null;
+  @JsonProperty("admin")
+  private Boolean admin = null;
 
   @JsonProperty("group_id")
   private Integer groupId = null;
 
+  @JsonProperty("group_name")
+  private String groupName = null;
+
   @JsonProperty("user_id")
   private Integer userId = null;
-
-  @JsonProperty("admin")
-  private Boolean admin = null;
 
   @JsonProperty("usernames")
   private List<String> usernames = null;
 
-  public GroupUserEntity groupName(String groupName) {
-    this.groupName = groupName;
+  public GroupUserEntity admin(Boolean admin) {
+    this.admin = admin;
     return this;
   }
 
    /**
-   * Group name
-   * @return groupName
+   * Is this user an administrator of this group?
+   * @return admin
   **/
-  @ApiModelProperty(example = "My Group", value = "Group name")
-  public String getGroupName() {
-    return groupName;
+  @Schema(example = "true", description = "Is this user an administrator of this group?")
+  public Boolean isAdmin() {
+    return admin;
   }
 
-  public void setGroupName(String groupName) {
-    this.groupName = groupName;
+  public void setAdmin(Boolean admin) {
+    this.admin = admin;
   }
 
   public GroupUserEntity groupId(Integer groupId) {
@@ -71,13 +68,31 @@ public class GroupUserEntity {
    * Group ID
    * @return groupId
   **/
-  @ApiModelProperty(example = "1", value = "Group ID")
+  @Schema(example = "1", description = "Group ID")
   public Integer getGroupId() {
     return groupId;
   }
 
   public void setGroupId(Integer groupId) {
     this.groupId = groupId;
+  }
+
+  public GroupUserEntity groupName(String groupName) {
+    this.groupName = groupName;
+    return this;
+  }
+
+   /**
+   * Group name
+   * @return groupName
+  **/
+  @Schema(example = "My Group", description = "Group name")
+  public String getGroupName() {
+    return groupName;
+  }
+
+  public void setGroupName(String groupName) {
+    this.groupName = groupName;
   }
 
   public GroupUserEntity userId(Integer userId) {
@@ -89,31 +104,13 @@ public class GroupUserEntity {
    * User ID
    * @return userId
   **/
-  @ApiModelProperty(example = "1", value = "User ID")
+  @Schema(example = "1", description = "User ID")
   public Integer getUserId() {
     return userId;
   }
 
   public void setUserId(Integer userId) {
     this.userId = userId;
-  }
-
-  public GroupUserEntity admin(Boolean admin) {
-    this.admin = admin;
-    return this;
-  }
-
-   /**
-   * Is this user an administrator of this group?
-   * @return admin
-  **/
-  @ApiModelProperty(example = "true", value = "Is this user an administrator of this group?")
-  public Boolean isAdmin() {
-    return admin;
-  }
-
-  public void setAdmin(Boolean admin) {
-    this.admin = admin;
   }
 
   public GroupUserEntity usernames(List<String> usernames) {
@@ -133,7 +130,7 @@ public class GroupUserEntity {
    * A list of usernames for users in this group
    * @return usernames
   **/
-  @ApiModelProperty(example = "[\"user\"]", value = "A list of usernames for users in this group")
+  @Schema(example = "[\"user\"]", description = "A list of usernames for users in this group")
   public List<String> getUsernames() {
     return usernames;
   }
@@ -152,16 +149,16 @@ public class GroupUserEntity {
       return false;
     }
     GroupUserEntity groupUserEntity = (GroupUserEntity) o;
-    return Objects.equals(this.groupName, groupUserEntity.groupName) &&
+    return Objects.equals(this.admin, groupUserEntity.admin) &&
         Objects.equals(this.groupId, groupUserEntity.groupId) &&
+        Objects.equals(this.groupName, groupUserEntity.groupName) &&
         Objects.equals(this.userId, groupUserEntity.userId) &&
-        Objects.equals(this.admin, groupUserEntity.admin) &&
         Objects.equals(this.usernames, groupUserEntity.usernames);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(groupName, groupId, userId, admin, usernames);
+    return Objects.hash(admin, groupId, groupName, userId, usernames);
   }
 
 
@@ -170,10 +167,10 @@ public class GroupUserEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class GroupUserEntity {\n");
     
-    sb.append("    groupName: ").append(toIndentedString(groupName)).append("\n");
-    sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
-    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
     sb.append("    admin: ").append(toIndentedString(admin)).append("\n");
+    sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
+    sb.append("    groupName: ").append(toIndentedString(groupName)).append("\n");
+    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
     sb.append("    usernames: ").append(toIndentedString(usernames)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -191,4 +188,3 @@ public class GroupUserEntity {
   }
 
 }
-

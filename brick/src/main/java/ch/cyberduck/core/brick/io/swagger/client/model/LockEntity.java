@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,29 +17,27 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * List Locks by path
  */
-@ApiModel(description = "List Locks by path")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Locks by path")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class LockEntity {
-  @JsonProperty("path")
-  private String path = null;
-
-  @JsonProperty("timeout")
-  private Integer timeout = null;
-
   @JsonProperty("depth")
   private String depth = null;
 
   @JsonProperty("owner")
   private String owner = null;
 
+  @JsonProperty("path")
+  private String path = null;
+
   @JsonProperty("scope")
   private String scope = null;
+
+  @JsonProperty("timeout")
+  private Integer timeout = null;
 
   @JsonProperty("token")
   private String token = null;
@@ -54,42 +51,6 @@ public class LockEntity {
   @JsonProperty("username")
   private String username = null;
 
-  public LockEntity path(String path) {
-    this.path = path;
-    return this;
-  }
-
-   /**
-   * Path
-   * @return path
-  **/
-  @ApiModelProperty(example = "locked_file", value = "Path")
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(String path) {
-    this.path = path;
-  }
-
-  public LockEntity timeout(Integer timeout) {
-    this.timeout = timeout;
-    return this;
-  }
-
-   /**
-   * Lock timeout
-   * @return timeout
-  **/
-  @ApiModelProperty(example = "43200", value = "Lock timeout")
-  public Integer getTimeout() {
-    return timeout;
-  }
-
-  public void setTimeout(Integer timeout) {
-    this.timeout = timeout;
-  }
-
   public LockEntity depth(String depth) {
     this.depth = depth;
     return this;
@@ -99,7 +60,7 @@ public class LockEntity {
    * Lock depth (0 or infinity)
    * @return depth
   **/
-  @ApiModelProperty(example = "infinity", value = "Lock depth (0 or infinity)")
+  @Schema(example = "infinity", description = "Lock depth (0 or infinity)")
   public String getDepth() {
     return depth;
   }
@@ -117,13 +78,31 @@ public class LockEntity {
    * Owner of lock.  This can be any arbitrary string.
    * @return owner
   **/
-  @ApiModelProperty(example = "user", value = "Owner of lock.  This can be any arbitrary string.")
+  @Schema(example = "user", description = "Owner of lock.  This can be any arbitrary string.")
   public String getOwner() {
     return owner;
   }
 
   public void setOwner(String owner) {
     this.owner = owner;
+  }
+
+  public LockEntity path(String path) {
+    this.path = path;
+    return this;
+  }
+
+   /**
+   * Path
+   * @return path
+  **/
+  @Schema(example = "locked_file", description = "Path")
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
   }
 
   public LockEntity scope(String scope) {
@@ -135,13 +114,31 @@ public class LockEntity {
    * Lock scope(shared or exclusive)
    * @return scope
   **/
-  @ApiModelProperty(example = "shared", value = "Lock scope(shared or exclusive)")
+  @Schema(example = "shared", description = "Lock scope(shared or exclusive)")
   public String getScope() {
     return scope;
   }
 
   public void setScope(String scope) {
     this.scope = scope;
+  }
+
+  public LockEntity timeout(Integer timeout) {
+    this.timeout = timeout;
+    return this;
+  }
+
+   /**
+   * Lock timeout
+   * @return timeout
+  **/
+  @Schema(example = "43200", description = "Lock timeout")
+  public Integer getTimeout() {
+    return timeout;
+  }
+
+  public void setTimeout(Integer timeout) {
+    this.timeout = timeout;
   }
 
   public LockEntity token(String token) {
@@ -153,7 +150,7 @@ public class LockEntity {
    * Lock token.  Use to release lock.
    * @return token
   **/
-  @ApiModelProperty(example = "17c54824e9931a4688ca032d03f6663c", value = "Lock token.  Use to release lock.")
+  @Schema(example = "17c54824e9931a4688ca032d03f6663c", description = "Lock token.  Use to release lock.")
   public String getToken() {
     return token;
   }
@@ -171,7 +168,7 @@ public class LockEntity {
    * Lock type
    * @return type
   **/
-  @ApiModelProperty(example = "write", value = "Lock type")
+  @Schema(example = "write", description = "Lock type")
   public String getType() {
     return type;
   }
@@ -189,7 +186,7 @@ public class LockEntity {
    * Lock creator user ID
    * @return userId
   **/
-  @ApiModelProperty(example = "1", value = "Lock creator user ID")
+  @Schema(example = "1", description = "Lock creator user ID")
   public Integer getUserId() {
     return userId;
   }
@@ -207,7 +204,7 @@ public class LockEntity {
    * Lock creator username
    * @return username
   **/
-  @ApiModelProperty(example = "username", value = "Lock creator username")
+  @Schema(example = "username", description = "Lock creator username")
   public String getUsername() {
     return username;
   }
@@ -226,11 +223,11 @@ public class LockEntity {
       return false;
     }
     LockEntity lockEntity = (LockEntity) o;
-    return Objects.equals(this.path, lockEntity.path) &&
-        Objects.equals(this.timeout, lockEntity.timeout) &&
-        Objects.equals(this.depth, lockEntity.depth) &&
+    return Objects.equals(this.depth, lockEntity.depth) &&
         Objects.equals(this.owner, lockEntity.owner) &&
+        Objects.equals(this.path, lockEntity.path) &&
         Objects.equals(this.scope, lockEntity.scope) &&
+        Objects.equals(this.timeout, lockEntity.timeout) &&
         Objects.equals(this.token, lockEntity.token) &&
         Objects.equals(this.type, lockEntity.type) &&
         Objects.equals(this.userId, lockEntity.userId) &&
@@ -239,7 +236,7 @@ public class LockEntity {
 
   @Override
   public int hashCode() {
-    return Objects.hash(path, timeout, depth, owner, scope, token, type, userId, username);
+    return Objects.hash(depth, owner, path, scope, timeout, token, type, userId, username);
   }
 
 
@@ -248,11 +245,11 @@ public class LockEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class LockEntity {\n");
     
-    sb.append("    path: ").append(toIndentedString(path)).append("\n");
-    sb.append("    timeout: ").append(toIndentedString(timeout)).append("\n");
     sb.append("    depth: ").append(toIndentedString(depth)).append("\n");
     sb.append("    owner: ").append(toIndentedString(owner)).append("\n");
+    sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    scope: ").append(toIndentedString(scope)).append("\n");
+    sb.append("    timeout: ").append(toIndentedString(timeout)).append("\n");
     sb.append("    token: ").append(toIndentedString(token)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
@@ -273,4 +270,3 @@ public class LockEntity {
   }
 
 }
-

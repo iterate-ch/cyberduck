@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -19,70 +18,50 @@ import ch.cyberduck.core.brick.io.swagger.client.model.FormFieldEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * Create Form Field Set
  */
-@ApiModel(description = "Create Form Field Set")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "Create Form Field Set")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class FormFieldSetEntity {
-  @JsonProperty("id")
-  private Integer id = null;
-
-  @JsonProperty("title")
-  private String title = null;
+  @JsonProperty("form_fields")
+  private FormFieldEntity formFields = null;
 
   @JsonProperty("form_layout")
   private Integer formLayout = null;
 
-  @JsonProperty("form_fields")
-  private FormFieldEntity formFields = null;
-
-  @JsonProperty("skip_name")
-  private Boolean skipName = null;
-
-  @JsonProperty("skip_email")
-  private Boolean skipEmail = null;
+  @JsonProperty("id")
+  private Integer id = null;
 
   @JsonProperty("skip_company")
   private Boolean skipCompany = null;
 
-  public FormFieldSetEntity id(Integer id) {
-    this.id = id;
+  @JsonProperty("skip_email")
+  private Boolean skipEmail = null;
+
+  @JsonProperty("skip_name")
+  private Boolean skipName = null;
+
+  @JsonProperty("title")
+  private String title = null;
+
+  public FormFieldSetEntity formFields(FormFieldEntity formFields) {
+    this.formFields = formFields;
     return this;
   }
 
    /**
-   * Form field set id
-   * @return id
+   * Get formFields
+   * @return formFields
   **/
-  @ApiModelProperty(example = "1", value = "Form field set id")
-  public Integer getId() {
-    return id;
+  @Schema(description = "")
+  public FormFieldEntity getFormFields() {
+    return formFields;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public FormFieldSetEntity title(String title) {
-    this.title = title;
-    return this;
-  }
-
-   /**
-   * Title to be displayed
-   * @return title
-  **/
-  @ApiModelProperty(example = "Sample Form Title", value = "Title to be displayed")
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
+  public void setFormFields(FormFieldEntity formFields) {
+    this.formFields = formFields;
   }
 
   public FormFieldSetEntity formLayout(Integer formLayout) {
@@ -94,7 +73,7 @@ public class FormFieldSetEntity {
    * Layout of the form
    * @return formLayout
   **/
-  @ApiModelProperty(example = "", value = "Layout of the form")
+  @Schema(description = "Layout of the form")
   public Integer getFormLayout() {
     return formLayout;
   }
@@ -103,58 +82,22 @@ public class FormFieldSetEntity {
     this.formLayout = formLayout;
   }
 
-  public FormFieldSetEntity formFields(FormFieldEntity formFields) {
-    this.formFields = formFields;
+  public FormFieldSetEntity id(Integer id) {
+    this.id = id;
     return this;
   }
 
    /**
-   * Associated form fields
-   * @return formFields
+   * Form field set id
+   * @return id
   **/
-  @ApiModelProperty(value = "Associated form fields")
-  public FormFieldEntity getFormFields() {
-    return formFields;
+  @Schema(example = "1", description = "Form field set id")
+  public Integer getId() {
+    return id;
   }
 
-  public void setFormFields(FormFieldEntity formFields) {
-    this.formFields = formFields;
-  }
-
-  public FormFieldSetEntity skipName(Boolean skipName) {
-    this.skipName = skipName;
-    return this;
-  }
-
-   /**
-   * Any associated InboxRegistrations or BundleRegistrations can be saved without providing name
-   * @return skipName
-  **/
-  @ApiModelProperty(example = "true", value = "Any associated InboxRegistrations or BundleRegistrations can be saved without providing name")
-  public Boolean isSkipName() {
-    return skipName;
-  }
-
-  public void setSkipName(Boolean skipName) {
-    this.skipName = skipName;
-  }
-
-  public FormFieldSetEntity skipEmail(Boolean skipEmail) {
-    this.skipEmail = skipEmail;
-    return this;
-  }
-
-   /**
-   * Any associated InboxRegistrations or BundleRegistrations can be saved without providing email
-   * @return skipEmail
-  **/
-  @ApiModelProperty(example = "true", value = "Any associated InboxRegistrations or BundleRegistrations can be saved without providing email")
-  public Boolean isSkipEmail() {
-    return skipEmail;
-  }
-
-  public void setSkipEmail(Boolean skipEmail) {
-    this.skipEmail = skipEmail;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public FormFieldSetEntity skipCompany(Boolean skipCompany) {
@@ -166,13 +109,67 @@ public class FormFieldSetEntity {
    * Any associated InboxRegistrations or BundleRegistrations can be saved without providing company
    * @return skipCompany
   **/
-  @ApiModelProperty(example = "true", value = "Any associated InboxRegistrations or BundleRegistrations can be saved without providing company")
+  @Schema(example = "true", description = "Any associated InboxRegistrations or BundleRegistrations can be saved without providing company")
   public Boolean isSkipCompany() {
     return skipCompany;
   }
 
   public void setSkipCompany(Boolean skipCompany) {
     this.skipCompany = skipCompany;
+  }
+
+  public FormFieldSetEntity skipEmail(Boolean skipEmail) {
+    this.skipEmail = skipEmail;
+    return this;
+  }
+
+   /**
+   * Any associated InboxRegistrations or BundleRegistrations can be saved without providing email
+   * @return skipEmail
+  **/
+  @Schema(example = "true", description = "Any associated InboxRegistrations or BundleRegistrations can be saved without providing email")
+  public Boolean isSkipEmail() {
+    return skipEmail;
+  }
+
+  public void setSkipEmail(Boolean skipEmail) {
+    this.skipEmail = skipEmail;
+  }
+
+  public FormFieldSetEntity skipName(Boolean skipName) {
+    this.skipName = skipName;
+    return this;
+  }
+
+   /**
+   * Any associated InboxRegistrations or BundleRegistrations can be saved without providing name
+   * @return skipName
+  **/
+  @Schema(example = "true", description = "Any associated InboxRegistrations or BundleRegistrations can be saved without providing name")
+  public Boolean isSkipName() {
+    return skipName;
+  }
+
+  public void setSkipName(Boolean skipName) {
+    this.skipName = skipName;
+  }
+
+  public FormFieldSetEntity title(String title) {
+    this.title = title;
+    return this;
+  }
+
+   /**
+   * Title to be displayed
+   * @return title
+  **/
+  @Schema(example = "Sample Form Title", description = "Title to be displayed")
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
 
@@ -185,18 +182,18 @@ public class FormFieldSetEntity {
       return false;
     }
     FormFieldSetEntity formFieldSetEntity = (FormFieldSetEntity) o;
-    return Objects.equals(this.id, formFieldSetEntity.id) &&
-        Objects.equals(this.title, formFieldSetEntity.title) &&
+    return Objects.equals(this.formFields, formFieldSetEntity.formFields) &&
         Objects.equals(this.formLayout, formFieldSetEntity.formLayout) &&
-        Objects.equals(this.formFields, formFieldSetEntity.formFields) &&
-        Objects.equals(this.skipName, formFieldSetEntity.skipName) &&
+        Objects.equals(this.id, formFieldSetEntity.id) &&
+        Objects.equals(this.skipCompany, formFieldSetEntity.skipCompany) &&
         Objects.equals(this.skipEmail, formFieldSetEntity.skipEmail) &&
-        Objects.equals(this.skipCompany, formFieldSetEntity.skipCompany);
+        Objects.equals(this.skipName, formFieldSetEntity.skipName) &&
+        Objects.equals(this.title, formFieldSetEntity.title);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, title, formLayout, formFields, skipName, skipEmail, skipCompany);
+    return Objects.hash(formFields, formLayout, id, skipCompany, skipEmail, skipName, title);
   }
 
 
@@ -205,13 +202,13 @@ public class FormFieldSetEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class FormFieldSetEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    title: ").append(toIndentedString(title)).append("\n");
-    sb.append("    formLayout: ").append(toIndentedString(formLayout)).append("\n");
     sb.append("    formFields: ").append(toIndentedString(formFields)).append("\n");
-    sb.append("    skipName: ").append(toIndentedString(skipName)).append("\n");
-    sb.append("    skipEmail: ").append(toIndentedString(skipEmail)).append("\n");
+    sb.append("    formLayout: ").append(toIndentedString(formLayout)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    skipCompany: ").append(toIndentedString(skipCompany)).append("\n");
+    sb.append("    skipEmail: ").append(toIndentedString(skipEmail)).append("\n");
+    sb.append("    skipName: ").append(toIndentedString(skipName)).append("\n");
+    sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -228,4 +225,3 @@ public class FormFieldSetEntity {
   }
 
 }
-

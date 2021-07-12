@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,49 +17,35 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * List Permissions
  */
-@ApiModel(description = "List Permissions")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Permissions")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class PermissionEntity {
-  @JsonProperty("id")
-  private Integer id = null;
-
-  @JsonProperty("path")
-  private String path = null;
-
-  @JsonProperty("user_id")
-  private Integer userId = null;
-
-  @JsonProperty("username")
-  private String username = null;
-
   @JsonProperty("group_id")
   private Integer groupId = null;
 
   @JsonProperty("group_name")
   private String groupName = null;
 
+  @JsonProperty("id")
+  private Integer id = null;
+
+  @JsonProperty("path")
+  private String path = null;
+
   /**
    * Permission type
    */
   public enum PermissionEnum {
     FULL("full"),
-    
     READONLY("readonly"),
-    
     WRITEONLY("writeonly"),
-    
     LIST("list"),
-    
     HISTORY("history"),
-    
     ADMIN("admin"),
-    
     BUNDLE("bundle");
 
     private String value;
@@ -68,7 +53,6 @@ public class PermissionEntity {
     PermissionEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -78,95 +62,27 @@ public class PermissionEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static PermissionEnum fromValue(String value) {
+    public static PermissionEnum fromValue(String text) {
       for (PermissionEnum b : PermissionEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("permission")
+  }  @JsonProperty("permission")
   private PermissionEnum permission = null;
 
   @JsonProperty("recursive")
   private Boolean recursive = null;
 
-  public PermissionEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
+  @JsonProperty("user_id")
+  private Integer userId = null;
 
-   /**
-   * Permission ID
-   * @return id
-  **/
-  @ApiModelProperty(example = "1", value = "Permission ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public PermissionEntity path(String path) {
-    this.path = path;
-    return this;
-  }
-
-   /**
-   * Folder path
-   * @return path
-  **/
-  @ApiModelProperty(example = "", value = "Folder path")
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(String path) {
-    this.path = path;
-  }
-
-  public PermissionEntity userId(Integer userId) {
-    this.userId = userId;
-    return this;
-  }
-
-   /**
-   * User ID
-   * @return userId
-  **/
-  @ApiModelProperty(example = "1", value = "User ID")
-  public Integer getUserId() {
-    return userId;
-  }
-
-  public void setUserId(Integer userId) {
-    this.userId = userId;
-  }
-
-  public PermissionEntity username(String username) {
-    this.username = username;
-    return this;
-  }
-
-   /**
-   * User&#39;s username
-   * @return username
-  **/
-  @ApiModelProperty(example = "Sser", value = "User's username")
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
+  @JsonProperty("username")
+  private String username = null;
 
   public PermissionEntity groupId(Integer groupId) {
     this.groupId = groupId;
@@ -177,7 +93,7 @@ public class PermissionEntity {
    * Group ID
    * @return groupId
   **/
-  @ApiModelProperty(example = "0", value = "Group ID")
+  @Schema(example = "0", description = "Group ID")
   public Integer getGroupId() {
     return groupId;
   }
@@ -195,13 +111,49 @@ public class PermissionEntity {
    * Group name if applicable
    * @return groupName
   **/
-  @ApiModelProperty(example = "", value = "Group name if applicable")
+  @Schema(description = "Group name if applicable")
   public String getGroupName() {
     return groupName;
   }
 
   public void setGroupName(String groupName) {
     this.groupName = groupName;
+  }
+
+  public PermissionEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Permission ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "Permission ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public PermissionEntity path(String path) {
+    this.path = path;
+    return this;
+  }
+
+   /**
+   * Folder path
+   * @return path
+  **/
+  @Schema(description = "Folder path")
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
   }
 
   public PermissionEntity permission(PermissionEnum permission) {
@@ -213,7 +165,7 @@ public class PermissionEntity {
    * Permission type
    * @return permission
   **/
-  @ApiModelProperty(example = "full", value = "Permission type")
+  @Schema(example = "full", description = "Permission type")
   public PermissionEnum getPermission() {
     return permission;
   }
@@ -231,13 +183,49 @@ public class PermissionEntity {
    * Does this permission apply to subfolders?
    * @return recursive
   **/
-  @ApiModelProperty(example = "true", value = "Does this permission apply to subfolders?")
+  @Schema(example = "true", description = "Does this permission apply to subfolders?")
   public Boolean isRecursive() {
     return recursive;
   }
 
   public void setRecursive(Boolean recursive) {
     this.recursive = recursive;
+  }
+
+  public PermissionEntity userId(Integer userId) {
+    this.userId = userId;
+    return this;
+  }
+
+   /**
+   * User ID
+   * @return userId
+  **/
+  @Schema(example = "1", description = "User ID")
+  public Integer getUserId() {
+    return userId;
+  }
+
+  public void setUserId(Integer userId) {
+    this.userId = userId;
+  }
+
+  public PermissionEntity username(String username) {
+    this.username = username;
+    return this;
+  }
+
+   /**
+   * User&#x27;s username
+   * @return username
+  **/
+  @Schema(example = "Sser", description = "User's username")
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
   }
 
 
@@ -250,19 +238,19 @@ public class PermissionEntity {
       return false;
     }
     PermissionEntity permissionEntity = (PermissionEntity) o;
-    return Objects.equals(this.id, permissionEntity.id) &&
-        Objects.equals(this.path, permissionEntity.path) &&
-        Objects.equals(this.userId, permissionEntity.userId) &&
-        Objects.equals(this.username, permissionEntity.username) &&
-        Objects.equals(this.groupId, permissionEntity.groupId) &&
+    return Objects.equals(this.groupId, permissionEntity.groupId) &&
         Objects.equals(this.groupName, permissionEntity.groupName) &&
+        Objects.equals(this.id, permissionEntity.id) &&
+        Objects.equals(this.path, permissionEntity.path) &&
         Objects.equals(this.permission, permissionEntity.permission) &&
-        Objects.equals(this.recursive, permissionEntity.recursive);
+        Objects.equals(this.recursive, permissionEntity.recursive) &&
+        Objects.equals(this.userId, permissionEntity.userId) &&
+        Objects.equals(this.username, permissionEntity.username);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, path, userId, username, groupId, groupName, permission, recursive);
+    return Objects.hash(groupId, groupName, id, path, permission, recursive, userId, username);
   }
 
 
@@ -271,14 +259,14 @@ public class PermissionEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class PermissionEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    path: ").append(toIndentedString(path)).append("\n");
-    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
-    sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
     sb.append("    groupName: ").append(toIndentedString(groupName)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    permission: ").append(toIndentedString(permission)).append("\n");
     sb.append("    recursive: ").append(toIndentedString(recursive)).append("\n");
+    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+    sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -295,4 +283,3 @@ public class PermissionEntity {
   }
 
 }
-

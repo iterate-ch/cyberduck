@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,19 +17,15 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * PatchFormFieldSetsFormFields
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
-public class PatchFormFieldSetsFormFields {
-  @JsonProperty("id")
-  private Integer id = null;
 
-  @JsonProperty("label")
-  private String label = null;
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+public class PatchFormFieldSetsFormFields {
+  @JsonProperty("default_option")
+  private String defaultOption = null;
 
   @JsonProperty("field_type")
   private String fieldType = null;
@@ -38,49 +33,34 @@ public class PatchFormFieldSetsFormFields {
   @JsonProperty("help_text")
   private String helpText = null;
 
-  @JsonProperty("required")
-  private Boolean required = null;
+  @JsonProperty("id")
+  private Integer id = null;
+
+  @JsonProperty("label")
+  private String label = null;
 
   @JsonProperty("options_for_select")
   private String optionsForSelect = null;
 
-  @JsonProperty("default_option")
-  private String defaultOption = null;
+  @JsonProperty("required")
+  private Boolean required = null;
 
-  public PatchFormFieldSetsFormFields id(Integer id) {
-    this.id = id;
+  public PatchFormFieldSetsFormFields defaultOption(String defaultOption) {
+    this.defaultOption = defaultOption;
     return this;
   }
 
    /**
-   * Id of existing Form Field
-   * @return id
+   * Default option to be preselected in the dropdown or radio.
+   * @return defaultOption
   **/
-  @ApiModelProperty(value = "Id of existing Form Field")
-  public Integer getId() {
-    return id;
+  @Schema(description = "Default option to be preselected in the dropdown or radio.")
+  public String getDefaultOption() {
+    return defaultOption;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public PatchFormFieldSetsFormFields label(String label) {
-    this.label = label;
-    return this;
-  }
-
-   /**
-   * Label of Field
-   * @return label
-  **/
-  @ApiModelProperty(value = "Label of Field")
-  public String getLabel() {
-    return label;
-  }
-
-  public void setLabel(String label) {
-    this.label = label;
+  public void setDefaultOption(String defaultOption) {
+    this.defaultOption = defaultOption;
   }
 
   public PatchFormFieldSetsFormFields fieldType(String fieldType) {
@@ -92,7 +72,7 @@ public class PatchFormFieldSetsFormFields {
    * Type of field: text, text_area, dropdown, or radio
    * @return fieldType
   **/
-  @ApiModelProperty(value = "Type of field: text, text_area, dropdown, or radio")
+  @Schema(description = "Type of field: text, text_area, dropdown, or radio")
   public String getFieldType() {
     return fieldType;
   }
@@ -110,7 +90,7 @@ public class PatchFormFieldSetsFormFields {
    * Help text of field
    * @return helpText
   **/
-  @ApiModelProperty(value = "Help text of field")
+  @Schema(description = "Help text of field")
   public String getHelpText() {
     return helpText;
   }
@@ -119,22 +99,40 @@ public class PatchFormFieldSetsFormFields {
     this.helpText = helpText;
   }
 
-  public PatchFormFieldSetsFormFields required(Boolean required) {
-    this.required = required;
+  public PatchFormFieldSetsFormFields id(Integer id) {
+    this.id = id;
     return this;
   }
 
    /**
-   * Is this a required field? (default true)
-   * @return required
+   * Id of existing Form Field
+   * @return id
   **/
-  @ApiModelProperty(value = "Is this a required field? (default true)")
-  public Boolean isRequired() {
-    return required;
+  @Schema(description = "Id of existing Form Field")
+  public Integer getId() {
+    return id;
   }
 
-  public void setRequired(Boolean required) {
-    this.required = required;
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public PatchFormFieldSetsFormFields label(String label) {
+    this.label = label;
+    return this;
+  }
+
+   /**
+   * Label of Field
+   * @return label
+  **/
+  @Schema(description = "Label of Field")
+  public String getLabel() {
+    return label;
+  }
+
+  public void setLabel(String label) {
+    this.label = label;
   }
 
   public PatchFormFieldSetsFormFields optionsForSelect(String optionsForSelect) {
@@ -146,7 +144,7 @@ public class PatchFormFieldSetsFormFields {
    * List of options for dropdown or radio
    * @return optionsForSelect
   **/
-  @ApiModelProperty(value = "List of options for dropdown or radio")
+  @Schema(description = "List of options for dropdown or radio")
   public String getOptionsForSelect() {
     return optionsForSelect;
   }
@@ -155,22 +153,22 @@ public class PatchFormFieldSetsFormFields {
     this.optionsForSelect = optionsForSelect;
   }
 
-  public PatchFormFieldSetsFormFields defaultOption(String defaultOption) {
-    this.defaultOption = defaultOption;
+  public PatchFormFieldSetsFormFields required(Boolean required) {
+    this.required = required;
     return this;
   }
 
    /**
-   * Default option to be preselected in the dropdown or radio.
-   * @return defaultOption
+   * Is this a required field? (default true)
+   * @return required
   **/
-  @ApiModelProperty(value = "Default option to be preselected in the dropdown or radio.")
-  public String getDefaultOption() {
-    return defaultOption;
+  @Schema(description = "Is this a required field? (default true)")
+  public Boolean isRequired() {
+    return required;
   }
 
-  public void setDefaultOption(String defaultOption) {
-    this.defaultOption = defaultOption;
+  public void setRequired(Boolean required) {
+    this.required = required;
   }
 
 
@@ -183,18 +181,18 @@ public class PatchFormFieldSetsFormFields {
       return false;
     }
     PatchFormFieldSetsFormFields patchFormFieldSetsFormFields = (PatchFormFieldSetsFormFields) o;
-    return Objects.equals(this.id, patchFormFieldSetsFormFields.id) &&
-        Objects.equals(this.label, patchFormFieldSetsFormFields.label) &&
+    return Objects.equals(this.defaultOption, patchFormFieldSetsFormFields.defaultOption) &&
         Objects.equals(this.fieldType, patchFormFieldSetsFormFields.fieldType) &&
         Objects.equals(this.helpText, patchFormFieldSetsFormFields.helpText) &&
-        Objects.equals(this.required, patchFormFieldSetsFormFields.required) &&
+        Objects.equals(this.id, patchFormFieldSetsFormFields.id) &&
+        Objects.equals(this.label, patchFormFieldSetsFormFields.label) &&
         Objects.equals(this.optionsForSelect, patchFormFieldSetsFormFields.optionsForSelect) &&
-        Objects.equals(this.defaultOption, patchFormFieldSetsFormFields.defaultOption);
+        Objects.equals(this.required, patchFormFieldSetsFormFields.required);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, label, fieldType, helpText, required, optionsForSelect, defaultOption);
+    return Objects.hash(defaultOption, fieldType, helpText, id, label, optionsForSelect, required);
   }
 
 
@@ -203,13 +201,13 @@ public class PatchFormFieldSetsFormFields {
     StringBuilder sb = new StringBuilder();
     sb.append("class PatchFormFieldSetsFormFields {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    label: ").append(toIndentedString(label)).append("\n");
+    sb.append("    defaultOption: ").append(toIndentedString(defaultOption)).append("\n");
     sb.append("    fieldType: ").append(toIndentedString(fieldType)).append("\n");
     sb.append("    helpText: ").append(toIndentedString(helpText)).append("\n");
-    sb.append("    required: ").append(toIndentedString(required)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    optionsForSelect: ").append(toIndentedString(optionsForSelect)).append("\n");
-    sb.append("    defaultOption: ").append(toIndentedString(defaultOption)).append("\n");
+    sb.append("    required: ").append(toIndentedString(required)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -226,4 +224,3 @@ public class PatchFormFieldSetsFormFields {
   }
 
 }
-

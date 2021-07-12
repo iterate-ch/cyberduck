@@ -2,7 +2,6 @@ package ch.cyberduck.core.brick.io.swagger.client.api;
 
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.ApiClient;
-import ch.cyberduck.core.brick.io.swagger.client.ApiResponse;
 import ch.cyberduck.core.brick.io.swagger.client.Configuration;
 import ch.cyberduck.core.brick.io.swagger.client.Pair;
 
@@ -15,8 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
-public class SsoStrategiesApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")public class SsoStrategiesApi {
   private ApiClient apiClient;
 
   public SsoStrategiesApi() {
@@ -44,20 +42,7 @@ public class SsoStrategiesApi {
    * @throws ApiException if fails to make API call
    */
   public List<SsoStrategyEntity> getSsoStrategies(String cursor, Integer perPage) throws ApiException {
-    return getSsoStrategiesWithHttpInfo(cursor, perPage).getData();
-      }
-
-  /**
-   * List Sso Strategies
-   * List Sso Strategies
-   * @param cursor Used for pagination.  Send a cursor value to resume an existing list from the point at which you left off.  Get a cursor from an existing list via the X-Files-Cursor-Next header. (optional)
-   * @param perPage Number of records to show per page.  (Max: 10,000, 1,000 or less is recommended). (optional)
-   * @return ApiResponse&lt;List&lt;SsoStrategyEntity&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<SsoStrategyEntity>> getSsoStrategiesWithHttpInfo(String cursor, Integer perPage) throws ApiException {
     Object localVarPostBody = null;
-    
     // create path and map variables
     String localVarPath = "/sso_strategies";
 
@@ -69,8 +54,7 @@ public class SsoStrategiesApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "cursor", cursor));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "per_page", perPage));
 
-    
-    
+
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -85,7 +69,7 @@ public class SsoStrategiesApi {
 
     GenericType<List<SsoStrategyEntity>> localVarReturnType = new GenericType<List<SsoStrategyEntity>>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
+  }
   /**
    * Show Sso Strategy
    * Show Sso Strategy
@@ -94,24 +78,11 @@ public class SsoStrategiesApi {
    * @throws ApiException if fails to make API call
    */
   public SsoStrategyEntity getSsoStrategiesId(Integer id) throws ApiException {
-    return getSsoStrategiesIdWithHttpInfo(id).getData();
-      }
-
-  /**
-   * Show Sso Strategy
-   * Show Sso Strategy
-   * @param id Sso Strategy ID. (required)
-   * @return ApiResponse&lt;SsoStrategyEntity&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SsoStrategyEntity> getSsoStrategiesIdWithHttpInfo(Integer id) throws ApiException {
     Object localVarPostBody = null;
-    
     // verify the required parameter 'id' is set
     if (id == null) {
       throw new ApiException(400, "Missing the required parameter 'id' when calling getSsoStrategiesId");
     }
-    
     // create path and map variables
     String localVarPath = "/sso_strategies/{id}"
       .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
@@ -122,8 +93,7 @@ public class SsoStrategiesApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    
-    
+
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -138,5 +108,5 @@ public class SsoStrategiesApi {
 
     GenericType<SsoStrategyEntity> localVarReturnType = new GenericType<SsoStrategyEntity>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
+  }
 }

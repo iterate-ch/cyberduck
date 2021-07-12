@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -19,26 +18,60 @@ import ch.cyberduck.core.brick.io.swagger.client.model.MessageCommentEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * List Messages
  */
-@ApiModel(description = "List Messages")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Messages")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class MessageEntity {
+  @JsonProperty("body")
+  private String body = null;
+
+  @JsonProperty("comments")
+  private MessageCommentEntity comments = null;
+
   @JsonProperty("id")
   private Integer id = null;
 
   @JsonProperty("subject")
   private String subject = null;
 
-  @JsonProperty("body")
-  private String body = null;
+  public MessageEntity body(String body) {
+    this.body = body;
+    return this;
+  }
 
-  @JsonProperty("comments")
-  private MessageCommentEntity comments = null;
+   /**
+   * Message body.
+   * @return body
+  **/
+  @Schema(example = "We should upgrade our Files.com account!", description = "Message body.")
+  public String getBody() {
+    return body;
+  }
+
+  public void setBody(String body) {
+    this.body = body;
+  }
+
+  public MessageEntity comments(MessageCommentEntity comments) {
+    this.comments = comments;
+    return this;
+  }
+
+   /**
+   * Get comments
+   * @return comments
+  **/
+  @Schema(description = "")
+  public MessageCommentEntity getComments() {
+    return comments;
+  }
+
+  public void setComments(MessageCommentEntity comments) {
+    this.comments = comments;
+  }
 
   public MessageEntity id(Integer id) {
     this.id = id;
@@ -49,7 +82,7 @@ public class MessageEntity {
    * Message ID
    * @return id
   **/
-  @ApiModelProperty(example = "1", value = "Message ID")
+  @Schema(example = "1", description = "Message ID")
   public Integer getId() {
     return id;
   }
@@ -67,49 +100,13 @@ public class MessageEntity {
    * Message subject.
    * @return subject
   **/
-  @ApiModelProperty(example = "Files.com Account Upgrade", value = "Message subject.")
+  @Schema(example = "Files.com Account Upgrade", description = "Message subject.")
   public String getSubject() {
     return subject;
   }
 
   public void setSubject(String subject) {
     this.subject = subject;
-  }
-
-  public MessageEntity body(String body) {
-    this.body = body;
-    return this;
-  }
-
-   /**
-   * Message body.
-   * @return body
-  **/
-  @ApiModelProperty(example = "We should upgrade our Files.com account!", value = "Message body.")
-  public String getBody() {
-    return body;
-  }
-
-  public void setBody(String body) {
-    this.body = body;
-  }
-
-  public MessageEntity comments(MessageCommentEntity comments) {
-    this.comments = comments;
-    return this;
-  }
-
-   /**
-   * Comments.
-   * @return comments
-  **/
-  @ApiModelProperty(value = "Comments.")
-  public MessageCommentEntity getComments() {
-    return comments;
-  }
-
-  public void setComments(MessageCommentEntity comments) {
-    this.comments = comments;
   }
 
 
@@ -122,15 +119,15 @@ public class MessageEntity {
       return false;
     }
     MessageEntity messageEntity = (MessageEntity) o;
-    return Objects.equals(this.id, messageEntity.id) &&
-        Objects.equals(this.subject, messageEntity.subject) &&
-        Objects.equals(this.body, messageEntity.body) &&
-        Objects.equals(this.comments, messageEntity.comments);
+    return Objects.equals(this.body, messageEntity.body) &&
+        Objects.equals(this.comments, messageEntity.comments) &&
+        Objects.equals(this.id, messageEntity.id) &&
+        Objects.equals(this.subject, messageEntity.subject);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, subject, body, comments);
+    return Objects.hash(body, comments, id, subject);
   }
 
 
@@ -139,10 +136,10 @@ public class MessageEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class MessageEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    subject: ").append(toIndentedString(subject)).append("\n");
     sb.append("    body: ").append(toIndentedString(body)).append("\n");
     sb.append("    comments: ").append(toIndentedString(comments)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    subject: ").append(toIndentedString(subject)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -159,4 +156,3 @@ public class MessageEntity {
   }
 
 }
-

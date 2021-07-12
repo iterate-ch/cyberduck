@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -19,26 +18,24 @@ import ch.cyberduck.core.brick.io.swagger.client.model.AutoEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * Create Webhook Test
  */
-@ApiModel(description = "Create Webhook Test")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "Create Webhook Test")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class WebhookTestEntity {
   @JsonProperty("code")
   private Integer code = null;
+
+  @JsonProperty("data")
+  private AutoEntity data = null;
 
   @JsonProperty("message")
   private String message = null;
 
   @JsonProperty("status")
   private String status = null;
-
-  @JsonProperty("data")
-  private AutoEntity data = null;
 
   @JsonProperty("success")
   private Boolean success = null;
@@ -52,13 +49,31 @@ public class WebhookTestEntity {
    * Status HTTP code
    * @return code
   **/
-  @ApiModelProperty(example = "200", value = "Status HTTP code")
+  @Schema(example = "200", description = "Status HTTP code")
   public Integer getCode() {
     return code;
   }
 
   public void setCode(Integer code) {
     this.code = code;
+  }
+
+  public WebhookTestEntity data(AutoEntity data) {
+    this.data = data;
+    return this;
+  }
+
+   /**
+   * Get data
+   * @return data
+  **/
+  @Schema(description = "")
+  public AutoEntity getData() {
+    return data;
+  }
+
+  public void setData(AutoEntity data) {
+    this.data = data;
   }
 
   public WebhookTestEntity message(String message) {
@@ -70,7 +85,7 @@ public class WebhookTestEntity {
    * Error message
    * @return message
   **/
-  @ApiModelProperty(example = "", value = "Error message")
+  @Schema(description = "Error message")
   public String getMessage() {
     return message;
   }
@@ -88,31 +103,13 @@ public class WebhookTestEntity {
    * Status message
    * @return status
   **/
-  @ApiModelProperty(example = "", value = "Status message")
+  @Schema(description = "Status message")
   public String getStatus() {
     return status;
   }
 
   public void setStatus(String status) {
     this.status = status;
-  }
-
-  public WebhookTestEntity data(AutoEntity data) {
-    this.data = data;
-    return this;
-  }
-
-   /**
-   * Additional data
-   * @return data
-  **/
-  @ApiModelProperty(value = "Additional data")
-  public AutoEntity getData() {
-    return data;
-  }
-
-  public void setData(AutoEntity data) {
-    this.data = data;
   }
 
   public WebhookTestEntity success(Boolean success) {
@@ -124,7 +121,7 @@ public class WebhookTestEntity {
    * The success status of the webhook test
    * @return success
   **/
-  @ApiModelProperty(example = "true", value = "The success status of the webhook test")
+  @Schema(example = "true", description = "The success status of the webhook test")
   public Boolean isSuccess() {
     return success;
   }
@@ -144,15 +141,15 @@ public class WebhookTestEntity {
     }
     WebhookTestEntity webhookTestEntity = (WebhookTestEntity) o;
     return Objects.equals(this.code, webhookTestEntity.code) &&
+        Objects.equals(this.data, webhookTestEntity.data) &&
         Objects.equals(this.message, webhookTestEntity.message) &&
         Objects.equals(this.status, webhookTestEntity.status) &&
-        Objects.equals(this.data, webhookTestEntity.data) &&
         Objects.equals(this.success, webhookTestEntity.success);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, message, status, data, success);
+    return Objects.hash(code, data, message, status, success);
   }
 
 
@@ -162,9 +159,9 @@ public class WebhookTestEntity {
     sb.append("class WebhookTestEntity {\n");
     
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
+    sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("    message: ").append(toIndentedString(message)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
-    sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("    success: ").append(toIndentedString(success)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -182,4 +179,3 @@ public class WebhookTestEntity {
   }
 
 }
-

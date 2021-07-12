@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,38 +17,18 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * Move file/folder
  */
-@ApiModel(description = "Move file/folder")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "Move file/folder")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class FileActionEntity {
-  @JsonProperty("status")
-  private String status = null;
-
   @JsonProperty("file_migration_id")
   private Integer fileMigrationId = null;
 
-  public FileActionEntity status(String status) {
-    this.status = status;
-    return this;
-  }
-
-   /**
-   * Status of file operation. Possible values: completed, enqueued.
-   * @return status
-  **/
-  @ApiModelProperty(example = "enqueued", value = "Status of file operation. Possible values: completed, enqueued.")
-  public String getStatus() {
-    return status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
+  @JsonProperty("status")
+  private String status = null;
 
   public FileActionEntity fileMigrationId(Integer fileMigrationId) {
     this.fileMigrationId = fileMigrationId;
@@ -60,13 +39,31 @@ public class FileActionEntity {
    * If status is enqueued, this is the id of the FileMigration to check for status updates.
    * @return fileMigrationId
   **/
-  @ApiModelProperty(example = "123", value = "If status is enqueued, this is the id of the FileMigration to check for status updates.")
+  @Schema(example = "123", description = "If status is enqueued, this is the id of the FileMigration to check for status updates.")
   public Integer getFileMigrationId() {
     return fileMigrationId;
   }
 
   public void setFileMigrationId(Integer fileMigrationId) {
     this.fileMigrationId = fileMigrationId;
+  }
+
+  public FileActionEntity status(String status) {
+    this.status = status;
+    return this;
+  }
+
+   /**
+   * Status of file operation. Possible values: completed, enqueued.
+   * @return status
+  **/
+  @Schema(example = "enqueued", description = "Status of file operation. Possible values: completed, enqueued.")
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
   }
 
 
@@ -79,13 +76,13 @@ public class FileActionEntity {
       return false;
     }
     FileActionEntity fileActionEntity = (FileActionEntity) o;
-    return Objects.equals(this.status, fileActionEntity.status) &&
-        Objects.equals(this.fileMigrationId, fileActionEntity.fileMigrationId);
+    return Objects.equals(this.fileMigrationId, fileActionEntity.fileMigrationId) &&
+        Objects.equals(this.status, fileActionEntity.status);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(status, fileMigrationId);
+    return Objects.hash(fileMigrationId, status);
   }
 
 
@@ -94,8 +91,8 @@ public class FileActionEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class FileActionEntity {\n");
     
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    fileMigrationId: ").append(toIndentedString(fileMigrationId)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -112,4 +109,3 @@ public class FileActionEntity {
   }
 
 }
-

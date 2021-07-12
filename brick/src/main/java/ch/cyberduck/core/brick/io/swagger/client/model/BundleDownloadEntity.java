@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -19,25 +18,25 @@ import ch.cyberduck.core.brick.io.swagger.client.model.BundleRegistrationEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.joda.time.DateTime;
-
 /**
  * List Bundle Downloads
  */
-@ApiModel(description = "List Bundle Downloads")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Bundle Downloads")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class BundleDownloadEntity {
   @JsonProperty("bundle_registration")
   private BundleRegistrationEntity bundleRegistration = null;
+
+  @JsonProperty("created_at")
+  private DateTime createdAt = null;
 
   /**
    * Download method (file or full_zip)
    */
   public enum DownloadMethodEnum {
     FILE("file"),
-    
     FULL_ZIP("full_zip");
 
     private String value;
@@ -45,7 +44,6 @@ public class BundleDownloadEntity {
     DownloadMethodEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -55,26 +53,21 @@ public class BundleDownloadEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static DownloadMethodEnum fromValue(String value) {
+    public static DownloadMethodEnum fromValue(String text) {
       for (DownloadMethodEnum b : DownloadMethodEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("download_method")
+  }  @JsonProperty("download_method")
   private DownloadMethodEnum downloadMethod = null;
 
   @JsonProperty("path")
   private String path = null;
-
-  @JsonProperty("created_at")
-  private DateTime createdAt = null;
 
   public BundleDownloadEntity bundleRegistration(BundleRegistrationEntity bundleRegistration) {
     this.bundleRegistration = bundleRegistration;
@@ -85,13 +78,31 @@ public class BundleDownloadEntity {
    * Get bundleRegistration
    * @return bundleRegistration
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public BundleRegistrationEntity getBundleRegistration() {
     return bundleRegistration;
   }
 
   public void setBundleRegistration(BundleRegistrationEntity bundleRegistration) {
     this.bundleRegistration = bundleRegistration;
+  }
+
+  public BundleDownloadEntity createdAt(DateTime createdAt) {
+    this.createdAt = createdAt;
+    return this;
+  }
+
+   /**
+   * Download date/time
+   * @return createdAt
+  **/
+  @Schema(description = "Download date/time")
+  public DateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(DateTime createdAt) {
+    this.createdAt = createdAt;
   }
 
   public BundleDownloadEntity downloadMethod(DownloadMethodEnum downloadMethod) {
@@ -103,7 +114,7 @@ public class BundleDownloadEntity {
    * Download method (file or full_zip)
    * @return downloadMethod
   **/
-  @ApiModelProperty(example = "file", value = "Download method (file or full_zip)")
+  @Schema(example = "file", description = "Download method (file or full_zip)")
   public DownloadMethodEnum getDownloadMethod() {
     return downloadMethod;
   }
@@ -121,31 +132,13 @@ public class BundleDownloadEntity {
    * Download path
    * @return path
   **/
-  @ApiModelProperty(example = "a/b/test.txt", value = "Download path")
+  @Schema(example = "a/b/test.txt", description = "Download path")
   public String getPath() {
     return path;
   }
 
   public void setPath(String path) {
     this.path = path;
-  }
-
-  public BundleDownloadEntity createdAt(DateTime createdAt) {
-    this.createdAt = createdAt;
-    return this;
-  }
-
-   /**
-   * Download date/time
-   * @return createdAt
-  **/
-  @ApiModelProperty(example = "2020-01-01 00:00:00", value = "Download date/time")
-  public DateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(DateTime createdAt) {
-    this.createdAt = createdAt;
   }
 
 
@@ -159,14 +152,14 @@ public class BundleDownloadEntity {
     }
     BundleDownloadEntity bundleDownloadEntity = (BundleDownloadEntity) o;
     return Objects.equals(this.bundleRegistration, bundleDownloadEntity.bundleRegistration) &&
+        Objects.equals(this.createdAt, bundleDownloadEntity.createdAt) &&
         Objects.equals(this.downloadMethod, bundleDownloadEntity.downloadMethod) &&
-        Objects.equals(this.path, bundleDownloadEntity.path) &&
-        Objects.equals(this.createdAt, bundleDownloadEntity.createdAt);
+        Objects.equals(this.path, bundleDownloadEntity.path);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(bundleRegistration, downloadMethod, path, createdAt);
+    return Objects.hash(bundleRegistration, createdAt, downloadMethod, path);
   }
 
 
@@ -176,9 +169,9 @@ public class BundleDownloadEntity {
     sb.append("class BundleDownloadEntity {\n");
     
     sb.append("    bundleRegistration: ").append(toIndentedString(bundleRegistration)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    downloadMethod: ").append(toIndentedString(downloadMethod)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
-    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -195,4 +188,3 @@ public class BundleDownloadEntity {
   }
 
 }
-

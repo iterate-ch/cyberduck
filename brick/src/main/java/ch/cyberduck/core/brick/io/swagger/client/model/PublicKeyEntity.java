@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,63 +17,25 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.joda.time.DateTime;
-
 /**
  * List Public Keys
  */
-@ApiModel(description = "List Public Keys")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Public Keys")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class PublicKeyEntity {
-  @JsonProperty("id")
-  private Integer id = null;
-
-  @JsonProperty("title")
-  private String title = null;
-
   @JsonProperty("created_at")
   private DateTime createdAt = null;
 
   @JsonProperty("fingerprint")
   private String fingerprint = null;
 
-  public PublicKeyEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
+  @JsonProperty("id")
+  private Integer id = null;
 
-   /**
-   * Public key ID
-   * @return id
-  **/
-  @ApiModelProperty(example = "1", value = "Public key ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public PublicKeyEntity title(String title) {
-    this.title = title;
-    return this;
-  }
-
-   /**
-   * Public key title
-   * @return title
-  **/
-  @ApiModelProperty(example = "My public key", value = "Public key title")
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
+  @JsonProperty("title")
+  private String title = null;
 
   public PublicKeyEntity createdAt(DateTime createdAt) {
     this.createdAt = createdAt;
@@ -85,7 +46,7 @@ public class PublicKeyEntity {
    * Public key created at date/time
    * @return createdAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Public key created at date/time")
+  @Schema(example = "2000-01-01T01:00Z", description = "Public key created at date/time")
   public DateTime getCreatedAt() {
     return createdAt;
   }
@@ -103,13 +64,49 @@ public class PublicKeyEntity {
    * Public key fingerprint
    * @return fingerprint
   **/
-  @ApiModelProperty(example = "43:51:43:a1:b5:fc:8b:b7:0a:3a:a9:b1:0f:66:73:a8", value = "Public key fingerprint")
+  @Schema(example = "43:51:43:a1:b5:fc:8b:b7:0a:3a:a9:b1:0f:66:73:a8", description = "Public key fingerprint")
   public String getFingerprint() {
     return fingerprint;
   }
 
   public void setFingerprint(String fingerprint) {
     this.fingerprint = fingerprint;
+  }
+
+  public PublicKeyEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Public key ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "Public key ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public PublicKeyEntity title(String title) {
+    this.title = title;
+    return this;
+  }
+
+   /**
+   * Public key title
+   * @return title
+  **/
+  @Schema(example = "My public key", description = "Public key title")
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
 
@@ -122,15 +119,15 @@ public class PublicKeyEntity {
       return false;
     }
     PublicKeyEntity publicKeyEntity = (PublicKeyEntity) o;
-    return Objects.equals(this.id, publicKeyEntity.id) &&
-        Objects.equals(this.title, publicKeyEntity.title) &&
-        Objects.equals(this.createdAt, publicKeyEntity.createdAt) &&
-        Objects.equals(this.fingerprint, publicKeyEntity.fingerprint);
+    return Objects.equals(this.createdAt, publicKeyEntity.createdAt) &&
+        Objects.equals(this.fingerprint, publicKeyEntity.fingerprint) &&
+        Objects.equals(this.id, publicKeyEntity.id) &&
+        Objects.equals(this.title, publicKeyEntity.title);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, title, createdAt, fingerprint);
+    return Objects.hash(createdAt, fingerprint, id, title);
   }
 
 
@@ -139,10 +136,10 @@ public class PublicKeyEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class PublicKeyEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    fingerprint: ").append(toIndentedString(fingerprint)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -159,4 +156,3 @@ public class PublicKeyEntity {
   }
 
 }
-

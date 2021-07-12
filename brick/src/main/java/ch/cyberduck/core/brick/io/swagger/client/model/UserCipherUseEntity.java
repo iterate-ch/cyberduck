@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,43 +17,31 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.joda.time.DateTime;
-
 /**
  * List User Cipher Uses
  */
-@ApiModel(description = "List User Cipher Uses")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List User Cipher Uses")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class UserCipherUseEntity {
-  @JsonProperty("id")
-  private Integer id = null;
-
-  @JsonProperty("protocol_cipher")
-  private String protocolCipher = null;
-
   @JsonProperty("created_at")
   private DateTime createdAt = null;
+
+  @JsonProperty("id")
+  private Integer id = null;
 
   /**
    * The interface accessed
    */
   public enum InterfaceEnum {
     WEB("web"),
-    
     FTP("ftp"),
-    
     SFTP("sftp"),
-    
     DAV("dav"),
-    
     DESKTOP("desktop"),
-    
     RESTAPI("restapi"),
-    
     ROBOT("robot"),
-    
     JSAPI("jsapi");
 
     private String value;
@@ -62,7 +49,6 @@ public class UserCipherUseEntity {
     InterfaceEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -72,62 +58,27 @@ public class UserCipherUseEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static InterfaceEnum fromValue(String value) {
+    public static InterfaceEnum fromValue(String text) {
       for (InterfaceEnum b : InterfaceEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("interface")
+  }  @JsonProperty("interface")
   private InterfaceEnum _interface = null;
+
+  @JsonProperty("protocol_cipher")
+  private String protocolCipher = null;
 
   @JsonProperty("updated_at")
   private DateTime updatedAt = null;
 
   @JsonProperty("user_id")
   private Integer userId = null;
-
-  public UserCipherUseEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * UserCipherUse ID
-   * @return id
-  **/
-  @ApiModelProperty(example = "1", value = "UserCipherUse ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public UserCipherUseEntity protocolCipher(String protocolCipher) {
-    this.protocolCipher = protocolCipher;
-    return this;
-  }
-
-   /**
-   * The protocol and cipher employed
-   * @return protocolCipher
-  **/
-  @ApiModelProperty(example = "TLSv1.2; ECDHE-RSA-AES256-GCM-SHA384", value = "The protocol and cipher employed")
-  public String getProtocolCipher() {
-    return protocolCipher;
-  }
-
-  public void setProtocolCipher(String protocolCipher) {
-    this.protocolCipher = protocolCipher;
-  }
 
   public UserCipherUseEntity createdAt(DateTime createdAt) {
     this.createdAt = createdAt;
@@ -138,13 +89,31 @@ public class UserCipherUseEntity {
    * The earliest recorded use of this combination of interface and protocol and cipher (for this user)
    * @return createdAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "The earliest recorded use of this combination of interface and protocol and cipher (for this user)")
+  @Schema(example = "2000-01-01T01:00Z", description = "The earliest recorded use of this combination of interface and protocol and cipher (for this user)")
   public DateTime getCreatedAt() {
     return createdAt;
   }
 
   public void setCreatedAt(DateTime createdAt) {
     this.createdAt = createdAt;
+  }
+
+  public UserCipherUseEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * UserCipherUse ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "UserCipherUse ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public UserCipherUseEntity _interface(InterfaceEnum _interface) {
@@ -156,13 +125,31 @@ public class UserCipherUseEntity {
    * The interface accessed
    * @return _interface
   **/
-  @ApiModelProperty(example = "restapi", value = "The interface accessed")
+  @Schema(example = "restapi", description = "The interface accessed")
   public InterfaceEnum getInterface() {
     return _interface;
   }
 
   public void setInterface(InterfaceEnum _interface) {
     this._interface = _interface;
+  }
+
+  public UserCipherUseEntity protocolCipher(String protocolCipher) {
+    this.protocolCipher = protocolCipher;
+    return this;
+  }
+
+   /**
+   * The protocol and cipher employed
+   * @return protocolCipher
+  **/
+  @Schema(example = "TLSv1.2; ECDHE-RSA-AES256-GCM-SHA384", description = "The protocol and cipher employed")
+  public String getProtocolCipher() {
+    return protocolCipher;
+  }
+
+  public void setProtocolCipher(String protocolCipher) {
+    this.protocolCipher = protocolCipher;
   }
 
   public UserCipherUseEntity updatedAt(DateTime updatedAt) {
@@ -174,7 +161,7 @@ public class UserCipherUseEntity {
    * The most recent use of this combination of interface and protocol and cipher (for this user)
    * @return updatedAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "The most recent use of this combination of interface and protocol and cipher (for this user)")
+  @Schema(example = "2000-01-01T01:00Z", description = "The most recent use of this combination of interface and protocol and cipher (for this user)")
   public DateTime getUpdatedAt() {
     return updatedAt;
   }
@@ -192,7 +179,7 @@ public class UserCipherUseEntity {
    * ID of the user who performed this access
    * @return userId
   **/
-  @ApiModelProperty(example = "1", value = "ID of the user who performed this access")
+  @Schema(example = "1", description = "ID of the user who performed this access")
   public Integer getUserId() {
     return userId;
   }
@@ -211,17 +198,17 @@ public class UserCipherUseEntity {
       return false;
     }
     UserCipherUseEntity userCipherUseEntity = (UserCipherUseEntity) o;
-    return Objects.equals(this.id, userCipherUseEntity.id) &&
-        Objects.equals(this.protocolCipher, userCipherUseEntity.protocolCipher) &&
-        Objects.equals(this.createdAt, userCipherUseEntity.createdAt) &&
+    return Objects.equals(this.createdAt, userCipherUseEntity.createdAt) &&
+        Objects.equals(this.id, userCipherUseEntity.id) &&
         Objects.equals(this._interface, userCipherUseEntity._interface) &&
+        Objects.equals(this.protocolCipher, userCipherUseEntity.protocolCipher) &&
         Objects.equals(this.updatedAt, userCipherUseEntity.updatedAt) &&
         Objects.equals(this.userId, userCipherUseEntity.userId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, protocolCipher, createdAt, _interface, updatedAt, userId);
+    return Objects.hash(createdAt, id, _interface, protocolCipher, updatedAt, userId);
   }
 
 
@@ -230,10 +217,10 @@ public class UserCipherUseEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class UserCipherUseEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    protocolCipher: ").append(toIndentedString(protocolCipher)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    _interface: ").append(toIndentedString(_interface)).append("\n");
+    sb.append("    protocolCipher: ").append(toIndentedString(protocolCipher)).append("\n");
     sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
     sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
     sb.append("}");
@@ -252,4 +239,3 @@ public class UserCipherUseEntity {
   }
 
 }
-

@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,14 +17,12 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * List all possible public IP addresses
  */
-@ApiModel(description = "List all possible public IP addresses")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List all possible public IP addresses")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class PublicIpAddressEntity {
   @JsonProperty("ip_address")
   private String ipAddress = null;
@@ -42,7 +39,7 @@ public class PublicIpAddressEntity {
    * The public IP address.
    * @return ipAddress
   **/
-  @ApiModelProperty(example = "1.1.1.1", value = "The public IP address.")
+  @Schema(example = "1.1.1.1", description = "The public IP address.")
   public String getIpAddress() {
     return ipAddress;
   }
@@ -60,7 +57,7 @@ public class PublicIpAddressEntity {
    * The name of the frontend server.
    * @return serverName
   **/
-  @ApiModelProperty(example = "server-1", value = "The name of the frontend server.")
+  @Schema(example = "server-1", description = "The name of the frontend server.")
   public String getServerName() {
     return serverName;
   }
@@ -112,4 +109,3 @@ public class PublicIpAddressEntity {
   }
 
 }
-

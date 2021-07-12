@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,23 +17,18 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
 import org.joda.time.DateTime;
-
 /**
  * Create User
  */
-@ApiModel(description = "Create User")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "Create User")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class UserEntity {
-  @JsonProperty("id")
-  private Integer id = null;
-
-  @JsonProperty("username")
-  private String username = null;
+  @JsonProperty("active_2fa")
+  private Boolean active2fa = null;
 
   @JsonProperty("admin_group_ids")
   private List<Integer> adminGroupIds = null;
@@ -42,11 +36,11 @@ public class UserEntity {
   @JsonProperty("allowed_ips")
   private String allowedIps = null;
 
-  @JsonProperty("attachments_permission")
-  private Boolean attachmentsPermission = null;
-
   @JsonProperty("api_keys_count")
   private Integer apiKeysCount = null;
+
+  @JsonProperty("attachments_permission")
+  private Boolean attachmentsPermission = null;
 
   @JsonProperty("authenticate_until")
   private DateTime authenticateUntil = null;
@@ -56,13 +50,9 @@ public class UserEntity {
    */
   public enum AuthenticationMethodEnum {
     PASSWORD("password"),
-    
     UNUSED_FORMER_LDAP("unused_former_ldap"),
-    
     SSO("sso"),
-    
     NONE("none"),
-    
     EMAIL_SIGNUP("email_signup");
 
     private String value;
@@ -70,7 +60,6 @@ public class UserEntity {
     AuthenticationMethodEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -80,19 +69,17 @@ public class UserEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static AuthenticationMethodEnum fromValue(String value) {
+    public static AuthenticationMethodEnum fromValue(String text) {
       for (AuthenticationMethodEnum b : AuthenticationMethodEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("authentication_method")
+  }  @JsonProperty("authentication_method")
   private AuthenticationMethodEnum authenticationMethod = null;
 
   @JsonProperty("avatar_url")
@@ -101,11 +88,14 @@ public class UserEntity {
   @JsonProperty("billing_permission")
   private Boolean billingPermission = null;
 
+  @JsonProperty("bypass_inactive_disable")
+  private Boolean bypassInactiveDisable = null;
+
   @JsonProperty("bypass_site_allowed_ips")
   private Boolean bypassSiteAllowedIps = null;
 
-  @JsonProperty("bypass_inactive_disable")
-  private Boolean bypassInactiveDisable = null;
+  @JsonProperty("company")
+  private String company = null;
 
   @JsonProperty("created_at")
   private DateTime createdAt = null;
@@ -119,6 +109,9 @@ public class UserEntity {
   @JsonProperty("email")
   private String email = null;
 
+  @JsonProperty("externally_managed")
+  private Boolean externallyManaged = null;
+
   @JsonProperty("ftp_permission")
   private Boolean ftpPermission = null;
 
@@ -127,6 +120,9 @@ public class UserEntity {
 
   @JsonProperty("header_text")
   private String headerText = null;
+
+  @JsonProperty("id")
+  private Integer id = null;
 
   @JsonProperty("language")
   private String language = null;
@@ -142,9 +138,6 @@ public class UserEntity {
 
   @JsonProperty("name")
   private String name = null;
-
-  @JsonProperty("company")
-  private String company = null;
 
   @JsonProperty("notes")
   private String notes = null;
@@ -172,9 +165,7 @@ public class UserEntity {
    */
   public enum Require2faEnum {
     USE_SYSTEM_SETTING("use_system_setting"),
-    
     ALWAYS_REQUIRE("always_require"),
-    
     NEVER_REQUIRE("never_require");
 
     private String value;
@@ -182,7 +173,6 @@ public class UserEntity {
     Require2faEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -192,23 +182,18 @@ public class UserEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static Require2faEnum fromValue(String value) {
+    public static Require2faEnum fromValue(String text) {
       for (Require2faEnum b : Require2faEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("require_2fa")
+  }  @JsonProperty("require_2fa")
   private Require2faEnum require2fa = null;
-
-  @JsonProperty("active_2fa")
-  private Boolean active2fa = null;
 
   @JsonProperty("require_password_change")
   private Boolean requirePasswordChange = null;
@@ -233,9 +218,7 @@ public class UserEntity {
    */
   public enum SslRequiredEnum {
     USE_SYSTEM_SETTING("use_system_setting"),
-    
     ALWAYS_REQUIRE("always_require"),
-    
     NEVER_REQUIRE("never_require");
 
     private String value;
@@ -243,7 +226,6 @@ public class UserEntity {
     SslRequiredEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -253,19 +235,17 @@ public class UserEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static SslRequiredEnum fromValue(String value) {
+    public static SslRequiredEnum fromValue(String text) {
       for (SslRequiredEnum b : SslRequiredEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("ssl_required")
+  }  @JsonProperty("ssl_required")
   private SslRequiredEnum sslRequired = null;
 
   @JsonProperty("sso_strategy_id")
@@ -273,9 +253,6 @@ public class UserEntity {
 
   @JsonProperty("subscribe_to_newsletter")
   private Boolean subscribeToNewsletter = null;
-
-  @JsonProperty("externally_managed")
-  private Boolean externallyManaged = null;
 
   @JsonProperty("time_zone")
   private String timeZone = null;
@@ -286,40 +263,25 @@ public class UserEntity {
   @JsonProperty("user_root")
   private String userRoot = null;
 
-  public UserEntity id(Integer id) {
-    this.id = id;
+  @JsonProperty("username")
+  private String username = null;
+
+  public UserEntity active2fa(Boolean active2fa) {
+    this.active2fa = active2fa;
     return this;
   }
 
    /**
-   * User ID
-   * @return id
+   * Is 2fa active for the user?
+   * @return active2fa
   **/
-  @ApiModelProperty(example = "1", value = "User ID")
-  public Integer getId() {
-    return id;
+  @Schema(example = "true", description = "Is 2fa active for the user?")
+  public Boolean isActive2fa() {
+    return active2fa;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public UserEntity username(String username) {
-    this.username = username;
-    return this;
-  }
-
-   /**
-   * User&#39;s username
-   * @return username
-  **/
-  @ApiModelProperty(example = "user", value = "User's username")
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
+  public void setActive2fa(Boolean active2fa) {
+    this.active2fa = active2fa;
   }
 
   public UserEntity adminGroupIds(List<Integer> adminGroupIds) {
@@ -339,7 +301,7 @@ public class UserEntity {
    * List of group IDs of which this user is an administrator
    * @return adminGroupIds
   **/
-  @ApiModelProperty(example = "[1]", value = "List of group IDs of which this user is an administrator")
+  @Schema(example = "[1]", description = "List of group IDs of which this user is an administrator")
   public List<Integer> getAdminGroupIds() {
     return adminGroupIds;
   }
@@ -357,31 +319,13 @@ public class UserEntity {
    * A list of allowed IPs if applicable.  Newline delimited
    * @return allowedIps
   **/
-  @ApiModelProperty(example = "127.0.0.1", value = "A list of allowed IPs if applicable.  Newline delimited")
+  @Schema(example = "127.0.0.1", description = "A list of allowed IPs if applicable.  Newline delimited")
   public String getAllowedIps() {
     return allowedIps;
   }
 
   public void setAllowedIps(String allowedIps) {
     this.allowedIps = allowedIps;
-  }
-
-  public UserEntity attachmentsPermission(Boolean attachmentsPermission) {
-    this.attachmentsPermission = attachmentsPermission;
-    return this;
-  }
-
-   /**
-   * DEPRECATED: Can the user create Bundles (aka Share Links)? Use the bundle permission instead.
-   * @return attachmentsPermission
-  **/
-  @ApiModelProperty(example = "true", value = "DEPRECATED: Can the user create Bundles (aka Share Links)? Use the bundle permission instead.")
-  public Boolean isAttachmentsPermission() {
-    return attachmentsPermission;
-  }
-
-  public void setAttachmentsPermission(Boolean attachmentsPermission) {
-    this.attachmentsPermission = attachmentsPermission;
   }
 
   public UserEntity apiKeysCount(Integer apiKeysCount) {
@@ -393,13 +337,31 @@ public class UserEntity {
    * Number of api keys associated with this user
    * @return apiKeysCount
   **/
-  @ApiModelProperty(example = "1", value = "Number of api keys associated with this user")
+  @Schema(example = "1", description = "Number of api keys associated with this user")
   public Integer getApiKeysCount() {
     return apiKeysCount;
   }
 
   public void setApiKeysCount(Integer apiKeysCount) {
     this.apiKeysCount = apiKeysCount;
+  }
+
+  public UserEntity attachmentsPermission(Boolean attachmentsPermission) {
+    this.attachmentsPermission = attachmentsPermission;
+    return this;
+  }
+
+   /**
+   * DEPRECATED: Can the user create Bundles (aka Share Links)? Use the bundle permission instead.
+   * @return attachmentsPermission
+  **/
+  @Schema(example = "true", description = "DEPRECATED: Can the user create Bundles (aka Share Links)? Use the bundle permission instead.")
+  public Boolean isAttachmentsPermission() {
+    return attachmentsPermission;
+  }
+
+  public void setAttachmentsPermission(Boolean attachmentsPermission) {
+    this.attachmentsPermission = attachmentsPermission;
   }
 
   public UserEntity authenticateUntil(DateTime authenticateUntil) {
@@ -411,7 +373,7 @@ public class UserEntity {
    * Scheduled Date/Time at which user will be deactivated
    * @return authenticateUntil
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Scheduled Date/Time at which user will be deactivated")
+  @Schema(example = "2000-01-01T01:00Z", description = "Scheduled Date/Time at which user will be deactivated")
   public DateTime getAuthenticateUntil() {
     return authenticateUntil;
   }
@@ -429,7 +391,7 @@ public class UserEntity {
    * How is this user authenticated?
    * @return authenticationMethod
   **/
-  @ApiModelProperty(example = "password", value = "How is this user authenticated?")
+  @Schema(example = "password", description = "How is this user authenticated?")
   public AuthenticationMethodEnum getAuthenticationMethod() {
     return authenticationMethod;
   }
@@ -444,10 +406,10 @@ public class UserEntity {
   }
 
    /**
-   * URL holding the user&#39;s avatar
+   * URL holding the user&#x27;s avatar
    * @return avatarUrl
   **/
-  @ApiModelProperty(example = "", value = "URL holding the user's avatar")
+  @Schema(description = "URL holding the user's avatar")
   public String getAvatarUrl() {
     return avatarUrl;
   }
@@ -465,31 +427,13 @@ public class UserEntity {
    * Allow this user to perform operations on the account, payments, and invoices?
    * @return billingPermission
   **/
-  @ApiModelProperty(value = "Allow this user to perform operations on the account, payments, and invoices?")
+  @Schema(description = "Allow this user to perform operations on the account, payments, and invoices?")
   public Boolean isBillingPermission() {
     return billingPermission;
   }
 
   public void setBillingPermission(Boolean billingPermission) {
     this.billingPermission = billingPermission;
-  }
-
-  public UserEntity bypassSiteAllowedIps(Boolean bypassSiteAllowedIps) {
-    this.bypassSiteAllowedIps = bypassSiteAllowedIps;
-    return this;
-  }
-
-   /**
-   * Allow this user to skip site-wide IP blacklists?
-   * @return bypassSiteAllowedIps
-  **/
-  @ApiModelProperty(value = "Allow this user to skip site-wide IP blacklists?")
-  public Boolean isBypassSiteAllowedIps() {
-    return bypassSiteAllowedIps;
-  }
-
-  public void setBypassSiteAllowedIps(Boolean bypassSiteAllowedIps) {
-    this.bypassSiteAllowedIps = bypassSiteAllowedIps;
   }
 
   public UserEntity bypassInactiveDisable(Boolean bypassInactiveDisable) {
@@ -501,13 +445,49 @@ public class UserEntity {
    * Exempt this user from being disabled based on inactivity?
    * @return bypassInactiveDisable
   **/
-  @ApiModelProperty(value = "Exempt this user from being disabled based on inactivity?")
+  @Schema(description = "Exempt this user from being disabled based on inactivity?")
   public Boolean isBypassInactiveDisable() {
     return bypassInactiveDisable;
   }
 
   public void setBypassInactiveDisable(Boolean bypassInactiveDisable) {
     this.bypassInactiveDisable = bypassInactiveDisable;
+  }
+
+  public UserEntity bypassSiteAllowedIps(Boolean bypassSiteAllowedIps) {
+    this.bypassSiteAllowedIps = bypassSiteAllowedIps;
+    return this;
+  }
+
+   /**
+   * Allow this user to skip site-wide IP blacklists?
+   * @return bypassSiteAllowedIps
+  **/
+  @Schema(description = "Allow this user to skip site-wide IP blacklists?")
+  public Boolean isBypassSiteAllowedIps() {
+    return bypassSiteAllowedIps;
+  }
+
+  public void setBypassSiteAllowedIps(Boolean bypassSiteAllowedIps) {
+    this.bypassSiteAllowedIps = bypassSiteAllowedIps;
+  }
+
+  public UserEntity company(String company) {
+    this.company = company;
+    return this;
+  }
+
+   /**
+   * User&#x27;s company
+   * @return company
+  **/
+  @Schema(example = "ACME Corp.", description = "User's company")
+  public String getCompany() {
+    return company;
+  }
+
+  public void setCompany(String company) {
+    this.company = company;
   }
 
   public UserEntity createdAt(DateTime createdAt) {
@@ -519,7 +499,7 @@ public class UserEntity {
    * When this user was created
    * @return createdAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "When this user was created")
+  @Schema(example = "2000-01-01T01:00Z", description = "When this user was created")
   public DateTime getCreatedAt() {
     return createdAt;
   }
@@ -537,7 +517,7 @@ public class UserEntity {
    * Can the user connect with WebDAV?
    * @return davPermission
   **/
-  @ApiModelProperty(example = "true", value = "Can the user connect with WebDAV?")
+  @Schema(example = "true", description = "Can the user connect with WebDAV?")
   public Boolean isDavPermission() {
     return davPermission;
   }
@@ -555,7 +535,7 @@ public class UserEntity {
    * Is user disabled? Disabled users cannot log in, and do not count for billing purposes.  Users can be automatically disabled after an inactivity period via a Site setting.
    * @return disabled
   **/
-  @ApiModelProperty(example = "true", value = "Is user disabled? Disabled users cannot log in, and do not count for billing purposes.  Users can be automatically disabled after an inactivity period via a Site setting.")
+  @Schema(example = "true", description = "Is user disabled? Disabled users cannot log in, and do not count for billing purposes.  Users can be automatically disabled after an inactivity period via a Site setting.")
   public Boolean isDisabled() {
     return disabled;
   }
@@ -573,13 +553,31 @@ public class UserEntity {
    * User email address
    * @return email
   **/
-  @ApiModelProperty(example = "john.doe@files.com", value = "User email address")
+  @Schema(example = "john.doe@files.com", description = "User email address")
   public String getEmail() {
     return email;
   }
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public UserEntity externallyManaged(Boolean externallyManaged) {
+    this.externallyManaged = externallyManaged;
+    return this;
+  }
+
+   /**
+   * Is this user managed by a SsoStrategy?
+   * @return externallyManaged
+  **/
+  @Schema(example = "true", description = "Is this user managed by a SsoStrategy?")
+  public Boolean isExternallyManaged() {
+    return externallyManaged;
+  }
+
+  public void setExternallyManaged(Boolean externallyManaged) {
+    this.externallyManaged = externallyManaged;
   }
 
   public UserEntity ftpPermission(Boolean ftpPermission) {
@@ -591,7 +589,7 @@ public class UserEntity {
    * Can the user access with FTP/FTPS?
    * @return ftpPermission
   **/
-  @ApiModelProperty(example = "true", value = "Can the user access with FTP/FTPS?")
+  @Schema(example = "true", description = "Can the user access with FTP/FTPS?")
   public Boolean isFtpPermission() {
     return ftpPermission;
   }
@@ -609,7 +607,7 @@ public class UserEntity {
    * Comma-separated list of group IDs of which this user is a member
    * @return groupIds
   **/
-  @ApiModelProperty(example = "", value = "Comma-separated list of group IDs of which this user is a member")
+  @Schema(description = "Comma-separated list of group IDs of which this user is a member")
   public String getGroupIds() {
     return groupIds;
   }
@@ -627,13 +625,31 @@ public class UserEntity {
    * Text to display to the user in the header of the UI
    * @return headerText
   **/
-  @ApiModelProperty(example = "User-specific message.", value = "Text to display to the user in the header of the UI")
+  @Schema(example = "User-specific message.", description = "Text to display to the user in the header of the UI")
   public String getHeaderText() {
     return headerText;
   }
 
   public void setHeaderText(String headerText) {
     this.headerText = headerText;
+  }
+
+  public UserEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * User ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "User ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public UserEntity language(String language) {
@@ -645,7 +661,7 @@ public class UserEntity {
    * Preferred language
    * @return language
   **/
-  @ApiModelProperty(example = "en", value = "Preferred language")
+  @Schema(example = "en", description = "Preferred language")
   public String getLanguage() {
     return language;
   }
@@ -660,10 +676,10 @@ public class UserEntity {
   }
 
    /**
-   * User&#39;s last login time
+   * User&#x27;s last login time
    * @return lastLoginAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "User's last login time")
+  @Schema(example = "2000-01-01T01:00Z", description = "User's last login time")
   public DateTime getLastLoginAt() {
     return lastLoginAt;
   }
@@ -681,7 +697,7 @@ public class UserEntity {
    * The last protocol and cipher used
    * @return lastProtocolCipher
   **/
-  @ApiModelProperty(example = "", value = "The last protocol and cipher used")
+  @Schema(description = "The last protocol and cipher used")
   public String getLastProtocolCipher() {
     return lastProtocolCipher;
   }
@@ -699,7 +715,7 @@ public class UserEntity {
    * Time in the future that the user will no longer be locked out if applicable
    * @return lockoutExpires
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Time in the future that the user will no longer be locked out if applicable")
+  @Schema(example = "2000-01-01T01:00Z", description = "Time in the future that the user will no longer be locked out if applicable")
   public DateTime getLockoutExpires() {
     return lockoutExpires;
   }
@@ -714,34 +730,16 @@ public class UserEntity {
   }
 
    /**
-   * User&#39;s full name
+   * User&#x27;s full name
    * @return name
   **/
-  @ApiModelProperty(example = "John Doe", value = "User's full name")
+  @Schema(example = "John Doe", description = "User's full name")
   public String getName() {
     return name;
   }
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public UserEntity company(String company) {
-    this.company = company;
-    return this;
-  }
-
-   /**
-   * User&#39;s company
-   * @return company
-  **/
-  @ApiModelProperty(example = "ACME Corp.", value = "User's company")
-  public String getCompany() {
-    return company;
-  }
-
-  public void setCompany(String company) {
-    this.company = company;
   }
 
   public UserEntity notes(String notes) {
@@ -753,7 +751,7 @@ public class UserEntity {
    * Any internal notes on the user
    * @return notes
   **/
-  @ApiModelProperty(example = "Internal notes on this user.", value = "Any internal notes on the user")
+  @Schema(example = "Internal notes on this user.", description = "Any internal notes on the user")
   public String getNotes() {
     return notes;
   }
@@ -771,7 +769,7 @@ public class UserEntity {
    * Hour of the day at which daily notifications should be sent. Can be in range 0 to 23
    * @return notificationDailySendTime
   **/
-  @ApiModelProperty(example = "18", value = "Hour of the day at which daily notifications should be sent. Can be in range 0 to 23")
+  @Schema(example = "18", description = "Hour of the day at which daily notifications should be sent. Can be in range 0 to 23")
   public Integer getNotificationDailySendTime() {
     return notificationDailySendTime;
   }
@@ -789,7 +787,7 @@ public class UserEntity {
    * Enable integration with Office for the web?
    * @return officeIntegrationEnabled
   **/
-  @ApiModelProperty(example = "true", value = "Enable integration with Office for the web?")
+  @Schema(example = "true", description = "Enable integration with Office for the web?")
   public Boolean isOfficeIntegrationEnabled() {
     return officeIntegrationEnabled;
   }
@@ -804,10 +802,10 @@ public class UserEntity {
   }
 
    /**
-   * Last time the user&#39;s password was set
+   * Last time the user&#x27;s password was set
    * @return passwordSetAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Last time the user's password was set")
+  @Schema(example = "2000-01-01T01:00Z", description = "Last time the user's password was set")
   public DateTime getPasswordSetAt() {
     return passwordSetAt;
   }
@@ -825,7 +823,7 @@ public class UserEntity {
    * Number of days to allow user to use the same password
    * @return passwordValidityDays
   **/
-  @ApiModelProperty(example = "1", value = "Number of days to allow user to use the same password")
+  @Schema(example = "1", description = "Number of days to allow user to use the same password")
   public Integer getPasswordValidityDays() {
     return passwordValidityDays;
   }
@@ -843,7 +841,7 @@ public class UserEntity {
    * Number of public keys associated with this user
    * @return publicKeysCount
   **/
-  @ApiModelProperty(example = "1", value = "Number of public keys associated with this user")
+  @Schema(example = "1", description = "Number of public keys associated with this user")
   public Integer getPublicKeysCount() {
     return publicKeysCount;
   }
@@ -861,7 +859,7 @@ public class UserEntity {
    * Should the user receive admin alerts such a certificate expiration notifications and overages?
    * @return receiveAdminAlerts
   **/
-  @ApiModelProperty(example = "true", value = "Should the user receive admin alerts such a certificate expiration notifications and overages?")
+  @Schema(example = "true", description = "Should the user receive admin alerts such a certificate expiration notifications and overages?")
   public Boolean isReceiveAdminAlerts() {
     return receiveAdminAlerts;
   }
@@ -879,31 +877,13 @@ public class UserEntity {
    * 2FA required setting
    * @return require2fa
   **/
-  @ApiModelProperty(example = "always_require", value = "2FA required setting")
+  @Schema(example = "always_require", description = "2FA required setting")
   public Require2faEnum getRequire2fa() {
     return require2fa;
   }
 
   public void setRequire2fa(Require2faEnum require2fa) {
     this.require2fa = require2fa;
-  }
-
-  public UserEntity active2fa(Boolean active2fa) {
-    this.active2fa = active2fa;
-    return this;
-  }
-
-   /**
-   * Is 2fa active for the user?
-   * @return active2fa
-  **/
-  @ApiModelProperty(example = "true", value = "Is 2fa active for the user?")
-  public Boolean isActive2fa() {
-    return active2fa;
-  }
-
-  public void setActive2fa(Boolean active2fa) {
-    this.active2fa = active2fa;
   }
 
   public UserEntity requirePasswordChange(Boolean requirePasswordChange) {
@@ -915,7 +895,7 @@ public class UserEntity {
    * Is a password change required upon next user login?
    * @return requirePasswordChange
   **/
-  @ApiModelProperty(example = "true", value = "Is a password change required upon next user login?")
+  @Schema(example = "true", description = "Is a password change required upon next user login?")
   public Boolean isRequirePasswordChange() {
     return requirePasswordChange;
   }
@@ -933,7 +913,7 @@ public class UserEntity {
    * Can this user access the REST API?
    * @return restapiPermission
   **/
-  @ApiModelProperty(example = "true", value = "Can this user access the REST API?")
+  @Schema(example = "true", description = "Can this user access the REST API?")
   public Boolean isRestapiPermission() {
     return restapiPermission;
   }
@@ -948,10 +928,10 @@ public class UserEntity {
   }
 
    /**
-   * Does this user manage it&#39;s own credentials or is it a shared/bot user?
+   * Does this user manage it&#x27;s own credentials or is it a shared/bot user?
    * @return selfManaged
   **/
-  @ApiModelProperty(example = "true", value = "Does this user manage it's own credentials or is it a shared/bot user?")
+  @Schema(example = "true", description = "Does this user manage it's own credentials or is it a shared/bot user?")
   public Boolean isSelfManaged() {
     return selfManaged;
   }
@@ -969,7 +949,7 @@ public class UserEntity {
    * Can the user access with SFTP?
    * @return sftpPermission
   **/
-  @ApiModelProperty(example = "true", value = "Can the user access with SFTP?")
+  @Schema(example = "true", description = "Can the user access with SFTP?")
   public Boolean isSftpPermission() {
     return sftpPermission;
   }
@@ -987,7 +967,7 @@ public class UserEntity {
    * Is the user an administrator for this site?
    * @return siteAdmin
   **/
-  @ApiModelProperty(example = "true", value = "Is the user an administrator for this site?")
+  @Schema(example = "true", description = "Is the user an administrator for this site?")
   public Boolean isSiteAdmin() {
     return siteAdmin;
   }
@@ -1005,7 +985,7 @@ public class UserEntity {
    * Skip Welcome page in the UI?
    * @return skipWelcomeScreen
   **/
-  @ApiModelProperty(example = "true", value = "Skip Welcome page in the UI?")
+  @Schema(example = "true", description = "Skip Welcome page in the UI?")
   public Boolean isSkipWelcomeScreen() {
     return skipWelcomeScreen;
   }
@@ -1023,7 +1003,7 @@ public class UserEntity {
    * SSL required setting
    * @return sslRequired
   **/
-  @ApiModelProperty(example = "always_require", value = "SSL required setting")
+  @Schema(example = "always_require", description = "SSL required setting")
   public SslRequiredEnum getSslRequired() {
     return sslRequired;
   }
@@ -1041,7 +1021,7 @@ public class UserEntity {
    * SSO (Single Sign On) strategy ID for the user, if applicable.
    * @return ssoStrategyId
   **/
-  @ApiModelProperty(example = "1", value = "SSO (Single Sign On) strategy ID for the user, if applicable.")
+  @Schema(example = "1", description = "SSO (Single Sign On) strategy ID for the user, if applicable.")
   public Integer getSsoStrategyId() {
     return ssoStrategyId;
   }
@@ -1059,31 +1039,13 @@ public class UserEntity {
    * Is the user subscribed to the newsletter?
    * @return subscribeToNewsletter
   **/
-  @ApiModelProperty(example = "true", value = "Is the user subscribed to the newsletter?")
+  @Schema(example = "true", description = "Is the user subscribed to the newsletter?")
   public Boolean isSubscribeToNewsletter() {
     return subscribeToNewsletter;
   }
 
   public void setSubscribeToNewsletter(Boolean subscribeToNewsletter) {
     this.subscribeToNewsletter = subscribeToNewsletter;
-  }
-
-  public UserEntity externallyManaged(Boolean externallyManaged) {
-    this.externallyManaged = externallyManaged;
-    return this;
-  }
-
-   /**
-   * Is this user managed by a SsoStrategy?
-   * @return externallyManaged
-  **/
-  @ApiModelProperty(example = "true", value = "Is this user managed by a SsoStrategy?")
-  public Boolean isExternallyManaged() {
-    return externallyManaged;
-  }
-
-  public void setExternallyManaged(Boolean externallyManaged) {
-    this.externallyManaged = externallyManaged;
   }
 
   public UserEntity timeZone(String timeZone) {
@@ -1095,7 +1057,7 @@ public class UserEntity {
    * User time zone
    * @return timeZone
   **/
-  @ApiModelProperty(example = "Pacific Time (US & Canada)", value = "User time zone")
+  @Schema(example = "Pacific Time (US & Canada)", description = "User time zone")
   public String getTimeZone() {
     return timeZone;
   }
@@ -1113,7 +1075,7 @@ public class UserEntity {
    * Type(s) of 2FA methods in use.  Will be either &#x60;sms&#x60;, &#x60;totp&#x60;, &#x60;u2f&#x60;, &#x60;yubi&#x60;, or multiple values sorted alphabetically and joined by an underscore.
    * @return typeOf2fa
   **/
-  @ApiModelProperty(example = "", value = "Type(s) of 2FA methods in use.  Will be either `sms`, `totp`, `u2f`, `yubi`, or multiple values sorted alphabetically and joined by an underscore.")
+  @Schema(description = "Type(s) of 2FA methods in use.  Will be either `sms`, `totp`, `u2f`, `yubi`, or multiple values sorted alphabetically and joined by an underscore.")
   public String getTypeOf2fa() {
     return typeOf2fa;
   }
@@ -1131,13 +1093,31 @@ public class UserEntity {
    * Root folder for FTP (and optionally SFTP if the appropriate site-wide setting is set.)  Note that this is not used for API, Desktop, or Web interface.
    * @return userRoot
   **/
-  @ApiModelProperty(example = "", value = "Root folder for FTP (and optionally SFTP if the appropriate site-wide setting is set.)  Note that this is not used for API, Desktop, or Web interface.")
+  @Schema(description = "Root folder for FTP (and optionally SFTP if the appropriate site-wide setting is set.)  Note that this is not used for API, Desktop, or Web interface.")
   public String getUserRoot() {
     return userRoot;
   }
 
   public void setUserRoot(String userRoot) {
     this.userRoot = userRoot;
+  }
+
+  public UserEntity username(String username) {
+    this.username = username;
+    return this;
+  }
+
+   /**
+   * User&#x27;s username
+   * @return username
+  **/
+  @Schema(example = "user", description = "User's username")
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
   }
 
 
@@ -1150,31 +1130,32 @@ public class UserEntity {
       return false;
     }
     UserEntity userEntity = (UserEntity) o;
-    return Objects.equals(this.id, userEntity.id) &&
-        Objects.equals(this.username, userEntity.username) &&
+    return Objects.equals(this.active2fa, userEntity.active2fa) &&
         Objects.equals(this.adminGroupIds, userEntity.adminGroupIds) &&
         Objects.equals(this.allowedIps, userEntity.allowedIps) &&
-        Objects.equals(this.attachmentsPermission, userEntity.attachmentsPermission) &&
         Objects.equals(this.apiKeysCount, userEntity.apiKeysCount) &&
+        Objects.equals(this.attachmentsPermission, userEntity.attachmentsPermission) &&
         Objects.equals(this.authenticateUntil, userEntity.authenticateUntil) &&
         Objects.equals(this.authenticationMethod, userEntity.authenticationMethod) &&
         Objects.equals(this.avatarUrl, userEntity.avatarUrl) &&
         Objects.equals(this.billingPermission, userEntity.billingPermission) &&
-        Objects.equals(this.bypassSiteAllowedIps, userEntity.bypassSiteAllowedIps) &&
         Objects.equals(this.bypassInactiveDisable, userEntity.bypassInactiveDisable) &&
+        Objects.equals(this.bypassSiteAllowedIps, userEntity.bypassSiteAllowedIps) &&
+        Objects.equals(this.company, userEntity.company) &&
         Objects.equals(this.createdAt, userEntity.createdAt) &&
         Objects.equals(this.davPermission, userEntity.davPermission) &&
         Objects.equals(this.disabled, userEntity.disabled) &&
         Objects.equals(this.email, userEntity.email) &&
+        Objects.equals(this.externallyManaged, userEntity.externallyManaged) &&
         Objects.equals(this.ftpPermission, userEntity.ftpPermission) &&
         Objects.equals(this.groupIds, userEntity.groupIds) &&
         Objects.equals(this.headerText, userEntity.headerText) &&
+        Objects.equals(this.id, userEntity.id) &&
         Objects.equals(this.language, userEntity.language) &&
         Objects.equals(this.lastLoginAt, userEntity.lastLoginAt) &&
         Objects.equals(this.lastProtocolCipher, userEntity.lastProtocolCipher) &&
         Objects.equals(this.lockoutExpires, userEntity.lockoutExpires) &&
         Objects.equals(this.name, userEntity.name) &&
-        Objects.equals(this.company, userEntity.company) &&
         Objects.equals(this.notes, userEntity.notes) &&
         Objects.equals(this.notificationDailySendTime, userEntity.notificationDailySendTime) &&
         Objects.equals(this.officeIntegrationEnabled, userEntity.officeIntegrationEnabled) &&
@@ -1183,7 +1164,6 @@ public class UserEntity {
         Objects.equals(this.publicKeysCount, userEntity.publicKeysCount) &&
         Objects.equals(this.receiveAdminAlerts, userEntity.receiveAdminAlerts) &&
         Objects.equals(this.require2fa, userEntity.require2fa) &&
-        Objects.equals(this.active2fa, userEntity.active2fa) &&
         Objects.equals(this.requirePasswordChange, userEntity.requirePasswordChange) &&
         Objects.equals(this.restapiPermission, userEntity.restapiPermission) &&
         Objects.equals(this.selfManaged, userEntity.selfManaged) &&
@@ -1193,15 +1173,15 @@ public class UserEntity {
         Objects.equals(this.sslRequired, userEntity.sslRequired) &&
         Objects.equals(this.ssoStrategyId, userEntity.ssoStrategyId) &&
         Objects.equals(this.subscribeToNewsletter, userEntity.subscribeToNewsletter) &&
-        Objects.equals(this.externallyManaged, userEntity.externallyManaged) &&
         Objects.equals(this.timeZone, userEntity.timeZone) &&
         Objects.equals(this.typeOf2fa, userEntity.typeOf2fa) &&
-        Objects.equals(this.userRoot, userEntity.userRoot);
+        Objects.equals(this.userRoot, userEntity.userRoot) &&
+        Objects.equals(this.username, userEntity.username);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, username, adminGroupIds, allowedIps, attachmentsPermission, apiKeysCount, authenticateUntil, authenticationMethod, avatarUrl, billingPermission, bypassSiteAllowedIps, bypassInactiveDisable, createdAt, davPermission, disabled, email, ftpPermission, groupIds, headerText, language, lastLoginAt, lastProtocolCipher, lockoutExpires, name, company, notes, notificationDailySendTime, officeIntegrationEnabled, passwordSetAt, passwordValidityDays, publicKeysCount, receiveAdminAlerts, require2fa, active2fa, requirePasswordChange, restapiPermission, selfManaged, sftpPermission, siteAdmin, skipWelcomeScreen, sslRequired, ssoStrategyId, subscribeToNewsletter, externallyManaged, timeZone, typeOf2fa, userRoot);
+    return Objects.hash(active2fa, adminGroupIds, allowedIps, apiKeysCount, attachmentsPermission, authenticateUntil, authenticationMethod, avatarUrl, billingPermission, bypassInactiveDisable, bypassSiteAllowedIps, company, createdAt, davPermission, disabled, email, externallyManaged, ftpPermission, groupIds, headerText, id, language, lastLoginAt, lastProtocolCipher, lockoutExpires, name, notes, notificationDailySendTime, officeIntegrationEnabled, passwordSetAt, passwordValidityDays, publicKeysCount, receiveAdminAlerts, require2fa, requirePasswordChange, restapiPermission, selfManaged, sftpPermission, siteAdmin, skipWelcomeScreen, sslRequired, ssoStrategyId, subscribeToNewsletter, timeZone, typeOf2fa, userRoot, username);
   }
 
 
@@ -1210,31 +1190,32 @@ public class UserEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class UserEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    username: ").append(toIndentedString(username)).append("\n");
+    sb.append("    active2fa: ").append(toIndentedString(active2fa)).append("\n");
     sb.append("    adminGroupIds: ").append(toIndentedString(adminGroupIds)).append("\n");
     sb.append("    allowedIps: ").append(toIndentedString(allowedIps)).append("\n");
-    sb.append("    attachmentsPermission: ").append(toIndentedString(attachmentsPermission)).append("\n");
     sb.append("    apiKeysCount: ").append(toIndentedString(apiKeysCount)).append("\n");
+    sb.append("    attachmentsPermission: ").append(toIndentedString(attachmentsPermission)).append("\n");
     sb.append("    authenticateUntil: ").append(toIndentedString(authenticateUntil)).append("\n");
     sb.append("    authenticationMethod: ").append(toIndentedString(authenticationMethod)).append("\n");
     sb.append("    avatarUrl: ").append(toIndentedString(avatarUrl)).append("\n");
     sb.append("    billingPermission: ").append(toIndentedString(billingPermission)).append("\n");
-    sb.append("    bypassSiteAllowedIps: ").append(toIndentedString(bypassSiteAllowedIps)).append("\n");
     sb.append("    bypassInactiveDisable: ").append(toIndentedString(bypassInactiveDisable)).append("\n");
+    sb.append("    bypassSiteAllowedIps: ").append(toIndentedString(bypassSiteAllowedIps)).append("\n");
+    sb.append("    company: ").append(toIndentedString(company)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    davPermission: ").append(toIndentedString(davPermission)).append("\n");
     sb.append("    disabled: ").append(toIndentedString(disabled)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
+    sb.append("    externallyManaged: ").append(toIndentedString(externallyManaged)).append("\n");
     sb.append("    ftpPermission: ").append(toIndentedString(ftpPermission)).append("\n");
     sb.append("    groupIds: ").append(toIndentedString(groupIds)).append("\n");
     sb.append("    headerText: ").append(toIndentedString(headerText)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    language: ").append(toIndentedString(language)).append("\n");
     sb.append("    lastLoginAt: ").append(toIndentedString(lastLoginAt)).append("\n");
     sb.append("    lastProtocolCipher: ").append(toIndentedString(lastProtocolCipher)).append("\n");
     sb.append("    lockoutExpires: ").append(toIndentedString(lockoutExpires)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    company: ").append(toIndentedString(company)).append("\n");
     sb.append("    notes: ").append(toIndentedString(notes)).append("\n");
     sb.append("    notificationDailySendTime: ").append(toIndentedString(notificationDailySendTime)).append("\n");
     sb.append("    officeIntegrationEnabled: ").append(toIndentedString(officeIntegrationEnabled)).append("\n");
@@ -1243,7 +1224,6 @@ public class UserEntity {
     sb.append("    publicKeysCount: ").append(toIndentedString(publicKeysCount)).append("\n");
     sb.append("    receiveAdminAlerts: ").append(toIndentedString(receiveAdminAlerts)).append("\n");
     sb.append("    require2fa: ").append(toIndentedString(require2fa)).append("\n");
-    sb.append("    active2fa: ").append(toIndentedString(active2fa)).append("\n");
     sb.append("    requirePasswordChange: ").append(toIndentedString(requirePasswordChange)).append("\n");
     sb.append("    restapiPermission: ").append(toIndentedString(restapiPermission)).append("\n");
     sb.append("    selfManaged: ").append(toIndentedString(selfManaged)).append("\n");
@@ -1253,10 +1233,10 @@ public class UserEntity {
     sb.append("    sslRequired: ").append(toIndentedString(sslRequired)).append("\n");
     sb.append("    ssoStrategyId: ").append(toIndentedString(ssoStrategyId)).append("\n");
     sb.append("    subscribeToNewsletter: ").append(toIndentedString(subscribeToNewsletter)).append("\n");
-    sb.append("    externallyManaged: ").append(toIndentedString(externallyManaged)).append("\n");
     sb.append("    timeZone: ").append(toIndentedString(timeZone)).append("\n");
     sb.append("    typeOf2fa: ").append(toIndentedString(typeOf2fa)).append("\n");
     sb.append("    userRoot: ").append(toIndentedString(userRoot)).append("\n");
+    sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -1273,4 +1253,3 @@ public class UserEntity {
   }
 
 }
-

@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -21,18 +20,19 @@ import ch.cyberduck.core.brick.io.swagger.client.model.UserEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.joda.time.DateTime;
-
 /**
  * Show site settings
  */
-@ApiModel(description = "Show site settings")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "Show site settings")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class SiteEntity {
-  @JsonProperty("name")
-  private String name = null;
+  @JsonProperty("admin_user_id")
+  private Integer adminUserId = null;
+
+  @JsonProperty("allow_bundle_names")
+  private Boolean allowBundleNames = null;
 
   @JsonProperty("allowed_2fa_method_sms")
   private Boolean allowed2faMethodSms = null;
@@ -45,12 +45,6 @@ public class SiteEntity {
 
   @JsonProperty("allowed_2fa_method_yubi")
   private Boolean allowed2faMethodYubi = null;
-
-  @JsonProperty("admin_user_id")
-  private Integer adminUserId = null;
-
-  @JsonProperty("allow_bundle_names")
-  private Boolean allowBundleNames = null;
 
   @JsonProperty("allowed_countries")
   private String allowedCountries = null;
@@ -112,29 +106,23 @@ public class SiteEntity {
   @JsonProperty("desktop_app_session_lifetime")
   private Integer desktopAppSessionLifetime = null;
 
-  @JsonProperty("disallowed_countries")
-  private String disallowedCountries = null;
-
   @JsonProperty("disable_notifications")
   private Boolean disableNotifications = null;
 
   @JsonProperty("disable_password_reset")
   private Boolean disablePasswordReset = null;
 
+  @JsonProperty("disable_users_from_inactivity_period_days")
+  private Integer disableUsersFromInactivityPeriodDays = null;
+
+  @JsonProperty("disallowed_countries")
+  private String disallowedCountries = null;
+
   @JsonProperty("domain")
   private String domain = null;
 
   @JsonProperty("email")
   private String email = null;
-
-  @JsonProperty("reply_to_email")
-  private String replyToEmail = null;
-
-  @JsonProperty("non_sso_groups_allowed")
-  private Boolean nonSsoGroupsAllowed = null;
-
-  @JsonProperty("non_sso_users_allowed")
-  private Boolean nonSsoUsersAllowed = null;
 
   @JsonProperty("folder_permissions_groups_only")
   private Boolean folderPermissionsGroupsOnly = null;
@@ -220,11 +208,20 @@ public class SiteEntity {
   @JsonProperty("max_prior_passwords")
   private Integer maxPriorPasswords = null;
 
+  @JsonProperty("name")
+  private String name = null;
+
   @JsonProperty("next_billing_amount")
   private Double nextBillingAmount = null;
 
   @JsonProperty("next_billing_date")
   private String nextBillingDate = null;
+
+  @JsonProperty("non_sso_groups_allowed")
+  private Boolean nonSsoGroupsAllowed = null;
+
+  @JsonProperty("non_sso_users_allowed")
+  private Boolean nonSsoUsersAllowed = null;
 
   @JsonProperty("office_integration_available")
   private Boolean officeIntegrationAvailable = null;
@@ -271,6 +268,9 @@ public class SiteEntity {
   @JsonProperty("phone")
   private String phone = null;
 
+  @JsonProperty("reply_to_email")
+  private String replyToEmail = null;
+
   @JsonProperty("require_2fa")
   private Boolean require2fa = null;
 
@@ -282,9 +282,7 @@ public class SiteEntity {
    */
   public enum Require2faUserTypeEnum {
     ALL("all"),
-    
     FOLDER_AND_SITE_ADMINS("folder_and_site_admins"),
-    
     SITE_ADMINS("site_admins");
 
     private String value;
@@ -292,7 +290,6 @@ public class SiteEntity {
     Require2faUserTypeEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -302,23 +299,24 @@ public class SiteEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static Require2faUserTypeEnum fromValue(String value) {
+    public static Require2faUserTypeEnum fromValue(String text) {
       for (Require2faUserTypeEnum b : Require2faUserTypeEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("require_2fa_user_type")
+  }  @JsonProperty("require_2fa_user_type")
   private Require2faUserTypeEnum require2faUserType = null;
 
   @JsonProperty("session")
   private SessionEntity session = null;
+
+  @JsonProperty("session_expiry")
+  private Double sessionExpiry = null;
 
   @JsonProperty("session_pinned_by_ip")
   private Boolean sessionPinnedByIp = null;
@@ -352,9 +350,6 @@ public class SiteEntity {
 
   @JsonProperty("smtp_username")
   private String smtpUsername = null;
-
-  @JsonProperty("session_expiry")
-  private Double sessionExpiry = null;
 
   @JsonProperty("ssl_required")
   private Boolean sslRequired = null;
@@ -412,9 +407,7 @@ public class SiteEntity {
    */
   public enum WelcomeScreenEnum {
     ENABLED("enabled"),
-    
     HIDDEN("hidden"),
-    
     DISABLED("disabled");
 
     private String value;
@@ -422,7 +415,6 @@ public class SiteEntity {
     WelcomeScreenEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -432,116 +424,21 @@ public class SiteEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static WelcomeScreenEnum fromValue(String value) {
+    public static WelcomeScreenEnum fromValue(String text) {
       for (WelcomeScreenEnum b : WelcomeScreenEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("welcome_screen")
+  }  @JsonProperty("welcome_screen")
   private WelcomeScreenEnum welcomeScreen = null;
 
   @JsonProperty("windows_mode_ftp")
   private Boolean windowsModeFtp = null;
-
-  @JsonProperty("disable_users_from_inactivity_period_days")
-  private Integer disableUsersFromInactivityPeriodDays = null;
-
-  public SiteEntity name(String name) {
-    this.name = name;
-    return this;
-  }
-
-   /**
-   * Site name
-   * @return name
-  **/
-  @ApiModelProperty(example = "My Site", value = "Site name")
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public SiteEntity allowed2faMethodSms(Boolean allowed2faMethodSms) {
-    this.allowed2faMethodSms = allowed2faMethodSms;
-    return this;
-  }
-
-   /**
-   * Is SMS two factor authentication allowed?
-   * @return allowed2faMethodSms
-  **/
-  @ApiModelProperty(example = "true", value = "Is SMS two factor authentication allowed?")
-  public Boolean isAllowed2faMethodSms() {
-    return allowed2faMethodSms;
-  }
-
-  public void setAllowed2faMethodSms(Boolean allowed2faMethodSms) {
-    this.allowed2faMethodSms = allowed2faMethodSms;
-  }
-
-  public SiteEntity allowed2faMethodTotp(Boolean allowed2faMethodTotp) {
-    this.allowed2faMethodTotp = allowed2faMethodTotp;
-    return this;
-  }
-
-   /**
-   * Is TOTP two factor authentication allowed?
-   * @return allowed2faMethodTotp
-  **/
-  @ApiModelProperty(example = "true", value = "Is TOTP two factor authentication allowed?")
-  public Boolean isAllowed2faMethodTotp() {
-    return allowed2faMethodTotp;
-  }
-
-  public void setAllowed2faMethodTotp(Boolean allowed2faMethodTotp) {
-    this.allowed2faMethodTotp = allowed2faMethodTotp;
-  }
-
-  public SiteEntity allowed2faMethodU2f(Boolean allowed2faMethodU2f) {
-    this.allowed2faMethodU2f = allowed2faMethodU2f;
-    return this;
-  }
-
-   /**
-   * Is U2F two factor authentication allowed?
-   * @return allowed2faMethodU2f
-  **/
-  @ApiModelProperty(example = "true", value = "Is U2F two factor authentication allowed?")
-  public Boolean isAllowed2faMethodU2f() {
-    return allowed2faMethodU2f;
-  }
-
-  public void setAllowed2faMethodU2f(Boolean allowed2faMethodU2f) {
-    this.allowed2faMethodU2f = allowed2faMethodU2f;
-  }
-
-  public SiteEntity allowed2faMethodYubi(Boolean allowed2faMethodYubi) {
-    this.allowed2faMethodYubi = allowed2faMethodYubi;
-    return this;
-  }
-
-   /**
-   * Is yubikey two factor authentication allowed?
-   * @return allowed2faMethodYubi
-  **/
-  @ApiModelProperty(example = "true", value = "Is yubikey two factor authentication allowed?")
-  public Boolean isAllowed2faMethodYubi() {
-    return allowed2faMethodYubi;
-  }
-
-  public void setAllowed2faMethodYubi(Boolean allowed2faMethodYubi) {
-    this.allowed2faMethodYubi = allowed2faMethodYubi;
-  }
 
   public SiteEntity adminUserId(Integer adminUserId) {
     this.adminUserId = adminUserId;
@@ -552,7 +449,7 @@ public class SiteEntity {
    * User ID for the main site administrator
    * @return adminUserId
   **/
-  @ApiModelProperty(example = "1", value = "User ID for the main site administrator")
+  @Schema(example = "1", description = "User ID for the main site administrator")
   public Integer getAdminUserId() {
     return adminUserId;
   }
@@ -570,13 +467,85 @@ public class SiteEntity {
    * Are manual Bundle names allowed?
    * @return allowBundleNames
   **/
-  @ApiModelProperty(example = "true", value = "Are manual Bundle names allowed?")
+  @Schema(example = "true", description = "Are manual Bundle names allowed?")
   public Boolean isAllowBundleNames() {
     return allowBundleNames;
   }
 
   public void setAllowBundleNames(Boolean allowBundleNames) {
     this.allowBundleNames = allowBundleNames;
+  }
+
+  public SiteEntity allowed2faMethodSms(Boolean allowed2faMethodSms) {
+    this.allowed2faMethodSms = allowed2faMethodSms;
+    return this;
+  }
+
+   /**
+   * Is SMS two factor authentication allowed?
+   * @return allowed2faMethodSms
+  **/
+  @Schema(example = "true", description = "Is SMS two factor authentication allowed?")
+  public Boolean isAllowed2faMethodSms() {
+    return allowed2faMethodSms;
+  }
+
+  public void setAllowed2faMethodSms(Boolean allowed2faMethodSms) {
+    this.allowed2faMethodSms = allowed2faMethodSms;
+  }
+
+  public SiteEntity allowed2faMethodTotp(Boolean allowed2faMethodTotp) {
+    this.allowed2faMethodTotp = allowed2faMethodTotp;
+    return this;
+  }
+
+   /**
+   * Is TOTP two factor authentication allowed?
+   * @return allowed2faMethodTotp
+  **/
+  @Schema(example = "true", description = "Is TOTP two factor authentication allowed?")
+  public Boolean isAllowed2faMethodTotp() {
+    return allowed2faMethodTotp;
+  }
+
+  public void setAllowed2faMethodTotp(Boolean allowed2faMethodTotp) {
+    this.allowed2faMethodTotp = allowed2faMethodTotp;
+  }
+
+  public SiteEntity allowed2faMethodU2f(Boolean allowed2faMethodU2f) {
+    this.allowed2faMethodU2f = allowed2faMethodU2f;
+    return this;
+  }
+
+   /**
+   * Is U2F two factor authentication allowed?
+   * @return allowed2faMethodU2f
+  **/
+  @Schema(example = "true", description = "Is U2F two factor authentication allowed?")
+  public Boolean isAllowed2faMethodU2f() {
+    return allowed2faMethodU2f;
+  }
+
+  public void setAllowed2faMethodU2f(Boolean allowed2faMethodU2f) {
+    this.allowed2faMethodU2f = allowed2faMethodU2f;
+  }
+
+  public SiteEntity allowed2faMethodYubi(Boolean allowed2faMethodYubi) {
+    this.allowed2faMethodYubi = allowed2faMethodYubi;
+    return this;
+  }
+
+   /**
+   * Is yubikey two factor authentication allowed?
+   * @return allowed2faMethodYubi
+  **/
+  @Schema(example = "true", description = "Is yubikey two factor authentication allowed?")
+  public Boolean isAllowed2faMethodYubi() {
+    return allowed2faMethodYubi;
+  }
+
+  public void setAllowed2faMethodYubi(Boolean allowed2faMethodYubi) {
+    this.allowed2faMethodYubi = allowed2faMethodYubi;
   }
 
   public SiteEntity allowedCountries(String allowedCountries) {
@@ -588,7 +557,7 @@ public class SiteEntity {
    * Comma seperated list of allowed Country codes
    * @return allowedCountries
   **/
-  @ApiModelProperty(example = "US,DE", value = "Comma seperated list of allowed Country codes")
+  @Schema(example = "US,DE", description = "Comma seperated list of allowed Country codes")
   public String getAllowedCountries() {
     return allowedCountries;
   }
@@ -606,7 +575,7 @@ public class SiteEntity {
    * List of allowed IP addresses
    * @return allowedIps
   **/
-  @ApiModelProperty(example = "", value = "List of allowed IP addresses")
+  @Schema(description = "List of allowed IP addresses")
   public String getAllowedIps() {
     return allowedIps;
   }
@@ -624,7 +593,7 @@ public class SiteEntity {
    * If false, rename conflicting files instead of asking for overwrite confirmation.  Only applies to web interface.
    * @return askAboutOverwrites
   **/
-  @ApiModelProperty(example = "true", value = "If false, rename conflicting files instead of asking for overwrite confirmation.  Only applies to web interface.")
+  @Schema(example = "true", description = "If false, rename conflicting files instead of asking for overwrite confirmation.  Only applies to web interface.")
   public Boolean isAskAboutOverwrites() {
     return askAboutOverwrites;
   }
@@ -642,7 +611,7 @@ public class SiteEntity {
    * Site-wide Bundle expiration in days
    * @return bundleExpiration
   **/
-  @ApiModelProperty(example = "1", value = "Site-wide Bundle expiration in days")
+  @Schema(example = "1", description = "Site-wide Bundle expiration in days")
   public Integer getBundleExpiration() {
     return bundleExpiration;
   }
@@ -660,7 +629,7 @@ public class SiteEntity {
    * Do Bundles require password protection?
    * @return bundlePasswordRequired
   **/
-  @ApiModelProperty(example = "true", value = "Do Bundles require password protection?")
+  @Schema(example = "true", description = "Do Bundles require password protection?")
   public Boolean isBundlePasswordRequired() {
     return bundlePasswordRequired;
   }
@@ -678,7 +647,7 @@ public class SiteEntity {
    * Do Bundles require recipients for sharing?
    * @return bundleRequireShareRecipient
   **/
-  @ApiModelProperty(example = "true", value = "Do Bundles require recipients for sharing?")
+  @Schema(example = "true", description = "Do Bundles require recipients for sharing?")
   public Boolean isBundleRequireShareRecipient() {
     return bundleRequireShareRecipient;
   }
@@ -696,7 +665,7 @@ public class SiteEntity {
    * Page link and button color
    * @return color2Left
   **/
-  @ApiModelProperty(example = "#0066a7", value = "Page link and button color")
+  @Schema(example = "#0066a7", description = "Page link and button color")
   public String getColor2Left() {
     return color2Left;
   }
@@ -714,7 +683,7 @@ public class SiteEntity {
    * Top bar link color
    * @return color2Link
   **/
-  @ApiModelProperty(example = "#d34f5d", value = "Top bar link color")
+  @Schema(example = "#d34f5d", description = "Top bar link color")
   public String getColor2Link() {
     return color2Link;
   }
@@ -732,7 +701,7 @@ public class SiteEntity {
    * Page link and button color
    * @return color2Text
   **/
-  @ApiModelProperty(example = "#0066a7", value = "Page link and button color")
+  @Schema(example = "#0066a7", description = "Page link and button color")
   public String getColor2Text() {
     return color2Text;
   }
@@ -750,7 +719,7 @@ public class SiteEntity {
    * Top bar background color
    * @return color2Top
   **/
-  @ApiModelProperty(example = "#000000", value = "Top bar background color")
+  @Schema(example = "#000000", description = "Top bar background color")
   public String getColor2Top() {
     return color2Top;
   }
@@ -768,7 +737,7 @@ public class SiteEntity {
    * Top bar text color
    * @return color2TopText
   **/
-  @ApiModelProperty(example = "#ffffff", value = "Top bar text color")
+  @Schema(example = "#ffffff", description = "Top bar text color")
   public String getColor2TopText() {
     return color2TopText;
   }
@@ -786,7 +755,7 @@ public class SiteEntity {
    * Site main contact name
    * @return contactName
   **/
-  @ApiModelProperty(example = "John Doe", value = "Site main contact name")
+  @Schema(example = "John Doe", description = "Site main contact name")
   public String getContactName() {
     return contactName;
   }
@@ -804,7 +773,7 @@ public class SiteEntity {
    * Time this site was created
    * @return createdAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Time this site was created")
+  @Schema(example = "2000-01-01T01:00Z", description = "Time this site was created")
   public DateTime getCreatedAt() {
     return createdAt;
   }
@@ -822,7 +791,7 @@ public class SiteEntity {
    * Preferred currency
    * @return currency
   **/
-  @ApiModelProperty(example = "USD", value = "Preferred currency")
+  @Schema(example = "USD", description = "Preferred currency")
   public String getCurrency() {
     return currency;
   }
@@ -840,7 +809,7 @@ public class SiteEntity {
    * Is this site using a custom namespace for users?
    * @return customNamespace
   **/
-  @ApiModelProperty(example = "true", value = "Is this site using a custom namespace for users?")
+  @Schema(example = "true", description = "Is this site using a custom namespace for users?")
   public Boolean isCustomNamespace() {
     return customNamespace;
   }
@@ -858,7 +827,7 @@ public class SiteEntity {
    * Number of days to keep deleted files
    * @return daysToRetainBackups
   **/
-  @ApiModelProperty(example = "30", value = "Number of days to keep deleted files")
+  @Schema(example = "30", description = "Number of days to keep deleted files")
   public Integer getDaysToRetainBackups() {
     return daysToRetainBackups;
   }
@@ -876,7 +845,7 @@ public class SiteEntity {
    * Site default time zone
    * @return defaultTimeZone
   **/
-  @ApiModelProperty(example = "Pacific Time (US & Canada)", value = "Site default time zone")
+  @Schema(example = "Pacific Time (US & Canada)", description = "Site default time zone")
   public String getDefaultTimeZone() {
     return defaultTimeZone;
   }
@@ -894,7 +863,7 @@ public class SiteEntity {
    * Is the desktop app enabled?
    * @return desktopApp
   **/
-  @ApiModelProperty(example = "true", value = "Is the desktop app enabled?")
+  @Schema(example = "true", description = "Is the desktop app enabled?")
   public Boolean isDesktopApp() {
     return desktopApp;
   }
@@ -912,7 +881,7 @@ public class SiteEntity {
    * Is desktop app session IP pinning enabled?
    * @return desktopAppSessionIpPinning
   **/
-  @ApiModelProperty(example = "true", value = "Is desktop app session IP pinning enabled?")
+  @Schema(example = "true", description = "Is desktop app session IP pinning enabled?")
   public Boolean isDesktopAppSessionIpPinning() {
     return desktopAppSessionIpPinning;
   }
@@ -930,31 +899,13 @@ public class SiteEntity {
    * Desktop app session lifetime (in hours)
    * @return desktopAppSessionLifetime
   **/
-  @ApiModelProperty(example = "1", value = "Desktop app session lifetime (in hours)")
+  @Schema(example = "1", description = "Desktop app session lifetime (in hours)")
   public Integer getDesktopAppSessionLifetime() {
     return desktopAppSessionLifetime;
   }
 
   public void setDesktopAppSessionLifetime(Integer desktopAppSessionLifetime) {
     this.desktopAppSessionLifetime = desktopAppSessionLifetime;
-  }
-
-  public SiteEntity disallowedCountries(String disallowedCountries) {
-    this.disallowedCountries = disallowedCountries;
-    return this;
-  }
-
-   /**
-   * Comma seperated list of disallowed Country codes
-   * @return disallowedCountries
-  **/
-  @ApiModelProperty(example = "US,DE", value = "Comma seperated list of disallowed Country codes")
-  public String getDisallowedCountries() {
-    return disallowedCountries;
-  }
-
-  public void setDisallowedCountries(String disallowedCountries) {
-    this.disallowedCountries = disallowedCountries;
   }
 
   public SiteEntity disableNotifications(Boolean disableNotifications) {
@@ -966,7 +917,7 @@ public class SiteEntity {
    * Are notifications disabled?
    * @return disableNotifications
   **/
-  @ApiModelProperty(example = "true", value = "Are notifications disabled?")
+  @Schema(example = "true", description = "Are notifications disabled?")
   public Boolean isDisableNotifications() {
     return disableNotifications;
   }
@@ -984,13 +935,49 @@ public class SiteEntity {
    * Is password reset disabled?
    * @return disablePasswordReset
   **/
-  @ApiModelProperty(example = "true", value = "Is password reset disabled?")
+  @Schema(example = "true", description = "Is password reset disabled?")
   public Boolean isDisablePasswordReset() {
     return disablePasswordReset;
   }
 
   public void setDisablePasswordReset(Boolean disablePasswordReset) {
     this.disablePasswordReset = disablePasswordReset;
+  }
+
+  public SiteEntity disableUsersFromInactivityPeriodDays(Integer disableUsersFromInactivityPeriodDays) {
+    this.disableUsersFromInactivityPeriodDays = disableUsersFromInactivityPeriodDays;
+    return this;
+  }
+
+   /**
+   * If greater than zero, users will unable to login if they do not show activity within this number of days.
+   * @return disableUsersFromInactivityPeriodDays
+  **/
+  @Schema(example = "1", description = "If greater than zero, users will unable to login if they do not show activity within this number of days.")
+  public Integer getDisableUsersFromInactivityPeriodDays() {
+    return disableUsersFromInactivityPeriodDays;
+  }
+
+  public void setDisableUsersFromInactivityPeriodDays(Integer disableUsersFromInactivityPeriodDays) {
+    this.disableUsersFromInactivityPeriodDays = disableUsersFromInactivityPeriodDays;
+  }
+
+  public SiteEntity disallowedCountries(String disallowedCountries) {
+    this.disallowedCountries = disallowedCountries;
+    return this;
+  }
+
+   /**
+   * Comma seperated list of disallowed Country codes
+   * @return disallowedCountries
+  **/
+  @Schema(example = "US,DE", description = "Comma seperated list of disallowed Country codes")
+  public String getDisallowedCountries() {
+    return disallowedCountries;
+  }
+
+  public void setDisallowedCountries(String disallowedCountries) {
+    this.disallowedCountries = disallowedCountries;
   }
 
   public SiteEntity domain(String domain) {
@@ -1002,7 +989,7 @@ public class SiteEntity {
    * Custom domain
    * @return domain
   **/
-  @ApiModelProperty(example = "my-custom-domain.com", value = "Custom domain")
+  @Schema(example = "my-custom-domain.com", description = "Custom domain")
   public String getDomain() {
     return domain;
   }
@@ -1020,67 +1007,13 @@ public class SiteEntity {
    * Main email for this site
    * @return email
   **/
-  @ApiModelProperty(example = "john.doe@files.com", value = "Main email for this site")
+  @Schema(example = "john.doe@files.com", description = "Main email for this site")
   public String getEmail() {
     return email;
   }
 
   public void setEmail(String email) {
     this.email = email;
-  }
-
-  public SiteEntity replyToEmail(String replyToEmail) {
-    this.replyToEmail = replyToEmail;
-    return this;
-  }
-
-   /**
-   * Reply-to email for this site
-   * @return replyToEmail
-  **/
-  @ApiModelProperty(example = "jane.doe@files.com", value = "Reply-to email for this site")
-  public String getReplyToEmail() {
-    return replyToEmail;
-  }
-
-  public void setReplyToEmail(String replyToEmail) {
-    this.replyToEmail = replyToEmail;
-  }
-
-  public SiteEntity nonSsoGroupsAllowed(Boolean nonSsoGroupsAllowed) {
-    this.nonSsoGroupsAllowed = nonSsoGroupsAllowed;
-    return this;
-  }
-
-   /**
-   * If true, groups can be manually created / modified / deleted by Site Admins. Otherwise, groups can only be managed via your SSO provider.
-   * @return nonSsoGroupsAllowed
-  **/
-  @ApiModelProperty(example = "true", value = "If true, groups can be manually created / modified / deleted by Site Admins. Otherwise, groups can only be managed via your SSO provider.")
-  public Boolean isNonSsoGroupsAllowed() {
-    return nonSsoGroupsAllowed;
-  }
-
-  public void setNonSsoGroupsAllowed(Boolean nonSsoGroupsAllowed) {
-    this.nonSsoGroupsAllowed = nonSsoGroupsAllowed;
-  }
-
-  public SiteEntity nonSsoUsersAllowed(Boolean nonSsoUsersAllowed) {
-    this.nonSsoUsersAllowed = nonSsoUsersAllowed;
-    return this;
-  }
-
-   /**
-   * If true, users can be manually created / modified / deleted by Site Admins. Otherwise, users can only be managed via your SSO provider.
-   * @return nonSsoUsersAllowed
-  **/
-  @ApiModelProperty(example = "true", value = "If true, users can be manually created / modified / deleted by Site Admins. Otherwise, users can only be managed via your SSO provider.")
-  public Boolean isNonSsoUsersAllowed() {
-    return nonSsoUsersAllowed;
-  }
-
-  public void setNonSsoUsersAllowed(Boolean nonSsoUsersAllowed) {
-    this.nonSsoUsersAllowed = nonSsoUsersAllowed;
   }
 
   public SiteEntity folderPermissionsGroupsOnly(Boolean folderPermissionsGroupsOnly) {
@@ -1092,7 +1025,7 @@ public class SiteEntity {
    * If true, permissions for this site must be bound to a group (not a user). Otherwise, permissions must be bound to a user.
    * @return folderPermissionsGroupsOnly
   **/
-  @ApiModelProperty(example = "true", value = "If true, permissions for this site must be bound to a group (not a user). Otherwise, permissions must be bound to a user.")
+  @Schema(example = "true", description = "If true, permissions for this site must be bound to a group (not a user). Otherwise, permissions must be bound to a user.")
   public Boolean isFolderPermissionsGroupsOnly() {
     return folderPermissionsGroupsOnly;
   }
@@ -1110,7 +1043,7 @@ public class SiteEntity {
    * Is there a signed HIPAA BAA between Files.com and this site?
    * @return hipaa
   **/
-  @ApiModelProperty(example = "true", value = "Is there a signed HIPAA BAA between Files.com and this site?")
+  @Schema(example = "true", description = "Is there a signed HIPAA BAA between Files.com and this site?")
   public Boolean isHipaa() {
     return hipaa;
   }
@@ -1125,10 +1058,10 @@ public class SiteEntity {
   }
 
    /**
-   * Branded icon 128x128
+   * Get icon128
    * @return icon128
   **/
-  @ApiModelProperty(value = "Branded icon 128x128")
+  @Schema(description = "")
   public ImageEntity getIcon128() {
     return icon128;
   }
@@ -1143,10 +1076,10 @@ public class SiteEntity {
   }
 
    /**
-   * Branded icon 16x16
+   * Get icon16
    * @return icon16
   **/
-  @ApiModelProperty(value = "Branded icon 16x16")
+  @Schema(description = "")
   public ImageEntity getIcon16() {
     return icon16;
   }
@@ -1161,10 +1094,10 @@ public class SiteEntity {
   }
 
    /**
-   * Branded icon 32x32
+   * Get icon32
    * @return icon32
   **/
-  @ApiModelProperty(value = "Branded icon 32x32")
+  @Schema(description = "")
   public ImageEntity getIcon32() {
     return icon32;
   }
@@ -1179,10 +1112,10 @@ public class SiteEntity {
   }
 
    /**
-   * Branded icon 48x48
+   * Get icon48
    * @return icon48
   **/
-  @ApiModelProperty(value = "Branded icon 48x48")
+  @Schema(description = "")
   public ImageEntity getIcon48() {
     return icon48;
   }
@@ -1200,7 +1133,7 @@ public class SiteEntity {
    * Can files be modified?
    * @return immutableFilesSetAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Can files be modified?")
+  @Schema(example = "2000-01-01T01:00Z", description = "Can files be modified?")
   public DateTime getImmutableFilesSetAt() {
     return immutableFilesSetAt;
   }
@@ -1218,7 +1151,7 @@ public class SiteEntity {
    * Include password in emails to new users?
    * @return includePasswordInWelcomeEmail
   **/
-  @ApiModelProperty(example = "true", value = "Include password in emails to new users?")
+  @Schema(example = "true", description = "Include password in emails to new users?")
   public Boolean isIncludePasswordInWelcomeEmail() {
     return includePasswordInWelcomeEmail;
   }
@@ -1236,7 +1169,7 @@ public class SiteEntity {
    * Site default language
    * @return language
   **/
-  @ApiModelProperty(example = "en", value = "Site default language")
+  @Schema(example = "en", description = "Site default language")
   public String getLanguage() {
     return language;
   }
@@ -1254,7 +1187,7 @@ public class SiteEntity {
    * Base DN for looking up users in LDAP server
    * @return ldapBaseDn
   **/
-  @ApiModelProperty(example = "", value = "Base DN for looking up users in LDAP server")
+  @Schema(description = "Base DN for looking up users in LDAP server")
   public String getLdapBaseDn() {
     return ldapBaseDn;
   }
@@ -1272,7 +1205,7 @@ public class SiteEntity {
    * Domain name that will be appended to usernames
    * @return ldapDomain
   **/
-  @ApiModelProperty(example = "mysite.com", value = "Domain name that will be appended to usernames")
+  @Schema(example = "mysite.com", description = "Domain name that will be appended to usernames")
   public String getLdapDomain() {
     return ldapDomain;
   }
@@ -1290,7 +1223,7 @@ public class SiteEntity {
    * Main LDAP setting: is LDAP enabled?
    * @return ldapEnabled
   **/
-  @ApiModelProperty(example = "true", value = "Main LDAP setting: is LDAP enabled?")
+  @Schema(example = "true", description = "Main LDAP setting: is LDAP enabled?")
   public Boolean isLdapEnabled() {
     return ldapEnabled;
   }
@@ -1308,7 +1241,7 @@ public class SiteEntity {
    * Should we sync groups from LDAP server?
    * @return ldapGroupAction
   **/
-  @ApiModelProperty(example = "disabled", value = "Should we sync groups from LDAP server?")
+  @Schema(example = "disabled", description = "Should we sync groups from LDAP server?")
   public String getLdapGroupAction() {
     return ldapGroupAction;
   }
@@ -1326,7 +1259,7 @@ public class SiteEntity {
    * Comma or newline separated list of group names (with optional wildcards) to exclude when syncing.
    * @return ldapGroupExclusion
   **/
-  @ApiModelProperty(example = "", value = "Comma or newline separated list of group names (with optional wildcards) to exclude when syncing.")
+  @Schema(description = "Comma or newline separated list of group names (with optional wildcards) to exclude when syncing.")
   public String getLdapGroupExclusion() {
     return ldapGroupExclusion;
   }
@@ -1344,7 +1277,7 @@ public class SiteEntity {
    * Comma or newline separated list of group names (with optional wildcards) to include when syncing.
    * @return ldapGroupInclusion
   **/
-  @ApiModelProperty(example = "", value = "Comma or newline separated list of group names (with optional wildcards) to include when syncing.")
+  @Schema(description = "Comma or newline separated list of group names (with optional wildcards) to include when syncing.")
   public String getLdapGroupInclusion() {
     return ldapGroupInclusion;
   }
@@ -1362,7 +1295,7 @@ public class SiteEntity {
    * LDAP host
    * @return ldapHost
   **/
-  @ApiModelProperty(example = "ldap.site.com", value = "LDAP host")
+  @Schema(example = "ldap.site.com", description = "LDAP host")
   public String getLdapHost() {
     return ldapHost;
   }
@@ -1380,7 +1313,7 @@ public class SiteEntity {
    * LDAP backup host
    * @return ldapHost2
   **/
-  @ApiModelProperty(example = "ldap2.site.com", value = "LDAP backup host")
+  @Schema(example = "ldap2.site.com", description = "LDAP backup host")
   public String getLdapHost2() {
     return ldapHost2;
   }
@@ -1398,7 +1331,7 @@ public class SiteEntity {
    * LDAP backup host
    * @return ldapHost3
   **/
-  @ApiModelProperty(example = "ldap3.site.com", value = "LDAP backup host")
+  @Schema(example = "ldap3.site.com", description = "LDAP backup host")
   public String getLdapHost3() {
     return ldapHost3;
   }
@@ -1416,7 +1349,7 @@ public class SiteEntity {
    * LDAP port
    * @return ldapPort
   **/
-  @ApiModelProperty(example = "1", value = "LDAP port")
+  @Schema(example = "1", description = "LDAP port")
   public Integer getLdapPort() {
     return ldapPort;
   }
@@ -1434,7 +1367,7 @@ public class SiteEntity {
    * Use secure LDAP?
    * @return ldapSecure
   **/
-  @ApiModelProperty(example = "true", value = "Use secure LDAP?")
+  @Schema(example = "true", description = "Use secure LDAP?")
   public Boolean isLdapSecure() {
     return ldapSecure;
   }
@@ -1452,7 +1385,7 @@ public class SiteEntity {
    * LDAP type
    * @return ldapType
   **/
-  @ApiModelProperty(example = "open_ldap", value = "LDAP type")
+  @Schema(example = "open_ldap", description = "LDAP type")
   public String getLdapType() {
     return ldapType;
   }
@@ -1470,7 +1403,7 @@ public class SiteEntity {
    * Should we sync users from LDAP server?
    * @return ldapUserAction
   **/
-  @ApiModelProperty(example = "disabled", value = "Should we sync users from LDAP server?")
+  @Schema(example = "disabled", description = "Should we sync users from LDAP server?")
   public String getLdapUserAction() {
     return ldapUserAction;
   }
@@ -1488,7 +1421,7 @@ public class SiteEntity {
    * Comma or newline separated list of group names (with optional wildcards) - if provided, only users in these groups will be added or synced.
    * @return ldapUserIncludeGroups
   **/
-  @ApiModelProperty(example = "", value = "Comma or newline separated list of group names (with optional wildcards) - if provided, only users in these groups will be added or synced.")
+  @Schema(description = "Comma or newline separated list of group names (with optional wildcards) - if provided, only users in these groups will be added or synced.")
   public String getLdapUserIncludeGroups() {
     return ldapUserIncludeGroups;
   }
@@ -1506,7 +1439,7 @@ public class SiteEntity {
    * Username for signing in to LDAP server.
    * @return ldapUsername
   **/
-  @ApiModelProperty(example = "[ldap username]", value = "Username for signing in to LDAP server.")
+  @Schema(example = "[ldap username]", description = "Username for signing in to LDAP server.")
   public String getLdapUsername() {
     return ldapUsername;
   }
@@ -1524,7 +1457,7 @@ public class SiteEntity {
    * LDAP username field
    * @return ldapUsernameField
   **/
-  @ApiModelProperty(example = "sAMAccountName", value = "LDAP username field")
+  @Schema(example = "sAMAccountName", description = "LDAP username field")
   public String getLdapUsernameField() {
     return ldapUsernameField;
   }
@@ -1542,7 +1475,7 @@ public class SiteEntity {
    * Login help text
    * @return loginHelpText
   **/
-  @ApiModelProperty(example = "Login page help text.", value = "Login help text")
+  @Schema(example = "Login page help text.", description = "Login help text")
   public String getLoginHelpText() {
     return loginHelpText;
   }
@@ -1557,10 +1490,10 @@ public class SiteEntity {
   }
 
    /**
-   * Branded logo
+   * Get logo
    * @return logo
   **/
-  @ApiModelProperty(value = "Branded logo")
+  @Schema(description = "")
   public ImageEntity getLogo() {
     return logo;
   }
@@ -1578,13 +1511,31 @@ public class SiteEntity {
    * Number of prior passwords to disallow
    * @return maxPriorPasswords
   **/
-  @ApiModelProperty(example = "1", value = "Number of prior passwords to disallow")
+  @Schema(example = "1", description = "Number of prior passwords to disallow")
   public Integer getMaxPriorPasswords() {
     return maxPriorPasswords;
   }
 
   public void setMaxPriorPasswords(Integer maxPriorPasswords) {
     this.maxPriorPasswords = maxPriorPasswords;
+  }
+
+  public SiteEntity name(String name) {
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * Site name
+   * @return name
+  **/
+  @Schema(example = "My Site", description = "Site name")
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public SiteEntity nextBillingAmount(Double nextBillingAmount) {
@@ -1596,7 +1547,7 @@ public class SiteEntity {
    * Next billing amount
    * @return nextBillingAmount
   **/
-  @ApiModelProperty(example = "1.0", value = "Next billing amount")
+  @Schema(example = "1", description = "Next billing amount")
   public Double getNextBillingAmount() {
     return nextBillingAmount;
   }
@@ -1614,13 +1565,49 @@ public class SiteEntity {
    * Next billing date
    * @return nextBillingDate
   **/
-  @ApiModelProperty(example = "Apr 20", value = "Next billing date")
+  @Schema(example = "Apr 20", description = "Next billing date")
   public String getNextBillingDate() {
     return nextBillingDate;
   }
 
   public void setNextBillingDate(String nextBillingDate) {
     this.nextBillingDate = nextBillingDate;
+  }
+
+  public SiteEntity nonSsoGroupsAllowed(Boolean nonSsoGroupsAllowed) {
+    this.nonSsoGroupsAllowed = nonSsoGroupsAllowed;
+    return this;
+  }
+
+   /**
+   * If true, groups can be manually created / modified / deleted by Site Admins. Otherwise, groups can only be managed via your SSO provider.
+   * @return nonSsoGroupsAllowed
+  **/
+  @Schema(example = "true", description = "If true, groups can be manually created / modified / deleted by Site Admins. Otherwise, groups can only be managed via your SSO provider.")
+  public Boolean isNonSsoGroupsAllowed() {
+    return nonSsoGroupsAllowed;
+  }
+
+  public void setNonSsoGroupsAllowed(Boolean nonSsoGroupsAllowed) {
+    this.nonSsoGroupsAllowed = nonSsoGroupsAllowed;
+  }
+
+  public SiteEntity nonSsoUsersAllowed(Boolean nonSsoUsersAllowed) {
+    this.nonSsoUsersAllowed = nonSsoUsersAllowed;
+    return this;
+  }
+
+   /**
+   * If true, users can be manually created / modified / deleted by Site Admins. Otherwise, users can only be managed via your SSO provider.
+   * @return nonSsoUsersAllowed
+  **/
+  @Schema(example = "true", description = "If true, users can be manually created / modified / deleted by Site Admins. Otherwise, users can only be managed via your SSO provider.")
+  public Boolean isNonSsoUsersAllowed() {
+    return nonSsoUsersAllowed;
+  }
+
+  public void setNonSsoUsersAllowed(Boolean nonSsoUsersAllowed) {
+    this.nonSsoUsersAllowed = nonSsoUsersAllowed;
   }
 
   public SiteEntity officeIntegrationAvailable(Boolean officeIntegrationAvailable) {
@@ -1632,7 +1619,7 @@ public class SiteEntity {
    * Allow users to use Office for the web?
    * @return officeIntegrationAvailable
   **/
-  @ApiModelProperty(example = "true", value = "Allow users to use Office for the web?")
+  @Schema(example = "true", description = "Allow users to use Office for the web?")
   public Boolean isOfficeIntegrationAvailable() {
     return officeIntegrationAvailable;
   }
@@ -1650,7 +1637,7 @@ public class SiteEntity {
    * Link to scheduling a meeting with our Sales team
    * @return oncehubLink
   **/
-  @ApiModelProperty(example = "https://go.oncehub.com/files", value = "Link to scheduling a meeting with our Sales team")
+  @Schema(example = "https://go.oncehub.com/files", description = "Link to scheduling a meeting with our Sales team")
   public String getOncehubLink() {
     return oncehubLink;
   }
@@ -1668,7 +1655,7 @@ public class SiteEntity {
    * Use servers in the USA only?
    * @return optOutGlobal
   **/
-  @ApiModelProperty(example = "true", value = "Use servers in the USA only?")
+  @Schema(example = "true", description = "Use servers in the USA only?")
   public Boolean isOptOutGlobal() {
     return optOutGlobal;
   }
@@ -1686,7 +1673,7 @@ public class SiteEntity {
    * Last time the site was notified about an overage
    * @return overageNotifiedAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Last time the site was notified about an overage")
+  @Schema(example = "2000-01-01T01:00Z", description = "Last time the site was notified about an overage")
   public DateTime getOverageNotifiedAt() {
     return overageNotifiedAt;
   }
@@ -1704,7 +1691,7 @@ public class SiteEntity {
    * Notify site email of overages?
    * @return overageNotify
   **/
-  @ApiModelProperty(example = "true", value = "Notify site email of overages?")
+  @Schema(example = "true", description = "Notify site email of overages?")
   public Boolean isOverageNotify() {
     return overageNotify;
   }
@@ -1719,10 +1706,10 @@ public class SiteEntity {
   }
 
    /**
-   * Is this site&#39;s billing overdue?
+   * Is this site&#x27;s billing overdue?
    * @return overdue
   **/
-  @ApiModelProperty(example = "true", value = "Is this site's billing overdue?")
+  @Schema(example = "true", description = "Is this site's billing overdue?")
   public Boolean isOverdue() {
     return overdue;
   }
@@ -1740,7 +1727,7 @@ public class SiteEntity {
    * Shortest password length for users
    * @return passwordMinLength
   **/
-  @ApiModelProperty(example = "1", value = "Shortest password length for users")
+  @Schema(example = "1", description = "Shortest password length for users")
   public Integer getPasswordMinLength() {
     return passwordMinLength;
   }
@@ -1758,7 +1745,7 @@ public class SiteEntity {
    * Require a letter in passwords?
    * @return passwordRequireLetter
   **/
-  @ApiModelProperty(example = "true", value = "Require a letter in passwords?")
+  @Schema(example = "true", description = "Require a letter in passwords?")
   public Boolean isPasswordRequireLetter() {
     return passwordRequireLetter;
   }
@@ -1776,7 +1763,7 @@ public class SiteEntity {
    * Require lower and upper case letters in passwords?
    * @return passwordRequireMixed
   **/
-  @ApiModelProperty(example = "true", value = "Require lower and upper case letters in passwords?")
+  @Schema(example = "true", description = "Require lower and upper case letters in passwords?")
   public Boolean isPasswordRequireMixed() {
     return passwordRequireMixed;
   }
@@ -1794,7 +1781,7 @@ public class SiteEntity {
    * Require a number in passwords?
    * @return passwordRequireNumber
   **/
-  @ApiModelProperty(example = "true", value = "Require a number in passwords?")
+  @Schema(example = "true", description = "Require a number in passwords?")
   public Boolean isPasswordRequireNumber() {
     return passwordRequireNumber;
   }
@@ -1812,7 +1799,7 @@ public class SiteEntity {
    * Require special characters in password?
    * @return passwordRequireSpecial
   **/
-  @ApiModelProperty(example = "true", value = "Require special characters in password?")
+  @Schema(example = "true", description = "Require special characters in password?")
   public Boolean isPasswordRequireSpecial() {
     return passwordRequireSpecial;
   }
@@ -1830,7 +1817,7 @@ public class SiteEntity {
    * Require passwords that have not been previously breached? (see https://haveibeenpwned.com/)
    * @return passwordRequireUnbreached
   **/
-  @ApiModelProperty(example = "true", value = "Require passwords that have not been previously breached? (see https://haveibeenpwned.com/)")
+  @Schema(example = "true", description = "Require passwords that have not been previously breached? (see https://haveibeenpwned.com/)")
   public Boolean isPasswordRequireUnbreached() {
     return passwordRequireUnbreached;
   }
@@ -1845,10 +1832,10 @@ public class SiteEntity {
   }
 
    /**
-   * Require bundles&#39; passwords, and passwords for other items (inboxes, public shares, etc.) to conform to the same requirements as users&#39; passwords?
+   * Require bundles&#x27; passwords, and passwords for other items (inboxes, public shares, etc.) to conform to the same requirements as users&#x27; passwords?
    * @return passwordRequirementsApplyToBundles
   **/
-  @ApiModelProperty(example = "true", value = "Require bundles' passwords, and passwords for other items (inboxes, public shares, etc.) to conform to the same requirements as users' passwords?")
+  @Schema(example = "true", description = "Require bundles' passwords, and passwords for other items (inboxes, public shares, etc.) to conform to the same requirements as users' passwords?")
   public Boolean isPasswordRequirementsApplyToBundles() {
     return passwordRequirementsApplyToBundles;
   }
@@ -1866,7 +1853,7 @@ public class SiteEntity {
    * Number of days password is valid
    * @return passwordValidityDays
   **/
-  @ApiModelProperty(example = "1", value = "Number of days password is valid")
+  @Schema(example = "1", description = "Number of days password is valid")
   public Integer getPasswordValidityDays() {
     return passwordValidityDays;
   }
@@ -1884,13 +1871,31 @@ public class SiteEntity {
    * Site phone number
    * @return phone
   **/
-  @ApiModelProperty(example = "555-555-5555", value = "Site phone number")
+  @Schema(example = "555-555-5555", description = "Site phone number")
   public String getPhone() {
     return phone;
   }
 
   public void setPhone(String phone) {
     this.phone = phone;
+  }
+
+  public SiteEntity replyToEmail(String replyToEmail) {
+    this.replyToEmail = replyToEmail;
+    return this;
+  }
+
+   /**
+   * Reply-to email for this site
+   * @return replyToEmail
+  **/
+  @Schema(example = "jane.doe@files.com", description = "Reply-to email for this site")
+  public String getReplyToEmail() {
+    return replyToEmail;
+  }
+
+  public void setReplyToEmail(String replyToEmail) {
+    this.replyToEmail = replyToEmail;
   }
 
   public SiteEntity require2fa(Boolean require2fa) {
@@ -1902,7 +1907,7 @@ public class SiteEntity {
    * Require two-factor authentication for all users?
    * @return require2fa
   **/
-  @ApiModelProperty(example = "true", value = "Require two-factor authentication for all users?")
+  @Schema(example = "true", description = "Require two-factor authentication for all users?")
   public Boolean isRequire2fa() {
     return require2fa;
   }
@@ -1920,7 +1925,7 @@ public class SiteEntity {
    * If set, requirement for two-factor authentication has been scheduled to end on this date-time.
    * @return require2faStopTime
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "If set, requirement for two-factor authentication has been scheduled to end on this date-time.")
+  @Schema(example = "2000-01-01T01:00Z", description = "If set, requirement for two-factor authentication has been scheduled to end on this date-time.")
   public DateTime getRequire2faStopTime() {
     return require2faStopTime;
   }
@@ -1938,7 +1943,7 @@ public class SiteEntity {
    * What type of user is required to use two-factor authentication (when require_2fa is set to &#x60;true&#x60; for this site)?
    * @return require2faUserType
   **/
-  @ApiModelProperty(example = "`site_admins`", value = "What type of user is required to use two-factor authentication (when require_2fa is set to `true` for this site)?")
+  @Schema(example = "`site_admins`", description = "What type of user is required to use two-factor authentication (when require_2fa is set to `true` for this site)?")
   public Require2faUserTypeEnum getRequire2faUserType() {
     return require2faUserType;
   }
@@ -1953,16 +1958,34 @@ public class SiteEntity {
   }
 
    /**
-   * Current session
+   * Get session
    * @return session
   **/
-  @ApiModelProperty(value = "Current session")
+  @Schema(description = "")
   public SessionEntity getSession() {
     return session;
   }
 
   public void setSession(SessionEntity session) {
     this.session = session;
+  }
+
+  public SiteEntity sessionExpiry(Double sessionExpiry) {
+    this.sessionExpiry = sessionExpiry;
+    return this;
+  }
+
+   /**
+   * Session expiry in hours
+   * @return sessionExpiry
+  **/
+  @Schema(example = "6", description = "Session expiry in hours")
+  public Double getSessionExpiry() {
+    return sessionExpiry;
+  }
+
+  public void setSessionExpiry(Double sessionExpiry) {
+    this.sessionExpiry = sessionExpiry;
   }
 
   public SiteEntity sessionPinnedByIp(Boolean sessionPinnedByIp) {
@@ -1974,7 +1997,7 @@ public class SiteEntity {
    * Are sessions locked to the same IP? (i.e. do users need to log in again if they change IPs?)
    * @return sessionPinnedByIp
   **/
-  @ApiModelProperty(example = "true", value = "Are sessions locked to the same IP? (i.e. do users need to log in again if they change IPs?)")
+  @Schema(example = "true", description = "Are sessions locked to the same IP? (i.e. do users need to log in again if they change IPs?)")
   public Boolean isSessionPinnedByIp() {
     return sessionPinnedByIp;
   }
@@ -1992,7 +2015,7 @@ public class SiteEntity {
    * Use user FTP roots also for SFTP?
    * @return sftpUserRootEnabled
   **/
-  @ApiModelProperty(value = "Use user FTP roots also for SFTP?")
+  @Schema(description = "Use user FTP roots also for SFTP?")
   public Boolean isSftpUserRootEnabled() {
     return sftpUserRootEnabled;
   }
@@ -2010,7 +2033,7 @@ public class SiteEntity {
    * Allow bundle creation
    * @return sharingEnabled
   **/
-  @ApiModelProperty(example = "true", value = "Allow bundle creation")
+  @Schema(example = "true", description = "Allow bundle creation")
   public Boolean isSharingEnabled() {
     return sharingEnabled;
   }
@@ -2028,7 +2051,7 @@ public class SiteEntity {
    * Show request access link for users without access?  Currently unused.
    * @return showRequestAccessLink
   **/
-  @ApiModelProperty(example = "true", value = "Show request access link for users without access?  Currently unused.")
+  @Schema(example = "true", description = "Show request access link for users without access?  Currently unused.")
   public Boolean isShowRequestAccessLink() {
     return showRequestAccessLink;
   }
@@ -2046,7 +2069,7 @@ public class SiteEntity {
    * Custom site footer text
    * @return siteFooter
   **/
-  @ApiModelProperty(example = "", value = "Custom site footer text")
+  @Schema(description = "Custom site footer text")
   public String getSiteFooter() {
     return siteFooter;
   }
@@ -2064,7 +2087,7 @@ public class SiteEntity {
    * Custom site header text
    * @return siteHeader
   **/
-  @ApiModelProperty(example = "", value = "Custom site header text")
+  @Schema(description = "Custom site header text")
   public String getSiteHeader() {
     return siteHeader;
   }
@@ -2082,7 +2105,7 @@ public class SiteEntity {
    * SMTP server hostname or IP
    * @return smtpAddress
   **/
-  @ApiModelProperty(example = "smtp.my-mail-server.com", value = "SMTP server hostname or IP")
+  @Schema(example = "smtp.my-mail-server.com", description = "SMTP server hostname or IP")
   public String getSmtpAddress() {
     return smtpAddress;
   }
@@ -2100,7 +2123,7 @@ public class SiteEntity {
    * SMTP server authentication type
    * @return smtpAuthentication
   **/
-  @ApiModelProperty(example = "plain", value = "SMTP server authentication type")
+  @Schema(example = "plain", description = "SMTP server authentication type")
   public String getSmtpAuthentication() {
     return smtpAuthentication;
   }
@@ -2118,7 +2141,7 @@ public class SiteEntity {
    * From address to use when mailing through custom SMTP
    * @return smtpFrom
   **/
-  @ApiModelProperty(example = "me@my-mail-server.com", value = "From address to use when mailing through custom SMTP")
+  @Schema(example = "me@my-mail-server.com", description = "From address to use when mailing through custom SMTP")
   public String getSmtpFrom() {
     return smtpFrom;
   }
@@ -2136,7 +2159,7 @@ public class SiteEntity {
    * SMTP server port
    * @return smtpPort
   **/
-  @ApiModelProperty(example = "25", value = "SMTP server port")
+  @Schema(example = "25", description = "SMTP server port")
   public Integer getSmtpPort() {
     return smtpPort;
   }
@@ -2154,31 +2177,13 @@ public class SiteEntity {
    * SMTP server username
    * @return smtpUsername
   **/
-  @ApiModelProperty(example = "mail", value = "SMTP server username")
+  @Schema(example = "mail", description = "SMTP server username")
   public String getSmtpUsername() {
     return smtpUsername;
   }
 
   public void setSmtpUsername(String smtpUsername) {
     this.smtpUsername = smtpUsername;
-  }
-
-  public SiteEntity sessionExpiry(Double sessionExpiry) {
-    this.sessionExpiry = sessionExpiry;
-    return this;
-  }
-
-   /**
-   * Session expiry in hours
-   * @return sessionExpiry
-  **/
-  @ApiModelProperty(example = "6.0", value = "Session expiry in hours")
-  public Double getSessionExpiry() {
-    return sessionExpiry;
-  }
-
-  public void setSessionExpiry(Double sessionExpiry) {
-    this.sessionExpiry = sessionExpiry;
   }
 
   public SiteEntity sslRequired(Boolean sslRequired) {
@@ -2190,7 +2195,7 @@ public class SiteEntity {
    * Is SSL required?  Disabling this is insecure.
    * @return sslRequired
   **/
-  @ApiModelProperty(example = "true", value = "Is SSL required?  Disabling this is insecure.")
+  @Schema(example = "true", description = "Is SSL required?  Disabling this is insecure.")
   public Boolean isSslRequired() {
     return sslRequired;
   }
@@ -2208,7 +2213,7 @@ public class SiteEntity {
    * Site subdomain
    * @return subdomain
   **/
-  @ApiModelProperty(example = "mysite", value = "Site subdomain")
+  @Schema(example = "mysite", description = "Site subdomain")
   public String getSubdomain() {
     return subdomain;
   }
@@ -2226,7 +2231,7 @@ public class SiteEntity {
    * If switching plans, when does the new plan take effect?
    * @return switchToPlanDate
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "If switching plans, when does the new plan take effect?")
+  @Schema(example = "2000-01-01T01:00Z", description = "If switching plans, when does the new plan take effect?")
   public DateTime getSwitchToPlanDate() {
     return switchToPlanDate;
   }
@@ -2244,7 +2249,7 @@ public class SiteEntity {
    * Is TLS disabled(site setting)?
    * @return tlsDisabled
   **/
-  @ApiModelProperty(value = "Is TLS disabled(site setting)?")
+  @Schema(description = "Is TLS disabled(site setting)?")
   public Boolean isTlsDisabled() {
     return tlsDisabled;
   }
@@ -2262,7 +2267,7 @@ public class SiteEntity {
    * Number of days left in trial
    * @return trialDaysLeft
   **/
-  @ApiModelProperty(example = "1", value = "Number of days left in trial")
+  @Schema(example = "1", description = "Number of days left in trial")
   public Integer getTrialDaysLeft() {
     return trialDaysLeft;
   }
@@ -2280,7 +2285,7 @@ public class SiteEntity {
    * When does this Site trial expire?
    * @return trialUntil
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "When does this Site trial expire?")
+  @Schema(example = "2000-01-01T01:00Z", description = "When does this Site trial expire?")
   public DateTime getTrialUntil() {
     return trialUntil;
   }
@@ -2298,7 +2303,7 @@ public class SiteEntity {
    * Last time this Site was updated
    * @return updatedAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Last time this Site was updated")
+  @Schema(example = "2000-01-01T01:00Z", description = "Last time this Site was updated")
   public DateTime getUpdatedAt() {
     return updatedAt;
   }
@@ -2316,7 +2321,7 @@ public class SiteEntity {
    * Allow uploaders to set &#x60;provided_modified_at&#x60; for uploaded files?
    * @return useProvidedModifiedAt
   **/
-  @ApiModelProperty(example = "true", value = "Allow uploaders to set `provided_modified_at` for uploaded files?")
+  @Schema(example = "true", description = "Allow uploaders to set `provided_modified_at` for uploaded files?")
   public Boolean isUseProvidedModifiedAt() {
     return useProvidedModifiedAt;
   }
@@ -2331,10 +2336,10 @@ public class SiteEntity {
   }
 
    /**
-   * User of current session
+   * Get user
    * @return user
   **/
-  @ApiModelProperty(value = "User of current session")
+  @Schema(description = "")
   public UserEntity getUser() {
     return user;
   }
@@ -2352,7 +2357,7 @@ public class SiteEntity {
    * Will users be locked out after incorrect login attempts?
    * @return userLockout
   **/
-  @ApiModelProperty(example = "true", value = "Will users be locked out after incorrect login attempts?")
+  @Schema(example = "true", description = "Will users be locked out after incorrect login attempts?")
   public Boolean isUserLockout() {
     return userLockout;
   }
@@ -2370,7 +2375,7 @@ public class SiteEntity {
    * How many hours to lock user out for failed password?
    * @return userLockoutLockPeriod
   **/
-  @ApiModelProperty(example = "1", value = "How many hours to lock user out for failed password?")
+  @Schema(example = "1", description = "How many hours to lock user out for failed password?")
   public Integer getUserLockoutLockPeriod() {
     return userLockoutLockPeriod;
   }
@@ -2388,7 +2393,7 @@ public class SiteEntity {
    * Number of login tries within &#x60;user_lockout_within&#x60; hours before users are locked out
    * @return userLockoutTries
   **/
-  @ApiModelProperty(example = "1", value = "Number of login tries within `user_lockout_within` hours before users are locked out")
+  @Schema(example = "1", description = "Number of login tries within `user_lockout_within` hours before users are locked out")
   public Integer getUserLockoutTries() {
     return userLockoutTries;
   }
@@ -2406,7 +2411,7 @@ public class SiteEntity {
    * Number of hours for user lockout window
    * @return userLockoutWithin
   **/
-  @ApiModelProperty(example = "6", value = "Number of hours for user lockout window")
+  @Schema(example = "6", description = "Number of hours for user lockout window")
   public Integer getUserLockoutWithin() {
     return userLockoutWithin;
   }
@@ -2424,7 +2429,7 @@ public class SiteEntity {
    * Enable User Requests feature
    * @return userRequestsEnabled
   **/
-  @ApiModelProperty(example = "true", value = "Enable User Requests feature")
+  @Schema(example = "true", description = "Enable User Requests feature")
   public Boolean isUserRequestsEnabled() {
     return userRequestsEnabled;
   }
@@ -2442,7 +2447,7 @@ public class SiteEntity {
    * Custom text send in user welcome email
    * @return welcomeCustomText
   **/
-  @ApiModelProperty(example = "Welcome to my site!", value = "Custom text send in user welcome email")
+  @Schema(example = "Welcome to my site!", description = "Custom text send in user welcome email")
   public String getWelcomeCustomText() {
     return welcomeCustomText;
   }
@@ -2460,7 +2465,7 @@ public class SiteEntity {
    * Include this email in welcome emails if enabled
    * @return welcomeEmailCc
   **/
-  @ApiModelProperty(example = "", value = "Include this email in welcome emails if enabled")
+  @Schema(description = "Include this email in welcome emails if enabled")
   public String getWelcomeEmailCc() {
     return welcomeEmailCc;
   }
@@ -2478,7 +2483,7 @@ public class SiteEntity {
    * Will the welcome email be sent to new users?
    * @return welcomeEmailEnabled
   **/
-  @ApiModelProperty(example = "true", value = "Will the welcome email be sent to new users?")
+  @Schema(example = "true", description = "Will the welcome email be sent to new users?")
   public Boolean isWelcomeEmailEnabled() {
     return welcomeEmailEnabled;
   }
@@ -2496,7 +2501,7 @@ public class SiteEntity {
    * Does the welcome screen appear?
    * @return welcomeScreen
   **/
-  @ApiModelProperty(example = "user_controlled", value = "Does the welcome screen appear?")
+  @Schema(example = "user_controlled", description = "Does the welcome screen appear?")
   public WelcomeScreenEnum getWelcomeScreen() {
     return welcomeScreen;
   }
@@ -2514,31 +2519,13 @@ public class SiteEntity {
    * Does FTP user Windows emulation mode?
    * @return windowsModeFtp
   **/
-  @ApiModelProperty(example = "true", value = "Does FTP user Windows emulation mode?")
+  @Schema(example = "true", description = "Does FTP user Windows emulation mode?")
   public Boolean isWindowsModeFtp() {
     return windowsModeFtp;
   }
 
   public void setWindowsModeFtp(Boolean windowsModeFtp) {
     this.windowsModeFtp = windowsModeFtp;
-  }
-
-  public SiteEntity disableUsersFromInactivityPeriodDays(Integer disableUsersFromInactivityPeriodDays) {
-    this.disableUsersFromInactivityPeriodDays = disableUsersFromInactivityPeriodDays;
-    return this;
-  }
-
-   /**
-   * If greater than zero, users will unable to login if they do not show activity within this number of days.
-   * @return disableUsersFromInactivityPeriodDays
-  **/
-  @ApiModelProperty(example = "1", value = "If greater than zero, users will unable to login if they do not show activity within this number of days.")
-  public Integer getDisableUsersFromInactivityPeriodDays() {
-    return disableUsersFromInactivityPeriodDays;
-  }
-
-  public void setDisableUsersFromInactivityPeriodDays(Integer disableUsersFromInactivityPeriodDays) {
-    this.disableUsersFromInactivityPeriodDays = disableUsersFromInactivityPeriodDays;
   }
 
 
@@ -2551,13 +2538,12 @@ public class SiteEntity {
       return false;
     }
     SiteEntity siteEntity = (SiteEntity) o;
-    return Objects.equals(this.name, siteEntity.name) &&
+    return Objects.equals(this.adminUserId, siteEntity.adminUserId) &&
+        Objects.equals(this.allowBundleNames, siteEntity.allowBundleNames) &&
         Objects.equals(this.allowed2faMethodSms, siteEntity.allowed2faMethodSms) &&
         Objects.equals(this.allowed2faMethodTotp, siteEntity.allowed2faMethodTotp) &&
         Objects.equals(this.allowed2faMethodU2f, siteEntity.allowed2faMethodU2f) &&
         Objects.equals(this.allowed2faMethodYubi, siteEntity.allowed2faMethodYubi) &&
-        Objects.equals(this.adminUserId, siteEntity.adminUserId) &&
-        Objects.equals(this.allowBundleNames, siteEntity.allowBundleNames) &&
         Objects.equals(this.allowedCountries, siteEntity.allowedCountries) &&
         Objects.equals(this.allowedIps, siteEntity.allowedIps) &&
         Objects.equals(this.askAboutOverwrites, siteEntity.askAboutOverwrites) &&
@@ -2578,14 +2564,12 @@ public class SiteEntity {
         Objects.equals(this.desktopApp, siteEntity.desktopApp) &&
         Objects.equals(this.desktopAppSessionIpPinning, siteEntity.desktopAppSessionIpPinning) &&
         Objects.equals(this.desktopAppSessionLifetime, siteEntity.desktopAppSessionLifetime) &&
-        Objects.equals(this.disallowedCountries, siteEntity.disallowedCountries) &&
         Objects.equals(this.disableNotifications, siteEntity.disableNotifications) &&
         Objects.equals(this.disablePasswordReset, siteEntity.disablePasswordReset) &&
+        Objects.equals(this.disableUsersFromInactivityPeriodDays, siteEntity.disableUsersFromInactivityPeriodDays) &&
+        Objects.equals(this.disallowedCountries, siteEntity.disallowedCountries) &&
         Objects.equals(this.domain, siteEntity.domain) &&
         Objects.equals(this.email, siteEntity.email) &&
-        Objects.equals(this.replyToEmail, siteEntity.replyToEmail) &&
-        Objects.equals(this.nonSsoGroupsAllowed, siteEntity.nonSsoGroupsAllowed) &&
-        Objects.equals(this.nonSsoUsersAllowed, siteEntity.nonSsoUsersAllowed) &&
         Objects.equals(this.folderPermissionsGroupsOnly, siteEntity.folderPermissionsGroupsOnly) &&
         Objects.equals(this.hipaa, siteEntity.hipaa) &&
         Objects.equals(this.icon128, siteEntity.icon128) &&
@@ -2614,8 +2598,11 @@ public class SiteEntity {
         Objects.equals(this.loginHelpText, siteEntity.loginHelpText) &&
         Objects.equals(this.logo, siteEntity.logo) &&
         Objects.equals(this.maxPriorPasswords, siteEntity.maxPriorPasswords) &&
+        Objects.equals(this.name, siteEntity.name) &&
         Objects.equals(this.nextBillingAmount, siteEntity.nextBillingAmount) &&
         Objects.equals(this.nextBillingDate, siteEntity.nextBillingDate) &&
+        Objects.equals(this.nonSsoGroupsAllowed, siteEntity.nonSsoGroupsAllowed) &&
+        Objects.equals(this.nonSsoUsersAllowed, siteEntity.nonSsoUsersAllowed) &&
         Objects.equals(this.officeIntegrationAvailable, siteEntity.officeIntegrationAvailable) &&
         Objects.equals(this.oncehubLink, siteEntity.oncehubLink) &&
         Objects.equals(this.optOutGlobal, siteEntity.optOutGlobal) &&
@@ -2631,10 +2618,12 @@ public class SiteEntity {
         Objects.equals(this.passwordRequirementsApplyToBundles, siteEntity.passwordRequirementsApplyToBundles) &&
         Objects.equals(this.passwordValidityDays, siteEntity.passwordValidityDays) &&
         Objects.equals(this.phone, siteEntity.phone) &&
+        Objects.equals(this.replyToEmail, siteEntity.replyToEmail) &&
         Objects.equals(this.require2fa, siteEntity.require2fa) &&
         Objects.equals(this.require2faStopTime, siteEntity.require2faStopTime) &&
         Objects.equals(this.require2faUserType, siteEntity.require2faUserType) &&
         Objects.equals(this.session, siteEntity.session) &&
+        Objects.equals(this.sessionExpiry, siteEntity.sessionExpiry) &&
         Objects.equals(this.sessionPinnedByIp, siteEntity.sessionPinnedByIp) &&
         Objects.equals(this.sftpUserRootEnabled, siteEntity.sftpUserRootEnabled) &&
         Objects.equals(this.sharingEnabled, siteEntity.sharingEnabled) &&
@@ -2646,7 +2635,6 @@ public class SiteEntity {
         Objects.equals(this.smtpFrom, siteEntity.smtpFrom) &&
         Objects.equals(this.smtpPort, siteEntity.smtpPort) &&
         Objects.equals(this.smtpUsername, siteEntity.smtpUsername) &&
-        Objects.equals(this.sessionExpiry, siteEntity.sessionExpiry) &&
         Objects.equals(this.sslRequired, siteEntity.sslRequired) &&
         Objects.equals(this.subdomain, siteEntity.subdomain) &&
         Objects.equals(this.switchToPlanDate, siteEntity.switchToPlanDate) &&
@@ -2665,13 +2653,12 @@ public class SiteEntity {
         Objects.equals(this.welcomeEmailCc, siteEntity.welcomeEmailCc) &&
         Objects.equals(this.welcomeEmailEnabled, siteEntity.welcomeEmailEnabled) &&
         Objects.equals(this.welcomeScreen, siteEntity.welcomeScreen) &&
-        Objects.equals(this.windowsModeFtp, siteEntity.windowsModeFtp) &&
-        Objects.equals(this.disableUsersFromInactivityPeriodDays, siteEntity.disableUsersFromInactivityPeriodDays);
+        Objects.equals(this.windowsModeFtp, siteEntity.windowsModeFtp);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, allowed2faMethodSms, allowed2faMethodTotp, allowed2faMethodU2f, allowed2faMethodYubi, adminUserId, allowBundleNames, allowedCountries, allowedIps, askAboutOverwrites, bundleExpiration, bundlePasswordRequired, bundleRequireShareRecipient, color2Left, color2Link, color2Text, color2Top, color2TopText, contactName, createdAt, currency, customNamespace, daysToRetainBackups, defaultTimeZone, desktopApp, desktopAppSessionIpPinning, desktopAppSessionLifetime, disallowedCountries, disableNotifications, disablePasswordReset, domain, email, replyToEmail, nonSsoGroupsAllowed, nonSsoUsersAllowed, folderPermissionsGroupsOnly, hipaa, icon128, icon16, icon32, icon48, immutableFilesSetAt, includePasswordInWelcomeEmail, language, ldapBaseDn, ldapDomain, ldapEnabled, ldapGroupAction, ldapGroupExclusion, ldapGroupInclusion, ldapHost, ldapHost2, ldapHost3, ldapPort, ldapSecure, ldapType, ldapUserAction, ldapUserIncludeGroups, ldapUsername, ldapUsernameField, loginHelpText, logo, maxPriorPasswords, nextBillingAmount, nextBillingDate, officeIntegrationAvailable, oncehubLink, optOutGlobal, overageNotifiedAt, overageNotify, overdue, passwordMinLength, passwordRequireLetter, passwordRequireMixed, passwordRequireNumber, passwordRequireSpecial, passwordRequireUnbreached, passwordRequirementsApplyToBundles, passwordValidityDays, phone, require2fa, require2faStopTime, require2faUserType, session, sessionPinnedByIp, sftpUserRootEnabled, sharingEnabled, showRequestAccessLink, siteFooter, siteHeader, smtpAddress, smtpAuthentication, smtpFrom, smtpPort, smtpUsername, sessionExpiry, sslRequired, subdomain, switchToPlanDate, tlsDisabled, trialDaysLeft, trialUntil, updatedAt, useProvidedModifiedAt, user, userLockout, userLockoutLockPeriod, userLockoutTries, userLockoutWithin, userRequestsEnabled, welcomeCustomText, welcomeEmailCc, welcomeEmailEnabled, welcomeScreen, windowsModeFtp, disableUsersFromInactivityPeriodDays);
+    return Objects.hash(adminUserId, allowBundleNames, allowed2faMethodSms, allowed2faMethodTotp, allowed2faMethodU2f, allowed2faMethodYubi, allowedCountries, allowedIps, askAboutOverwrites, bundleExpiration, bundlePasswordRequired, bundleRequireShareRecipient, color2Left, color2Link, color2Text, color2Top, color2TopText, contactName, createdAt, currency, customNamespace, daysToRetainBackups, defaultTimeZone, desktopApp, desktopAppSessionIpPinning, desktopAppSessionLifetime, disableNotifications, disablePasswordReset, disableUsersFromInactivityPeriodDays, disallowedCountries, domain, email, folderPermissionsGroupsOnly, hipaa, icon128, icon16, icon32, icon48, immutableFilesSetAt, includePasswordInWelcomeEmail, language, ldapBaseDn, ldapDomain, ldapEnabled, ldapGroupAction, ldapGroupExclusion, ldapGroupInclusion, ldapHost, ldapHost2, ldapHost3, ldapPort, ldapSecure, ldapType, ldapUserAction, ldapUserIncludeGroups, ldapUsername, ldapUsernameField, loginHelpText, logo, maxPriorPasswords, name, nextBillingAmount, nextBillingDate, nonSsoGroupsAllowed, nonSsoUsersAllowed, officeIntegrationAvailable, oncehubLink, optOutGlobal, overageNotifiedAt, overageNotify, overdue, passwordMinLength, passwordRequireLetter, passwordRequireMixed, passwordRequireNumber, passwordRequireSpecial, passwordRequireUnbreached, passwordRequirementsApplyToBundles, passwordValidityDays, phone, replyToEmail, require2fa, require2faStopTime, require2faUserType, session, sessionExpiry, sessionPinnedByIp, sftpUserRootEnabled, sharingEnabled, showRequestAccessLink, siteFooter, siteHeader, smtpAddress, smtpAuthentication, smtpFrom, smtpPort, smtpUsername, sslRequired, subdomain, switchToPlanDate, tlsDisabled, trialDaysLeft, trialUntil, updatedAt, useProvidedModifiedAt, user, userLockout, userLockoutLockPeriod, userLockoutTries, userLockoutWithin, userRequestsEnabled, welcomeCustomText, welcomeEmailCc, welcomeEmailEnabled, welcomeScreen, windowsModeFtp);
   }
 
 
@@ -2680,13 +2667,12 @@ public class SiteEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class SiteEntity {\n");
     
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    adminUserId: ").append(toIndentedString(adminUserId)).append("\n");
+    sb.append("    allowBundleNames: ").append(toIndentedString(allowBundleNames)).append("\n");
     sb.append("    allowed2faMethodSms: ").append(toIndentedString(allowed2faMethodSms)).append("\n");
     sb.append("    allowed2faMethodTotp: ").append(toIndentedString(allowed2faMethodTotp)).append("\n");
     sb.append("    allowed2faMethodU2f: ").append(toIndentedString(allowed2faMethodU2f)).append("\n");
     sb.append("    allowed2faMethodYubi: ").append(toIndentedString(allowed2faMethodYubi)).append("\n");
-    sb.append("    adminUserId: ").append(toIndentedString(adminUserId)).append("\n");
-    sb.append("    allowBundleNames: ").append(toIndentedString(allowBundleNames)).append("\n");
     sb.append("    allowedCountries: ").append(toIndentedString(allowedCountries)).append("\n");
     sb.append("    allowedIps: ").append(toIndentedString(allowedIps)).append("\n");
     sb.append("    askAboutOverwrites: ").append(toIndentedString(askAboutOverwrites)).append("\n");
@@ -2707,14 +2693,12 @@ public class SiteEntity {
     sb.append("    desktopApp: ").append(toIndentedString(desktopApp)).append("\n");
     sb.append("    desktopAppSessionIpPinning: ").append(toIndentedString(desktopAppSessionIpPinning)).append("\n");
     sb.append("    desktopAppSessionLifetime: ").append(toIndentedString(desktopAppSessionLifetime)).append("\n");
-    sb.append("    disallowedCountries: ").append(toIndentedString(disallowedCountries)).append("\n");
     sb.append("    disableNotifications: ").append(toIndentedString(disableNotifications)).append("\n");
     sb.append("    disablePasswordReset: ").append(toIndentedString(disablePasswordReset)).append("\n");
+    sb.append("    disableUsersFromInactivityPeriodDays: ").append(toIndentedString(disableUsersFromInactivityPeriodDays)).append("\n");
+    sb.append("    disallowedCountries: ").append(toIndentedString(disallowedCountries)).append("\n");
     sb.append("    domain: ").append(toIndentedString(domain)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
-    sb.append("    replyToEmail: ").append(toIndentedString(replyToEmail)).append("\n");
-    sb.append("    nonSsoGroupsAllowed: ").append(toIndentedString(nonSsoGroupsAllowed)).append("\n");
-    sb.append("    nonSsoUsersAllowed: ").append(toIndentedString(nonSsoUsersAllowed)).append("\n");
     sb.append("    folderPermissionsGroupsOnly: ").append(toIndentedString(folderPermissionsGroupsOnly)).append("\n");
     sb.append("    hipaa: ").append(toIndentedString(hipaa)).append("\n");
     sb.append("    icon128: ").append(toIndentedString(icon128)).append("\n");
@@ -2743,8 +2727,11 @@ public class SiteEntity {
     sb.append("    loginHelpText: ").append(toIndentedString(loginHelpText)).append("\n");
     sb.append("    logo: ").append(toIndentedString(logo)).append("\n");
     sb.append("    maxPriorPasswords: ").append(toIndentedString(maxPriorPasswords)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    nextBillingAmount: ").append(toIndentedString(nextBillingAmount)).append("\n");
     sb.append("    nextBillingDate: ").append(toIndentedString(nextBillingDate)).append("\n");
+    sb.append("    nonSsoGroupsAllowed: ").append(toIndentedString(nonSsoGroupsAllowed)).append("\n");
+    sb.append("    nonSsoUsersAllowed: ").append(toIndentedString(nonSsoUsersAllowed)).append("\n");
     sb.append("    officeIntegrationAvailable: ").append(toIndentedString(officeIntegrationAvailable)).append("\n");
     sb.append("    oncehubLink: ").append(toIndentedString(oncehubLink)).append("\n");
     sb.append("    optOutGlobal: ").append(toIndentedString(optOutGlobal)).append("\n");
@@ -2760,10 +2747,12 @@ public class SiteEntity {
     sb.append("    passwordRequirementsApplyToBundles: ").append(toIndentedString(passwordRequirementsApplyToBundles)).append("\n");
     sb.append("    passwordValidityDays: ").append(toIndentedString(passwordValidityDays)).append("\n");
     sb.append("    phone: ").append(toIndentedString(phone)).append("\n");
+    sb.append("    replyToEmail: ").append(toIndentedString(replyToEmail)).append("\n");
     sb.append("    require2fa: ").append(toIndentedString(require2fa)).append("\n");
     sb.append("    require2faStopTime: ").append(toIndentedString(require2faStopTime)).append("\n");
     sb.append("    require2faUserType: ").append(toIndentedString(require2faUserType)).append("\n");
     sb.append("    session: ").append(toIndentedString(session)).append("\n");
+    sb.append("    sessionExpiry: ").append(toIndentedString(sessionExpiry)).append("\n");
     sb.append("    sessionPinnedByIp: ").append(toIndentedString(sessionPinnedByIp)).append("\n");
     sb.append("    sftpUserRootEnabled: ").append(toIndentedString(sftpUserRootEnabled)).append("\n");
     sb.append("    sharingEnabled: ").append(toIndentedString(sharingEnabled)).append("\n");
@@ -2775,7 +2764,6 @@ public class SiteEntity {
     sb.append("    smtpFrom: ").append(toIndentedString(smtpFrom)).append("\n");
     sb.append("    smtpPort: ").append(toIndentedString(smtpPort)).append("\n");
     sb.append("    smtpUsername: ").append(toIndentedString(smtpUsername)).append("\n");
-    sb.append("    sessionExpiry: ").append(toIndentedString(sessionExpiry)).append("\n");
     sb.append("    sslRequired: ").append(toIndentedString(sslRequired)).append("\n");
     sb.append("    subdomain: ").append(toIndentedString(subdomain)).append("\n");
     sb.append("    switchToPlanDate: ").append(toIndentedString(switchToPlanDate)).append("\n");
@@ -2795,7 +2783,6 @@ public class SiteEntity {
     sb.append("    welcomeEmailEnabled: ").append(toIndentedString(welcomeEmailEnabled)).append("\n");
     sb.append("    welcomeScreen: ").append(toIndentedString(welcomeScreen)).append("\n");
     sb.append("    windowsModeFtp: ").append(toIndentedString(windowsModeFtp)).append("\n");
-    sb.append("    disableUsersFromInactivityPeriodDays: ").append(toIndentedString(disableUsersFromInactivityPeriodDays)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -2812,4 +2799,3 @@ public class SiteEntity {
   }
 
 }
-

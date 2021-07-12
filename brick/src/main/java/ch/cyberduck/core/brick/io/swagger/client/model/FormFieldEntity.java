@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,36 +17,23 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * FormFieldEntity
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class FormFieldEntity {
-  @JsonProperty("id")
-  private Integer id = null;
-
-  @JsonProperty("label")
-  private String label = null;
-
-  @JsonProperty("required")
-  private Boolean required = null;
-
-  @JsonProperty("help_text")
-  private String helpText = null;
+  @JsonProperty("default_option")
+  private String defaultOption = null;
 
   /**
    * Type of Field
    */
   public enum FieldTypeEnum {
     TEXT("text"),
-    
     TEXT_AREA("text_area"),
-    
     DROPDOWN("dropdown"),
-    
     RADIO("radio");
 
     private String value;
@@ -55,7 +41,6 @@ public class FormFieldEntity {
     FieldTypeEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -65,29 +50,108 @@ public class FormFieldEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static FieldTypeEnum fromValue(String value) {
+    public static FieldTypeEnum fromValue(String text) {
       for (FieldTypeEnum b : FieldTypeEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("field_type")
+  }  @JsonProperty("field_type")
   private FieldTypeEnum fieldType = null;
+
+  @JsonProperty("form_field_set_id")
+  private Integer formFieldSetId = null;
+
+  @JsonProperty("help_text")
+  private String helpText = null;
+
+  @JsonProperty("id")
+  private Integer id = null;
+
+  @JsonProperty("label")
+  private String label = null;
 
   @JsonProperty("options_for_select")
   private String optionsForSelect = null;
 
-  @JsonProperty("default_option")
-  private String defaultOption = null;
+  @JsonProperty("required")
+  private Boolean required = null;
 
-  @JsonProperty("form_field_set_id")
-  private Integer formFieldSetId = null;
+  public FormFieldEntity defaultOption(String defaultOption) {
+    this.defaultOption = defaultOption;
+    return this;
+  }
+
+   /**
+   * Default option for radio and dropdown
+   * @return defaultOption
+  **/
+  @Schema(example = "red", description = "Default option for radio and dropdown")
+  public String getDefaultOption() {
+    return defaultOption;
+  }
+
+  public void setDefaultOption(String defaultOption) {
+    this.defaultOption = defaultOption;
+  }
+
+  public FormFieldEntity fieldType(FieldTypeEnum fieldType) {
+    this.fieldType = fieldType;
+    return this;
+  }
+
+   /**
+   * Type of Field
+   * @return fieldType
+  **/
+  @Schema(example = "text", description = "Type of Field")
+  public FieldTypeEnum getFieldType() {
+    return fieldType;
+  }
+
+  public void setFieldType(FieldTypeEnum fieldType) {
+    this.fieldType = fieldType;
+  }
+
+  public FormFieldEntity formFieldSetId(Integer formFieldSetId) {
+    this.formFieldSetId = formFieldSetId;
+    return this;
+  }
+
+   /**
+   * Form field set id
+   * @return formFieldSetId
+  **/
+  @Schema(example = "1", description = "Form field set id")
+  public Integer getFormFieldSetId() {
+    return formFieldSetId;
+  }
+
+  public void setFormFieldSetId(Integer formFieldSetId) {
+    this.formFieldSetId = formFieldSetId;
+  }
+
+  public FormFieldEntity helpText(String helpText) {
+    this.helpText = helpText;
+    return this;
+  }
+
+   /**
+   * Help text to be displayed
+   * @return helpText
+  **/
+  @Schema(example = "Help Text", description = "Help text to be displayed")
+  public String getHelpText() {
+    return helpText;
+  }
+
+  public void setHelpText(String helpText) {
+    this.helpText = helpText;
+  }
 
   public FormFieldEntity id(Integer id) {
     this.id = id;
@@ -98,7 +162,7 @@ public class FormFieldEntity {
    * Form field id
    * @return id
   **/
-  @ApiModelProperty(example = "1", value = "Form field id")
+  @Schema(example = "1", description = "Form field id")
   public Integer getId() {
     return id;
   }
@@ -116,67 +180,13 @@ public class FormFieldEntity {
    * Label to be displayed
    * @return label
   **/
-  @ApiModelProperty(example = "Sample Label", value = "Label to be displayed")
+  @Schema(example = "Sample Label", description = "Label to be displayed")
   public String getLabel() {
     return label;
   }
 
   public void setLabel(String label) {
     this.label = label;
-  }
-
-  public FormFieldEntity required(Boolean required) {
-    this.required = required;
-    return this;
-  }
-
-   /**
-   * Is this a required field?
-   * @return required
-  **/
-  @ApiModelProperty(example = "true", value = "Is this a required field?")
-  public Boolean isRequired() {
-    return required;
-  }
-
-  public void setRequired(Boolean required) {
-    this.required = required;
-  }
-
-  public FormFieldEntity helpText(String helpText) {
-    this.helpText = helpText;
-    return this;
-  }
-
-   /**
-   * Help text to be displayed
-   * @return helpText
-  **/
-  @ApiModelProperty(example = "Help Text", value = "Help text to be displayed")
-  public String getHelpText() {
-    return helpText;
-  }
-
-  public void setHelpText(String helpText) {
-    this.helpText = helpText;
-  }
-
-  public FormFieldEntity fieldType(FieldTypeEnum fieldType) {
-    this.fieldType = fieldType;
-    return this;
-  }
-
-   /**
-   * Type of Field
-   * @return fieldType
-  **/
-  @ApiModelProperty(example = "text", value = "Type of Field")
-  public FieldTypeEnum getFieldType() {
-    return fieldType;
-  }
-
-  public void setFieldType(FieldTypeEnum fieldType) {
-    this.fieldType = fieldType;
   }
 
   public FormFieldEntity optionsForSelect(String optionsForSelect) {
@@ -188,7 +198,7 @@ public class FormFieldEntity {
    * Options to display for radio and dropdown
    * @return optionsForSelect
   **/
-  @ApiModelProperty(example = "", value = "Options to display for radio and dropdown")
+  @Schema(description = "Options to display for radio and dropdown")
   public String getOptionsForSelect() {
     return optionsForSelect;
   }
@@ -197,40 +207,22 @@ public class FormFieldEntity {
     this.optionsForSelect = optionsForSelect;
   }
 
-  public FormFieldEntity defaultOption(String defaultOption) {
-    this.defaultOption = defaultOption;
+  public FormFieldEntity required(Boolean required) {
+    this.required = required;
     return this;
   }
 
    /**
-   * Default option for radio and dropdown
-   * @return defaultOption
+   * Is this a required field?
+   * @return required
   **/
-  @ApiModelProperty(example = "red", value = "Default option for radio and dropdown")
-  public String getDefaultOption() {
-    return defaultOption;
+  @Schema(example = "true", description = "Is this a required field?")
+  public Boolean isRequired() {
+    return required;
   }
 
-  public void setDefaultOption(String defaultOption) {
-    this.defaultOption = defaultOption;
-  }
-
-  public FormFieldEntity formFieldSetId(Integer formFieldSetId) {
-    this.formFieldSetId = formFieldSetId;
-    return this;
-  }
-
-   /**
-   * Form field set id
-   * @return formFieldSetId
-  **/
-  @ApiModelProperty(example = "1", value = "Form field set id")
-  public Integer getFormFieldSetId() {
-    return formFieldSetId;
-  }
-
-  public void setFormFieldSetId(Integer formFieldSetId) {
-    this.formFieldSetId = formFieldSetId;
+  public void setRequired(Boolean required) {
+    this.required = required;
   }
 
 
@@ -243,19 +235,19 @@ public class FormFieldEntity {
       return false;
     }
     FormFieldEntity formFieldEntity = (FormFieldEntity) o;
-    return Objects.equals(this.id, formFieldEntity.id) &&
-        Objects.equals(this.label, formFieldEntity.label) &&
-        Objects.equals(this.required, formFieldEntity.required) &&
-        Objects.equals(this.helpText, formFieldEntity.helpText) &&
+    return Objects.equals(this.defaultOption, formFieldEntity.defaultOption) &&
         Objects.equals(this.fieldType, formFieldEntity.fieldType) &&
+        Objects.equals(this.formFieldSetId, formFieldEntity.formFieldSetId) &&
+        Objects.equals(this.helpText, formFieldEntity.helpText) &&
+        Objects.equals(this.id, formFieldEntity.id) &&
+        Objects.equals(this.label, formFieldEntity.label) &&
         Objects.equals(this.optionsForSelect, formFieldEntity.optionsForSelect) &&
-        Objects.equals(this.defaultOption, formFieldEntity.defaultOption) &&
-        Objects.equals(this.formFieldSetId, formFieldEntity.formFieldSetId);
+        Objects.equals(this.required, formFieldEntity.required);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, label, required, helpText, fieldType, optionsForSelect, defaultOption, formFieldSetId);
+    return Objects.hash(defaultOption, fieldType, formFieldSetId, helpText, id, label, optionsForSelect, required);
   }
 
 
@@ -264,14 +256,14 @@ public class FormFieldEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class FormFieldEntity {\n");
     
+    sb.append("    defaultOption: ").append(toIndentedString(defaultOption)).append("\n");
+    sb.append("    fieldType: ").append(toIndentedString(fieldType)).append("\n");
+    sb.append("    formFieldSetId: ").append(toIndentedString(formFieldSetId)).append("\n");
+    sb.append("    helpText: ").append(toIndentedString(helpText)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
-    sb.append("    required: ").append(toIndentedString(required)).append("\n");
-    sb.append("    helpText: ").append(toIndentedString(helpText)).append("\n");
-    sb.append("    fieldType: ").append(toIndentedString(fieldType)).append("\n");
     sb.append("    optionsForSelect: ").append(toIndentedString(optionsForSelect)).append("\n");
-    sb.append("    defaultOption: ").append(toIndentedString(defaultOption)).append("\n");
-    sb.append("    formFieldSetId: ").append(toIndentedString(formFieldSetId)).append("\n");
+    sb.append("    required: ").append(toIndentedString(required)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -288,4 +280,3 @@ public class FormFieldEntity {
   }
 
 }
-

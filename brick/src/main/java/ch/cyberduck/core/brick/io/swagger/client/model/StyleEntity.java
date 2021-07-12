@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -19,23 +18,21 @@ import ch.cyberduck.core.brick.io.swagger.client.model.ImageEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * Show Style
  */
-@ApiModel(description = "Show Style")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "Show Style")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class StyleEntity {
   @JsonProperty("id")
   private Integer id = null;
 
-  @JsonProperty("path")
-  private String path = null;
-
   @JsonProperty("logo")
   private ImageEntity logo = null;
+
+  @JsonProperty("path")
+  private String path = null;
 
   @JsonProperty("thumbnail")
   private ImageEntity thumbnail = null;
@@ -49,13 +46,31 @@ public class StyleEntity {
    * Style ID
    * @return id
   **/
-  @ApiModelProperty(example = "1", value = "Style ID")
+  @Schema(example = "1", description = "Style ID")
   public Integer getId() {
     return id;
   }
 
   public void setId(Integer id) {
     this.id = id;
+  }
+
+  public StyleEntity logo(ImageEntity logo) {
+    this.logo = logo;
+    return this;
+  }
+
+   /**
+   * Get logo
+   * @return logo
+  **/
+  @Schema(description = "")
+  public ImageEntity getLogo() {
+    return logo;
+  }
+
+  public void setLogo(ImageEntity logo) {
+    this.logo = logo;
   }
 
   public StyleEntity path(String path) {
@@ -67,7 +82,7 @@ public class StyleEntity {
    * Folder path
    * @return path
   **/
-  @ApiModelProperty(example = "", value = "Folder path")
+  @Schema(description = "Folder path")
   public String getPath() {
     return path;
   }
@@ -76,34 +91,16 @@ public class StyleEntity {
     this.path = path;
   }
 
-  public StyleEntity logo(ImageEntity logo) {
-    this.logo = logo;
-    return this;
-  }
-
-   /**
-   * Logo
-   * @return logo
-  **/
-  @ApiModelProperty(value = "Logo")
-  public ImageEntity getLogo() {
-    return logo;
-  }
-
-  public void setLogo(ImageEntity logo) {
-    this.logo = logo;
-  }
-
   public StyleEntity thumbnail(ImageEntity thumbnail) {
     this.thumbnail = thumbnail;
     return this;
   }
 
    /**
-   * Logo thumbnail
+   * Get thumbnail
    * @return thumbnail
   **/
-  @ApiModelProperty(value = "Logo thumbnail")
+  @Schema(description = "")
   public ImageEntity getThumbnail() {
     return thumbnail;
   }
@@ -123,14 +120,14 @@ public class StyleEntity {
     }
     StyleEntity styleEntity = (StyleEntity) o;
     return Objects.equals(this.id, styleEntity.id) &&
-        Objects.equals(this.path, styleEntity.path) &&
         Objects.equals(this.logo, styleEntity.logo) &&
+        Objects.equals(this.path, styleEntity.path) &&
         Objects.equals(this.thumbnail, styleEntity.thumbnail);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, path, logo, thumbnail);
+    return Objects.hash(id, logo, path, thumbnail);
   }
 
 
@@ -140,8 +137,8 @@ public class StyleEntity {
     sb.append("class StyleEntity {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    logo: ").append(toIndentedString(logo)).append("\n");
+    sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    thumbnail: ").append(toIndentedString(thumbnail)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -159,4 +156,3 @@ public class StyleEntity {
   }
 
 }
-

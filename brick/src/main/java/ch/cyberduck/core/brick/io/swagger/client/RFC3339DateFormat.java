@@ -9,7 +9,6 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-
 package ch.cyberduck.core.brick.io.swagger.client;
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;

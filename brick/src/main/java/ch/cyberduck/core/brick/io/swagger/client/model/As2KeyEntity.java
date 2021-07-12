@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,19 +17,14 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.joda.time.DateTime;
-
 /**
  * List As2 Keys
  */
-@ApiModel(description = "List As2 Keys")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List As2 Keys")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class As2KeyEntity {
-  @JsonProperty("id")
-  private Integer id = null;
-
   @JsonProperty("as2_partnership_name")
   private String as2PartnershipName = null;
 
@@ -40,23 +34,8 @@ public class As2KeyEntity {
   @JsonProperty("fingerprint")
   private String fingerprint = null;
 
-  public As2KeyEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * AS2 Key ID
-   * @return id
-  **/
-  @ApiModelProperty(example = "1", value = "AS2 Key ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
+  @JsonProperty("id")
+  private Integer id = null;
 
   public As2KeyEntity as2PartnershipName(String as2PartnershipName) {
     this.as2PartnershipName = as2PartnershipName;
@@ -67,7 +46,7 @@ public class As2KeyEntity {
    * AS2 Partnership Name
    * @return as2PartnershipName
   **/
-  @ApiModelProperty(example = "Test", value = "AS2 Partnership Name")
+  @Schema(example = "Test", description = "AS2 Partnership Name")
   public String getAs2PartnershipName() {
     return as2PartnershipName;
   }
@@ -85,7 +64,7 @@ public class As2KeyEntity {
    * AS2 Key created at date/time
    * @return createdAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "AS2 Key created at date/time")
+  @Schema(example = "2000-01-01T01:00Z", description = "AS2 Key created at date/time")
   public DateTime getCreatedAt() {
     return createdAt;
   }
@@ -103,13 +82,31 @@ public class As2KeyEntity {
    * Public key fingerprint
    * @return fingerprint
   **/
-  @ApiModelProperty(example = "cf:cb:d3:26:52:6c:55:88:83:17:13:cf:e7:70:eb:1b:32:37:38:c0", value = "Public key fingerprint")
+  @Schema(example = "cf:cb:d3:26:52:6c:55:88:83:17:13:cf:e7:70:eb:1b:32:37:38:c0", description = "Public key fingerprint")
   public String getFingerprint() {
     return fingerprint;
   }
 
   public void setFingerprint(String fingerprint) {
     this.fingerprint = fingerprint;
+  }
+
+  public As2KeyEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * AS2 Key ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "AS2 Key ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
   }
 
 
@@ -122,15 +119,15 @@ public class As2KeyEntity {
       return false;
     }
     As2KeyEntity as2KeyEntity = (As2KeyEntity) o;
-    return Objects.equals(this.id, as2KeyEntity.id) &&
-        Objects.equals(this.as2PartnershipName, as2KeyEntity.as2PartnershipName) &&
+    return Objects.equals(this.as2PartnershipName, as2KeyEntity.as2PartnershipName) &&
         Objects.equals(this.createdAt, as2KeyEntity.createdAt) &&
-        Objects.equals(this.fingerprint, as2KeyEntity.fingerprint);
+        Objects.equals(this.fingerprint, as2KeyEntity.fingerprint) &&
+        Objects.equals(this.id, as2KeyEntity.id);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, as2PartnershipName, createdAt, fingerprint);
+    return Objects.hash(as2PartnershipName, createdAt, fingerprint, id);
   }
 
 
@@ -139,10 +136,10 @@ public class As2KeyEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class As2KeyEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    as2PartnershipName: ").append(toIndentedString(as2PartnershipName)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    fingerprint: ").append(toIndentedString(fingerprint)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -159,4 +156,3 @@ public class As2KeyEntity {
   }
 
 }
-

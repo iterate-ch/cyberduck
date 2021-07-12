@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,15 +17,13 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.joda.time.DateTime;
-
 /**
  * List Inbox Recipients
  */
-@ApiModel(description = "List Inbox Recipients")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Inbox Recipients")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class InboxRecipientEntity {
   @JsonProperty("company")
   private String company = null;
@@ -49,10 +46,10 @@ public class InboxRecipientEntity {
   }
 
    /**
-   * The recipient&#39;s company.
+   * The recipient&#x27;s company.
    * @return company
   **/
-  @ApiModelProperty(example = "Acme Inc.", value = "The recipient's company.")
+  @Schema(example = "Acme Inc.", description = "The recipient's company.")
   public String getCompany() {
     return company;
   }
@@ -67,10 +64,10 @@ public class InboxRecipientEntity {
   }
 
    /**
-   * The recipient&#39;s name.
+   * The recipient&#x27;s name.
    * @return name
   **/
-  @ApiModelProperty(example = "John Doe", value = "The recipient's name.")
+  @Schema(example = "John Doe", description = "The recipient's name.")
   public String getName() {
     return name;
   }
@@ -88,7 +85,7 @@ public class InboxRecipientEntity {
    * A note sent to the recipient with the inbox.
    * @return note
   **/
-  @ApiModelProperty(example = "Some note.", value = "A note sent to the recipient with the inbox.")
+  @Schema(example = "Some note.", description = "A note sent to the recipient with the inbox.")
   public String getNote() {
     return note;
   }
@@ -103,10 +100,10 @@ public class InboxRecipientEntity {
   }
 
    /**
-   * The recipient&#39;s email address.
+   * The recipient&#x27;s email address.
    * @return recipient
   **/
-  @ApiModelProperty(example = "john.doe@example.com", value = "The recipient's email address.")
+  @Schema(example = "john.doe@example.com", description = "The recipient's email address.")
   public String getRecipient() {
     return recipient;
   }
@@ -124,7 +121,7 @@ public class InboxRecipientEntity {
    * When the Inbox was shared with this recipient.
    * @return sentAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "When the Inbox was shared with this recipient.")
+  @Schema(example = "2000-01-01T01:00Z", description = "When the Inbox was shared with this recipient.")
   public DateTime getSentAt() {
     return sentAt;
   }
@@ -182,4 +179,3 @@ public class InboxRecipientEntity {
   }
 
 }
-

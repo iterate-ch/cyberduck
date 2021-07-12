@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -19,36 +18,22 @@ import ch.cyberduck.core.brick.io.swagger.client.model.PreviewEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.joda.time.DateTime;
-
 /**
  * List Folders by path
  */
-@ApiModel(description = "List Folders by path")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Folders by path")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class FileEntity {
-  @JsonProperty("path")
-  private String path = null;
+  @JsonProperty("crc32")
+  private String crc32 = null;
 
   @JsonProperty("display_name")
   private String displayName = null;
 
-  @JsonProperty("type")
-  private String type = null;
-
-  @JsonProperty("size")
-  private Integer size = null;
-
-  @JsonProperty("mtime")
-  private DateTime mtime = null;
-
-  @JsonProperty("provided_mtime")
-  private DateTime providedMtime = null;
-
-  @JsonProperty("crc32")
-  private String crc32 = null;
+  @JsonProperty("download_uri")
+  private String downloadUri = null;
 
   @JsonProperty("md5")
   private String md5 = null;
@@ -56,43 +41,55 @@ public class FileEntity {
   @JsonProperty("mime_type")
   private String mimeType = null;
 
-  @JsonProperty("region")
-  private String region = null;
+  @JsonProperty("mtime")
+  private DateTime mtime = null;
+
+  @JsonProperty("path")
+  private String path = null;
 
   @JsonProperty("permissions")
   private String permissions = null;
 
-  @JsonProperty("subfolders_locked?")
-  private Boolean subfoldersLocked = null;
-
-  @JsonProperty("download_uri")
-  private String downloadUri = null;
-
-  @JsonProperty("priority_color")
-  private String priorityColor = null;
+  @JsonProperty("preview")
+  private PreviewEntity preview = null;
 
   @JsonProperty("preview_id")
   private Integer previewId = null;
 
-  @JsonProperty("preview")
-  private PreviewEntity preview = null;
+  @JsonProperty("priority_color")
+  private String priorityColor = null;
 
-  public FileEntity path(String path) {
-    this.path = path;
+  @JsonProperty("provided_mtime")
+  private DateTime providedMtime = null;
+
+  @JsonProperty("region")
+  private String region = null;
+
+  @JsonProperty("size")
+  private Integer size = null;
+
+  @JsonProperty("subfolders_locked?")
+  private Boolean subfoldersLocked = null;
+
+  @JsonProperty("type")
+  private String type = null;
+
+  public FileEntity crc32(String crc32) {
+    this.crc32 = crc32;
     return this;
   }
 
    /**
-   * File/Folder path
-   * @return path
+   * File CRC32 checksum. This is sometimes delayed, so if you get a blank response, wait and try again.
+   * @return crc32
   **/
-  @ApiModelProperty(example = "path/file.txt", value = "File/Folder path")
-  public String getPath() {
-    return path;
+  @Schema(example = "70976923", description = "File CRC32 checksum. This is sometimes delayed, so if you get a blank response, wait and try again.")
+  public String getCrc32() {
+    return crc32;
   }
 
-  public void setPath(String path) {
-    this.path = path;
+  public void setCrc32(String crc32) {
+    this.crc32 = crc32;
   }
 
   public FileEntity displayName(String displayName) {
@@ -104,7 +101,7 @@ public class FileEntity {
    * File/Folder display name
    * @return displayName
   **/
-  @ApiModelProperty(example = "file.txt", value = "File/Folder display name")
+  @Schema(example = "file.txt", description = "File/Folder display name")
   public String getDisplayName() {
     return displayName;
   }
@@ -113,94 +110,22 @@ public class FileEntity {
     this.displayName = displayName;
   }
 
-  public FileEntity type(String type) {
-    this.type = type;
+  public FileEntity downloadUri(String downloadUri) {
+    this.downloadUri = downloadUri;
     return this;
   }
 
    /**
-   * Type: &#x60;directory&#x60; or &#x60;file&#x60;.
-   * @return type
+   * Link to download file. Provided only in response to a download request.
+   * @return downloadUri
   **/
-  @ApiModelProperty(example = "file", value = "Type: `directory` or `file`.")
-  public String getType() {
-    return type;
+  @Schema(example = "https://mysite.files.com/...", description = "Link to download file. Provided only in response to a download request.")
+  public String getDownloadUri() {
+    return downloadUri;
   }
 
-  public void setType(String type) {
-    this.type = type;
-  }
-
-  public FileEntity size(Integer size) {
-    this.size = size;
-    return this;
-  }
-
-   /**
-   * File/Folder size
-   * @return size
-  **/
-  @ApiModelProperty(example = "1024", value = "File/Folder size")
-  public Integer getSize() {
-    return size;
-  }
-
-  public void setSize(Integer size) {
-    this.size = size;
-  }
-
-  public FileEntity mtime(DateTime mtime) {
-    this.mtime = mtime;
-    return this;
-  }
-
-   /**
-   * File last modified date/time, according to the server.  This is the timestamp of the last Files.com operation of the file, regardless of what modified timestamp was sent.
-   * @return mtime
-  **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "File last modified date/time, according to the server.  This is the timestamp of the last Files.com operation of the file, regardless of what modified timestamp was sent.")
-  public DateTime getMtime() {
-    return mtime;
-  }
-
-  public void setMtime(DateTime mtime) {
-    this.mtime = mtime;
-  }
-
-  public FileEntity providedMtime(DateTime providedMtime) {
-    this.providedMtime = providedMtime;
-    return this;
-  }
-
-   /**
-   * File last modified date/time, according to the client who set it.  Files.com allows desktop, FTP, SFTP, and WebDAV clients to set modified at times.  This allows Desktop&lt;-&gt;Cloud syncing to preserve modified at times.
-   * @return providedMtime
-  **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "File last modified date/time, according to the client who set it.  Files.com allows desktop, FTP, SFTP, and WebDAV clients to set modified at times.  This allows Desktop<->Cloud syncing to preserve modified at times.")
-  public DateTime getProvidedMtime() {
-    return providedMtime;
-  }
-
-  public void setProvidedMtime(DateTime providedMtime) {
-    this.providedMtime = providedMtime;
-  }
-
-  public FileEntity crc32(String crc32) {
-    this.crc32 = crc32;
-    return this;
-  }
-
-   /**
-   * File CRC32 checksum. This is sometimes delayed, so if you get a blank response, wait and try again.
-   * @return crc32
-  **/
-  @ApiModelProperty(example = "70976923", value = "File CRC32 checksum. This is sometimes delayed, so if you get a blank response, wait and try again.")
-  public String getCrc32() {
-    return crc32;
-  }
-
-  public void setCrc32(String crc32) {
-    this.crc32 = crc32;
+  public void setDownloadUri(String downloadUri) {
+    this.downloadUri = downloadUri;
   }
 
   public FileEntity md5(String md5) {
@@ -212,7 +137,7 @@ public class FileEntity {
    * File MD5 checksum. This is sometimes delayed, so if you get a blank response, wait and try again.
    * @return md5
   **/
-  @ApiModelProperty(example = "17c54824e9931a4688ca032d03f6663c", value = "File MD5 checksum. This is sometimes delayed, so if you get a blank response, wait and try again.")
+  @Schema(example = "17c54824e9931a4688ca032d03f6663c", description = "File MD5 checksum. This is sometimes delayed, so if you get a blank response, wait and try again.")
   public String getMd5() {
     return md5;
   }
@@ -230,7 +155,7 @@ public class FileEntity {
    * MIME Type.  This is determined by the filename extension and is not stored separately internally.
    * @return mimeType
   **/
-  @ApiModelProperty(example = "application/octet-stream", value = "MIME Type.  This is determined by the filename extension and is not stored separately internally.")
+  @Schema(example = "application/octet-stream", description = "MIME Type.  This is determined by the filename extension and is not stored separately internally.")
   public String getMimeType() {
     return mimeType;
   }
@@ -239,22 +164,40 @@ public class FileEntity {
     this.mimeType = mimeType;
   }
 
-  public FileEntity region(String region) {
-    this.region = region;
+  public FileEntity mtime(DateTime mtime) {
+    this.mtime = mtime;
     return this;
   }
 
    /**
-   * Region location
-   * @return region
+   * File last modified date/time, according to the server.  This is the timestamp of the last Files.com operation of the file, regardless of what modified timestamp was sent.
+   * @return mtime
   **/
-  @ApiModelProperty(example = "us-east-1", value = "Region location")
-  public String getRegion() {
-    return region;
+  @Schema(example = "2000-01-01T01:00Z", description = "File last modified date/time, according to the server.  This is the timestamp of the last Files.com operation of the file, regardless of what modified timestamp was sent.")
+  public DateTime getMtime() {
+    return mtime;
   }
 
-  public void setRegion(String region) {
-    this.region = region;
+  public void setMtime(DateTime mtime) {
+    this.mtime = mtime;
+  }
+
+  public FileEntity path(String path) {
+    this.path = path;
+    return this;
+  }
+
+   /**
+   * File/Folder path
+   * @return path
+  **/
+  @Schema(example = "path/file.txt", description = "File/Folder path")
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
   }
 
   public FileEntity permissions(String permissions) {
@@ -263,10 +206,10 @@ public class FileEntity {
   }
 
    /**
-   * A short string representing the current user&#39;s permissions.  Can be &#x60;r&#x60;,&#x60;w&#x60;,&#x60;p&#x60;, or any combination
+   * A short string representing the current user&#x27;s permissions.  Can be &#x60;r&#x60;,&#x60;w&#x60;,&#x60;p&#x60;, or any combination
    * @return permissions
   **/
-  @ApiModelProperty(example = "rpw", value = "A short string representing the current user's permissions.  Can be `r`,`w`,`p`, or any combination")
+  @Schema(example = "rpw", description = "A short string representing the current user's permissions.  Can be `r`,`w`,`p`, or any combination")
   public String getPermissions() {
     return permissions;
   }
@@ -275,58 +218,22 @@ public class FileEntity {
     this.permissions = permissions;
   }
 
-  public FileEntity subfoldersLocked(Boolean subfoldersLocked) {
-    this.subfoldersLocked = subfoldersLocked;
+  public FileEntity preview(PreviewEntity preview) {
+    this.preview = preview;
     return this;
   }
 
    /**
-   * Are subfolders locked and unable to be modified?
-   * @return subfoldersLocked
+   * Get preview
+   * @return preview
   **/
-  @ApiModelProperty(example = "true", value = "Are subfolders locked and unable to be modified?")
-  public Boolean isSubfoldersLocked() {
-    return subfoldersLocked;
+  @Schema(description = "")
+  public PreviewEntity getPreview() {
+    return preview;
   }
 
-  public void setSubfoldersLocked(Boolean subfoldersLocked) {
-    this.subfoldersLocked = subfoldersLocked;
-  }
-
-  public FileEntity downloadUri(String downloadUri) {
-    this.downloadUri = downloadUri;
-    return this;
-  }
-
-   /**
-   * Link to download file. Provided only in response to a download request.
-   * @return downloadUri
-  **/
-  @ApiModelProperty(example = "https://mysite.files.com/...", value = "Link to download file. Provided only in response to a download request.")
-  public String getDownloadUri() {
-    return downloadUri;
-  }
-
-  public void setDownloadUri(String downloadUri) {
-    this.downloadUri = downloadUri;
-  }
-
-  public FileEntity priorityColor(String priorityColor) {
-    this.priorityColor = priorityColor;
-    return this;
-  }
-
-   /**
-   * Bookmark/priority color of file/folder
-   * @return priorityColor
-  **/
-  @ApiModelProperty(example = "red", value = "Bookmark/priority color of file/folder")
-  public String getPriorityColor() {
-    return priorityColor;
-  }
-
-  public void setPriorityColor(String priorityColor) {
-    this.priorityColor = priorityColor;
+  public void setPreview(PreviewEntity preview) {
+    this.preview = preview;
   }
 
   public FileEntity previewId(Integer previewId) {
@@ -338,7 +245,7 @@ public class FileEntity {
    * File preview ID
    * @return previewId
   **/
-  @ApiModelProperty(example = "1", value = "File preview ID")
+  @Schema(example = "1", description = "File preview ID")
   public Integer getPreviewId() {
     return previewId;
   }
@@ -347,22 +254,112 @@ public class FileEntity {
     this.previewId = previewId;
   }
 
-  public FileEntity preview(PreviewEntity preview) {
-    this.preview = preview;
+  public FileEntity priorityColor(String priorityColor) {
+    this.priorityColor = priorityColor;
     return this;
   }
 
    /**
-   * File preview
-   * @return preview
+   * Bookmark/priority color of file/folder
+   * @return priorityColor
   **/
-  @ApiModelProperty(value = "File preview")
-  public PreviewEntity getPreview() {
-    return preview;
+  @Schema(example = "red", description = "Bookmark/priority color of file/folder")
+  public String getPriorityColor() {
+    return priorityColor;
   }
 
-  public void setPreview(PreviewEntity preview) {
-    this.preview = preview;
+  public void setPriorityColor(String priorityColor) {
+    this.priorityColor = priorityColor;
+  }
+
+  public FileEntity providedMtime(DateTime providedMtime) {
+    this.providedMtime = providedMtime;
+    return this;
+  }
+
+   /**
+   * File last modified date/time, according to the client who set it.  Files.com allows desktop, FTP, SFTP, and WebDAV clients to set modified at times.  This allows Desktop&lt;-&gt;Cloud syncing to preserve modified at times.
+   * @return providedMtime
+  **/
+  @Schema(example = "2000-01-01T01:00Z", description = "File last modified date/time, according to the client who set it.  Files.com allows desktop, FTP, SFTP, and WebDAV clients to set modified at times.  This allows Desktop<->Cloud syncing to preserve modified at times.")
+  public DateTime getProvidedMtime() {
+    return providedMtime;
+  }
+
+  public void setProvidedMtime(DateTime providedMtime) {
+    this.providedMtime = providedMtime;
+  }
+
+  public FileEntity region(String region) {
+    this.region = region;
+    return this;
+  }
+
+   /**
+   * Region location
+   * @return region
+  **/
+  @Schema(example = "us-east-1", description = "Region location")
+  public String getRegion() {
+    return region;
+  }
+
+  public void setRegion(String region) {
+    this.region = region;
+  }
+
+  public FileEntity size(Integer size) {
+    this.size = size;
+    return this;
+  }
+
+   /**
+   * File/Folder size
+   * @return size
+  **/
+  @Schema(example = "1024", description = "File/Folder size")
+  public Integer getSize() {
+    return size;
+  }
+
+  public void setSize(Integer size) {
+    this.size = size;
+  }
+
+  public FileEntity subfoldersLocked(Boolean subfoldersLocked) {
+    this.subfoldersLocked = subfoldersLocked;
+    return this;
+  }
+
+   /**
+   * Are subfolders locked and unable to be modified?
+   * @return subfoldersLocked
+  **/
+  @Schema(example = "true", description = "Are subfolders locked and unable to be modified?")
+  public Boolean isSubfoldersLocked() {
+    return subfoldersLocked;
+  }
+
+  public void setSubfoldersLocked(Boolean subfoldersLocked) {
+    this.subfoldersLocked = subfoldersLocked;
+  }
+
+  public FileEntity type(String type) {
+    this.type = type;
+    return this;
+  }
+
+   /**
+   * Type: &#x60;directory&#x60; or &#x60;file&#x60;.
+   * @return type
+  **/
+  @Schema(example = "file", description = "Type: `directory` or `file`.")
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 
 
@@ -375,27 +372,27 @@ public class FileEntity {
       return false;
     }
     FileEntity fileEntity = (FileEntity) o;
-    return Objects.equals(this.path, fileEntity.path) &&
+    return Objects.equals(this.crc32, fileEntity.crc32) &&
         Objects.equals(this.displayName, fileEntity.displayName) &&
-        Objects.equals(this.type, fileEntity.type) &&
-        Objects.equals(this.size, fileEntity.size) &&
-        Objects.equals(this.mtime, fileEntity.mtime) &&
-        Objects.equals(this.providedMtime, fileEntity.providedMtime) &&
-        Objects.equals(this.crc32, fileEntity.crc32) &&
+        Objects.equals(this.downloadUri, fileEntity.downloadUri) &&
         Objects.equals(this.md5, fileEntity.md5) &&
         Objects.equals(this.mimeType, fileEntity.mimeType) &&
-        Objects.equals(this.region, fileEntity.region) &&
+        Objects.equals(this.mtime, fileEntity.mtime) &&
+        Objects.equals(this.path, fileEntity.path) &&
         Objects.equals(this.permissions, fileEntity.permissions) &&
-        Objects.equals(this.subfoldersLocked, fileEntity.subfoldersLocked) &&
-        Objects.equals(this.downloadUri, fileEntity.downloadUri) &&
-        Objects.equals(this.priorityColor, fileEntity.priorityColor) &&
+        Objects.equals(this.preview, fileEntity.preview) &&
         Objects.equals(this.previewId, fileEntity.previewId) &&
-        Objects.equals(this.preview, fileEntity.preview);
+        Objects.equals(this.priorityColor, fileEntity.priorityColor) &&
+        Objects.equals(this.providedMtime, fileEntity.providedMtime) &&
+        Objects.equals(this.region, fileEntity.region) &&
+        Objects.equals(this.size, fileEntity.size) &&
+        Objects.equals(this.subfoldersLocked, fileEntity.subfoldersLocked) &&
+        Objects.equals(this.type, fileEntity.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(path, displayName, type, size, mtime, providedMtime, crc32, md5, mimeType, region, permissions, subfoldersLocked, downloadUri, priorityColor, previewId, preview);
+    return Objects.hash(crc32, displayName, downloadUri, md5, mimeType, mtime, path, permissions, preview, previewId, priorityColor, providedMtime, region, size, subfoldersLocked, type);
   }
 
 
@@ -404,22 +401,22 @@ public class FileEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class FileEntity {\n");
     
-    sb.append("    path: ").append(toIndentedString(path)).append("\n");
-    sb.append("    displayName: ").append(toIndentedString(displayName)).append("\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    size: ").append(toIndentedString(size)).append("\n");
-    sb.append("    mtime: ").append(toIndentedString(mtime)).append("\n");
-    sb.append("    providedMtime: ").append(toIndentedString(providedMtime)).append("\n");
     sb.append("    crc32: ").append(toIndentedString(crc32)).append("\n");
+    sb.append("    displayName: ").append(toIndentedString(displayName)).append("\n");
+    sb.append("    downloadUri: ").append(toIndentedString(downloadUri)).append("\n");
     sb.append("    md5: ").append(toIndentedString(md5)).append("\n");
     sb.append("    mimeType: ").append(toIndentedString(mimeType)).append("\n");
-    sb.append("    region: ").append(toIndentedString(region)).append("\n");
+    sb.append("    mtime: ").append(toIndentedString(mtime)).append("\n");
+    sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    permissions: ").append(toIndentedString(permissions)).append("\n");
-    sb.append("    subfoldersLocked: ").append(toIndentedString(subfoldersLocked)).append("\n");
-    sb.append("    downloadUri: ").append(toIndentedString(downloadUri)).append("\n");
-    sb.append("    priorityColor: ").append(toIndentedString(priorityColor)).append("\n");
-    sb.append("    previewId: ").append(toIndentedString(previewId)).append("\n");
     sb.append("    preview: ").append(toIndentedString(preview)).append("\n");
+    sb.append("    previewId: ").append(toIndentedString(previewId)).append("\n");
+    sb.append("    priorityColor: ").append(toIndentedString(priorityColor)).append("\n");
+    sb.append("    providedMtime: ").append(toIndentedString(providedMtime)).append("\n");
+    sb.append("    region: ").append(toIndentedString(region)).append("\n");
+    sb.append("    size: ").append(toIndentedString(size)).append("\n");
+    sb.append("    subfoldersLocked: ").append(toIndentedString(subfoldersLocked)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -436,4 +433,3 @@ public class FileEntity {
   }
 
 }
-

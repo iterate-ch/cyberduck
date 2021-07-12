@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,33 +17,49 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.joda.time.DateTime;
-
 /**
  * List Sync Jobs
  */
-@ApiModel(description = "List Sync Jobs")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Sync Jobs")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class SyncJobEntity {
+  @JsonProperty("folder_behavior_id")
+  private Integer folderBehaviorId = null;
+
   @JsonProperty("queued_at")
   private DateTime queuedAt = null;
-
-  @JsonProperty("updated_at")
-  private DateTime updatedAt = null;
-
-  @JsonProperty("status")
-  private String status = null;
 
   @JsonProperty("regional_worker_status")
   private String regionalWorkerStatus = null;
 
+  @JsonProperty("status")
+  private String status = null;
+
+  @JsonProperty("updated_at")
+  private DateTime updatedAt = null;
+
   @JsonProperty("uuid")
   private String uuid = null;
 
-  @JsonProperty("folder_behavior_id")
-  private Integer folderBehaviorId = null;
+  public SyncJobEntity folderBehaviorId(Integer folderBehaviorId) {
+    this.folderBehaviorId = folderBehaviorId;
+    return this;
+  }
+
+   /**
+   * Get folderBehaviorId
+   * @return folderBehaviorId
+  **/
+  @Schema(example = "1", description = "")
+  public Integer getFolderBehaviorId() {
+    return folderBehaviorId;
+  }
+
+  public void setFolderBehaviorId(Integer folderBehaviorId) {
+    this.folderBehaviorId = folderBehaviorId;
+  }
 
   public SyncJobEntity queuedAt(DateTime queuedAt) {
     this.queuedAt = queuedAt;
@@ -55,49 +70,13 @@ public class SyncJobEntity {
    * Job enqueued at
    * @return queuedAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Job enqueued at")
+  @Schema(example = "2000-01-01T01:00Z", description = "Job enqueued at")
   public DateTime getQueuedAt() {
     return queuedAt;
   }
 
   public void setQueuedAt(DateTime queuedAt) {
     this.queuedAt = queuedAt;
-  }
-
-  public SyncJobEntity updatedAt(DateTime updatedAt) {
-    this.updatedAt = updatedAt;
-    return this;
-  }
-
-   /**
-   * Job updated at
-   * @return updatedAt
-  **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Job updated at")
-  public DateTime getUpdatedAt() {
-    return updatedAt;
-  }
-
-  public void setUpdatedAt(DateTime updatedAt) {
-    this.updatedAt = updatedAt;
-  }
-
-  public SyncJobEntity status(String status) {
-    this.status = status;
-    return this;
-  }
-
-   /**
-   * Status of the job
-   * @return status
-  **/
-  @ApiModelProperty(example = "", value = "Status of the job")
-  public String getStatus() {
-    return status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
   }
 
   public SyncJobEntity regionalWorkerStatus(String regionalWorkerStatus) {
@@ -109,7 +88,7 @@ public class SyncJobEntity {
    * Most recent reported status of sync worker
    * @return regionalWorkerStatus
   **/
-  @ApiModelProperty(example = "", value = "Most recent reported status of sync worker")
+  @Schema(description = "Most recent reported status of sync worker")
   public String getRegionalWorkerStatus() {
     return regionalWorkerStatus;
   }
@@ -118,40 +97,58 @@ public class SyncJobEntity {
     this.regionalWorkerStatus = regionalWorkerStatus;
   }
 
+  public SyncJobEntity status(String status) {
+    this.status = status;
+    return this;
+  }
+
+   /**
+   * Status of the job
+   * @return status
+  **/
+  @Schema(description = "Status of the job")
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public SyncJobEntity updatedAt(DateTime updatedAt) {
+    this.updatedAt = updatedAt;
+    return this;
+  }
+
+   /**
+   * Job updated at
+   * @return updatedAt
+  **/
+  @Schema(example = "2000-01-01T01:00Z", description = "Job updated at")
+  public DateTime getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(DateTime updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
   public SyncJobEntity uuid(String uuid) {
     this.uuid = uuid;
     return this;
   }
 
    /**
-   * 
+   * Get uuid
    * @return uuid
   **/
-  @ApiModelProperty(example = "", value = "")
+  @Schema(description = "")
   public String getUuid() {
     return uuid;
   }
 
   public void setUuid(String uuid) {
     this.uuid = uuid;
-  }
-
-  public SyncJobEntity folderBehaviorId(Integer folderBehaviorId) {
-    this.folderBehaviorId = folderBehaviorId;
-    return this;
-  }
-
-   /**
-   * 
-   * @return folderBehaviorId
-  **/
-  @ApiModelProperty(example = "1", value = "")
-  public Integer getFolderBehaviorId() {
-    return folderBehaviorId;
-  }
-
-  public void setFolderBehaviorId(Integer folderBehaviorId) {
-    this.folderBehaviorId = folderBehaviorId;
   }
 
 
@@ -164,17 +161,17 @@ public class SyncJobEntity {
       return false;
     }
     SyncJobEntity syncJobEntity = (SyncJobEntity) o;
-    return Objects.equals(this.queuedAt, syncJobEntity.queuedAt) &&
-        Objects.equals(this.updatedAt, syncJobEntity.updatedAt) &&
-        Objects.equals(this.status, syncJobEntity.status) &&
+    return Objects.equals(this.folderBehaviorId, syncJobEntity.folderBehaviorId) &&
+        Objects.equals(this.queuedAt, syncJobEntity.queuedAt) &&
         Objects.equals(this.regionalWorkerStatus, syncJobEntity.regionalWorkerStatus) &&
-        Objects.equals(this.uuid, syncJobEntity.uuid) &&
-        Objects.equals(this.folderBehaviorId, syncJobEntity.folderBehaviorId);
+        Objects.equals(this.status, syncJobEntity.status) &&
+        Objects.equals(this.updatedAt, syncJobEntity.updatedAt) &&
+        Objects.equals(this.uuid, syncJobEntity.uuid);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(queuedAt, updatedAt, status, regionalWorkerStatus, uuid, folderBehaviorId);
+    return Objects.hash(folderBehaviorId, queuedAt, regionalWorkerStatus, status, updatedAt, uuid);
   }
 
 
@@ -183,12 +180,12 @@ public class SyncJobEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class SyncJobEntity {\n");
     
-    sb.append("    queuedAt: ").append(toIndentedString(queuedAt)).append("\n");
-    sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
-    sb.append("    regionalWorkerStatus: ").append(toIndentedString(regionalWorkerStatus)).append("\n");
-    sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    folderBehaviorId: ").append(toIndentedString(folderBehaviorId)).append("\n");
+    sb.append("    queuedAt: ").append(toIndentedString(queuedAt)).append("\n");
+    sb.append("    regionalWorkerStatus: ").append(toIndentedString(regionalWorkerStatus)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
+    sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -205,4 +202,3 @@ public class SyncJobEntity {
   }
 
 }
-

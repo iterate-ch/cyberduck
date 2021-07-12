@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,20 +17,18 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * List Bundle Registrations
  */
-@ApiModel(description = "List Bundle Registrations")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Bundle Registrations")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class BundleRegistrationEntity {
+  @JsonProperty("clickwrap_body")
+  private String clickwrapBody = null;
+
   @JsonProperty("code")
   private String code = null;
-
-  @JsonProperty("name")
-  private String name = null;
 
   @JsonProperty("company")
   private String company = null;
@@ -39,17 +36,35 @@ public class BundleRegistrationEntity {
   @JsonProperty("email")
   private String email = null;
 
-  @JsonProperty("inbox_code")
-  private String inboxCode = null;
-
-  @JsonProperty("clickwrap_body")
-  private String clickwrapBody = null;
+  @JsonProperty("form_field_data")
+  private String formFieldData = null;
 
   @JsonProperty("form_field_set_id")
   private Integer formFieldSetId = null;
 
-  @JsonProperty("form_field_data")
-  private String formFieldData = null;
+  @JsonProperty("inbox_code")
+  private String inboxCode = null;
+
+  @JsonProperty("name")
+  private String name = null;
+
+  public BundleRegistrationEntity clickwrapBody(String clickwrapBody) {
+    this.clickwrapBody = clickwrapBody;
+    return this;
+  }
+
+   /**
+   * Clickwrap text that was shown to the registrant
+   * @return clickwrapBody
+  **/
+  @Schema(description = "Clickwrap text that was shown to the registrant")
+  public String getClickwrapBody() {
+    return clickwrapBody;
+  }
+
+  public void setClickwrapBody(String clickwrapBody) {
+    this.clickwrapBody = clickwrapBody;
+  }
 
   public BundleRegistrationEntity code(String code) {
     this.code = code;
@@ -60,31 +75,13 @@ public class BundleRegistrationEntity {
    * Registration cookie code
    * @return code
   **/
-  @ApiModelProperty(example = "abc123", value = "Registration cookie code")
+  @Schema(example = "abc123", description = "Registration cookie code")
   public String getCode() {
     return code;
   }
 
   public void setCode(String code) {
     this.code = code;
-  }
-
-  public BundleRegistrationEntity name(String name) {
-    this.name = name;
-    return this;
-  }
-
-   /**
-   * Registrant name
-   * @return name
-  **/
-  @ApiModelProperty(example = "account", value = "Registrant name")
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
   }
 
   public BundleRegistrationEntity company(String company) {
@@ -96,7 +93,7 @@ public class BundleRegistrationEntity {
    * Registrant company name
    * @return company
   **/
-  @ApiModelProperty(example = "Action Verb", value = "Registrant company name")
+  @Schema(example = "Action Verb", description = "Registrant company name")
   public String getCompany() {
     return company;
   }
@@ -114,67 +111,13 @@ public class BundleRegistrationEntity {
    * Registrant email address
    * @return email
   **/
-  @ApiModelProperty(example = "john.doe@files.com", value = "Registrant email address")
+  @Schema(example = "john.doe@files.com", description = "Registrant email address")
   public String getEmail() {
     return email;
   }
 
   public void setEmail(String email) {
     this.email = email;
-  }
-
-  public BundleRegistrationEntity inboxCode(String inboxCode) {
-    this.inboxCode = inboxCode;
-    return this;
-  }
-
-   /**
-   * InboxRegistration cookie code, if there is an associated InboxRegistration
-   * @return inboxCode
-  **/
-  @ApiModelProperty(example = "abc123", value = "InboxRegistration cookie code, if there is an associated InboxRegistration")
-  public String getInboxCode() {
-    return inboxCode;
-  }
-
-  public void setInboxCode(String inboxCode) {
-    this.inboxCode = inboxCode;
-  }
-
-  public BundleRegistrationEntity clickwrapBody(String clickwrapBody) {
-    this.clickwrapBody = clickwrapBody;
-    return this;
-  }
-
-   /**
-   * Clickwrap text that was shown to the registrant
-   * @return clickwrapBody
-  **/
-  @ApiModelProperty(example = "", value = "Clickwrap text that was shown to the registrant")
-  public String getClickwrapBody() {
-    return clickwrapBody;
-  }
-
-  public void setClickwrapBody(String clickwrapBody) {
-    this.clickwrapBody = clickwrapBody;
-  }
-
-  public BundleRegistrationEntity formFieldSetId(Integer formFieldSetId) {
-    this.formFieldSetId = formFieldSetId;
-    return this;
-  }
-
-   /**
-   * Id of associated form field set
-   * @return formFieldSetId
-  **/
-  @ApiModelProperty(example = "1", value = "Id of associated form field set")
-  public Integer getFormFieldSetId() {
-    return formFieldSetId;
-  }
-
-  public void setFormFieldSetId(Integer formFieldSetId) {
-    this.formFieldSetId = formFieldSetId;
   }
 
   public BundleRegistrationEntity formFieldData(String formFieldData) {
@@ -186,13 +129,67 @@ public class BundleRegistrationEntity {
    * Data for form field set with form field ids as keys and user data as values
    * @return formFieldData
   **/
-  @ApiModelProperty(example = "", value = "Data for form field set with form field ids as keys and user data as values")
+  @Schema(description = "Data for form field set with form field ids as keys and user data as values")
   public String getFormFieldData() {
     return formFieldData;
   }
 
   public void setFormFieldData(String formFieldData) {
     this.formFieldData = formFieldData;
+  }
+
+  public BundleRegistrationEntity formFieldSetId(Integer formFieldSetId) {
+    this.formFieldSetId = formFieldSetId;
+    return this;
+  }
+
+   /**
+   * Id of associated form field set
+   * @return formFieldSetId
+  **/
+  @Schema(example = "1", description = "Id of associated form field set")
+  public Integer getFormFieldSetId() {
+    return formFieldSetId;
+  }
+
+  public void setFormFieldSetId(Integer formFieldSetId) {
+    this.formFieldSetId = formFieldSetId;
+  }
+
+  public BundleRegistrationEntity inboxCode(String inboxCode) {
+    this.inboxCode = inboxCode;
+    return this;
+  }
+
+   /**
+   * InboxRegistration cookie code, if there is an associated InboxRegistration
+   * @return inboxCode
+  **/
+  @Schema(example = "abc123", description = "InboxRegistration cookie code, if there is an associated InboxRegistration")
+  public String getInboxCode() {
+    return inboxCode;
+  }
+
+  public void setInboxCode(String inboxCode) {
+    this.inboxCode = inboxCode;
+  }
+
+  public BundleRegistrationEntity name(String name) {
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * Registrant name
+   * @return name
+  **/
+  @Schema(example = "account", description = "Registrant name")
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
 
@@ -205,19 +202,19 @@ public class BundleRegistrationEntity {
       return false;
     }
     BundleRegistrationEntity bundleRegistrationEntity = (BundleRegistrationEntity) o;
-    return Objects.equals(this.code, bundleRegistrationEntity.code) &&
-        Objects.equals(this.name, bundleRegistrationEntity.name) &&
+    return Objects.equals(this.clickwrapBody, bundleRegistrationEntity.clickwrapBody) &&
+        Objects.equals(this.code, bundleRegistrationEntity.code) &&
         Objects.equals(this.company, bundleRegistrationEntity.company) &&
         Objects.equals(this.email, bundleRegistrationEntity.email) &&
-        Objects.equals(this.inboxCode, bundleRegistrationEntity.inboxCode) &&
-        Objects.equals(this.clickwrapBody, bundleRegistrationEntity.clickwrapBody) &&
+        Objects.equals(this.formFieldData, bundleRegistrationEntity.formFieldData) &&
         Objects.equals(this.formFieldSetId, bundleRegistrationEntity.formFieldSetId) &&
-        Objects.equals(this.formFieldData, bundleRegistrationEntity.formFieldData);
+        Objects.equals(this.inboxCode, bundleRegistrationEntity.inboxCode) &&
+        Objects.equals(this.name, bundleRegistrationEntity.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, name, company, email, inboxCode, clickwrapBody, formFieldSetId, formFieldData);
+    return Objects.hash(clickwrapBody, code, company, email, formFieldData, formFieldSetId, inboxCode, name);
   }
 
 
@@ -226,14 +223,14 @@ public class BundleRegistrationEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class BundleRegistrationEntity {\n");
     
+    sb.append("    clickwrapBody: ").append(toIndentedString(clickwrapBody)).append("\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    company: ").append(toIndentedString(company)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
-    sb.append("    inboxCode: ").append(toIndentedString(inboxCode)).append("\n");
-    sb.append("    clickwrapBody: ").append(toIndentedString(clickwrapBody)).append("\n");
-    sb.append("    formFieldSetId: ").append(toIndentedString(formFieldSetId)).append("\n");
     sb.append("    formFieldData: ").append(toIndentedString(formFieldData)).append("\n");
+    sb.append("    formFieldSetId: ").append(toIndentedString(formFieldSetId)).append("\n");
+    sb.append("    inboxCode: ").append(toIndentedString(inboxCode)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -250,4 +247,3 @@ public class BundleRegistrationEntity {
   }
 
 }
-

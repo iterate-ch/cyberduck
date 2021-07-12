@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,64 +17,27 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * PreviewEntity
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class PreviewEntity {
-  @JsonProperty("id")
-  private Integer id = null;
-
-  @JsonProperty("status")
-  private String status = null;
-
   @JsonProperty("download_uri")
   private String downloadUri = null;
 
-  @JsonProperty("type")
-  private String type = null;
+  @JsonProperty("id")
+  private Integer id = null;
 
   @JsonProperty("size")
   private Integer size = null;
 
-  public PreviewEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
+  @JsonProperty("status")
+  private String status = null;
 
-   /**
-   * Preview ID
-   * @return id
-  **/
-  @ApiModelProperty(example = "1", value = "Preview ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public PreviewEntity status(String status) {
-    this.status = status;
-    return this;
-  }
-
-   /**
-   * Preview status.  Can be invalid, not_generated, generating, complete, or file_too_large
-   * @return status
-  **/
-  @ApiModelProperty(example = "complete", value = "Preview status.  Can be invalid, not_generated, generating, complete, or file_too_large")
-  public String getStatus() {
-    return status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
+  @JsonProperty("type")
+  private String type = null;
 
   public PreviewEntity downloadUri(String downloadUri) {
     this.downloadUri = downloadUri;
@@ -86,7 +48,7 @@ public class PreviewEntity {
    * Link to download preview
    * @return downloadUri
   **/
-  @ApiModelProperty(example = "https://mysite.files.com/...", value = "Link to download preview")
+  @Schema(example = "https://mysite.files.com/...", description = "Link to download preview")
   public String getDownloadUri() {
     return downloadUri;
   }
@@ -95,22 +57,22 @@ public class PreviewEntity {
     this.downloadUri = downloadUri;
   }
 
-  public PreviewEntity type(String type) {
-    this.type = type;
+  public PreviewEntity id(Integer id) {
+    this.id = id;
     return this;
   }
 
    /**
-   * Preview status.  Can be invalid, not_generated, generating, complete, or file_too_large
-   * @return type
+   * Preview ID
+   * @return id
   **/
-  @ApiModelProperty(example = "complete", value = "Preview status.  Can be invalid, not_generated, generating, complete, or file_too_large")
-  public String getType() {
-    return type;
+  @Schema(example = "1", description = "Preview ID")
+  public Integer getId() {
+    return id;
   }
 
-  public void setType(String type) {
-    this.type = type;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public PreviewEntity size(Integer size) {
@@ -122,13 +84,49 @@ public class PreviewEntity {
    * Preview size
    * @return size
   **/
-  @ApiModelProperty(example = "1024", value = "Preview size")
+  @Schema(example = "1024", description = "Preview size")
   public Integer getSize() {
     return size;
   }
 
   public void setSize(Integer size) {
     this.size = size;
+  }
+
+  public PreviewEntity status(String status) {
+    this.status = status;
+    return this;
+  }
+
+   /**
+   * Preview status.  Can be invalid, not_generated, generating, complete, or file_too_large
+   * @return status
+  **/
+  @Schema(example = "complete", description = "Preview status.  Can be invalid, not_generated, generating, complete, or file_too_large")
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public PreviewEntity type(String type) {
+    this.type = type;
+    return this;
+  }
+
+   /**
+   * Preview status.  Can be invalid, not_generated, generating, complete, or file_too_large
+   * @return type
+  **/
+  @Schema(example = "complete", description = "Preview status.  Can be invalid, not_generated, generating, complete, or file_too_large")
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 
 
@@ -141,16 +139,16 @@ public class PreviewEntity {
       return false;
     }
     PreviewEntity previewEntity = (PreviewEntity) o;
-    return Objects.equals(this.id, previewEntity.id) &&
+    return Objects.equals(this.downloadUri, previewEntity.downloadUri) &&
+        Objects.equals(this.id, previewEntity.id) &&
+        Objects.equals(this.size, previewEntity.size) &&
         Objects.equals(this.status, previewEntity.status) &&
-        Objects.equals(this.downloadUri, previewEntity.downloadUri) &&
-        Objects.equals(this.type, previewEntity.type) &&
-        Objects.equals(this.size, previewEntity.size);
+        Objects.equals(this.type, previewEntity.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, status, downloadUri, type, size);
+    return Objects.hash(downloadUri, id, size, status, type);
   }
 
 
@@ -159,11 +157,11 @@ public class PreviewEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class PreviewEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    downloadUri: ").append(toIndentedString(downloadUri)).append("\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    size: ").append(toIndentedString(size)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -180,4 +178,3 @@ public class PreviewEntity {
   }
 
 }
-

@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,29 +17,27 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * List Action Notification Export Results
  */
-@ApiModel(description = "List Action Notification Export Results")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Action Notification Export Results")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class ActionNotificationExportResultEntity {
-  @JsonProperty("id")
-  private Integer id = null;
-
   @JsonProperty("created_at")
   private Integer createdAt = null;
 
-  @JsonProperty("status")
-  private Integer status = null;
+  @JsonProperty("folder")
+  private String folder = null;
+
+  @JsonProperty("id")
+  private Integer id = null;
 
   @JsonProperty("message")
   private String message = null;
 
-  @JsonProperty("success")
-  private Boolean success = null;
+  @JsonProperty("path")
+  private String path = null;
 
   @JsonProperty("request_headers")
   private String requestHeaders = null;
@@ -51,29 +48,11 @@ public class ActionNotificationExportResultEntity {
   @JsonProperty("request_url")
   private String requestUrl = null;
 
-  @JsonProperty("path")
-  private String path = null;
+  @JsonProperty("status")
+  private Integer status = null;
 
-  @JsonProperty("folder")
-  private String folder = null;
-
-  public ActionNotificationExportResultEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Notification ID
-   * @return id
-  **/
-  @ApiModelProperty(example = "1", value = "Notification ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
+  @JsonProperty("success")
+  private Boolean success = null;
 
   public ActionNotificationExportResultEntity createdAt(Integer createdAt) {
     this.createdAt = createdAt;
@@ -84,7 +63,7 @@ public class ActionNotificationExportResultEntity {
    * When the notification was sent.
    * @return createdAt
   **/
-  @ApiModelProperty(example = "1", value = "When the notification was sent.")
+  @Schema(example = "1", description = "When the notification was sent.")
   public Integer getCreatedAt() {
     return createdAt;
   }
@@ -93,22 +72,40 @@ public class ActionNotificationExportResultEntity {
     this.createdAt = createdAt;
   }
 
-  public ActionNotificationExportResultEntity status(Integer status) {
-    this.status = status;
+  public ActionNotificationExportResultEntity folder(String folder) {
+    this.folder = folder;
     return this;
   }
 
    /**
-   * HTTP status code returned in the webhook response.
-   * @return status
+   * The folder associated with the triggering action for this notification.
+   * @return folder
   **/
-  @ApiModelProperty(example = "200", value = "HTTP status code returned in the webhook response.")
-  public Integer getStatus() {
-    return status;
+  @Schema(example = "MyFolder", description = "The folder associated with the triggering action for this notification.")
+  public String getFolder() {
+    return folder;
   }
 
-  public void setStatus(Integer status) {
-    this.status = status;
+  public void setFolder(String folder) {
+    this.folder = folder;
+  }
+
+  public ActionNotificationExportResultEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Notification ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "Notification ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public ActionNotificationExportResultEntity message(String message) {
@@ -120,7 +117,7 @@ public class ActionNotificationExportResultEntity {
    * A message indicating the overall status of the webhook notification.
    * @return message
   **/
-  @ApiModelProperty(example = "Success", value = "A message indicating the overall status of the webhook notification.")
+  @Schema(example = "Success", description = "A message indicating the overall status of the webhook notification.")
   public String getMessage() {
     return message;
   }
@@ -129,22 +126,22 @@ public class ActionNotificationExportResultEntity {
     this.message = message;
   }
 
-  public ActionNotificationExportResultEntity success(Boolean success) {
-    this.success = success;
+  public ActionNotificationExportResultEntity path(String path) {
+    this.path = path;
     return this;
   }
 
    /**
-   * &#x60;true&#x60; if the webhook succeeded by receiving a 200 or 204 response.
-   * @return success
+   * The path to the actual file that triggered this notification.
+   * @return path
   **/
-  @ApiModelProperty(example = "true", value = "`true` if the webhook succeeded by receiving a 200 or 204 response.")
-  public Boolean isSuccess() {
-    return success;
+  @Schema(example = "MyFolder/MyFile.txt", description = "The path to the actual file that triggered this notification.")
+  public String getPath() {
+    return path;
   }
 
-  public void setSuccess(Boolean success) {
-    this.success = success;
+  public void setPath(String path) {
+    this.path = path;
   }
 
   public ActionNotificationExportResultEntity requestHeaders(String requestHeaders) {
@@ -156,7 +153,7 @@ public class ActionNotificationExportResultEntity {
    * A JSON-encoded string with headers that were sent with the webhook.
    * @return requestHeaders
   **/
-  @ApiModelProperty(example = "{\"User-Agent\":\"Files.com Webhook\"}", value = "A JSON-encoded string with headers that were sent with the webhook.")
+  @Schema(example = "{\"User-Agent\":\"Files.com Webhook\"}", description = "A JSON-encoded string with headers that were sent with the webhook.")
   public String getRequestHeaders() {
     return requestHeaders;
   }
@@ -174,7 +171,7 @@ public class ActionNotificationExportResultEntity {
    * The HTTP verb used to perform the webhook.
    * @return requestMethod
   **/
-  @ApiModelProperty(example = "GET", value = "The HTTP verb used to perform the webhook.")
+  @Schema(example = "GET", description = "The HTTP verb used to perform the webhook.")
   public String getRequestMethod() {
     return requestMethod;
   }
@@ -192,7 +189,7 @@ public class ActionNotificationExportResultEntity {
    * The webhook request URL.
    * @return requestUrl
   **/
-  @ApiModelProperty(example = "www.example.com/webhook_receiver", value = "The webhook request URL.")
+  @Schema(example = "www.example.com/webhook_receiver", description = "The webhook request URL.")
   public String getRequestUrl() {
     return requestUrl;
   }
@@ -201,40 +198,40 @@ public class ActionNotificationExportResultEntity {
     this.requestUrl = requestUrl;
   }
 
-  public ActionNotificationExportResultEntity path(String path) {
-    this.path = path;
+  public ActionNotificationExportResultEntity status(Integer status) {
+    this.status = status;
     return this;
   }
 
    /**
-   * The path to the actual file that triggered this notification.
-   * @return path
+   * HTTP status code returned in the webhook response.
+   * @return status
   **/
-  @ApiModelProperty(example = "MyFolder/MyFile.txt", value = "The path to the actual file that triggered this notification.")
-  public String getPath() {
-    return path;
+  @Schema(example = "200", description = "HTTP status code returned in the webhook response.")
+  public Integer getStatus() {
+    return status;
   }
 
-  public void setPath(String path) {
-    this.path = path;
+  public void setStatus(Integer status) {
+    this.status = status;
   }
 
-  public ActionNotificationExportResultEntity folder(String folder) {
-    this.folder = folder;
+  public ActionNotificationExportResultEntity success(Boolean success) {
+    this.success = success;
     return this;
   }
 
    /**
-   * The folder associated with the triggering action for this notification.
-   * @return folder
+   * &#x60;true&#x60; if the webhook succeeded by receiving a 200 or 204 response.
+   * @return success
   **/
-  @ApiModelProperty(example = "MyFolder", value = "The folder associated with the triggering action for this notification.")
-  public String getFolder() {
-    return folder;
+  @Schema(example = "true", description = "`true` if the webhook succeeded by receiving a 200 or 204 response.")
+  public Boolean isSuccess() {
+    return success;
   }
 
-  public void setFolder(String folder) {
-    this.folder = folder;
+  public void setSuccess(Boolean success) {
+    this.success = success;
   }
 
 
@@ -247,21 +244,21 @@ public class ActionNotificationExportResultEntity {
       return false;
     }
     ActionNotificationExportResultEntity actionNotificationExportResultEntity = (ActionNotificationExportResultEntity) o;
-    return Objects.equals(this.id, actionNotificationExportResultEntity.id) &&
-        Objects.equals(this.createdAt, actionNotificationExportResultEntity.createdAt) &&
-        Objects.equals(this.status, actionNotificationExportResultEntity.status) &&
+    return Objects.equals(this.createdAt, actionNotificationExportResultEntity.createdAt) &&
+        Objects.equals(this.folder, actionNotificationExportResultEntity.folder) &&
+        Objects.equals(this.id, actionNotificationExportResultEntity.id) &&
         Objects.equals(this.message, actionNotificationExportResultEntity.message) &&
-        Objects.equals(this.success, actionNotificationExportResultEntity.success) &&
+        Objects.equals(this.path, actionNotificationExportResultEntity.path) &&
         Objects.equals(this.requestHeaders, actionNotificationExportResultEntity.requestHeaders) &&
         Objects.equals(this.requestMethod, actionNotificationExportResultEntity.requestMethod) &&
         Objects.equals(this.requestUrl, actionNotificationExportResultEntity.requestUrl) &&
-        Objects.equals(this.path, actionNotificationExportResultEntity.path) &&
-        Objects.equals(this.folder, actionNotificationExportResultEntity.folder);
+        Objects.equals(this.status, actionNotificationExportResultEntity.status) &&
+        Objects.equals(this.success, actionNotificationExportResultEntity.success);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, createdAt, status, message, success, requestHeaders, requestMethod, requestUrl, path, folder);
+    return Objects.hash(createdAt, folder, id, message, path, requestHeaders, requestMethod, requestUrl, status, success);
   }
 
 
@@ -270,16 +267,16 @@ public class ActionNotificationExportResultEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class ActionNotificationExportResultEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    folder: ").append(toIndentedString(folder)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    message: ").append(toIndentedString(message)).append("\n");
-    sb.append("    success: ").append(toIndentedString(success)).append("\n");
+    sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    requestHeaders: ").append(toIndentedString(requestHeaders)).append("\n");
     sb.append("    requestMethod: ").append(toIndentedString(requestMethod)).append("\n");
     sb.append("    requestUrl: ").append(toIndentedString(requestUrl)).append("\n");
-    sb.append("    path: ").append(toIndentedString(path)).append("\n");
-    sb.append("    folder: ").append(toIndentedString(folder)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    success: ").append(toIndentedString(success)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -296,4 +293,3 @@ public class ActionNotificationExportResultEntity {
   }
 
 }
-

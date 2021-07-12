@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,13 +17,12 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * AutoEntity
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class AutoEntity {
   @JsonProperty("dynamic")
   private Object dynamic = null;
@@ -38,7 +36,7 @@ public class AutoEntity {
    * Get dynamic
    * @return dynamic
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Object getDynamic() {
     return dynamic;
   }
@@ -88,4 +86,3 @@ public class AutoEntity {
   }
 
 }
-

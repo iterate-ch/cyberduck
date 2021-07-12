@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,46 +17,26 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * List IP Addresses associated with the current site
  */
-@ApiModel(description = "List IP Addresses associated with the current site")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List IP Addresses associated with the current site")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class IpAddressEntity {
-  @JsonProperty("id")
-  private String id = null;
-
   @JsonProperty("associated_with")
   private String associatedWith = null;
 
   @JsonProperty("group_id")
   private Integer groupId = null;
 
+  @JsonProperty("id")
+  private String id = null;
+
   @JsonProperty("ip_addresses")
   private List<String> ipAddresses = null;
-
-  public IpAddressEntity id(String id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Unique label for list; used by Zapier and other integrations.
-   * @return id
-  **/
-  @ApiModelProperty(example = "Site", value = "Unique label for list; used by Zapier and other integrations.")
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public IpAddressEntity associatedWith(String associatedWith) {
     this.associatedWith = associatedWith;
@@ -68,7 +47,7 @@ public class IpAddressEntity {
    * The object that this public IP address list is associated with.
    * @return associatedWith
   **/
-  @ApiModelProperty(example = "Site", value = "The object that this public IP address list is associated with.")
+  @Schema(example = "Site", description = "The object that this public IP address list is associated with.")
   public String getAssociatedWith() {
     return associatedWith;
   }
@@ -86,13 +65,31 @@ public class IpAddressEntity {
    * Group ID
    * @return groupId
   **/
-  @ApiModelProperty(example = "1", value = "Group ID")
+  @Schema(example = "1", description = "Group ID")
   public Integer getGroupId() {
     return groupId;
   }
 
   public void setGroupId(Integer groupId) {
     this.groupId = groupId;
+  }
+
+  public IpAddressEntity id(String id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Unique label for list; used by Zapier and other integrations.
+   * @return id
+  **/
+  @Schema(example = "Site", description = "Unique label for list; used by Zapier and other integrations.")
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
   }
 
   public IpAddressEntity ipAddresses(List<String> ipAddresses) {
@@ -112,7 +109,7 @@ public class IpAddressEntity {
    * A list of IP addresses.
    * @return ipAddresses
   **/
-  @ApiModelProperty(example = "[\"127.0.0.1\"]", value = "A list of IP addresses.")
+  @Schema(example = "[\"127.0.0.1\"]", description = "A list of IP addresses.")
   public List<String> getIpAddresses() {
     return ipAddresses;
   }
@@ -131,15 +128,15 @@ public class IpAddressEntity {
       return false;
     }
     IpAddressEntity ipAddressEntity = (IpAddressEntity) o;
-    return Objects.equals(this.id, ipAddressEntity.id) &&
-        Objects.equals(this.associatedWith, ipAddressEntity.associatedWith) &&
+    return Objects.equals(this.associatedWith, ipAddressEntity.associatedWith) &&
         Objects.equals(this.groupId, ipAddressEntity.groupId) &&
+        Objects.equals(this.id, ipAddressEntity.id) &&
         Objects.equals(this.ipAddresses, ipAddressEntity.ipAddresses);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, associatedWith, groupId, ipAddresses);
+    return Objects.hash(associatedWith, groupId, id, ipAddresses);
   }
 
 
@@ -148,9 +145,9 @@ public class IpAddressEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class IpAddressEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    associatedWith: ").append(toIndentedString(associatedWith)).append("\n");
     sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    ipAddresses: ").append(toIndentedString(ipAddresses)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -168,4 +165,3 @@ public class IpAddressEntity {
   }
 
 }
-

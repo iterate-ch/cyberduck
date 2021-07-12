@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,56 +17,33 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * Create Remote Server
  */
-@ApiModel(description = "Create Remote Server")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "Create Remote Server")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class RemoteServerEntity {
-  @JsonProperty("id")
-  private Integer id = null;
+  @JsonProperty("auth_account_name")
+  private String authAccountName = null;
 
-  @JsonProperty("authentication_method")
-  private String authenticationMethod = null;
-
-  @JsonProperty("hostname")
-  private String hostname = null;
-
-  @JsonProperty("remote_home_path")
-  private String remoteHomePath = null;
-
-  @JsonProperty("name")
-  private String name = null;
-
-  @JsonProperty("port")
-  private Integer port = null;
-
-  @JsonProperty("max_connections")
-  private Integer maxConnections = null;
-
-  @JsonProperty("s3_bucket")
-  private String s3Bucket = null;
-
-  @JsonProperty("s3_region")
-  private String s3Region = null;
+  @JsonProperty("auth_setup_link")
+  private String authSetupLink = null;
 
   /**
-   * Remote server certificate
+   * Either &#x60;in_setup&#x60; or &#x60;complete&#x60;
    */
-  public enum ServerCertificateEnum {
-    REQUIRE_MATCH("require_match"),
-    
-    ALLOW_ANY("allow_any");
+  public enum AuthStatusEnum {
+    NOT_APPLICABLE("not_applicable"),
+    IN_SETUP("in_setup"),
+    COMPLETE("complete"),
+    REAUTHENTICATE("reauthenticate");
 
     private String value;
 
-    ServerCertificateEnum(String value) {
+    AuthStatusEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -77,19 +53,148 @@ public class RemoteServerEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static ServerCertificateEnum fromValue(String value) {
-      for (ServerCertificateEnum b : ServerCertificateEnum.values()) {
-        if (b.value.equals(value)) {
+    public static AuthStatusEnum fromValue(String text) {
+      for (AuthStatusEnum b : AuthStatusEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("server_certificate")
+  }  @JsonProperty("auth_status")
+  private AuthStatusEnum authStatus = null;
+
+  @JsonProperty("authentication_method")
+  private String authenticationMethod = null;
+
+  @JsonProperty("azure_blob_storage_account")
+  private String azureBlobStorageAccount = null;
+
+  @JsonProperty("azure_blob_storage_container")
+  private String azureBlobStorageContainer = null;
+
+  @JsonProperty("backblaze_b2_bucket")
+  private String backblazeB2Bucket = null;
+
+  @JsonProperty("backblaze_b2_s3_endpoint")
+  private String backblazeB2S3Endpoint = null;
+
+  @JsonProperty("google_cloud_storage_bucket")
+  private String googleCloudStorageBucket = null;
+
+  @JsonProperty("google_cloud_storage_project_id")
+  private String googleCloudStorageProjectId = null;
+
+  @JsonProperty("hostname")
+  private String hostname = null;
+
+  @JsonProperty("id")
+  private Integer id = null;
+
+  @JsonProperty("max_connections")
+  private Integer maxConnections = null;
+
+  @JsonProperty("name")
+  private String name = null;
+
+  /**
+   * Either personal or business_other account types
+   */
+  public enum OneDriveAccountTypeEnum {
+    PERSONAL("personal"),
+    BUSINESS_OTHER("business_other");
+
+    private String value;
+
+    OneDriveAccountTypeEnum(String value) {
+      this.value = value;
+    }
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+    @JsonCreator
+    public static OneDriveAccountTypeEnum fromValue(String text) {
+      for (OneDriveAccountTypeEnum b : OneDriveAccountTypeEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+
+  }  @JsonProperty("one_drive_account_type")
+  private OneDriveAccountTypeEnum oneDriveAccountType = null;
+
+  @JsonProperty("port")
+  private Integer port = null;
+
+  @JsonProperty("rackspace_container")
+  private String rackspaceContainer = null;
+
+  @JsonProperty("rackspace_region")
+  private String rackspaceRegion = null;
+
+  @JsonProperty("rackspace_username")
+  private String rackspaceUsername = null;
+
+  @JsonProperty("remote_home_path")
+  private String remoteHomePath = null;
+
+  @JsonProperty("s3_bucket")
+  private String s3Bucket = null;
+
+  @JsonProperty("s3_compatible_bucket")
+  private String s3CompatibleBucket = null;
+
+  @JsonProperty("s3_compatible_endpoint")
+  private String s3CompatibleEndpoint = null;
+
+  @JsonProperty("s3_compatible_region")
+  private String s3CompatibleRegion = null;
+
+  @JsonProperty("s3_region")
+  private String s3Region = null;
+
+  /**
+   * Remote server certificate
+   */
+  public enum ServerCertificateEnum {
+    REQUIRE_MATCH("require_match"),
+    ALLOW_ANY("allow_any");
+
+    private String value;
+
+    ServerCertificateEnum(String value) {
+      this.value = value;
+    }
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+    @JsonCreator
+    public static ServerCertificateEnum fromValue(String text) {
+      for (ServerCertificateEnum b : ServerCertificateEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+
+  }  @JsonProperty("server_certificate")
   private ServerCertificateEnum serverCertificate = null;
 
   @JsonProperty("server_host_key")
@@ -100,33 +205,19 @@ public class RemoteServerEntity {
    */
   public enum ServerTypeEnum {
     FTP("ftp"),
-    
     SFTP("sftp"),
-    
     S3("s3"),
-    
     GOOGLE_CLOUD_STORAGE("google_cloud_storage"),
-    
     WEBDAV("webdav"),
-    
     WASABI("wasabi"),
-    
     BACKBLAZE_B2("backblaze_b2"),
-    
     ONE_DRIVE("one_drive"),
-    
     RACKSPACE("rackspace"),
-    
     BOX("box"),
-    
     DROPBOX("dropbox"),
-    
     GOOGLE_DRIVE("google_drive"),
-    
     AZURE("azure"),
-    
     SHAREPOINT("sharepoint"),
-    
     S3_COMPATIBLE("s3_compatible");
 
     private String value;
@@ -134,7 +225,6 @@ public class RemoteServerEntity {
     ServerTypeEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -144,19 +234,17 @@ public class RemoteServerEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static ServerTypeEnum fromValue(String value) {
+    public static ServerTypeEnum fromValue(String text) {
       for (ServerTypeEnum b : ServerTypeEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("server_type")
+  }  @JsonProperty("server_type")
   private ServerTypeEnum serverType = null;
 
   /**
@@ -164,11 +252,8 @@ public class RemoteServerEntity {
    */
   public enum SslEnum {
     IF_AVAILABLE("if_available"),
-    
     REQUIRE("require"),
-    
     REQUIRE_IMPLICIT("require_implicit"),
-    
     NEVER("never");
 
     private String value;
@@ -176,7 +261,6 @@ public class RemoteServerEntity {
     SslEnum(String value) {
       this.value = value;
     }
-
     @JsonValue
     public String getValue() {
       return value;
@@ -186,35 +270,21 @@ public class RemoteServerEntity {
     public String toString() {
       return String.valueOf(value);
     }
-
     @JsonCreator
-    public static SslEnum fromValue(String value) {
+    public static SslEnum fromValue(String text) {
       for (SslEnum b : SslEnum.values()) {
-        if (b.value.equals(value)) {
+        if (String.valueOf(b.value).equals(text)) {
           return b;
         }
       }
       return null;
     }
-  }
 
-  @JsonProperty("ssl")
+  }  @JsonProperty("ssl")
   private SslEnum ssl = null;
 
   @JsonProperty("username")
   private String username = null;
-
-  @JsonProperty("google_cloud_storage_bucket")
-  private String googleCloudStorageBucket = null;
-
-  @JsonProperty("google_cloud_storage_project_id")
-  private String googleCloudStorageProjectId = null;
-
-  @JsonProperty("backblaze_b2_s3_endpoint")
-  private String backblazeB2S3Endpoint = null;
-
-  @JsonProperty("backblaze_b2_bucket")
-  private String backblazeB2Bucket = null;
 
   @JsonProperty("wasabi_bucket")
   private String wasabiBucket = null;
@@ -222,528 +292,22 @@ public class RemoteServerEntity {
   @JsonProperty("wasabi_region")
   private String wasabiRegion = null;
 
-  @JsonProperty("rackspace_username")
-  private String rackspaceUsername = null;
-
-  @JsonProperty("rackspace_region")
-  private String rackspaceRegion = null;
-
-  @JsonProperty("rackspace_container")
-  private String rackspaceContainer = null;
-
-  @JsonProperty("auth_setup_link")
-  private String authSetupLink = null;
-
-  /**
-   * Either &#x60;in_setup&#x60; or &#x60;complete&#x60;
-   */
-  public enum AuthStatusEnum {
-    NOT_APPLICABLE("not_applicable"),
-    
-    IN_SETUP("in_setup"),
-    
-    COMPLETE("complete"),
-    
-    REAUTHENTICATE("reauthenticate");
-
-    private String value;
-
-    AuthStatusEnum(String value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static AuthStatusEnum fromValue(String value) {
-      for (AuthStatusEnum b : AuthStatusEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
-  @JsonProperty("auth_status")
-  private AuthStatusEnum authStatus = null;
-
-  @JsonProperty("auth_account_name")
-  private String authAccountName = null;
-
-  /**
-   * Either personal or business_other account types
-   */
-  public enum OneDriveAccountTypeEnum {
-    PERSONAL("personal"),
-    
-    BUSINESS_OTHER("business_other");
-
-    private String value;
-
-    OneDriveAccountTypeEnum(String value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static OneDriveAccountTypeEnum fromValue(String value) {
-      for (OneDriveAccountTypeEnum b : OneDriveAccountTypeEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
-  @JsonProperty("one_drive_account_type")
-  private OneDriveAccountTypeEnum oneDriveAccountType = null;
-
-  @JsonProperty("azure_blob_storage_account")
-  private String azureBlobStorageAccount = null;
-
-  @JsonProperty("azure_blob_storage_container")
-  private String azureBlobStorageContainer = null;
-
-  @JsonProperty("s3_compatible_bucket")
-  private String s3CompatibleBucket = null;
-
-  @JsonProperty("s3_compatible_region")
-  private String s3CompatibleRegion = null;
-
-  @JsonProperty("s3_compatible_endpoint")
-  private String s3CompatibleEndpoint = null;
-
-  public RemoteServerEntity id(Integer id) {
-    this.id = id;
+  public RemoteServerEntity authAccountName(String authAccountName) {
+    this.authAccountName = authAccountName;
     return this;
   }
 
    /**
-   * Remote server ID
-   * @return id
+   * Describes the authorized account
+   * @return authAccountName
   **/
-  @ApiModelProperty(example = "1", value = "Remote server ID")
-  public Integer getId() {
-    return id;
+  @Schema(example = "me@example.com", description = "Describes the authorized account")
+  public String getAuthAccountName() {
+    return authAccountName;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public RemoteServerEntity authenticationMethod(String authenticationMethod) {
-    this.authenticationMethod = authenticationMethod;
-    return this;
-  }
-
-   /**
-   * Type of authentication method
-   * @return authenticationMethod
-  **/
-  @ApiModelProperty(example = "password", value = "Type of authentication method")
-  public String getAuthenticationMethod() {
-    return authenticationMethod;
-  }
-
-  public void setAuthenticationMethod(String authenticationMethod) {
-    this.authenticationMethod = authenticationMethod;
-  }
-
-  public RemoteServerEntity hostname(String hostname) {
-    this.hostname = hostname;
-    return this;
-  }
-
-   /**
-   * Hostname or IP address
-   * @return hostname
-  **/
-  @ApiModelProperty(example = "remote-server.com", value = "Hostname or IP address")
-  public String getHostname() {
-    return hostname;
-  }
-
-  public void setHostname(String hostname) {
-    this.hostname = hostname;
-  }
-
-  public RemoteServerEntity remoteHomePath(String remoteHomePath) {
-    this.remoteHomePath = remoteHomePath;
-    return this;
-  }
-
-   /**
-   * Initial home folder on remote server
-   * @return remoteHomePath
-  **/
-  @ApiModelProperty(example = "/home/user1", value = "Initial home folder on remote server")
-  public String getRemoteHomePath() {
-    return remoteHomePath;
-  }
-
-  public void setRemoteHomePath(String remoteHomePath) {
-    this.remoteHomePath = remoteHomePath;
-  }
-
-  public RemoteServerEntity name(String name) {
-    this.name = name;
-    return this;
-  }
-
-   /**
-   * Internal name for your reference
-   * @return name
-  **/
-  @ApiModelProperty(example = "My Remote server", value = "Internal name for your reference")
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public RemoteServerEntity port(Integer port) {
-    this.port = port;
-    return this;
-  }
-
-   /**
-   * Port for remote server.  Not needed for S3.
-   * @return port
-  **/
-  @ApiModelProperty(example = "1", value = "Port for remote server.  Not needed for S3.")
-  public Integer getPort() {
-    return port;
-  }
-
-  public void setPort(Integer port) {
-    this.port = port;
-  }
-
-  public RemoteServerEntity maxConnections(Integer maxConnections) {
-    this.maxConnections = maxConnections;
-    return this;
-  }
-
-   /**
-   * Max number of parallel connections.  Ignored for S3 connections (we will parallelize these as much as possible).
-   * @return maxConnections
-  **/
-  @ApiModelProperty(example = "1", value = "Max number of parallel connections.  Ignored for S3 connections (we will parallelize these as much as possible).")
-  public Integer getMaxConnections() {
-    return maxConnections;
-  }
-
-  public void setMaxConnections(Integer maxConnections) {
-    this.maxConnections = maxConnections;
-  }
-
-  public RemoteServerEntity s3Bucket(String s3Bucket) {
-    this.s3Bucket = s3Bucket;
-    return this;
-  }
-
-   /**
-   * S3 bucket name
-   * @return s3Bucket
-  **/
-  @ApiModelProperty(example = "my-bucket", value = "S3 bucket name")
-  public String getS3Bucket() {
-    return s3Bucket;
-  }
-
-  public void setS3Bucket(String s3Bucket) {
-    this.s3Bucket = s3Bucket;
-  }
-
-  public RemoteServerEntity s3Region(String s3Region) {
-    this.s3Region = s3Region;
-    return this;
-  }
-
-   /**
-   * S3 region
-   * @return s3Region
-  **/
-  @ApiModelProperty(example = "us-east-1", value = "S3 region")
-  public String getS3Region() {
-    return s3Region;
-  }
-
-  public void setS3Region(String s3Region) {
-    this.s3Region = s3Region;
-  }
-
-  public RemoteServerEntity serverCertificate(ServerCertificateEnum serverCertificate) {
-    this.serverCertificate = serverCertificate;
-    return this;
-  }
-
-   /**
-   * Remote server certificate
-   * @return serverCertificate
-  **/
-  @ApiModelProperty(example = "require_match", value = "Remote server certificate")
-  public ServerCertificateEnum getServerCertificate() {
-    return serverCertificate;
-  }
-
-  public void setServerCertificate(ServerCertificateEnum serverCertificate) {
-    this.serverCertificate = serverCertificate;
-  }
-
-  public RemoteServerEntity serverHostKey(String serverHostKey) {
-    this.serverHostKey = serverHostKey;
-    return this;
-  }
-
-   /**
-   * Remote server SSH Host Key. If provided, we will require that the server host key matches the provided key. Uses OpenSSH format similar to what would go into ~/.ssh/known_hosts
-   * @return serverHostKey
-  **/
-  @ApiModelProperty(example = "[public key]", value = "Remote server SSH Host Key. If provided, we will require that the server host key matches the provided key. Uses OpenSSH format similar to what would go into ~/.ssh/known_hosts")
-  public String getServerHostKey() {
-    return serverHostKey;
-  }
-
-  public void setServerHostKey(String serverHostKey) {
-    this.serverHostKey = serverHostKey;
-  }
-
-  public RemoteServerEntity serverType(ServerTypeEnum serverType) {
-    this.serverType = serverType;
-    return this;
-  }
-
-   /**
-   * Remote server type.
-   * @return serverType
-  **/
-  @ApiModelProperty(example = "s3", value = "Remote server type.")
-  public ServerTypeEnum getServerType() {
-    return serverType;
-  }
-
-  public void setServerType(ServerTypeEnum serverType) {
-    this.serverType = serverType;
-  }
-
-  public RemoteServerEntity ssl(SslEnum ssl) {
-    this.ssl = ssl;
-    return this;
-  }
-
-   /**
-   * Should we require SSL?
-   * @return ssl
-  **/
-  @ApiModelProperty(example = "if_available", value = "Should we require SSL?")
-  public SslEnum getSsl() {
-    return ssl;
-  }
-
-  public void setSsl(SslEnum ssl) {
-    this.ssl = ssl;
-  }
-
-  public RemoteServerEntity username(String username) {
-    this.username = username;
-    return this;
-  }
-
-   /**
-   * Remote server username.  Not needed for S3 buckets.
-   * @return username
-  **/
-  @ApiModelProperty(example = "user", value = "Remote server username.  Not needed for S3 buckets.")
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public RemoteServerEntity googleCloudStorageBucket(String googleCloudStorageBucket) {
-    this.googleCloudStorageBucket = googleCloudStorageBucket;
-    return this;
-  }
-
-   /**
-   * Google Cloud Storage bucket name
-   * @return googleCloudStorageBucket
-  **/
-  @ApiModelProperty(example = "my-bucket", value = "Google Cloud Storage bucket name")
-  public String getGoogleCloudStorageBucket() {
-    return googleCloudStorageBucket;
-  }
-
-  public void setGoogleCloudStorageBucket(String googleCloudStorageBucket) {
-    this.googleCloudStorageBucket = googleCloudStorageBucket;
-  }
-
-  public RemoteServerEntity googleCloudStorageProjectId(String googleCloudStorageProjectId) {
-    this.googleCloudStorageProjectId = googleCloudStorageProjectId;
-    return this;
-  }
-
-   /**
-   * Google Cloud Project ID
-   * @return googleCloudStorageProjectId
-  **/
-  @ApiModelProperty(example = "my-project", value = "Google Cloud Project ID")
-  public String getGoogleCloudStorageProjectId() {
-    return googleCloudStorageProjectId;
-  }
-
-  public void setGoogleCloudStorageProjectId(String googleCloudStorageProjectId) {
-    this.googleCloudStorageProjectId = googleCloudStorageProjectId;
-  }
-
-  public RemoteServerEntity backblazeB2S3Endpoint(String backblazeB2S3Endpoint) {
-    this.backblazeB2S3Endpoint = backblazeB2S3Endpoint;
-    return this;
-  }
-
-   /**
-   * Backblaze B2 Cloud Storage S3 Endpoint
-   * @return backblazeB2S3Endpoint
-  **/
-  @ApiModelProperty(example = "s3.us-west-001.backblazeb2.com", value = "Backblaze B2 Cloud Storage S3 Endpoint")
-  public String getBackblazeB2S3Endpoint() {
-    return backblazeB2S3Endpoint;
-  }
-
-  public void setBackblazeB2S3Endpoint(String backblazeB2S3Endpoint) {
-    this.backblazeB2S3Endpoint = backblazeB2S3Endpoint;
-  }
-
-  public RemoteServerEntity backblazeB2Bucket(String backblazeB2Bucket) {
-    this.backblazeB2Bucket = backblazeB2Bucket;
-    return this;
-  }
-
-   /**
-   * Backblaze B2 Cloud Storage Bucket name
-   * @return backblazeB2Bucket
-  **/
-  @ApiModelProperty(example = "my-bucket", value = "Backblaze B2 Cloud Storage Bucket name")
-  public String getBackblazeB2Bucket() {
-    return backblazeB2Bucket;
-  }
-
-  public void setBackblazeB2Bucket(String backblazeB2Bucket) {
-    this.backblazeB2Bucket = backblazeB2Bucket;
-  }
-
-  public RemoteServerEntity wasabiBucket(String wasabiBucket) {
-    this.wasabiBucket = wasabiBucket;
-    return this;
-  }
-
-   /**
-   * Wasabi Bucket name
-   * @return wasabiBucket
-  **/
-  @ApiModelProperty(example = "my-bucket", value = "Wasabi Bucket name")
-  public String getWasabiBucket() {
-    return wasabiBucket;
-  }
-
-  public void setWasabiBucket(String wasabiBucket) {
-    this.wasabiBucket = wasabiBucket;
-  }
-
-  public RemoteServerEntity wasabiRegion(String wasabiRegion) {
-    this.wasabiRegion = wasabiRegion;
-    return this;
-  }
-
-   /**
-   * Wasabi region
-   * @return wasabiRegion
-  **/
-  @ApiModelProperty(example = "us-west-1", value = "Wasabi region")
-  public String getWasabiRegion() {
-    return wasabiRegion;
-  }
-
-  public void setWasabiRegion(String wasabiRegion) {
-    this.wasabiRegion = wasabiRegion;
-  }
-
-  public RemoteServerEntity rackspaceUsername(String rackspaceUsername) {
-    this.rackspaceUsername = rackspaceUsername;
-    return this;
-  }
-
-   /**
-   * Rackspace username used to login to the Rackspace Cloud Control Panel.
-   * @return rackspaceUsername
-  **/
-  @ApiModelProperty(example = "rackspaceuser", value = "Rackspace username used to login to the Rackspace Cloud Control Panel.")
-  public String getRackspaceUsername() {
-    return rackspaceUsername;
-  }
-
-  public void setRackspaceUsername(String rackspaceUsername) {
-    this.rackspaceUsername = rackspaceUsername;
-  }
-
-  public RemoteServerEntity rackspaceRegion(String rackspaceRegion) {
-    this.rackspaceRegion = rackspaceRegion;
-    return this;
-  }
-
-   /**
-   * Three letter airport code for Rackspace region. See https://support.rackspace.com/how-to/about-regions/
-   * @return rackspaceRegion
-  **/
-  @ApiModelProperty(example = "dfw", value = "Three letter airport code for Rackspace region. See https://support.rackspace.com/how-to/about-regions/")
-  public String getRackspaceRegion() {
-    return rackspaceRegion;
-  }
-
-  public void setRackspaceRegion(String rackspaceRegion) {
-    this.rackspaceRegion = rackspaceRegion;
-  }
-
-  public RemoteServerEntity rackspaceContainer(String rackspaceContainer) {
-    this.rackspaceContainer = rackspaceContainer;
-    return this;
-  }
-
-   /**
-   * The name of the container (top level directory) where files will sync.
-   * @return rackspaceContainer
-  **/
-  @ApiModelProperty(example = "my-container", value = "The name of the container (top level directory) where files will sync.")
-  public String getRackspaceContainer() {
-    return rackspaceContainer;
-  }
-
-  public void setRackspaceContainer(String rackspaceContainer) {
-    this.rackspaceContainer = rackspaceContainer;
+  public void setAuthAccountName(String authAccountName) {
+    this.authAccountName = authAccountName;
   }
 
   public RemoteServerEntity authSetupLink(String authSetupLink) {
@@ -755,7 +319,7 @@ public class RemoteServerEntity {
    * Returns link to login with an Oauth provider
    * @return authSetupLink
   **/
-  @ApiModelProperty(example = "auth/:provider", value = "Returns link to login with an Oauth provider")
+  @Schema(example = "auth/:provider", description = "Returns link to login with an Oauth provider")
   public String getAuthSetupLink() {
     return authSetupLink;
   }
@@ -773,7 +337,7 @@ public class RemoteServerEntity {
    * Either &#x60;in_setup&#x60; or &#x60;complete&#x60;
    * @return authStatus
   **/
-  @ApiModelProperty(example = "in_setup", value = "Either `in_setup` or `complete`")
+  @Schema(example = "in_setup", description = "Either `in_setup` or `complete`")
   public AuthStatusEnum getAuthStatus() {
     return authStatus;
   }
@@ -782,40 +346,22 @@ public class RemoteServerEntity {
     this.authStatus = authStatus;
   }
 
-  public RemoteServerEntity authAccountName(String authAccountName) {
-    this.authAccountName = authAccountName;
+  public RemoteServerEntity authenticationMethod(String authenticationMethod) {
+    this.authenticationMethod = authenticationMethod;
     return this;
   }
 
    /**
-   * Describes the authorized account
-   * @return authAccountName
+   * Type of authentication method
+   * @return authenticationMethod
   **/
-  @ApiModelProperty(example = "me@example.com", value = "Describes the authorized account")
-  public String getAuthAccountName() {
-    return authAccountName;
+  @Schema(example = "password", description = "Type of authentication method")
+  public String getAuthenticationMethod() {
+    return authenticationMethod;
   }
 
-  public void setAuthAccountName(String authAccountName) {
-    this.authAccountName = authAccountName;
-  }
-
-  public RemoteServerEntity oneDriveAccountType(OneDriveAccountTypeEnum oneDriveAccountType) {
-    this.oneDriveAccountType = oneDriveAccountType;
-    return this;
-  }
-
-   /**
-   * Either personal or business_other account types
-   * @return oneDriveAccountType
-  **/
-  @ApiModelProperty(example = "personal", value = "Either personal or business_other account types")
-  public OneDriveAccountTypeEnum getOneDriveAccountType() {
-    return oneDriveAccountType;
-  }
-
-  public void setOneDriveAccountType(OneDriveAccountTypeEnum oneDriveAccountType) {
-    this.oneDriveAccountType = oneDriveAccountType;
+  public void setAuthenticationMethod(String authenticationMethod) {
+    this.authenticationMethod = authenticationMethod;
   }
 
   public RemoteServerEntity azureBlobStorageAccount(String azureBlobStorageAccount) {
@@ -827,7 +373,7 @@ public class RemoteServerEntity {
    * Azure Blob Storage Account name
    * @return azureBlobStorageAccount
   **/
-  @ApiModelProperty(example = "storage-account-name", value = "Azure Blob Storage Account name")
+  @Schema(example = "storage-account-name", description = "Azure Blob Storage Account name")
   public String getAzureBlobStorageAccount() {
     return azureBlobStorageAccount;
   }
@@ -845,13 +391,283 @@ public class RemoteServerEntity {
    * Azure Blob Storage Container name
    * @return azureBlobStorageContainer
   **/
-  @ApiModelProperty(example = "container-name", value = "Azure Blob Storage Container name")
+  @Schema(example = "container-name", description = "Azure Blob Storage Container name")
   public String getAzureBlobStorageContainer() {
     return azureBlobStorageContainer;
   }
 
   public void setAzureBlobStorageContainer(String azureBlobStorageContainer) {
     this.azureBlobStorageContainer = azureBlobStorageContainer;
+  }
+
+  public RemoteServerEntity backblazeB2Bucket(String backblazeB2Bucket) {
+    this.backblazeB2Bucket = backblazeB2Bucket;
+    return this;
+  }
+
+   /**
+   * Backblaze B2 Cloud Storage Bucket name
+   * @return backblazeB2Bucket
+  **/
+  @Schema(example = "my-bucket", description = "Backblaze B2 Cloud Storage Bucket name")
+  public String getBackblazeB2Bucket() {
+    return backblazeB2Bucket;
+  }
+
+  public void setBackblazeB2Bucket(String backblazeB2Bucket) {
+    this.backblazeB2Bucket = backblazeB2Bucket;
+  }
+
+  public RemoteServerEntity backblazeB2S3Endpoint(String backblazeB2S3Endpoint) {
+    this.backblazeB2S3Endpoint = backblazeB2S3Endpoint;
+    return this;
+  }
+
+   /**
+   * Backblaze B2 Cloud Storage S3 Endpoint
+   * @return backblazeB2S3Endpoint
+  **/
+  @Schema(example = "s3.us-west-001.backblazeb2.com", description = "Backblaze B2 Cloud Storage S3 Endpoint")
+  public String getBackblazeB2S3Endpoint() {
+    return backblazeB2S3Endpoint;
+  }
+
+  public void setBackblazeB2S3Endpoint(String backblazeB2S3Endpoint) {
+    this.backblazeB2S3Endpoint = backblazeB2S3Endpoint;
+  }
+
+  public RemoteServerEntity googleCloudStorageBucket(String googleCloudStorageBucket) {
+    this.googleCloudStorageBucket = googleCloudStorageBucket;
+    return this;
+  }
+
+   /**
+   * Google Cloud Storage bucket name
+   * @return googleCloudStorageBucket
+  **/
+  @Schema(example = "my-bucket", description = "Google Cloud Storage bucket name")
+  public String getGoogleCloudStorageBucket() {
+    return googleCloudStorageBucket;
+  }
+
+  public void setGoogleCloudStorageBucket(String googleCloudStorageBucket) {
+    this.googleCloudStorageBucket = googleCloudStorageBucket;
+  }
+
+  public RemoteServerEntity googleCloudStorageProjectId(String googleCloudStorageProjectId) {
+    this.googleCloudStorageProjectId = googleCloudStorageProjectId;
+    return this;
+  }
+
+   /**
+   * Google Cloud Project ID
+   * @return googleCloudStorageProjectId
+  **/
+  @Schema(example = "my-project", description = "Google Cloud Project ID")
+  public String getGoogleCloudStorageProjectId() {
+    return googleCloudStorageProjectId;
+  }
+
+  public void setGoogleCloudStorageProjectId(String googleCloudStorageProjectId) {
+    this.googleCloudStorageProjectId = googleCloudStorageProjectId;
+  }
+
+  public RemoteServerEntity hostname(String hostname) {
+    this.hostname = hostname;
+    return this;
+  }
+
+   /**
+   * Hostname or IP address
+   * @return hostname
+  **/
+  @Schema(example = "remote-server.com", description = "Hostname or IP address")
+  public String getHostname() {
+    return hostname;
+  }
+
+  public void setHostname(String hostname) {
+    this.hostname = hostname;
+  }
+
+  public RemoteServerEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Remote server ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "Remote server ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public RemoteServerEntity maxConnections(Integer maxConnections) {
+    this.maxConnections = maxConnections;
+    return this;
+  }
+
+   /**
+   * Max number of parallel connections.  Ignored for S3 connections (we will parallelize these as much as possible).
+   * @return maxConnections
+  **/
+  @Schema(example = "1", description = "Max number of parallel connections.  Ignored for S3 connections (we will parallelize these as much as possible).")
+  public Integer getMaxConnections() {
+    return maxConnections;
+  }
+
+  public void setMaxConnections(Integer maxConnections) {
+    this.maxConnections = maxConnections;
+  }
+
+  public RemoteServerEntity name(String name) {
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * Internal name for your reference
+   * @return name
+  **/
+  @Schema(example = "My Remote server", description = "Internal name for your reference")
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public RemoteServerEntity oneDriveAccountType(OneDriveAccountTypeEnum oneDriveAccountType) {
+    this.oneDriveAccountType = oneDriveAccountType;
+    return this;
+  }
+
+   /**
+   * Either personal or business_other account types
+   * @return oneDriveAccountType
+  **/
+  @Schema(example = "personal", description = "Either personal or business_other account types")
+  public OneDriveAccountTypeEnum getOneDriveAccountType() {
+    return oneDriveAccountType;
+  }
+
+  public void setOneDriveAccountType(OneDriveAccountTypeEnum oneDriveAccountType) {
+    this.oneDriveAccountType = oneDriveAccountType;
+  }
+
+  public RemoteServerEntity port(Integer port) {
+    this.port = port;
+    return this;
+  }
+
+   /**
+   * Port for remote server.  Not needed for S3.
+   * @return port
+  **/
+  @Schema(example = "1", description = "Port for remote server.  Not needed for S3.")
+  public Integer getPort() {
+    return port;
+  }
+
+  public void setPort(Integer port) {
+    this.port = port;
+  }
+
+  public RemoteServerEntity rackspaceContainer(String rackspaceContainer) {
+    this.rackspaceContainer = rackspaceContainer;
+    return this;
+  }
+
+   /**
+   * The name of the container (top level directory) where files will sync.
+   * @return rackspaceContainer
+  **/
+  @Schema(example = "my-container", description = "The name of the container (top level directory) where files will sync.")
+  public String getRackspaceContainer() {
+    return rackspaceContainer;
+  }
+
+  public void setRackspaceContainer(String rackspaceContainer) {
+    this.rackspaceContainer = rackspaceContainer;
+  }
+
+  public RemoteServerEntity rackspaceRegion(String rackspaceRegion) {
+    this.rackspaceRegion = rackspaceRegion;
+    return this;
+  }
+
+   /**
+   * Three letter airport code for Rackspace region. See https://support.rackspace.com/how-to/about-regions/
+   * @return rackspaceRegion
+  **/
+  @Schema(example = "dfw", description = "Three letter airport code for Rackspace region. See https://support.rackspace.com/how-to/about-regions/")
+  public String getRackspaceRegion() {
+    return rackspaceRegion;
+  }
+
+  public void setRackspaceRegion(String rackspaceRegion) {
+    this.rackspaceRegion = rackspaceRegion;
+  }
+
+  public RemoteServerEntity rackspaceUsername(String rackspaceUsername) {
+    this.rackspaceUsername = rackspaceUsername;
+    return this;
+  }
+
+   /**
+   * Rackspace username used to login to the Rackspace Cloud Control Panel.
+   * @return rackspaceUsername
+  **/
+  @Schema(example = "rackspaceuser", description = "Rackspace username used to login to the Rackspace Cloud Control Panel.")
+  public String getRackspaceUsername() {
+    return rackspaceUsername;
+  }
+
+  public void setRackspaceUsername(String rackspaceUsername) {
+    this.rackspaceUsername = rackspaceUsername;
+  }
+
+  public RemoteServerEntity remoteHomePath(String remoteHomePath) {
+    this.remoteHomePath = remoteHomePath;
+    return this;
+  }
+
+   /**
+   * Initial home folder on remote server
+   * @return remoteHomePath
+  **/
+  @Schema(example = "/home/user1", description = "Initial home folder on remote server")
+  public String getRemoteHomePath() {
+    return remoteHomePath;
+  }
+
+  public void setRemoteHomePath(String remoteHomePath) {
+    this.remoteHomePath = remoteHomePath;
+  }
+
+  public RemoteServerEntity s3Bucket(String s3Bucket) {
+    this.s3Bucket = s3Bucket;
+    return this;
+  }
+
+   /**
+   * S3 bucket name
+   * @return s3Bucket
+  **/
+  @Schema(example = "my-bucket", description = "S3 bucket name")
+  public String getS3Bucket() {
+    return s3Bucket;
+  }
+
+  public void setS3Bucket(String s3Bucket) {
+    this.s3Bucket = s3Bucket;
   }
 
   public RemoteServerEntity s3CompatibleBucket(String s3CompatibleBucket) {
@@ -863,31 +679,13 @@ public class RemoteServerEntity {
    * S3-compatible Bucket name
    * @return s3CompatibleBucket
   **/
-  @ApiModelProperty(example = "my-bucket", value = "S3-compatible Bucket name")
+  @Schema(example = "my-bucket", description = "S3-compatible Bucket name")
   public String getS3CompatibleBucket() {
     return s3CompatibleBucket;
   }
 
   public void setS3CompatibleBucket(String s3CompatibleBucket) {
     this.s3CompatibleBucket = s3CompatibleBucket;
-  }
-
-  public RemoteServerEntity s3CompatibleRegion(String s3CompatibleRegion) {
-    this.s3CompatibleRegion = s3CompatibleRegion;
-    return this;
-  }
-
-   /**
-   * S3-compatible Bucket name
-   * @return s3CompatibleRegion
-  **/
-  @ApiModelProperty(example = "us-east-1", value = "S3-compatible Bucket name")
-  public String getS3CompatibleRegion() {
-    return s3CompatibleRegion;
-  }
-
-  public void setS3CompatibleRegion(String s3CompatibleRegion) {
-    this.s3CompatibleRegion = s3CompatibleRegion;
   }
 
   public RemoteServerEntity s3CompatibleEndpoint(String s3CompatibleEndpoint) {
@@ -899,13 +697,175 @@ public class RemoteServerEntity {
    * S3-compatible endpoint
    * @return s3CompatibleEndpoint
   **/
-  @ApiModelProperty(example = "mys3platform.com", value = "S3-compatible endpoint")
+  @Schema(example = "mys3platform.com", description = "S3-compatible endpoint")
   public String getS3CompatibleEndpoint() {
     return s3CompatibleEndpoint;
   }
 
   public void setS3CompatibleEndpoint(String s3CompatibleEndpoint) {
     this.s3CompatibleEndpoint = s3CompatibleEndpoint;
+  }
+
+  public RemoteServerEntity s3CompatibleRegion(String s3CompatibleRegion) {
+    this.s3CompatibleRegion = s3CompatibleRegion;
+    return this;
+  }
+
+   /**
+   * S3-compatible Bucket name
+   * @return s3CompatibleRegion
+  **/
+  @Schema(example = "us-east-1", description = "S3-compatible Bucket name")
+  public String getS3CompatibleRegion() {
+    return s3CompatibleRegion;
+  }
+
+  public void setS3CompatibleRegion(String s3CompatibleRegion) {
+    this.s3CompatibleRegion = s3CompatibleRegion;
+  }
+
+  public RemoteServerEntity s3Region(String s3Region) {
+    this.s3Region = s3Region;
+    return this;
+  }
+
+   /**
+   * S3 region
+   * @return s3Region
+  **/
+  @Schema(example = "us-east-1", description = "S3 region")
+  public String getS3Region() {
+    return s3Region;
+  }
+
+  public void setS3Region(String s3Region) {
+    this.s3Region = s3Region;
+  }
+
+  public RemoteServerEntity serverCertificate(ServerCertificateEnum serverCertificate) {
+    this.serverCertificate = serverCertificate;
+    return this;
+  }
+
+   /**
+   * Remote server certificate
+   * @return serverCertificate
+  **/
+  @Schema(example = "require_match", description = "Remote server certificate")
+  public ServerCertificateEnum getServerCertificate() {
+    return serverCertificate;
+  }
+
+  public void setServerCertificate(ServerCertificateEnum serverCertificate) {
+    this.serverCertificate = serverCertificate;
+  }
+
+  public RemoteServerEntity serverHostKey(String serverHostKey) {
+    this.serverHostKey = serverHostKey;
+    return this;
+  }
+
+   /**
+   * Remote server SSH Host Key. If provided, we will require that the server host key matches the provided key. Uses OpenSSH format similar to what would go into ~/.ssh/known_hosts
+   * @return serverHostKey
+  **/
+  @Schema(example = "[public key]", description = "Remote server SSH Host Key. If provided, we will require that the server host key matches the provided key. Uses OpenSSH format similar to what would go into ~/.ssh/known_hosts")
+  public String getServerHostKey() {
+    return serverHostKey;
+  }
+
+  public void setServerHostKey(String serverHostKey) {
+    this.serverHostKey = serverHostKey;
+  }
+
+  public RemoteServerEntity serverType(ServerTypeEnum serverType) {
+    this.serverType = serverType;
+    return this;
+  }
+
+   /**
+   * Remote server type.
+   * @return serverType
+  **/
+  @Schema(example = "s3", description = "Remote server type.")
+  public ServerTypeEnum getServerType() {
+    return serverType;
+  }
+
+  public void setServerType(ServerTypeEnum serverType) {
+    this.serverType = serverType;
+  }
+
+  public RemoteServerEntity ssl(SslEnum ssl) {
+    this.ssl = ssl;
+    return this;
+  }
+
+   /**
+   * Should we require SSL?
+   * @return ssl
+  **/
+  @Schema(example = "if_available", description = "Should we require SSL?")
+  public SslEnum getSsl() {
+    return ssl;
+  }
+
+  public void setSsl(SslEnum ssl) {
+    this.ssl = ssl;
+  }
+
+  public RemoteServerEntity username(String username) {
+    this.username = username;
+    return this;
+  }
+
+   /**
+   * Remote server username.  Not needed for S3 buckets.
+   * @return username
+  **/
+  @Schema(example = "user", description = "Remote server username.  Not needed for S3 buckets.")
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public RemoteServerEntity wasabiBucket(String wasabiBucket) {
+    this.wasabiBucket = wasabiBucket;
+    return this;
+  }
+
+   /**
+   * Wasabi Bucket name
+   * @return wasabiBucket
+  **/
+  @Schema(example = "my-bucket", description = "Wasabi Bucket name")
+  public String getWasabiBucket() {
+    return wasabiBucket;
+  }
+
+  public void setWasabiBucket(String wasabiBucket) {
+    this.wasabiBucket = wasabiBucket;
+  }
+
+  public RemoteServerEntity wasabiRegion(String wasabiRegion) {
+    this.wasabiRegion = wasabiRegion;
+    return this;
+  }
+
+   /**
+   * Wasabi region
+   * @return wasabiRegion
+  **/
+  @Schema(example = "us-west-1", description = "Wasabi region")
+  public String getWasabiRegion() {
+    return wasabiRegion;
+  }
+
+  public void setWasabiRegion(String wasabiRegion) {
+    this.wasabiRegion = wasabiRegion;
   }
 
 
@@ -918,43 +878,43 @@ public class RemoteServerEntity {
       return false;
     }
     RemoteServerEntity remoteServerEntity = (RemoteServerEntity) o;
-    return Objects.equals(this.id, remoteServerEntity.id) &&
+    return Objects.equals(this.authAccountName, remoteServerEntity.authAccountName) &&
+        Objects.equals(this.authSetupLink, remoteServerEntity.authSetupLink) &&
+        Objects.equals(this.authStatus, remoteServerEntity.authStatus) &&
         Objects.equals(this.authenticationMethod, remoteServerEntity.authenticationMethod) &&
+        Objects.equals(this.azureBlobStorageAccount, remoteServerEntity.azureBlobStorageAccount) &&
+        Objects.equals(this.azureBlobStorageContainer, remoteServerEntity.azureBlobStorageContainer) &&
+        Objects.equals(this.backblazeB2Bucket, remoteServerEntity.backblazeB2Bucket) &&
+        Objects.equals(this.backblazeB2S3Endpoint, remoteServerEntity.backblazeB2S3Endpoint) &&
+        Objects.equals(this.googleCloudStorageBucket, remoteServerEntity.googleCloudStorageBucket) &&
+        Objects.equals(this.googleCloudStorageProjectId, remoteServerEntity.googleCloudStorageProjectId) &&
         Objects.equals(this.hostname, remoteServerEntity.hostname) &&
-        Objects.equals(this.remoteHomePath, remoteServerEntity.remoteHomePath) &&
-        Objects.equals(this.name, remoteServerEntity.name) &&
-        Objects.equals(this.port, remoteServerEntity.port) &&
+        Objects.equals(this.id, remoteServerEntity.id) &&
         Objects.equals(this.maxConnections, remoteServerEntity.maxConnections) &&
+        Objects.equals(this.name, remoteServerEntity.name) &&
+        Objects.equals(this.oneDriveAccountType, remoteServerEntity.oneDriveAccountType) &&
+        Objects.equals(this.port, remoteServerEntity.port) &&
+        Objects.equals(this.rackspaceContainer, remoteServerEntity.rackspaceContainer) &&
+        Objects.equals(this.rackspaceRegion, remoteServerEntity.rackspaceRegion) &&
+        Objects.equals(this.rackspaceUsername, remoteServerEntity.rackspaceUsername) &&
+        Objects.equals(this.remoteHomePath, remoteServerEntity.remoteHomePath) &&
         Objects.equals(this.s3Bucket, remoteServerEntity.s3Bucket) &&
+        Objects.equals(this.s3CompatibleBucket, remoteServerEntity.s3CompatibleBucket) &&
+        Objects.equals(this.s3CompatibleEndpoint, remoteServerEntity.s3CompatibleEndpoint) &&
+        Objects.equals(this.s3CompatibleRegion, remoteServerEntity.s3CompatibleRegion) &&
         Objects.equals(this.s3Region, remoteServerEntity.s3Region) &&
         Objects.equals(this.serverCertificate, remoteServerEntity.serverCertificate) &&
         Objects.equals(this.serverHostKey, remoteServerEntity.serverHostKey) &&
         Objects.equals(this.serverType, remoteServerEntity.serverType) &&
         Objects.equals(this.ssl, remoteServerEntity.ssl) &&
         Objects.equals(this.username, remoteServerEntity.username) &&
-        Objects.equals(this.googleCloudStorageBucket, remoteServerEntity.googleCloudStorageBucket) &&
-        Objects.equals(this.googleCloudStorageProjectId, remoteServerEntity.googleCloudStorageProjectId) &&
-        Objects.equals(this.backblazeB2S3Endpoint, remoteServerEntity.backblazeB2S3Endpoint) &&
-        Objects.equals(this.backblazeB2Bucket, remoteServerEntity.backblazeB2Bucket) &&
         Objects.equals(this.wasabiBucket, remoteServerEntity.wasabiBucket) &&
-        Objects.equals(this.wasabiRegion, remoteServerEntity.wasabiRegion) &&
-        Objects.equals(this.rackspaceUsername, remoteServerEntity.rackspaceUsername) &&
-        Objects.equals(this.rackspaceRegion, remoteServerEntity.rackspaceRegion) &&
-        Objects.equals(this.rackspaceContainer, remoteServerEntity.rackspaceContainer) &&
-        Objects.equals(this.authSetupLink, remoteServerEntity.authSetupLink) &&
-        Objects.equals(this.authStatus, remoteServerEntity.authStatus) &&
-        Objects.equals(this.authAccountName, remoteServerEntity.authAccountName) &&
-        Objects.equals(this.oneDriveAccountType, remoteServerEntity.oneDriveAccountType) &&
-        Objects.equals(this.azureBlobStorageAccount, remoteServerEntity.azureBlobStorageAccount) &&
-        Objects.equals(this.azureBlobStorageContainer, remoteServerEntity.azureBlobStorageContainer) &&
-        Objects.equals(this.s3CompatibleBucket, remoteServerEntity.s3CompatibleBucket) &&
-        Objects.equals(this.s3CompatibleRegion, remoteServerEntity.s3CompatibleRegion) &&
-        Objects.equals(this.s3CompatibleEndpoint, remoteServerEntity.s3CompatibleEndpoint);
+        Objects.equals(this.wasabiRegion, remoteServerEntity.wasabiRegion);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, authenticationMethod, hostname, remoteHomePath, name, port, maxConnections, s3Bucket, s3Region, serverCertificate, serverHostKey, serverType, ssl, username, googleCloudStorageBucket, googleCloudStorageProjectId, backblazeB2S3Endpoint, backblazeB2Bucket, wasabiBucket, wasabiRegion, rackspaceUsername, rackspaceRegion, rackspaceContainer, authSetupLink, authStatus, authAccountName, oneDriveAccountType, azureBlobStorageAccount, azureBlobStorageContainer, s3CompatibleBucket, s3CompatibleRegion, s3CompatibleEndpoint);
+    return Objects.hash(authAccountName, authSetupLink, authStatus, authenticationMethod, azureBlobStorageAccount, azureBlobStorageContainer, backblazeB2Bucket, backblazeB2S3Endpoint, googleCloudStorageBucket, googleCloudStorageProjectId, hostname, id, maxConnections, name, oneDriveAccountType, port, rackspaceContainer, rackspaceRegion, rackspaceUsername, remoteHomePath, s3Bucket, s3CompatibleBucket, s3CompatibleEndpoint, s3CompatibleRegion, s3Region, serverCertificate, serverHostKey, serverType, ssl, username, wasabiBucket, wasabiRegion);
   }
 
 
@@ -963,38 +923,38 @@ public class RemoteServerEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class RemoteServerEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    authAccountName: ").append(toIndentedString(authAccountName)).append("\n");
+    sb.append("    authSetupLink: ").append(toIndentedString(authSetupLink)).append("\n");
+    sb.append("    authStatus: ").append(toIndentedString(authStatus)).append("\n");
     sb.append("    authenticationMethod: ").append(toIndentedString(authenticationMethod)).append("\n");
+    sb.append("    azureBlobStorageAccount: ").append(toIndentedString(azureBlobStorageAccount)).append("\n");
+    sb.append("    azureBlobStorageContainer: ").append(toIndentedString(azureBlobStorageContainer)).append("\n");
+    sb.append("    backblazeB2Bucket: ").append(toIndentedString(backblazeB2Bucket)).append("\n");
+    sb.append("    backblazeB2S3Endpoint: ").append(toIndentedString(backblazeB2S3Endpoint)).append("\n");
+    sb.append("    googleCloudStorageBucket: ").append(toIndentedString(googleCloudStorageBucket)).append("\n");
+    sb.append("    googleCloudStorageProjectId: ").append(toIndentedString(googleCloudStorageProjectId)).append("\n");
     sb.append("    hostname: ").append(toIndentedString(hostname)).append("\n");
-    sb.append("    remoteHomePath: ").append(toIndentedString(remoteHomePath)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    port: ").append(toIndentedString(port)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    maxConnections: ").append(toIndentedString(maxConnections)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    oneDriveAccountType: ").append(toIndentedString(oneDriveAccountType)).append("\n");
+    sb.append("    port: ").append(toIndentedString(port)).append("\n");
+    sb.append("    rackspaceContainer: ").append(toIndentedString(rackspaceContainer)).append("\n");
+    sb.append("    rackspaceRegion: ").append(toIndentedString(rackspaceRegion)).append("\n");
+    sb.append("    rackspaceUsername: ").append(toIndentedString(rackspaceUsername)).append("\n");
+    sb.append("    remoteHomePath: ").append(toIndentedString(remoteHomePath)).append("\n");
     sb.append("    s3Bucket: ").append(toIndentedString(s3Bucket)).append("\n");
+    sb.append("    s3CompatibleBucket: ").append(toIndentedString(s3CompatibleBucket)).append("\n");
+    sb.append("    s3CompatibleEndpoint: ").append(toIndentedString(s3CompatibleEndpoint)).append("\n");
+    sb.append("    s3CompatibleRegion: ").append(toIndentedString(s3CompatibleRegion)).append("\n");
     sb.append("    s3Region: ").append(toIndentedString(s3Region)).append("\n");
     sb.append("    serverCertificate: ").append(toIndentedString(serverCertificate)).append("\n");
     sb.append("    serverHostKey: ").append(toIndentedString(serverHostKey)).append("\n");
     sb.append("    serverType: ").append(toIndentedString(serverType)).append("\n");
     sb.append("    ssl: ").append(toIndentedString(ssl)).append("\n");
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
-    sb.append("    googleCloudStorageBucket: ").append(toIndentedString(googleCloudStorageBucket)).append("\n");
-    sb.append("    googleCloudStorageProjectId: ").append(toIndentedString(googleCloudStorageProjectId)).append("\n");
-    sb.append("    backblazeB2S3Endpoint: ").append(toIndentedString(backblazeB2S3Endpoint)).append("\n");
-    sb.append("    backblazeB2Bucket: ").append(toIndentedString(backblazeB2Bucket)).append("\n");
     sb.append("    wasabiBucket: ").append(toIndentedString(wasabiBucket)).append("\n");
     sb.append("    wasabiRegion: ").append(toIndentedString(wasabiRegion)).append("\n");
-    sb.append("    rackspaceUsername: ").append(toIndentedString(rackspaceUsername)).append("\n");
-    sb.append("    rackspaceRegion: ").append(toIndentedString(rackspaceRegion)).append("\n");
-    sb.append("    rackspaceContainer: ").append(toIndentedString(rackspaceContainer)).append("\n");
-    sb.append("    authSetupLink: ").append(toIndentedString(authSetupLink)).append("\n");
-    sb.append("    authStatus: ").append(toIndentedString(authStatus)).append("\n");
-    sb.append("    authAccountName: ").append(toIndentedString(authAccountName)).append("\n");
-    sb.append("    oneDriveAccountType: ").append(toIndentedString(oneDriveAccountType)).append("\n");
-    sb.append("    azureBlobStorageAccount: ").append(toIndentedString(azureBlobStorageAccount)).append("\n");
-    sb.append("    azureBlobStorageContainer: ").append(toIndentedString(azureBlobStorageContainer)).append("\n");
-    sb.append("    s3CompatibleBucket: ").append(toIndentedString(s3CompatibleBucket)).append("\n");
-    sb.append("    s3CompatibleRegion: ").append(toIndentedString(s3CompatibleRegion)).append("\n");
-    sb.append("    s3CompatibleEndpoint: ").append(toIndentedString(s3CompatibleEndpoint)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -1011,4 +971,3 @@ public class RemoteServerEntity {
   }
 
 }
-

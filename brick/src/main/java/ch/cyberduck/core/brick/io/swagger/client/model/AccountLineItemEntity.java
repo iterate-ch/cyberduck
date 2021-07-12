@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -20,19 +19,14 @@ import ch.cyberduck.core.brick.io.swagger.client.model.PaymentLineItemEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.joda.time.DateTime;
-
 /**
  * List Payments
  */
-@ApiModel(description = "List Payments")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Payments")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class AccountLineItemEntity {
-  @JsonProperty("id")
-  private Integer id = null;
-
   @JsonProperty("amount")
   private Double amount = null;
 
@@ -47,6 +41,9 @@ public class AccountLineItemEntity {
 
   @JsonProperty("download_uri")
   private String downloadUri = null;
+
+  @JsonProperty("id")
+  private Integer id = null;
 
   @JsonProperty("invoice_line_items")
   private InvoiceLineItemEntity invoiceLineItems = null;
@@ -72,24 +69,6 @@ public class AccountLineItemEntity {
   @JsonProperty("updated_at")
   private DateTime updatedAt = null;
 
-  public AccountLineItemEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Line item Id
-   * @return id
-  **/
-  @ApiModelProperty(example = "1", value = "Line item Id")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
   public AccountLineItemEntity amount(Double amount) {
     this.amount = amount;
     return this;
@@ -99,7 +78,7 @@ public class AccountLineItemEntity {
    * Line item amount
    * @return amount
   **/
-  @ApiModelProperty(example = "1.0", value = "Line item amount")
+  @Schema(example = "1", description = "Line item amount")
   public Double getAmount() {
     return amount;
   }
@@ -117,7 +96,7 @@ public class AccountLineItemEntity {
    * Line item balance
    * @return balance
   **/
-  @ApiModelProperty(example = "1.0", value = "Line item balance")
+  @Schema(example = "1", description = "Line item balance")
   public Double getBalance() {
     return balance;
   }
@@ -135,7 +114,7 @@ public class AccountLineItemEntity {
    * Line item created at
    * @return createdAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Line item created at")
+  @Schema(example = "2000-01-01T01:00Z", description = "Line item created at")
   public DateTime getCreatedAt() {
     return createdAt;
   }
@@ -153,7 +132,7 @@ public class AccountLineItemEntity {
    * Line item currency
    * @return currency
   **/
-  @ApiModelProperty(example = "USD", value = "Line item currency")
+  @Schema(example = "USD", description = "Line item currency")
   public String getCurrency() {
     return currency;
   }
@@ -171,7 +150,7 @@ public class AccountLineItemEntity {
    * Line item download uri
    * @return downloadUri
   **/
-  @ApiModelProperty(example = "https://url...", value = "Line item download uri")
+  @Schema(example = "https://url...", description = "Line item download uri")
   public String getDownloadUri() {
     return downloadUri;
   }
@@ -180,16 +159,34 @@ public class AccountLineItemEntity {
     this.downloadUri = downloadUri;
   }
 
+  public AccountLineItemEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Line item Id
+   * @return id
+  **/
+  @Schema(example = "1", description = "Line item Id")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
   public AccountLineItemEntity invoiceLineItems(InvoiceLineItemEntity invoiceLineItems) {
     this.invoiceLineItems = invoiceLineItems;
     return this;
   }
 
    /**
-   * Associated invoice line items
+   * Get invoiceLineItems
    * @return invoiceLineItems
   **/
-  @ApiModelProperty(value = "Associated invoice line items")
+  @Schema(description = "")
   public InvoiceLineItemEntity getInvoiceLineItems() {
     return invoiceLineItems;
   }
@@ -207,7 +204,7 @@ public class AccountLineItemEntity {
    * Line item payment method
    * @return method
   **/
-  @ApiModelProperty(example = "paypal", value = "Line item payment method")
+  @Schema(example = "paypal", description = "Line item payment method")
   public String getMethod() {
     return method;
   }
@@ -222,10 +219,10 @@ public class AccountLineItemEntity {
   }
 
    /**
-   * Associated payment line items
+   * Get paymentLineItems
    * @return paymentLineItems
   **/
-  @ApiModelProperty(value = "Associated payment line items")
+  @Schema(description = "")
   public PaymentLineItemEntity getPaymentLineItems() {
     return paymentLineItems;
   }
@@ -243,7 +240,7 @@ public class AccountLineItemEntity {
    * Date/time payment was reversed if applicable
    * @return paymentReversedAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Date/time payment was reversed if applicable")
+  @Schema(example = "2000-01-01T01:00Z", description = "Date/time payment was reversed if applicable")
   public DateTime getPaymentReversedAt() {
     return paymentReversedAt;
   }
@@ -261,7 +258,7 @@ public class AccountLineItemEntity {
    * Type of payment if applicable
    * @return paymentType
   **/
-  @ApiModelProperty(example = "", value = "Type of payment if applicable")
+  @Schema(description = "Type of payment if applicable")
   public String getPaymentType() {
     return paymentType;
   }
@@ -279,7 +276,7 @@ public class AccountLineItemEntity {
    * Site name this line item is for
    * @return siteName
   **/
-  @ApiModelProperty(example = "My Site", value = "Site name this line item is for")
+  @Schema(example = "My Site", description = "Site name this line item is for")
   public String getSiteName() {
     return siteName;
   }
@@ -297,7 +294,7 @@ public class AccountLineItemEntity {
    * Type of line item, either payment or invoice
    * @return type
   **/
-  @ApiModelProperty(example = "invoice", value = "Type of line item, either payment or invoice")
+  @Schema(example = "invoice", description = "Type of line item, either payment or invoice")
   public String getType() {
     return type;
   }
@@ -315,7 +312,7 @@ public class AccountLineItemEntity {
    * Line item updated at
    * @return updatedAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Line item updated at")
+  @Schema(example = "2000-01-01T01:00Z", description = "Line item updated at")
   public DateTime getUpdatedAt() {
     return updatedAt;
   }
@@ -334,12 +331,12 @@ public class AccountLineItemEntity {
       return false;
     }
     AccountLineItemEntity accountLineItemEntity = (AccountLineItemEntity) o;
-    return Objects.equals(this.id, accountLineItemEntity.id) &&
-        Objects.equals(this.amount, accountLineItemEntity.amount) &&
+    return Objects.equals(this.amount, accountLineItemEntity.amount) &&
         Objects.equals(this.balance, accountLineItemEntity.balance) &&
         Objects.equals(this.createdAt, accountLineItemEntity.createdAt) &&
         Objects.equals(this.currency, accountLineItemEntity.currency) &&
         Objects.equals(this.downloadUri, accountLineItemEntity.downloadUri) &&
+        Objects.equals(this.id, accountLineItemEntity.id) &&
         Objects.equals(this.invoiceLineItems, accountLineItemEntity.invoiceLineItems) &&
         Objects.equals(this.method, accountLineItemEntity.method) &&
         Objects.equals(this.paymentLineItems, accountLineItemEntity.paymentLineItems) &&
@@ -352,7 +349,7 @@ public class AccountLineItemEntity {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, amount, balance, createdAt, currency, downloadUri, invoiceLineItems, method, paymentLineItems, paymentReversedAt, paymentType, siteName, type, updatedAt);
+    return Objects.hash(amount, balance, createdAt, currency, downloadUri, id, invoiceLineItems, method, paymentLineItems, paymentReversedAt, paymentType, siteName, type, updatedAt);
   }
 
 
@@ -361,12 +358,12 @@ public class AccountLineItemEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class AccountLineItemEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    amount: ").append(toIndentedString(amount)).append("\n");
     sb.append("    balance: ").append(toIndentedString(balance)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
     sb.append("    downloadUri: ").append(toIndentedString(downloadUri)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    invoiceLineItems: ").append(toIndentedString(invoiceLineItems)).append("\n");
     sb.append("    method: ").append(toIndentedString(method)).append("\n");
     sb.append("    paymentLineItems: ").append(toIndentedString(paymentLineItems)).append("\n");
@@ -391,4 +388,3 @@ public class AccountLineItemEntity {
   }
 
 }
-

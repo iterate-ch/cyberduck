@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,65 +17,27 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * List Behaviors
  */
-@ApiModel(description = "List Behaviors")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "List Behaviors")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class BehaviorEntity {
-  @JsonProperty("id")
-  private Integer id = null;
-
-  @JsonProperty("path")
-  private String path = null;
-
   @JsonProperty("attachment_url")
   private String attachmentUrl = null;
 
   @JsonProperty("behavior")
   private String behavior = null;
 
+  @JsonProperty("id")
+  private Integer id = null;
+
+  @JsonProperty("path")
+  private String path = null;
+
   @JsonProperty("value")
   private Object value = null;
-
-  public BehaviorEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Folder behavior ID
-   * @return id
-  **/
-  @ApiModelProperty(example = "1", value = "Folder behavior ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public BehaviorEntity path(String path) {
-    this.path = path;
-    return this;
-  }
-
-   /**
-   * Folder path
-   * @return path
-  **/
-  @ApiModelProperty(example = "", value = "Folder path")
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(String path) {
-    this.path = path;
-  }
 
   public BehaviorEntity attachmentUrl(String attachmentUrl) {
     this.attachmentUrl = attachmentUrl;
@@ -87,7 +48,7 @@ public class BehaviorEntity {
    * URL for attached file
    * @return attachmentUrl
   **/
-  @ApiModelProperty(example = "", value = "URL for attached file")
+  @Schema(description = "URL for attached file")
   public String getAttachmentUrl() {
     return attachmentUrl;
   }
@@ -105,13 +66,49 @@ public class BehaviorEntity {
    * Behavior type.
    * @return behavior
   **/
-  @ApiModelProperty(example = "webhook", value = "Behavior type.")
+  @Schema(example = "webhook", description = "Behavior type.")
   public String getBehavior() {
     return behavior;
   }
 
   public void setBehavior(String behavior) {
     this.behavior = behavior;
+  }
+
+  public BehaviorEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Folder behavior ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "Folder behavior ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public BehaviorEntity path(String path) {
+    this.path = path;
+    return this;
+  }
+
+   /**
+   * Folder path
+   * @return path
+  **/
+  @Schema(description = "Folder path")
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
   }
 
   public BehaviorEntity value(Object value) {
@@ -123,7 +120,7 @@ public class BehaviorEntity {
    * Settings for this behavior.  See the section above for an example value to provide here.  Formatting is different for each Behavior type.  May be sent as nested JSON or a single JSON-encoded string.  If using XML encoding for the API call, this data must be sent as a JSON-encoded string.
    * @return value
   **/
-  @ApiModelProperty(example = "\"{ \\\"method\\\": \\\"GET\\\" }\"", value = "Settings for this behavior.  See the section above for an example value to provide here.  Formatting is different for each Behavior type.  May be sent as nested JSON or a single JSON-encoded string.  If using XML encoding for the API call, this data must be sent as a JSON-encoded string.")
+  @Schema(example = "{ \"method\": \"GET\" }", description = "Settings for this behavior.  See the section above for an example value to provide here.  Formatting is different for each Behavior type.  May be sent as nested JSON or a single JSON-encoded string.  If using XML encoding for the API call, this data must be sent as a JSON-encoded string.")
   public Object getValue() {
     return value;
   }
@@ -142,16 +139,16 @@ public class BehaviorEntity {
       return false;
     }
     BehaviorEntity behaviorEntity = (BehaviorEntity) o;
-    return Objects.equals(this.id, behaviorEntity.id) &&
-        Objects.equals(this.path, behaviorEntity.path) &&
-        Objects.equals(this.attachmentUrl, behaviorEntity.attachmentUrl) &&
+    return Objects.equals(this.attachmentUrl, behaviorEntity.attachmentUrl) &&
         Objects.equals(this.behavior, behaviorEntity.behavior) &&
+        Objects.equals(this.id, behaviorEntity.id) &&
+        Objects.equals(this.path, behaviorEntity.path) &&
         Objects.equals(this.value, behaviorEntity.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, path, attachmentUrl, behavior, value);
+    return Objects.hash(attachmentUrl, behavior, id, path, value);
   }
 
 
@@ -160,10 +157,10 @@ public class BehaviorEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class BehaviorEntity {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    attachmentUrl: ").append(toIndentedString(attachmentUrl)).append("\n");
     sb.append("    behavior: ").append(toIndentedString(behavior)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -181,4 +178,3 @@ public class BehaviorEntity {
   }
 
 }
-

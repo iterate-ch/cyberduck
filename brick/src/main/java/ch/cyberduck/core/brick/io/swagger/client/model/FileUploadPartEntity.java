@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,18 +17,13 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * Begin file upload
  */
-@ApiModel(description = "Begin file upload")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "Begin file upload")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class FileUploadPartEntity {
-  @JsonProperty("send")
-  private Object send = null;
-
   @JsonProperty("action")
   private String action = null;
 
@@ -69,26 +63,11 @@ public class FileUploadPartEntity {
   @JsonProperty("ref")
   private String ref = null;
 
+  @JsonProperty("send")
+  private Object send = null;
+
   @JsonProperty("upload_uri")
   private String uploadUri = null;
-
-  public FileUploadPartEntity send(Object send) {
-    this.send = send;
-    return this;
-  }
-
-   /**
-   * Content-Type and File to send
-   * @return send
-  **/
-  @ApiModelProperty(example = "{}", value = "Content-Type and File to send")
-  public Object getSend() {
-    return send;
-  }
-
-  public void setSend(Object send) {
-    this.send = send;
-  }
 
   public FileUploadPartEntity action(String action) {
     this.action = action;
@@ -99,7 +78,7 @@ public class FileUploadPartEntity {
    * Type of upload
    * @return action
   **/
-  @ApiModelProperty(example = "multipart", value = "Type of upload")
+  @Schema(example = "multipart", description = "Type of upload")
   public String getAction() {
     return action;
   }
@@ -117,7 +96,7 @@ public class FileUploadPartEntity {
    * If &#x60;true&#x60;, this file exists and you may wish to ask the user for overwrite confirmation
    * @return askAboutOverwrites
   **/
-  @ApiModelProperty(example = "true", value = "If `true`, this file exists and you may wish to ask the user for overwrite confirmation")
+  @Schema(example = "true", description = "If `true`, this file exists and you may wish to ask the user for overwrite confirmation")
   public Boolean isAskAboutOverwrites() {
     return askAboutOverwrites;
   }
@@ -135,7 +114,7 @@ public class FileUploadPartEntity {
    * Number of parts in the upload
    * @return availableParts
   **/
-  @ApiModelProperty(example = "1", value = "Number of parts in the upload")
+  @Schema(example = "1", description = "Number of parts in the upload")
   public Integer getAvailableParts() {
     return availableParts;
   }
@@ -153,7 +132,7 @@ public class FileUploadPartEntity {
    * Date/time of when this Upload part expires and the URL cannot be used any more
    * @return expires
   **/
-  @ApiModelProperty(example = "", value = "Date/time of when this Upload part expires and the URL cannot be used any more")
+  @Schema(description = "Date/time of when this Upload part expires and the URL cannot be used any more")
   public String getExpires() {
     return expires;
   }
@@ -171,7 +150,7 @@ public class FileUploadPartEntity {
    * Additional upload headers to provide as part of the upload
    * @return headers
   **/
-  @ApiModelProperty(example = "{}", value = "Additional upload headers to provide as part of the upload")
+  @Schema(example = "{}", description = "Additional upload headers to provide as part of the upload")
   public Object getHeaders() {
     return headers;
   }
@@ -189,7 +168,7 @@ public class FileUploadPartEntity {
    * HTTP Method to use for uploading the part, usually &#x60;PUT&#x60;
    * @return httpMethod
   **/
-  @ApiModelProperty(example = "PUT", value = "HTTP Method to use for uploading the part, usually `PUT`")
+  @Schema(example = "PUT", description = "HTTP Method to use for uploading the part, usually `PUT`")
   public String getHttpMethod() {
     return httpMethod;
   }
@@ -207,7 +186,7 @@ public class FileUploadPartEntity {
    * Size in bytes for this part
    * @return nextPartsize
   **/
-  @ApiModelProperty(example = "1", value = "Size in bytes for this part")
+  @Schema(example = "1", description = "Size in bytes for this part")
   public Integer getNextPartsize() {
     return nextPartsize;
   }
@@ -225,7 +204,7 @@ public class FileUploadPartEntity {
    * If &#x60;true&#x60;, multiple parts may be uploaded in parallel.  If &#x60;false&#x60;, be sure to only upload one part at a time, in order.
    * @return parallelParts
   **/
-  @ApiModelProperty(example = "true", value = "If `true`, multiple parts may be uploaded in parallel.  If `false`, be sure to only upload one part at a time, in order.")
+  @Schema(example = "true", description = "If `true`, multiple parts may be uploaded in parallel.  If `false`, be sure to only upload one part at a time, in order.")
   public Boolean isParallelParts() {
     return parallelParts;
   }
@@ -243,7 +222,7 @@ public class FileUploadPartEntity {
    * Additional HTTP parameters to send with the upload
    * @return parameters
   **/
-  @ApiModelProperty(example = "\"{}\"", value = "Additional HTTP parameters to send with the upload")
+  @Schema(example = "{}", description = "Additional HTTP parameters to send with the upload")
   public Object getParameters() {
     return parameters;
   }
@@ -261,7 +240,7 @@ public class FileUploadPartEntity {
    * Number of this upload part
    * @return partNumber
   **/
-  @ApiModelProperty(example = "1", value = "Number of this upload part")
+  @Schema(example = "1", description = "Number of this upload part")
   public Integer getPartNumber() {
     return partNumber;
   }
@@ -279,7 +258,7 @@ public class FileUploadPartEntity {
    * Size in bytes for the next upload part
    * @return partsize
   **/
-  @ApiModelProperty(example = "1", value = "Size in bytes for the next upload part")
+  @Schema(example = "1", description = "Size in bytes for the next upload part")
   public Integer getPartsize() {
     return partsize;
   }
@@ -297,7 +276,7 @@ public class FileUploadPartEntity {
    * New file path
    * @return path
   **/
-  @ApiModelProperty(example = "path", value = "New file path")
+  @Schema(example = "path", description = "New file path")
   public String getPath() {
     return path;
   }
@@ -315,13 +294,31 @@ public class FileUploadPartEntity {
    * Reference name for this upload part
    * @return ref
   **/
-  @ApiModelProperty(example = "upload-1", value = "Reference name for this upload part")
+  @Schema(example = "upload-1", description = "Reference name for this upload part")
   public String getRef() {
     return ref;
   }
 
   public void setRef(String ref) {
     this.ref = ref;
+  }
+
+  public FileUploadPartEntity send(Object send) {
+    this.send = send;
+    return this;
+  }
+
+   /**
+   * Content-Type and File to send
+   * @return send
+  **/
+  @Schema(example = "{}", description = "Content-Type and File to send")
+  public Object getSend() {
+    return send;
+  }
+
+  public void setSend(Object send) {
+    this.send = send;
   }
 
   public FileUploadPartEntity uploadUri(String uploadUri) {
@@ -333,7 +330,7 @@ public class FileUploadPartEntity {
    * URI to upload this part to
    * @return uploadUri
   **/
-  @ApiModelProperty(example = "", value = "URI to upload this part to")
+  @Schema(description = "URI to upload this part to")
   public String getUploadUri() {
     return uploadUri;
   }
@@ -352,8 +349,7 @@ public class FileUploadPartEntity {
       return false;
     }
     FileUploadPartEntity fileUploadPartEntity = (FileUploadPartEntity) o;
-    return Objects.equals(this.send, fileUploadPartEntity.send) &&
-        Objects.equals(this.action, fileUploadPartEntity.action) &&
+    return Objects.equals(this.action, fileUploadPartEntity.action) &&
         Objects.equals(this.askAboutOverwrites, fileUploadPartEntity.askAboutOverwrites) &&
         Objects.equals(this.availableParts, fileUploadPartEntity.availableParts) &&
         Objects.equals(this.expires, fileUploadPartEntity.expires) &&
@@ -366,12 +362,13 @@ public class FileUploadPartEntity {
         Objects.equals(this.partsize, fileUploadPartEntity.partsize) &&
         Objects.equals(this.path, fileUploadPartEntity.path) &&
         Objects.equals(this.ref, fileUploadPartEntity.ref) &&
+        Objects.equals(this.send, fileUploadPartEntity.send) &&
         Objects.equals(this.uploadUri, fileUploadPartEntity.uploadUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(send, action, askAboutOverwrites, availableParts, expires, headers, httpMethod, nextPartsize, parallelParts, parameters, partNumber, partsize, path, ref, uploadUri);
+    return Objects.hash(action, askAboutOverwrites, availableParts, expires, headers, httpMethod, nextPartsize, parallelParts, parameters, partNumber, partsize, path, ref, send, uploadUri);
   }
 
 
@@ -380,7 +377,6 @@ public class FileUploadPartEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class FileUploadPartEntity {\n");
     
-    sb.append("    send: ").append(toIndentedString(send)).append("\n");
     sb.append("    action: ").append(toIndentedString(action)).append("\n");
     sb.append("    askAboutOverwrites: ").append(toIndentedString(askAboutOverwrites)).append("\n");
     sb.append("    availableParts: ").append(toIndentedString(availableParts)).append("\n");
@@ -394,6 +390,7 @@ public class FileUploadPartEntity {
     sb.append("    partsize: ").append(toIndentedString(partsize)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    ref: ").append(toIndentedString(ref)).append("\n");
+    sb.append("    send: ").append(toIndentedString(send)).append("\n");
     sb.append("    uploadUri: ").append(toIndentedString(uploadUri)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -411,4 +408,3 @@ public class FileUploadPartEntity {
   }
 
 }
-

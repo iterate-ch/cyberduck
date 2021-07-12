@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -19,22 +18,20 @@ import ch.cyberduck.core.brick.io.swagger.client.model.PatchFormFieldSetsFormFie
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * Create Form Field Set
  */
-@ApiModel(description = "Create Form Field Set")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "Create Form Field Set")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class PostFormFieldSets {
-  @JsonProperty("user_id")
-  private Integer userId = null;
+  @JsonProperty("form_fields")
+  private List<PatchFormFieldSetsFormFields> formFields = null;
 
-  @JsonProperty("title")
-  private String title = null;
+  @JsonProperty("skip_company")
+  private Boolean skipCompany = null;
 
   @JsonProperty("skip_email")
   private Boolean skipEmail = null;
@@ -42,101 +39,11 @@ public class PostFormFieldSets {
   @JsonProperty("skip_name")
   private Boolean skipName = null;
 
-  @JsonProperty("skip_company")
-  private Boolean skipCompany = null;
+  @JsonProperty("title")
+  private String title = null;
 
-  @JsonProperty("form_fields")
-  private List<PatchFormFieldSetsFormFields> formFields = null;
-
-  public PostFormFieldSets userId(Integer userId) {
-    this.userId = userId;
-    return this;
-  }
-
-   /**
-   * User ID.  Provide a value of &#x60;0&#x60; to operate the current session&#39;s user.
-   * @return userId
-  **/
-  @ApiModelProperty(value = "User ID.  Provide a value of `0` to operate the current session's user.")
-  public Integer getUserId() {
-    return userId;
-  }
-
-  public void setUserId(Integer userId) {
-    this.userId = userId;
-  }
-
-  public PostFormFieldSets title(String title) {
-    this.title = title;
-    return this;
-  }
-
-   /**
-   * Title to be displayed
-   * @return title
-  **/
-  @ApiModelProperty(value = "Title to be displayed")
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public PostFormFieldSets skipEmail(Boolean skipEmail) {
-    this.skipEmail = skipEmail;
-    return this;
-  }
-
-   /**
-   * Skip validating form email
-   * @return skipEmail
-  **/
-  @ApiModelProperty(value = "Skip validating form email")
-  public Boolean isSkipEmail() {
-    return skipEmail;
-  }
-
-  public void setSkipEmail(Boolean skipEmail) {
-    this.skipEmail = skipEmail;
-  }
-
-  public PostFormFieldSets skipName(Boolean skipName) {
-    this.skipName = skipName;
-    return this;
-  }
-
-   /**
-   * Skip validating form name
-   * @return skipName
-  **/
-  @ApiModelProperty(value = "Skip validating form name")
-  public Boolean isSkipName() {
-    return skipName;
-  }
-
-  public void setSkipName(Boolean skipName) {
-    this.skipName = skipName;
-  }
-
-  public PostFormFieldSets skipCompany(Boolean skipCompany) {
-    this.skipCompany = skipCompany;
-    return this;
-  }
-
-   /**
-   * Skip validating company
-   * @return skipCompany
-  **/
-  @ApiModelProperty(value = "Skip validating company")
-  public Boolean isSkipCompany() {
-    return skipCompany;
-  }
-
-  public void setSkipCompany(Boolean skipCompany) {
-    this.skipCompany = skipCompany;
-  }
+  @JsonProperty("user_id")
+  private Integer userId = null;
 
   public PostFormFieldSets formFields(List<PatchFormFieldSetsFormFields> formFields) {
     this.formFields = formFields;
@@ -155,13 +62,103 @@ public class PostFormFieldSets {
    * Get formFields
    * @return formFields
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public List<PatchFormFieldSetsFormFields> getFormFields() {
     return formFields;
   }
 
   public void setFormFields(List<PatchFormFieldSetsFormFields> formFields) {
     this.formFields = formFields;
+  }
+
+  public PostFormFieldSets skipCompany(Boolean skipCompany) {
+    this.skipCompany = skipCompany;
+    return this;
+  }
+
+   /**
+   * Skip validating company
+   * @return skipCompany
+  **/
+  @Schema(description = "Skip validating company")
+  public Boolean isSkipCompany() {
+    return skipCompany;
+  }
+
+  public void setSkipCompany(Boolean skipCompany) {
+    this.skipCompany = skipCompany;
+  }
+
+  public PostFormFieldSets skipEmail(Boolean skipEmail) {
+    this.skipEmail = skipEmail;
+    return this;
+  }
+
+   /**
+   * Skip validating form email
+   * @return skipEmail
+  **/
+  @Schema(description = "Skip validating form email")
+  public Boolean isSkipEmail() {
+    return skipEmail;
+  }
+
+  public void setSkipEmail(Boolean skipEmail) {
+    this.skipEmail = skipEmail;
+  }
+
+  public PostFormFieldSets skipName(Boolean skipName) {
+    this.skipName = skipName;
+    return this;
+  }
+
+   /**
+   * Skip validating form name
+   * @return skipName
+  **/
+  @Schema(description = "Skip validating form name")
+  public Boolean isSkipName() {
+    return skipName;
+  }
+
+  public void setSkipName(Boolean skipName) {
+    this.skipName = skipName;
+  }
+
+  public PostFormFieldSets title(String title) {
+    this.title = title;
+    return this;
+  }
+
+   /**
+   * Title to be displayed
+   * @return title
+  **/
+  @Schema(description = "Title to be displayed")
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public PostFormFieldSets userId(Integer userId) {
+    this.userId = userId;
+    return this;
+  }
+
+   /**
+   * User ID.  Provide a value of &#x60;0&#x60; to operate the current session&#x27;s user.
+   * @return userId
+  **/
+  @Schema(description = "User ID.  Provide a value of `0` to operate the current session's user.")
+  public Integer getUserId() {
+    return userId;
+  }
+
+  public void setUserId(Integer userId) {
+    this.userId = userId;
   }
 
 
@@ -174,17 +171,17 @@ public class PostFormFieldSets {
       return false;
     }
     PostFormFieldSets postFormFieldSets = (PostFormFieldSets) o;
-    return Objects.equals(this.userId, postFormFieldSets.userId) &&
-        Objects.equals(this.title, postFormFieldSets.title) &&
+    return Objects.equals(this.formFields, postFormFieldSets.formFields) &&
+        Objects.equals(this.skipCompany, postFormFieldSets.skipCompany) &&
         Objects.equals(this.skipEmail, postFormFieldSets.skipEmail) &&
         Objects.equals(this.skipName, postFormFieldSets.skipName) &&
-        Objects.equals(this.skipCompany, postFormFieldSets.skipCompany) &&
-        Objects.equals(this.formFields, postFormFieldSets.formFields);
+        Objects.equals(this.title, postFormFieldSets.title) &&
+        Objects.equals(this.userId, postFormFieldSets.userId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(userId, title, skipEmail, skipName, skipCompany, formFields);
+    return Objects.hash(formFields, skipCompany, skipEmail, skipName, title, userId);
   }
 
 
@@ -193,12 +190,12 @@ public class PostFormFieldSets {
     StringBuilder sb = new StringBuilder();
     sb.append("class PostFormFieldSets {\n");
     
-    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
-    sb.append("    title: ").append(toIndentedString(title)).append("\n");
+    sb.append("    formFields: ").append(toIndentedString(formFields)).append("\n");
+    sb.append("    skipCompany: ").append(toIndentedString(skipCompany)).append("\n");
     sb.append("    skipEmail: ").append(toIndentedString(skipEmail)).append("\n");
     sb.append("    skipName: ").append(toIndentedString(skipName)).append("\n");
-    sb.append("    skipCompany: ").append(toIndentedString(skipCompany)).append("\n");
-    sb.append("    formFields: ").append(toIndentedString(formFields)).append("\n");
+    sb.append("    title: ").append(toIndentedString(title)).append("\n");
+    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -215,4 +212,3 @@ public class PostFormFieldSets {
   }
 
 }
-

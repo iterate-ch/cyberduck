@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -18,14 +17,13 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.joda.time.DateTime;
-
 /**
  * PaymentLineItemEntity
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class PaymentLineItemEntity {
   @JsonProperty("amount")
   private Double amount = null;
@@ -51,7 +49,7 @@ public class PaymentLineItemEntity {
    * Payment line item amount
    * @return amount
   **/
-  @ApiModelProperty(example = "1.0", value = "Payment line item amount")
+  @Schema(example = "1", description = "Payment line item amount")
   public Double getAmount() {
     return amount;
   }
@@ -69,7 +67,7 @@ public class PaymentLineItemEntity {
    * Payment line item created at date/time
    * @return createdAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Payment line item created at date/time")
+  @Schema(example = "2000-01-01T01:00Z", description = "Payment line item created at date/time")
   public DateTime getCreatedAt() {
     return createdAt;
   }
@@ -87,7 +85,7 @@ public class PaymentLineItemEntity {
    * Invoice ID
    * @return invoiceId
   **/
-  @ApiModelProperty(example = "1", value = "Invoice ID")
+  @Schema(example = "1", description = "Invoice ID")
   public Integer getInvoiceId() {
     return invoiceId;
   }
@@ -105,7 +103,7 @@ public class PaymentLineItemEntity {
    * Payment ID
    * @return paymentId
   **/
-  @ApiModelProperty(example = "1", value = "Payment ID")
+  @Schema(example = "1", description = "Payment ID")
   public Integer getPaymentId() {
     return paymentId;
   }
@@ -123,7 +121,7 @@ public class PaymentLineItemEntity {
    * Payment line item updated at date/time
    * @return updatedAt
   **/
-  @ApiModelProperty(example = "2000-01-01T01:00:00Z", value = "Payment line item updated at date/time")
+  @Schema(example = "2000-01-01T01:00Z", description = "Payment line item updated at date/time")
   public DateTime getUpdatedAt() {
     return updatedAt;
   }
@@ -181,4 +179,3 @@ public class PaymentLineItemEntity {
   }
 
 }
-

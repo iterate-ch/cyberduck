@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
@@ -19,19 +18,20 @@ import ch.cyberduck.core.brick.io.swagger.client.model.PatchFormFieldSetsFormFie
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * Update Form Field Set
  */
-@ApiModel(description = "Update Form Field Set")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2021-06-30T21:29:25.490+02:00")
+@Schema(description = "Update Form Field Set")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
 public class PatchFormFieldSets {
-  @JsonProperty("title")
-  private String title = null;
+  @JsonProperty("form_fields")
+  private List<PatchFormFieldSetsFormFields> formFields = null;
+
+  @JsonProperty("skip_company")
+  private Boolean skipCompany = null;
 
   @JsonProperty("skip_email")
   private Boolean skipEmail = null;
@@ -39,83 +39,8 @@ public class PatchFormFieldSets {
   @JsonProperty("skip_name")
   private Boolean skipName = null;
 
-  @JsonProperty("skip_company")
-  private Boolean skipCompany = null;
-
-  @JsonProperty("form_fields")
-  private List<PatchFormFieldSetsFormFields> formFields = null;
-
-  public PatchFormFieldSets title(String title) {
-    this.title = title;
-    return this;
-  }
-
-   /**
-   * Title to be displayed
-   * @return title
-  **/
-  @ApiModelProperty(value = "Title to be displayed")
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public PatchFormFieldSets skipEmail(Boolean skipEmail) {
-    this.skipEmail = skipEmail;
-    return this;
-  }
-
-   /**
-   * Skip validating form email
-   * @return skipEmail
-  **/
-  @ApiModelProperty(value = "Skip validating form email")
-  public Boolean isSkipEmail() {
-    return skipEmail;
-  }
-
-  public void setSkipEmail(Boolean skipEmail) {
-    this.skipEmail = skipEmail;
-  }
-
-  public PatchFormFieldSets skipName(Boolean skipName) {
-    this.skipName = skipName;
-    return this;
-  }
-
-   /**
-   * Skip validating form name
-   * @return skipName
-  **/
-  @ApiModelProperty(value = "Skip validating form name")
-  public Boolean isSkipName() {
-    return skipName;
-  }
-
-  public void setSkipName(Boolean skipName) {
-    this.skipName = skipName;
-  }
-
-  public PatchFormFieldSets skipCompany(Boolean skipCompany) {
-    this.skipCompany = skipCompany;
-    return this;
-  }
-
-   /**
-   * Skip validating company
-   * @return skipCompany
-  **/
-  @ApiModelProperty(value = "Skip validating company")
-  public Boolean isSkipCompany() {
-    return skipCompany;
-  }
-
-  public void setSkipCompany(Boolean skipCompany) {
-    this.skipCompany = skipCompany;
-  }
+  @JsonProperty("title")
+  private String title = null;
 
   public PatchFormFieldSets formFields(List<PatchFormFieldSetsFormFields> formFields) {
     this.formFields = formFields;
@@ -134,13 +59,85 @@ public class PatchFormFieldSets {
    * Get formFields
    * @return formFields
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public List<PatchFormFieldSetsFormFields> getFormFields() {
     return formFields;
   }
 
   public void setFormFields(List<PatchFormFieldSetsFormFields> formFields) {
     this.formFields = formFields;
+  }
+
+  public PatchFormFieldSets skipCompany(Boolean skipCompany) {
+    this.skipCompany = skipCompany;
+    return this;
+  }
+
+   /**
+   * Skip validating company
+   * @return skipCompany
+  **/
+  @Schema(description = "Skip validating company")
+  public Boolean isSkipCompany() {
+    return skipCompany;
+  }
+
+  public void setSkipCompany(Boolean skipCompany) {
+    this.skipCompany = skipCompany;
+  }
+
+  public PatchFormFieldSets skipEmail(Boolean skipEmail) {
+    this.skipEmail = skipEmail;
+    return this;
+  }
+
+   /**
+   * Skip validating form email
+   * @return skipEmail
+  **/
+  @Schema(description = "Skip validating form email")
+  public Boolean isSkipEmail() {
+    return skipEmail;
+  }
+
+  public void setSkipEmail(Boolean skipEmail) {
+    this.skipEmail = skipEmail;
+  }
+
+  public PatchFormFieldSets skipName(Boolean skipName) {
+    this.skipName = skipName;
+    return this;
+  }
+
+   /**
+   * Skip validating form name
+   * @return skipName
+  **/
+  @Schema(description = "Skip validating form name")
+  public Boolean isSkipName() {
+    return skipName;
+  }
+
+  public void setSkipName(Boolean skipName) {
+    this.skipName = skipName;
+  }
+
+  public PatchFormFieldSets title(String title) {
+    this.title = title;
+    return this;
+  }
+
+   /**
+   * Title to be displayed
+   * @return title
+  **/
+  @Schema(description = "Title to be displayed")
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
 
@@ -153,16 +150,16 @@ public class PatchFormFieldSets {
       return false;
     }
     PatchFormFieldSets patchFormFieldSets = (PatchFormFieldSets) o;
-    return Objects.equals(this.title, patchFormFieldSets.title) &&
+    return Objects.equals(this.formFields, patchFormFieldSets.formFields) &&
+        Objects.equals(this.skipCompany, patchFormFieldSets.skipCompany) &&
         Objects.equals(this.skipEmail, patchFormFieldSets.skipEmail) &&
         Objects.equals(this.skipName, patchFormFieldSets.skipName) &&
-        Objects.equals(this.skipCompany, patchFormFieldSets.skipCompany) &&
-        Objects.equals(this.formFields, patchFormFieldSets.formFields);
+        Objects.equals(this.title, patchFormFieldSets.title);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, skipEmail, skipName, skipCompany, formFields);
+    return Objects.hash(formFields, skipCompany, skipEmail, skipName, title);
   }
 
 
@@ -171,11 +168,11 @@ public class PatchFormFieldSets {
     StringBuilder sb = new StringBuilder();
     sb.append("class PatchFormFieldSets {\n");
     
-    sb.append("    title: ").append(toIndentedString(title)).append("\n");
+    sb.append("    formFields: ").append(toIndentedString(formFields)).append("\n");
+    sb.append("    skipCompany: ").append(toIndentedString(skipCompany)).append("\n");
     sb.append("    skipEmail: ").append(toIndentedString(skipEmail)).append("\n");
     sb.append("    skipName: ").append(toIndentedString(skipName)).append("\n");
-    sb.append("    skipCompany: ").append(toIndentedString(skipCompany)).append("\n");
-    sb.append("    formFields: ").append(toIndentedString(formFields)).append("\n");
+    sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -192,4 +189,3 @@ public class PatchFormFieldSets {
   }
 
 }
-
