@@ -42,7 +42,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.swagger</groupId>
+            <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
         </dependency>
     </dependencies>
@@ -65,7 +65,7 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>io.swagger</groupId>
+                        <groupId>io.swagger.codegen.v3</groupId>
                         <artifactId>swagger-codegen-maven-plugin</artifactId>
                         <executions>
                             <execution>
@@ -73,7 +73,7 @@
                                     <goal>generate</goal>
                                 </goals>
                                 <configuration>
-                                    <inputSpec>https://app.files.com/api/rest/v1/swagger_doc.json</inputSpec>
+                                    <inputSpec>${project.basedir}/src/main/resources/brick.json</inputSpec>
                                     <language>java</language>
                                     <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.brick.io.swagger.client.model</modelPackage>
