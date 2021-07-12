@@ -275,12 +275,12 @@ public class Terminal {
                 new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
                 VaultRegistryFactory.create(new TerminalPasswordCallback()));
             final Path remote;
-            if(StringUtils.startsWith(new CommandLinePathParser(input).parse(uri).getAbsolute(), TildePathExpander.PREFIX)) {
+            if(StringUtils.startsWith(new CommandLinePathParser(input, protocols).parse(uri).getAbsolute(), TildePathExpander.PREFIX)) {
                 final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
-                remote = new TildePathExpander(home).expand(new CommandLinePathParser(input).parse(uri));
+                remote = new TildePathExpander(home).expand(new CommandLinePathParser(input, protocols).parse(uri));
             }
             else {
-                remote = new CommandLinePathParser(input).parse(uri);
+                remote = new CommandLinePathParser(input, protocols).parse(uri);
             }
             try {
                 // Set remote file attributes of existing file on server
@@ -346,7 +346,7 @@ public class Terminal {
                         new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)),
                         VaultRegistryFactory.create(new TerminalPasswordCallback()));
                     return this.transfer(new CopyTransfer(
-                            host, target, Collections.singletonMap(remote, new CommandLinePathParser(input).parse(input.getOptionValues(action.name())[1]))),
+                            host, target, Collections.singletonMap(remote, new CommandLinePathParser(input, protocols).parse(input.getOptionValues(action.name())[1]))),
                         source, destination);
                 default:
                     throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
