@@ -1,7 +1,5 @@
-package ch.cyberduck.core.brick;
-
-/*
- * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+package ch.cyberduck.core.brick;/*
+ * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,32 +13,39 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.FilesApi;
-import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody1;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.joda.time.DateTime;
+import java.util.Map;
 
-public class BrickTimestampFeature extends DefaultTimestampFeature {
+public class BrickDeleteFeature implements Delete {
 
     private final BrickSession session;
 
-    public BrickTimestampFeature(final BrickSession session) {
+    public BrickDeleteFeature(final BrickSession session) {
         this.session = session;
     }
 
     @Override
-    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         try {
-            new FilesApi(session.getClient()).patchFilesPath(file.getAbsolute(),
-                new FilesPathBody1().providedMtime(new DateTime(status.getTimestamp())));
+            for(Path f : files.keySet()) {
+                new FilesApi(session.getClient()).deleteFilesPath(f.getAbsolute(), f.isDirectory());
+            }
         }
         catch(ApiException e) {
-            throw new BrickExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+            throw new BrickExceptionMappingService().map(e);
         }
+    }
+
+    @Override
+    public boolean isRecursive() {
+        return true;
     }
 }

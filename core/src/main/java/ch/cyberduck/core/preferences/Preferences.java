@@ -867,6 +867,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("brick.pairing.hostname.configure", String.valueOf(true));
         this.setDefault("brick.pairing.interval.ms", String.valueOf(1000L));
         this.setDefault("brick.pairing.interrupt.ms", String.valueOf(10 * 60 * 1000L)); // 10min
+        this.setDefault("brick.listing.chunksize", String.valueOf(1000));
 
         this.setDefault("dropbox.upload.chunksize", String.valueOf(150 * 1024L * 1024L));
         this.setDefault("dropbox.business.enable", String.valueOf(true));

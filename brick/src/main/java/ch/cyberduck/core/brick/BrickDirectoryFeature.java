@@ -1,7 +1,7 @@
 package ch.cyberduck.core.brick;
 
 /*
- * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,30 +17,35 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
-import ch.cyberduck.core.brick.io.swagger.client.api.FilesApi;
-import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody1;
+import ch.cyberduck.core.brick.io.swagger.client.api.FoldersApi;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.joda.time.DateTime;
+import java.util.EnumSet;
 
-public class BrickTimestampFeature extends DefaultTimestampFeature {
+public class BrickDirectoryFeature implements Directory<Void> {
 
     private final BrickSession session;
 
-    public BrickTimestampFeature(final BrickSession session) {
+    public BrickDirectoryFeature(final BrickSession session) {
         this.session = session;
     }
 
     @Override
-    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
-            new FilesApi(session.getClient()).patchFilesPath(file.getAbsolute(),
-                new FilesPathBody1().providedMtime(new DateTime(status.getTimestamp())));
+            return new Path(folder.getAbsolute(), EnumSet.of(Path.Type.directory),
+                new BrickAttributesFinderFeature(session).toAttributes(new FoldersApi(session.getClient()).postFoldersPath(folder.getAbsolute())));
         }
         catch(ApiException e) {
-            throw new BrickExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+            throw new BrickExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
+    }
+
+    @Override
+    public Directory<Void> withWriter(final Write<Void> writer) {
+        return this;
     }
 }

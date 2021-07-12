@@ -21,23 +21,31 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.dav.DAVClient;
-import ch.cyberduck.core.dav.DAVRedirectStrategy;
-import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.dav.DAVUploadFeature;
+import ch.cyberduck.core.brick.io.swagger.client.JSON;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Lock;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.PreferencesRedirectCallback;
+import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
@@ -45,9 +53,15 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.message.internal.InputStreamProvider;
 
+import javax.ws.rs.client.ClientBuilder;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
@@ -55,7 +69,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
-public class BrickSession extends DAVSession {
+public class BrickSession extends HttpSession<BrickApiClient> {
     private static final Logger log = Logger.getLogger(BrickSession.class);
 
     public BrickSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -63,11 +77,24 @@ public class BrickSession extends DAVSession {
     }
 
     @Override
-    protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected BrickApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
         configuration.setServiceUnavailableRetryStrategy(new BrickUnauthorizedRetryStrategy(this, prompt, cancel));
-        return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
+        final CloseableHttpClient apache = configuration.build();
+        final BrickApiClient client = new BrickApiClient(apache);
+        client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
+            null, host.getHostname(), "api/rest/v1"));
+        client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
+            .register(new InputStreamProvider())
+            .register(MultiPartFeature.class)
+            .register(new JSON())
+            .register(JacksonFeature.class)
+            .connectorProvider(new HttpComponentsProvider(apache))));
+        final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
+        client.setConnectTimeout(timeout);
+        client.setReadTimeout(timeout);
+        client.setUserAgent(new PreferencesUseragentProvider().get());
+        return client;
     }
 
     @Override
@@ -77,14 +104,12 @@ public class BrickSession extends DAVSession {
             // No prompt on explicit connect
             this.pair(host, new DisabledConnectionCallback(), cancel).setSaved(true);
         }
-        try {
-            super.login(proxy, prompt, cancel);
-        }
-        catch(LoginFailureException e) {
-            log.warn(String.format("Attempt to obtain new pairing keys for response %s", e));
-            this.pair(host, prompt, cancel).setSaved(true);
-            super.login(proxy, prompt, cancel);
-        }
+        client.setApiKey(credentials.getPassword());
+    }
+
+    @Override
+    protected void logout() {
+        client.getHttpClient().close();
     }
 
     public Credentials pair(final Host bookmark, final ConnectionCallback prompt, final CancelCallback cancel) throws BackgroundException {
@@ -148,11 +173,14 @@ public class BrickSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == Upload.class) {
+            return (T) new BrickUploadFeature(this, new BrickWriteFeature(this));
+        }
         if(type == Write.class) {
             return (T) new BrickWriteFeature(this);
         }
-        if(type == Upload.class) {
-            return (T) new DAVUploadFeature(new BrickWriteFeature(this));
+        if(type == Touch.class) {
+            return (T) new BrickTouchFeature(this);
         }
         if(type == Timestamp.class) {
             return (T) new BrickTimestampFeature(this);
@@ -160,7 +188,36 @@ public class BrickSession extends DAVSession {
         if(type == UrlProvider.class) {
             return (T) new BrickUrlProvider(host);
         }
+        if(type == ListService.class) {
+            return (T) new BrickListService(this);
+        }
+        if(type == Read.class) {
+            return (T) new BrickReadFeature(this);
+        }
+        if(type == Move.class) {
+            return (T) new BrickMoveFeature(this);
+        }
+        if(type == Copy.class) {
+            return (T) new BrickCopyFeature(this);
+        }
+        if(type == Directory.class) {
+            return (T) new BrickDirectoryFeature(this);
+        }
+        if(type == Delete.class) {
+            return (T) new BrickDeleteFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new BrickFindFeature(this);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new BrickAttributesFinderFeature(this);
+        }
+        if(type == Lock.class) {
+            return (T) new BrickLockFeature(this);
+        }
+        if(type == PromptUrlProvider.class) {
+            return (T) new BrickShareFeature(this);
+        }
         return super._getFeature(type);
     }
-
 }

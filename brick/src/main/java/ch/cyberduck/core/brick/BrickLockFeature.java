@@ -1,7 +1,7 @@
 package ch.cyberduck.core.brick;
 
 /*
- * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,27 +17,33 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
-import ch.cyberduck.core.brick.io.swagger.client.api.FilesApi;
-import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody1;
+import ch.cyberduck.core.brick.io.swagger.client.api.LocksApi;
+import ch.cyberduck.core.brick.io.swagger.client.model.LocksPathBody;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultTimestampFeature;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.features.Lock;
 
-import org.joda.time.DateTime;
-
-public class BrickTimestampFeature extends DefaultTimestampFeature {
+public class BrickLockFeature implements Lock<String> {
 
     private final BrickSession session;
 
-    public BrickTimestampFeature(final BrickSession session) {
+    public BrickLockFeature(final BrickSession session) {
         this.session = session;
     }
 
     @Override
-    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
+    public String lock(final Path file) throws BackgroundException {
         try {
-            new FilesApi(session.getClient()).patchFilesPath(file.getAbsolute(),
-                new FilesPathBody1().providedMtime(new DateTime(status.getTimestamp())));
+            return new LocksApi(session.getClient()).postLocksPath(file.getAbsolute(), new LocksPathBody()).getToken();
+        }
+        catch(ApiException e) {
+            throw new BrickExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+        }
+    }
+
+    @Override
+    public void unlock(final Path file, final String token) throws BackgroundException {
+        try {
+            new LocksApi(this.session.getClient()).deleteLocksPath(file.getAbsolute(), token);
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Failure to write attributes of {0}", e, file);
