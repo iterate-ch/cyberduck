@@ -1,7 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using Ch.Cyberduck.Core.Refresh.Services;
+﻿using Ch.Cyberduck.Core.Refresh.Services;
 using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
 using ReactiveUI;
 
