@@ -558,7 +558,7 @@ public class Terminal {
         try {
             final T result = controller.background(action).get();
             if(action.hasFailed()) {
-                throw new TerminalBackgroundException();
+                throw new TerminalBackgroundException(action.getFailure());
             }
             return result;
         }
@@ -571,9 +571,6 @@ public class Terminal {
     }
 
     private static final class TerminalBackgroundException extends BackgroundException {
-        public TerminalBackgroundException() {
-        }
-
         public TerminalBackgroundException(final Throwable cause) {
             super(cause);
         }
