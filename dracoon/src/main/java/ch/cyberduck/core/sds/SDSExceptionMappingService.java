@@ -129,6 +129,8 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                                 }
                             case HttpStatus.SC_NOT_FOUND:
                                 switch(errorCode) {
+                                    case -70020:
+                                        // [-70020] User does not have a keypair
                                     case -70501:
                                         // [-70501] User not found
                                     case -40761:
