@@ -18,10 +18,12 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
@@ -37,8 +39,22 @@ public class TerminalTransferBackgroundAction extends TransferBackgroundAction {
                                             final TransferPrompt prompt,
                                             final TransferSpeedometer meter,
                                             final StreamListener listener) {
-        super(new TerminalLoginCallback(reader), controller, source, destination,
-                new TerminalTransferListener(), controller, transfer, options,
-                prompt, new TerminalTransferErrorCallback(reader), meter, listener);
+        this(controller, source, destination, transfer, options, prompt,
+            new TerminalLoginCallback(reader), new TerminalTransferErrorCallback(reader), meter, listener);
+    }
+
+    public TerminalTransferBackgroundAction(final TerminalController controller,
+                                            final SessionPool source,
+                                            final SessionPool destination,
+                                            final Transfer transfer,
+                                            final TransferOptions options,
+                                            final TransferPrompt prompt,
+                                            final LoginCallback login,
+                                            final TransferErrorCallback error,
+                                            final TransferSpeedometer meter,
+                                            final StreamListener listener) {
+        super(login, controller, source, destination,
+            new TerminalTransferListener(), controller, transfer, options,
+            prompt, error, meter, listener);
     }
 }

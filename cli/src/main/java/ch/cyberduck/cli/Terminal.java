@@ -277,7 +277,7 @@ public class Terminal {
             source = SessionPoolFactory.create(connect, transcript, host,
                 new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
                 new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
-                VaultRegistryFactory.create(new TerminalPasswordCallback()));
+                VaultRegistryFactory.create(login));
             final Path remote;
             if(StringUtils.startsWith(new CommandLinePathParser(input, protocols).parse(uri).getAbsolute(), TildePathExpander.PREFIX)) {
                 final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
@@ -347,7 +347,7 @@ public class Terminal {
                 case download:
                 case upload:
                 case synchronize:
-                    return this.transfer(new TerminalTransferFactory().create(input, host, remote,
+                    return this.transfer(login, new TerminalTransferFactory().create(input, host, remote,
                         new ArrayList<>(new SingleTransferItemFinder().find(input, action, remote))),
                         source, SessionPool.DISCONNECTED);
                 case copy:
@@ -356,7 +356,7 @@ public class Terminal {
                         new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(target), new TerminalCertificateStore(reader)),
                         new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)),
                         VaultRegistryFactory.create(new TerminalPasswordCallback()));
-                    return this.transfer(new CopyTransfer(
+                    return this.transfer(login, new CopyTransfer(
                             host, target, Collections.singletonMap(remote, new CommandLinePathParser(input, protocols).parse(input.getOptionValues(action.name())[1]))),
                         source, destination);
                 default:
@@ -412,7 +412,7 @@ public class Terminal {
         preferences.setDefault("connection.login.keychain", String.valueOf(!input.hasOption(TerminalOptionsBuilder.Params.nokeychain.name())));
     }
 
-    protected Exit transfer(final Transfer transfer, final SessionPool source, final SessionPool destination) {
+    protected Exit transfer(final LoginCallback login, final Transfer transfer, final SessionPool source, final SessionPool destination) {
         // Transfer
         final TransferSpeedometer meter = new TransferSpeedometer(transfer);
         final TransferPrompt prompt;
@@ -442,9 +442,9 @@ public class Terminal {
         else {
             prompt = new TerminalTransferPrompt(transfer.getType());
         }
-        final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller, reader,
+        final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller,
             source, destination,
-            transfer.withCache(cache), new TransferOptions().reload(true), prompt, meter,
+            transfer.withCache(cache), new TransferOptions().reload(true), prompt, login, new TerminalTransferErrorCallback(reader), meter,
             input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                 ? new DisabledStreamListener() : new TerminalStreamListener(meter)
         );
