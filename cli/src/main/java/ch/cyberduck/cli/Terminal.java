@@ -307,6 +307,9 @@ public class Terminal {
                                 new AttributesWorker(cache, remote.getParent()))));
                     }
                 }
+                else {
+                    throw e;
+                }
             }
             if(input.hasOption(TerminalOptionsBuilder.Params.vault.name())) {
                 final Path vault;
