@@ -301,6 +301,10 @@ public class Terminal {
                         case delete:
                             // We expect file on server to exist
                             throw e;
+                        default:
+                            // Try to find parent instead
+                            remote.getParent().withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source,
+                                new AttributesWorker(cache, remote.getParent()))));
                     }
                 }
             }
