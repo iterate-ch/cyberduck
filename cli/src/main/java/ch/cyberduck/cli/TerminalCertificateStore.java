@@ -41,7 +41,7 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
     private final TerminalPromptReader prompt;
 
     public TerminalCertificateStore() {
-        this.prompt = new InteractiveTerminalPromptReader();
+        this(new InteractiveTerminalPromptReader());
     }
 
     public TerminalCertificateStore(final TerminalPromptReader prompt) {
