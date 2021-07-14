@@ -215,6 +215,10 @@ public class Terminal {
     }
 
     protected Exit execute() {
+        return this.execute(new TerminalLoginCallback(reader));
+    }
+
+    protected Exit execute(final LoginCallback login) {
         final Console console = new Console();
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
@@ -268,8 +272,8 @@ public class Terminal {
             }
             final String uri = input.getOptionValue(action.name());
             final Host host = new CommandLineUriParser(input, protocols).parse(uri);
-            final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input
-            ), new TerminalLoginCallback(reader), new TerminalHostKeyVerifier(reader), progress);
+            final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input),
+                login, new TerminalHostKeyVerifier(reader), progress);
             source = SessionPoolFactory.create(connect, transcript, host,
                 new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
                 new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
