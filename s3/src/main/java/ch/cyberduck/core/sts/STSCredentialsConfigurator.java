@@ -34,7 +34,10 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.io.InputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -57,9 +60,21 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 import com.amazonaws.services.securitytoken.model.GetSessionTokenRequest;
 import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Charsets;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
+import com.google.common.io.BaseEncoding;
+
 
 public class STSCredentialsConfigurator {
     private static final Logger log = Logger.getLogger(STSCredentialsConfigurator.class);
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    static {
+        MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
 
     private final X509TrustManager trust;
     private final X509KeyManager key;
@@ -73,26 +88,41 @@ public class STSCredentialsConfigurator {
 
     public Credentials configure(final Host host) throws LoginFailureException, LoginCanceledException {
         final Credentials credentials = new Credentials(host.getCredentials());
-        // Find matching profile name or AWS access key in ~/.aws/credentials
-        final Local file = LocalFactory.get(LocalFactory.get(LocalFactory.get(), ".aws"), "credentials");
+        // See https://docs.aws.amazon.com/sdkref/latest/guide/creds-config-files.html for configuration behavior
+        final Local awsDirectory = LocalFactory.get(LocalFactory.get(), ".aws");
+        final Local configFile = LocalFactory.get(awsDirectory, "config");
+        final Local credentialsFile = LocalFactory.get(awsDirectory, "credentials");
         // Profile can be null – the default profile from the configuration will be loaded
         final String profile = host.getCredentials().getUsername();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Look for profile name %s in %s", profile, file));
-        }
-        if(!file.exists()) {
-            log.warn("Missing configuration file ~/.aws/credentials. Skip auto configuration");
-            return host.getCredentials();
+            log.debug(String.format("Look for profile name %s in %s and %s", profile, configFile, credentialsFile));
         }
         // Iterating all profiles on our own because AWSProfileCredentialsConfigurator does not support MFA tokens
-        final Map<String, Map<String, String>> allProfileProperties;
+        final Map<String, Map<String, String>> allProfileProperties = new HashMap<>();
         try {
-            allProfileProperties = new ProfilesConfigFileLoaderHelper()
-                .parseProfileProperties(new Scanner(file.getInputStream(), StandardCharsets.UTF_8.name()));
+            final Map<String, Map<String, String>> credentialsFileProfileProperties = new ProfilesConfigFileLoaderHelper()
+                .parseProfileProperties(credentialsFile);
+            allProfileProperties.putAll(credentialsFileProfileProperties);
+            final Map<String, Map<String, String>> configFileProfileProperties = new ProfilesConfigFileLoaderHelper()
+                .parseProfileProperties(configFile);
+            for(Map.Entry<String, Map<String, String>> entry : configFileProfileProperties.entrySet()) {
+                final String profileName = entry.getKey();
+                final Map<String, String> configFileProperties = entry.getValue();
+                Map<String, String> credentialsFileProperties = allProfileProperties.get(profileName);
+                // If the credentials file had properties, then merge them in
+                if(credentialsFileProperties != null){ 
+                    configFileProperties.putAll(credentialsFileProperties);
+                }
+                allProfileProperties.put(profileName, configFileProperties);
+            }
         }
-        catch(AccessDeniedException | IllegalArgumentException e) {
-            log.warn(String.format("Failure reading %s", file), e);
+        catch(AccessDeniedException | IllegalArgumentException | IOException e) {
+            log.warn(String.format("Failure reading %s and ", configFile, credentialsFile), e);
             return credentials;
+        }
+        if(allProfileProperties.isEmpty()) {
+            log.warn("Missing configuration file ~/.aws/credentials or ~/.aws/config. Skip auto configuration");
+            return host.getCredentials();
         }
         // Convert the loaded property map to credential objects
         final Map<String, BasicProfile> profilesByName = new LinkedHashMap<>();
@@ -200,7 +230,12 @@ public class STSCredentialsConfigurator {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Configure credentials from basic profile %s", basicProfile.getProfileName()));
                 }
-                if(StringUtils.isNotBlank(basicProfile.getAwsSessionToken())) {
+                final Map<String, String> profileProperties = basicProfile.getProperties();
+                if(profileProperties.containsKey("sso_start_url")) {
+                    // Read cached SSO credentials
+                    fetchSsoCredentials(credentials, profileProperties, awsDirectory);
+                }
+                else if(StringUtils.isNotBlank(basicProfile.getAwsSessionToken())) {
                     // No need to obtain session token if preconfigured in profile
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Set session token credentials from profile %s", profile));
@@ -246,6 +281,62 @@ public class STSCredentialsConfigurator {
             }
         }
         return credentials;
+    }
+
+    private void fetchSsoCredentials(Credentials credentials, Map<String,String> properties, Local awsDirectory)
+        throws LoginFailureException {
+        // See https://github.com/boto/botocore/blob/23ee17f5446c78167ff442302471f9928c3b4b7c/botocore/credentials.py#L2004
+        try {
+            final String ssoStartUrl = properties.get("sso_start_url");
+            final String ssoAccountId = properties.get("sso_account_id");
+            final String ssoRoleName = properties.get("sso_role_name");
+            final String cacheKey = String.format("{\"accountId\":\"%s\",\"roleName\":\"%s\",\"startUrl\":\"%s\"}",
+                ssoAccountId, ssoRoleName, ssoStartUrl);
+            final HashCode hashCode = Hashing.sha1().newHasher().putString(cacheKey, Charsets.UTF_8).hash();
+            final String hash = BaseEncoding.base16().lowerCase().encode(hashCode.asBytes());
+            final String cachedCredentialsJson = String.format("%s.json", hash);
+            final Local cachedCredentialsFile = 
+                LocalFactory.get(LocalFactory.get(LocalFactory.get(awsDirectory, "cli"), "cache"), cachedCredentialsJson);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Attempting to read SSO credentials %s", cachedCredentialsFile));
+            }
+            if(!cachedCredentialsFile.exists()) {
+                throw new LoginFailureException("SSO credentials are missing.");
+            }
+            try(InputStream inputStream = cachedCredentialsFile.getInputStream()) {
+                CachedCredentials cachedCredentials = MAPPER.readValue(inputStream, CachedCredentials.class);
+                CachedCredential cachedCredential = cachedCredentials.credentials;
+                if(cachedCredential == null){
+                    throw new LoginFailureException("SSO credentials missing keys.");
+                }
+                Instant expiration = Instant.parse(cachedCredential.expiration);
+                if(expiration.isBefore(Instant.now())) {
+                    throw new LoginFailureException("SSO credentials are expired.");
+                }
+                credentials.setUsername(cachedCredential.accessKey);
+                credentials.setPassword(cachedCredential.secretKey);
+                credentials.setToken(cachedCredential.sessionToken);
+            }
+        }
+        catch(IOException | AccessDeniedException e) {
+            throw new LoginFailureException("SSO credentials could not be fetched.", e);
+        }
+    }
+
+    private static class CachedCredentials {
+        @JsonProperty("Credentials")
+        private CachedCredential credentials;
+    }
+
+    private static class CachedCredential {
+        @JsonProperty("AccessKeyId")
+        private String accessKey;
+        @JsonProperty("SecretAccessKey")
+        private String secretKey;
+        @JsonProperty("SessionToken")
+        private String sessionToken;
+        @JsonProperty("Expiration")
+        private String expiration;
     }
 
     protected AWSSecurityTokenService getTokenService(final Host host, final String region, final String accessKey, final String secretKey, final String sessionToken) {
@@ -296,10 +387,23 @@ public class STSCredentialsConfigurator {
         /**
          * Parses the input and returns a map of all the profile properties.
          */
-        public Map<String, Map<String, String>> parseProfileProperties(Scanner scanner) {
-            allProfileProperties.clear();
-            run(scanner);
-            return new LinkedHashMap<>(allProfileProperties);
+        public Map<String, Map<String, String>> parseProfileProperties(Local file) throws AccessDeniedException, IOException {
+            if(!file.exists()) {
+                return new LinkedHashMap<>();
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Reading AWS file %s", file));
+            }
+            try(InputStream inputStream = file.getInputStream();
+                Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name())){
+                run(scanner);
+                return new LinkedHashMap<>(allProfileProperties);
+            }
+        }
+
+        private String sanitizeProfile(String profileName) {
+            // The config file has sections that start with `profile `
+            return profileName.replaceAll("^profile ", "");
         }
 
         @Override
@@ -311,7 +415,7 @@ public class STSCredentialsConfigurator {
         protected void onProfileStartingLine(String newProfileName, String line) {
             // If the same profile name has already been declared, clobber the
             // previous one
-            allProfileProperties.put(newProfileName, new HashMap<>());
+            allProfileProperties.put(sanitizeProfile(newProfileName), new HashMap<>());
         }
 
         @Override
@@ -323,6 +427,7 @@ public class STSCredentialsConfigurator {
         protected void onProfileProperty(String profileName, String propertyKey,
                                          String propertyValue, boolean isSupportedProperty,
                                          String line) {
+            profileName = sanitizeProfile(profileName);
             Map<String, String> properties = allProfileProperties.get(profileName);
 
             if(properties.containsKey(propertyKey)) {
