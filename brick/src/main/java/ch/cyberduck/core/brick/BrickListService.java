@@ -27,11 +27,12 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 public class BrickListService implements ListService {
 
     private final BrickSession session;
-    private BrickAttributesFinderFeature attributes;
+    private final BrickAttributesFinderFeature attributes;
 
     public BrickListService(final BrickSession session) {
         this.session = session;
@@ -52,10 +53,12 @@ public class BrickListService implements ListService {
                     children.add(new Path(entity.getPath(), EnumSet.of("directory".equals(entity.getType()) ? Path.Type.directory : Path.Type.file),
                         attributes.toAttributes(entity)));
                 }
-//                final Optional<String> header = response.getHeaders().get("X-Files-Cursor").stream().findFirst();
-//                if(header.isPresent()) {
-//                    cursor = header.get();
-//                }
+                if(session.getClient().getResponseHeaders().containsKey("X-Files-Cursor")) {
+                    final Optional<String> header = session.getClient().getResponseHeaders().get("X-Files-Cursor").stream().findFirst();
+                    if(header.isPresent()) {
+                        cursor = header.get();
+                    }
+                }
                 listener.chunk(directory, children);
             }
             while(cursor != null);
