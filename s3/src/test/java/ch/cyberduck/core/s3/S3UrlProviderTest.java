@@ -2,6 +2,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -42,6 +43,29 @@ public class S3UrlProviderTest extends AbstractS3Test {
                 return "k";
             }
         }).toUrl(p).filter(DescriptiveUrl.Type.signed).size());
+    }
+
+    @Test
+    public void testWebUrl() {
+        {
+            final DescriptiveUrlBag list = new S3UrlProvider(session).toUrl(new Path("/test-eu-west-1-cyberduck/key",
+                EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.http);
+            assertEquals(3, list.size());
+            final Iterator<DescriptiveUrl> provider = list.iterator();
+            assertEquals("https://test-eu-west-1-cyberduck.s3.amazonaws.com/key", provider.next().getUrl());
+            assertEquals("http://test-eu-west-1-cyberduck.s3.amazonaws.com/key", provider.next().getUrl());
+            assertEquals("https://s3.amazonaws.com/test-eu-west-1-cyberduck/key", provider.next().getUrl());
+        }
+        session.getHost().setWebURL("https://cdn.cyberduck.io/");
+        {
+            final DescriptiveUrlBag list = new S3UrlProvider(session).toUrl(new Path("/test-eu-west-1-cyberduck/key",
+                EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.http);
+            assertEquals(3, list.size());
+            final Iterator<DescriptiveUrl> provider = list.iterator();
+            assertEquals("https://test-eu-west-1-cyberduck.s3.amazonaws.com/key", provider.next().getUrl());
+            assertEquals("http://test-eu-west-1-cyberduck.s3.amazonaws.com/key", provider.next().getUrl());
+            assertEquals("https://cdn.cyberduck.io/test-eu-west-1-cyberduck/key", provider.next().getUrl());
+        }
     }
 
     @Test
