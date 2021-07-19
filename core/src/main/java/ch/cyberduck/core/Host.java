@@ -517,6 +517,18 @@ public class Host implements Serializable, Comparable<Host> {
         this.timezone = timezone;
     }
 
+    /**
+     * Read property from protocol with fallback to generic preferences
+     * @param key Property name
+     * @return Value for property key
+     */
+    public String getProperty(final String key) {
+        if(protocol.getProperties().containsKey(key)) {
+            return protocol.getProperties().get(key);
+        }
+        return PreferencesFactory.get().getProperty(key);
+    }
+
     public String getRegion() {
         if(StringUtils.isBlank(region)) {
             return protocol.getRegion();

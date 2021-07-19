@@ -1231,6 +1231,10 @@ public abstract class Preferences implements Locales {
 
     public int getInteger(final String property) {
         final String v = this.getProperty(property);
+        return toInteger(property, v);
+    }
+
+    public static int toInteger(final String property, final String v) {
         if(null == v) {
             return -1;
         }
@@ -1238,12 +1242,16 @@ public abstract class Preferences implements Locales {
             return Integer.parseInt(v);
         }
         catch(NumberFormatException e) {
-            return (int) this.getDouble(property);
+            return (int) toDouble(v);
         }
     }
 
     public float getFloat(final String property) {
         final String v = this.getProperty(property);
+        return toFloat(property, v);
+    }
+
+    public static float toFloat(final String property, final String v) {
         if(null == v) {
             return -1;
         }
@@ -1251,12 +1259,16 @@ public abstract class Preferences implements Locales {
             return Float.parseFloat(v);
         }
         catch(NumberFormatException e) {
-            return (float) this.getDouble(property);
+            return (float) toDouble(v);
         }
     }
 
     public long getLong(final String property) {
         final String v = this.getProperty(property);
+        return toLong(property, v);
+    }
+
+    public static long toLong(final String property, final String v) {
         if(null == v) {
             return -1;
         }
@@ -1264,12 +1276,16 @@ public abstract class Preferences implements Locales {
             return Long.parseLong(v);
         }
         catch(NumberFormatException e) {
-            return (long) this.getDouble(property);
+            return (long) toDouble(v);
         }
     }
 
     public double getDouble(final String property) {
         final String v = this.getProperty(property);
+        return toDouble(v);
+    }
+
+    public static double toDouble(final String v) {
         if(null == v) {
             return -1;
         }
@@ -1283,6 +1299,10 @@ public abstract class Preferences implements Locales {
 
     public boolean getBoolean(final String property) {
         final String v = this.getProperty(property);
+        return toBoolean(v);
+    }
+
+    public static boolean toBoolean(final String v) {
         if(null == v) {
             return false;
         }
