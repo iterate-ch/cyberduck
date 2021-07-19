@@ -33,7 +33,7 @@ public class TerminalTransferErrorCallback implements TransferErrorCallback {
     private final TerminalPromptReader prompt;
 
     public TerminalTransferErrorCallback() {
-        this.prompt = new InteractiveTerminalPromptReader();
+        this(new InteractiveTerminalPromptReader());
     }
 
     public TerminalTransferErrorCallback(final TerminalPromptReader prompt) {
