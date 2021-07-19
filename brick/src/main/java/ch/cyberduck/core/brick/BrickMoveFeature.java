@@ -37,7 +37,7 @@ public class BrickMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path target, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final FileActionEntity entity = new FileActionsApi(session.getClient())
+            final FileActionEntity entity = new FileActionsApi(new BrickApiClient(session.getApiKey(), session.getClient()))
                 .move(new MovePathBody().destination(target.getAbsolute()), file.getAbsolute());
             return target.withAttributes(file.attributes());
         }

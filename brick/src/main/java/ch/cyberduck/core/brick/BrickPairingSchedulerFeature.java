@@ -108,7 +108,7 @@ public class BrickPairingSchedulerFeature {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Fetch credentials for paring key %s from %s", token, resource));
             }
-            final JsonObject json = session.getClient().getClient().execute(resource, new AbstractResponseHandler<JsonObject>() {
+            final JsonObject json = session.getClient().execute(resource, new AbstractResponseHandler<JsonObject>() {
                 @Override
                 public JsonObject handleEntity(final HttpEntity entity) throws IOException {
                     final ByteArrayOutputStream out = new ByteArrayOutputStream();

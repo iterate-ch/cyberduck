@@ -17,6 +17,7 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -27,7 +28,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.brick.io.swagger.client.JSON;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -45,7 +45,6 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
@@ -56,12 +55,8 @@ import ch.cyberduck.core.threading.CancelCallback;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
-import org.glassfish.jersey.message.internal.InputStreamProvider;
 
-import javax.ws.rs.client.ClientBuilder;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
@@ -69,47 +64,48 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
-public class BrickSession extends HttpSession<BrickApiClient> {
+public class BrickSession extends HttpSession<CloseableHttpClient> {
     private static final Logger log = Logger.getLogger(BrickSession.class);
+
+    private String apiKey;
 
     public BrickSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
 
+    public String getApiKey() {
+        return apiKey;
+    }
+
     @Override
-    protected BrickApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected CloseableHttpClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setServiceUnavailableRetryStrategy(new BrickUnauthorizedRetryStrategy(this, prompt, cancel));
-        final CloseableHttpClient apache = configuration.build();
-        final BrickApiClient client = new BrickApiClient(apache);
-        client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
-            null, host.getHostname(), "api/rest/v1"));
-        client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
-            .register(new InputStreamProvider())
-            .register(MultiPartFeature.class)
-            .register(new JSON())
-            .register(JacksonFeature.class)
-            .connectorProvider(new HttpComponentsProvider(apache))));
-        final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
-        client.setConnectTimeout(timeout);
-        client.setReadTimeout(timeout);
-        client.setUserAgent(new PreferencesUseragentProvider().get());
-        return client;
+        return configuration.build();
     }
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Credentials credentials = host.getCredentials();
-        if(!credentials.isPasswordAuthentication()) {
-            // No prompt on explicit connect
-            this.pair(host, new DisabledConnectionCallback(), cancel).setSaved(true);
+        final Credentials credentials;
+        if(host.getCredentials().isPasswordAuthentication()) {
+            credentials = host.getCredentials();
         }
-        client.setApiKey(credentials.getPassword());
+        else {
+            // No prompt on explicit connect
+            credentials = this.pair(host, new DisabledConnectionCallback(), cancel);
+            credentials.setSaved(true);
+        }
+        apiKey = credentials.getPassword();
     }
 
     @Override
-    protected void logout() {
-        client.getHttpClient().close();
+    protected void logout() throws BackgroundException {
+        try {
+            client.close();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     public Credentials pair(final Host bookmark, final ConnectionCallback prompt, final CancelCallback cancel) throws BackgroundException {

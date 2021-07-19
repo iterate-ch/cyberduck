@@ -36,7 +36,7 @@ public class BrickCopyFeature implements Copy {
     @Override
     public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final FileActionEntity entity = new FileActionsApi(session.getClient())
+            final FileActionEntity entity = new FileActionsApi(new BrickApiClient(session.getApiKey(), session.getClient()))
                 .copy(new CopyPathBody().destination(target.getAbsolute()), file.getAbsolute());
             return target.withAttributes(file.attributes());
         }

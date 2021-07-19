@@ -61,7 +61,7 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<Void> {
                     final HttpPut request = new HttpPut(status.getUrl());
                     request.setEntity(entity);
                     request.setHeader(HttpHeaders.CONTENT_TYPE, MimeTypeService.DEFAULT_CONTENT_TYPE);
-                    final HttpResponse response = session.getClient().getClient().execute(request);
+                    final HttpResponse response = session.getClient().execute(request);
                     // Validate response
                     try {
                         switch(response.getStatusLine().getStatusCode()) {

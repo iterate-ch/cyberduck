@@ -45,7 +45,7 @@ public class BrickTouchFeature implements Touch<Void> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final List<FileUploadPartEntity> uploadPartEntities = new FileActionsApi(session.getClient())
+            final List<FileUploadPartEntity> uploadPartEntities = new FileActionsApi(new BrickApiClient(session.getApiKey(), session.getClient()))
                 .beginUpload(file.getAbsolute(), new BeginUploadPathBody().parts(1).part(1));
             for(FileUploadPartEntity uploadPartEntity : uploadPartEntities) {
                 status
@@ -55,7 +55,7 @@ public class BrickTouchFeature implements Touch<Void> {
                 status.setUrl(uploadPartEntity.getUploadUri());
                 status.setPart(1);
                 new BrickWriteFeature(session).write(file, status, new DisabledConnectionCallback()).close();
-                final FileEntity entity = new FilesApi(session.getClient()).postFilesPath(
+                final FileEntity entity = new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).postFilesPath(
                     new FilesPathBody()
                         .providedMtime(new DateTime(System.currentTimeMillis()))
                         .action("end").ref(uploadPartEntity.getRef()), file.getAbsolute());

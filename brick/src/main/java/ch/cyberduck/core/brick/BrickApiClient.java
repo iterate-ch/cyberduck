@@ -15,28 +15,43 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.brick.io.swagger.client.ApiClient;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
+import ch.cyberduck.core.brick.io.swagger.client.JSON;
 import ch.cyberduck.core.brick.io.swagger.client.Pair;
+import ch.cyberduck.core.jersey.HttpComponentsProvider;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.GenericType;
 import java.util.List;
 import java.util.Map;
 
 public class BrickApiClient extends ApiClient {
 
-    private final CloseableHttpClient client;
-
-    public BrickApiClient(final CloseableHttpClient client) {
-        this.client = client;
-    }
-
-    public CloseableHttpClient getClient() {
-        return client;
+    public BrickApiClient(final String apiKey, final CloseableHttpClient client) {
+        this.setHttpClient(ClientBuilder.newClient(new ClientConfig()
+            .register(new InputStreamProvider())
+            .register(MultiPartFeature.class)
+            .register(new JSON())
+            .register(JacksonFeature.class)
+            .connectorProvider(new HttpComponentsProvider(client)))
+        );
+        final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
+        this.setConnectTimeout(timeout);
+        this.setReadTimeout(timeout);
+        this.setUserAgent(new PreferencesUseragentProvider().get());
+        this.setBasePath("https://app.files.com/api/rest/v1");
+        this.setApiKey(apiKey);
     }
 
     @Override

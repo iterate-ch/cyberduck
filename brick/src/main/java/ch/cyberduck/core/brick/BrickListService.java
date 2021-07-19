@@ -45,16 +45,17 @@ public class BrickListService implements ListService {
             final AttributedList<Path> children = new AttributedList<>();
             String cursor = null;
             List<FileEntity> response;
+            final BrickApiClient client = new BrickApiClient(session.getApiKey(), session.getClient());
             do {
-                response = new FoldersApi(session.getClient()).foldersListForPath(directory.getAbsolute(), cursor,
+                response = new FoldersApi(client).foldersListForPath(directory.getAbsolute(), cursor,
                     PreferencesFactory.get().getInteger("brick.listing.chunksize"),
                     null, null, null, null, null, null);
                 for(FileEntity entity : response) {
                     children.add(new Path(entity.getPath(), EnumSet.of("directory".equals(entity.getType()) ? Path.Type.directory : Path.Type.file),
                         attributes.toAttributes(entity)));
                 }
-                if(session.getClient().getResponseHeaders().containsKey("X-Files-Cursor")) {
-                    final Optional<String> header = session.getClient().getResponseHeaders().get("X-Files-Cursor").stream().findFirst();
+                if(client.getResponseHeaders().containsKey("X-Files-Cursor")) {
+                    final Optional<String> header = client.getResponseHeaders().get("X-Files-Cursor").stream().findFirst();
                     if(header.isPresent()) {
                         cursor = header.get();
                     }

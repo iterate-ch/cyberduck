@@ -37,7 +37,8 @@ public class BrickDirectoryFeature implements Directory<Void> {
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             return new Path(folder.getAbsolute(), EnumSet.of(Path.Type.directory),
-                new BrickAttributesFinderFeature(session).toAttributes(new FoldersApi(session.getClient()).postFoldersPath(folder.getAbsolute())));
+                new BrickAttributesFinderFeature(session).toAttributes(new FoldersApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+                    .postFoldersPath(folder.getAbsolute())));
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Cannot create folder {0}", e, folder);

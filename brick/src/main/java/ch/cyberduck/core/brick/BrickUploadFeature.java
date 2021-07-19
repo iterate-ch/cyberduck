@@ -83,7 +83,7 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             long remaining = status.getLength();
             String ref = null;
             for(int partNumber = 1; remaining > 0; partNumber++) {
-                final List<FileUploadPartEntity> uploadPartEntities = new FileActionsApi(session.getClient())
+                final List<FileUploadPartEntity> uploadPartEntities = new FileActionsApi(new BrickApiClient(session.getApiKey(), session.getClient()))
                     .beginUpload(file.getAbsolute(), new BeginUploadPathBody().ref(ref).part(partNumber));
                 for(FileUploadPartEntity uploadPartEntity : uploadPartEntities) {
                     final long length = Math.min(Math.max(size / (MAXIMUM_UPLOAD_PARTS - 1), partsize), remaining);
@@ -111,7 +111,7 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                     throw new BackgroundException(e.getCause());
                 }
             }
-            new FilesApi(session.getClient()).postFilesPath(new FilesPathBody()
+            new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).postFilesPath(new FilesPathBody()
                 .providedMtime(new DateTime(status.getTimestamp()))
                 .ref(ref)
                 .action("end"), file.getAbsolute());

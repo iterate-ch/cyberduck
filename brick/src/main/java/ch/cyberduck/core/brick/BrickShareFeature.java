@@ -57,7 +57,7 @@ public class BrickShareFeature implements PromptUrlProvider {
             catch(LoginCanceledException e) {
                 // Ignore no password set
             }
-            return new DescriptiveUrl(URI.create(new BundlesApi(session.getClient()).postBundles(
+            return new DescriptiveUrl(URI.create(new BundlesApi(new BrickApiClient(session.getApiKey(), session.getClient())).postBundles(
                 new BundlesBody().password(password).paths(Collections.singletonList(file.getAbsolute()))).getUrl()), DescriptiveUrl.Type.signed);
         }
         catch(ApiException e) {
