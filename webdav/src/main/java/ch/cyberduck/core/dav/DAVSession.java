@@ -129,7 +129,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final CredentialsProvider provider = new BasicCredentialsProvider();
-        if(preferences.getBoolean("webdav.ntlm.windows.authentication.enable") && WinHttpClients.isWinAuthAvailable()) {
+        if(Preferences.toBoolean(host.getProperty("webdav.ntlm.windows.authentication.enable")) && WinHttpClients.isWinAuthAvailable()) {
             provider.setCredentials(
                 new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
                 new WindowsCredentialsProvider(new BasicCredentialsProvider()).getCredentials(
@@ -145,12 +145,12 @@ public class DAVSession extends HttpSession<DAVClient> {
             provider.setCredentials(
                 new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
                 new NTCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-                    preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
+                    host.getProperty("webdav.ntlm.workstation"), host.getProperty("webdav.ntlm.domain"))
             );
             provider.setCredentials(
                 new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO),
                 new NTCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-                    preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
+                    host.getProperty("webdav.ntlm.workstation"), host.getProperty("webdav.ntlm.domain"))
             );
         }
         provider.setCredentials(
@@ -163,7 +163,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.KERBEROS),
             new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         client.setCredentials(provider);
-        if(preferences.getBoolean("webdav.basic.preemptive")) {
+        if(Preferences.toBoolean(host.getProperty("webdav.basic.preemptive"))) {
             switch(proxy.getType()) {
                 case DIRECT:
                 case SOCKS:
@@ -171,7 +171,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                     client.enablePreemptiveAuthentication(host.getHostname(),
                         host.getPort(),
                         host.getPort(),
-                        Charset.forName(preferences.getProperty("http.credentials.charset"))
+                        Charset.forName(host.getProperty("http.credentials.charset"))
                     );
                     break;
                 default:
@@ -199,7 +199,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                             list = new MicrosoftIISDAVListService(DAVSession.this, new MicrosoftIISDAVAttributesFinderFeature(DAVSession.this));
                             timestamp = new MicrosoftIISDAVTimestampFeature(DAVSession.this);
                             attributes = new MicrosoftIISDAVAttributesFinderFeature(DAVSession.this);
-                            if(preferences.getBoolean("webdav.microsoftiis.header.translate")) {
+                            if(Preferences.toBoolean(host.getProperty("webdav.microsoftiis.header.translate"))) {
                                 read = new MicrosoftIISDAVReadFeature(DAVSession.this);
                                 find = new MicrosoftIISDAVFindFeature(DAVSession.this);
                             }
