@@ -16,12 +16,17 @@ package ch.cyberduck.core.preferences;
  */
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface Settings {
+    Logger log = Logger.getLogger(Settings.class);
+
     /**
      * Give value in user settings or default value if not customized.
      *
@@ -35,6 +40,33 @@ public interface Settings {
      * @return The configured values determined by a whitespace separator.
      */
     List<String> getList(String property);
+
+    default Map<String, String> getMap(final String property) {
+        final List<String> list = this.getList(property);
+        final Map<String, String> table = new HashMap<>();
+        for(String m : list) {
+            if(StringUtils.isBlank(m)) {
+                continue;
+            }
+            if(!m.contains("=")) {
+                log.warn(String.format("Invalid header %s", m));
+                continue;
+            }
+            int split = m.indexOf('=');
+            String key = m.substring(0, split);
+            if(StringUtils.isBlank(key)) {
+                log.warn(String.format("Missing key in %s", m));
+                continue;
+            }
+            String value = m.substring(split + 1);
+            if(StringUtils.isEmpty(value)) {
+                log.warn(String.format("Missing value in %s", m));
+                continue;
+            }
+            table.put(key, value);
+        }
+        return table;
+    }
 
     static List<String> toList(final String value) {
         if(StringUtils.isBlank(value)) {

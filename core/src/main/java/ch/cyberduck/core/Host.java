@@ -68,8 +68,7 @@ public class Host implements Serializable, Comparable<Host> {
     private String nickname;
 
     /**
-     * The initial working directory if any and absolute
-     * path to document root of webserver for Web URL configuration
+     * The initial working directory if any and absolute path to document root of webserver for Web URL configuration
      */
     private String defaultpath;
 
@@ -425,8 +424,8 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * @return The character encoding to be used when connecting to this server or null
-     * if the default encoding should be used
+     * @return The character encoding to be used when connecting to this server or null if the default encoding should
+     * be used
      */
     public String getEncoding() {
         if(null == encoding) {
@@ -445,8 +444,8 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * @return The connect mode to be used when connecting
-     * to this server or null if the default connect mode should be used
+     * @return The connect mode to be used when connecting to this server or null if the default connect mode should be
+     * used
      */
     public FTPConnectMode getFTPConnectMode() {
         return connectMode;
@@ -457,16 +456,14 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * @return The number of concurrent sessions allowed. -1 if unlimited or null
-     * if the default should be used
+     * @return The number of concurrent sessions allowed. -1 if unlimited or null if the default should be used
      */
     public TransferType getTransferType() {
         return transfer;
     }
 
     /**
-     * Set a custom number of concurrent sessions allowed for this host
-     * If not set, connection.pool.max is used.
+     * Set a custom number of concurrent sessions allowed for this host If not set, connection.pool.max is used.
      *
      * @param transfer null to use the default value or -1 if no limit
      */
@@ -508,8 +505,8 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * Set a timezone for the remote server different from the local default timezone
-     * May be useful to display modification dates of remote files correctly using the local timezone
+     * Set a timezone for the remote server different from the local default timezone May be useful to display
+     * modification dates of remote files correctly using the local timezone
      *
      * @param timezone Timezone of server
      */
@@ -519,14 +516,12 @@ public class Host implements Serializable, Comparable<Host> {
 
     /**
      * Read property from protocol with fallback to generic preferences
+     *
      * @param key Property name
      * @return Value for property key
      */
     public String getProperty(final String key) {
-        if(protocol.getProperties().containsKey(key)) {
-            return protocol.getProperties().get(key);
-        }
-        return PreferencesFactory.get().getProperty(key);
+        return protocol.getProperties().get(key);
     }
 
     public String getRegion() {

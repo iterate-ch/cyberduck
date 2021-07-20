@@ -82,7 +82,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -1184,33 +1183,6 @@ public abstract class Preferences implements Locales, Settings {
     public List<String> getList(final String property) {
         final String value = this.getProperty(property);
         return Settings.toList(value);
-    }
-
-    public Map<String, String> getMap(final String property) {
-        final List<String> list = this.getList(property);
-        final Map<String, String> table = new HashMap<>();
-        for(String m : list) {
-            if(StringUtils.isBlank(m)) {
-                continue;
-            }
-            if(!m.contains("=")) {
-                log.warn(String.format("Invalid header %s", m));
-                continue;
-            }
-            int split = m.indexOf('=');
-            String key = m.substring(0, split);
-            if(StringUtils.isBlank(key)) {
-                log.warn(String.format("Missing key in %s", m));
-                continue;
-            }
-            String value = m.substring(split + 1);
-            if(StringUtils.isEmpty(value)) {
-                log.warn(String.format("Missing value in %s", m));
-                continue;
-            }
-            table.put(key, value);
-        }
-        return table;
     }
 
     @Override
