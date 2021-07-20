@@ -5,7 +5,7 @@
 	<key>Protocol</key>
 	<string>ftps</string>
 	<key>Vendor</key>
-    <string>iterate GmbH</string>
+    <string>ftpssl-compat</string>
 	<key>Description</key>
 	<string>FTP-SSL (Compatibility Mode)</string>
     <key>Properties</key>

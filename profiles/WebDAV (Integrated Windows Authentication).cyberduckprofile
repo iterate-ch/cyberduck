@@ -5,7 +5,7 @@
 	<key>Protocol</key>
 	<string>davs</string>
 	<key>Vendor</key>
-    <string>iterate GmbH</string>
+    <string>davs-iwa</string>
 	<key>Description</key>
 	<string>WebDAV (Integrated Windows Authentication)</string>
     <key>Properties</key>
