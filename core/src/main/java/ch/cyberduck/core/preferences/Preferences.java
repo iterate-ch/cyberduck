@@ -80,8 +80,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -96,7 +94,7 @@ import com.google.common.collect.ImmutableMap;
  * Holding all application preferences. Default values get overwritten when loading the <code>PREFERENCES_FILE</code>.
  * Singleton class.
  */
-public abstract class Preferences implements Locales {
+public abstract class Preferences implements Locales, Settings {
     private static final Logger log = Logger.getLogger(Preferences.class);
 
     protected static final String LIST_SEPERATOR = StringUtils.SPACE;
@@ -1182,16 +1180,10 @@ public abstract class Preferences implements Locales {
         }
     }
 
-    /**
-     * @param property The property to query.
-     * @return The configured values determined by a whitespace separator.
-     */
+    @Override
     public List<String> getList(final String property) {
         final String value = this.getProperty(property);
-        if(StringUtils.isBlank(value)) {
-            return Collections.emptyList();
-        }
-        return Arrays.asList(value.split("(?<!\\\\)\\p{javaWhitespace}+"));
+        return Settings.toList(value);
     }
 
     public Map<String, String> getMap(final String property) {
@@ -1221,104 +1213,34 @@ public abstract class Preferences implements Locales {
         return table;
     }
 
-    /**
-     * Give value in user settings or default value if not customized.
-     *
-     * @param property The property to query.
-     * @return The user configured value or default.
-     */
-    public abstract String getProperty(String property);
-
-    public int getInteger(final String property) {
-        final String v = this.getProperty(property);
-        return toInteger(property, v);
+    @Override
+    public int getInteger(final String key) {
+        final String v = this.getProperty(key);
+        return Settings.toInteger(v);
     }
 
-    public static int toInteger(final String property, final String v) {
-        if(null == v) {
-            return -1;
-        }
-        try {
-            return Integer.parseInt(v);
-        }
-        catch(NumberFormatException e) {
-            return (int) toDouble(v);
-        }
+    @Override
+    public float getFloat(final String key) {
+        final String v = this.getProperty(key);
+        return Settings.toFloat(v);
     }
 
-    public float getFloat(final String property) {
-        final String v = this.getProperty(property);
-        return toFloat(property, v);
+    @Override
+    public long getLong(final String key) {
+        final String v = this.getProperty(key);
+        return Settings.toLong(v);
     }
 
-    public static float toFloat(final String property, final String v) {
-        if(null == v) {
-            return -1;
-        }
-        try {
-            return Float.parseFloat(v);
-        }
-        catch(NumberFormatException e) {
-            return (float) toDouble(v);
-        }
+    @Override
+    public double getDouble(final String key) {
+        final String v = this.getProperty(key);
+        return Settings.toDouble(v);
     }
 
-    public long getLong(final String property) {
-        final String v = this.getProperty(property);
-        return toLong(property, v);
-    }
-
-    public static long toLong(final String property, final String v) {
-        if(null == v) {
-            return -1;
-        }
-        try {
-            return Long.parseLong(v);
-        }
-        catch(NumberFormatException e) {
-            return (long) toDouble(v);
-        }
-    }
-
-    public double getDouble(final String property) {
-        final String v = this.getProperty(property);
-        return toDouble(v);
-    }
-
-    public static double toDouble(final String v) {
-        if(null == v) {
-            return -1;
-        }
-        try {
-            return Double.parseDouble(v);
-        }
-        catch(NumberFormatException e) {
-            return -1;
-        }
-    }
-
-    public boolean getBoolean(final String property) {
-        final String v = this.getProperty(property);
-        return toBoolean(v);
-    }
-
-    public static boolean toBoolean(final String v) {
-        if(null == v) {
-            return false;
-        }
-        if(v.equalsIgnoreCase(String.valueOf(true))) {
-            return true;
-        }
-        if(v.equalsIgnoreCase(String.valueOf(false))) {
-            return false;
-        }
-        if(v.equalsIgnoreCase(String.valueOf(1))) {
-            return true;
-        }
-        if(v.equalsIgnoreCase(String.valueOf(0))) {
-            return false;
-        }
-        return v.equalsIgnoreCase("yes");
+    @Override
+    public boolean getBoolean(final String key) {
+        final String v = this.getProperty(key);
+        return Settings.toBoolean(v);
     }
 
     protected void setFactories() {
