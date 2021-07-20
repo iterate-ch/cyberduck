@@ -27,8 +27,8 @@ import ch.cyberduck.core.ftp.FTPExceptionMappingService;
 import ch.cyberduck.core.ftp.FTPParserSelector;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.Settings;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClientConfig;
@@ -52,7 +52,7 @@ public class FTPListService implements ListService {
     private final FTPSession session;
 
     protected final Map<Command, ListService> implementations
-        = new HashMap<Command, ListService>();
+        = new HashMap<>();
 
     public enum Command {
         stat(FTPCmd.STAT),
@@ -95,7 +95,8 @@ public class FTPListService implements ListService {
         // Directory listing parser depending on response for SYST command
         final CompositeFileEntryParser parser = new FTPParserSelector().getParser(system, zone);
         this.implementations.put(Command.list, new FTPDefaultListService(session, parser, Command.list));
-        if(Preferences.toBoolean(session.getHost().getProperty("ftp.command.stat"))) {
+        final Settings preferences = new HostPreferences(session.getHost());
+        if(preferences.getBoolean("ftp.command.stat")) {
             if(StringUtils.isNotBlank(system)) {
                 if(!system.toUpperCase(Locale.ROOT).contains(FTPClientConfig.SYST_NT)) {
                     // Workaround for #5572.
@@ -106,10 +107,10 @@ public class FTPListService implements ListService {
                 this.implementations.put(Command.stat, new FTPStatListService(session, parser));
             }
         }
-        if(Preferences.toBoolean(session.getHost().getProperty("ftp.command.mlsd"))) {
+        if(preferences.getBoolean("ftp.command.mlsd")) {
             this.implementations.put(Command.mlsd, new FTPMlsdListService(session));
         }
-        if(Preferences.toBoolean(session.getHost().getProperty("ftp.command.lista"))) {
+        if(preferences.getBoolean("ftp.command.lista")) {
             this.implementations.put(Command.lista, new FTPDefaultListService(session, parser, Command.lista));
         }
     }

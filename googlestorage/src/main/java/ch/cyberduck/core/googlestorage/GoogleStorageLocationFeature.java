@@ -20,7 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.util.Set;
 
@@ -36,7 +36,7 @@ public class GoogleStorageLocationFeature implements Location {
 
     @Override
     public Name getDefault() {
-        return new GoogleStorageRegion(PreferencesFactory.get().getProperty("googlestorage.location"));
+        return new GoogleStorageRegion(new HostPreferences(session.getHost()).getProperty("googlestorage.location"));
     }
 
     @Override

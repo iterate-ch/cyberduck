@@ -28,8 +28,7 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -42,9 +41,6 @@ import java.util.EnumSet;
 
 public class S3ObjectListService extends S3AbstractListService implements ListService {
     private static final Logger log = Logger.getLogger(S3ObjectListService.class);
-
-    private final Preferences preferences
-        = PreferencesFactory.get();
 
     private final PathContainerService containerService;
     private final S3Session session;
@@ -63,7 +59,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
     }
 
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter) throws BackgroundException {
-        return this.list(directory, listener, delimiter, preferences.getInteger("s3.listing.chunksize"));
+        return this.list(directory, listener, delimiter, new HostPreferences(session.getHost()).getInteger("s3.listing.chunksize"));
     }
 
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {

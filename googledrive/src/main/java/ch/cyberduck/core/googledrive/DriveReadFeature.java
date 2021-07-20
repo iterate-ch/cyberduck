@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
@@ -77,7 +78,7 @@ public class DriveReadFeature implements Read {
             try {
                 final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsAllDrives=%s",
                     session.getClient().getRootUrl(), fileid.getFileId(file, new DisabledListProgressListener()),
-                    PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
+                    new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")));
                 return this.read(request, file, status);
             }
             catch(RetriableAccessDeniedException e) {
@@ -95,7 +96,7 @@ public class DriveReadFeature implements Read {
                 // Continue with acknowledgeAbuse=true
                 final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsAllDrives=%s&acknowledgeAbuse=true",
                     session.getClient().getRootUrl(), fileid.getFileId(file, new DisabledListProgressListener()),
-                    PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
+                    new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")));
                 return this.read(request, file, status);
             }
         }

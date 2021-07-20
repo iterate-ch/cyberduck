@@ -20,7 +20,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -40,7 +40,7 @@ public class DriveSearchListService extends AbstractDriveListService {
     private final String query;
 
     public DriveSearchListService(final DriveSession session, final DriveFileIdProvider fileid, final String query) {
-        super(session, fileid, PreferencesFactory.get().getInteger("googledrive.list.limit"), DEFAULT_FIELDS);
+        super(session, fileid, new HostPreferences(session.getHost()).getInteger("googledrive.list.limit"), DEFAULT_FIELDS);
         this.session = session;
         this.fileid = fileid;
         this.query = query;
@@ -58,7 +58,7 @@ public class DriveSearchListService extends AbstractDriveListService {
             // Parent may not be current working directory when searching recursively
             final Set<Path> tree = new HashSet<>();
             final String workdirId = session.getClient().files().get(fileid.getFileId(directory, new DisabledListProgressListener()))
-                .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute().getId();
+                .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute().getId();
             for(String parentid : f.getParents()) {
                 tree.addAll(this.parents(directory, workdirId, parentid, new ArrayDeque<>()));
             }

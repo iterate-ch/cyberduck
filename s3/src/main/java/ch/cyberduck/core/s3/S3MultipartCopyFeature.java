@@ -22,7 +22,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpRange;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -49,14 +49,12 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
     private final S3Session session;
     private final PathContainerService containerService;
 
-    private final ThreadPool pool
-        = ThreadPoolFactory.get("multipart", PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
+    private final ThreadPool pool;
 
     /**
      * A split smaller than 5M is not allowed
      */
-    private final Long partsize
-        = PreferencesFactory.get().getLong("s3.copy.multipart.size");
+    private final Long partsize;
 
     public S3MultipartCopyFeature(final S3Session session) {
         this(session, new S3AccessControlListFeature(session));
@@ -66,6 +64,8 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
         super(session, acl);
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
+        this.pool = ThreadPoolFactory.get("multipart", new HostPreferences(session.getHost()).getInteger("s3.upload.multipart.concurrency"));
+        this.partsize = new HostPreferences(session.getHost()).getLong("s3.copy.multipart.size");
     }
 
     @Override

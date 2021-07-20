@@ -19,7 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -32,7 +32,7 @@ public class B2ThresholdCopyFeature implements Copy {
     private final Long threshold;
 
     public B2ThresholdCopyFeature(final B2Session session, final B2VersionIdProvider fileid) {
-        this(session, fileid, PreferencesFactory.get().getLong("b2.copy.largeobject.threshold"));
+        this(session, fileid, new HostPreferences(session.getHost()).getLong("b2.copy.largeobject.threshold"));
     }
 
     public B2ThresholdCopyFeature(final B2Session session, final B2VersionIdProvider fileid, final Long threshold) {

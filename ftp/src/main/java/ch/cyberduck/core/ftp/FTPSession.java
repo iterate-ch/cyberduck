@@ -46,8 +46,9 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ftp.list.FTPListService;
 import ch.cyberduck.core.idna.PunycodeConverter;
-import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.Settings;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
@@ -74,8 +75,8 @@ import java.util.TimeZone;
 public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = Logger.getLogger(FTPSession.class);
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
+    private final Settings preferences
+        = new HostPreferences(host, PreferencesFactory.get());
 
     private Timestamp timestamp;
     private UnixPermission permission;

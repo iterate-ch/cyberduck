@@ -24,7 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
@@ -47,7 +47,7 @@ public class SDSListService implements ListService {
     private final boolean references;
 
     public SDSListService(final SDSSession session, final SDSNodeIdProvider nodeid) {
-        this(session, nodeid, PreferencesFactory.get().getBoolean("sds.versioning.references.enable"));
+        this(session, nodeid, new HostPreferences(session.getHost()).getBoolean("sds.versioning.references.enable"));
     }
 
     public SDSListService(final SDSSession session, final SDSNodeIdProvider nodeid, final boolean references) {
@@ -58,7 +58,7 @@ public class SDSListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return this.list(directory, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
+        return this.list(directory, listener, new HostPreferences(session.getHost()).getInteger("sds.listing.chunksize"));
     }
 
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final int chunksize) throws BackgroundException {

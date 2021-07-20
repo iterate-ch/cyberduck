@@ -23,8 +23,8 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.Settings;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -59,11 +59,10 @@ public class RequestEntityRestStorageService extends RestS3Service {
 
     private final S3Session session;
     private final Jets3tProperties properties;
-    private final Preferences preferences = PreferencesFactory.get();
 
     private static Jets3tProperties toProperties(final Host bookmark, final S3Protocol.AuthenticationHeaderSignatureVersion signatureVersion) {
         final Jets3tProperties properties = new Jets3tProperties();
-        final Preferences preferences = PreferencesFactory.get();
+        final Settings preferences = new HostPreferences(bookmark);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure for endpoint %s", bookmark));
         }
@@ -124,7 +123,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
         // Client configuration
         configuration.disableContentCompression();
         final RequestEntityRestStorageService authorizer = this;
-        configuration.setRetryHandler(new S3HttpRequestRetryHandler(authorizer, preferences.getInteger("http.connections.retry")));
+        configuration.setRetryHandler(new S3HttpRequestRetryHandler(authorizer, new HostPreferences(session.getHost()).getInteger("http.connections.retry")));
         configuration.setRedirectStrategy(new DefaultRedirectStrategy() {
             @Override
             public HttpUriRequest getRedirect(final HttpRequest request, final HttpResponse response, final HttpContext context) throws ProtocolException {
@@ -177,6 +176,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                                              final String objectKey, final Map<String, String> requestParameters) throws S3ServiceException {
         final Host host = session.getHost();
         // Apply default configuration
+        final HostPreferences preferences = new HostPreferences(session.getHost());
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
             // Check if not already set to accelerated endpoint
             if(properties.getStringProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default")).matches("s3-accelerate(\\.dualstack)?\\.amazonaws\\.com")) {

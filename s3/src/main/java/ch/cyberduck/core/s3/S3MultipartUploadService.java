@@ -35,7 +35,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
@@ -76,8 +76,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private final Integer concurrency;
 
     public S3MultipartUploadService(final S3Session session, final Write<StorageObject> writer) {
-        this(session, writer, PreferencesFactory.get().getLong("s3.upload.multipart.size"),
-            PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
+        this(session, writer, new HostPreferences(session.getHost()).getLong("s3.upload.multipart.size"),
+            new HostPreferences(session.getHost()).getInteger("s3.upload.multipart.concurrency"));
     }
 
     public S3MultipartUploadService(final S3Session session, final Write<StorageObject> writer, final Long partsize, final Integer concurrency) {

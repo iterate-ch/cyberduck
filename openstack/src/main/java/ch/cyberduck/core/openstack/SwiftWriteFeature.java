@@ -34,8 +34,6 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.AbstractHttpEntity;
@@ -53,9 +51,6 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
 
     private final PathContainerService containerService
         = new DefaultPathContainerService();
-
-    private final Preferences preferences
-        = PreferencesFactory.get();
 
     private final SwiftSession session;
     private final SwiftRegionService regionService;

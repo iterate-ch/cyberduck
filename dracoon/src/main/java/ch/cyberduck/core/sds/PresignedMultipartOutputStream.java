@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CompleteS3FileUploadRequest;
@@ -188,7 +188,7 @@ public class PresignedMultipartOutputStream extends OutputStream {
             else {
                 try {
                     final CompleteS3FileUploadRequest completeS3FileUploadRequest = new CompleteS3FileUploadRequest()
-                        .keepShareLinks(overall.isExists() ? PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep") : false)
+                        .keepShareLinks(overall.isExists() ? new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep") : false)
                         .resolutionStrategy(overall.isExists() ? CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteS3FileUploadRequest.ResolutionStrategyEnum.FAIL);
                     if(overall.getFilekey() != null) {
                         final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
@@ -233,7 +233,7 @@ public class PresignedMultipartOutputStream extends OutputStream {
                                 failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
                             }
                         }
-                    }, PreferencesFactory.get().getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
+                    }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
                     Uninterruptibles.awaitUninterruptibly(done);
                     polling.shutdown();
                     if(null != failure.get()) {

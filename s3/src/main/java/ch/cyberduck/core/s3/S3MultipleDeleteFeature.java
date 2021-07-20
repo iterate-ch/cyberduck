@@ -26,7 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -62,8 +62,8 @@ public class S3MultipleDeleteFeature implements Delete {
     }
 
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();
-        final List<Path> containers = new ArrayList<Path>();
+        final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<>();
+        final List<Path> containers = new ArrayList<>();
         for(Path file : files.keySet()) {
             if(containerService.isContainer(file)) {
                 containers.add(file);
@@ -82,7 +82,7 @@ public class S3MultipleDeleteFeature implements Delete {
             }
             else {
                 final Path container = containerService.getContainer(file);
-                final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
+                final List<ObjectKeyAndVersion> keys = new ArrayList<>();
                 // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
                 keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
                 if(map.containsKey(container)) {
@@ -147,7 +147,8 @@ public class S3MultipleDeleteFeature implements Delete {
             }
             else {
                 // Request contains a list of up to 1000 keys that you want to delete
-                for(List<ObjectKeyAndVersion> partition : new Partition<ObjectKeyAndVersion>(keys, PreferencesFactory.get().getInteger("s3.delete.multiple.partition"))) {
+                for(List<ObjectKeyAndVersion> partition : new Partition<>(keys,
+                    new HostPreferences(session.getHost()).getInteger("s3.delete.multiple.partition"))) {
                     final MultipleDeleteResult result = session.getClient().deleteMultipleObjects(container.getName(),
                         partition.toArray(new ObjectKeyAndVersion[partition.size()]),
                         // Only include errors in response

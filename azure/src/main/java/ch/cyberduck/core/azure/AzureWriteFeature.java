@@ -32,8 +32,7 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -65,17 +64,12 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
 
     private final AzureSession session;
     private final OperationContext context;
-
     private final PathContainerService containerService
         = new DirectoryDelimiterPathContainerService();
-
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
     private final BlobType blobType;
 
     public AzureWriteFeature(final AzureSession session, final OperationContext context) {
-        this(session, BlobType.valueOf(PreferencesFactory.get().getProperty("azure.upload.blobtype")), context);
+        this(session, BlobType.valueOf(new HostPreferences(session.getHost()).getProperty("azure.upload.blobtype")), context);
     }
 
     public AzureWriteFeature(final AzureSession session, final BlobType blobType, final OperationContext context) {
@@ -111,7 +105,7 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
         try {
             final CloudBlob blob;
             if(status.isExists()) {
-                if(preferences.getBoolean("azure.upload.snapshot")) {
+                if(new HostPreferences(session.getHost()).getBoolean("azure.upload.snapshot")) {
                     session.getClient().getContainerReference(containerService.getContainer(file).getName())
                         .getBlobReferenceFromServer(containerService.getKey(file)).createSnapshot();
                 }
@@ -176,7 +170,7 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
             }
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setConcurrentRequestCount(1);
-            options.setStoreBlobContentMD5(preferences.getBoolean("azure.upload.md5"));
+            options.setStoreBlobContentMD5(new HostPreferences(session.getHost()).getBoolean("azure.upload.md5"));
             final BlobOutputStream out;
             if(status.isAppend()) {
                 options.setStoreBlobContentMD5(false);

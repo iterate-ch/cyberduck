@@ -21,8 +21,8 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.Settings;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -39,9 +39,6 @@ public class SFTPReadFeature implements Read {
     private static final Logger log = Logger.getLogger(SFTPReadFeature.class);
 
     private final SFTPSession session;
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
 
     public SFTPReadFeature(final SFTPSession session) {
         this.session = session;
@@ -80,10 +77,11 @@ public class SFTPReadFeature implements Read {
     }
 
     protected int getMaxUnconfirmedReads(final TransferStatus status) {
+        final Settings preferences = new HostPreferences(session.getHost());
         if(-1 == status.getLength()) {
             return preferences.getInteger("sftp.read.maxunconfirmed");
         }
         return Integer.min(((int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1),
-                preferences.getInteger("sftp.read.maxunconfirmed"));
+            preferences.getInteger("sftp.read.maxunconfirmed"));
     }
 }

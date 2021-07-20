@@ -31,7 +31,7 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -94,6 +94,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     @Override
     protected StoregateApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        final HostPreferences preferences = new HostPreferences(host);
         authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) {
@@ -105,7 +106,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                 Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                     host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
             )
-            .withParameter("login_hint", PreferencesFactory.get().getProperty("storegate.login.hint"));
+            .withParameter("login_hint", preferences.getProperty("storegate.login.hint"));
         // Force login even if browser session already exists
         authorizationService.withParameter("prompt", "login");
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
@@ -120,7 +121,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             .register(new JSON())
             .register(JacksonFeature.class)
             .connectorProvider(new HttpComponentsProvider(apache))));
-        final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
         client.setConnectTimeout(timeout);
         client.setReadTimeout(timeout);
         client.setUserAgent(new PreferencesUseragentProvider().get());

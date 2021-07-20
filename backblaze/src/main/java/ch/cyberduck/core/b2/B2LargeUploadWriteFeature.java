@@ -28,7 +28,7 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -73,7 +73,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<B2StartLargeFil
     public StatusOutputStream<B2StartLargeFileResponse> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, status);
         return new HttpResponseOutputStream<B2StartLargeFileResponse>(new MemorySegementingOutputStream(proxy,
-            PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum"))) {
+            new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.size.minimum"))) {
             @Override
             public B2StartLargeFileResponse getStatus() {
                 return proxy.getResponse();
@@ -113,7 +113,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<B2StartLargeFil
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
             try {
-                if(0 == partNumber && len < PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum")) {
+                if(0 == partNumber && len < new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.size.minimum")) {
                     // Write single upload
                     final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()));
                     final Checksum checksum = overall.getChecksum();

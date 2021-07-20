@@ -24,7 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -36,7 +36,6 @@ import java.util.Set;
 
 public class S3EncryptionFeature implements Encryption {
 
-    private final Preferences preferences = PreferencesFactory.get();
     private final PathContainerService containerService;
     private final S3Session session;
 
@@ -57,11 +56,11 @@ public class S3EncryptionFeature implements Encryption {
     @Override
     public Algorithm getDefault(final Path file) {
         final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
-        if(StringUtils.isNotBlank(preferences.getProperty(key))) {
-            return Algorithm.fromString(preferences.getProperty(key));
+        if(StringUtils.isNotBlank(new HostPreferences(session.getHost()).getProperty(key))) {
+            return Algorithm.fromString(new HostPreferences(session.getHost()).getProperty(key));
         }
         // Return default setting in preferences
-        final String setting = preferences.getProperty("s3.encryption.algorithm");
+        final String setting = new HostPreferences(session.getHost()).getProperty("s3.encryption.algorithm");
         if(StringUtils.equals(SSE_AES256.algorithm, setting)) {
             return SSE_AES256;
         }
@@ -86,7 +85,7 @@ public class S3EncryptionFeature implements Encryption {
     public void setEncryption(final Path file, final Algorithm setting) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
-            preferences.setProperty(key, setting.toString());
+            PreferencesFactory.get().setProperty(key, setting.toString());
         }
         if(file.isFile() || file.isPlaceholder()) {
             try {

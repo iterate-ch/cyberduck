@@ -21,7 +21,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.irods.jargon.core.exception.JargonException;
@@ -61,7 +61,8 @@ public class IRODSCopyFeature implements Copy {
                     public CallbackResponse transferAsksWhetherToForceOperation(final String irodsAbsolutePath, final boolean isCollection) {
                         return CallbackResponse.YES_THIS_FILE;
                     }
-                }, DefaultTransferControlBlock.instance(StringUtils.EMPTY, PreferencesFactory.get().getInteger("connection.retry")));
+                }, DefaultTransferControlBlock.instance(StringUtils.EMPTY,
+                    new HostPreferences(session.getHost()).getInteger("connection.retry")));
             return target;
         }
         catch(JargonException e) {

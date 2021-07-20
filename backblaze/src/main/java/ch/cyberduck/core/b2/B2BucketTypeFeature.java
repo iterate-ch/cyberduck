@@ -24,7 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.jets3t.service.acl.Permission;
@@ -105,7 +105,7 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
 
     @Override
     public Name getDefault() {
-        return new B2BucketTypeName(BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")));
+        return new B2BucketTypeName(BucketType.valueOf(new HostPreferences(session.getHost()).getProperty("b2.bucket.acl.default")));
     }
 
     @Override

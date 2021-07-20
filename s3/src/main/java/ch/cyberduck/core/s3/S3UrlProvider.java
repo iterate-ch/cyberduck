@@ -29,7 +29,7 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.WebUrlProvider;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
@@ -78,7 +78,8 @@ public class S3UrlProvider implements UrlProvider {
                 // In one hour
                 list.add(this.toSignedUrl(file, (int) TimeUnit.HOURS.toSeconds(1)));
                 // Default signed URL expiring in 24 hours.
-                list.add(this.toSignedUrl(file, (int) TimeUnit.SECONDS.toSeconds(PreferencesFactory.get().getInteger("s3.url.expire.seconds"))));
+                list.add(this.toSignedUrl(file, (int) TimeUnit.SECONDS.toSeconds(
+                    new HostPreferences(session.getHost()).getInteger("s3.url.expire.seconds"))));
                 // 1 Week
                 list.add(this.toSignedUrl(file, (int) TimeUnit.DAYS.toSeconds(7)));
                 switch(session.getSignatureVersion()) {

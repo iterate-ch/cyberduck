@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -79,7 +79,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
             case download:
                 break;
             default:
-                if(PreferencesFactory.get().getBoolean("sds.encryption.missingkeys.upload")) {
+                if(new HostPreferences(session.getHost()).getBoolean("sds.encryption.missingkeys.upload")) {
                     if(session.userAccount().isEncryptionEnabled()) {
                         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature();
                         final Map<Path, Boolean> rooms = this.getRoomEncryptionStatus(files);

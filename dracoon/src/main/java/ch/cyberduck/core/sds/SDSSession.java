@@ -25,7 +25,8 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.Settings;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.JSON;
@@ -103,23 +104,25 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     protected SDSErrorResponseInterceptor retryHandler;
     protected OAuth2RequestInterceptor authorizationService;
 
+    private final Settings preferences = new HostPreferences(host);
+
     private final ExpiringObjectHolder<UserAccountWrapper> userAccount
-        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.useracount.ttl"));
+        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPair
-        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
+        = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
 
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPairDeprecated
-        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
+        = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
 
     private final ExpiringObjectHolder<SystemDefaults> systemDefaults
-        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.useracount.ttl"));
+        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<GeneralSettingsInfo> generalSettingsInfo
-        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.useracount.ttl"));
+        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<SoftwareVersionData> softwareVersion
-        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.useracount.ttl"));
+        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private UserKeyPair.Version requiredKeyPairVersion;
 
@@ -146,7 +149,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     @Override
     protected SDSApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        if(PreferencesFactory.get().getBoolean("sds.oauth.migrate.enable")) {
+        if(preferences.getBoolean("sds.oauth.migrate.enable")) {
             if(host.getProtocol().isDeprecated()) {
                 final Credentials credentials = host.getCredentials();
                 if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()))) {
@@ -246,7 +249,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             .register(new JSON())
             .register(JacksonFeature.class)
             .connectorProvider(new HttpComponentsProvider(apache))));
-        final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
         client.setConnectTimeout(timeout);
         client.setReadTimeout(timeout);
         client.setUserAgent(new PreferencesUseragentProvider().get());
@@ -258,7 +261,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         final SoftwareVersionData version = this.softwareVersion();
         final Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(version.getRestApiVersion());
         if(matcher.matches()) {
-            if(new Version(matcher.group(1)).compareTo(new Version(PreferencesFactory.get().getProperty("sds.version.lts"))) < 0) {
+            if(new Version(matcher.group(1)).compareTo(new Version(preferences.getProperty("sds.version.lts"))) < 0) {
                 throw new InteroperabilityException(
                     LocaleFactory.localizedString("DRACOON environment needs to be updated", "SDS"),
                     LocaleFactory.localizedString("Your DRACOON environment is outdated and no longer works with this application. Please contact your administrator.", "SDS"));
@@ -590,7 +593,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
         }
         if(type == Upload.class) {
-            if(PreferencesFactory.get().getBoolean("sds.upload.s3.enable")) {
+            if(preferences.getBoolean("sds.upload.s3.enable")) {
                 try {
                     if(this.generalSettingsInfo().isUseS3Storage()) {
                         final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());

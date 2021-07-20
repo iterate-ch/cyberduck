@@ -36,8 +36,8 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.Settings;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -63,9 +63,6 @@ import java.text.MessageFormat;
 
 public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     private static final Logger log = Logger.getLogger(IRODSSession.class);
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
 
     public IRODSSession(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -99,11 +96,12 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     protected IRODSFileSystem configure(final IRODSFileSystem client) {
         final SettableJargonProperties properties = new SettableJargonProperties(client.getJargonProperties());
         properties.setEncoding(host.getEncoding());
+        final Settings preferences = new HostPreferences(host);
         final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
         properties.setIrodsSocketTimeout(timeout);
         properties.setIrodsParallelSocketTimeout(timeout);
-        properties.setGetBufferSize(PreferencesFactory.get().getInteger("connection.chunksize"));
-        properties.setPutBufferSize(PreferencesFactory.get().getInteger("connection.chunksize"));
+        properties.setGetBufferSize(preferences.getInteger("connection.chunksize"));
+        properties.setPutBufferSize(preferences.getInteger("connection.chunksize"));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure client %s with properties %s", client, properties));
         }
@@ -139,7 +137,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
             }
             if(!response.isSuccessful()) {
                 throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
-                        "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));
+                    "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));
             }
         }
         catch(JargonException e) {
@@ -203,12 +201,12 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
         public URI toURI(final boolean includePassword) throws JargonException {
             try {
                 return new URI(String.format("irods://%s.%s%s@%s:%d%s",
-                        this.getUserName(),
-                        this.getZone(),
-                        includePassword ? String.format(":%s", this.getPassword()) : StringUtils.EMPTY,
-                        this.getHost(),
-                        this.getPort(),
-                        URIEncoder.encode(this.getHomeDirectory())));
+                    this.getUserName(),
+                    this.getZone(),
+                    includePassword ? String.format(":%s", this.getPassword()) : StringUtils.EMPTY,
+                    this.getHost(),
+                    this.getPort(),
+                    URIEncoder.encode(this.getHomeDirectory())));
             }
             catch(URISyntaxException e) {
                 throw new JargonException(e.getMessage());

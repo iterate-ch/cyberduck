@@ -28,8 +28,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -38,16 +37,13 @@ import org.jets3t.service.model.StorageObject;
 public class S3ThresholdUploadService implements Upload<StorageObject> {
     private static final Logger log = Logger.getLogger(S3ThresholdUploadService.class);
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
     private final S3Session session;
     private final Long threshold;
 
     private Write<StorageObject> writer;
 
     public S3ThresholdUploadService(final S3Session session) {
-        this(session, PreferencesFactory.get().getLong("s3.upload.multipart.threshold"));
+        this(session, new HostPreferences(session.getHost()).getLong("s3.upload.multipart.threshold"));
     }
 
     public S3ThresholdUploadService(final S3Session session, final Long threshold) {
@@ -65,10 +61,10 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     public StorageObject upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         if(status.getLength() >= threshold) {
-            if(!preferences.getBoolean("s3.upload.multipart")) {
+            if(!new HostPreferences(session.getHost()).getBoolean("s3.upload.multipart")) {
                 log.warn("Multipart upload is disabled with property s3.upload.multipart");
                 // Disabled by user
-                if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
+                if(status.getLength() < new HostPreferences(session.getHost()).getLong("s3.upload.multipart.required.threshold")) {
                     // Use single upload service
                     return new S3SingleUploadService(session, writer).upload(file, local, throttle, listener, status, prompt);
                 }

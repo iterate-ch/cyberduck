@@ -27,8 +27,7 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
@@ -56,21 +55,18 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
 
     public static final String KEY_DELETE_MARKER = "delete_marker";
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
     private final PathContainerService containerService;
     private final S3Session session;
     private final Integer concurrency;
     private final boolean references;
 
     public S3VersionedObjectListService(final S3Session session) {
-        this(session, PreferencesFactory.get().getInteger("s3.listing.concurrency"),
-            PreferencesFactory.get().getBoolean("s3.versioning.references.enable"));
+        this(session, new HostPreferences(session.getHost()).getInteger("s3.listing.concurrency"),
+            new HostPreferences(session.getHost()).getBoolean("s3.versioning.references.enable"));
     }
 
     public S3VersionedObjectListService(final S3Session session, final boolean references) {
-        this(session, PreferencesFactory.get().getInteger("s3.listing.concurrency"), references);
+        this(session, new HostPreferences(session.getHost()).getInteger("s3.listing.concurrency"), references);
     }
 
     /**
@@ -92,8 +88,8 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         try {
             final String prefix = this.createPrefix(directory);
             final Path bucket = containerService.getContainer(directory);
-            final AttributedList<Path> children = new AttributedList<Path>();
-            final List<Future<Path>> folders = new ArrayList<Future<Path>>();
+            final AttributedList<Path> children = new AttributedList<>();
+            final List<Future<Path>> folders = new ArrayList<>();
             String priorLastKey = null;
             String priorLastVersionId = null;
             long revision = 0L;
@@ -102,7 +98,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
             do {
                 final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
                     bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
-                    preferences.getInteger("s3.listing.chunksize"),
+                    new HostPreferences(session.getHost()).getInteger("s3.listing.chunksize"),
                     priorLastKey, priorLastVersionId, false);
                 // Amazon S3 returns object versions in the order in which they were stored, with the most recently stored returned first.
                 for(BaseVersionOrDeleteMarker marker : chunk.getItems()) {

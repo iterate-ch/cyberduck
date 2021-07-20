@@ -27,8 +27,7 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -42,14 +41,13 @@ import com.google.api.services.storage.model.StorageObject;
 public class GoogleStorageObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(GoogleStorageObjectListService.class);
 
-    private final Preferences preferences = PreferencesFactory.get();
     private final GoogleStorageSession session;
     private final GoogleStorageAttributesFinderFeature attributes;
     private final PathContainerService containerService;
     private final boolean references;
 
     public GoogleStorageObjectListService(final GoogleStorageSession session) {
-        this(session, PreferencesFactory.get().getBoolean("googlestorage.versioning.references.enable"));
+        this(session, new HostPreferences(session.getHost()).getBoolean("googlestorage.versioning.references.enable"));
     }
 
     public GoogleStorageObjectListService(final GoogleStorageSession session, final boolean references) {
@@ -61,7 +59,8 @@ public class GoogleStorageObjectListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return this.list(directory, listener, String.valueOf(Path.DELIMITER), preferences.getInteger("googlestorage.listing.chunksize"));
+        return this.list(directory, listener, String.valueOf(Path.DELIMITER),
+            new HostPreferences(session.getHost()).getInteger("googlestorage.listing.chunksize"));
     }
 
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {
@@ -70,7 +69,7 @@ public class GoogleStorageObjectListService implements ListService {
             final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
                 containerService.getContainer(directory)
             ) : VersioningConfiguration.empty();
-            final AttributedList<Path> objects = new AttributedList<Path>();
+            final AttributedList<Path> objects = new AttributedList<>();
             Objects response;
             long revision = 0L;
             String lastKey = null;

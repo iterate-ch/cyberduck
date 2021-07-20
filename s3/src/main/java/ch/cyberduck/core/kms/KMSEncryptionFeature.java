@@ -26,8 +26,7 @@ import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -54,7 +53,6 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     private static final Logger log = Logger.getLogger(KMSEncryptionFeature.class);
 
     private final S3Session session;
-    private final Preferences preferences = PreferencesFactory.get();
     private final PathContainerService containerService;
     private final ClientConfiguration configuration;
     private final Location locationFeature;
@@ -71,11 +69,11 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
 
     @Override
     public Algorithm getDefault(final Path file) {
-        final String setting = preferences.getProperty("s3.encryption.algorithm");
+        final String setting = new HostPreferences(session.getHost()).getProperty("s3.encryption.algorithm");
         if(StringUtils.equals(KMSEncryptionFeature.SSE_KMS_DEFAULT.algorithm, setting)) {
             final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
-            if(StringUtils.isNotBlank(preferences.getProperty(key))) {
-                return Algorithm.fromString(preferences.getProperty(key));
+            if(StringUtils.isNotBlank(new HostPreferences(session.getHost()).getProperty(key))) {
+                return Algorithm.fromString(new HostPreferences(session.getHost()).getProperty(key));
             }
             return KMSEncryptionFeature.SSE_KMS_DEFAULT;
         }
@@ -86,8 +84,8 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     public Algorithm getEncryption(final Path file) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
-            if(StringUtils.isNotBlank(preferences.getProperty(key))) {
-                return Algorithm.fromString(preferences.getProperty(key));
+            if(StringUtils.isNotBlank(new HostPreferences(session.getHost()).getProperty(key))) {
+                return Algorithm.fromString(new HostPreferences(session.getHost()).getProperty(key));
             }
         }
         return super.getEncryption(file);

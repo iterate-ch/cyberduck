@@ -23,7 +23,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -39,7 +39,7 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
     private final Long threshold;
 
     public B2ThresholdUploadService(final B2Session session, final B2VersionIdProvider fileid) {
-        this(session, fileid, PreferencesFactory.get().getLong("b2.upload.largeobject.threshold"));
+        this(session, fileid, new HostPreferences(session.getHost()).getLong("b2.upload.largeobject.threshold"));
     }
 
     public B2ThresholdUploadService(final B2Session session, final B2VersionIdProvider fileid, final Long threshold) {
@@ -61,7 +61,7 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
             return new B2LargeUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, callback);
         }
         else {
-            return new B2SingleUploadService(writer).upload(file, local, throttle, listener, status, callback);
+            return new B2SingleUploadService(session, writer).upload(file, local, throttle, listener, status, callback);
         }
     }
 
@@ -73,9 +73,9 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
 
     protected boolean threshold(final Long length) {
         if(length > threshold) {
-            if(!PreferencesFactory.get().getBoolean("b2.upload.largeobject")) {
+            if(!new HostPreferences(session.getHost()).getBoolean("b2.upload.largeobject")) {
                 // Disabled by user
-                if(length < PreferencesFactory.get().getLong("b2.upload.largeobject.required.threshold")) {
+                if(length < new HostPreferences(session.getHost()).getLong("b2.upload.largeobject.required.threshold")) {
                     log.warn("Large upload is disabled with property b2.upload.largeobject.required.threshold");
                     return false;
                 }

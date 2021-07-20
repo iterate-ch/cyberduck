@@ -48,8 +48,8 @@ import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.Settings;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -80,8 +80,8 @@ import java.util.Map;
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
+    private final Settings preferences
+        = new HostPreferences(host);
 
     private final Versioning versioning
         = preferences.getBoolean("s3.versioning.enable") ? new S3VersioningFeature(this, new S3AccessControlListFeature(this)) : null;

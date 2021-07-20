@@ -39,7 +39,7 @@ public class SwiftSmallObjectUploadFeatureTest extends AbstractSwiftTest {
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        assertSame(NullInputStream.class, new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(
+        assertSame(NullInputStream.class, new SwiftSmallObjectUploadFeature(session, new SwiftWriteFeature(
             session, new SwiftRegionService(session))).decorate(n, null).getClass());
     }
 
@@ -48,7 +48,7 @@ public class SwiftSmallObjectUploadFeatureTest extends AbstractSwiftTest {
         final StorageObject o = new StorageObject("f");
         o.setMd5sum("d41d8cd98f00b204e9800998ecf8427f");
         try {
-            new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(
+            new SwiftSmallObjectUploadFeature(session, new SwiftWriteFeature(
                 session, new SwiftRegionService(session))).post(
                 new Path("/f", EnumSet.of(Path.Type.file)), MessageDigest.getInstance("MD5"), o
             );
@@ -64,7 +64,7 @@ public class SwiftSmallObjectUploadFeatureTest extends AbstractSwiftTest {
     public void testPostChecksum() throws Exception {
         final StorageObject o = new StorageObject("f");
         o.setMd5sum("d41d8cd98f00b204e9800998ecf8427e");
-        new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(
+        new SwiftSmallObjectUploadFeature(session, new SwiftWriteFeature(
             session, new SwiftRegionService(session))).post(
             new Path("/f", EnumSet.of(Path.Type.file)), MessageDigest.getInstance("MD5"), o
         );

@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.apache.commons.lang3.StringUtils;
@@ -67,12 +67,12 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
 
     @Override
     public Acl getDefault(final EnumSet<Path.Type> type) {
-        return Acl.toAcl(PreferencesFactory.get().getProperty("googlestorage.acl.default"));
+        return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("googlestorage.acl.default"));
     }
 
     @Override
     public Acl getDefault(final Local file) {
-        return Acl.toAcl(PreferencesFactory.get().getProperty("googlestorage.acl.default"));
+        return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("googlestorage.acl.default"));
     }
 
     @Override

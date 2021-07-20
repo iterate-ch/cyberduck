@@ -19,7 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Redundancy;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.jets3t.service.model.S3Object;
 
@@ -52,7 +52,7 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
 
     @Override
     public String getDefault() {
-        return PreferencesFactory.get().getProperty("googlestorage.storage.class");
+        return new HostPreferences(session.getHost()).getProperty("googlestorage.storage.class");
     }
 
     @Override

@@ -23,7 +23,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
@@ -42,10 +42,12 @@ import synapticloop.b2.response.BaseB2Response;
 public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, MessageDigest> {
     private static final Logger log = Logger.getLogger(B2SingleUploadService.class);
 
+    private final B2Session session;
     private Write<BaseB2Response> writer;
 
-    public B2SingleUploadService(final Write<BaseB2Response> writer) {
+    public B2SingleUploadService(final B2Session session, final Write<BaseB2Response> writer) {
         super(writer);
+        this.session = session;
         this.writer = writer;
     }
 
@@ -62,7 +64,7 @@ public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, Mes
     @Override
     protected MessageDigest digest() throws IOException {
         MessageDigest digest = null;
-        if(PreferencesFactory.get().getBoolean("b2.upload.checksum.verify")) {
+        if(new HostPreferences(session.getHost()).getBoolean("b2.upload.checksum.verify")) {
             try {
                 digest = MessageDigest.getInstance("SHA1");
             }
