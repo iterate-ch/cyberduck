@@ -45,7 +45,7 @@ public class SDSUrlProvider implements UrlProvider {
             return DescriptiveUrlBag.empty();
         }
         return new DescriptiveUrlBag(Collections.singletonList(
-            new DescriptiveUrl(URI.create(String.format("%s/#/node/%s",
+            new DescriptiveUrl(URI.create(String.format("%s/#/node/%s/details",
                 new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(
                     nodeid
                 ))),
