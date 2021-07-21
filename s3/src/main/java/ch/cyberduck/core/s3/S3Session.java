@@ -49,7 +49,7 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.Settings;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -80,7 +80,7 @@ import java.util.Map;
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
 
-    private final Settings preferences
+    private final PreferencesReader preferences
         = new HostPreferences(host);
 
     private final Versioning versioning

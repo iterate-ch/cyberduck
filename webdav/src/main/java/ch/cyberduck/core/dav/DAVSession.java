@@ -46,7 +46,7 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.Settings;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -88,7 +88,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     private static final Logger log = Logger.getLogger(DAVSession.class);
 
     private final RedirectCallback redirect;
-    private final Settings preferences
+    private final PreferencesReader preferences
         = new HostPreferences(host);
 
     private ListService list = new DAVListService(this, new DAVAttributesFinderFeature(this));

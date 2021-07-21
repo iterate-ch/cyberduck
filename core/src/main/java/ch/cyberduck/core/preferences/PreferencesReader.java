@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public interface Settings {
-    Logger log = Logger.getLogger(Settings.class);
+public interface PreferencesReader {
+    Logger log = Logger.getLogger(PreferencesReader.class);
 
     /**
      * Give value in user settings or default value if not customized.

@@ -26,7 +26,7 @@ import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.Settings;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.JSON;
@@ -104,7 +104,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     protected SDSErrorResponseInterceptor retryHandler;
     protected OAuth2RequestInterceptor authorizationService;
 
-    private final Settings preferences = new HostPreferences(host);
+    private final PreferencesReader preferences = new HostPreferences(host);
 
     private final ExpiringObjectHolder<UserAccountWrapper> userAccount
         = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));

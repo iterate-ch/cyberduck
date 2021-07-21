@@ -93,7 +93,7 @@ import com.google.common.collect.ImmutableMap;
  * Holding all application preferences. Default values get overwritten when loading the <code>PREFERENCES_FILE</code>.
  * Singleton class.
  */
-public abstract class Preferences implements Locales, Settings {
+public abstract class Preferences implements Locales, PreferencesReader {
     private static final Logger log = Logger.getLogger(Preferences.class);
 
     protected static final String LIST_SEPERATOR = StringUtils.SPACE;
@@ -1182,37 +1182,37 @@ public abstract class Preferences implements Locales, Settings {
     @Override
     public List<String> getList(final String property) {
         final String value = this.getProperty(property);
-        return Settings.toList(value);
+        return PreferencesReader.toList(value);
     }
 
     @Override
     public int getInteger(final String key) {
         final String v = this.getProperty(key);
-        return Settings.toInteger(v);
+        return PreferencesReader.toInteger(v);
     }
 
     @Override
     public float getFloat(final String key) {
         final String v = this.getProperty(key);
-        return Settings.toFloat(v);
+        return PreferencesReader.toFloat(v);
     }
 
     @Override
     public long getLong(final String key) {
         final String v = this.getProperty(key);
-        return Settings.toLong(v);
+        return PreferencesReader.toLong(v);
     }
 
     @Override
     public double getDouble(final String key) {
         final String v = this.getProperty(key);
-        return Settings.toDouble(v);
+        return PreferencesReader.toDouble(v);
     }
 
     @Override
     public boolean getBoolean(final String key) {
         final String v = this.getProperty(key);
-        return Settings.toBoolean(v);
+        return PreferencesReader.toBoolean(v);
     }
 
     protected void setFactories() {

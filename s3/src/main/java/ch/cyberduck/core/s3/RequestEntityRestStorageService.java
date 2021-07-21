@@ -24,7 +24,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.Settings;
+import ch.cyberduck.core.preferences.PreferencesReader;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -62,7 +62,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
 
     private static Jets3tProperties toProperties(final Host bookmark, final S3Protocol.AuthenticationHeaderSignatureVersion signatureVersion) {
         final Jets3tProperties properties = new Jets3tProperties();
-        final Settings preferences = new HostPreferences(bookmark);
+        final PreferencesReader preferences = new HostPreferences(bookmark);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure for endpoint %s", bookmark));
         }
@@ -176,7 +176,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                                              final String objectKey, final Map<String, String> requestParameters) throws S3ServiceException {
         final Host host = session.getHost();
         // Apply default configuration
-        final HostPreferences preferences = new HostPreferences(session.getHost());
+        final PreferencesReader preferences = new HostPreferences(session.getHost());
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
             // Check if not already set to accelerated endpoint
             if(properties.getStringProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default")).matches("s3-accelerate(\\.dualstack)?\\.amazonaws\\.com")) {

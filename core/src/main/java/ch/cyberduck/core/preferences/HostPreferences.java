@@ -19,16 +19,16 @@ import ch.cyberduck.core.Host;
 
 import java.util.List;
 
-public class HostPreferences implements Settings {
+public class HostPreferences implements PreferencesReader {
 
-    private final Settings proxy;
+    private final PreferencesReader proxy;
     private final Host bookmark;
 
     public HostPreferences(final Host bookmark) {
         this(bookmark, PreferencesFactory.get());
     }
 
-    public HostPreferences(final Host bookmark, final Settings proxy) {
+    public HostPreferences(final Host bookmark, final PreferencesReader proxy) {
         this.bookmark = bookmark;
         this.proxy = proxy;
     }
@@ -48,7 +48,7 @@ public class HostPreferences implements Settings {
         if(null == value) {
             return proxy.getList(key);
         }
-        return Settings.toList(value);
+        return PreferencesReader.toList(value);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class HostPreferences implements Settings {
         if(null == value) {
             return proxy.getInteger(key);
         }
-        return Settings.toInteger(value);
+        return PreferencesReader.toInteger(value);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class HostPreferences implements Settings {
         if(null == value) {
             return proxy.getFloat(key);
         }
-        return Settings.toFloat(value);
+        return PreferencesReader.toFloat(value);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class HostPreferences implements Settings {
         if(null == value) {
             return proxy.getLong(key);
         }
-        return Settings.toLong(value);
+        return PreferencesReader.toLong(value);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class HostPreferences implements Settings {
         if(null == value) {
             return proxy.getDouble(key);
         }
-        return Settings.toDouble(value);
+        return PreferencesReader.toDouble(value);
     }
 
     @Override
@@ -93,6 +93,6 @@ public class HostPreferences implements Settings {
         if(null == value) {
             return proxy.getBoolean(key);
         }
-        return Settings.toBoolean(value);
+        return PreferencesReader.toBoolean(value);
     }
 }
