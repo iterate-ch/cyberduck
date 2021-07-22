@@ -125,7 +125,7 @@ public class SessionPoolFactory {
         if(log.isInfoEnabled()) {
             log.info(String.format("Create new stateful connection pool for %s", bookmark));
         }
-        final Session<?> session = SessionFactory.create(bookmark, trust, key);
+        final Session<?> session = SessionFactory.create(new Host(bookmark).withCredentials(new Credentials(bookmark.getCredentials())), trust, key);
         return new StatefulSessionPool(connect, session, transcript, vault);
     }
 
