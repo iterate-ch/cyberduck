@@ -70,7 +70,13 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
         else {
             query = file;
         }
-        final AttributedList<Path> list = new FileidDriveListService(session, fileid, query).list(file.getParent(), listener);
+        final AttributedList<Path> list;
+        if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
+            list = new DriveTeamDrivesListService(session, fileid).list(file.getParent(), listener);
+        }
+        else {
+            list = new FileidDriveListService(session, fileid, query).list(file.getParent(), listener);
+        }
         final Path found = list.find(new SimplePathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());

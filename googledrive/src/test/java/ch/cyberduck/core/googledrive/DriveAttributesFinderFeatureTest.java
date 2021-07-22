@@ -62,8 +62,24 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     }
 
     @Test
+    public void testFindSharedDriveAsDefaultPath() throws Exception {
+        final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, new DriveFileIdProvider(session));
+        assertNotEquals(PathAttributes.EMPTY, f.find(new Path(DriveHomeFinderService.SHARED_DRIVES_NAME, "iterate", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
+    public void testFindFolderInSharedDriveAsDefaultPath() throws Exception {
+        final Path test = new Path(new Path(DriveHomeFinderService.SHARED_DRIVES_NAME, "iterate", EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, new DriveFileIdProvider(session));
+        assertNotEquals(PathAttributes.EMPTY, f.find(test));
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testFind() throws Exception {
-        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
@@ -71,7 +87,6 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         assertEquals(0L, attributes.getSize());
         assertNotNull(attributes.getFileId());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
