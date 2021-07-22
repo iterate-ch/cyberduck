@@ -192,13 +192,8 @@ public class KeychainLoginService implements LoginService {
             }
             // Flag for successful authentication
             credentials.setPassed(true);
-            switch(bookmark.getProtocol().getStatefulness()) {
-                case stateful:
-                    break;
-                default:
-                    // Nullify password and tokens
-                    credentials.reset();
-            }
+            // Nullify password and tokens
+            credentials.reset();
             return true;
         }
         catch(LoginFailureException e) {
