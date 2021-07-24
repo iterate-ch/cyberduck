@@ -25,9 +25,12 @@ import ch.cyberduck.core.brick.io.swagger.client.model.FileActionEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileMigrationEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
+
+import java.util.Collections;
 
 public class BrickCopyFeature implements Copy {
     private static final Logger log = Logger.getLogger(BrickCopyFeature.class);
@@ -42,6 +45,9 @@ public class BrickCopyFeature implements Copy {
     public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final BrickApiClient client = new BrickApiClient(session.getApiKey(), session.getClient());
+            if(status.isExists()) {
+                new BrickDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
+            }
             final FileActionEntity entity = new FileActionsApi(client)
                 .copy(new CopyPathBody().destination(target.getAbsolute()), file.getAbsolute());
             if(entity.getFileMigrationId() != null) {

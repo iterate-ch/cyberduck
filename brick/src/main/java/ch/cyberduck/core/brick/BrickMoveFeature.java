@@ -30,6 +30,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
+
 public class BrickMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(BrickMoveFeature.class);
 
@@ -43,6 +45,9 @@ public class BrickMoveFeature implements Move {
     public Path move(final Path file, final Path target, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         try {
             final BrickApiClient client = new BrickApiClient(session.getApiKey(), session.getClient());
+            if(status.isExists()) {
+                new BrickDeleteFeature(session).delete(Collections.singletonList(target), callback, delete);
+            }
             final FileActionEntity entity = new FileActionsApi(client)
                 .move(new MovePathBody().destination(target.getAbsolute()), file.getAbsolute());
             if(entity.getFileMigrationId() != null) {
