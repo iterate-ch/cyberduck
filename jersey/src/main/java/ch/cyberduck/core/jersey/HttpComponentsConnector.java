@@ -29,7 +29,6 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.log4j.Logger;
-import org.glassfish.jersey.apache.connector.LocalizationMessages;
 import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.client.ClientResponse;
 import org.glassfish.jersey.client.spi.AsyncConnectorCallback;
@@ -201,11 +200,6 @@ public class HttpComponentsConnector implements Connector {
 
     @Override
     public void close() {
-        try {
-            client.close();
-        }
-        catch(final IOException e) {
-            throw new ProcessingException(LocalizationMessages.FAILED_TO_STOP_CLIENT(), e);
-        }
+
     }
 }
