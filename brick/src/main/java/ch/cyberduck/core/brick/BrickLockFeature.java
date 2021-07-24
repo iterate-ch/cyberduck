@@ -22,6 +22,8 @@ import ch.cyberduck.core.brick.io.swagger.client.model.LocksPathBody;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Lock;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class BrickLockFeature implements Lock<String> {
 
     private final BrickSession session;
@@ -34,7 +36,8 @@ public class BrickLockFeature implements Lock<String> {
     public String lock(final Path file) throws BackgroundException {
         try {
             return new LocksApi(new BrickApiClient(session.getApiKey(), session.getClient()))
-                .postLocksPath(file.getAbsolute(), new LocksPathBody().exclusive(true)).getToken();
+                .postLocksPath(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
+                    new LocksPathBody().exclusive(true)).getToken();
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Failure to write attributes of {0}", e, file);
@@ -44,7 +47,8 @@ public class BrickLockFeature implements Lock<String> {
     @Override
     public void unlock(final Path file, final String token) throws BackgroundException {
         try {
-            new LocksApi(new BrickApiClient(session.getApiKey(), session.getClient())).deleteLocksPath(file.getAbsolute(), token);
+            new LocksApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+                .deleteLocksPath(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)), token);
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Failure to write attributes of {0}", e, file);

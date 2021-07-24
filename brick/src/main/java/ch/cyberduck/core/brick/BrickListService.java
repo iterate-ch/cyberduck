@@ -25,6 +25,8 @@ import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +49,7 @@ public class BrickListService implements ListService {
             List<FileEntity> response;
             final BrickApiClient client = new BrickApiClient(session.getApiKey(), session.getClient());
             do {
-                response = new FoldersApi(client).foldersListForPath(directory.getAbsolute(), cursor,
+                response = new FoldersApi(client).foldersListForPath(StringUtils.removeStart(directory.getAbsolute(), String.valueOf(Path.DELIMITER)), cursor,
                     PreferencesFactory.get().getInteger("brick.listing.chunksize"),
                     null, null, null, null, null, null);
                 for(FileEntity entity : response) {

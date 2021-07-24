@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
@@ -46,7 +47,7 @@ public class BrickTouchFeature implements Touch<Void> {
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final List<FileUploadPartEntity> uploadPartEntities = new FileActionsApi(new BrickApiClient(session.getApiKey(), session.getClient()))
-                .beginUpload(file.getAbsolute(), new BeginUploadPathBody().parts(1).part(1));
+                .beginUpload(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)), new BeginUploadPathBody().parts(1).part(1));
             for(FileUploadPartEntity uploadPartEntity : uploadPartEntities) {
                 status
                     .segment(true)
@@ -58,7 +59,8 @@ public class BrickTouchFeature implements Touch<Void> {
                 final FileEntity entity = new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).postFilesPath(
                     new FilesPathBody()
                         .providedMtime(new DateTime(System.currentTimeMillis()))
-                        .action("end").ref(uploadPartEntity.getRef()), file.getAbsolute());
+                        .action("end").ref(uploadPartEntity.getRef()),
+                    StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
                 return file.withAttributes(new BrickAttributesFinderFeature(session).toAttributes(entity));
             }
             throw new NotfoundException(file.getAbsolute());

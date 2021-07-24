@@ -23,6 +23,8 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.EnumSet;
 
 public class BrickDirectoryFeature implements Directory<Void> {
@@ -38,7 +40,7 @@ public class BrickDirectoryFeature implements Directory<Void> {
         try {
             return new Path(folder.getAbsolute(), EnumSet.of(Path.Type.directory),
                 new BrickAttributesFinderFeature(session).toAttributes(new FoldersApi(new BrickApiClient(session.getApiKey(), session.getClient()))
-                    .postFoldersPath(folder.getAbsolute())));
+                    .postFoldersPath(StringUtils.removeStart(folder.getAbsolute(), String.valueOf(Path.DELIMITER)))));
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Cannot create folder {0}", e, folder);

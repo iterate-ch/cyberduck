@@ -22,6 +22,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Map;
 
 public class BrickDeleteFeature implements Delete {
@@ -36,7 +38,8 @@ public class BrickDeleteFeature implements Delete {
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         try {
             for(Path f : files.keySet()) {
-                new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).deleteFilesPath(f.getAbsolute(), f.isDirectory());
+                new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).deleteFilesPath(
+                    StringUtils.removeStart(f.getAbsolute(), String.valueOf(Path.DELIMITER)), f.isDirectory());
             }
         }
         catch(ApiException e) {

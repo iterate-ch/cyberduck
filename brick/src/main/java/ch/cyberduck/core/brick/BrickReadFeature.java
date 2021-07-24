@@ -28,6 +28,7 @@ import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -52,8 +53,9 @@ public class BrickReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final FileEntity entity = new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).download(file.getAbsolute(),
-                "redirect", null, null, null);
+            final FileEntity entity = new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+                .download(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
+                    "redirect", null, null, null);
             final HttpUriRequest request = new HttpGet(entity.getDownloadUri());
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);

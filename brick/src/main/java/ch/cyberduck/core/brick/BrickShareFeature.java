@@ -27,6 +27,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -57,8 +59,9 @@ public class BrickShareFeature implements PromptUrlProvider {
             catch(LoginCanceledException e) {
                 // Ignore no password set
             }
-            return new DescriptiveUrl(URI.create(new BundlesApi(new BrickApiClient(session.getApiKey(), session.getClient())).postBundles(
-                new BundlesBody().password(password).paths(Collections.singletonList(file.getAbsolute()))).getUrl()), DescriptiveUrl.Type.signed);
+            return new DescriptiveUrl(URI.create(new BundlesApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+                .postBundles(new BundlesBody().password(password).paths(Collections.singletonList(
+                    StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER))))).getUrl()), DescriptiveUrl.Type.signed);
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map(e);

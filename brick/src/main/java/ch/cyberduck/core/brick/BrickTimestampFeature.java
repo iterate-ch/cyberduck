@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 public class BrickTimestampFeature extends DefaultTimestampFeature {
@@ -36,8 +37,9 @@ public class BrickTimestampFeature extends DefaultTimestampFeature {
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).patchFilesPath(file.getAbsolute(),
-                new FilesPathBody().providedMtime(new DateTime(status.getTimestamp())));
+            new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+                .patchFilesPath(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
+                    new FilesPathBody().providedMtime(new DateTime(status.getTimestamp())));
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Failure to write attributes of {0}", e, file);

@@ -24,6 +24,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class BrickAttributesFinderFeature implements AttributesFinder {
 
     private final BrickSession session;
@@ -35,8 +37,9 @@ public class BrickAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            final FileEntity entity = new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).download(file.getAbsolute(),
-                "stat", null, false, false);
+            final FileEntity entity = new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+                .download(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
+                    "stat", null, false, false);
             switch(entity.getType()) {
                 case "file":
                     if(file.isDirectory()) {

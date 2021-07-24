@@ -37,6 +37,7 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
@@ -84,7 +85,7 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             String ref = null;
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final List<FileUploadPartEntity> uploadPartEntities = new FileActionsApi(new BrickApiClient(session.getApiKey(), session.getClient()))
-                    .beginUpload(file.getAbsolute(), new BeginUploadPathBody().ref(ref).part(partNumber));
+                    .beginUpload(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)), new BeginUploadPathBody().ref(ref).part(partNumber));
                 for(FileUploadPartEntity uploadPartEntity : uploadPartEntities) {
                     final long length = Math.min(Math.max(size / (MAXIMUM_UPLOAD_PARTS - 1), partsize), remaining);
                     parts.add(this.submit(pool, file, local, throttle, listener, status,
@@ -114,7 +115,7 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).postFilesPath(new FilesPathBody()
                 .providedMtime(new DateTime(status.getTimestamp()))
                 .ref(ref)
-                .action("end"), file.getAbsolute());
+                .action("end"), StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
             // Mark parent status as complete
             status.setComplete();
             return null;

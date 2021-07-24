@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
@@ -49,7 +50,8 @@ public class BrickCopyFeature implements Copy {
                 new BrickDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }
             final FileActionEntity entity = new FileActionsApi(client)
-                .copy(new CopyPathBody().destination(target.getAbsolute()), file.getAbsolute());
+                .copy(new CopyPathBody().destination(StringUtils.removeStart(target.getAbsolute(), String.valueOf(Path.DELIMITER))),
+                    StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
             if(entity.getFileMigrationId() != null) {
                 while(true) {
                     // Poll status
