@@ -19,14 +19,19 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.FileActionsApi;
+import ch.cyberduck.core.brick.io.swagger.client.api.FileMigrationsApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileActionEntity;
+import ch.cyberduck.core.brick.io.swagger.client.model.FileMigrationEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.MovePathBody;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
+
 public class BrickMoveFeature implements Move {
+    private static final Logger log = Logger.getLogger(BrickMoveFeature.class);
 
     private final BrickSession session;
 
@@ -37,8 +42,23 @@ public class BrickMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path target, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final FileActionEntity entity = new FileActionsApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+            final BrickApiClient client = new BrickApiClient(session.getApiKey(), session.getClient());
+            final FileActionEntity entity = new FileActionsApi(client)
                 .move(new MovePathBody().destination(target.getAbsolute()), file.getAbsolute());
+            if(entity.getFileMigrationId() != null) {
+                while(true) {
+                    // Poll status
+                    final FileMigrationEntity.StatusEnum migration = new FileMigrationsApi(client)
+                        .getFileMigrationsId(entity.getFileMigrationId()).getStatus();
+                    switch(migration) {
+                        case COMPLETE:
+                            return target.withAttributes(file.attributes());
+                        default:
+                            log.warn(String.format("Wait for copy to complete with current status %s", migration));
+                            break;
+                    }
+                }
+            }
             return target.withAttributes(file.attributes());
         }
         catch(ApiException e) {
