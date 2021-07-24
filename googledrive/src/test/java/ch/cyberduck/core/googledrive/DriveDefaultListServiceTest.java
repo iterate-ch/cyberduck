@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -36,6 +37,7 @@ import java.util.EnumSet;
 
 import com.google.api.services.drive.model.File;
 
+import static ch.cyberduck.core.googledrive.DriveHomeFinderService.SHARED_DRIVES_NAME;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -51,6 +53,33 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
                 assertNotNull(f.attributes().getFileId());
             }
         }
+    }
+
+    @Test
+    public void testListSharedDrive() throws Exception {
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(
+            new Path(SHARED_DRIVES_NAME, "iterate", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        assertFalse(list.isEmpty());
+        for(Path f : list) {
+            assertNotEquals(PathAttributes.EMPTY, new DriveAttributesFinderFeature(session, fileid).find(f));
+            break;
+        }
+    }
+
+    @Test
+    public void testListSharedDriveFolder() throws Exception {
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
+            new Path(new Path(SHARED_DRIVES_NAME, "iterate", EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path file = new DriveTouchFeature(session, fileid).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
+        assertFalse(list.isEmpty());
+        for(Path f : list) {
+            assertEquals(file.attributes().getFileId(), new DriveAttributesFinderFeature(session, fileid).find(f).getFileId());
+            break;
+        }
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test

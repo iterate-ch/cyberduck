@@ -32,7 +32,8 @@ public class DriveTeamDrivesListServiceTest extends AbstractDriveTest {
 
     @Test
     public void list() throws Exception {
-        final AttributedList<Path> list = new DriveTeamDrivesListService(session, new DriveFileIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new DriveTeamDrivesListService(session, new DriveFileIdProvider(session)).list(
+            DriveHomeFinderService.SHARED_DRIVES_NAME, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
     }
 }
