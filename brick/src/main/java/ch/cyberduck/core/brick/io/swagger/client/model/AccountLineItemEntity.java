@@ -25,8 +25,11 @@ import org.joda.time.DateTime;
  * List Payments
  */
 @Schema(description = "List Payments")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class AccountLineItemEntity {
+  @JsonProperty("id")
+  private Integer id = null;
+
   @JsonProperty("amount")
   private Double amount = null;
 
@@ -41,9 +44,6 @@ public class AccountLineItemEntity {
 
   @JsonProperty("download_uri")
   private String downloadUri = null;
-
-  @JsonProperty("id")
-  private Integer id = null;
 
   @JsonProperty("invoice_line_items")
   private InvoiceLineItemEntity invoiceLineItems = null;
@@ -68,6 +68,24 @@ public class AccountLineItemEntity {
 
   @JsonProperty("updated_at")
   private DateTime updatedAt = null;
+
+  public AccountLineItemEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Line item Id
+   * @return id
+  **/
+  @Schema(example = "1", description = "Line item Id")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
 
   public AccountLineItemEntity amount(Double amount) {
     this.amount = amount;
@@ -114,7 +132,7 @@ public class AccountLineItemEntity {
    * Line item created at
    * @return createdAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Line item created at")
+  @Schema(description = "Line item created at")
   public DateTime getCreatedAt() {
     return createdAt;
   }
@@ -157,24 +175,6 @@ public class AccountLineItemEntity {
 
   public void setDownloadUri(String downloadUri) {
     this.downloadUri = downloadUri;
-  }
-
-  public AccountLineItemEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Line item Id
-   * @return id
-  **/
-  @Schema(example = "1", description = "Line item Id")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
   }
 
   public AccountLineItemEntity invoiceLineItems(InvoiceLineItemEntity invoiceLineItems) {
@@ -240,7 +240,7 @@ public class AccountLineItemEntity {
    * Date/time payment was reversed if applicable
    * @return paymentReversedAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Date/time payment was reversed if applicable")
+  @Schema(description = "Date/time payment was reversed if applicable")
   public DateTime getPaymentReversedAt() {
     return paymentReversedAt;
   }
@@ -312,7 +312,7 @@ public class AccountLineItemEntity {
    * Line item updated at
    * @return updatedAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Line item updated at")
+  @Schema(description = "Line item updated at")
   public DateTime getUpdatedAt() {
     return updatedAt;
   }
@@ -331,12 +331,12 @@ public class AccountLineItemEntity {
       return false;
     }
     AccountLineItemEntity accountLineItemEntity = (AccountLineItemEntity) o;
-    return Objects.equals(this.amount, accountLineItemEntity.amount) &&
+    return Objects.equals(this.id, accountLineItemEntity.id) &&
+        Objects.equals(this.amount, accountLineItemEntity.amount) &&
         Objects.equals(this.balance, accountLineItemEntity.balance) &&
         Objects.equals(this.createdAt, accountLineItemEntity.createdAt) &&
         Objects.equals(this.currency, accountLineItemEntity.currency) &&
         Objects.equals(this.downloadUri, accountLineItemEntity.downloadUri) &&
-        Objects.equals(this.id, accountLineItemEntity.id) &&
         Objects.equals(this.invoiceLineItems, accountLineItemEntity.invoiceLineItems) &&
         Objects.equals(this.method, accountLineItemEntity.method) &&
         Objects.equals(this.paymentLineItems, accountLineItemEntity.paymentLineItems) &&
@@ -349,7 +349,7 @@ public class AccountLineItemEntity {
 
   @Override
   public int hashCode() {
-    return Objects.hash(amount, balance, createdAt, currency, downloadUri, id, invoiceLineItems, method, paymentLineItems, paymentReversedAt, paymentType, siteName, type, updatedAt);
+    return Objects.hash(id, amount, balance, createdAt, currency, downloadUri, invoiceLineItems, method, paymentLineItems, paymentReversedAt, paymentType, siteName, type, updatedAt);
   }
 
 
@@ -358,12 +358,12 @@ public class AccountLineItemEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class AccountLineItemEntity {\n");
     
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    amount: ").append(toIndentedString(amount)).append("\n");
     sb.append("    balance: ").append(toIndentedString(balance)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
     sb.append("    downloadUri: ").append(toIndentedString(downloadUri)).append("\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    invoiceLineItems: ").append(toIndentedString(invoiceLineItems)).append("\n");
     sb.append("    method: ").append(toIndentedString(method)).append("\n");
     sb.append("    paymentLineItems: ").append(toIndentedString(paymentLineItems)).append("\n");

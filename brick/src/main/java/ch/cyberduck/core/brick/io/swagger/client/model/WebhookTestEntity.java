@@ -23,19 +23,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * Create Webhook Test
  */
 @Schema(description = "Create Webhook Test")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class WebhookTestEntity {
   @JsonProperty("code")
   private Integer code = null;
-
-  @JsonProperty("data")
-  private AutoEntity data = null;
 
   @JsonProperty("message")
   private String message = null;
 
   @JsonProperty("status")
   private String status = null;
+
+  @JsonProperty("data")
+  private AutoEntity data = null;
 
   @JsonProperty("success")
   private Boolean success = null;
@@ -56,24 +56,6 @@ public class WebhookTestEntity {
 
   public void setCode(Integer code) {
     this.code = code;
-  }
-
-  public WebhookTestEntity data(AutoEntity data) {
-    this.data = data;
-    return this;
-  }
-
-   /**
-   * Get data
-   * @return data
-  **/
-  @Schema(description = "")
-  public AutoEntity getData() {
-    return data;
-  }
-
-  public void setData(AutoEntity data) {
-    this.data = data;
   }
 
   public WebhookTestEntity message(String message) {
@@ -112,6 +94,24 @@ public class WebhookTestEntity {
     this.status = status;
   }
 
+  public WebhookTestEntity data(AutoEntity data) {
+    this.data = data;
+    return this;
+  }
+
+   /**
+   * Get data
+   * @return data
+  **/
+  @Schema(description = "")
+  public AutoEntity getData() {
+    return data;
+  }
+
+  public void setData(AutoEntity data) {
+    this.data = data;
+  }
+
   public WebhookTestEntity success(Boolean success) {
     this.success = success;
     return this;
@@ -141,15 +141,15 @@ public class WebhookTestEntity {
     }
     WebhookTestEntity webhookTestEntity = (WebhookTestEntity) o;
     return Objects.equals(this.code, webhookTestEntity.code) &&
-        Objects.equals(this.data, webhookTestEntity.data) &&
         Objects.equals(this.message, webhookTestEntity.message) &&
         Objects.equals(this.status, webhookTestEntity.status) &&
+        Objects.equals(this.data, webhookTestEntity.data) &&
         Objects.equals(this.success, webhookTestEntity.success);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, data, message, status, success);
+    return Objects.hash(code, message, status, data, success);
   }
 
 
@@ -159,9 +159,9 @@ public class WebhookTestEntity {
     sb.append("class WebhookTestEntity {\n");
     
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
-    sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("    message: ").append(toIndentedString(message)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("    success: ").append(toIndentedString(success)).append("\n");
     sb.append("}");
     return sb.toString();

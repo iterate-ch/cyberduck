@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
  * List Bundle Recipients
  */
 @Schema(description = "List Bundle Recipients")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class BundleRecipientEntity {
   @JsonProperty("company")
   private String company = null;
@@ -121,7 +121,7 @@ public class BundleRecipientEntity {
    * When the Bundle was shared with this recipient.
    * @return sentAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "When the Bundle was shared with this recipient.")
+  @Schema(description = "When the Bundle was shared with this recipient.")
   public DateTime getSentAt() {
     return sentAt;
   }

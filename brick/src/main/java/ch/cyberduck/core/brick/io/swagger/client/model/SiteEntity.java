@@ -26,13 +26,10 @@ import org.joda.time.DateTime;
  * Show site settings
  */
 @Schema(description = "Show site settings")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class SiteEntity {
-  @JsonProperty("admin_user_id")
-  private Integer adminUserId = null;
-
-  @JsonProperty("allow_bundle_names")
-  private Boolean allowBundleNames = null;
+  @JsonProperty("name")
+  private String name = null;
 
   @JsonProperty("allowed_2fa_method_sms")
   private Boolean allowed2faMethodSms = null;
@@ -45,6 +42,12 @@ public class SiteEntity {
 
   @JsonProperty("allowed_2fa_method_yubi")
   private Boolean allowed2faMethodYubi = null;
+
+  @JsonProperty("admin_user_id")
+  private Integer adminUserId = null;
+
+  @JsonProperty("allow_bundle_names")
+  private Boolean allowBundleNames = null;
 
   @JsonProperty("allowed_countries")
   private String allowedCountries = null;
@@ -106,23 +109,29 @@ public class SiteEntity {
   @JsonProperty("desktop_app_session_lifetime")
   private Integer desktopAppSessionLifetime = null;
 
+  @JsonProperty("disallowed_countries")
+  private String disallowedCountries = null;
+
   @JsonProperty("disable_notifications")
   private Boolean disableNotifications = null;
 
   @JsonProperty("disable_password_reset")
   private Boolean disablePasswordReset = null;
 
-  @JsonProperty("disable_users_from_inactivity_period_days")
-  private Integer disableUsersFromInactivityPeriodDays = null;
-
-  @JsonProperty("disallowed_countries")
-  private String disallowedCountries = null;
-
   @JsonProperty("domain")
   private String domain = null;
 
   @JsonProperty("email")
   private String email = null;
+
+  @JsonProperty("reply_to_email")
+  private String replyToEmail = null;
+
+  @JsonProperty("non_sso_groups_allowed")
+  private Boolean nonSsoGroupsAllowed = null;
+
+  @JsonProperty("non_sso_users_allowed")
+  private Boolean nonSsoUsersAllowed = null;
 
   @JsonProperty("folder_permissions_groups_only")
   private Boolean folderPermissionsGroupsOnly = null;
@@ -208,20 +217,11 @@ public class SiteEntity {
   @JsonProperty("max_prior_passwords")
   private Integer maxPriorPasswords = null;
 
-  @JsonProperty("name")
-  private String name = null;
-
   @JsonProperty("next_billing_amount")
   private Double nextBillingAmount = null;
 
   @JsonProperty("next_billing_date")
   private String nextBillingDate = null;
-
-  @JsonProperty("non_sso_groups_allowed")
-  private Boolean nonSsoGroupsAllowed = null;
-
-  @JsonProperty("non_sso_users_allowed")
-  private Boolean nonSsoUsersAllowed = null;
 
   @JsonProperty("office_integration_available")
   private Boolean officeIntegrationAvailable = null;
@@ -268,9 +268,6 @@ public class SiteEntity {
   @JsonProperty("phone")
   private String phone = null;
 
-  @JsonProperty("reply_to_email")
-  private String replyToEmail = null;
-
   @JsonProperty("require_2fa")
   private Boolean require2fa = null;
 
@@ -315,9 +312,6 @@ public class SiteEntity {
   @JsonProperty("session")
   private SessionEntity session = null;
 
-  @JsonProperty("session_expiry")
-  private Double sessionExpiry = null;
-
   @JsonProperty("session_pinned_by_ip")
   private Boolean sessionPinnedByIp = null;
 
@@ -350,6 +344,9 @@ public class SiteEntity {
 
   @JsonProperty("smtp_username")
   private String smtpUsername = null;
+
+  @JsonProperty("session_expiry")
+  private Double sessionExpiry = null;
 
   @JsonProperty("ssl_required")
   private Boolean sslRequired = null;
@@ -440,40 +437,25 @@ public class SiteEntity {
   @JsonProperty("windows_mode_ftp")
   private Boolean windowsModeFtp = null;
 
-  public SiteEntity adminUserId(Integer adminUserId) {
-    this.adminUserId = adminUserId;
+  @JsonProperty("disable_users_from_inactivity_period_days")
+  private Integer disableUsersFromInactivityPeriodDays = null;
+
+  public SiteEntity name(String name) {
+    this.name = name;
     return this;
   }
 
    /**
-   * User ID for the main site administrator
-   * @return adminUserId
+   * Site name
+   * @return name
   **/
-  @Schema(example = "1", description = "User ID for the main site administrator")
-  public Integer getAdminUserId() {
-    return adminUserId;
+  @Schema(example = "My Site", description = "Site name")
+  public String getName() {
+    return name;
   }
 
-  public void setAdminUserId(Integer adminUserId) {
-    this.adminUserId = adminUserId;
-  }
-
-  public SiteEntity allowBundleNames(Boolean allowBundleNames) {
-    this.allowBundleNames = allowBundleNames;
-    return this;
-  }
-
-   /**
-   * Are manual Bundle names allowed?
-   * @return allowBundleNames
-  **/
-  @Schema(example = "true", description = "Are manual Bundle names allowed?")
-  public Boolean isAllowBundleNames() {
-    return allowBundleNames;
-  }
-
-  public void setAllowBundleNames(Boolean allowBundleNames) {
-    this.allowBundleNames = allowBundleNames;
+  public void setName(String name) {
+    this.name = name;
   }
 
   public SiteEntity allowed2faMethodSms(Boolean allowed2faMethodSms) {
@@ -546,6 +528,42 @@ public class SiteEntity {
 
   public void setAllowed2faMethodYubi(Boolean allowed2faMethodYubi) {
     this.allowed2faMethodYubi = allowed2faMethodYubi;
+  }
+
+  public SiteEntity adminUserId(Integer adminUserId) {
+    this.adminUserId = adminUserId;
+    return this;
+  }
+
+   /**
+   * User ID for the main site administrator
+   * @return adminUserId
+  **/
+  @Schema(example = "1", description = "User ID for the main site administrator")
+  public Integer getAdminUserId() {
+    return adminUserId;
+  }
+
+  public void setAdminUserId(Integer adminUserId) {
+    this.adminUserId = adminUserId;
+  }
+
+  public SiteEntity allowBundleNames(Boolean allowBundleNames) {
+    this.allowBundleNames = allowBundleNames;
+    return this;
+  }
+
+   /**
+   * Are manual Bundle names allowed?
+   * @return allowBundleNames
+  **/
+  @Schema(example = "true", description = "Are manual Bundle names allowed?")
+  public Boolean isAllowBundleNames() {
+    return allowBundleNames;
+  }
+
+  public void setAllowBundleNames(Boolean allowBundleNames) {
+    this.allowBundleNames = allowBundleNames;
   }
 
   public SiteEntity allowedCountries(String allowedCountries) {
@@ -773,7 +791,7 @@ public class SiteEntity {
    * Time this site was created
    * @return createdAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Time this site was created")
+  @Schema(description = "Time this site was created")
   public DateTime getCreatedAt() {
     return createdAt;
   }
@@ -908,6 +926,24 @@ public class SiteEntity {
     this.desktopAppSessionLifetime = desktopAppSessionLifetime;
   }
 
+  public SiteEntity disallowedCountries(String disallowedCountries) {
+    this.disallowedCountries = disallowedCountries;
+    return this;
+  }
+
+   /**
+   * Comma seperated list of disallowed Country codes
+   * @return disallowedCountries
+  **/
+  @Schema(example = "US,DE", description = "Comma seperated list of disallowed Country codes")
+  public String getDisallowedCountries() {
+    return disallowedCountries;
+  }
+
+  public void setDisallowedCountries(String disallowedCountries) {
+    this.disallowedCountries = disallowedCountries;
+  }
+
   public SiteEntity disableNotifications(Boolean disableNotifications) {
     this.disableNotifications = disableNotifications;
     return this;
@@ -944,42 +980,6 @@ public class SiteEntity {
     this.disablePasswordReset = disablePasswordReset;
   }
 
-  public SiteEntity disableUsersFromInactivityPeriodDays(Integer disableUsersFromInactivityPeriodDays) {
-    this.disableUsersFromInactivityPeriodDays = disableUsersFromInactivityPeriodDays;
-    return this;
-  }
-
-   /**
-   * If greater than zero, users will unable to login if they do not show activity within this number of days.
-   * @return disableUsersFromInactivityPeriodDays
-  **/
-  @Schema(example = "1", description = "If greater than zero, users will unable to login if they do not show activity within this number of days.")
-  public Integer getDisableUsersFromInactivityPeriodDays() {
-    return disableUsersFromInactivityPeriodDays;
-  }
-
-  public void setDisableUsersFromInactivityPeriodDays(Integer disableUsersFromInactivityPeriodDays) {
-    this.disableUsersFromInactivityPeriodDays = disableUsersFromInactivityPeriodDays;
-  }
-
-  public SiteEntity disallowedCountries(String disallowedCountries) {
-    this.disallowedCountries = disallowedCountries;
-    return this;
-  }
-
-   /**
-   * Comma seperated list of disallowed Country codes
-   * @return disallowedCountries
-  **/
-  @Schema(example = "US,DE", description = "Comma seperated list of disallowed Country codes")
-  public String getDisallowedCountries() {
-    return disallowedCountries;
-  }
-
-  public void setDisallowedCountries(String disallowedCountries) {
-    this.disallowedCountries = disallowedCountries;
-  }
-
   public SiteEntity domain(String domain) {
     this.domain = domain;
     return this;
@@ -1014,6 +1014,60 @@ public class SiteEntity {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public SiteEntity replyToEmail(String replyToEmail) {
+    this.replyToEmail = replyToEmail;
+    return this;
+  }
+
+   /**
+   * Reply-to email for this site
+   * @return replyToEmail
+  **/
+  @Schema(example = "jane.doe@files.com", description = "Reply-to email for this site")
+  public String getReplyToEmail() {
+    return replyToEmail;
+  }
+
+  public void setReplyToEmail(String replyToEmail) {
+    this.replyToEmail = replyToEmail;
+  }
+
+  public SiteEntity nonSsoGroupsAllowed(Boolean nonSsoGroupsAllowed) {
+    this.nonSsoGroupsAllowed = nonSsoGroupsAllowed;
+    return this;
+  }
+
+   /**
+   * If true, groups can be manually created / modified / deleted by Site Admins. Otherwise, groups can only be managed via your SSO provider.
+   * @return nonSsoGroupsAllowed
+  **/
+  @Schema(example = "true", description = "If true, groups can be manually created / modified / deleted by Site Admins. Otherwise, groups can only be managed via your SSO provider.")
+  public Boolean isNonSsoGroupsAllowed() {
+    return nonSsoGroupsAllowed;
+  }
+
+  public void setNonSsoGroupsAllowed(Boolean nonSsoGroupsAllowed) {
+    this.nonSsoGroupsAllowed = nonSsoGroupsAllowed;
+  }
+
+  public SiteEntity nonSsoUsersAllowed(Boolean nonSsoUsersAllowed) {
+    this.nonSsoUsersAllowed = nonSsoUsersAllowed;
+    return this;
+  }
+
+   /**
+   * If true, users can be manually created / modified / deleted by Site Admins. Otherwise, users can only be managed via your SSO provider.
+   * @return nonSsoUsersAllowed
+  **/
+  @Schema(example = "true", description = "If true, users can be manually created / modified / deleted by Site Admins. Otherwise, users can only be managed via your SSO provider.")
+  public Boolean isNonSsoUsersAllowed() {
+    return nonSsoUsersAllowed;
+  }
+
+  public void setNonSsoUsersAllowed(Boolean nonSsoUsersAllowed) {
+    this.nonSsoUsersAllowed = nonSsoUsersAllowed;
   }
 
   public SiteEntity folderPermissionsGroupsOnly(Boolean folderPermissionsGroupsOnly) {
@@ -1133,7 +1187,7 @@ public class SiteEntity {
    * Can files be modified?
    * @return immutableFilesSetAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Can files be modified?")
+  @Schema(description = "Can files be modified?")
   public DateTime getImmutableFilesSetAt() {
     return immutableFilesSetAt;
   }
@@ -1520,24 +1574,6 @@ public class SiteEntity {
     this.maxPriorPasswords = maxPriorPasswords;
   }
 
-  public SiteEntity name(String name) {
-    this.name = name;
-    return this;
-  }
-
-   /**
-   * Site name
-   * @return name
-  **/
-  @Schema(example = "My Site", description = "Site name")
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
   public SiteEntity nextBillingAmount(Double nextBillingAmount) {
     this.nextBillingAmount = nextBillingAmount;
     return this;
@@ -1572,42 +1608,6 @@ public class SiteEntity {
 
   public void setNextBillingDate(String nextBillingDate) {
     this.nextBillingDate = nextBillingDate;
-  }
-
-  public SiteEntity nonSsoGroupsAllowed(Boolean nonSsoGroupsAllowed) {
-    this.nonSsoGroupsAllowed = nonSsoGroupsAllowed;
-    return this;
-  }
-
-   /**
-   * If true, groups can be manually created / modified / deleted by Site Admins. Otherwise, groups can only be managed via your SSO provider.
-   * @return nonSsoGroupsAllowed
-  **/
-  @Schema(example = "true", description = "If true, groups can be manually created / modified / deleted by Site Admins. Otherwise, groups can only be managed via your SSO provider.")
-  public Boolean isNonSsoGroupsAllowed() {
-    return nonSsoGroupsAllowed;
-  }
-
-  public void setNonSsoGroupsAllowed(Boolean nonSsoGroupsAllowed) {
-    this.nonSsoGroupsAllowed = nonSsoGroupsAllowed;
-  }
-
-  public SiteEntity nonSsoUsersAllowed(Boolean nonSsoUsersAllowed) {
-    this.nonSsoUsersAllowed = nonSsoUsersAllowed;
-    return this;
-  }
-
-   /**
-   * If true, users can be manually created / modified / deleted by Site Admins. Otherwise, users can only be managed via your SSO provider.
-   * @return nonSsoUsersAllowed
-  **/
-  @Schema(example = "true", description = "If true, users can be manually created / modified / deleted by Site Admins. Otherwise, users can only be managed via your SSO provider.")
-  public Boolean isNonSsoUsersAllowed() {
-    return nonSsoUsersAllowed;
-  }
-
-  public void setNonSsoUsersAllowed(Boolean nonSsoUsersAllowed) {
-    this.nonSsoUsersAllowed = nonSsoUsersAllowed;
   }
 
   public SiteEntity officeIntegrationAvailable(Boolean officeIntegrationAvailable) {
@@ -1673,7 +1673,7 @@ public class SiteEntity {
    * Last time the site was notified about an overage
    * @return overageNotifiedAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Last time the site was notified about an overage")
+  @Schema(description = "Last time the site was notified about an overage")
   public DateTime getOverageNotifiedAt() {
     return overageNotifiedAt;
   }
@@ -1880,24 +1880,6 @@ public class SiteEntity {
     this.phone = phone;
   }
 
-  public SiteEntity replyToEmail(String replyToEmail) {
-    this.replyToEmail = replyToEmail;
-    return this;
-  }
-
-   /**
-   * Reply-to email for this site
-   * @return replyToEmail
-  **/
-  @Schema(example = "jane.doe@files.com", description = "Reply-to email for this site")
-  public String getReplyToEmail() {
-    return replyToEmail;
-  }
-
-  public void setReplyToEmail(String replyToEmail) {
-    this.replyToEmail = replyToEmail;
-  }
-
   public SiteEntity require2fa(Boolean require2fa) {
     this.require2fa = require2fa;
     return this;
@@ -1925,7 +1907,7 @@ public class SiteEntity {
    * If set, requirement for two-factor authentication has been scheduled to end on this date-time.
    * @return require2faStopTime
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "If set, requirement for two-factor authentication has been scheduled to end on this date-time.")
+  @Schema(description = "If set, requirement for two-factor authentication has been scheduled to end on this date-time.")
   public DateTime getRequire2faStopTime() {
     return require2faStopTime;
   }
@@ -1968,24 +1950,6 @@ public class SiteEntity {
 
   public void setSession(SessionEntity session) {
     this.session = session;
-  }
-
-  public SiteEntity sessionExpiry(Double sessionExpiry) {
-    this.sessionExpiry = sessionExpiry;
-    return this;
-  }
-
-   /**
-   * Session expiry in hours
-   * @return sessionExpiry
-  **/
-  @Schema(example = "6", description = "Session expiry in hours")
-  public Double getSessionExpiry() {
-    return sessionExpiry;
-  }
-
-  public void setSessionExpiry(Double sessionExpiry) {
-    this.sessionExpiry = sessionExpiry;
   }
 
   public SiteEntity sessionPinnedByIp(Boolean sessionPinnedByIp) {
@@ -2186,6 +2150,24 @@ public class SiteEntity {
     this.smtpUsername = smtpUsername;
   }
 
+  public SiteEntity sessionExpiry(Double sessionExpiry) {
+    this.sessionExpiry = sessionExpiry;
+    return this;
+  }
+
+   /**
+   * Session expiry in hours
+   * @return sessionExpiry
+  **/
+  @Schema(example = "6", description = "Session expiry in hours")
+  public Double getSessionExpiry() {
+    return sessionExpiry;
+  }
+
+  public void setSessionExpiry(Double sessionExpiry) {
+    this.sessionExpiry = sessionExpiry;
+  }
+
   public SiteEntity sslRequired(Boolean sslRequired) {
     this.sslRequired = sslRequired;
     return this;
@@ -2231,7 +2213,7 @@ public class SiteEntity {
    * If switching plans, when does the new plan take effect?
    * @return switchToPlanDate
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "If switching plans, when does the new plan take effect?")
+  @Schema(description = "If switching plans, when does the new plan take effect?")
   public DateTime getSwitchToPlanDate() {
     return switchToPlanDate;
   }
@@ -2285,7 +2267,7 @@ public class SiteEntity {
    * When does this Site trial expire?
    * @return trialUntil
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "When does this Site trial expire?")
+  @Schema(description = "When does this Site trial expire?")
   public DateTime getTrialUntil() {
     return trialUntil;
   }
@@ -2303,7 +2285,7 @@ public class SiteEntity {
    * Last time this Site was updated
    * @return updatedAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Last time this Site was updated")
+  @Schema(description = "Last time this Site was updated")
   public DateTime getUpdatedAt() {
     return updatedAt;
   }
@@ -2528,6 +2510,24 @@ public class SiteEntity {
     this.windowsModeFtp = windowsModeFtp;
   }
 
+  public SiteEntity disableUsersFromInactivityPeriodDays(Integer disableUsersFromInactivityPeriodDays) {
+    this.disableUsersFromInactivityPeriodDays = disableUsersFromInactivityPeriodDays;
+    return this;
+  }
+
+   /**
+   * If greater than zero, users will unable to login if they do not show activity within this number of days.
+   * @return disableUsersFromInactivityPeriodDays
+  **/
+  @Schema(example = "1", description = "If greater than zero, users will unable to login if they do not show activity within this number of days.")
+  public Integer getDisableUsersFromInactivityPeriodDays() {
+    return disableUsersFromInactivityPeriodDays;
+  }
+
+  public void setDisableUsersFromInactivityPeriodDays(Integer disableUsersFromInactivityPeriodDays) {
+    this.disableUsersFromInactivityPeriodDays = disableUsersFromInactivityPeriodDays;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -2538,12 +2538,13 @@ public class SiteEntity {
       return false;
     }
     SiteEntity siteEntity = (SiteEntity) o;
-    return Objects.equals(this.adminUserId, siteEntity.adminUserId) &&
-        Objects.equals(this.allowBundleNames, siteEntity.allowBundleNames) &&
+    return Objects.equals(this.name, siteEntity.name) &&
         Objects.equals(this.allowed2faMethodSms, siteEntity.allowed2faMethodSms) &&
         Objects.equals(this.allowed2faMethodTotp, siteEntity.allowed2faMethodTotp) &&
         Objects.equals(this.allowed2faMethodU2f, siteEntity.allowed2faMethodU2f) &&
         Objects.equals(this.allowed2faMethodYubi, siteEntity.allowed2faMethodYubi) &&
+        Objects.equals(this.adminUserId, siteEntity.adminUserId) &&
+        Objects.equals(this.allowBundleNames, siteEntity.allowBundleNames) &&
         Objects.equals(this.allowedCountries, siteEntity.allowedCountries) &&
         Objects.equals(this.allowedIps, siteEntity.allowedIps) &&
         Objects.equals(this.askAboutOverwrites, siteEntity.askAboutOverwrites) &&
@@ -2564,12 +2565,14 @@ public class SiteEntity {
         Objects.equals(this.desktopApp, siteEntity.desktopApp) &&
         Objects.equals(this.desktopAppSessionIpPinning, siteEntity.desktopAppSessionIpPinning) &&
         Objects.equals(this.desktopAppSessionLifetime, siteEntity.desktopAppSessionLifetime) &&
+        Objects.equals(this.disallowedCountries, siteEntity.disallowedCountries) &&
         Objects.equals(this.disableNotifications, siteEntity.disableNotifications) &&
         Objects.equals(this.disablePasswordReset, siteEntity.disablePasswordReset) &&
-        Objects.equals(this.disableUsersFromInactivityPeriodDays, siteEntity.disableUsersFromInactivityPeriodDays) &&
-        Objects.equals(this.disallowedCountries, siteEntity.disallowedCountries) &&
         Objects.equals(this.domain, siteEntity.domain) &&
         Objects.equals(this.email, siteEntity.email) &&
+        Objects.equals(this.replyToEmail, siteEntity.replyToEmail) &&
+        Objects.equals(this.nonSsoGroupsAllowed, siteEntity.nonSsoGroupsAllowed) &&
+        Objects.equals(this.nonSsoUsersAllowed, siteEntity.nonSsoUsersAllowed) &&
         Objects.equals(this.folderPermissionsGroupsOnly, siteEntity.folderPermissionsGroupsOnly) &&
         Objects.equals(this.hipaa, siteEntity.hipaa) &&
         Objects.equals(this.icon128, siteEntity.icon128) &&
@@ -2598,11 +2601,8 @@ public class SiteEntity {
         Objects.equals(this.loginHelpText, siteEntity.loginHelpText) &&
         Objects.equals(this.logo, siteEntity.logo) &&
         Objects.equals(this.maxPriorPasswords, siteEntity.maxPriorPasswords) &&
-        Objects.equals(this.name, siteEntity.name) &&
         Objects.equals(this.nextBillingAmount, siteEntity.nextBillingAmount) &&
         Objects.equals(this.nextBillingDate, siteEntity.nextBillingDate) &&
-        Objects.equals(this.nonSsoGroupsAllowed, siteEntity.nonSsoGroupsAllowed) &&
-        Objects.equals(this.nonSsoUsersAllowed, siteEntity.nonSsoUsersAllowed) &&
         Objects.equals(this.officeIntegrationAvailable, siteEntity.officeIntegrationAvailable) &&
         Objects.equals(this.oncehubLink, siteEntity.oncehubLink) &&
         Objects.equals(this.optOutGlobal, siteEntity.optOutGlobal) &&
@@ -2618,12 +2618,10 @@ public class SiteEntity {
         Objects.equals(this.passwordRequirementsApplyToBundles, siteEntity.passwordRequirementsApplyToBundles) &&
         Objects.equals(this.passwordValidityDays, siteEntity.passwordValidityDays) &&
         Objects.equals(this.phone, siteEntity.phone) &&
-        Objects.equals(this.replyToEmail, siteEntity.replyToEmail) &&
         Objects.equals(this.require2fa, siteEntity.require2fa) &&
         Objects.equals(this.require2faStopTime, siteEntity.require2faStopTime) &&
         Objects.equals(this.require2faUserType, siteEntity.require2faUserType) &&
         Objects.equals(this.session, siteEntity.session) &&
-        Objects.equals(this.sessionExpiry, siteEntity.sessionExpiry) &&
         Objects.equals(this.sessionPinnedByIp, siteEntity.sessionPinnedByIp) &&
         Objects.equals(this.sftpUserRootEnabled, siteEntity.sftpUserRootEnabled) &&
         Objects.equals(this.sharingEnabled, siteEntity.sharingEnabled) &&
@@ -2635,6 +2633,7 @@ public class SiteEntity {
         Objects.equals(this.smtpFrom, siteEntity.smtpFrom) &&
         Objects.equals(this.smtpPort, siteEntity.smtpPort) &&
         Objects.equals(this.smtpUsername, siteEntity.smtpUsername) &&
+        Objects.equals(this.sessionExpiry, siteEntity.sessionExpiry) &&
         Objects.equals(this.sslRequired, siteEntity.sslRequired) &&
         Objects.equals(this.subdomain, siteEntity.subdomain) &&
         Objects.equals(this.switchToPlanDate, siteEntity.switchToPlanDate) &&
@@ -2653,12 +2652,13 @@ public class SiteEntity {
         Objects.equals(this.welcomeEmailCc, siteEntity.welcomeEmailCc) &&
         Objects.equals(this.welcomeEmailEnabled, siteEntity.welcomeEmailEnabled) &&
         Objects.equals(this.welcomeScreen, siteEntity.welcomeScreen) &&
-        Objects.equals(this.windowsModeFtp, siteEntity.windowsModeFtp);
+        Objects.equals(this.windowsModeFtp, siteEntity.windowsModeFtp) &&
+        Objects.equals(this.disableUsersFromInactivityPeriodDays, siteEntity.disableUsersFromInactivityPeriodDays);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(adminUserId, allowBundleNames, allowed2faMethodSms, allowed2faMethodTotp, allowed2faMethodU2f, allowed2faMethodYubi, allowedCountries, allowedIps, askAboutOverwrites, bundleExpiration, bundlePasswordRequired, bundleRequireShareRecipient, color2Left, color2Link, color2Text, color2Top, color2TopText, contactName, createdAt, currency, customNamespace, daysToRetainBackups, defaultTimeZone, desktopApp, desktopAppSessionIpPinning, desktopAppSessionLifetime, disableNotifications, disablePasswordReset, disableUsersFromInactivityPeriodDays, disallowedCountries, domain, email, folderPermissionsGroupsOnly, hipaa, icon128, icon16, icon32, icon48, immutableFilesSetAt, includePasswordInWelcomeEmail, language, ldapBaseDn, ldapDomain, ldapEnabled, ldapGroupAction, ldapGroupExclusion, ldapGroupInclusion, ldapHost, ldapHost2, ldapHost3, ldapPort, ldapSecure, ldapType, ldapUserAction, ldapUserIncludeGroups, ldapUsername, ldapUsernameField, loginHelpText, logo, maxPriorPasswords, name, nextBillingAmount, nextBillingDate, nonSsoGroupsAllowed, nonSsoUsersAllowed, officeIntegrationAvailable, oncehubLink, optOutGlobal, overageNotifiedAt, overageNotify, overdue, passwordMinLength, passwordRequireLetter, passwordRequireMixed, passwordRequireNumber, passwordRequireSpecial, passwordRequireUnbreached, passwordRequirementsApplyToBundles, passwordValidityDays, phone, replyToEmail, require2fa, require2faStopTime, require2faUserType, session, sessionExpiry, sessionPinnedByIp, sftpUserRootEnabled, sharingEnabled, showRequestAccessLink, siteFooter, siteHeader, smtpAddress, smtpAuthentication, smtpFrom, smtpPort, smtpUsername, sslRequired, subdomain, switchToPlanDate, tlsDisabled, trialDaysLeft, trialUntil, updatedAt, useProvidedModifiedAt, user, userLockout, userLockoutLockPeriod, userLockoutTries, userLockoutWithin, userRequestsEnabled, welcomeCustomText, welcomeEmailCc, welcomeEmailEnabled, welcomeScreen, windowsModeFtp);
+    return Objects.hash(name, allowed2faMethodSms, allowed2faMethodTotp, allowed2faMethodU2f, allowed2faMethodYubi, adminUserId, allowBundleNames, allowedCountries, allowedIps, askAboutOverwrites, bundleExpiration, bundlePasswordRequired, bundleRequireShareRecipient, color2Left, color2Link, color2Text, color2Top, color2TopText, contactName, createdAt, currency, customNamespace, daysToRetainBackups, defaultTimeZone, desktopApp, desktopAppSessionIpPinning, desktopAppSessionLifetime, disallowedCountries, disableNotifications, disablePasswordReset, domain, email, replyToEmail, nonSsoGroupsAllowed, nonSsoUsersAllowed, folderPermissionsGroupsOnly, hipaa, icon128, icon16, icon32, icon48, immutableFilesSetAt, includePasswordInWelcomeEmail, language, ldapBaseDn, ldapDomain, ldapEnabled, ldapGroupAction, ldapGroupExclusion, ldapGroupInclusion, ldapHost, ldapHost2, ldapHost3, ldapPort, ldapSecure, ldapType, ldapUserAction, ldapUserIncludeGroups, ldapUsername, ldapUsernameField, loginHelpText, logo, maxPriorPasswords, nextBillingAmount, nextBillingDate, officeIntegrationAvailable, oncehubLink, optOutGlobal, overageNotifiedAt, overageNotify, overdue, passwordMinLength, passwordRequireLetter, passwordRequireMixed, passwordRequireNumber, passwordRequireSpecial, passwordRequireUnbreached, passwordRequirementsApplyToBundles, passwordValidityDays, phone, require2fa, require2faStopTime, require2faUserType, session, sessionPinnedByIp, sftpUserRootEnabled, sharingEnabled, showRequestAccessLink, siteFooter, siteHeader, smtpAddress, smtpAuthentication, smtpFrom, smtpPort, smtpUsername, sessionExpiry, sslRequired, subdomain, switchToPlanDate, tlsDisabled, trialDaysLeft, trialUntil, updatedAt, useProvidedModifiedAt, user, userLockout, userLockoutLockPeriod, userLockoutTries, userLockoutWithin, userRequestsEnabled, welcomeCustomText, welcomeEmailCc, welcomeEmailEnabled, welcomeScreen, windowsModeFtp, disableUsersFromInactivityPeriodDays);
   }
 
 
@@ -2667,12 +2667,13 @@ public class SiteEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class SiteEntity {\n");
     
-    sb.append("    adminUserId: ").append(toIndentedString(adminUserId)).append("\n");
-    sb.append("    allowBundleNames: ").append(toIndentedString(allowBundleNames)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    allowed2faMethodSms: ").append(toIndentedString(allowed2faMethodSms)).append("\n");
     sb.append("    allowed2faMethodTotp: ").append(toIndentedString(allowed2faMethodTotp)).append("\n");
     sb.append("    allowed2faMethodU2f: ").append(toIndentedString(allowed2faMethodU2f)).append("\n");
     sb.append("    allowed2faMethodYubi: ").append(toIndentedString(allowed2faMethodYubi)).append("\n");
+    sb.append("    adminUserId: ").append(toIndentedString(adminUserId)).append("\n");
+    sb.append("    allowBundleNames: ").append(toIndentedString(allowBundleNames)).append("\n");
     sb.append("    allowedCountries: ").append(toIndentedString(allowedCountries)).append("\n");
     sb.append("    allowedIps: ").append(toIndentedString(allowedIps)).append("\n");
     sb.append("    askAboutOverwrites: ").append(toIndentedString(askAboutOverwrites)).append("\n");
@@ -2693,12 +2694,14 @@ public class SiteEntity {
     sb.append("    desktopApp: ").append(toIndentedString(desktopApp)).append("\n");
     sb.append("    desktopAppSessionIpPinning: ").append(toIndentedString(desktopAppSessionIpPinning)).append("\n");
     sb.append("    desktopAppSessionLifetime: ").append(toIndentedString(desktopAppSessionLifetime)).append("\n");
+    sb.append("    disallowedCountries: ").append(toIndentedString(disallowedCountries)).append("\n");
     sb.append("    disableNotifications: ").append(toIndentedString(disableNotifications)).append("\n");
     sb.append("    disablePasswordReset: ").append(toIndentedString(disablePasswordReset)).append("\n");
-    sb.append("    disableUsersFromInactivityPeriodDays: ").append(toIndentedString(disableUsersFromInactivityPeriodDays)).append("\n");
-    sb.append("    disallowedCountries: ").append(toIndentedString(disallowedCountries)).append("\n");
     sb.append("    domain: ").append(toIndentedString(domain)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
+    sb.append("    replyToEmail: ").append(toIndentedString(replyToEmail)).append("\n");
+    sb.append("    nonSsoGroupsAllowed: ").append(toIndentedString(nonSsoGroupsAllowed)).append("\n");
+    sb.append("    nonSsoUsersAllowed: ").append(toIndentedString(nonSsoUsersAllowed)).append("\n");
     sb.append("    folderPermissionsGroupsOnly: ").append(toIndentedString(folderPermissionsGroupsOnly)).append("\n");
     sb.append("    hipaa: ").append(toIndentedString(hipaa)).append("\n");
     sb.append("    icon128: ").append(toIndentedString(icon128)).append("\n");
@@ -2727,11 +2730,8 @@ public class SiteEntity {
     sb.append("    loginHelpText: ").append(toIndentedString(loginHelpText)).append("\n");
     sb.append("    logo: ").append(toIndentedString(logo)).append("\n");
     sb.append("    maxPriorPasswords: ").append(toIndentedString(maxPriorPasswords)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    nextBillingAmount: ").append(toIndentedString(nextBillingAmount)).append("\n");
     sb.append("    nextBillingDate: ").append(toIndentedString(nextBillingDate)).append("\n");
-    sb.append("    nonSsoGroupsAllowed: ").append(toIndentedString(nonSsoGroupsAllowed)).append("\n");
-    sb.append("    nonSsoUsersAllowed: ").append(toIndentedString(nonSsoUsersAllowed)).append("\n");
     sb.append("    officeIntegrationAvailable: ").append(toIndentedString(officeIntegrationAvailable)).append("\n");
     sb.append("    oncehubLink: ").append(toIndentedString(oncehubLink)).append("\n");
     sb.append("    optOutGlobal: ").append(toIndentedString(optOutGlobal)).append("\n");
@@ -2747,12 +2747,10 @@ public class SiteEntity {
     sb.append("    passwordRequirementsApplyToBundles: ").append(toIndentedString(passwordRequirementsApplyToBundles)).append("\n");
     sb.append("    passwordValidityDays: ").append(toIndentedString(passwordValidityDays)).append("\n");
     sb.append("    phone: ").append(toIndentedString(phone)).append("\n");
-    sb.append("    replyToEmail: ").append(toIndentedString(replyToEmail)).append("\n");
     sb.append("    require2fa: ").append(toIndentedString(require2fa)).append("\n");
     sb.append("    require2faStopTime: ").append(toIndentedString(require2faStopTime)).append("\n");
     sb.append("    require2faUserType: ").append(toIndentedString(require2faUserType)).append("\n");
     sb.append("    session: ").append(toIndentedString(session)).append("\n");
-    sb.append("    sessionExpiry: ").append(toIndentedString(sessionExpiry)).append("\n");
     sb.append("    sessionPinnedByIp: ").append(toIndentedString(sessionPinnedByIp)).append("\n");
     sb.append("    sftpUserRootEnabled: ").append(toIndentedString(sftpUserRootEnabled)).append("\n");
     sb.append("    sharingEnabled: ").append(toIndentedString(sharingEnabled)).append("\n");
@@ -2764,6 +2762,7 @@ public class SiteEntity {
     sb.append("    smtpFrom: ").append(toIndentedString(smtpFrom)).append("\n");
     sb.append("    smtpPort: ").append(toIndentedString(smtpPort)).append("\n");
     sb.append("    smtpUsername: ").append(toIndentedString(smtpUsername)).append("\n");
+    sb.append("    sessionExpiry: ").append(toIndentedString(sessionExpiry)).append("\n");
     sb.append("    sslRequired: ").append(toIndentedString(sslRequired)).append("\n");
     sb.append("    subdomain: ").append(toIndentedString(subdomain)).append("\n");
     sb.append("    switchToPlanDate: ").append(toIndentedString(switchToPlanDate)).append("\n");
@@ -2783,6 +2782,7 @@ public class SiteEntity {
     sb.append("    welcomeEmailEnabled: ").append(toIndentedString(welcomeEmailEnabled)).append("\n");
     sb.append("    welcomeScreen: ").append(toIndentedString(welcomeScreen)).append("\n");
     sb.append("    windowsModeFtp: ").append(toIndentedString(windowsModeFtp)).append("\n");
+    sb.append("    disableUsersFromInactivityPeriodDays: ").append(toIndentedString(disableUsersFromInactivityPeriodDays)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -22,58 +22,22 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * List Behaviors
  */
 @Schema(description = "List Behaviors")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class BehaviorEntity {
-  @JsonProperty("attachment_url")
-  private String attachmentUrl = null;
-
-  @JsonProperty("behavior")
-  private String behavior = null;
-
   @JsonProperty("id")
   private Integer id = null;
 
   @JsonProperty("path")
   private String path = null;
 
+  @JsonProperty("attachment_url")
+  private String attachmentUrl = null;
+
+  @JsonProperty("behavior")
+  private String behavior = null;
+
   @JsonProperty("value")
   private Object value = null;
-
-  public BehaviorEntity attachmentUrl(String attachmentUrl) {
-    this.attachmentUrl = attachmentUrl;
-    return this;
-  }
-
-   /**
-   * URL for attached file
-   * @return attachmentUrl
-  **/
-  @Schema(description = "URL for attached file")
-  public String getAttachmentUrl() {
-    return attachmentUrl;
-  }
-
-  public void setAttachmentUrl(String attachmentUrl) {
-    this.attachmentUrl = attachmentUrl;
-  }
-
-  public BehaviorEntity behavior(String behavior) {
-    this.behavior = behavior;
-    return this;
-  }
-
-   /**
-   * Behavior type.
-   * @return behavior
-  **/
-  @Schema(example = "webhook", description = "Behavior type.")
-  public String getBehavior() {
-    return behavior;
-  }
-
-  public void setBehavior(String behavior) {
-    this.behavior = behavior;
-  }
 
   public BehaviorEntity id(Integer id) {
     this.id = id;
@@ -111,6 +75,42 @@ public class BehaviorEntity {
     this.path = path;
   }
 
+  public BehaviorEntity attachmentUrl(String attachmentUrl) {
+    this.attachmentUrl = attachmentUrl;
+    return this;
+  }
+
+   /**
+   * URL for attached file
+   * @return attachmentUrl
+  **/
+  @Schema(description = "URL for attached file")
+  public String getAttachmentUrl() {
+    return attachmentUrl;
+  }
+
+  public void setAttachmentUrl(String attachmentUrl) {
+    this.attachmentUrl = attachmentUrl;
+  }
+
+  public BehaviorEntity behavior(String behavior) {
+    this.behavior = behavior;
+    return this;
+  }
+
+   /**
+   * Behavior type.
+   * @return behavior
+  **/
+  @Schema(example = "webhook", description = "Behavior type.")
+  public String getBehavior() {
+    return behavior;
+  }
+
+  public void setBehavior(String behavior) {
+    this.behavior = behavior;
+  }
+
   public BehaviorEntity value(Object value) {
     this.value = value;
     return this;
@@ -139,16 +139,16 @@ public class BehaviorEntity {
       return false;
     }
     BehaviorEntity behaviorEntity = (BehaviorEntity) o;
-    return Objects.equals(this.attachmentUrl, behaviorEntity.attachmentUrl) &&
-        Objects.equals(this.behavior, behaviorEntity.behavior) &&
-        Objects.equals(this.id, behaviorEntity.id) &&
+    return Objects.equals(this.id, behaviorEntity.id) &&
         Objects.equals(this.path, behaviorEntity.path) &&
+        Objects.equals(this.attachmentUrl, behaviorEntity.attachmentUrl) &&
+        Objects.equals(this.behavior, behaviorEntity.behavior) &&
         Objects.equals(this.value, behaviorEntity.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attachmentUrl, behavior, id, path, value);
+    return Objects.hash(id, path, attachmentUrl, behavior, value);
   }
 
 
@@ -157,10 +157,10 @@ public class BehaviorEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class BehaviorEntity {\n");
     
-    sb.append("    attachmentUrl: ").append(toIndentedString(attachmentUrl)).append("\n");
-    sb.append("    behavior: ").append(toIndentedString(behavior)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
+    sb.append("    attachmentUrl: ").append(toIndentedString(attachmentUrl)).append("\n");
+    sb.append("    behavior: ").append(toIndentedString(behavior)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("}");
     return sb.toString();

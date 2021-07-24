@@ -22,40 +22,22 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * PreviewEntity
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class PreviewEntity {
-  @JsonProperty("download_uri")
-  private String downloadUri = null;
-
   @JsonProperty("id")
   private Integer id = null;
-
-  @JsonProperty("size")
-  private Integer size = null;
 
   @JsonProperty("status")
   private String status = null;
 
+  @JsonProperty("download_uri")
+  private String downloadUri = null;
+
   @JsonProperty("type")
   private String type = null;
 
-  public PreviewEntity downloadUri(String downloadUri) {
-    this.downloadUri = downloadUri;
-    return this;
-  }
-
-   /**
-   * Link to download preview
-   * @return downloadUri
-  **/
-  @Schema(example = "https://mysite.files.com/...", description = "Link to download preview")
-  public String getDownloadUri() {
-    return downloadUri;
-  }
-
-  public void setDownloadUri(String downloadUri) {
-    this.downloadUri = downloadUri;
-  }
+  @JsonProperty("size")
+  private Integer size = null;
 
   public PreviewEntity id(Integer id) {
     this.id = id;
@@ -73,24 +55,6 @@ public class PreviewEntity {
 
   public void setId(Integer id) {
     this.id = id;
-  }
-
-  public PreviewEntity size(Integer size) {
-    this.size = size;
-    return this;
-  }
-
-   /**
-   * Preview size
-   * @return size
-  **/
-  @Schema(example = "1024", description = "Preview size")
-  public Integer getSize() {
-    return size;
-  }
-
-  public void setSize(Integer size) {
-    this.size = size;
   }
 
   public PreviewEntity status(String status) {
@@ -111,6 +75,24 @@ public class PreviewEntity {
     this.status = status;
   }
 
+  public PreviewEntity downloadUri(String downloadUri) {
+    this.downloadUri = downloadUri;
+    return this;
+  }
+
+   /**
+   * Link to download preview
+   * @return downloadUri
+  **/
+  @Schema(example = "https://mysite.files.com/...", description = "Link to download preview")
+  public String getDownloadUri() {
+    return downloadUri;
+  }
+
+  public void setDownloadUri(String downloadUri) {
+    this.downloadUri = downloadUri;
+  }
+
   public PreviewEntity type(String type) {
     this.type = type;
     return this;
@@ -129,6 +111,24 @@ public class PreviewEntity {
     this.type = type;
   }
 
+  public PreviewEntity size(Integer size) {
+    this.size = size;
+    return this;
+  }
+
+   /**
+   * Preview size
+   * @return size
+  **/
+  @Schema(example = "1024", description = "Preview size")
+  public Integer getSize() {
+    return size;
+  }
+
+  public void setSize(Integer size) {
+    this.size = size;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -139,16 +139,16 @@ public class PreviewEntity {
       return false;
     }
     PreviewEntity previewEntity = (PreviewEntity) o;
-    return Objects.equals(this.downloadUri, previewEntity.downloadUri) &&
-        Objects.equals(this.id, previewEntity.id) &&
-        Objects.equals(this.size, previewEntity.size) &&
+    return Objects.equals(this.id, previewEntity.id) &&
         Objects.equals(this.status, previewEntity.status) &&
-        Objects.equals(this.type, previewEntity.type);
+        Objects.equals(this.downloadUri, previewEntity.downloadUri) &&
+        Objects.equals(this.type, previewEntity.type) &&
+        Objects.equals(this.size, previewEntity.size);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(downloadUri, id, size, status, type);
+    return Objects.hash(id, status, downloadUri, type, size);
   }
 
 
@@ -157,11 +157,11 @@ public class PreviewEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class PreviewEntity {\n");
     
-    sb.append("    downloadUri: ").append(toIndentedString(downloadUri)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    size: ").append(toIndentedString(size)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    downloadUri: ").append(toIndentedString(downloadUri)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    size: ").append(toIndentedString(size)).append("\n");
     sb.append("}");
     return sb.toString();
   }

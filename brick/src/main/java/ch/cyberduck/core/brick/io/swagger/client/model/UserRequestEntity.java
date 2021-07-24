@@ -22,55 +22,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * Create User Request
  */
 @Schema(description = "Create User Request")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class UserRequestEntity {
-  @JsonProperty("details")
-  private String details = null;
-
-  @JsonProperty("email")
-  private String email = null;
-
   @JsonProperty("id")
   private Integer id = null;
 
   @JsonProperty("name")
   private String name = null;
 
-  public UserRequestEntity details(String details) {
-    this.details = details;
-    return this;
-  }
+  @JsonProperty("email")
+  private String email = null;
 
-   /**
-   * Details of the user&#x27;s request
-   * @return details
-  **/
-  @Schema(example = "Changed Departments", description = "Details of the user's request")
-  public String getDetails() {
-    return details;
-  }
-
-  public void setDetails(String details) {
-    this.details = details;
-  }
-
-  public UserRequestEntity email(String email) {
-    this.email = email;
-    return this;
-  }
-
-   /**
-   * User email address
-   * @return email
-  **/
-  @Schema(example = "john.doe@files.com", description = "User email address")
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
+  @JsonProperty("details")
+  private String details = null;
 
   public UserRequestEntity id(Integer id) {
     this.id = id;
@@ -108,6 +72,42 @@ public class UserRequestEntity {
     this.name = name;
   }
 
+  public UserRequestEntity email(String email) {
+    this.email = email;
+    return this;
+  }
+
+   /**
+   * User email address
+   * @return email
+  **/
+  @Schema(example = "john.doe@files.com", description = "User email address")
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public UserRequestEntity details(String details) {
+    this.details = details;
+    return this;
+  }
+
+   /**
+   * Details of the user&#x27;s request
+   * @return details
+  **/
+  @Schema(example = "Changed Departments", description = "Details of the user's request")
+  public String getDetails() {
+    return details;
+  }
+
+  public void setDetails(String details) {
+    this.details = details;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -118,15 +118,15 @@ public class UserRequestEntity {
       return false;
     }
     UserRequestEntity userRequestEntity = (UserRequestEntity) o;
-    return Objects.equals(this.details, userRequestEntity.details) &&
+    return Objects.equals(this.id, userRequestEntity.id) &&
+        Objects.equals(this.name, userRequestEntity.name) &&
         Objects.equals(this.email, userRequestEntity.email) &&
-        Objects.equals(this.id, userRequestEntity.id) &&
-        Objects.equals(this.name, userRequestEntity.name);
+        Objects.equals(this.details, userRequestEntity.details);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(details, email, id, name);
+    return Objects.hash(id, name, email, details);
   }
 
 
@@ -135,10 +135,10 @@ public class UserRequestEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class UserRequestEntity {\n");
     
-    sb.append("    details: ").append(toIndentedString(details)).append("\n");
-    sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    email: ").append(toIndentedString(email)).append("\n");
+    sb.append("    details: ").append(toIndentedString(details)).append("\n");
     sb.append("}");
     return sb.toString();
   }

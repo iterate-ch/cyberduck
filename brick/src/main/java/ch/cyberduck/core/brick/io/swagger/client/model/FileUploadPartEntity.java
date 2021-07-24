@@ -22,8 +22,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * Begin file upload
  */
 @Schema(description = "Begin file upload")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class FileUploadPartEntity {
+  @JsonProperty("send")
+  private Object send = null;
+
   @JsonProperty("action")
   private String action = null;
 
@@ -63,11 +66,26 @@ public class FileUploadPartEntity {
   @JsonProperty("ref")
   private String ref = null;
 
-  @JsonProperty("send")
-  private Object send = null;
-
   @JsonProperty("upload_uri")
   private String uploadUri = null;
+
+  public FileUploadPartEntity send(Object send) {
+    this.send = send;
+    return this;
+  }
+
+   /**
+   * Content-Type and File to send
+   * @return send
+  **/
+  @Schema(example = "{}", description = "Content-Type and File to send")
+  public Object getSend() {
+    return send;
+  }
+
+  public void setSend(Object send) {
+    this.send = send;
+  }
 
   public FileUploadPartEntity action(String action) {
     this.action = action;
@@ -303,24 +321,6 @@ public class FileUploadPartEntity {
     this.ref = ref;
   }
 
-  public FileUploadPartEntity send(Object send) {
-    this.send = send;
-    return this;
-  }
-
-   /**
-   * Content-Type and File to send
-   * @return send
-  **/
-  @Schema(example = "{}", description = "Content-Type and File to send")
-  public Object getSend() {
-    return send;
-  }
-
-  public void setSend(Object send) {
-    this.send = send;
-  }
-
   public FileUploadPartEntity uploadUri(String uploadUri) {
     this.uploadUri = uploadUri;
     return this;
@@ -349,7 +349,8 @@ public class FileUploadPartEntity {
       return false;
     }
     FileUploadPartEntity fileUploadPartEntity = (FileUploadPartEntity) o;
-    return Objects.equals(this.action, fileUploadPartEntity.action) &&
+    return Objects.equals(this.send, fileUploadPartEntity.send) &&
+        Objects.equals(this.action, fileUploadPartEntity.action) &&
         Objects.equals(this.askAboutOverwrites, fileUploadPartEntity.askAboutOverwrites) &&
         Objects.equals(this.availableParts, fileUploadPartEntity.availableParts) &&
         Objects.equals(this.expires, fileUploadPartEntity.expires) &&
@@ -362,13 +363,12 @@ public class FileUploadPartEntity {
         Objects.equals(this.partsize, fileUploadPartEntity.partsize) &&
         Objects.equals(this.path, fileUploadPartEntity.path) &&
         Objects.equals(this.ref, fileUploadPartEntity.ref) &&
-        Objects.equals(this.send, fileUploadPartEntity.send) &&
         Objects.equals(this.uploadUri, fileUploadPartEntity.uploadUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(action, askAboutOverwrites, availableParts, expires, headers, httpMethod, nextPartsize, parallelParts, parameters, partNumber, partsize, path, ref, send, uploadUri);
+    return Objects.hash(send, action, askAboutOverwrites, availableParts, expires, headers, httpMethod, nextPartsize, parallelParts, parameters, partNumber, partsize, path, ref, uploadUri);
   }
 
 
@@ -377,6 +377,7 @@ public class FileUploadPartEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class FileUploadPartEntity {\n");
     
+    sb.append("    send: ").append(toIndentedString(send)).append("\n");
     sb.append("    action: ").append(toIndentedString(action)).append("\n");
     sb.append("    askAboutOverwrites: ").append(toIndentedString(askAboutOverwrites)).append("\n");
     sb.append("    availableParts: ").append(toIndentedString(availableParts)).append("\n");
@@ -390,7 +391,6 @@ public class FileUploadPartEntity {
     sb.append("    partsize: ").append(toIndentedString(partsize)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    ref: ").append(toIndentedString(ref)).append("\n");
-    sb.append("    send: ").append(toIndentedString(send)).append("\n");
     sb.append("    uploadUri: ").append(toIndentedString(uploadUri)).append("\n");
     sb.append("}");
     return sb.toString();

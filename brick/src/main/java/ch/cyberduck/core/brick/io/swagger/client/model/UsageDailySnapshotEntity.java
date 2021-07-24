@@ -14,48 +14,46 @@ package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.cyberduck.core.brick.io.swagger.client.model.UsageSnapshotEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.ArrayList;
 import java.util.List;
 import org.joda.time.LocalDate;
 /**
  * List Usage Daily Snapshots
  */
 @Schema(description = "List Usage Daily Snapshots")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class UsageDailySnapshotEntity {
-  @JsonProperty("current_storage")
-  private Integer currentStorage = null;
+  @JsonProperty("id")
+  private Integer id = null;
 
   @JsonProperty("date")
   private LocalDate date = null;
 
-  @JsonProperty("id")
-  private Integer id = null;
+  @JsonProperty("current_storage")
+  private Integer currentStorage = null;
 
   @JsonProperty("usage_by_top_level_dir")
-  private List<UsageSnapshotEntity> usageByTopLevelDir = null;
+  private List usageByTopLevelDir = null;
 
-  public UsageDailySnapshotEntity currentStorage(Integer currentStorage) {
-    this.currentStorage = currentStorage;
+  public UsageDailySnapshotEntity id(Integer id) {
+    this.id = id;
     return this;
   }
 
    /**
-   * The quantity of storage held for this site
-   * @return currentStorage
+   * ID of the usage record
+   * @return id
   **/
-  @Schema(example = "65536", description = "The quantity of storage held for this site")
-  public Integer getCurrentStorage() {
-    return currentStorage;
+  @Schema(example = "1", description = "ID of the usage record")
+  public Integer getId() {
+    return id;
   }
 
-  public void setCurrentStorage(Integer currentStorage) {
-    this.currentStorage = currentStorage;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public UsageDailySnapshotEntity date(LocalDate date) {
@@ -76,34 +74,26 @@ public class UsageDailySnapshotEntity {
     this.date = date;
   }
 
-  public UsageDailySnapshotEntity id(Integer id) {
-    this.id = id;
+  public UsageDailySnapshotEntity currentStorage(Integer currentStorage) {
+    this.currentStorage = currentStorage;
     return this;
   }
 
    /**
-   * ID of the usage record
-   * @return id
+   * The quantity of storage held for this site
+   * @return currentStorage
   **/
-  @Schema(example = "1", description = "ID of the usage record")
-  public Integer getId() {
-    return id;
+  @Schema(example = "65536", description = "The quantity of storage held for this site")
+  public Integer getCurrentStorage() {
+    return currentStorage;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
+  public void setCurrentStorage(Integer currentStorage) {
+    this.currentStorage = currentStorage;
   }
 
-  public UsageDailySnapshotEntity usageByTopLevelDir(List<UsageSnapshotEntity> usageByTopLevelDir) {
+  public UsageDailySnapshotEntity usageByTopLevelDir(List usageByTopLevelDir) {
     this.usageByTopLevelDir = usageByTopLevelDir;
-    return this;
-  }
-
-  public UsageDailySnapshotEntity addUsageByTopLevelDirItem(UsageSnapshotEntity usageByTopLevelDirItem) {
-    if (this.usageByTopLevelDir == null) {
-      this.usageByTopLevelDir = new ArrayList<>();
-    }
-    this.usageByTopLevelDir.add(usageByTopLevelDirItem);
     return this;
   }
 
@@ -112,11 +102,11 @@ public class UsageDailySnapshotEntity {
    * @return usageByTopLevelDir
   **/
   @Schema(description = "Usage broken down by each top-level folder")
-  public List<UsageSnapshotEntity> getUsageByTopLevelDir() {
+  public List getUsageByTopLevelDir() {
     return usageByTopLevelDir;
   }
 
-  public void setUsageByTopLevelDir(List<UsageSnapshotEntity> usageByTopLevelDir) {
+  public void setUsageByTopLevelDir(List usageByTopLevelDir) {
     this.usageByTopLevelDir = usageByTopLevelDir;
   }
 
@@ -130,15 +120,15 @@ public class UsageDailySnapshotEntity {
       return false;
     }
     UsageDailySnapshotEntity usageDailySnapshotEntity = (UsageDailySnapshotEntity) o;
-    return Objects.equals(this.currentStorage, usageDailySnapshotEntity.currentStorage) &&
+    return Objects.equals(this.id, usageDailySnapshotEntity.id) &&
         Objects.equals(this.date, usageDailySnapshotEntity.date) &&
-        Objects.equals(this.id, usageDailySnapshotEntity.id) &&
+        Objects.equals(this.currentStorage, usageDailySnapshotEntity.currentStorage) &&
         Objects.equals(this.usageByTopLevelDir, usageDailySnapshotEntity.usageByTopLevelDir);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(currentStorage, date, id, usageByTopLevelDir);
+    return Objects.hash(id, date, currentStorage, usageByTopLevelDir);
   }
 
 
@@ -147,9 +137,9 @@ public class UsageDailySnapshotEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class UsageDailySnapshotEntity {\n");
     
-    sb.append("    currentStorage: ").append(toIndentedString(currentStorage)).append("\n");
-    sb.append("    date: ").append(toIndentedString(date)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    date: ").append(toIndentedString(date)).append("\n");
+    sb.append("    currentStorage: ").append(toIndentedString(currentStorage)).append("\n");
     sb.append("    usageByTopLevelDir: ").append(toIndentedString(usageByTopLevelDir)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -22,31 +22,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * List Message Comment Reactions
  */
 @Schema(description = "List Message Comment Reactions")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class MessageCommentReactionEntity {
-  @JsonProperty("emoji")
-  private String emoji = null;
-
   @JsonProperty("id")
   private Integer id = null;
 
-  public MessageCommentReactionEntity emoji(String emoji) {
-    this.emoji = emoji;
-    return this;
-  }
-
-   /**
-   * Emoji used in the reaction.
-   * @return emoji
-  **/
-  @Schema(example = "👍", description = "Emoji used in the reaction.")
-  public String getEmoji() {
-    return emoji;
-  }
-
-  public void setEmoji(String emoji) {
-    this.emoji = emoji;
-  }
+  @JsonProperty("emoji")
+  private String emoji = null;
 
   public MessageCommentReactionEntity id(Integer id) {
     this.id = id;
@@ -66,6 +48,24 @@ public class MessageCommentReactionEntity {
     this.id = id;
   }
 
+  public MessageCommentReactionEntity emoji(String emoji) {
+    this.emoji = emoji;
+    return this;
+  }
+
+   /**
+   * Emoji used in the reaction.
+   * @return emoji
+  **/
+  @Schema(example = "👍", description = "Emoji used in the reaction.")
+  public String getEmoji() {
+    return emoji;
+  }
+
+  public void setEmoji(String emoji) {
+    this.emoji = emoji;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -76,13 +76,13 @@ public class MessageCommentReactionEntity {
       return false;
     }
     MessageCommentReactionEntity messageCommentReactionEntity = (MessageCommentReactionEntity) o;
-    return Objects.equals(this.emoji, messageCommentReactionEntity.emoji) &&
-        Objects.equals(this.id, messageCommentReactionEntity.id);
+    return Objects.equals(this.id, messageCommentReactionEntity.id) &&
+        Objects.equals(this.emoji, messageCommentReactionEntity.emoji);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(emoji, id);
+    return Objects.hash(id, emoji);
   }
 
 
@@ -91,8 +91,8 @@ public class MessageCommentReactionEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class MessageCommentReactionEntity {\n");
     
-    sb.append("    emoji: ").append(toIndentedString(emoji)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    emoji: ").append(toIndentedString(emoji)).append("\n");
     sb.append("}");
     return sb.toString();
   }

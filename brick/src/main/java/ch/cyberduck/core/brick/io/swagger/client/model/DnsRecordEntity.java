@@ -22,37 +22,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * Show site DNS configuration.
  */
 @Schema(description = "Show site DNS configuration.")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class DnsRecordEntity {
-  @JsonProperty("domain")
-  private String domain = null;
-
   @JsonProperty("id")
   private String id = null;
+
+  @JsonProperty("domain")
+  private String domain = null;
 
   @JsonProperty("rrtype")
   private String rrtype = null;
 
   @JsonProperty("value")
   private String value = null;
-
-  public DnsRecordEntity domain(String domain) {
-    this.domain = domain;
-    return this;
-  }
-
-   /**
-   * DNS record domain name
-   * @return domain
-  **/
-  @Schema(example = "my-custom-domain.com", description = "DNS record domain name")
-  public String getDomain() {
-    return domain;
-  }
-
-  public void setDomain(String domain) {
-    this.domain = domain;
-  }
 
   public DnsRecordEntity id(String id) {
     this.id = id;
@@ -70,6 +52,24 @@ public class DnsRecordEntity {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public DnsRecordEntity domain(String domain) {
+    this.domain = domain;
+    return this;
+  }
+
+   /**
+   * DNS record domain name
+   * @return domain
+  **/
+  @Schema(example = "my-custom-domain.com", description = "DNS record domain name")
+  public String getDomain() {
+    return domain;
+  }
+
+  public void setDomain(String domain) {
+    this.domain = domain;
   }
 
   public DnsRecordEntity rrtype(String rrtype) {
@@ -118,15 +118,15 @@ public class DnsRecordEntity {
       return false;
     }
     DnsRecordEntity dnsRecordEntity = (DnsRecordEntity) o;
-    return Objects.equals(this.domain, dnsRecordEntity.domain) &&
-        Objects.equals(this.id, dnsRecordEntity.id) &&
+    return Objects.equals(this.id, dnsRecordEntity.id) &&
+        Objects.equals(this.domain, dnsRecordEntity.domain) &&
         Objects.equals(this.rrtype, dnsRecordEntity.rrtype) &&
         Objects.equals(this.value, dnsRecordEntity.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(domain, id, rrtype, value);
+    return Objects.hash(id, domain, rrtype, value);
   }
 
 
@@ -135,8 +135,8 @@ public class DnsRecordEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class DnsRecordEntity {\n");
     
-    sb.append("    domain: ").append(toIndentedString(domain)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    domain: ").append(toIndentedString(domain)).append("\n");
     sb.append("    rrtype: ").append(toIndentedString(rrtype)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("}");

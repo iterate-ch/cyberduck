@@ -23,37 +23,28 @@ import org.joda.time.DateTime;
  * List Usage Snapshots
  */
 @Schema(description = "List Usage Snapshots")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class UsageSnapshotEntity {
-  @JsonProperty("created_at")
-  private DateTime createdAt = null;
+  @JsonProperty("id")
+  private Integer id = null;
 
-  @JsonProperty("current_storage")
-  private Double currentStorage = null;
-
-  @JsonProperty("deleted_files_counted_in_minimum")
-  private Double deletedFilesCountedInMinimum = null;
-
-  @JsonProperty("deleted_files_storage")
-  private Double deletedFilesStorage = null;
+  @JsonProperty("start_at")
+  private DateTime startAt = null;
 
   @JsonProperty("end_at")
   private DateTime endAt = null;
 
-  @JsonProperty("high_water_storage")
-  private Double highWaterStorage = null;
+  @JsonProperty("created_at")
+  private DateTime createdAt = null;
 
   @JsonProperty("high_water_user_count")
   private Double highWaterUserCount = null;
 
-  @JsonProperty("id")
-  private Integer id = null;
+  @JsonProperty("current_storage")
+  private Double currentStorage = null;
 
-  @JsonProperty("root_storage")
-  private Double rootStorage = null;
-
-  @JsonProperty("start_at")
-  private DateTime startAt = null;
+  @JsonProperty("high_water_storage")
+  private Double highWaterStorage = null;
 
   @JsonProperty("total_downloads")
   private Integer totalDownloads = null;
@@ -67,76 +58,49 @@ public class UsageSnapshotEntity {
   @JsonProperty("usage_by_top_level_dir")
   private Object usageByTopLevelDir = null;
 
-  public UsageSnapshotEntity createdAt(DateTime createdAt) {
-    this.createdAt = createdAt;
+  @JsonProperty("root_storage")
+  private Double rootStorage = null;
+
+  @JsonProperty("deleted_files_counted_in_minimum")
+  private Double deletedFilesCountedInMinimum = null;
+
+  @JsonProperty("deleted_files_storage")
+  private Double deletedFilesStorage = null;
+
+  public UsageSnapshotEntity id(Integer id) {
+    this.id = id;
     return this;
   }
 
    /**
-   * Site usage report created at date/time
-   * @return createdAt
+   * Site usage ID
+   * @return id
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Site usage report created at date/time")
-  public DateTime getCreatedAt() {
-    return createdAt;
+  @Schema(example = "1", description = "Site usage ID")
+  public Integer getId() {
+    return id;
   }
 
-  public void setCreatedAt(DateTime createdAt) {
-    this.createdAt = createdAt;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
-  public UsageSnapshotEntity currentStorage(Double currentStorage) {
-    this.currentStorage = currentStorage;
+  public UsageSnapshotEntity startAt(DateTime startAt) {
+    this.startAt = startAt;
     return this;
   }
 
    /**
-   * Current site usage as of report
-   * @return currentStorage
+   * Site usage report start date/time
+   * @return startAt
   **/
-  @Schema(example = "1", description = "Current site usage as of report")
-  public Double getCurrentStorage() {
-    return currentStorage;
+  @Schema(description = "Site usage report start date/time")
+  public DateTime getStartAt() {
+    return startAt;
   }
 
-  public void setCurrentStorage(Double currentStorage) {
-    this.currentStorage = currentStorage;
-  }
-
-  public UsageSnapshotEntity deletedFilesCountedInMinimum(Double deletedFilesCountedInMinimum) {
-    this.deletedFilesCountedInMinimum = deletedFilesCountedInMinimum;
-    return this;
-  }
-
-   /**
-   * Usage for files that are deleted but uploaded within last 30 days
-   * @return deletedFilesCountedInMinimum
-  **/
-  @Schema(example = "1", description = "Usage for files that are deleted but uploaded within last 30 days")
-  public Double getDeletedFilesCountedInMinimum() {
-    return deletedFilesCountedInMinimum;
-  }
-
-  public void setDeletedFilesCountedInMinimum(Double deletedFilesCountedInMinimum) {
-    this.deletedFilesCountedInMinimum = deletedFilesCountedInMinimum;
-  }
-
-  public UsageSnapshotEntity deletedFilesStorage(Double deletedFilesStorage) {
-    this.deletedFilesStorage = deletedFilesStorage;
-    return this;
-  }
-
-   /**
-   * Usage for files that are deleted but retained as backups
-   * @return deletedFilesStorage
-  **/
-  @Schema(example = "1", description = "Usage for files that are deleted but retained as backups")
-  public Double getDeletedFilesStorage() {
-    return deletedFilesStorage;
-  }
-
-  public void setDeletedFilesStorage(Double deletedFilesStorage) {
-    this.deletedFilesStorage = deletedFilesStorage;
+  public void setStartAt(DateTime startAt) {
+    this.startAt = startAt;
   }
 
   public UsageSnapshotEntity endAt(DateTime endAt) {
@@ -148,7 +112,7 @@ public class UsageSnapshotEntity {
    * Site usage report end date/time
    * @return endAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Site usage report end date/time")
+  @Schema(description = "Site usage report end date/time")
   public DateTime getEndAt() {
     return endAt;
   }
@@ -157,22 +121,22 @@ public class UsageSnapshotEntity {
     this.endAt = endAt;
   }
 
-  public UsageSnapshotEntity highWaterStorage(Double highWaterStorage) {
-    this.highWaterStorage = highWaterStorage;
+  public UsageSnapshotEntity createdAt(DateTime createdAt) {
+    this.createdAt = createdAt;
     return this;
   }
 
    /**
-   * Site usage report highest usage in time period
-   * @return highWaterStorage
+   * Site usage report created at date/time
+   * @return createdAt
   **/
-  @Schema(example = "1", description = "Site usage report highest usage in time period")
-  public Double getHighWaterStorage() {
-    return highWaterStorage;
+  @Schema(description = "Site usage report created at date/time")
+  public DateTime getCreatedAt() {
+    return createdAt;
   }
 
-  public void setHighWaterStorage(Double highWaterStorage) {
-    this.highWaterStorage = highWaterStorage;
+  public void setCreatedAt(DateTime createdAt) {
+    this.createdAt = createdAt;
   }
 
   public UsageSnapshotEntity highWaterUserCount(Double highWaterUserCount) {
@@ -193,58 +157,40 @@ public class UsageSnapshotEntity {
     this.highWaterUserCount = highWaterUserCount;
   }
 
-  public UsageSnapshotEntity id(Integer id) {
-    this.id = id;
+  public UsageSnapshotEntity currentStorage(Double currentStorage) {
+    this.currentStorage = currentStorage;
     return this;
   }
 
    /**
-   * Site usage ID
-   * @return id
+   * Current site usage as of report
+   * @return currentStorage
   **/
-  @Schema(example = "1", description = "Site usage ID")
-  public Integer getId() {
-    return id;
+  @Schema(example = "1", description = "Current site usage as of report")
+  public Double getCurrentStorage() {
+    return currentStorage;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
+  public void setCurrentStorage(Double currentStorage) {
+    this.currentStorage = currentStorage;
   }
 
-  public UsageSnapshotEntity rootStorage(Double rootStorage) {
-    this.rootStorage = rootStorage;
+  public UsageSnapshotEntity highWaterStorage(Double highWaterStorage) {
+    this.highWaterStorage = highWaterStorage;
     return this;
   }
 
    /**
-   * Usage for root folder
-   * @return rootStorage
+   * Site usage report highest usage in time period
+   * @return highWaterStorage
   **/
-  @Schema(example = "1", description = "Usage for root folder")
-  public Double getRootStorage() {
-    return rootStorage;
+  @Schema(example = "1", description = "Site usage report highest usage in time period")
+  public Double getHighWaterStorage() {
+    return highWaterStorage;
   }
 
-  public void setRootStorage(Double rootStorage) {
-    this.rootStorage = rootStorage;
-  }
-
-  public UsageSnapshotEntity startAt(DateTime startAt) {
-    this.startAt = startAt;
-    return this;
-  }
-
-   /**
-   * Site usage report start date/time
-   * @return startAt
-  **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Site usage report start date/time")
-  public DateTime getStartAt() {
-    return startAt;
-  }
-
-  public void setStartAt(DateTime startAt) {
-    this.startAt = startAt;
+  public void setHighWaterStorage(Double highWaterStorage) {
+    this.highWaterStorage = highWaterStorage;
   }
 
   public UsageSnapshotEntity totalDownloads(Integer totalDownloads) {
@@ -292,7 +238,7 @@ public class UsageSnapshotEntity {
    * The last time this site usage report was updated
    * @return updatedAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "The last time this site usage report was updated")
+  @Schema(description = "The last time this site usage report was updated")
   public DateTime getUpdatedAt() {
     return updatedAt;
   }
@@ -319,6 +265,60 @@ public class UsageSnapshotEntity {
     this.usageByTopLevelDir = usageByTopLevelDir;
   }
 
+  public UsageSnapshotEntity rootStorage(Double rootStorage) {
+    this.rootStorage = rootStorage;
+    return this;
+  }
+
+   /**
+   * Usage for root folder
+   * @return rootStorage
+  **/
+  @Schema(example = "1", description = "Usage for root folder")
+  public Double getRootStorage() {
+    return rootStorage;
+  }
+
+  public void setRootStorage(Double rootStorage) {
+    this.rootStorage = rootStorage;
+  }
+
+  public UsageSnapshotEntity deletedFilesCountedInMinimum(Double deletedFilesCountedInMinimum) {
+    this.deletedFilesCountedInMinimum = deletedFilesCountedInMinimum;
+    return this;
+  }
+
+   /**
+   * Usage for files that are deleted but uploaded within last 30 days
+   * @return deletedFilesCountedInMinimum
+  **/
+  @Schema(example = "1", description = "Usage for files that are deleted but uploaded within last 30 days")
+  public Double getDeletedFilesCountedInMinimum() {
+    return deletedFilesCountedInMinimum;
+  }
+
+  public void setDeletedFilesCountedInMinimum(Double deletedFilesCountedInMinimum) {
+    this.deletedFilesCountedInMinimum = deletedFilesCountedInMinimum;
+  }
+
+  public UsageSnapshotEntity deletedFilesStorage(Double deletedFilesStorage) {
+    this.deletedFilesStorage = deletedFilesStorage;
+    return this;
+  }
+
+   /**
+   * Usage for files that are deleted but retained as backups
+   * @return deletedFilesStorage
+  **/
+  @Schema(example = "1", description = "Usage for files that are deleted but retained as backups")
+  public Double getDeletedFilesStorage() {
+    return deletedFilesStorage;
+  }
+
+  public void setDeletedFilesStorage(Double deletedFilesStorage) {
+    this.deletedFilesStorage = deletedFilesStorage;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -329,25 +329,25 @@ public class UsageSnapshotEntity {
       return false;
     }
     UsageSnapshotEntity usageSnapshotEntity = (UsageSnapshotEntity) o;
-    return Objects.equals(this.createdAt, usageSnapshotEntity.createdAt) &&
-        Objects.equals(this.currentStorage, usageSnapshotEntity.currentStorage) &&
-        Objects.equals(this.deletedFilesCountedInMinimum, usageSnapshotEntity.deletedFilesCountedInMinimum) &&
-        Objects.equals(this.deletedFilesStorage, usageSnapshotEntity.deletedFilesStorage) &&
-        Objects.equals(this.endAt, usageSnapshotEntity.endAt) &&
-        Objects.equals(this.highWaterStorage, usageSnapshotEntity.highWaterStorage) &&
-        Objects.equals(this.highWaterUserCount, usageSnapshotEntity.highWaterUserCount) &&
-        Objects.equals(this.id, usageSnapshotEntity.id) &&
-        Objects.equals(this.rootStorage, usageSnapshotEntity.rootStorage) &&
+    return Objects.equals(this.id, usageSnapshotEntity.id) &&
         Objects.equals(this.startAt, usageSnapshotEntity.startAt) &&
+        Objects.equals(this.endAt, usageSnapshotEntity.endAt) &&
+        Objects.equals(this.createdAt, usageSnapshotEntity.createdAt) &&
+        Objects.equals(this.highWaterUserCount, usageSnapshotEntity.highWaterUserCount) &&
+        Objects.equals(this.currentStorage, usageSnapshotEntity.currentStorage) &&
+        Objects.equals(this.highWaterStorage, usageSnapshotEntity.highWaterStorage) &&
         Objects.equals(this.totalDownloads, usageSnapshotEntity.totalDownloads) &&
         Objects.equals(this.totalUploads, usageSnapshotEntity.totalUploads) &&
         Objects.equals(this.updatedAt, usageSnapshotEntity.updatedAt) &&
-        Objects.equals(this.usageByTopLevelDir, usageSnapshotEntity.usageByTopLevelDir);
+        Objects.equals(this.usageByTopLevelDir, usageSnapshotEntity.usageByTopLevelDir) &&
+        Objects.equals(this.rootStorage, usageSnapshotEntity.rootStorage) &&
+        Objects.equals(this.deletedFilesCountedInMinimum, usageSnapshotEntity.deletedFilesCountedInMinimum) &&
+        Objects.equals(this.deletedFilesStorage, usageSnapshotEntity.deletedFilesStorage);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(createdAt, currentStorage, deletedFilesCountedInMinimum, deletedFilesStorage, endAt, highWaterStorage, highWaterUserCount, id, rootStorage, startAt, totalDownloads, totalUploads, updatedAt, usageByTopLevelDir);
+    return Objects.hash(id, startAt, endAt, createdAt, highWaterUserCount, currentStorage, highWaterStorage, totalDownloads, totalUploads, updatedAt, usageByTopLevelDir, rootStorage, deletedFilesCountedInMinimum, deletedFilesStorage);
   }
 
 
@@ -356,20 +356,20 @@ public class UsageSnapshotEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class UsageSnapshotEntity {\n");
     
-    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
-    sb.append("    currentStorage: ").append(toIndentedString(currentStorage)).append("\n");
-    sb.append("    deletedFilesCountedInMinimum: ").append(toIndentedString(deletedFilesCountedInMinimum)).append("\n");
-    sb.append("    deletedFilesStorage: ").append(toIndentedString(deletedFilesStorage)).append("\n");
-    sb.append("    endAt: ").append(toIndentedString(endAt)).append("\n");
-    sb.append("    highWaterStorage: ").append(toIndentedString(highWaterStorage)).append("\n");
-    sb.append("    highWaterUserCount: ").append(toIndentedString(highWaterUserCount)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    rootStorage: ").append(toIndentedString(rootStorage)).append("\n");
     sb.append("    startAt: ").append(toIndentedString(startAt)).append("\n");
+    sb.append("    endAt: ").append(toIndentedString(endAt)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
+    sb.append("    highWaterUserCount: ").append(toIndentedString(highWaterUserCount)).append("\n");
+    sb.append("    currentStorage: ").append(toIndentedString(currentStorage)).append("\n");
+    sb.append("    highWaterStorage: ").append(toIndentedString(highWaterStorage)).append("\n");
     sb.append("    totalDownloads: ").append(toIndentedString(totalDownloads)).append("\n");
     sb.append("    totalUploads: ").append(toIndentedString(totalUploads)).append("\n");
     sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
     sb.append("    usageByTopLevelDir: ").append(toIndentedString(usageByTopLevelDir)).append("\n");
+    sb.append("    rootStorage: ").append(toIndentedString(rootStorage)).append("\n");
+    sb.append("    deletedFilesCountedInMinimum: ").append(toIndentedString(deletedFilesCountedInMinimum)).append("\n");
+    sb.append("    deletedFilesStorage: ").append(toIndentedString(deletedFilesStorage)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -22,31 +22,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * Move file/folder
  */
 @Schema(description = "Move file/folder")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class FileActionEntity {
-  @JsonProperty("file_migration_id")
-  private Integer fileMigrationId = null;
-
   @JsonProperty("status")
   private String status = null;
 
-  public FileActionEntity fileMigrationId(Integer fileMigrationId) {
-    this.fileMigrationId = fileMigrationId;
-    return this;
-  }
-
-   /**
-   * If status is enqueued, this is the id of the FileMigration to check for status updates.
-   * @return fileMigrationId
-  **/
-  @Schema(example = "123", description = "If status is enqueued, this is the id of the FileMigration to check for status updates.")
-  public Integer getFileMigrationId() {
-    return fileMigrationId;
-  }
-
-  public void setFileMigrationId(Integer fileMigrationId) {
-    this.fileMigrationId = fileMigrationId;
-  }
+  @JsonProperty("file_migration_id")
+  private Integer fileMigrationId = null;
 
   public FileActionEntity status(String status) {
     this.status = status;
@@ -66,6 +48,24 @@ public class FileActionEntity {
     this.status = status;
   }
 
+  public FileActionEntity fileMigrationId(Integer fileMigrationId) {
+    this.fileMigrationId = fileMigrationId;
+    return this;
+  }
+
+   /**
+   * If status is enqueued, this is the id of the FileMigration to check for status updates.
+   * @return fileMigrationId
+  **/
+  @Schema(example = "123", description = "If status is enqueued, this is the id of the FileMigration to check for status updates.")
+  public Integer getFileMigrationId() {
+    return fileMigrationId;
+  }
+
+  public void setFileMigrationId(Integer fileMigrationId) {
+    this.fileMigrationId = fileMigrationId;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -76,13 +76,13 @@ public class FileActionEntity {
       return false;
     }
     FileActionEntity fileActionEntity = (FileActionEntity) o;
-    return Objects.equals(this.fileMigrationId, fileActionEntity.fileMigrationId) &&
-        Objects.equals(this.status, fileActionEntity.status);
+    return Objects.equals(this.status, fileActionEntity.status) &&
+        Objects.equals(this.fileMigrationId, fileActionEntity.fileMigrationId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(fileMigrationId, status);
+    return Objects.hash(status, fileMigrationId);
   }
 
 
@@ -91,8 +91,8 @@ public class FileActionEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class FileActionEntity {\n");
     
-    sb.append("    fileMigrationId: ").append(toIndentedString(fileMigrationId)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    fileMigrationId: ").append(toIndentedString(fileMigrationId)).append("\n");
     sb.append("}");
     return sb.toString();
   }

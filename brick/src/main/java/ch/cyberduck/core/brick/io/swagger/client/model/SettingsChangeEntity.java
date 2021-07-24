@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
  * List Settings Changes
  */
 @Schema(description = "List Settings Changes")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class SettingsChangeEntity {
   @JsonProperty("change_details")
   private Object changeDetails = null;
@@ -61,7 +61,7 @@ public class SettingsChangeEntity {
    * The time this change was made
    * @return createdAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "The time this change was made")
+  @Schema(description = "The time this change was made")
   public DateTime getCreatedAt() {
     return createdAt;
   }

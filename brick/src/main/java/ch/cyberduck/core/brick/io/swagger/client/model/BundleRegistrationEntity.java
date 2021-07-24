@@ -22,13 +22,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * List Bundle Registrations
  */
 @Schema(description = "List Bundle Registrations")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class BundleRegistrationEntity {
-  @JsonProperty("clickwrap_body")
-  private String clickwrapBody = null;
-
   @JsonProperty("code")
   private String code = null;
+
+  @JsonProperty("name")
+  private String name = null;
 
   @JsonProperty("company")
   private String company = null;
@@ -36,35 +36,17 @@ public class BundleRegistrationEntity {
   @JsonProperty("email")
   private String email = null;
 
-  @JsonProperty("form_field_data")
-  private String formFieldData = null;
+  @JsonProperty("inbox_code")
+  private String inboxCode = null;
+
+  @JsonProperty("clickwrap_body")
+  private String clickwrapBody = null;
 
   @JsonProperty("form_field_set_id")
   private Integer formFieldSetId = null;
 
-  @JsonProperty("inbox_code")
-  private String inboxCode = null;
-
-  @JsonProperty("name")
-  private String name = null;
-
-  public BundleRegistrationEntity clickwrapBody(String clickwrapBody) {
-    this.clickwrapBody = clickwrapBody;
-    return this;
-  }
-
-   /**
-   * Clickwrap text that was shown to the registrant
-   * @return clickwrapBody
-  **/
-  @Schema(description = "Clickwrap text that was shown to the registrant")
-  public String getClickwrapBody() {
-    return clickwrapBody;
-  }
-
-  public void setClickwrapBody(String clickwrapBody) {
-    this.clickwrapBody = clickwrapBody;
-  }
+  @JsonProperty("form_field_data")
+  private String formFieldData = null;
 
   public BundleRegistrationEntity code(String code) {
     this.code = code;
@@ -82,6 +64,24 @@ public class BundleRegistrationEntity {
 
   public void setCode(String code) {
     this.code = code;
+  }
+
+  public BundleRegistrationEntity name(String name) {
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * Registrant name
+   * @return name
+  **/
+  @Schema(example = "account", description = "Registrant name")
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public BundleRegistrationEntity company(String company) {
@@ -120,22 +120,40 @@ public class BundleRegistrationEntity {
     this.email = email;
   }
 
-  public BundleRegistrationEntity formFieldData(String formFieldData) {
-    this.formFieldData = formFieldData;
+  public BundleRegistrationEntity inboxCode(String inboxCode) {
+    this.inboxCode = inboxCode;
     return this;
   }
 
    /**
-   * Data for form field set with form field ids as keys and user data as values
-   * @return formFieldData
+   * InboxRegistration cookie code, if there is an associated InboxRegistration
+   * @return inboxCode
   **/
-  @Schema(description = "Data for form field set with form field ids as keys and user data as values")
-  public String getFormFieldData() {
-    return formFieldData;
+  @Schema(example = "abc123", description = "InboxRegistration cookie code, if there is an associated InboxRegistration")
+  public String getInboxCode() {
+    return inboxCode;
   }
 
-  public void setFormFieldData(String formFieldData) {
-    this.formFieldData = formFieldData;
+  public void setInboxCode(String inboxCode) {
+    this.inboxCode = inboxCode;
+  }
+
+  public BundleRegistrationEntity clickwrapBody(String clickwrapBody) {
+    this.clickwrapBody = clickwrapBody;
+    return this;
+  }
+
+   /**
+   * Clickwrap text that was shown to the registrant
+   * @return clickwrapBody
+  **/
+  @Schema(description = "Clickwrap text that was shown to the registrant")
+  public String getClickwrapBody() {
+    return clickwrapBody;
+  }
+
+  public void setClickwrapBody(String clickwrapBody) {
+    this.clickwrapBody = clickwrapBody;
   }
 
   public BundleRegistrationEntity formFieldSetId(Integer formFieldSetId) {
@@ -156,40 +174,22 @@ public class BundleRegistrationEntity {
     this.formFieldSetId = formFieldSetId;
   }
 
-  public BundleRegistrationEntity inboxCode(String inboxCode) {
-    this.inboxCode = inboxCode;
+  public BundleRegistrationEntity formFieldData(String formFieldData) {
+    this.formFieldData = formFieldData;
     return this;
   }
 
    /**
-   * InboxRegistration cookie code, if there is an associated InboxRegistration
-   * @return inboxCode
+   * Data for form field set with form field ids as keys and user data as values
+   * @return formFieldData
   **/
-  @Schema(example = "abc123", description = "InboxRegistration cookie code, if there is an associated InboxRegistration")
-  public String getInboxCode() {
-    return inboxCode;
+  @Schema(description = "Data for form field set with form field ids as keys and user data as values")
+  public String getFormFieldData() {
+    return formFieldData;
   }
 
-  public void setInboxCode(String inboxCode) {
-    this.inboxCode = inboxCode;
-  }
-
-  public BundleRegistrationEntity name(String name) {
-    this.name = name;
-    return this;
-  }
-
-   /**
-   * Registrant name
-   * @return name
-  **/
-  @Schema(example = "account", description = "Registrant name")
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
+  public void setFormFieldData(String formFieldData) {
+    this.formFieldData = formFieldData;
   }
 
 
@@ -202,19 +202,19 @@ public class BundleRegistrationEntity {
       return false;
     }
     BundleRegistrationEntity bundleRegistrationEntity = (BundleRegistrationEntity) o;
-    return Objects.equals(this.clickwrapBody, bundleRegistrationEntity.clickwrapBody) &&
-        Objects.equals(this.code, bundleRegistrationEntity.code) &&
+    return Objects.equals(this.code, bundleRegistrationEntity.code) &&
+        Objects.equals(this.name, bundleRegistrationEntity.name) &&
         Objects.equals(this.company, bundleRegistrationEntity.company) &&
         Objects.equals(this.email, bundleRegistrationEntity.email) &&
-        Objects.equals(this.formFieldData, bundleRegistrationEntity.formFieldData) &&
-        Objects.equals(this.formFieldSetId, bundleRegistrationEntity.formFieldSetId) &&
         Objects.equals(this.inboxCode, bundleRegistrationEntity.inboxCode) &&
-        Objects.equals(this.name, bundleRegistrationEntity.name);
+        Objects.equals(this.clickwrapBody, bundleRegistrationEntity.clickwrapBody) &&
+        Objects.equals(this.formFieldSetId, bundleRegistrationEntity.formFieldSetId) &&
+        Objects.equals(this.formFieldData, bundleRegistrationEntity.formFieldData);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(clickwrapBody, code, company, email, formFieldData, formFieldSetId, inboxCode, name);
+    return Objects.hash(code, name, company, email, inboxCode, clickwrapBody, formFieldSetId, formFieldData);
   }
 
 
@@ -223,14 +223,14 @@ public class BundleRegistrationEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class BundleRegistrationEntity {\n");
     
-    sb.append("    clickwrapBody: ").append(toIndentedString(clickwrapBody)).append("\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    company: ").append(toIndentedString(company)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
-    sb.append("    formFieldData: ").append(toIndentedString(formFieldData)).append("\n");
-    sb.append("    formFieldSetId: ").append(toIndentedString(formFieldSetId)).append("\n");
     sb.append("    inboxCode: ").append(toIndentedString(inboxCode)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    clickwrapBody: ").append(toIndentedString(clickwrapBody)).append("\n");
+    sb.append("    formFieldSetId: ").append(toIndentedString(formFieldSetId)).append("\n");
+    sb.append("    formFieldData: ").append(toIndentedString(formFieldData)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -24,7 +24,7 @@ import java.util.List;
  * IdShareBody
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class IdShareBody {
   @JsonProperty("to")
   private List<String> to = null;
@@ -96,7 +96,7 @@ public class IdShareBody {
    * A list of recipients to share this bundle with. Required unless &#x60;to&#x60; is used.
    * @return recipients
   **/
-  @Schema(example = "[{\"company\":\"Acme Ltd\",\"name\":\"John Doe\",\"recipient\":\"johndoe@gmail.com\"}]", description = "A list of recipients to share this bundle with. Required unless `to` is used.")
+  @Schema(example = "[{\"name\":\"John Doe\",\"company\":\"Acme Ltd\",\"recipient\":\"johndoe@gmail.com\"}]", description = "A list of recipients to share this bundle with. Required unless `to` is used.")
   public List<Object> getRecipients() {
     return recipients;
   }

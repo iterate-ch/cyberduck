@@ -22,16 +22,50 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * Create Clickwrap
  */
 @Schema(description = "Create Clickwrap")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class ClickwrapEntity {
-  @JsonProperty("body")
-  private String body = null;
-
   @JsonProperty("id")
   private Integer id = null;
 
   @JsonProperty("name")
   private String name = null;
+
+  @JsonProperty("body")
+  private String body = null;
+
+  /**
+   * Use this Clickwrap for User Registrations?  Note: This only applies to User Registrations where the User is invited to your Files.com site using an E-Mail invitation process where they then set their own password.
+   */
+  public enum UseWithUsersEnum {
+    NONE("none"),
+    REQUIRE("require");
+
+    private String value;
+
+    UseWithUsersEnum(String value) {
+      this.value = value;
+    }
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+    @JsonCreator
+    public static UseWithUsersEnum fromValue(String text) {
+      for (UseWithUsersEnum b : UseWithUsersEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+
+  }  @JsonProperty("use_with_users")
+  private UseWithUsersEnum useWithUsers = null;
 
   /**
    * Use this Clickwrap for Bundles?
@@ -103,58 +137,6 @@ public class ClickwrapEntity {
   }  @JsonProperty("use_with_inboxes")
   private UseWithInboxesEnum useWithInboxes = null;
 
-  /**
-   * Use this Clickwrap for User Registrations?  Note: This only applies to User Registrations where the User is invited to your Files.com site using an E-Mail invitation process where they then set their own password.
-   */
-  public enum UseWithUsersEnum {
-    NONE("none"),
-    REQUIRE("require");
-
-    private String value;
-
-    UseWithUsersEnum(String value) {
-      this.value = value;
-    }
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-    @JsonCreator
-    public static UseWithUsersEnum fromValue(String text) {
-      for (UseWithUsersEnum b : UseWithUsersEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-
-  }  @JsonProperty("use_with_users")
-  private UseWithUsersEnum useWithUsers = null;
-
-  public ClickwrapEntity body(String body) {
-    this.body = body;
-    return this;
-  }
-
-   /**
-   * Body text of Clickwrap (supports Markdown formatting).
-   * @return body
-  **/
-  @Schema(example = "[Legal body text]", description = "Body text of Clickwrap (supports Markdown formatting).")
-  public String getBody() {
-    return body;
-  }
-
-  public void setBody(String body) {
-    this.body = body;
-  }
-
   public ClickwrapEntity id(Integer id) {
     this.id = id;
     return this;
@@ -189,6 +171,42 @@ public class ClickwrapEntity {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public ClickwrapEntity body(String body) {
+    this.body = body;
+    return this;
+  }
+
+   /**
+   * Body text of Clickwrap (supports Markdown formatting).
+   * @return body
+  **/
+  @Schema(example = "[Legal body text]", description = "Body text of Clickwrap (supports Markdown formatting).")
+  public String getBody() {
+    return body;
+  }
+
+  public void setBody(String body) {
+    this.body = body;
+  }
+
+  public ClickwrapEntity useWithUsers(UseWithUsersEnum useWithUsers) {
+    this.useWithUsers = useWithUsers;
+    return this;
+  }
+
+   /**
+   * Use this Clickwrap for User Registrations?  Note: This only applies to User Registrations where the User is invited to your Files.com site using an E-Mail invitation process where they then set their own password.
+   * @return useWithUsers
+  **/
+  @Schema(description = "Use this Clickwrap for User Registrations?  Note: This only applies to User Registrations where the User is invited to your Files.com site using an E-Mail invitation process where they then set their own password.")
+  public UseWithUsersEnum getUseWithUsers() {
+    return useWithUsers;
+  }
+
+  public void setUseWithUsers(UseWithUsersEnum useWithUsers) {
+    this.useWithUsers = useWithUsers;
   }
 
   public ClickwrapEntity useWithBundles(UseWithBundlesEnum useWithBundles) {
@@ -227,24 +245,6 @@ public class ClickwrapEntity {
     this.useWithInboxes = useWithInboxes;
   }
 
-  public ClickwrapEntity useWithUsers(UseWithUsersEnum useWithUsers) {
-    this.useWithUsers = useWithUsers;
-    return this;
-  }
-
-   /**
-   * Use this Clickwrap for User Registrations?  Note: This only applies to User Registrations where the User is invited to your Files.com site using an E-Mail invitation process where they then set their own password.
-   * @return useWithUsers
-  **/
-  @Schema(description = "Use this Clickwrap for User Registrations?  Note: This only applies to User Registrations where the User is invited to your Files.com site using an E-Mail invitation process where they then set their own password.")
-  public UseWithUsersEnum getUseWithUsers() {
-    return useWithUsers;
-  }
-
-  public void setUseWithUsers(UseWithUsersEnum useWithUsers) {
-    this.useWithUsers = useWithUsers;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -255,17 +255,17 @@ public class ClickwrapEntity {
       return false;
     }
     ClickwrapEntity clickwrapEntity = (ClickwrapEntity) o;
-    return Objects.equals(this.body, clickwrapEntity.body) &&
-        Objects.equals(this.id, clickwrapEntity.id) &&
+    return Objects.equals(this.id, clickwrapEntity.id) &&
         Objects.equals(this.name, clickwrapEntity.name) &&
+        Objects.equals(this.body, clickwrapEntity.body) &&
+        Objects.equals(this.useWithUsers, clickwrapEntity.useWithUsers) &&
         Objects.equals(this.useWithBundles, clickwrapEntity.useWithBundles) &&
-        Objects.equals(this.useWithInboxes, clickwrapEntity.useWithInboxes) &&
-        Objects.equals(this.useWithUsers, clickwrapEntity.useWithUsers);
+        Objects.equals(this.useWithInboxes, clickwrapEntity.useWithInboxes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(body, id, name, useWithBundles, useWithInboxes, useWithUsers);
+    return Objects.hash(id, name, body, useWithUsers, useWithBundles, useWithInboxes);
   }
 
 
@@ -274,12 +274,12 @@ public class ClickwrapEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class ClickwrapEntity {\n");
     
-    sb.append("    body: ").append(toIndentedString(body)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    body: ").append(toIndentedString(body)).append("\n");
+    sb.append("    useWithUsers: ").append(toIndentedString(useWithUsers)).append("\n");
     sb.append("    useWithBundles: ").append(toIndentedString(useWithBundles)).append("\n");
     sb.append("    useWithInboxes: ").append(toIndentedString(useWithInboxes)).append("\n");
-    sb.append("    useWithUsers: ").append(toIndentedString(useWithUsers)).append("\n");
     sb.append("}");
     return sb.toString();
   }

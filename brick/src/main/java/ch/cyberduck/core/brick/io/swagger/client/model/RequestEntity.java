@@ -22,14 +22,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * List Requests
  */
 @Schema(description = "List Requests")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class RequestEntity {
-  @JsonProperty("automation_id")
-  private String automationId = null;
-
-  @JsonProperty("destination")
-  private String destination = null;
-
   @JsonProperty("id")
   private Integer id = null;
 
@@ -39,44 +33,14 @@ public class RequestEntity {
   @JsonProperty("source")
   private String source = null;
 
+  @JsonProperty("destination")
+  private String destination = null;
+
+  @JsonProperty("automation_id")
+  private String automationId = null;
+
   @JsonProperty("user_display_name")
   private String userDisplayName = null;
-
-  public RequestEntity automationId(String automationId) {
-    this.automationId = automationId;
-    return this;
-  }
-
-   /**
-   * ID of automation that created request
-   * @return automationId
-  **/
-  @Schema(description = "ID of automation that created request")
-  public String getAutomationId() {
-    return automationId;
-  }
-
-  public void setAutomationId(String automationId) {
-    this.automationId = automationId;
-  }
-
-  public RequestEntity destination(String destination) {
-    this.destination = destination;
-    return this;
-  }
-
-   /**
-   * Destination filename
-   * @return destination
-  **/
-  @Schema(description = "Destination filename")
-  public String getDestination() {
-    return destination;
-  }
-
-  public void setDestination(String destination) {
-    this.destination = destination;
-  }
 
   public RequestEntity id(Integer id) {
     this.id = id;
@@ -132,6 +96,42 @@ public class RequestEntity {
     this.source = source;
   }
 
+  public RequestEntity destination(String destination) {
+    this.destination = destination;
+    return this;
+  }
+
+   /**
+   * Destination filename
+   * @return destination
+  **/
+  @Schema(description = "Destination filename")
+  public String getDestination() {
+    return destination;
+  }
+
+  public void setDestination(String destination) {
+    this.destination = destination;
+  }
+
+  public RequestEntity automationId(String automationId) {
+    this.automationId = automationId;
+    return this;
+  }
+
+   /**
+   * ID of automation that created request
+   * @return automationId
+  **/
+  @Schema(description = "ID of automation that created request")
+  public String getAutomationId() {
+    return automationId;
+  }
+
+  public void setAutomationId(String automationId) {
+    this.automationId = automationId;
+  }
+
   public RequestEntity userDisplayName(String userDisplayName) {
     this.userDisplayName = userDisplayName;
     return this;
@@ -160,17 +160,17 @@ public class RequestEntity {
       return false;
     }
     RequestEntity requestEntity = (RequestEntity) o;
-    return Objects.equals(this.automationId, requestEntity.automationId) &&
-        Objects.equals(this.destination, requestEntity.destination) &&
-        Objects.equals(this.id, requestEntity.id) &&
+    return Objects.equals(this.id, requestEntity.id) &&
         Objects.equals(this.path, requestEntity.path) &&
         Objects.equals(this.source, requestEntity.source) &&
+        Objects.equals(this.destination, requestEntity.destination) &&
+        Objects.equals(this.automationId, requestEntity.automationId) &&
         Objects.equals(this.userDisplayName, requestEntity.userDisplayName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(automationId, destination, id, path, source, userDisplayName);
+    return Objects.hash(id, path, source, destination, automationId, userDisplayName);
   }
 
 
@@ -179,11 +179,11 @@ public class RequestEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class RequestEntity {\n");
     
-    sb.append("    automationId: ").append(toIndentedString(automationId)).append("\n");
-    sb.append("    destination: ").append(toIndentedString(destination)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    source: ").append(toIndentedString(source)).append("\n");
+    sb.append("    destination: ").append(toIndentedString(destination)).append("\n");
+    sb.append("    automationId: ").append(toIndentedString(automationId)).append("\n");
     sb.append("    userDisplayName: ").append(toIndentedString(userDisplayName)).append("\n");
     sb.append("}");
     return sb.toString();

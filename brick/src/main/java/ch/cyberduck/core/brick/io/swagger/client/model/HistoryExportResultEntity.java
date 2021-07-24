@@ -22,34 +22,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * List History Export Results
  */
 @Schema(description = "List History Export Results")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class HistoryExportResultEntity {
-  @JsonProperty("action")
-  private String action = null;
+  @JsonProperty("id")
+  private Integer id = null;
 
   @JsonProperty("created_at")
   private Integer createdAt = null;
 
-  @JsonProperty("destination")
-  private String destination = null;
-
-  @JsonProperty("failure_type")
-  private String failureType = null;
+  @JsonProperty("user_id")
+  private Integer userId = null;
 
   @JsonProperty("file_id")
   private Integer fileId = null;
-
-  @JsonProperty("folder")
-  private String folder = null;
-
-  @JsonProperty("id")
-  private Integer id = null;
-
-  @JsonProperty("interface")
-  private String _interface = null;
-
-  @JsonProperty("ip")
-  private String ip = null;
 
   @JsonProperty("parent_id")
   private Integer parentId = null;
@@ -57,11 +42,29 @@ public class HistoryExportResultEntity {
   @JsonProperty("path")
   private String path = null;
 
+  @JsonProperty("folder")
+  private String folder = null;
+
   @JsonProperty("src")
   private String src = null;
 
-  @JsonProperty("target_expires_at")
-  private Integer targetExpiresAt = null;
+  @JsonProperty("destination")
+  private String destination = null;
+
+  @JsonProperty("ip")
+  private String ip = null;
+
+  @JsonProperty("username")
+  private String username = null;
+
+  @JsonProperty("action")
+  private String action = null;
+
+  @JsonProperty("failure_type")
+  private String failureType = null;
+
+  @JsonProperty("interface")
+  private String _interface = null;
 
   @JsonProperty("target_id")
   private Integer targetId = null;
@@ -72,43 +75,40 @@ public class HistoryExportResultEntity {
   @JsonProperty("target_permission")
   private String targetPermission = null;
 
+  @JsonProperty("target_recursive")
+  private Boolean targetRecursive = null;
+
+  @JsonProperty("target_expires_at")
+  private Integer targetExpiresAt = null;
+
   @JsonProperty("target_permission_set")
   private String targetPermissionSet = null;
 
   @JsonProperty("target_platform")
   private String targetPlatform = null;
 
-  @JsonProperty("target_recursive")
-  private Boolean targetRecursive = null;
+  @JsonProperty("target_username")
+  private String targetUsername = null;
 
   @JsonProperty("target_user_id")
   private Integer targetUserId = null;
 
-  @JsonProperty("target_username")
-  private String targetUsername = null;
-
-  @JsonProperty("user_id")
-  private Integer userId = null;
-
-  @JsonProperty("username")
-  private String username = null;
-
-  public HistoryExportResultEntity action(String action) {
-    this.action = action;
+  public HistoryExportResultEntity id(Integer id) {
+    this.id = id;
     return this;
   }
 
    /**
-   * What action was taken. Valid values: &#x60;create&#x60;, &#x60;read&#x60;, &#x60;update&#x60;, &#x60;destroy&#x60;, &#x60;move&#x60;, &#x60;login&#x60;, &#x60;failedlogin&#x60;, &#x60;copy&#x60;, &#x60;user_create&#x60;, &#x60;user_update&#x60;, &#x60;user_destroy&#x60;, &#x60;group_create&#x60;, &#x60;group_update&#x60;, &#x60;group_destroy&#x60;, &#x60;permission_create&#x60;, &#x60;permission_destroy&#x60;, &#x60;api_key_create&#x60;, &#x60;api_key_update&#x60;, &#x60;api_key_destroy&#x60;
-   * @return action
+   * Action ID
+   * @return id
   **/
-  @Schema(example = "read", description = "What action was taken. Valid values: `create`, `read`, `update`, `destroy`, `move`, `login`, `failedlogin`, `copy`, `user_create`, `user_update`, `user_destroy`, `group_create`, `group_update`, `group_destroy`, `permission_create`, `permission_destroy`, `api_key_create`, `api_key_update`, `api_key_destroy`")
-  public String getAction() {
-    return action;
+  @Schema(example = "1", description = "Action ID")
+  public Integer getId() {
+    return id;
   }
 
-  public void setAction(String action) {
-    this.action = action;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public HistoryExportResultEntity createdAt(Integer createdAt) {
@@ -129,40 +129,22 @@ public class HistoryExportResultEntity {
     this.createdAt = createdAt;
   }
 
-  public HistoryExportResultEntity destination(String destination) {
-    this.destination = destination;
+  public HistoryExportResultEntity userId(Integer userId) {
+    this.userId = userId;
     return this;
   }
 
    /**
-   * File moved to this destination folder
-   * @return destination
+   * User ID
+   * @return userId
   **/
-  @Schema(example = "DestFolder", description = "File moved to this destination folder")
-  public String getDestination() {
-    return destination;
+  @Schema(example = "1", description = "User ID")
+  public Integer getUserId() {
+    return userId;
   }
 
-  public void setDestination(String destination) {
-    this.destination = destination;
-  }
-
-  public HistoryExportResultEntity failureType(String failureType) {
-    this.failureType = failureType;
-    return this;
-  }
-
-   /**
-   * The type of login failure, if applicable.  Valid values: &#x60;expired_trial&#x60;, &#x60;account_overdue&#x60;, &#x60;locked_out&#x60;, &#x60;ip_mismatch&#x60;, &#x60;password_mismatch&#x60;, &#x60;site_mismatch&#x60;, &#x60;username_not_found&#x60;, &#x60;none&#x60;, &#x60;no_ftp_permission&#x60;, &#x60;no_web_permission&#x60;, &#x60;no_directory&#x60;, &#x60;errno_enoent&#x60;, &#x60;no_sftp_permission&#x60;, &#x60;no_dav_permission&#x60;, &#x60;no_restapi_permission&#x60;, &#x60;key_mismatch&#x60;, &#x60;region_mismatch&#x60;, &#x60;expired_access&#x60;, &#x60;desktop_ip_mismatch&#x60;, &#x60;desktop_api_key_not_used_quickly_enough&#x60;, &#x60;disabled&#x60;, &#x60;country_mismatch&#x60;
-   * @return failureType
-  **/
-  @Schema(example = "bad_password", description = "The type of login failure, if applicable.  Valid values: `expired_trial`, `account_overdue`, `locked_out`, `ip_mismatch`, `password_mismatch`, `site_mismatch`, `username_not_found`, `none`, `no_ftp_permission`, `no_web_permission`, `no_directory`, `errno_enoent`, `no_sftp_permission`, `no_dav_permission`, `no_restapi_permission`, `key_mismatch`, `region_mismatch`, `expired_access`, `desktop_ip_mismatch`, `desktop_api_key_not_used_quickly_enough`, `disabled`, `country_mismatch`")
-  public String getFailureType() {
-    return failureType;
-  }
-
-  public void setFailureType(String failureType) {
-    this.failureType = failureType;
+  public void setUserId(Integer userId) {
+    this.userId = userId;
   }
 
   public HistoryExportResultEntity fileId(Integer fileId) {
@@ -181,78 +163,6 @@ public class HistoryExportResultEntity {
 
   public void setFileId(Integer fileId) {
     this.fileId = fileId;
-  }
-
-  public HistoryExportResultEntity folder(String folder) {
-    this.folder = folder;
-    return this;
-  }
-
-   /**
-   * Folder in which the action occurred
-   * @return folder
-  **/
-  @Schema(example = "Folder", description = "Folder in which the action occurred")
-  public String getFolder() {
-    return folder;
-  }
-
-  public void setFolder(String folder) {
-    this.folder = folder;
-  }
-
-  public HistoryExportResultEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Action ID
-   * @return id
-  **/
-  @Schema(example = "1", description = "Action ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public HistoryExportResultEntity _interface(String _interface) {
-    this._interface = _interface;
-    return this;
-  }
-
-   /**
-   * Inteface through which the action was taken. Valid values: &#x60;web&#x60;, &#x60;ftp&#x60;, &#x60;robot&#x60;, &#x60;jsapi&#x60;, &#x60;webdesktopapi&#x60;, &#x60;sftp&#x60;, &#x60;dav&#x60;, &#x60;desktop&#x60;, &#x60;restapi&#x60;, &#x60;scim&#x60;, &#x60;office&#x60;
-   * @return _interface
-  **/
-  @Schema(example = "ftp", description = "Inteface through which the action was taken. Valid values: `web`, `ftp`, `robot`, `jsapi`, `webdesktopapi`, `sftp`, `dav`, `desktop`, `restapi`, `scim`, `office`")
-  public String getInterface() {
-    return _interface;
-  }
-
-  public void setInterface(String _interface) {
-    this._interface = _interface;
-  }
-
-  public HistoryExportResultEntity ip(String ip) {
-    this.ip = ip;
-    return this;
-  }
-
-   /**
-   * Client IP that performed the action
-   * @return ip
-  **/
-  @Schema(example = "127.0.0.1", description = "Client IP that performed the action")
-  public String getIp() {
-    return ip;
-  }
-
-  public void setIp(String ip) {
-    this.ip = ip;
   }
 
   public HistoryExportResultEntity parentId(Integer parentId) {
@@ -291,6 +201,24 @@ public class HistoryExportResultEntity {
     this.path = path;
   }
 
+  public HistoryExportResultEntity folder(String folder) {
+    this.folder = folder;
+    return this;
+  }
+
+   /**
+   * Folder in which the action occurred
+   * @return folder
+  **/
+  @Schema(example = "Folder", description = "Folder in which the action occurred")
+  public String getFolder() {
+    return folder;
+  }
+
+  public void setFolder(String folder) {
+    this.folder = folder;
+  }
+
   public HistoryExportResultEntity src(String src) {
     this.src = src;
     return this;
@@ -309,22 +237,112 @@ public class HistoryExportResultEntity {
     this.src = src;
   }
 
-  public HistoryExportResultEntity targetExpiresAt(Integer targetExpiresAt) {
-    this.targetExpiresAt = targetExpiresAt;
+  public HistoryExportResultEntity destination(String destination) {
+    this.destination = destination;
     return this;
   }
 
    /**
-   * If searching for Histories about API keys, this is when the API key will expire
-   * @return targetExpiresAt
+   * File moved to this destination folder
+   * @return destination
   **/
-  @Schema(example = "1", description = "If searching for Histories about API keys, this is when the API key will expire")
-  public Integer getTargetExpiresAt() {
-    return targetExpiresAt;
+  @Schema(example = "DestFolder", description = "File moved to this destination folder")
+  public String getDestination() {
+    return destination;
   }
 
-  public void setTargetExpiresAt(Integer targetExpiresAt) {
-    this.targetExpiresAt = targetExpiresAt;
+  public void setDestination(String destination) {
+    this.destination = destination;
+  }
+
+  public HistoryExportResultEntity ip(String ip) {
+    this.ip = ip;
+    return this;
+  }
+
+   /**
+   * Client IP that performed the action
+   * @return ip
+  **/
+  @Schema(example = "127.0.0.1", description = "Client IP that performed the action")
+  public String getIp() {
+    return ip;
+  }
+
+  public void setIp(String ip) {
+    this.ip = ip;
+  }
+
+  public HistoryExportResultEntity username(String username) {
+    this.username = username;
+    return this;
+  }
+
+   /**
+   * Username of the user that performed the action
+   * @return username
+  **/
+  @Schema(example = "jerry", description = "Username of the user that performed the action")
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public HistoryExportResultEntity action(String action) {
+    this.action = action;
+    return this;
+  }
+
+   /**
+   * What action was taken. Valid values: &#x60;create&#x60;, &#x60;read&#x60;, &#x60;update&#x60;, &#x60;destroy&#x60;, &#x60;move&#x60;, &#x60;login&#x60;, &#x60;failedlogin&#x60;, &#x60;copy&#x60;, &#x60;user_create&#x60;, &#x60;user_update&#x60;, &#x60;user_destroy&#x60;, &#x60;group_create&#x60;, &#x60;group_update&#x60;, &#x60;group_destroy&#x60;, &#x60;permission_create&#x60;, &#x60;permission_destroy&#x60;, &#x60;api_key_create&#x60;, &#x60;api_key_update&#x60;, &#x60;api_key_destroy&#x60;
+   * @return action
+  **/
+  @Schema(example = "read", description = "What action was taken. Valid values: `create`, `read`, `update`, `destroy`, `move`, `login`, `failedlogin`, `copy`, `user_create`, `user_update`, `user_destroy`, `group_create`, `group_update`, `group_destroy`, `permission_create`, `permission_destroy`, `api_key_create`, `api_key_update`, `api_key_destroy`")
+  public String getAction() {
+    return action;
+  }
+
+  public void setAction(String action) {
+    this.action = action;
+  }
+
+  public HistoryExportResultEntity failureType(String failureType) {
+    this.failureType = failureType;
+    return this;
+  }
+
+   /**
+   * The type of login failure, if applicable.  Valid values: &#x60;expired_trial&#x60;, &#x60;account_overdue&#x60;, &#x60;locked_out&#x60;, &#x60;ip_mismatch&#x60;, &#x60;password_mismatch&#x60;, &#x60;site_mismatch&#x60;, &#x60;username_not_found&#x60;, &#x60;none&#x60;, &#x60;no_ftp_permission&#x60;, &#x60;no_web_permission&#x60;, &#x60;no_directory&#x60;, &#x60;errno_enoent&#x60;, &#x60;no_sftp_permission&#x60;, &#x60;no_dav_permission&#x60;, &#x60;no_restapi_permission&#x60;, &#x60;key_mismatch&#x60;, &#x60;region_mismatch&#x60;, &#x60;expired_access&#x60;, &#x60;desktop_ip_mismatch&#x60;, &#x60;desktop_api_key_not_used_quickly_enough&#x60;, &#x60;disabled&#x60;, &#x60;country_mismatch&#x60;
+   * @return failureType
+  **/
+  @Schema(example = "bad_password", description = "The type of login failure, if applicable.  Valid values: `expired_trial`, `account_overdue`, `locked_out`, `ip_mismatch`, `password_mismatch`, `site_mismatch`, `username_not_found`, `none`, `no_ftp_permission`, `no_web_permission`, `no_directory`, `errno_enoent`, `no_sftp_permission`, `no_dav_permission`, `no_restapi_permission`, `key_mismatch`, `region_mismatch`, `expired_access`, `desktop_ip_mismatch`, `desktop_api_key_not_used_quickly_enough`, `disabled`, `country_mismatch`")
+  public String getFailureType() {
+    return failureType;
+  }
+
+  public void setFailureType(String failureType) {
+    this.failureType = failureType;
+  }
+
+  public HistoryExportResultEntity _interface(String _interface) {
+    this._interface = _interface;
+    return this;
+  }
+
+   /**
+   * Inteface through which the action was taken. Valid values: &#x60;web&#x60;, &#x60;ftp&#x60;, &#x60;robot&#x60;, &#x60;jsapi&#x60;, &#x60;webdesktopapi&#x60;, &#x60;sftp&#x60;, &#x60;dav&#x60;, &#x60;desktop&#x60;, &#x60;restapi&#x60;, &#x60;scim&#x60;, &#x60;office&#x60;
+   * @return _interface
+  **/
+  @Schema(example = "ftp", description = "Inteface through which the action was taken. Valid values: `web`, `ftp`, `robot`, `jsapi`, `webdesktopapi`, `sftp`, `dav`, `desktop`, `restapi`, `scim`, `office`")
+  public String getInterface() {
+    return _interface;
+  }
+
+  public void setInterface(String _interface) {
+    this._interface = _interface;
   }
 
   public HistoryExportResultEntity targetId(Integer targetId) {
@@ -381,6 +399,42 @@ public class HistoryExportResultEntity {
     this.targetPermission = targetPermission;
   }
 
+  public HistoryExportResultEntity targetRecursive(Boolean targetRecursive) {
+    this.targetRecursive = targetRecursive;
+    return this;
+  }
+
+   /**
+   * Whether or not the action was recursive
+   * @return targetRecursive
+  **/
+  @Schema(example = "true", description = "Whether or not the action was recursive")
+  public Boolean isTargetRecursive() {
+    return targetRecursive;
+  }
+
+  public void setTargetRecursive(Boolean targetRecursive) {
+    this.targetRecursive = targetRecursive;
+  }
+
+  public HistoryExportResultEntity targetExpiresAt(Integer targetExpiresAt) {
+    this.targetExpiresAt = targetExpiresAt;
+    return this;
+  }
+
+   /**
+   * If searching for Histories about API keys, this is when the API key will expire
+   * @return targetExpiresAt
+  **/
+  @Schema(example = "1", description = "If searching for Histories about API keys, this is when the API key will expire")
+  public Integer getTargetExpiresAt() {
+    return targetExpiresAt;
+  }
+
+  public void setTargetExpiresAt(Integer targetExpiresAt) {
+    this.targetExpiresAt = targetExpiresAt;
+  }
+
   public HistoryExportResultEntity targetPermissionSet(String targetPermissionSet) {
     this.targetPermissionSet = targetPermissionSet;
     return this;
@@ -417,22 +471,22 @@ public class HistoryExportResultEntity {
     this.targetPlatform = targetPlatform;
   }
 
-  public HistoryExportResultEntity targetRecursive(Boolean targetRecursive) {
-    this.targetRecursive = targetRecursive;
+  public HistoryExportResultEntity targetUsername(String targetUsername) {
+    this.targetUsername = targetUsername;
     return this;
   }
 
    /**
-   * Whether or not the action was recursive
-   * @return targetRecursive
+   * If searching for Histories about API keys, this is the username on which the action was taken
+   * @return targetUsername
   **/
-  @Schema(example = "true", description = "Whether or not the action was recursive")
-  public Boolean isTargetRecursive() {
-    return targetRecursive;
+  @Schema(example = "jerry", description = "If searching for Histories about API keys, this is the username on which the action was taken")
+  public String getTargetUsername() {
+    return targetUsername;
   }
 
-  public void setTargetRecursive(Boolean targetRecursive) {
-    this.targetRecursive = targetRecursive;
+  public void setTargetUsername(String targetUsername) {
+    this.targetUsername = targetUsername;
   }
 
   public HistoryExportResultEntity targetUserId(Integer targetUserId) {
@@ -453,60 +507,6 @@ public class HistoryExportResultEntity {
     this.targetUserId = targetUserId;
   }
 
-  public HistoryExportResultEntity targetUsername(String targetUsername) {
-    this.targetUsername = targetUsername;
-    return this;
-  }
-
-   /**
-   * If searching for Histories about API keys, this is the username on which the action was taken
-   * @return targetUsername
-  **/
-  @Schema(example = "jerry", description = "If searching for Histories about API keys, this is the username on which the action was taken")
-  public String getTargetUsername() {
-    return targetUsername;
-  }
-
-  public void setTargetUsername(String targetUsername) {
-    this.targetUsername = targetUsername;
-  }
-
-  public HistoryExportResultEntity userId(Integer userId) {
-    this.userId = userId;
-    return this;
-  }
-
-   /**
-   * User ID
-   * @return userId
-  **/
-  @Schema(example = "1", description = "User ID")
-  public Integer getUserId() {
-    return userId;
-  }
-
-  public void setUserId(Integer userId) {
-    this.userId = userId;
-  }
-
-  public HistoryExportResultEntity username(String username) {
-    this.username = username;
-    return this;
-  }
-
-   /**
-   * Username of the user that performed the action
-   * @return username
-  **/
-  @Schema(example = "jerry", description = "Username of the user that performed the action")
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -517,34 +517,34 @@ public class HistoryExportResultEntity {
       return false;
     }
     HistoryExportResultEntity historyExportResultEntity = (HistoryExportResultEntity) o;
-    return Objects.equals(this.action, historyExportResultEntity.action) &&
+    return Objects.equals(this.id, historyExportResultEntity.id) &&
         Objects.equals(this.createdAt, historyExportResultEntity.createdAt) &&
-        Objects.equals(this.destination, historyExportResultEntity.destination) &&
-        Objects.equals(this.failureType, historyExportResultEntity.failureType) &&
+        Objects.equals(this.userId, historyExportResultEntity.userId) &&
         Objects.equals(this.fileId, historyExportResultEntity.fileId) &&
-        Objects.equals(this.folder, historyExportResultEntity.folder) &&
-        Objects.equals(this.id, historyExportResultEntity.id) &&
-        Objects.equals(this._interface, historyExportResultEntity._interface) &&
-        Objects.equals(this.ip, historyExportResultEntity.ip) &&
         Objects.equals(this.parentId, historyExportResultEntity.parentId) &&
         Objects.equals(this.path, historyExportResultEntity.path) &&
+        Objects.equals(this.folder, historyExportResultEntity.folder) &&
         Objects.equals(this.src, historyExportResultEntity.src) &&
-        Objects.equals(this.targetExpiresAt, historyExportResultEntity.targetExpiresAt) &&
+        Objects.equals(this.destination, historyExportResultEntity.destination) &&
+        Objects.equals(this.ip, historyExportResultEntity.ip) &&
+        Objects.equals(this.username, historyExportResultEntity.username) &&
+        Objects.equals(this.action, historyExportResultEntity.action) &&
+        Objects.equals(this.failureType, historyExportResultEntity.failureType) &&
+        Objects.equals(this._interface, historyExportResultEntity._interface) &&
         Objects.equals(this.targetId, historyExportResultEntity.targetId) &&
         Objects.equals(this.targetName, historyExportResultEntity.targetName) &&
         Objects.equals(this.targetPermission, historyExportResultEntity.targetPermission) &&
+        Objects.equals(this.targetRecursive, historyExportResultEntity.targetRecursive) &&
+        Objects.equals(this.targetExpiresAt, historyExportResultEntity.targetExpiresAt) &&
         Objects.equals(this.targetPermissionSet, historyExportResultEntity.targetPermissionSet) &&
         Objects.equals(this.targetPlatform, historyExportResultEntity.targetPlatform) &&
-        Objects.equals(this.targetRecursive, historyExportResultEntity.targetRecursive) &&
-        Objects.equals(this.targetUserId, historyExportResultEntity.targetUserId) &&
         Objects.equals(this.targetUsername, historyExportResultEntity.targetUsername) &&
-        Objects.equals(this.userId, historyExportResultEntity.userId) &&
-        Objects.equals(this.username, historyExportResultEntity.username);
+        Objects.equals(this.targetUserId, historyExportResultEntity.targetUserId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(action, createdAt, destination, failureType, fileId, folder, id, _interface, ip, parentId, path, src, targetExpiresAt, targetId, targetName, targetPermission, targetPermissionSet, targetPlatform, targetRecursive, targetUserId, targetUsername, userId, username);
+    return Objects.hash(id, createdAt, userId, fileId, parentId, path, folder, src, destination, ip, username, action, failureType, _interface, targetId, targetName, targetPermission, targetRecursive, targetExpiresAt, targetPermissionSet, targetPlatform, targetUsername, targetUserId);
   }
 
 
@@ -553,29 +553,29 @@ public class HistoryExportResultEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class HistoryExportResultEntity {\n");
     
-    sb.append("    action: ").append(toIndentedString(action)).append("\n");
-    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
-    sb.append("    destination: ").append(toIndentedString(destination)).append("\n");
-    sb.append("    failureType: ").append(toIndentedString(failureType)).append("\n");
-    sb.append("    fileId: ").append(toIndentedString(fileId)).append("\n");
-    sb.append("    folder: ").append(toIndentedString(folder)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    _interface: ").append(toIndentedString(_interface)).append("\n");
-    sb.append("    ip: ").append(toIndentedString(ip)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
+    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+    sb.append("    fileId: ").append(toIndentedString(fileId)).append("\n");
     sb.append("    parentId: ").append(toIndentedString(parentId)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
+    sb.append("    folder: ").append(toIndentedString(folder)).append("\n");
     sb.append("    src: ").append(toIndentedString(src)).append("\n");
-    sb.append("    targetExpiresAt: ").append(toIndentedString(targetExpiresAt)).append("\n");
+    sb.append("    destination: ").append(toIndentedString(destination)).append("\n");
+    sb.append("    ip: ").append(toIndentedString(ip)).append("\n");
+    sb.append("    username: ").append(toIndentedString(username)).append("\n");
+    sb.append("    action: ").append(toIndentedString(action)).append("\n");
+    sb.append("    failureType: ").append(toIndentedString(failureType)).append("\n");
+    sb.append("    _interface: ").append(toIndentedString(_interface)).append("\n");
     sb.append("    targetId: ").append(toIndentedString(targetId)).append("\n");
     sb.append("    targetName: ").append(toIndentedString(targetName)).append("\n");
     sb.append("    targetPermission: ").append(toIndentedString(targetPermission)).append("\n");
+    sb.append("    targetRecursive: ").append(toIndentedString(targetRecursive)).append("\n");
+    sb.append("    targetExpiresAt: ").append(toIndentedString(targetExpiresAt)).append("\n");
     sb.append("    targetPermissionSet: ").append(toIndentedString(targetPermissionSet)).append("\n");
     sb.append("    targetPlatform: ").append(toIndentedString(targetPlatform)).append("\n");
-    sb.append("    targetRecursive: ").append(toIndentedString(targetRecursive)).append("\n");
-    sb.append("    targetUserId: ").append(toIndentedString(targetUserId)).append("\n");
     sb.append("    targetUsername: ").append(toIndentedString(targetUsername)).append("\n");
-    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
-    sb.append("    username: ").append(toIndentedString(username)).append("\n");
+    sb.append("    targetUserId: ").append(toIndentedString(targetUserId)).append("\n");
     sb.append("}");
     return sb.toString();
   }

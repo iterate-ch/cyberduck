@@ -22,13 +22,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * List Inbox Registrations
  */
 @Schema(description = "List Inbox Registrations")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class InboxRegistrationEntity {
-  @JsonProperty("clickwrap_body")
-  private String clickwrapBody = null;
-
   @JsonProperty("code")
   private String code = null;
+
+  @JsonProperty("name")
+  private String name = null;
 
   @JsonProperty("company")
   private String company = null;
@@ -36,32 +36,14 @@ public class InboxRegistrationEntity {
   @JsonProperty("email")
   private String email = null;
 
-  @JsonProperty("form_field_data")
-  private String formFieldData = null;
+  @JsonProperty("clickwrap_body")
+  private String clickwrapBody = null;
 
   @JsonProperty("form_field_set_id")
   private Integer formFieldSetId = null;
 
-  @JsonProperty("name")
-  private String name = null;
-
-  public InboxRegistrationEntity clickwrapBody(String clickwrapBody) {
-    this.clickwrapBody = clickwrapBody;
-    return this;
-  }
-
-   /**
-   * Clickwrap text that was shown to the registrant
-   * @return clickwrapBody
-  **/
-  @Schema(description = "Clickwrap text that was shown to the registrant")
-  public String getClickwrapBody() {
-    return clickwrapBody;
-  }
-
-  public void setClickwrapBody(String clickwrapBody) {
-    this.clickwrapBody = clickwrapBody;
-  }
+  @JsonProperty("form_field_data")
+  private String formFieldData = null;
 
   public InboxRegistrationEntity code(String code) {
     this.code = code;
@@ -79,6 +61,24 @@ public class InboxRegistrationEntity {
 
   public void setCode(String code) {
     this.code = code;
+  }
+
+  public InboxRegistrationEntity name(String name) {
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * Registrant name
+   * @return name
+  **/
+  @Schema(example = "account", description = "Registrant name")
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public InboxRegistrationEntity company(String company) {
@@ -117,22 +117,22 @@ public class InboxRegistrationEntity {
     this.email = email;
   }
 
-  public InboxRegistrationEntity formFieldData(String formFieldData) {
-    this.formFieldData = formFieldData;
+  public InboxRegistrationEntity clickwrapBody(String clickwrapBody) {
+    this.clickwrapBody = clickwrapBody;
     return this;
   }
 
    /**
-   * Data for form field set with form field ids as keys and user data as values
-   * @return formFieldData
+   * Clickwrap text that was shown to the registrant
+   * @return clickwrapBody
   **/
-  @Schema(description = "Data for form field set with form field ids as keys and user data as values")
-  public String getFormFieldData() {
-    return formFieldData;
+  @Schema(description = "Clickwrap text that was shown to the registrant")
+  public String getClickwrapBody() {
+    return clickwrapBody;
   }
 
-  public void setFormFieldData(String formFieldData) {
-    this.formFieldData = formFieldData;
+  public void setClickwrapBody(String clickwrapBody) {
+    this.clickwrapBody = clickwrapBody;
   }
 
   public InboxRegistrationEntity formFieldSetId(Integer formFieldSetId) {
@@ -153,22 +153,22 @@ public class InboxRegistrationEntity {
     this.formFieldSetId = formFieldSetId;
   }
 
-  public InboxRegistrationEntity name(String name) {
-    this.name = name;
+  public InboxRegistrationEntity formFieldData(String formFieldData) {
+    this.formFieldData = formFieldData;
     return this;
   }
 
    /**
-   * Registrant name
-   * @return name
+   * Data for form field set with form field ids as keys and user data as values
+   * @return formFieldData
   **/
-  @Schema(example = "account", description = "Registrant name")
-  public String getName() {
-    return name;
+  @Schema(description = "Data for form field set with form field ids as keys and user data as values")
+  public String getFormFieldData() {
+    return formFieldData;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setFormFieldData(String formFieldData) {
+    this.formFieldData = formFieldData;
   }
 
 
@@ -181,18 +181,18 @@ public class InboxRegistrationEntity {
       return false;
     }
     InboxRegistrationEntity inboxRegistrationEntity = (InboxRegistrationEntity) o;
-    return Objects.equals(this.clickwrapBody, inboxRegistrationEntity.clickwrapBody) &&
-        Objects.equals(this.code, inboxRegistrationEntity.code) &&
+    return Objects.equals(this.code, inboxRegistrationEntity.code) &&
+        Objects.equals(this.name, inboxRegistrationEntity.name) &&
         Objects.equals(this.company, inboxRegistrationEntity.company) &&
         Objects.equals(this.email, inboxRegistrationEntity.email) &&
-        Objects.equals(this.formFieldData, inboxRegistrationEntity.formFieldData) &&
+        Objects.equals(this.clickwrapBody, inboxRegistrationEntity.clickwrapBody) &&
         Objects.equals(this.formFieldSetId, inboxRegistrationEntity.formFieldSetId) &&
-        Objects.equals(this.name, inboxRegistrationEntity.name);
+        Objects.equals(this.formFieldData, inboxRegistrationEntity.formFieldData);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(clickwrapBody, code, company, email, formFieldData, formFieldSetId, name);
+    return Objects.hash(code, name, company, email, clickwrapBody, formFieldSetId, formFieldData);
   }
 
 
@@ -201,13 +201,13 @@ public class InboxRegistrationEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class InboxRegistrationEntity {\n");
     
-    sb.append("    clickwrapBody: ").append(toIndentedString(clickwrapBody)).append("\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    company: ").append(toIndentedString(company)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
-    sb.append("    formFieldData: ").append(toIndentedString(formFieldData)).append("\n");
+    sb.append("    clickwrapBody: ").append(toIndentedString(clickwrapBody)).append("\n");
     sb.append("    formFieldSetId: ").append(toIndentedString(formFieldSetId)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    formFieldData: ").append(toIndentedString(formFieldData)).append("\n");
     sb.append("}");
     return sb.toString();
   }

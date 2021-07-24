@@ -22,25 +22,25 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * List Notifications
  */
 @Schema(description = "List Notifications")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class NotificationEntity {
+  @JsonProperty("id")
+  private Integer id = null;
+
+  @JsonProperty("path")
+  private String path = null;
+
   @JsonProperty("group_id")
   private Integer groupId = null;
 
   @JsonProperty("group_name")
   private String groupName = null;
 
-  @JsonProperty("id")
-  private Integer id = null;
-
-  @JsonProperty("notify_on_copy")
-  private Boolean notifyOnCopy = null;
-
   @JsonProperty("notify_user_actions")
   private Boolean notifyUserActions = null;
 
-  @JsonProperty("path")
-  private String path = null;
+  @JsonProperty("notify_on_copy")
+  private Boolean notifyOnCopy = null;
 
   @JsonProperty("recursive")
   private Boolean recursive = null;
@@ -80,9 +80,6 @@ public class NotificationEntity {
 
   }  @JsonProperty("send_interval")
   private SendIntervalEnum sendInterval = null;
-
-  @JsonProperty("suppressed_email")
-  private Boolean suppressedEmail = null;
 
   @JsonProperty("unsubscribed")
   private Boolean unsubscribed = null;
@@ -129,6 +126,45 @@ public class NotificationEntity {
   @JsonProperty("username")
   private String username = null;
 
+  @JsonProperty("suppressed_email")
+  private Boolean suppressedEmail = null;
+
+  public NotificationEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Notification ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "Notification ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public NotificationEntity path(String path) {
+    this.path = path;
+    return this;
+  }
+
+   /**
+   * Folder path to notify on
+   * @return path
+  **/
+  @Schema(example = "path", description = "Folder path to notify on")
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
+  }
+
   public NotificationEntity groupId(Integer groupId) {
     this.groupId = groupId;
     return this;
@@ -165,42 +201,6 @@ public class NotificationEntity {
     this.groupName = groupName;
   }
 
-  public NotificationEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Notification ID
-   * @return id
-  **/
-  @Schema(example = "1", description = "Notification ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public NotificationEntity notifyOnCopy(Boolean notifyOnCopy) {
-    this.notifyOnCopy = notifyOnCopy;
-    return this;
-  }
-
-   /**
-   * Triggers notification when moving or copying files to this path
-   * @return notifyOnCopy
-  **/
-  @Schema(example = "true", description = "Triggers notification when moving or copying files to this path")
-  public Boolean isNotifyOnCopy() {
-    return notifyOnCopy;
-  }
-
-  public void setNotifyOnCopy(Boolean notifyOnCopy) {
-    this.notifyOnCopy = notifyOnCopy;
-  }
-
   public NotificationEntity notifyUserActions(Boolean notifyUserActions) {
     this.notifyUserActions = notifyUserActions;
     return this;
@@ -219,22 +219,22 @@ public class NotificationEntity {
     this.notifyUserActions = notifyUserActions;
   }
 
-  public NotificationEntity path(String path) {
-    this.path = path;
+  public NotificationEntity notifyOnCopy(Boolean notifyOnCopy) {
+    this.notifyOnCopy = notifyOnCopy;
     return this;
   }
 
    /**
-   * Folder path to notify on
-   * @return path
+   * Triggers notification when moving or copying files to this path
+   * @return notifyOnCopy
   **/
-  @Schema(example = "path", description = "Folder path to notify on")
-  public String getPath() {
-    return path;
+  @Schema(example = "true", description = "Triggers notification when moving or copying files to this path")
+  public Boolean isNotifyOnCopy() {
+    return notifyOnCopy;
   }
 
-  public void setPath(String path) {
-    this.path = path;
+  public void setNotifyOnCopy(Boolean notifyOnCopy) {
+    this.notifyOnCopy = notifyOnCopy;
   }
 
   public NotificationEntity recursive(Boolean recursive) {
@@ -271,24 +271,6 @@ public class NotificationEntity {
 
   public void setSendInterval(SendIntervalEnum sendInterval) {
     this.sendInterval = sendInterval;
-  }
-
-  public NotificationEntity suppressedEmail(Boolean suppressedEmail) {
-    this.suppressedEmail = suppressedEmail;
-    return this;
-  }
-
-   /**
-   * If true, it means that the recipient at this user&#x27;s email address has manually unsubscribed from all emails, or had their email \&quot;hard bounce\&quot;, which means that we are unable to send mail to this user&#x27;s current email address. Notifications will resume if the user changes their email address.
-   * @return suppressedEmail
-  **/
-  @Schema(example = "false", description = "If true, it means that the recipient at this user's email address has manually unsubscribed from all emails, or had their email \"hard bounce\", which means that we are unable to send mail to this user's current email address. Notifications will resume if the user changes their email address.")
-  public Boolean isSuppressedEmail() {
-    return suppressedEmail;
-  }
-
-  public void setSuppressedEmail(Boolean suppressedEmail) {
-    this.suppressedEmail = suppressedEmail;
   }
 
   public NotificationEntity unsubscribed(Boolean unsubscribed) {
@@ -363,6 +345,24 @@ public class NotificationEntity {
     this.username = username;
   }
 
+  public NotificationEntity suppressedEmail(Boolean suppressedEmail) {
+    this.suppressedEmail = suppressedEmail;
+    return this;
+  }
+
+   /**
+   * If true, it means that the recipient at this user&#x27;s email address has manually unsubscribed from all emails, or had their email \&quot;hard bounce\&quot;, which means that we are unable to send mail to this user&#x27;s current email address. Notifications will resume if the user changes their email address.
+   * @return suppressedEmail
+  **/
+  @Schema(example = "false", description = "If true, it means that the recipient at this user's email address has manually unsubscribed from all emails, or had their email \"hard bounce\", which means that we are unable to send mail to this user's current email address. Notifications will resume if the user changes their email address.")
+  public Boolean isSuppressedEmail() {
+    return suppressedEmail;
+  }
+
+  public void setSuppressedEmail(Boolean suppressedEmail) {
+    this.suppressedEmail = suppressedEmail;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -373,24 +373,24 @@ public class NotificationEntity {
       return false;
     }
     NotificationEntity notificationEntity = (NotificationEntity) o;
-    return Objects.equals(this.groupId, notificationEntity.groupId) &&
-        Objects.equals(this.groupName, notificationEntity.groupName) &&
-        Objects.equals(this.id, notificationEntity.id) &&
-        Objects.equals(this.notifyOnCopy, notificationEntity.notifyOnCopy) &&
-        Objects.equals(this.notifyUserActions, notificationEntity.notifyUserActions) &&
+    return Objects.equals(this.id, notificationEntity.id) &&
         Objects.equals(this.path, notificationEntity.path) &&
+        Objects.equals(this.groupId, notificationEntity.groupId) &&
+        Objects.equals(this.groupName, notificationEntity.groupName) &&
+        Objects.equals(this.notifyUserActions, notificationEntity.notifyUserActions) &&
+        Objects.equals(this.notifyOnCopy, notificationEntity.notifyOnCopy) &&
         Objects.equals(this.recursive, notificationEntity.recursive) &&
         Objects.equals(this.sendInterval, notificationEntity.sendInterval) &&
-        Objects.equals(this.suppressedEmail, notificationEntity.suppressedEmail) &&
         Objects.equals(this.unsubscribed, notificationEntity.unsubscribed) &&
         Objects.equals(this.unsubscribedReason, notificationEntity.unsubscribedReason) &&
         Objects.equals(this.userId, notificationEntity.userId) &&
-        Objects.equals(this.username, notificationEntity.username);
+        Objects.equals(this.username, notificationEntity.username) &&
+        Objects.equals(this.suppressedEmail, notificationEntity.suppressedEmail);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(groupId, groupName, id, notifyOnCopy, notifyUserActions, path, recursive, sendInterval, suppressedEmail, unsubscribed, unsubscribedReason, userId, username);
+    return Objects.hash(id, path, groupId, groupName, notifyUserActions, notifyOnCopy, recursive, sendInterval, unsubscribed, unsubscribedReason, userId, username, suppressedEmail);
   }
 
 
@@ -399,19 +399,19 @@ public class NotificationEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class NotificationEntity {\n");
     
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
     sb.append("    groupName: ").append(toIndentedString(groupName)).append("\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    notifyOnCopy: ").append(toIndentedString(notifyOnCopy)).append("\n");
     sb.append("    notifyUserActions: ").append(toIndentedString(notifyUserActions)).append("\n");
-    sb.append("    path: ").append(toIndentedString(path)).append("\n");
+    sb.append("    notifyOnCopy: ").append(toIndentedString(notifyOnCopy)).append("\n");
     sb.append("    recursive: ").append(toIndentedString(recursive)).append("\n");
     sb.append("    sendInterval: ").append(toIndentedString(sendInterval)).append("\n");
-    sb.append("    suppressedEmail: ").append(toIndentedString(suppressedEmail)).append("\n");
     sb.append("    unsubscribed: ").append(toIndentedString(unsubscribed)).append("\n");
     sb.append("    unsubscribedReason: ").append(toIndentedString(unsubscribedReason)).append("\n");
     sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
+    sb.append("    suppressedEmail: ").append(toIndentedString(suppressedEmail)).append("\n");
     sb.append("}");
     return sb.toString();
   }

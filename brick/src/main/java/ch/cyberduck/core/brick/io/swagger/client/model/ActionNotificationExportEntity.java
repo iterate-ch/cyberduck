@@ -23,25 +23,31 @@ import org.joda.time.DateTime;
  * Show Action Notification Export
  */
 @Schema(description = "Show Action Notification Export")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class ActionNotificationExportEntity {
-  @JsonProperty("end_at")
-  private DateTime endAt = null;
+  @JsonProperty("id")
+  private Integer id = null;
 
   @JsonProperty("export_version")
   private String exportVersion = null;
 
-  @JsonProperty("id")
-  private Integer id = null;
+  @JsonProperty("start_at")
+  private DateTime startAt = null;
+
+  @JsonProperty("end_at")
+  private DateTime endAt = null;
+
+  @JsonProperty("status")
+  private String status = null;
+
+  @JsonProperty("query_path")
+  private String queryPath = null;
 
   @JsonProperty("query_folder")
   private String queryFolder = null;
 
   @JsonProperty("query_message")
   private String queryMessage = null;
-
-  @JsonProperty("query_path")
-  private String queryPath = null;
 
   @JsonProperty("query_request_method")
   private String queryRequestMethod = null;
@@ -58,28 +64,22 @@ public class ActionNotificationExportEntity {
   @JsonProperty("results_url")
   private String resultsUrl = null;
 
-  @JsonProperty("start_at")
-  private DateTime startAt = null;
-
-  @JsonProperty("status")
-  private String status = null;
-
-  public ActionNotificationExportEntity endAt(DateTime endAt) {
-    this.endAt = endAt;
+  public ActionNotificationExportEntity id(Integer id) {
+    this.id = id;
     return this;
   }
 
    /**
-   * End date/time of export range.
-   * @return endAt
+   * History Export ID
+   * @return id
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "End date/time of export range.")
-  public DateTime getEndAt() {
-    return endAt;
+  @Schema(example = "1", description = "History Export ID")
+  public Integer getId() {
+    return id;
   }
 
-  public void setEndAt(DateTime endAt) {
-    this.endAt = endAt;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public ActionNotificationExportEntity exportVersion(String exportVersion) {
@@ -100,22 +100,76 @@ public class ActionNotificationExportEntity {
     this.exportVersion = exportVersion;
   }
 
-  public ActionNotificationExportEntity id(Integer id) {
-    this.id = id;
+  public ActionNotificationExportEntity startAt(DateTime startAt) {
+    this.startAt = startAt;
     return this;
   }
 
    /**
-   * History Export ID
-   * @return id
+   * Start date/time of export range.
+   * @return startAt
   **/
-  @Schema(example = "1", description = "History Export ID")
-  public Integer getId() {
-    return id;
+  @Schema(description = "Start date/time of export range.")
+  public DateTime getStartAt() {
+    return startAt;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
+  public void setStartAt(DateTime startAt) {
+    this.startAt = startAt;
+  }
+
+  public ActionNotificationExportEntity endAt(DateTime endAt) {
+    this.endAt = endAt;
+    return this;
+  }
+
+   /**
+   * End date/time of export range.
+   * @return endAt
+  **/
+  @Schema(description = "End date/time of export range.")
+  public DateTime getEndAt() {
+    return endAt;
+  }
+
+  public void setEndAt(DateTime endAt) {
+    this.endAt = endAt;
+  }
+
+  public ActionNotificationExportEntity status(String status) {
+    this.status = status;
+    return this;
+  }
+
+   /**
+   * Status of export.  Valid values: &#x60;building&#x60;, &#x60;ready&#x60;, or &#x60;failed&#x60;
+   * @return status
+  **/
+  @Schema(example = "ready", description = "Status of export.  Valid values: `building`, `ready`, or `failed`")
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public ActionNotificationExportEntity queryPath(String queryPath) {
+    this.queryPath = queryPath;
+    return this;
+  }
+
+   /**
+   * Return notifications that were triggered by actions on this specific path.
+   * @return queryPath
+  **/
+  @Schema(example = "MyFile.txt", description = "Return notifications that were triggered by actions on this specific path.")
+  public String getQueryPath() {
+    return queryPath;
+  }
+
+  public void setQueryPath(String queryPath) {
+    this.queryPath = queryPath;
   }
 
   public ActionNotificationExportEntity queryFolder(String queryFolder) {
@@ -152,24 +206,6 @@ public class ActionNotificationExportEntity {
 
   public void setQueryMessage(String queryMessage) {
     this.queryMessage = queryMessage;
-  }
-
-  public ActionNotificationExportEntity queryPath(String queryPath) {
-    this.queryPath = queryPath;
-    return this;
-  }
-
-   /**
-   * Return notifications that were triggered by actions on this specific path.
-   * @return queryPath
-  **/
-  @Schema(example = "MyFile.txt", description = "Return notifications that were triggered by actions on this specific path.")
-  public String getQueryPath() {
-    return queryPath;
-  }
-
-  public void setQueryPath(String queryPath) {
-    this.queryPath = queryPath;
   }
 
   public ActionNotificationExportEntity queryRequestMethod(String queryRequestMethod) {
@@ -262,42 +298,6 @@ public class ActionNotificationExportEntity {
     this.resultsUrl = resultsUrl;
   }
 
-  public ActionNotificationExportEntity startAt(DateTime startAt) {
-    this.startAt = startAt;
-    return this;
-  }
-
-   /**
-   * Start date/time of export range.
-   * @return startAt
-  **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Start date/time of export range.")
-  public DateTime getStartAt() {
-    return startAt;
-  }
-
-  public void setStartAt(DateTime startAt) {
-    this.startAt = startAt;
-  }
-
-  public ActionNotificationExportEntity status(String status) {
-    this.status = status;
-    return this;
-  }
-
-   /**
-   * Status of export.  Valid values: &#x60;building&#x60;, &#x60;ready&#x60;, or &#x60;failed&#x60;
-   * @return status
-  **/
-  @Schema(example = "ready", description = "Status of export.  Valid values: `building`, `ready`, or `failed`")
-  public String getStatus() {
-    return status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -308,24 +308,24 @@ public class ActionNotificationExportEntity {
       return false;
     }
     ActionNotificationExportEntity actionNotificationExportEntity = (ActionNotificationExportEntity) o;
-    return Objects.equals(this.endAt, actionNotificationExportEntity.endAt) &&
+    return Objects.equals(this.id, actionNotificationExportEntity.id) &&
         Objects.equals(this.exportVersion, actionNotificationExportEntity.exportVersion) &&
-        Objects.equals(this.id, actionNotificationExportEntity.id) &&
+        Objects.equals(this.startAt, actionNotificationExportEntity.startAt) &&
+        Objects.equals(this.endAt, actionNotificationExportEntity.endAt) &&
+        Objects.equals(this.status, actionNotificationExportEntity.status) &&
+        Objects.equals(this.queryPath, actionNotificationExportEntity.queryPath) &&
         Objects.equals(this.queryFolder, actionNotificationExportEntity.queryFolder) &&
         Objects.equals(this.queryMessage, actionNotificationExportEntity.queryMessage) &&
-        Objects.equals(this.queryPath, actionNotificationExportEntity.queryPath) &&
         Objects.equals(this.queryRequestMethod, actionNotificationExportEntity.queryRequestMethod) &&
         Objects.equals(this.queryRequestUrl, actionNotificationExportEntity.queryRequestUrl) &&
         Objects.equals(this.queryStatus, actionNotificationExportEntity.queryStatus) &&
         Objects.equals(this.querySuccess, actionNotificationExportEntity.querySuccess) &&
-        Objects.equals(this.resultsUrl, actionNotificationExportEntity.resultsUrl) &&
-        Objects.equals(this.startAt, actionNotificationExportEntity.startAt) &&
-        Objects.equals(this.status, actionNotificationExportEntity.status);
+        Objects.equals(this.resultsUrl, actionNotificationExportEntity.resultsUrl);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(endAt, exportVersion, id, queryFolder, queryMessage, queryPath, queryRequestMethod, queryRequestUrl, queryStatus, querySuccess, resultsUrl, startAt, status);
+    return Objects.hash(id, exportVersion, startAt, endAt, status, queryPath, queryFolder, queryMessage, queryRequestMethod, queryRequestUrl, queryStatus, querySuccess, resultsUrl);
   }
 
 
@@ -334,19 +334,19 @@ public class ActionNotificationExportEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class ActionNotificationExportEntity {\n");
     
-    sb.append("    endAt: ").append(toIndentedString(endAt)).append("\n");
-    sb.append("    exportVersion: ").append(toIndentedString(exportVersion)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    exportVersion: ").append(toIndentedString(exportVersion)).append("\n");
+    sb.append("    startAt: ").append(toIndentedString(startAt)).append("\n");
+    sb.append("    endAt: ").append(toIndentedString(endAt)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    queryPath: ").append(toIndentedString(queryPath)).append("\n");
     sb.append("    queryFolder: ").append(toIndentedString(queryFolder)).append("\n");
     sb.append("    queryMessage: ").append(toIndentedString(queryMessage)).append("\n");
-    sb.append("    queryPath: ").append(toIndentedString(queryPath)).append("\n");
     sb.append("    queryRequestMethod: ").append(toIndentedString(queryRequestMethod)).append("\n");
     sb.append("    queryRequestUrl: ").append(toIndentedString(queryRequestUrl)).append("\n");
     sb.append("    queryStatus: ").append(toIndentedString(queryStatus)).append("\n");
     sb.append("    querySuccess: ").append(toIndentedString(querySuccess)).append("\n");
     sb.append("    resultsUrl: ").append(toIndentedString(resultsUrl)).append("\n");
-    sb.append("    startAt: ").append(toIndentedString(startAt)).append("\n");
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("}");
     return sb.toString();
   }

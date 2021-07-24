@@ -23,8 +23,11 @@ import org.joda.time.DateTime;
  * List As2 Keys
  */
 @Schema(description = "List As2 Keys")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class As2KeyEntity {
+  @JsonProperty("id")
+  private Integer id = null;
+
   @JsonProperty("as2_partnership_name")
   private String as2PartnershipName = null;
 
@@ -34,8 +37,23 @@ public class As2KeyEntity {
   @JsonProperty("fingerprint")
   private String fingerprint = null;
 
-  @JsonProperty("id")
-  private Integer id = null;
+  public As2KeyEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * AS2 Key ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "AS2 Key ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
 
   public As2KeyEntity as2PartnershipName(String as2PartnershipName) {
     this.as2PartnershipName = as2PartnershipName;
@@ -64,7 +82,7 @@ public class As2KeyEntity {
    * AS2 Key created at date/time
    * @return createdAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "AS2 Key created at date/time")
+  @Schema(description = "AS2 Key created at date/time")
   public DateTime getCreatedAt() {
     return createdAt;
   }
@@ -91,24 +109,6 @@ public class As2KeyEntity {
     this.fingerprint = fingerprint;
   }
 
-  public As2KeyEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * AS2 Key ID
-   * @return id
-  **/
-  @Schema(example = "1", description = "AS2 Key ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -119,15 +119,15 @@ public class As2KeyEntity {
       return false;
     }
     As2KeyEntity as2KeyEntity = (As2KeyEntity) o;
-    return Objects.equals(this.as2PartnershipName, as2KeyEntity.as2PartnershipName) &&
+    return Objects.equals(this.id, as2KeyEntity.id) &&
+        Objects.equals(this.as2PartnershipName, as2KeyEntity.as2PartnershipName) &&
         Objects.equals(this.createdAt, as2KeyEntity.createdAt) &&
-        Objects.equals(this.fingerprint, as2KeyEntity.fingerprint) &&
-        Objects.equals(this.id, as2KeyEntity.id);
+        Objects.equals(this.fingerprint, as2KeyEntity.fingerprint);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(as2PartnershipName, createdAt, fingerprint, id);
+    return Objects.hash(id, as2PartnershipName, createdAt, fingerprint);
   }
 
 
@@ -136,10 +136,10 @@ public class As2KeyEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class As2KeyEntity {\n");
     
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    as2PartnershipName: ").append(toIndentedString(as2PartnershipName)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    fingerprint: ").append(toIndentedString(fingerprint)).append("\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("}");
     return sb.toString();
   }

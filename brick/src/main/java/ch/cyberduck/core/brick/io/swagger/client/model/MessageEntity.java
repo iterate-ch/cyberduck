@@ -23,55 +23,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * List Messages
  */
 @Schema(description = "List Messages")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class MessageEntity {
-  @JsonProperty("body")
-  private String body = null;
-
-  @JsonProperty("comments")
-  private MessageCommentEntity comments = null;
-
   @JsonProperty("id")
   private Integer id = null;
 
   @JsonProperty("subject")
   private String subject = null;
 
-  public MessageEntity body(String body) {
-    this.body = body;
-    return this;
-  }
+  @JsonProperty("body")
+  private String body = null;
 
-   /**
-   * Message body.
-   * @return body
-  **/
-  @Schema(example = "We should upgrade our Files.com account!", description = "Message body.")
-  public String getBody() {
-    return body;
-  }
-
-  public void setBody(String body) {
-    this.body = body;
-  }
-
-  public MessageEntity comments(MessageCommentEntity comments) {
-    this.comments = comments;
-    return this;
-  }
-
-   /**
-   * Get comments
-   * @return comments
-  **/
-  @Schema(description = "")
-  public MessageCommentEntity getComments() {
-    return comments;
-  }
-
-  public void setComments(MessageCommentEntity comments) {
-    this.comments = comments;
-  }
+  @JsonProperty("comments")
+  private MessageCommentEntity comments = null;
 
   public MessageEntity id(Integer id) {
     this.id = id;
@@ -109,6 +73,42 @@ public class MessageEntity {
     this.subject = subject;
   }
 
+  public MessageEntity body(String body) {
+    this.body = body;
+    return this;
+  }
+
+   /**
+   * Message body.
+   * @return body
+  **/
+  @Schema(example = "We should upgrade our Files.com account!", description = "Message body.")
+  public String getBody() {
+    return body;
+  }
+
+  public void setBody(String body) {
+    this.body = body;
+  }
+
+  public MessageEntity comments(MessageCommentEntity comments) {
+    this.comments = comments;
+    return this;
+  }
+
+   /**
+   * Get comments
+   * @return comments
+  **/
+  @Schema(description = "")
+  public MessageCommentEntity getComments() {
+    return comments;
+  }
+
+  public void setComments(MessageCommentEntity comments) {
+    this.comments = comments;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -119,15 +119,15 @@ public class MessageEntity {
       return false;
     }
     MessageEntity messageEntity = (MessageEntity) o;
-    return Objects.equals(this.body, messageEntity.body) &&
-        Objects.equals(this.comments, messageEntity.comments) &&
-        Objects.equals(this.id, messageEntity.id) &&
-        Objects.equals(this.subject, messageEntity.subject);
+    return Objects.equals(this.id, messageEntity.id) &&
+        Objects.equals(this.subject, messageEntity.subject) &&
+        Objects.equals(this.body, messageEntity.body) &&
+        Objects.equals(this.comments, messageEntity.comments);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(body, comments, id, subject);
+    return Objects.hash(id, subject, body, comments);
   }
 
 
@@ -136,10 +136,10 @@ public class MessageEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class MessageEntity {\n");
     
-    sb.append("    body: ").append(toIndentedString(body)).append("\n");
-    sb.append("    comments: ").append(toIndentedString(comments)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    subject: ").append(toIndentedString(subject)).append("\n");
+    sb.append("    body: ").append(toIndentedString(body)).append("\n");
+    sb.append("    comments: ").append(toIndentedString(comments)).append("\n");
     sb.append("}");
     return sb.toString();
   }

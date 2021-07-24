@@ -23,19 +23,19 @@ import org.joda.time.DateTime;
  * List Api Keys
  */
 @Schema(description = "List Api Keys")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class ApiKeyEntity {
-  @JsonProperty("created_at")
-  private DateTime createdAt = null;
+  @JsonProperty("id")
+  private Integer id = null;
 
   @JsonProperty("descriptive_label")
   private String descriptiveLabel = null;
 
+  @JsonProperty("created_at")
+  private DateTime createdAt = null;
+
   @JsonProperty("expires_at")
   private DateTime expiresAt = null;
-
-  @JsonProperty("id")
-  private Integer id = null;
 
   @JsonProperty("key")
   private String key = null;
@@ -92,22 +92,22 @@ public class ApiKeyEntity {
   @JsonProperty("user_id")
   private Integer userId = null;
 
-  public ApiKeyEntity createdAt(DateTime createdAt) {
-    this.createdAt = createdAt;
+  public ApiKeyEntity id(Integer id) {
+    this.id = id;
     return this;
   }
 
    /**
-   * Time which API Key was created
-   * @return createdAt
+   * API Key ID
+   * @return id
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Time which API Key was created")
-  public DateTime getCreatedAt() {
-    return createdAt;
+  @Schema(example = "1", description = "API Key ID")
+  public Integer getId() {
+    return id;
   }
 
-  public void setCreatedAt(DateTime createdAt) {
-    this.createdAt = createdAt;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public ApiKeyEntity descriptiveLabel(String descriptiveLabel) {
@@ -128,6 +128,24 @@ public class ApiKeyEntity {
     this.descriptiveLabel = descriptiveLabel;
   }
 
+  public ApiKeyEntity createdAt(DateTime createdAt) {
+    this.createdAt = createdAt;
+    return this;
+  }
+
+   /**
+   * Time which API Key was created
+   * @return createdAt
+  **/
+  @Schema(description = "Time which API Key was created")
+  public DateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(DateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
   public ApiKeyEntity expiresAt(DateTime expiresAt) {
     this.expiresAt = expiresAt;
     return this;
@@ -137,31 +155,13 @@ public class ApiKeyEntity {
    * API Key expiration date
    * @return expiresAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "API Key expiration date")
+  @Schema(description = "API Key expiration date")
   public DateTime getExpiresAt() {
     return expiresAt;
   }
 
   public void setExpiresAt(DateTime expiresAt) {
     this.expiresAt = expiresAt;
-  }
-
-  public ApiKeyEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * API Key ID
-   * @return id
-  **/
-  @Schema(example = "1", description = "API Key ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
   }
 
   public ApiKeyEntity key(String key) {
@@ -191,7 +191,7 @@ public class ApiKeyEntity {
    * API Key last used - note this value is only updated once per 3 hour period, so the &#x27;actual&#x27; time of last use may be up to 3 hours later than this timestamp.
    * @return lastUseAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "API Key last used - note this value is only updated once per 3 hour period, so the 'actual' time of last use may be up to 3 hours later than this timestamp.")
+  @Schema(description = "API Key last used - note this value is only updated once per 3 hour period, so the 'actual' time of last use may be up to 3 hours later than this timestamp.")
   public DateTime getLastUseAt() {
     return lastUseAt;
   }
@@ -300,10 +300,10 @@ public class ApiKeyEntity {
       return false;
     }
     ApiKeyEntity apiKeyEntity = (ApiKeyEntity) o;
-    return Objects.equals(this.createdAt, apiKeyEntity.createdAt) &&
+    return Objects.equals(this.id, apiKeyEntity.id) &&
         Objects.equals(this.descriptiveLabel, apiKeyEntity.descriptiveLabel) &&
+        Objects.equals(this.createdAt, apiKeyEntity.createdAt) &&
         Objects.equals(this.expiresAt, apiKeyEntity.expiresAt) &&
-        Objects.equals(this.id, apiKeyEntity.id) &&
         Objects.equals(this.key, apiKeyEntity.key) &&
         Objects.equals(this.lastUseAt, apiKeyEntity.lastUseAt) &&
         Objects.equals(this.name, apiKeyEntity.name) &&
@@ -315,7 +315,7 @@ public class ApiKeyEntity {
 
   @Override
   public int hashCode() {
-    return Objects.hash(createdAt, descriptiveLabel, expiresAt, id, key, lastUseAt, name, path, permissionSet, platform, userId);
+    return Objects.hash(id, descriptiveLabel, createdAt, expiresAt, key, lastUseAt, name, path, permissionSet, platform, userId);
   }
 
 
@@ -324,10 +324,10 @@ public class ApiKeyEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class ApiKeyEntity {\n");
     
-    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
-    sb.append("    descriptiveLabel: ").append(toIndentedString(descriptiveLabel)).append("\n");
-    sb.append("    expiresAt: ").append(toIndentedString(expiresAt)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    descriptiveLabel: ").append(toIndentedString(descriptiveLabel)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
+    sb.append("    expiresAt: ").append(toIndentedString(expiresAt)).append("\n");
     sb.append("    key: ").append(toIndentedString(key)).append("\n");
     sb.append("    lastUseAt: ").append(toIndentedString(lastUseAt)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");

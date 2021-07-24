@@ -23,16 +23,10 @@ import org.joda.time.DateTime;
  * List External Events
  */
 @Schema(description = "List External Events")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class ExternalEventEntity {
-  @JsonProperty("body")
-  private String body = null;
-
-  @JsonProperty("body_url")
-  private String bodyUrl = null;
-
-  @JsonProperty("created_at")
-  private DateTime createdAt = null;
+  @JsonProperty("id")
+  private Integer id = null;
 
   /**
    * Type of event being recorded.
@@ -72,15 +66,13 @@ public class ExternalEventEntity {
   }  @JsonProperty("event_type")
   private EventTypeEnum eventType = null;
 
-  @JsonProperty("id")
-  private Integer id = null;
-
   /**
    * Status of event.
    */
   public enum StatusEnum {
     SUCCESS("success"),
-    ERROR("error");
+    ERROR("error"),
+    PARTIAL_FAILURE("partial_failure");
 
     private String value;
 
@@ -109,58 +101,46 @@ public class ExternalEventEntity {
   }  @JsonProperty("status")
   private StatusEnum status = null;
 
-  public ExternalEventEntity body(String body) {
-    this.body = body;
+  @JsonProperty("body")
+  private String body = null;
+
+  @JsonProperty("created_at")
+  private DateTime createdAt = null;
+
+  @JsonProperty("body_url")
+  private String bodyUrl = null;
+
+  @JsonProperty("folder_behavior_id")
+  private Integer folderBehaviorId = null;
+
+  @JsonProperty("successful_files")
+  private Integer successfulFiles = null;
+
+  @JsonProperty("errored_files")
+  private Integer erroredFiles = null;
+
+  @JsonProperty("bytes_synced")
+  private Integer bytesSynced = null;
+
+  @JsonProperty("remote_server_type")
+  private String remoteServerType = null;
+
+  public ExternalEventEntity id(Integer id) {
+    this.id = id;
     return this;
   }
 
    /**
-   * Event body
-   * @return body
+   * Event ID
+   * @return id
   **/
-  @Schema(description = "Event body")
-  public String getBody() {
-    return body;
+  @Schema(example = "1", description = "Event ID")
+  public Integer getId() {
+    return id;
   }
 
-  public void setBody(String body) {
-    this.body = body;
-  }
-
-  public ExternalEventEntity bodyUrl(String bodyUrl) {
-    this.bodyUrl = bodyUrl;
-    return this;
-  }
-
-   /**
-   * Link to log file.
-   * @return bodyUrl
-  **/
-  @Schema(description = "Link to log file.")
-  public String getBodyUrl() {
-    return bodyUrl;
-  }
-
-  public void setBodyUrl(String bodyUrl) {
-    this.bodyUrl = bodyUrl;
-  }
-
-  public ExternalEventEntity createdAt(DateTime createdAt) {
-    this.createdAt = createdAt;
-    return this;
-  }
-
-   /**
-   * External event create date/time
-   * @return createdAt
-  **/
-  @Schema(example = "2000-01-01T01:00Z", description = "External event create date/time")
-  public DateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(DateTime createdAt) {
-    this.createdAt = createdAt;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public ExternalEventEntity eventType(EventTypeEnum eventType) {
@@ -181,24 +161,6 @@ public class ExternalEventEntity {
     this.eventType = eventType;
   }
 
-  public ExternalEventEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Event ID
-   * @return id
-  **/
-  @Schema(example = "1", description = "Event ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
   public ExternalEventEntity status(StatusEnum status) {
     this.status = status;
     return this;
@@ -217,6 +179,150 @@ public class ExternalEventEntity {
     this.status = status;
   }
 
+  public ExternalEventEntity body(String body) {
+    this.body = body;
+    return this;
+  }
+
+   /**
+   * Event body
+   * @return body
+  **/
+  @Schema(description = "Event body")
+  public String getBody() {
+    return body;
+  }
+
+  public void setBody(String body) {
+    this.body = body;
+  }
+
+  public ExternalEventEntity createdAt(DateTime createdAt) {
+    this.createdAt = createdAt;
+    return this;
+  }
+
+   /**
+   * External event create date/time
+   * @return createdAt
+  **/
+  @Schema(description = "External event create date/time")
+  public DateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(DateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public ExternalEventEntity bodyUrl(String bodyUrl) {
+    this.bodyUrl = bodyUrl;
+    return this;
+  }
+
+   /**
+   * Link to log file.
+   * @return bodyUrl
+  **/
+  @Schema(description = "Link to log file.")
+  public String getBodyUrl() {
+    return bodyUrl;
+  }
+
+  public void setBodyUrl(String bodyUrl) {
+    this.bodyUrl = bodyUrl;
+  }
+
+  public ExternalEventEntity folderBehaviorId(Integer folderBehaviorId) {
+    this.folderBehaviorId = folderBehaviorId;
+    return this;
+  }
+
+   /**
+   * Folder Behavior ID
+   * @return folderBehaviorId
+  **/
+  @Schema(example = "1", description = "Folder Behavior ID")
+  public Integer getFolderBehaviorId() {
+    return folderBehaviorId;
+  }
+
+  public void setFolderBehaviorId(Integer folderBehaviorId) {
+    this.folderBehaviorId = folderBehaviorId;
+  }
+
+  public ExternalEventEntity successfulFiles(Integer successfulFiles) {
+    this.successfulFiles = successfulFiles;
+    return this;
+  }
+
+   /**
+   * For sync events, the number of files handled successfully.
+   * @return successfulFiles
+  **/
+  @Schema(example = "1", description = "For sync events, the number of files handled successfully.")
+  public Integer getSuccessfulFiles() {
+    return successfulFiles;
+  }
+
+  public void setSuccessfulFiles(Integer successfulFiles) {
+    this.successfulFiles = successfulFiles;
+  }
+
+  public ExternalEventEntity erroredFiles(Integer erroredFiles) {
+    this.erroredFiles = erroredFiles;
+    return this;
+  }
+
+   /**
+   * For sync events, the number of files that encountered errors.
+   * @return erroredFiles
+  **/
+  @Schema(example = "1", description = "For sync events, the number of files that encountered errors.")
+  public Integer getErroredFiles() {
+    return erroredFiles;
+  }
+
+  public void setErroredFiles(Integer erroredFiles) {
+    this.erroredFiles = erroredFiles;
+  }
+
+  public ExternalEventEntity bytesSynced(Integer bytesSynced) {
+    this.bytesSynced = bytesSynced;
+    return this;
+  }
+
+   /**
+   * For sync events, the total number of bytes synced.
+   * @return bytesSynced
+  **/
+  @Schema(example = "1", description = "For sync events, the total number of bytes synced.")
+  public Integer getBytesSynced() {
+    return bytesSynced;
+  }
+
+  public void setBytesSynced(Integer bytesSynced) {
+    this.bytesSynced = bytesSynced;
+  }
+
+  public ExternalEventEntity remoteServerType(String remoteServerType) {
+    this.remoteServerType = remoteServerType;
+    return this;
+  }
+
+   /**
+   * Associated Remote Server type, if any
+   * @return remoteServerType
+  **/
+  @Schema(description = "Associated Remote Server type, if any")
+  public String getRemoteServerType() {
+    return remoteServerType;
+  }
+
+  public void setRemoteServerType(String remoteServerType) {
+    this.remoteServerType = remoteServerType;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -227,17 +333,22 @@ public class ExternalEventEntity {
       return false;
     }
     ExternalEventEntity externalEventEntity = (ExternalEventEntity) o;
-    return Objects.equals(this.body, externalEventEntity.body) &&
-        Objects.equals(this.bodyUrl, externalEventEntity.bodyUrl) &&
-        Objects.equals(this.createdAt, externalEventEntity.createdAt) &&
+    return Objects.equals(this.id, externalEventEntity.id) &&
         Objects.equals(this.eventType, externalEventEntity.eventType) &&
-        Objects.equals(this.id, externalEventEntity.id) &&
-        Objects.equals(this.status, externalEventEntity.status);
+        Objects.equals(this.status, externalEventEntity.status) &&
+        Objects.equals(this.body, externalEventEntity.body) &&
+        Objects.equals(this.createdAt, externalEventEntity.createdAt) &&
+        Objects.equals(this.bodyUrl, externalEventEntity.bodyUrl) &&
+        Objects.equals(this.folderBehaviorId, externalEventEntity.folderBehaviorId) &&
+        Objects.equals(this.successfulFiles, externalEventEntity.successfulFiles) &&
+        Objects.equals(this.erroredFiles, externalEventEntity.erroredFiles) &&
+        Objects.equals(this.bytesSynced, externalEventEntity.bytesSynced) &&
+        Objects.equals(this.remoteServerType, externalEventEntity.remoteServerType);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(body, bodyUrl, createdAt, eventType, id, status);
+    return Objects.hash(id, eventType, status, body, createdAt, bodyUrl, folderBehaviorId, successfulFiles, erroredFiles, bytesSynced, remoteServerType);
   }
 
 
@@ -246,12 +357,17 @@ public class ExternalEventEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class ExternalEventEntity {\n");
     
-    sb.append("    body: ").append(toIndentedString(body)).append("\n");
-    sb.append("    bodyUrl: ").append(toIndentedString(bodyUrl)).append("\n");
-    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
-    sb.append("    eventType: ").append(toIndentedString(eventType)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    eventType: ").append(toIndentedString(eventType)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    body: ").append(toIndentedString(body)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
+    sb.append("    bodyUrl: ").append(toIndentedString(bodyUrl)).append("\n");
+    sb.append("    folderBehaviorId: ").append(toIndentedString(folderBehaviorId)).append("\n");
+    sb.append("    successfulFiles: ").append(toIndentedString(successfulFiles)).append("\n");
+    sb.append("    erroredFiles: ").append(toIndentedString(erroredFiles)).append("\n");
+    sb.append("    bytesSynced: ").append(toIndentedString(bytesSynced)).append("\n");
+    sb.append("    remoteServerType: ").append(toIndentedString(remoteServerType)).append("\n");
     sb.append("}");
     return sb.toString();
   }

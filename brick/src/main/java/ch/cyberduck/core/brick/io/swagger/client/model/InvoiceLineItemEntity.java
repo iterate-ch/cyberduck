@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
  * InvoiceLineItemEntity
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class InvoiceLineItemEntity {
   @JsonProperty("amount")
   private Double amount = null;
@@ -33,18 +33,6 @@ public class InvoiceLineItemEntity {
 
   @JsonProperty("description")
   private String description = null;
-
-  @JsonProperty("plan")
-  private String plan = null;
-
-  @JsonProperty("service_end_at")
-  private DateTime serviceEndAt = null;
-
-  @JsonProperty("service_start_at")
-  private DateTime serviceStartAt = null;
-
-  @JsonProperty("site")
-  private String site = null;
 
   /**
    * Invoice line item type
@@ -84,8 +72,20 @@ public class InvoiceLineItemEntity {
   }  @JsonProperty("type")
   private TypeEnum type = null;
 
+  @JsonProperty("service_end_at")
+  private DateTime serviceEndAt = null;
+
+  @JsonProperty("service_start_at")
+  private DateTime serviceStartAt = null;
+
   @JsonProperty("updated_at")
   private DateTime updatedAt = null;
+
+  @JsonProperty("plan")
+  private String plan = null;
+
+  @JsonProperty("site")
+  private String site = null;
 
   public InvoiceLineItemEntity amount(Double amount) {
     this.amount = amount;
@@ -114,7 +114,7 @@ public class InvoiceLineItemEntity {
    * Invoice line item created at date/time
    * @return createdAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Invoice line item created at date/time")
+  @Schema(description = "Invoice line item created at date/time")
   public DateTime getCreatedAt() {
     return createdAt;
   }
@@ -141,22 +141,22 @@ public class InvoiceLineItemEntity {
     this.description = description;
   }
 
-  public InvoiceLineItemEntity plan(String plan) {
-    this.plan = plan;
+  public InvoiceLineItemEntity type(TypeEnum type) {
+    this.type = type;
     return this;
   }
 
    /**
-   * Plan name
-   * @return plan
+   * Invoice line item type
+   * @return type
   **/
-  @Schema(example = "Enterprise", description = "Plan name")
-  public String getPlan() {
-    return plan;
+  @Schema(example = "invoice", description = "Invoice line item type")
+  public TypeEnum getType() {
+    return type;
   }
 
-  public void setPlan(String plan) {
-    this.plan = plan;
+  public void setType(TypeEnum type) {
+    this.type = type;
   }
 
   public InvoiceLineItemEntity serviceEndAt(DateTime serviceEndAt) {
@@ -168,7 +168,7 @@ public class InvoiceLineItemEntity {
    * Invoice line item service end date/time
    * @return serviceEndAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Invoice line item service end date/time")
+  @Schema(description = "Invoice line item service end date/time")
   public DateTime getServiceEndAt() {
     return serviceEndAt;
   }
@@ -186,13 +186,49 @@ public class InvoiceLineItemEntity {
    * Invoice line item service start date/time
    * @return serviceStartAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Invoice line item service start date/time")
+  @Schema(description = "Invoice line item service start date/time")
   public DateTime getServiceStartAt() {
     return serviceStartAt;
   }
 
   public void setServiceStartAt(DateTime serviceStartAt) {
     this.serviceStartAt = serviceStartAt;
+  }
+
+  public InvoiceLineItemEntity updatedAt(DateTime updatedAt) {
+    this.updatedAt = updatedAt;
+    return this;
+  }
+
+   /**
+   * Invoice line item updated date/time
+   * @return updatedAt
+  **/
+  @Schema(description = "Invoice line item updated date/time")
+  public DateTime getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(DateTime updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  public InvoiceLineItemEntity plan(String plan) {
+    this.plan = plan;
+    return this;
+  }
+
+   /**
+   * Plan name
+   * @return plan
+  **/
+  @Schema(example = "Enterprise", description = "Plan name")
+  public String getPlan() {
+    return plan;
+  }
+
+  public void setPlan(String plan) {
+    this.plan = plan;
   }
 
   public InvoiceLineItemEntity site(String site) {
@@ -213,42 +249,6 @@ public class InvoiceLineItemEntity {
     this.site = site;
   }
 
-  public InvoiceLineItemEntity type(TypeEnum type) {
-    this.type = type;
-    return this;
-  }
-
-   /**
-   * Invoice line item type
-   * @return type
-  **/
-  @Schema(example = "invoice", description = "Invoice line item type")
-  public TypeEnum getType() {
-    return type;
-  }
-
-  public void setType(TypeEnum type) {
-    this.type = type;
-  }
-
-  public InvoiceLineItemEntity updatedAt(DateTime updatedAt) {
-    this.updatedAt = updatedAt;
-    return this;
-  }
-
-   /**
-   * Invoice line item updated date/time
-   * @return updatedAt
-  **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Invoice line item updated date/time")
-  public DateTime getUpdatedAt() {
-    return updatedAt;
-  }
-
-  public void setUpdatedAt(DateTime updatedAt) {
-    this.updatedAt = updatedAt;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -262,17 +262,17 @@ public class InvoiceLineItemEntity {
     return Objects.equals(this.amount, invoiceLineItemEntity.amount) &&
         Objects.equals(this.createdAt, invoiceLineItemEntity.createdAt) &&
         Objects.equals(this.description, invoiceLineItemEntity.description) &&
-        Objects.equals(this.plan, invoiceLineItemEntity.plan) &&
+        Objects.equals(this.type, invoiceLineItemEntity.type) &&
         Objects.equals(this.serviceEndAt, invoiceLineItemEntity.serviceEndAt) &&
         Objects.equals(this.serviceStartAt, invoiceLineItemEntity.serviceStartAt) &&
-        Objects.equals(this.site, invoiceLineItemEntity.site) &&
-        Objects.equals(this.type, invoiceLineItemEntity.type) &&
-        Objects.equals(this.updatedAt, invoiceLineItemEntity.updatedAt);
+        Objects.equals(this.updatedAt, invoiceLineItemEntity.updatedAt) &&
+        Objects.equals(this.plan, invoiceLineItemEntity.plan) &&
+        Objects.equals(this.site, invoiceLineItemEntity.site);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(amount, createdAt, description, plan, serviceEndAt, serviceStartAt, site, type, updatedAt);
+    return Objects.hash(amount, createdAt, description, type, serviceEndAt, serviceStartAt, updatedAt, plan, site);
   }
 
 
@@ -284,12 +284,12 @@ public class InvoiceLineItemEntity {
     sb.append("    amount: ").append(toIndentedString(amount)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
-    sb.append("    plan: ").append(toIndentedString(plan)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    serviceEndAt: ").append(toIndentedString(serviceEndAt)).append("\n");
     sb.append("    serviceStartAt: ").append(toIndentedString(serviceStartAt)).append("\n");
-    sb.append("    site: ").append(toIndentedString(site)).append("\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
+    sb.append("    plan: ").append(toIndentedString(plan)).append("\n");
+    sb.append("    site: ").append(toIndentedString(site)).append("\n");
     sb.append("}");
     return sb.toString();
   }

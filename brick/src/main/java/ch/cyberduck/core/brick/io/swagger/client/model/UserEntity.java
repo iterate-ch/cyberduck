@@ -25,10 +25,13 @@ import org.joda.time.DateTime;
  * Create User
  */
 @Schema(description = "Create User")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class UserEntity {
-  @JsonProperty("active_2fa")
-  private Boolean active2fa = null;
+  @JsonProperty("id")
+  private Integer id = null;
+
+  @JsonProperty("username")
+  private String username = null;
 
   @JsonProperty("admin_group_ids")
   private List<Integer> adminGroupIds = null;
@@ -36,11 +39,11 @@ public class UserEntity {
   @JsonProperty("allowed_ips")
   private String allowedIps = null;
 
-  @JsonProperty("api_keys_count")
-  private Integer apiKeysCount = null;
-
   @JsonProperty("attachments_permission")
   private Boolean attachmentsPermission = null;
+
+  @JsonProperty("api_keys_count")
+  private Integer apiKeysCount = null;
 
   @JsonProperty("authenticate_until")
   private DateTime authenticateUntil = null;
@@ -88,14 +91,11 @@ public class UserEntity {
   @JsonProperty("billing_permission")
   private Boolean billingPermission = null;
 
-  @JsonProperty("bypass_inactive_disable")
-  private Boolean bypassInactiveDisable = null;
-
   @JsonProperty("bypass_site_allowed_ips")
   private Boolean bypassSiteAllowedIps = null;
 
-  @JsonProperty("company")
-  private String company = null;
+  @JsonProperty("bypass_inactive_disable")
+  private Boolean bypassInactiveDisable = null;
 
   @JsonProperty("created_at")
   private DateTime createdAt = null;
@@ -109,9 +109,6 @@ public class UserEntity {
   @JsonProperty("email")
   private String email = null;
 
-  @JsonProperty("externally_managed")
-  private Boolean externallyManaged = null;
-
   @JsonProperty("ftp_permission")
   private Boolean ftpPermission = null;
 
@@ -120,9 +117,6 @@ public class UserEntity {
 
   @JsonProperty("header_text")
   private String headerText = null;
-
-  @JsonProperty("id")
-  private Integer id = null;
 
   @JsonProperty("language")
   private String language = null;
@@ -138,6 +132,9 @@ public class UserEntity {
 
   @JsonProperty("name")
   private String name = null;
+
+  @JsonProperty("company")
+  private String company = null;
 
   @JsonProperty("notes")
   private String notes = null;
@@ -194,6 +191,9 @@ public class UserEntity {
 
   }  @JsonProperty("require_2fa")
   private Require2faEnum require2fa = null;
+
+  @JsonProperty("active_2fa")
+  private Boolean active2fa = null;
 
   @JsonProperty("require_password_change")
   private Boolean requirePasswordChange = null;
@@ -254,6 +254,9 @@ public class UserEntity {
   @JsonProperty("subscribe_to_newsletter")
   private Boolean subscribeToNewsletter = null;
 
+  @JsonProperty("externally_managed")
+  private Boolean externallyManaged = null;
+
   @JsonProperty("time_zone")
   private String timeZone = null;
 
@@ -263,25 +266,40 @@ public class UserEntity {
   @JsonProperty("user_root")
   private String userRoot = null;
 
-  @JsonProperty("username")
-  private String username = null;
-
-  public UserEntity active2fa(Boolean active2fa) {
-    this.active2fa = active2fa;
+  public UserEntity id(Integer id) {
+    this.id = id;
     return this;
   }
 
    /**
-   * Is 2fa active for the user?
-   * @return active2fa
+   * User ID
+   * @return id
   **/
-  @Schema(example = "true", description = "Is 2fa active for the user?")
-  public Boolean isActive2fa() {
-    return active2fa;
+  @Schema(example = "1", description = "User ID")
+  public Integer getId() {
+    return id;
   }
 
-  public void setActive2fa(Boolean active2fa) {
-    this.active2fa = active2fa;
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public UserEntity username(String username) {
+    this.username = username;
+    return this;
+  }
+
+   /**
+   * User&#x27;s username
+   * @return username
+  **/
+  @Schema(example = "user", description = "User's username")
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
   }
 
   public UserEntity adminGroupIds(List<Integer> adminGroupIds) {
@@ -328,24 +346,6 @@ public class UserEntity {
     this.allowedIps = allowedIps;
   }
 
-  public UserEntity apiKeysCount(Integer apiKeysCount) {
-    this.apiKeysCount = apiKeysCount;
-    return this;
-  }
-
-   /**
-   * Number of api keys associated with this user
-   * @return apiKeysCount
-  **/
-  @Schema(example = "1", description = "Number of api keys associated with this user")
-  public Integer getApiKeysCount() {
-    return apiKeysCount;
-  }
-
-  public void setApiKeysCount(Integer apiKeysCount) {
-    this.apiKeysCount = apiKeysCount;
-  }
-
   public UserEntity attachmentsPermission(Boolean attachmentsPermission) {
     this.attachmentsPermission = attachmentsPermission;
     return this;
@@ -364,6 +364,24 @@ public class UserEntity {
     this.attachmentsPermission = attachmentsPermission;
   }
 
+  public UserEntity apiKeysCount(Integer apiKeysCount) {
+    this.apiKeysCount = apiKeysCount;
+    return this;
+  }
+
+   /**
+   * Number of api keys associated with this user
+   * @return apiKeysCount
+  **/
+  @Schema(example = "1", description = "Number of api keys associated with this user")
+  public Integer getApiKeysCount() {
+    return apiKeysCount;
+  }
+
+  public void setApiKeysCount(Integer apiKeysCount) {
+    this.apiKeysCount = apiKeysCount;
+  }
+
   public UserEntity authenticateUntil(DateTime authenticateUntil) {
     this.authenticateUntil = authenticateUntil;
     return this;
@@ -373,7 +391,7 @@ public class UserEntity {
    * Scheduled Date/Time at which user will be deactivated
    * @return authenticateUntil
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Scheduled Date/Time at which user will be deactivated")
+  @Schema(description = "Scheduled Date/Time at which user will be deactivated")
   public DateTime getAuthenticateUntil() {
     return authenticateUntil;
   }
@@ -436,24 +454,6 @@ public class UserEntity {
     this.billingPermission = billingPermission;
   }
 
-  public UserEntity bypassInactiveDisable(Boolean bypassInactiveDisable) {
-    this.bypassInactiveDisable = bypassInactiveDisable;
-    return this;
-  }
-
-   /**
-   * Exempt this user from being disabled based on inactivity?
-   * @return bypassInactiveDisable
-  **/
-  @Schema(description = "Exempt this user from being disabled based on inactivity?")
-  public Boolean isBypassInactiveDisable() {
-    return bypassInactiveDisable;
-  }
-
-  public void setBypassInactiveDisable(Boolean bypassInactiveDisable) {
-    this.bypassInactiveDisable = bypassInactiveDisable;
-  }
-
   public UserEntity bypassSiteAllowedIps(Boolean bypassSiteAllowedIps) {
     this.bypassSiteAllowedIps = bypassSiteAllowedIps;
     return this;
@@ -472,22 +472,22 @@ public class UserEntity {
     this.bypassSiteAllowedIps = bypassSiteAllowedIps;
   }
 
-  public UserEntity company(String company) {
-    this.company = company;
+  public UserEntity bypassInactiveDisable(Boolean bypassInactiveDisable) {
+    this.bypassInactiveDisable = bypassInactiveDisable;
     return this;
   }
 
    /**
-   * User&#x27;s company
-   * @return company
+   * Exempt this user from being disabled based on inactivity?
+   * @return bypassInactiveDisable
   **/
-  @Schema(example = "ACME Corp.", description = "User's company")
-  public String getCompany() {
-    return company;
+  @Schema(description = "Exempt this user from being disabled based on inactivity?")
+  public Boolean isBypassInactiveDisable() {
+    return bypassInactiveDisable;
   }
 
-  public void setCompany(String company) {
-    this.company = company;
+  public void setBypassInactiveDisable(Boolean bypassInactiveDisable) {
+    this.bypassInactiveDisable = bypassInactiveDisable;
   }
 
   public UserEntity createdAt(DateTime createdAt) {
@@ -499,7 +499,7 @@ public class UserEntity {
    * When this user was created
    * @return createdAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "When this user was created")
+  @Schema(description = "When this user was created")
   public DateTime getCreatedAt() {
     return createdAt;
   }
@@ -562,24 +562,6 @@ public class UserEntity {
     this.email = email;
   }
 
-  public UserEntity externallyManaged(Boolean externallyManaged) {
-    this.externallyManaged = externallyManaged;
-    return this;
-  }
-
-   /**
-   * Is this user managed by a SsoStrategy?
-   * @return externallyManaged
-  **/
-  @Schema(example = "true", description = "Is this user managed by a SsoStrategy?")
-  public Boolean isExternallyManaged() {
-    return externallyManaged;
-  }
-
-  public void setExternallyManaged(Boolean externallyManaged) {
-    this.externallyManaged = externallyManaged;
-  }
-
   public UserEntity ftpPermission(Boolean ftpPermission) {
     this.ftpPermission = ftpPermission;
     return this;
@@ -634,24 +616,6 @@ public class UserEntity {
     this.headerText = headerText;
   }
 
-  public UserEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * User ID
-   * @return id
-  **/
-  @Schema(example = "1", description = "User ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
   public UserEntity language(String language) {
     this.language = language;
     return this;
@@ -679,7 +643,7 @@ public class UserEntity {
    * User&#x27;s last login time
    * @return lastLoginAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "User's last login time")
+  @Schema(description = "User's last login time")
   public DateTime getLastLoginAt() {
     return lastLoginAt;
   }
@@ -715,7 +679,7 @@ public class UserEntity {
    * Time in the future that the user will no longer be locked out if applicable
    * @return lockoutExpires
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Time in the future that the user will no longer be locked out if applicable")
+  @Schema(description = "Time in the future that the user will no longer be locked out if applicable")
   public DateTime getLockoutExpires() {
     return lockoutExpires;
   }
@@ -740,6 +704,24 @@ public class UserEntity {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public UserEntity company(String company) {
+    this.company = company;
+    return this;
+  }
+
+   /**
+   * User&#x27;s company
+   * @return company
+  **/
+  @Schema(example = "ACME Corp.", description = "User's company")
+  public String getCompany() {
+    return company;
+  }
+
+  public void setCompany(String company) {
+    this.company = company;
   }
 
   public UserEntity notes(String notes) {
@@ -805,7 +787,7 @@ public class UserEntity {
    * Last time the user&#x27;s password was set
    * @return passwordSetAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Last time the user's password was set")
+  @Schema(description = "Last time the user's password was set")
   public DateTime getPasswordSetAt() {
     return passwordSetAt;
   }
@@ -884,6 +866,24 @@ public class UserEntity {
 
   public void setRequire2fa(Require2faEnum require2fa) {
     this.require2fa = require2fa;
+  }
+
+  public UserEntity active2fa(Boolean active2fa) {
+    this.active2fa = active2fa;
+    return this;
+  }
+
+   /**
+   * Is 2fa active for the user?
+   * @return active2fa
+  **/
+  @Schema(example = "true", description = "Is 2fa active for the user?")
+  public Boolean isActive2fa() {
+    return active2fa;
+  }
+
+  public void setActive2fa(Boolean active2fa) {
+    this.active2fa = active2fa;
   }
 
   public UserEntity requirePasswordChange(Boolean requirePasswordChange) {
@@ -1048,6 +1048,24 @@ public class UserEntity {
     this.subscribeToNewsletter = subscribeToNewsletter;
   }
 
+  public UserEntity externallyManaged(Boolean externallyManaged) {
+    this.externallyManaged = externallyManaged;
+    return this;
+  }
+
+   /**
+   * Is this user managed by a SsoStrategy?
+   * @return externallyManaged
+  **/
+  @Schema(example = "true", description = "Is this user managed by a SsoStrategy?")
+  public Boolean isExternallyManaged() {
+    return externallyManaged;
+  }
+
+  public void setExternallyManaged(Boolean externallyManaged) {
+    this.externallyManaged = externallyManaged;
+  }
+
   public UserEntity timeZone(String timeZone) {
     this.timeZone = timeZone;
     return this;
@@ -1102,24 +1120,6 @@ public class UserEntity {
     this.userRoot = userRoot;
   }
 
-  public UserEntity username(String username) {
-    this.username = username;
-    return this;
-  }
-
-   /**
-   * User&#x27;s username
-   * @return username
-  **/
-  @Schema(example = "user", description = "User's username")
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -1130,32 +1130,31 @@ public class UserEntity {
       return false;
     }
     UserEntity userEntity = (UserEntity) o;
-    return Objects.equals(this.active2fa, userEntity.active2fa) &&
+    return Objects.equals(this.id, userEntity.id) &&
+        Objects.equals(this.username, userEntity.username) &&
         Objects.equals(this.adminGroupIds, userEntity.adminGroupIds) &&
         Objects.equals(this.allowedIps, userEntity.allowedIps) &&
-        Objects.equals(this.apiKeysCount, userEntity.apiKeysCount) &&
         Objects.equals(this.attachmentsPermission, userEntity.attachmentsPermission) &&
+        Objects.equals(this.apiKeysCount, userEntity.apiKeysCount) &&
         Objects.equals(this.authenticateUntil, userEntity.authenticateUntil) &&
         Objects.equals(this.authenticationMethod, userEntity.authenticationMethod) &&
         Objects.equals(this.avatarUrl, userEntity.avatarUrl) &&
         Objects.equals(this.billingPermission, userEntity.billingPermission) &&
-        Objects.equals(this.bypassInactiveDisable, userEntity.bypassInactiveDisable) &&
         Objects.equals(this.bypassSiteAllowedIps, userEntity.bypassSiteAllowedIps) &&
-        Objects.equals(this.company, userEntity.company) &&
+        Objects.equals(this.bypassInactiveDisable, userEntity.bypassInactiveDisable) &&
         Objects.equals(this.createdAt, userEntity.createdAt) &&
         Objects.equals(this.davPermission, userEntity.davPermission) &&
         Objects.equals(this.disabled, userEntity.disabled) &&
         Objects.equals(this.email, userEntity.email) &&
-        Objects.equals(this.externallyManaged, userEntity.externallyManaged) &&
         Objects.equals(this.ftpPermission, userEntity.ftpPermission) &&
         Objects.equals(this.groupIds, userEntity.groupIds) &&
         Objects.equals(this.headerText, userEntity.headerText) &&
-        Objects.equals(this.id, userEntity.id) &&
         Objects.equals(this.language, userEntity.language) &&
         Objects.equals(this.lastLoginAt, userEntity.lastLoginAt) &&
         Objects.equals(this.lastProtocolCipher, userEntity.lastProtocolCipher) &&
         Objects.equals(this.lockoutExpires, userEntity.lockoutExpires) &&
         Objects.equals(this.name, userEntity.name) &&
+        Objects.equals(this.company, userEntity.company) &&
         Objects.equals(this.notes, userEntity.notes) &&
         Objects.equals(this.notificationDailySendTime, userEntity.notificationDailySendTime) &&
         Objects.equals(this.officeIntegrationEnabled, userEntity.officeIntegrationEnabled) &&
@@ -1164,6 +1163,7 @@ public class UserEntity {
         Objects.equals(this.publicKeysCount, userEntity.publicKeysCount) &&
         Objects.equals(this.receiveAdminAlerts, userEntity.receiveAdminAlerts) &&
         Objects.equals(this.require2fa, userEntity.require2fa) &&
+        Objects.equals(this.active2fa, userEntity.active2fa) &&
         Objects.equals(this.requirePasswordChange, userEntity.requirePasswordChange) &&
         Objects.equals(this.restapiPermission, userEntity.restapiPermission) &&
         Objects.equals(this.selfManaged, userEntity.selfManaged) &&
@@ -1173,15 +1173,15 @@ public class UserEntity {
         Objects.equals(this.sslRequired, userEntity.sslRequired) &&
         Objects.equals(this.ssoStrategyId, userEntity.ssoStrategyId) &&
         Objects.equals(this.subscribeToNewsletter, userEntity.subscribeToNewsletter) &&
+        Objects.equals(this.externallyManaged, userEntity.externallyManaged) &&
         Objects.equals(this.timeZone, userEntity.timeZone) &&
         Objects.equals(this.typeOf2fa, userEntity.typeOf2fa) &&
-        Objects.equals(this.userRoot, userEntity.userRoot) &&
-        Objects.equals(this.username, userEntity.username);
+        Objects.equals(this.userRoot, userEntity.userRoot);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(active2fa, adminGroupIds, allowedIps, apiKeysCount, attachmentsPermission, authenticateUntil, authenticationMethod, avatarUrl, billingPermission, bypassInactiveDisable, bypassSiteAllowedIps, company, createdAt, davPermission, disabled, email, externallyManaged, ftpPermission, groupIds, headerText, id, language, lastLoginAt, lastProtocolCipher, lockoutExpires, name, notes, notificationDailySendTime, officeIntegrationEnabled, passwordSetAt, passwordValidityDays, publicKeysCount, receiveAdminAlerts, require2fa, requirePasswordChange, restapiPermission, selfManaged, sftpPermission, siteAdmin, skipWelcomeScreen, sslRequired, ssoStrategyId, subscribeToNewsletter, timeZone, typeOf2fa, userRoot, username);
+    return Objects.hash(id, username, adminGroupIds, allowedIps, attachmentsPermission, apiKeysCount, authenticateUntil, authenticationMethod, avatarUrl, billingPermission, bypassSiteAllowedIps, bypassInactiveDisable, createdAt, davPermission, disabled, email, ftpPermission, groupIds, headerText, language, lastLoginAt, lastProtocolCipher, lockoutExpires, name, company, notes, notificationDailySendTime, officeIntegrationEnabled, passwordSetAt, passwordValidityDays, publicKeysCount, receiveAdminAlerts, require2fa, active2fa, requirePasswordChange, restapiPermission, selfManaged, sftpPermission, siteAdmin, skipWelcomeScreen, sslRequired, ssoStrategyId, subscribeToNewsletter, externallyManaged, timeZone, typeOf2fa, userRoot);
   }
 
 
@@ -1190,32 +1190,31 @@ public class UserEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class UserEntity {\n");
     
-    sb.append("    active2fa: ").append(toIndentedString(active2fa)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("    adminGroupIds: ").append(toIndentedString(adminGroupIds)).append("\n");
     sb.append("    allowedIps: ").append(toIndentedString(allowedIps)).append("\n");
-    sb.append("    apiKeysCount: ").append(toIndentedString(apiKeysCount)).append("\n");
     sb.append("    attachmentsPermission: ").append(toIndentedString(attachmentsPermission)).append("\n");
+    sb.append("    apiKeysCount: ").append(toIndentedString(apiKeysCount)).append("\n");
     sb.append("    authenticateUntil: ").append(toIndentedString(authenticateUntil)).append("\n");
     sb.append("    authenticationMethod: ").append(toIndentedString(authenticationMethod)).append("\n");
     sb.append("    avatarUrl: ").append(toIndentedString(avatarUrl)).append("\n");
     sb.append("    billingPermission: ").append(toIndentedString(billingPermission)).append("\n");
-    sb.append("    bypassInactiveDisable: ").append(toIndentedString(bypassInactiveDisable)).append("\n");
     sb.append("    bypassSiteAllowedIps: ").append(toIndentedString(bypassSiteAllowedIps)).append("\n");
-    sb.append("    company: ").append(toIndentedString(company)).append("\n");
+    sb.append("    bypassInactiveDisable: ").append(toIndentedString(bypassInactiveDisable)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    davPermission: ").append(toIndentedString(davPermission)).append("\n");
     sb.append("    disabled: ").append(toIndentedString(disabled)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
-    sb.append("    externallyManaged: ").append(toIndentedString(externallyManaged)).append("\n");
     sb.append("    ftpPermission: ").append(toIndentedString(ftpPermission)).append("\n");
     sb.append("    groupIds: ").append(toIndentedString(groupIds)).append("\n");
     sb.append("    headerText: ").append(toIndentedString(headerText)).append("\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    language: ").append(toIndentedString(language)).append("\n");
     sb.append("    lastLoginAt: ").append(toIndentedString(lastLoginAt)).append("\n");
     sb.append("    lastProtocolCipher: ").append(toIndentedString(lastProtocolCipher)).append("\n");
     sb.append("    lockoutExpires: ").append(toIndentedString(lockoutExpires)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    company: ").append(toIndentedString(company)).append("\n");
     sb.append("    notes: ").append(toIndentedString(notes)).append("\n");
     sb.append("    notificationDailySendTime: ").append(toIndentedString(notificationDailySendTime)).append("\n");
     sb.append("    officeIntegrationEnabled: ").append(toIndentedString(officeIntegrationEnabled)).append("\n");
@@ -1224,6 +1223,7 @@ public class UserEntity {
     sb.append("    publicKeysCount: ").append(toIndentedString(publicKeysCount)).append("\n");
     sb.append("    receiveAdminAlerts: ").append(toIndentedString(receiveAdminAlerts)).append("\n");
     sb.append("    require2fa: ").append(toIndentedString(require2fa)).append("\n");
+    sb.append("    active2fa: ").append(toIndentedString(active2fa)).append("\n");
     sb.append("    requirePasswordChange: ").append(toIndentedString(requirePasswordChange)).append("\n");
     sb.append("    restapiPermission: ").append(toIndentedString(restapiPermission)).append("\n");
     sb.append("    selfManaged: ").append(toIndentedString(selfManaged)).append("\n");
@@ -1233,10 +1233,10 @@ public class UserEntity {
     sb.append("    sslRequired: ").append(toIndentedString(sslRequired)).append("\n");
     sb.append("    ssoStrategyId: ").append(toIndentedString(ssoStrategyId)).append("\n");
     sb.append("    subscribeToNewsletter: ").append(toIndentedString(subscribeToNewsletter)).append("\n");
+    sb.append("    externallyManaged: ").append(toIndentedString(externallyManaged)).append("\n");
     sb.append("    timeZone: ").append(toIndentedString(timeZone)).append("\n");
     sb.append("    typeOf2fa: ").append(toIndentedString(typeOf2fa)).append("\n");
     sb.append("    userRoot: ").append(toIndentedString(userRoot)).append("\n");
-    sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -23,64 +23,28 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * Create Form Field Set
  */
 @Schema(description = "Create Form Field Set")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class FormFieldSetEntity {
-  @JsonProperty("form_fields")
-  private FormFieldEntity formFields = null;
-
-  @JsonProperty("form_layout")
-  private Integer formLayout = null;
-
   @JsonProperty("id")
   private Integer id = null;
-
-  @JsonProperty("skip_company")
-  private Boolean skipCompany = null;
-
-  @JsonProperty("skip_email")
-  private Boolean skipEmail = null;
-
-  @JsonProperty("skip_name")
-  private Boolean skipName = null;
 
   @JsonProperty("title")
   private String title = null;
 
-  public FormFieldSetEntity formFields(FormFieldEntity formFields) {
-    this.formFields = formFields;
-    return this;
-  }
+  @JsonProperty("form_layout")
+  private Integer formLayout = null;
 
-   /**
-   * Get formFields
-   * @return formFields
-  **/
-  @Schema(description = "")
-  public FormFieldEntity getFormFields() {
-    return formFields;
-  }
+  @JsonProperty("form_fields")
+  private FormFieldEntity formFields = null;
 
-  public void setFormFields(FormFieldEntity formFields) {
-    this.formFields = formFields;
-  }
+  @JsonProperty("skip_name")
+  private Boolean skipName = null;
 
-  public FormFieldSetEntity formLayout(Integer formLayout) {
-    this.formLayout = formLayout;
-    return this;
-  }
+  @JsonProperty("skip_email")
+  private Boolean skipEmail = null;
 
-   /**
-   * Layout of the form
-   * @return formLayout
-  **/
-  @Schema(description = "Layout of the form")
-  public Integer getFormLayout() {
-    return formLayout;
-  }
-
-  public void setFormLayout(Integer formLayout) {
-    this.formLayout = formLayout;
-  }
+  @JsonProperty("skip_company")
+  private Boolean skipCompany = null;
 
   public FormFieldSetEntity id(Integer id) {
     this.id = id;
@@ -98,60 +62,6 @@ public class FormFieldSetEntity {
 
   public void setId(Integer id) {
     this.id = id;
-  }
-
-  public FormFieldSetEntity skipCompany(Boolean skipCompany) {
-    this.skipCompany = skipCompany;
-    return this;
-  }
-
-   /**
-   * Any associated InboxRegistrations or BundleRegistrations can be saved without providing company
-   * @return skipCompany
-  **/
-  @Schema(example = "true", description = "Any associated InboxRegistrations or BundleRegistrations can be saved without providing company")
-  public Boolean isSkipCompany() {
-    return skipCompany;
-  }
-
-  public void setSkipCompany(Boolean skipCompany) {
-    this.skipCompany = skipCompany;
-  }
-
-  public FormFieldSetEntity skipEmail(Boolean skipEmail) {
-    this.skipEmail = skipEmail;
-    return this;
-  }
-
-   /**
-   * Any associated InboxRegistrations or BundleRegistrations can be saved without providing email
-   * @return skipEmail
-  **/
-  @Schema(example = "true", description = "Any associated InboxRegistrations or BundleRegistrations can be saved without providing email")
-  public Boolean isSkipEmail() {
-    return skipEmail;
-  }
-
-  public void setSkipEmail(Boolean skipEmail) {
-    this.skipEmail = skipEmail;
-  }
-
-  public FormFieldSetEntity skipName(Boolean skipName) {
-    this.skipName = skipName;
-    return this;
-  }
-
-   /**
-   * Any associated InboxRegistrations or BundleRegistrations can be saved without providing name
-   * @return skipName
-  **/
-  @Schema(example = "true", description = "Any associated InboxRegistrations or BundleRegistrations can be saved without providing name")
-  public Boolean isSkipName() {
-    return skipName;
-  }
-
-  public void setSkipName(Boolean skipName) {
-    this.skipName = skipName;
   }
 
   public FormFieldSetEntity title(String title) {
@@ -172,6 +82,96 @@ public class FormFieldSetEntity {
     this.title = title;
   }
 
+  public FormFieldSetEntity formLayout(Integer formLayout) {
+    this.formLayout = formLayout;
+    return this;
+  }
+
+   /**
+   * Layout of the form
+   * @return formLayout
+  **/
+  @Schema(description = "Layout of the form")
+  public Integer getFormLayout() {
+    return formLayout;
+  }
+
+  public void setFormLayout(Integer formLayout) {
+    this.formLayout = formLayout;
+  }
+
+  public FormFieldSetEntity formFields(FormFieldEntity formFields) {
+    this.formFields = formFields;
+    return this;
+  }
+
+   /**
+   * Get formFields
+   * @return formFields
+  **/
+  @Schema(description = "")
+  public FormFieldEntity getFormFields() {
+    return formFields;
+  }
+
+  public void setFormFields(FormFieldEntity formFields) {
+    this.formFields = formFields;
+  }
+
+  public FormFieldSetEntity skipName(Boolean skipName) {
+    this.skipName = skipName;
+    return this;
+  }
+
+   /**
+   * Any associated InboxRegistrations or BundleRegistrations can be saved without providing name
+   * @return skipName
+  **/
+  @Schema(example = "true", description = "Any associated InboxRegistrations or BundleRegistrations can be saved without providing name")
+  public Boolean isSkipName() {
+    return skipName;
+  }
+
+  public void setSkipName(Boolean skipName) {
+    this.skipName = skipName;
+  }
+
+  public FormFieldSetEntity skipEmail(Boolean skipEmail) {
+    this.skipEmail = skipEmail;
+    return this;
+  }
+
+   /**
+   * Any associated InboxRegistrations or BundleRegistrations can be saved without providing email
+   * @return skipEmail
+  **/
+  @Schema(example = "true", description = "Any associated InboxRegistrations or BundleRegistrations can be saved without providing email")
+  public Boolean isSkipEmail() {
+    return skipEmail;
+  }
+
+  public void setSkipEmail(Boolean skipEmail) {
+    this.skipEmail = skipEmail;
+  }
+
+  public FormFieldSetEntity skipCompany(Boolean skipCompany) {
+    this.skipCompany = skipCompany;
+    return this;
+  }
+
+   /**
+   * Any associated InboxRegistrations or BundleRegistrations can be saved without providing company
+   * @return skipCompany
+  **/
+  @Schema(example = "true", description = "Any associated InboxRegistrations or BundleRegistrations can be saved without providing company")
+  public Boolean isSkipCompany() {
+    return skipCompany;
+  }
+
+  public void setSkipCompany(Boolean skipCompany) {
+    this.skipCompany = skipCompany;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -182,18 +182,18 @@ public class FormFieldSetEntity {
       return false;
     }
     FormFieldSetEntity formFieldSetEntity = (FormFieldSetEntity) o;
-    return Objects.equals(this.formFields, formFieldSetEntity.formFields) &&
+    return Objects.equals(this.id, formFieldSetEntity.id) &&
+        Objects.equals(this.title, formFieldSetEntity.title) &&
         Objects.equals(this.formLayout, formFieldSetEntity.formLayout) &&
-        Objects.equals(this.id, formFieldSetEntity.id) &&
-        Objects.equals(this.skipCompany, formFieldSetEntity.skipCompany) &&
-        Objects.equals(this.skipEmail, formFieldSetEntity.skipEmail) &&
+        Objects.equals(this.formFields, formFieldSetEntity.formFields) &&
         Objects.equals(this.skipName, formFieldSetEntity.skipName) &&
-        Objects.equals(this.title, formFieldSetEntity.title);
+        Objects.equals(this.skipEmail, formFieldSetEntity.skipEmail) &&
+        Objects.equals(this.skipCompany, formFieldSetEntity.skipCompany);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(formFields, formLayout, id, skipCompany, skipEmail, skipName, title);
+    return Objects.hash(id, title, formLayout, formFields, skipName, skipEmail, skipCompany);
   }
 
 
@@ -202,13 +202,13 @@ public class FormFieldSetEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class FormFieldSetEntity {\n");
     
-    sb.append("    formFields: ").append(toIndentedString(formFields)).append("\n");
-    sb.append("    formLayout: ").append(toIndentedString(formLayout)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    skipCompany: ").append(toIndentedString(skipCompany)).append("\n");
-    sb.append("    skipEmail: ").append(toIndentedString(skipEmail)).append("\n");
-    sb.append("    skipName: ").append(toIndentedString(skipName)).append("\n");
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
+    sb.append("    formLayout: ").append(toIndentedString(formLayout)).append("\n");
+    sb.append("    formFields: ").append(toIndentedString(formFields)).append("\n");
+    sb.append("    skipName: ").append(toIndentedString(skipName)).append("\n");
+    sb.append("    skipEmail: ").append(toIndentedString(skipEmail)).append("\n");
+    sb.append("    skipCompany: ").append(toIndentedString(skipCompany)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -24,7 +24,7 @@ import org.joda.time.DateTime;
  * GroupIdUsersBody
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class GroupIdUsersBody {
   @JsonProperty("avatar_file")
   private File avatarFile = null;
@@ -475,7 +475,7 @@ public class GroupIdUsersBody {
    * Scheduled Date/Time at which user will be deactivated
    * @return authenticateUntil
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Scheduled Date/Time at which user will be deactivated")
+  @Schema(description = "Scheduled Date/Time at which user will be deactivated")
   public DateTime getAuthenticateUntil() {
     return authenticateUntil;
   }

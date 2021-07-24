@@ -24,34 +24,16 @@ import org.joda.time.DateTime;
  * List Inbox Uploads
  */
 @Schema(description = "List Inbox Uploads")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class InboxUploadEntity {
-  @JsonProperty("created_at")
-  private DateTime createdAt = null;
-
   @JsonProperty("inbox_registration")
   private InboxRegistrationEntity inboxRegistration = null;
 
   @JsonProperty("path")
   private String path = null;
 
-  public InboxUploadEntity createdAt(DateTime createdAt) {
-    this.createdAt = createdAt;
-    return this;
-  }
-
-   /**
-   * Upload date/time
-   * @return createdAt
-  **/
-  @Schema(description = "Upload date/time")
-  public DateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(DateTime createdAt) {
-    this.createdAt = createdAt;
-  }
+  @JsonProperty("created_at")
+  private DateTime createdAt = null;
 
   public InboxUploadEntity inboxRegistration(InboxRegistrationEntity inboxRegistration) {
     this.inboxRegistration = inboxRegistration;
@@ -89,6 +71,24 @@ public class InboxUploadEntity {
     this.path = path;
   }
 
+  public InboxUploadEntity createdAt(DateTime createdAt) {
+    this.createdAt = createdAt;
+    return this;
+  }
+
+   /**
+   * Upload date/time
+   * @return createdAt
+  **/
+  @Schema(description = "Upload date/time")
+  public DateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(DateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -99,14 +99,14 @@ public class InboxUploadEntity {
       return false;
     }
     InboxUploadEntity inboxUploadEntity = (InboxUploadEntity) o;
-    return Objects.equals(this.createdAt, inboxUploadEntity.createdAt) &&
-        Objects.equals(this.inboxRegistration, inboxUploadEntity.inboxRegistration) &&
-        Objects.equals(this.path, inboxUploadEntity.path);
+    return Objects.equals(this.inboxRegistration, inboxUploadEntity.inboxRegistration) &&
+        Objects.equals(this.path, inboxUploadEntity.path) &&
+        Objects.equals(this.createdAt, inboxUploadEntity.createdAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(createdAt, inboxRegistration, path);
+    return Objects.hash(inboxRegistration, path, createdAt);
   }
 
 
@@ -115,9 +115,9 @@ public class InboxUploadEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class InboxUploadEntity {\n");
     
-    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    inboxRegistration: ").append(toIndentedString(inboxRegistration)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("}");
     return sb.toString();
   }

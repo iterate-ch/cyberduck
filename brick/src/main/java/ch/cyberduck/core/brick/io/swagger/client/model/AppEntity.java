@@ -22,22 +22,54 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * List Apps
  */
 @Schema(description = "List Apps")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class AppEntity {
+  @JsonProperty("name")
+  private String name = null;
+
+  @JsonProperty("extended_description")
+  private String extendedDescription = null;
+
+  @JsonProperty("short_description")
+  private String shortDescription = null;
+
+  @JsonProperty("documentation_links")
+  private String documentationLinks = null;
+
+  @JsonProperty("icon_url")
+  private String iconUrl = null;
+
+  @JsonProperty("logo_url")
+  private String logoUrl = null;
+
+  @JsonProperty("screenshot_list_urls")
+  private String screenshotListUrls = null;
+
+  @JsonProperty("logo_thumbnail_url")
+  private String logoThumbnailUrl = null;
+
   /**
-   * The type of the App
+   * Associated SSO Strategy type, if any
    */
-  public enum AppTypeEnum {
-    SDK("sdk"),
-    SSO("sso"),
-    REMOTE_SERVER("remote_server"),
-    FOLDER_BEHAVIOR("folder_behavior"),
-    CLIENT_APP("client_app"),
-    APP_INTEGRATION("app_integration");
+  public enum SsoStrategyTypeEnum {
+    GOOGLE("google"),
+    AUTH0("auth0"),
+    OKTA("okta"),
+    ATLASSIAN("atlassian"),
+    AZURE("azure"),
+    BOX("box"),
+    DROPBOX("dropbox"),
+    SLACK("slack"),
+    _UNUSED_UBUNTU("_unused_ubuntu"),
+    ONELOGIN("onelogin"),
+    SAML("saml"),
+    IDAPTIVE("idaptive"),
+    LDAP("ldap"),
+    SCIM("scim");
 
     private String value;
 
-    AppTypeEnum(String value) {
+    SsoStrategyTypeEnum(String value) {
       this.value = value;
     }
     @JsonValue
@@ -50,8 +82,8 @@ public class AppEntity {
       return String.valueOf(value);
     }
     @JsonCreator
-    public static AppTypeEnum fromValue(String text) {
-      for (AppTypeEnum b : AppTypeEnum.values()) {
+    public static SsoStrategyTypeEnum fromValue(String text) {
+      for (SsoStrategyTypeEnum b : SsoStrategyTypeEnum.values()) {
         if (String.valueOf(b.value).equals(text)) {
           return b;
         }
@@ -59,20 +91,55 @@ public class AppEntity {
       return null;
     }
 
-  }  @JsonProperty("app_type")
-  private AppTypeEnum appType = null;
+  }  @JsonProperty("sso_strategy_type")
+  private SsoStrategyTypeEnum ssoStrategyType = null;
 
-  @JsonProperty("documentation_links")
-  private String documentationLinks = null;
+  /**
+   * Associated Remote Server type, if any
+   */
+  public enum RemoteServerTypeEnum {
+    FTP("ftp"),
+    SFTP("sftp"),
+    S3("s3"),
+    GOOGLE_CLOUD_STORAGE("google_cloud_storage"),
+    WEBDAV("webdav"),
+    WASABI("wasabi"),
+    BACKBLAZE_B2("backblaze_b2"),
+    ONE_DRIVE("one_drive"),
+    RACKSPACE("rackspace"),
+    BOX("box"),
+    DROPBOX("dropbox"),
+    GOOGLE_DRIVE("google_drive"),
+    AZURE("azure"),
+    SHAREPOINT("sharepoint"),
+    S3_COMPATIBLE("s3_compatible");
 
-  @JsonProperty("extended_description")
-  private String extendedDescription = null;
+    private String value;
 
-  @JsonProperty("external_homepage_url")
-  private String externalHomepageUrl = null;
+    RemoteServerTypeEnum(String value) {
+      this.value = value;
+    }
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
 
-  @JsonProperty("featured")
-  private Boolean featured = null;
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+    @JsonCreator
+    public static RemoteServerTypeEnum fromValue(String text) {
+      for (RemoteServerTypeEnum b : RemoteServerTypeEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+
+  }  @JsonProperty("remote_server_type")
+  private RemoteServerTypeEnum remoteServerType = null;
 
   /**
    * Associated Folder Behavior type, if any
@@ -122,157 +189,72 @@ public class AppEntity {
   }  @JsonProperty("folder_behavior_type")
   private FolderBehaviorTypeEnum folderBehaviorType = null;
 
-  @JsonProperty("icon_url")
-  private String iconUrl = null;
-
-  @JsonProperty("logo_thumbnail_url")
-  private String logoThumbnailUrl = null;
-
-  @JsonProperty("logo_url")
-  private String logoUrl = null;
+  @JsonProperty("external_homepage_url")
+  private String externalHomepageUrl = null;
 
   @JsonProperty("marketing_youtube_url")
   private String marketingYoutubeUrl = null;
 
-  @JsonProperty("name")
-  private String name = null;
-
-  /**
-   * Associated Remote Server type, if any
-   */
-  public enum RemoteServerTypeEnum {
-    FTP("ftp"),
-    SFTP("sftp"),
-    S3("s3"),
-    GOOGLE_CLOUD_STORAGE("google_cloud_storage"),
-    WEBDAV("webdav"),
-    WASABI("wasabi"),
-    BACKBLAZE_B2("backblaze_b2"),
-    ONE_DRIVE("one_drive"),
-    RACKSPACE("rackspace"),
-    BOX("box"),
-    DROPBOX("dropbox"),
-    GOOGLE_DRIVE("google_drive"),
-    AZURE("azure"),
-    SHAREPOINT("sharepoint"),
-    S3_COMPATIBLE("s3_compatible");
-
-    private String value;
-
-    RemoteServerTypeEnum(String value) {
-      this.value = value;
-    }
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-    @JsonCreator
-    public static RemoteServerTypeEnum fromValue(String text) {
-      for (RemoteServerTypeEnum b : RemoteServerTypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-
-  }  @JsonProperty("remote_server_type")
-  private RemoteServerTypeEnum remoteServerType = null;
-
-  @JsonProperty("screenshot_list_urls")
-  private String screenshotListUrls = null;
-
-  @JsonProperty("short_description")
-  private String shortDescription = null;
-
-  /**
-   * Associated SSO Strategy type, if any
-   */
-  public enum SsoStrategyTypeEnum {
-    GOOGLE("google"),
-    AUTH0("auth0"),
-    OKTA("okta"),
-    ATLASSIAN("atlassian"),
-    AZURE("azure"),
-    BOX("box"),
-    DROPBOX("dropbox"),
-    SLACK("slack"),
-    _UNUSED_UBUNTU("_unused_ubuntu"),
-    ONELOGIN("onelogin"),
-    SAML("saml"),
-    IDAPTIVE("idaptive"),
-    LDAP("ldap"),
-    SCIM("scim");
-
-    private String value;
-
-    SsoStrategyTypeEnum(String value) {
-      this.value = value;
-    }
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-    @JsonCreator
-    public static SsoStrategyTypeEnum fromValue(String text) {
-      for (SsoStrategyTypeEnum b : SsoStrategyTypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-
-  }  @JsonProperty("sso_strategy_type")
-  private SsoStrategyTypeEnum ssoStrategyType = null;
-
   @JsonProperty("tutorial_youtube_url")
   private String tutorialYoutubeUrl = null;
 
-  public AppEntity appType(AppTypeEnum appType) {
-    this.appType = appType;
-    return this;
-  }
-
-   /**
+  /**
    * The type of the App
-   * @return appType
-  **/
-  @Schema(description = "The type of the App")
-  public AppTypeEnum getAppType() {
-    return appType;
-  }
+   */
+  public enum AppTypeEnum {
+    SDK("sdk"),
+    SSO("sso"),
+    REMOTE_SERVER("remote_server"),
+    FOLDER_BEHAVIOR("folder_behavior"),
+    CLIENT_APP("client_app"),
+    APP_INTEGRATION("app_integration");
 
-  public void setAppType(AppTypeEnum appType) {
-    this.appType = appType;
-  }
+    private String value;
 
-  public AppEntity documentationLinks(String documentationLinks) {
-    this.documentationLinks = documentationLinks;
+    AppTypeEnum(String value) {
+      this.value = value;
+    }
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+    @JsonCreator
+    public static AppTypeEnum fromValue(String text) {
+      for (AppTypeEnum b : AppTypeEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+
+  }  @JsonProperty("app_type")
+  private AppTypeEnum appType = null;
+
+  @JsonProperty("featured")
+  private Boolean featured = null;
+
+  public AppEntity name(String name) {
+    this.name = name;
     return this;
   }
 
    /**
-   * Collection of named links to documentation
-   * @return documentationLinks
+   * Name of the App
+   * @return name
   **/
-  @Schema(example = "Important Info => http://files.test/learn-more", description = "Collection of named links to documentation")
-  public String getDocumentationLinks() {
-    return documentationLinks;
+  @Schema(description = "Name of the App")
+  public String getName() {
+    return name;
   }
 
-  public void setDocumentationLinks(String documentationLinks) {
-    this.documentationLinks = documentationLinks;
+  public void setName(String name) {
+    this.name = name;
   }
 
   public AppEntity extendedDescription(String extendedDescription) {
@@ -293,58 +275,40 @@ public class AppEntity {
     this.extendedDescription = extendedDescription;
   }
 
-  public AppEntity externalHomepageUrl(String externalHomepageUrl) {
-    this.externalHomepageUrl = externalHomepageUrl;
+  public AppEntity shortDescription(String shortDescription) {
+    this.shortDescription = shortDescription;
     return this;
   }
 
    /**
-   * Link to external homepage
-   * @return externalHomepageUrl
+   * Short description of the App
+   * @return shortDescription
   **/
-  @Schema(description = "Link to external homepage")
-  public String getExternalHomepageUrl() {
-    return externalHomepageUrl;
+  @Schema(description = "Short description of the App")
+  public String getShortDescription() {
+    return shortDescription;
   }
 
-  public void setExternalHomepageUrl(String externalHomepageUrl) {
-    this.externalHomepageUrl = externalHomepageUrl;
+  public void setShortDescription(String shortDescription) {
+    this.shortDescription = shortDescription;
   }
 
-  public AppEntity featured(Boolean featured) {
-    this.featured = featured;
+  public AppEntity documentationLinks(String documentationLinks) {
+    this.documentationLinks = documentationLinks;
     return this;
   }
 
    /**
-   * Is featured on the App listing?
-   * @return featured
+   * Collection of named links to documentation
+   * @return documentationLinks
   **/
-  @Schema(example = "true", description = "Is featured on the App listing?")
-  public Boolean isFeatured() {
-    return featured;
+  @Schema(example = "Important Info => http://files.test/learn-more", description = "Collection of named links to documentation")
+  public String getDocumentationLinks() {
+    return documentationLinks;
   }
 
-  public void setFeatured(Boolean featured) {
-    this.featured = featured;
-  }
-
-  public AppEntity folderBehaviorType(FolderBehaviorTypeEnum folderBehaviorType) {
-    this.folderBehaviorType = folderBehaviorType;
-    return this;
-  }
-
-   /**
-   * Associated Folder Behavior type, if any
-   * @return folderBehaviorType
-  **/
-  @Schema(description = "Associated Folder Behavior type, if any")
-  public FolderBehaviorTypeEnum getFolderBehaviorType() {
-    return folderBehaviorType;
-  }
-
-  public void setFolderBehaviorType(FolderBehaviorTypeEnum folderBehaviorType) {
-    this.folderBehaviorType = folderBehaviorType;
+  public void setDocumentationLinks(String documentationLinks) {
+    this.documentationLinks = documentationLinks;
   }
 
   public AppEntity iconUrl(String iconUrl) {
@@ -365,24 +329,6 @@ public class AppEntity {
     this.iconUrl = iconUrl;
   }
 
-  public AppEntity logoThumbnailUrl(String logoThumbnailUrl) {
-    this.logoThumbnailUrl = logoThumbnailUrl;
-    return this;
-  }
-
-   /**
-   * Logo thumbnail for the App
-   * @return logoThumbnailUrl
-  **/
-  @Schema(description = "Logo thumbnail for the App")
-  public String getLogoThumbnailUrl() {
-    return logoThumbnailUrl;
-  }
-
-  public void setLogoThumbnailUrl(String logoThumbnailUrl) {
-    this.logoThumbnailUrl = logoThumbnailUrl;
-  }
-
   public AppEntity logoUrl(String logoUrl) {
     this.logoUrl = logoUrl;
     return this;
@@ -399,60 +345,6 @@ public class AppEntity {
 
   public void setLogoUrl(String logoUrl) {
     this.logoUrl = logoUrl;
-  }
-
-  public AppEntity marketingYoutubeUrl(String marketingYoutubeUrl) {
-    this.marketingYoutubeUrl = marketingYoutubeUrl;
-    return this;
-  }
-
-   /**
-   * Marketing video page
-   * @return marketingYoutubeUrl
-  **/
-  @Schema(description = "Marketing video page")
-  public String getMarketingYoutubeUrl() {
-    return marketingYoutubeUrl;
-  }
-
-  public void setMarketingYoutubeUrl(String marketingYoutubeUrl) {
-    this.marketingYoutubeUrl = marketingYoutubeUrl;
-  }
-
-  public AppEntity name(String name) {
-    this.name = name;
-    return this;
-  }
-
-   /**
-   * Name of the App
-   * @return name
-  **/
-  @Schema(description = "Name of the App")
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public AppEntity remoteServerType(RemoteServerTypeEnum remoteServerType) {
-    this.remoteServerType = remoteServerType;
-    return this;
-  }
-
-   /**
-   * Associated Remote Server type, if any
-   * @return remoteServerType
-  **/
-  @Schema(description = "Associated Remote Server type, if any")
-  public RemoteServerTypeEnum getRemoteServerType() {
-    return remoteServerType;
-  }
-
-  public void setRemoteServerType(RemoteServerTypeEnum remoteServerType) {
-    this.remoteServerType = remoteServerType;
   }
 
   public AppEntity screenshotListUrls(String screenshotListUrls) {
@@ -473,22 +365,22 @@ public class AppEntity {
     this.screenshotListUrls = screenshotListUrls;
   }
 
-  public AppEntity shortDescription(String shortDescription) {
-    this.shortDescription = shortDescription;
+  public AppEntity logoThumbnailUrl(String logoThumbnailUrl) {
+    this.logoThumbnailUrl = logoThumbnailUrl;
     return this;
   }
 
    /**
-   * Short description of the App
-   * @return shortDescription
+   * Logo thumbnail for the App
+   * @return logoThumbnailUrl
   **/
-  @Schema(description = "Short description of the App")
-  public String getShortDescription() {
-    return shortDescription;
+  @Schema(description = "Logo thumbnail for the App")
+  public String getLogoThumbnailUrl() {
+    return logoThumbnailUrl;
   }
 
-  public void setShortDescription(String shortDescription) {
-    this.shortDescription = shortDescription;
+  public void setLogoThumbnailUrl(String logoThumbnailUrl) {
+    this.logoThumbnailUrl = logoThumbnailUrl;
   }
 
   public AppEntity ssoStrategyType(SsoStrategyTypeEnum ssoStrategyType) {
@@ -509,6 +401,78 @@ public class AppEntity {
     this.ssoStrategyType = ssoStrategyType;
   }
 
+  public AppEntity remoteServerType(RemoteServerTypeEnum remoteServerType) {
+    this.remoteServerType = remoteServerType;
+    return this;
+  }
+
+   /**
+   * Associated Remote Server type, if any
+   * @return remoteServerType
+  **/
+  @Schema(description = "Associated Remote Server type, if any")
+  public RemoteServerTypeEnum getRemoteServerType() {
+    return remoteServerType;
+  }
+
+  public void setRemoteServerType(RemoteServerTypeEnum remoteServerType) {
+    this.remoteServerType = remoteServerType;
+  }
+
+  public AppEntity folderBehaviorType(FolderBehaviorTypeEnum folderBehaviorType) {
+    this.folderBehaviorType = folderBehaviorType;
+    return this;
+  }
+
+   /**
+   * Associated Folder Behavior type, if any
+   * @return folderBehaviorType
+  **/
+  @Schema(description = "Associated Folder Behavior type, if any")
+  public FolderBehaviorTypeEnum getFolderBehaviorType() {
+    return folderBehaviorType;
+  }
+
+  public void setFolderBehaviorType(FolderBehaviorTypeEnum folderBehaviorType) {
+    this.folderBehaviorType = folderBehaviorType;
+  }
+
+  public AppEntity externalHomepageUrl(String externalHomepageUrl) {
+    this.externalHomepageUrl = externalHomepageUrl;
+    return this;
+  }
+
+   /**
+   * Link to external homepage
+   * @return externalHomepageUrl
+  **/
+  @Schema(description = "Link to external homepage")
+  public String getExternalHomepageUrl() {
+    return externalHomepageUrl;
+  }
+
+  public void setExternalHomepageUrl(String externalHomepageUrl) {
+    this.externalHomepageUrl = externalHomepageUrl;
+  }
+
+  public AppEntity marketingYoutubeUrl(String marketingYoutubeUrl) {
+    this.marketingYoutubeUrl = marketingYoutubeUrl;
+    return this;
+  }
+
+   /**
+   * Marketing video page
+   * @return marketingYoutubeUrl
+  **/
+  @Schema(description = "Marketing video page")
+  public String getMarketingYoutubeUrl() {
+    return marketingYoutubeUrl;
+  }
+
+  public void setMarketingYoutubeUrl(String marketingYoutubeUrl) {
+    this.marketingYoutubeUrl = marketingYoutubeUrl;
+  }
+
   public AppEntity tutorialYoutubeUrl(String tutorialYoutubeUrl) {
     this.tutorialYoutubeUrl = tutorialYoutubeUrl;
     return this;
@@ -527,6 +491,42 @@ public class AppEntity {
     this.tutorialYoutubeUrl = tutorialYoutubeUrl;
   }
 
+  public AppEntity appType(AppTypeEnum appType) {
+    this.appType = appType;
+    return this;
+  }
+
+   /**
+   * The type of the App
+   * @return appType
+  **/
+  @Schema(description = "The type of the App")
+  public AppTypeEnum getAppType() {
+    return appType;
+  }
+
+  public void setAppType(AppTypeEnum appType) {
+    this.appType = appType;
+  }
+
+  public AppEntity featured(Boolean featured) {
+    this.featured = featured;
+    return this;
+  }
+
+   /**
+   * Is featured on the App listing?
+   * @return featured
+  **/
+  @Schema(example = "true", description = "Is featured on the App listing?")
+  public Boolean isFeatured() {
+    return featured;
+  }
+
+  public void setFeatured(Boolean featured) {
+    this.featured = featured;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -537,27 +537,27 @@ public class AppEntity {
       return false;
     }
     AppEntity appEntity = (AppEntity) o;
-    return Objects.equals(this.appType, appEntity.appType) &&
-        Objects.equals(this.documentationLinks, appEntity.documentationLinks) &&
+    return Objects.equals(this.name, appEntity.name) &&
         Objects.equals(this.extendedDescription, appEntity.extendedDescription) &&
-        Objects.equals(this.externalHomepageUrl, appEntity.externalHomepageUrl) &&
-        Objects.equals(this.featured, appEntity.featured) &&
-        Objects.equals(this.folderBehaviorType, appEntity.folderBehaviorType) &&
-        Objects.equals(this.iconUrl, appEntity.iconUrl) &&
-        Objects.equals(this.logoThumbnailUrl, appEntity.logoThumbnailUrl) &&
-        Objects.equals(this.logoUrl, appEntity.logoUrl) &&
-        Objects.equals(this.marketingYoutubeUrl, appEntity.marketingYoutubeUrl) &&
-        Objects.equals(this.name, appEntity.name) &&
-        Objects.equals(this.remoteServerType, appEntity.remoteServerType) &&
-        Objects.equals(this.screenshotListUrls, appEntity.screenshotListUrls) &&
         Objects.equals(this.shortDescription, appEntity.shortDescription) &&
+        Objects.equals(this.documentationLinks, appEntity.documentationLinks) &&
+        Objects.equals(this.iconUrl, appEntity.iconUrl) &&
+        Objects.equals(this.logoUrl, appEntity.logoUrl) &&
+        Objects.equals(this.screenshotListUrls, appEntity.screenshotListUrls) &&
+        Objects.equals(this.logoThumbnailUrl, appEntity.logoThumbnailUrl) &&
         Objects.equals(this.ssoStrategyType, appEntity.ssoStrategyType) &&
-        Objects.equals(this.tutorialYoutubeUrl, appEntity.tutorialYoutubeUrl);
+        Objects.equals(this.remoteServerType, appEntity.remoteServerType) &&
+        Objects.equals(this.folderBehaviorType, appEntity.folderBehaviorType) &&
+        Objects.equals(this.externalHomepageUrl, appEntity.externalHomepageUrl) &&
+        Objects.equals(this.marketingYoutubeUrl, appEntity.marketingYoutubeUrl) &&
+        Objects.equals(this.tutorialYoutubeUrl, appEntity.tutorialYoutubeUrl) &&
+        Objects.equals(this.appType, appEntity.appType) &&
+        Objects.equals(this.featured, appEntity.featured);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(appType, documentationLinks, extendedDescription, externalHomepageUrl, featured, folderBehaviorType, iconUrl, logoThumbnailUrl, logoUrl, marketingYoutubeUrl, name, remoteServerType, screenshotListUrls, shortDescription, ssoStrategyType, tutorialYoutubeUrl);
+    return Objects.hash(name, extendedDescription, shortDescription, documentationLinks, iconUrl, logoUrl, screenshotListUrls, logoThumbnailUrl, ssoStrategyType, remoteServerType, folderBehaviorType, externalHomepageUrl, marketingYoutubeUrl, tutorialYoutubeUrl, appType, featured);
   }
 
 
@@ -566,22 +566,22 @@ public class AppEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class AppEntity {\n");
     
-    sb.append("    appType: ").append(toIndentedString(appType)).append("\n");
-    sb.append("    documentationLinks: ").append(toIndentedString(documentationLinks)).append("\n");
-    sb.append("    extendedDescription: ").append(toIndentedString(extendedDescription)).append("\n");
-    sb.append("    externalHomepageUrl: ").append(toIndentedString(externalHomepageUrl)).append("\n");
-    sb.append("    featured: ").append(toIndentedString(featured)).append("\n");
-    sb.append("    folderBehaviorType: ").append(toIndentedString(folderBehaviorType)).append("\n");
-    sb.append("    iconUrl: ").append(toIndentedString(iconUrl)).append("\n");
-    sb.append("    logoThumbnailUrl: ").append(toIndentedString(logoThumbnailUrl)).append("\n");
-    sb.append("    logoUrl: ").append(toIndentedString(logoUrl)).append("\n");
-    sb.append("    marketingYoutubeUrl: ").append(toIndentedString(marketingYoutubeUrl)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    remoteServerType: ").append(toIndentedString(remoteServerType)).append("\n");
-    sb.append("    screenshotListUrls: ").append(toIndentedString(screenshotListUrls)).append("\n");
+    sb.append("    extendedDescription: ").append(toIndentedString(extendedDescription)).append("\n");
     sb.append("    shortDescription: ").append(toIndentedString(shortDescription)).append("\n");
+    sb.append("    documentationLinks: ").append(toIndentedString(documentationLinks)).append("\n");
+    sb.append("    iconUrl: ").append(toIndentedString(iconUrl)).append("\n");
+    sb.append("    logoUrl: ").append(toIndentedString(logoUrl)).append("\n");
+    sb.append("    screenshotListUrls: ").append(toIndentedString(screenshotListUrls)).append("\n");
+    sb.append("    logoThumbnailUrl: ").append(toIndentedString(logoThumbnailUrl)).append("\n");
     sb.append("    ssoStrategyType: ").append(toIndentedString(ssoStrategyType)).append("\n");
+    sb.append("    remoteServerType: ").append(toIndentedString(remoteServerType)).append("\n");
+    sb.append("    folderBehaviorType: ").append(toIndentedString(folderBehaviorType)).append("\n");
+    sb.append("    externalHomepageUrl: ").append(toIndentedString(externalHomepageUrl)).append("\n");
+    sb.append("    marketingYoutubeUrl: ").append(toIndentedString(marketingYoutubeUrl)).append("\n");
     sb.append("    tutorialYoutubeUrl: ").append(toIndentedString(tutorialYoutubeUrl)).append("\n");
+    sb.append("    appType: ").append(toIndentedString(appType)).append("\n");
+    sb.append("    featured: ").append(toIndentedString(featured)).append("\n");
     sb.append("}");
     return sb.toString();
   }

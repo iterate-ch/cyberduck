@@ -22,8 +22,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * List Projects
  */
 @Schema(description = "List Projects")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class ProjectEntity {
+  @JsonProperty("id")
+  private Integer id = null;
+
   /**
    * Global access settings
    */
@@ -59,8 +62,23 @@ public class ProjectEntity {
   }  @JsonProperty("global_access")
   private GlobalAccessEnum globalAccess = null;
 
-  @JsonProperty("id")
-  private Integer id = null;
+  public ProjectEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Project ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "Project ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
 
   public ProjectEntity globalAccess(GlobalAccessEnum globalAccess) {
     this.globalAccess = globalAccess;
@@ -80,24 +98,6 @@ public class ProjectEntity {
     this.globalAccess = globalAccess;
   }
 
-  public ProjectEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Project ID
-   * @return id
-  **/
-  @Schema(example = "1", description = "Project ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -108,13 +108,13 @@ public class ProjectEntity {
       return false;
     }
     ProjectEntity projectEntity = (ProjectEntity) o;
-    return Objects.equals(this.globalAccess, projectEntity.globalAccess) &&
-        Objects.equals(this.id, projectEntity.id);
+    return Objects.equals(this.id, projectEntity.id) &&
+        Objects.equals(this.globalAccess, projectEntity.globalAccess);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(globalAccess, id);
+    return Objects.hash(id, globalAccess);
   }
 
 
@@ -123,8 +123,8 @@ public class ProjectEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class ProjectEntity {\n");
     
-    sb.append("    globalAccess: ").append(toIndentedString(globalAccess)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    globalAccess: ").append(toIndentedString(globalAccess)).append("\n");
     sb.append("}");
     return sb.toString();
   }

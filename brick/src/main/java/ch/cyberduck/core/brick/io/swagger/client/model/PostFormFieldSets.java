@@ -25,13 +25,13 @@ import java.util.List;
  * Create Form Field Set
  */
 @Schema(description = "Create Form Field Set")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class PostFormFieldSets {
-  @JsonProperty("form_fields")
-  private List<PatchFormFieldSetsFormFields> formFields = null;
+  @JsonProperty("user_id")
+  private Integer userId = null;
 
-  @JsonProperty("skip_company")
-  private Boolean skipCompany = null;
+  @JsonProperty("title")
+  private String title = null;
 
   @JsonProperty("skip_email")
   private Boolean skipEmail = null;
@@ -39,54 +39,46 @@ public class PostFormFieldSets {
   @JsonProperty("skip_name")
   private Boolean skipName = null;
 
-  @JsonProperty("title")
-  private String title = null;
+  @JsonProperty("skip_company")
+  private Boolean skipCompany = null;
 
-  @JsonProperty("user_id")
-  private Integer userId = null;
+  @JsonProperty("form_fields")
+  private List<PatchFormFieldSetsFormFields> formFields = null;
 
-  public PostFormFieldSets formFields(List<PatchFormFieldSetsFormFields> formFields) {
-    this.formFields = formFields;
-    return this;
-  }
-
-  public PostFormFieldSets addFormFieldsItem(PatchFormFieldSetsFormFields formFieldsItem) {
-    if (this.formFields == null) {
-      this.formFields = new ArrayList<>();
-    }
-    this.formFields.add(formFieldsItem);
+  public PostFormFieldSets userId(Integer userId) {
+    this.userId = userId;
     return this;
   }
 
    /**
-   * Get formFields
-   * @return formFields
+   * User ID.  Provide a value of &#x60;0&#x60; to operate the current session&#x27;s user.
+   * @return userId
   **/
-  @Schema(description = "")
-  public List<PatchFormFieldSetsFormFields> getFormFields() {
-    return formFields;
+  @Schema(description = "User ID.  Provide a value of `0` to operate the current session's user.")
+  public Integer getUserId() {
+    return userId;
   }
 
-  public void setFormFields(List<PatchFormFieldSetsFormFields> formFields) {
-    this.formFields = formFields;
+  public void setUserId(Integer userId) {
+    this.userId = userId;
   }
 
-  public PostFormFieldSets skipCompany(Boolean skipCompany) {
-    this.skipCompany = skipCompany;
+  public PostFormFieldSets title(String title) {
+    this.title = title;
     return this;
   }
 
    /**
-   * Skip validating company
-   * @return skipCompany
+   * Title to be displayed
+   * @return title
   **/
-  @Schema(description = "Skip validating company")
-  public Boolean isSkipCompany() {
-    return skipCompany;
+  @Schema(description = "Title to be displayed")
+  public String getTitle() {
+    return title;
   }
 
-  public void setSkipCompany(Boolean skipCompany) {
-    this.skipCompany = skipCompany;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public PostFormFieldSets skipEmail(Boolean skipEmail) {
@@ -125,40 +117,48 @@ public class PostFormFieldSets {
     this.skipName = skipName;
   }
 
-  public PostFormFieldSets title(String title) {
-    this.title = title;
+  public PostFormFieldSets skipCompany(Boolean skipCompany) {
+    this.skipCompany = skipCompany;
     return this;
   }
 
    /**
-   * Title to be displayed
-   * @return title
+   * Skip validating company
+   * @return skipCompany
   **/
-  @Schema(description = "Title to be displayed")
-  public String getTitle() {
-    return title;
+  @Schema(description = "Skip validating company")
+  public Boolean isSkipCompany() {
+    return skipCompany;
   }
 
-  public void setTitle(String title) {
-    this.title = title;
+  public void setSkipCompany(Boolean skipCompany) {
+    this.skipCompany = skipCompany;
   }
 
-  public PostFormFieldSets userId(Integer userId) {
-    this.userId = userId;
+  public PostFormFieldSets formFields(List<PatchFormFieldSetsFormFields> formFields) {
+    this.formFields = formFields;
+    return this;
+  }
+
+  public PostFormFieldSets addFormFieldsItem(PatchFormFieldSetsFormFields formFieldsItem) {
+    if (this.formFields == null) {
+      this.formFields = new ArrayList<>();
+    }
+    this.formFields.add(formFieldsItem);
     return this;
   }
 
    /**
-   * User ID.  Provide a value of &#x60;0&#x60; to operate the current session&#x27;s user.
-   * @return userId
+   * Get formFields
+   * @return formFields
   **/
-  @Schema(description = "User ID.  Provide a value of `0` to operate the current session's user.")
-  public Integer getUserId() {
-    return userId;
+  @Schema(description = "")
+  public List<PatchFormFieldSetsFormFields> getFormFields() {
+    return formFields;
   }
 
-  public void setUserId(Integer userId) {
-    this.userId = userId;
+  public void setFormFields(List<PatchFormFieldSetsFormFields> formFields) {
+    this.formFields = formFields;
   }
 
 
@@ -171,17 +171,17 @@ public class PostFormFieldSets {
       return false;
     }
     PostFormFieldSets postFormFieldSets = (PostFormFieldSets) o;
-    return Objects.equals(this.formFields, postFormFieldSets.formFields) &&
-        Objects.equals(this.skipCompany, postFormFieldSets.skipCompany) &&
+    return Objects.equals(this.userId, postFormFieldSets.userId) &&
+        Objects.equals(this.title, postFormFieldSets.title) &&
         Objects.equals(this.skipEmail, postFormFieldSets.skipEmail) &&
         Objects.equals(this.skipName, postFormFieldSets.skipName) &&
-        Objects.equals(this.title, postFormFieldSets.title) &&
-        Objects.equals(this.userId, postFormFieldSets.userId);
+        Objects.equals(this.skipCompany, postFormFieldSets.skipCompany) &&
+        Objects.equals(this.formFields, postFormFieldSets.formFields);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(formFields, skipCompany, skipEmail, skipName, title, userId);
+    return Objects.hash(userId, title, skipEmail, skipName, skipCompany, formFields);
   }
 
 
@@ -190,12 +190,12 @@ public class PostFormFieldSets {
     StringBuilder sb = new StringBuilder();
     sb.append("class PostFormFieldSets {\n");
     
-    sb.append("    formFields: ").append(toIndentedString(formFields)).append("\n");
-    sb.append("    skipCompany: ").append(toIndentedString(skipCompany)).append("\n");
+    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+    sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    skipEmail: ").append(toIndentedString(skipEmail)).append("\n");
     sb.append("    skipName: ").append(toIndentedString(skipName)).append("\n");
-    sb.append("    title: ").append(toIndentedString(title)).append("\n");
-    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+    sb.append("    skipCompany: ").append(toIndentedString(skipCompany)).append("\n");
+    sb.append("    formFields: ").append(toIndentedString(formFields)).append("\n");
     sb.append("}");
     return sb.toString();
   }

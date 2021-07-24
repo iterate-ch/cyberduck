@@ -23,37 +23,34 @@ import org.joda.time.DateTime;
  * Show History Export
  */
 @Schema(description = "Show History Export")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class HistoryExportEntity {
-  @JsonProperty("end_at")
-  private DateTime endAt = null;
+  @JsonProperty("id")
+  private Integer id = null;
 
   @JsonProperty("history_version")
   private String historyVersion = null;
 
-  @JsonProperty("id")
-  private Integer id = null;
+  @JsonProperty("start_at")
+  private DateTime startAt = null;
+
+  @JsonProperty("end_at")
+  private DateTime endAt = null;
+
+  @JsonProperty("status")
+  private String status = null;
 
   @JsonProperty("query_action")
   private String queryAction = null;
 
-  @JsonProperty("query_destination")
-  private String queryDestination = null;
-
-  @JsonProperty("query_failure_type")
-  private String queryFailureType = null;
-
-  @JsonProperty("query_file_id")
-  private String queryFileId = null;
-
-  @JsonProperty("query_folder")
-  private String queryFolder = null;
-
   @JsonProperty("query_interface")
   private String queryInterface = null;
 
-  @JsonProperty("query_ip")
-  private String queryIp = null;
+  @JsonProperty("query_user_id")
+  private String queryUserId = null;
+
+  @JsonProperty("query_file_id")
+  private String queryFileId = null;
 
   @JsonProperty("query_parent_id")
   private String queryParentId = null;
@@ -61,8 +58,23 @@ public class HistoryExportEntity {
   @JsonProperty("query_path")
   private String queryPath = null;
 
+  @JsonProperty("query_folder")
+  private String queryFolder = null;
+
   @JsonProperty("query_src")
   private String querySrc = null;
+
+  @JsonProperty("query_destination")
+  private String queryDestination = null;
+
+  @JsonProperty("query_ip")
+  private String queryIp = null;
+
+  @JsonProperty("query_username")
+  private String queryUsername = null;
+
+  @JsonProperty("query_failure_type")
+  private String queryFailureType = null;
 
   @JsonProperty("query_target_id")
   private String queryTargetId = null;
@@ -73,49 +85,37 @@ public class HistoryExportEntity {
   @JsonProperty("query_target_permission")
   private String queryTargetPermission = null;
 
-  @JsonProperty("query_target_permission_set")
-  private String queryTargetPermissionSet = null;
-
-  @JsonProperty("query_target_platform")
-  private String queryTargetPlatform = null;
-
   @JsonProperty("query_target_user_id")
   private String queryTargetUserId = null;
 
   @JsonProperty("query_target_username")
   private String queryTargetUsername = null;
 
-  @JsonProperty("query_user_id")
-  private String queryUserId = null;
+  @JsonProperty("query_target_platform")
+  private String queryTargetPlatform = null;
 
-  @JsonProperty("query_username")
-  private String queryUsername = null;
+  @JsonProperty("query_target_permission_set")
+  private String queryTargetPermissionSet = null;
 
   @JsonProperty("results_url")
   private String resultsUrl = null;
 
-  @JsonProperty("start_at")
-  private DateTime startAt = null;
-
-  @JsonProperty("status")
-  private String status = null;
-
-  public HistoryExportEntity endAt(DateTime endAt) {
-    this.endAt = endAt;
+  public HistoryExportEntity id(Integer id) {
+    this.id = id;
     return this;
   }
 
    /**
-   * End date/time of export range.
-   * @return endAt
+   * History Export ID
+   * @return id
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "End date/time of export range.")
-  public DateTime getEndAt() {
-    return endAt;
+  @Schema(example = "1", description = "History Export ID")
+  public Integer getId() {
+    return id;
   }
 
-  public void setEndAt(DateTime endAt) {
-    this.endAt = endAt;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public HistoryExportEntity historyVersion(String historyVersion) {
@@ -136,22 +136,58 @@ public class HistoryExportEntity {
     this.historyVersion = historyVersion;
   }
 
-  public HistoryExportEntity id(Integer id) {
-    this.id = id;
+  public HistoryExportEntity startAt(DateTime startAt) {
+    this.startAt = startAt;
     return this;
   }
 
    /**
-   * History Export ID
-   * @return id
+   * Start date/time of export range.
+   * @return startAt
   **/
-  @Schema(example = "1", description = "History Export ID")
-  public Integer getId() {
-    return id;
+  @Schema(description = "Start date/time of export range.")
+  public DateTime getStartAt() {
+    return startAt;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
+  public void setStartAt(DateTime startAt) {
+    this.startAt = startAt;
+  }
+
+  public HistoryExportEntity endAt(DateTime endAt) {
+    this.endAt = endAt;
+    return this;
+  }
+
+   /**
+   * End date/time of export range.
+   * @return endAt
+  **/
+  @Schema(description = "End date/time of export range.")
+  public DateTime getEndAt() {
+    return endAt;
+  }
+
+  public void setEndAt(DateTime endAt) {
+    this.endAt = endAt;
+  }
+
+  public HistoryExportEntity status(String status) {
+    this.status = status;
+    return this;
+  }
+
+   /**
+   * Status of export.  Will be: &#x60;building&#x60;, &#x60;ready&#x60;, or &#x60;failed&#x60;
+   * @return status
+  **/
+  @Schema(example = "ready", description = "Status of export.  Will be: `building`, `ready`, or `failed`")
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
   }
 
   public HistoryExportEntity queryAction(String queryAction) {
@@ -172,78 +208,6 @@ public class HistoryExportEntity {
     this.queryAction = queryAction;
   }
 
-  public HistoryExportEntity queryDestination(String queryDestination) {
-    this.queryDestination = queryDestination;
-    return this;
-  }
-
-   /**
-   * Return results that are file moves with this path as destination.
-   * @return queryDestination
-  **/
-  @Schema(example = "DestFolder", description = "Return results that are file moves with this path as destination.")
-  public String getQueryDestination() {
-    return queryDestination;
-  }
-
-  public void setQueryDestination(String queryDestination) {
-    this.queryDestination = queryDestination;
-  }
-
-  public HistoryExportEntity queryFailureType(String queryFailureType) {
-    this.queryFailureType = queryFailureType;
-    return this;
-  }
-
-   /**
-   * If searching for Histories about login failures, this parameter restricts results to failures of this specific type.  Valid values: &#x60;expired_trial&#x60;, &#x60;account_overdue&#x60;, &#x60;locked_out&#x60;, &#x60;ip_mismatch&#x60;, &#x60;password_mismatch&#x60;, &#x60;site_mismatch&#x60;, &#x60;username_not_found&#x60;, &#x60;none&#x60;, &#x60;no_ftp_permission&#x60;, &#x60;no_web_permission&#x60;, &#x60;no_directory&#x60;, &#x60;errno_enoent&#x60;, &#x60;no_sftp_permission&#x60;, &#x60;no_dav_permission&#x60;, &#x60;no_restapi_permission&#x60;, &#x60;key_mismatch&#x60;, &#x60;region_mismatch&#x60;, &#x60;expired_access&#x60;, &#x60;desktop_ip_mismatch&#x60;, &#x60;desktop_api_key_not_used_quickly_enough&#x60;, &#x60;disabled&#x60;, &#x60;country_mismatch&#x60;
-   * @return queryFailureType
-  **/
-  @Schema(example = "bad_password", description = "If searching for Histories about login failures, this parameter restricts results to failures of this specific type.  Valid values: `expired_trial`, `account_overdue`, `locked_out`, `ip_mismatch`, `password_mismatch`, `site_mismatch`, `username_not_found`, `none`, `no_ftp_permission`, `no_web_permission`, `no_directory`, `errno_enoent`, `no_sftp_permission`, `no_dav_permission`, `no_restapi_permission`, `key_mismatch`, `region_mismatch`, `expired_access`, `desktop_ip_mismatch`, `desktop_api_key_not_used_quickly_enough`, `disabled`, `country_mismatch`")
-  public String getQueryFailureType() {
-    return queryFailureType;
-  }
-
-  public void setQueryFailureType(String queryFailureType) {
-    this.queryFailureType = queryFailureType;
-  }
-
-  public HistoryExportEntity queryFileId(String queryFileId) {
-    this.queryFileId = queryFileId;
-    return this;
-  }
-
-   /**
-   * Return results that are file actions related to the file indicated by this File ID
-   * @return queryFileId
-  **/
-  @Schema(example = "1", description = "Return results that are file actions related to the file indicated by this File ID")
-  public String getQueryFileId() {
-    return queryFileId;
-  }
-
-  public void setQueryFileId(String queryFileId) {
-    this.queryFileId = queryFileId;
-  }
-
-  public HistoryExportEntity queryFolder(String queryFolder) {
-    this.queryFolder = queryFolder;
-    return this;
-  }
-
-   /**
-   * Return results that are file actions related to files or folders inside this folder path.
-   * @return queryFolder
-  **/
-  @Schema(example = "Folder", description = "Return results that are file actions related to files or folders inside this folder path.")
-  public String getQueryFolder() {
-    return queryFolder;
-  }
-
-  public void setQueryFolder(String queryFolder) {
-    this.queryFolder = queryFolder;
-  }
-
   public HistoryExportEntity queryInterface(String queryInterface) {
     this.queryInterface = queryInterface;
     return this;
@@ -262,22 +226,40 @@ public class HistoryExportEntity {
     this.queryInterface = queryInterface;
   }
 
-  public HistoryExportEntity queryIp(String queryIp) {
-    this.queryIp = queryIp;
+  public HistoryExportEntity queryUserId(String queryUserId) {
+    this.queryUserId = queryUserId;
     return this;
   }
 
    /**
-   * Filter results by this IP address.
-   * @return queryIp
+   * Return results that are actions performed by the user indiciated by this User ID
+   * @return queryUserId
   **/
-  @Schema(example = "127.0.0.1", description = "Filter results by this IP address.")
-  public String getQueryIp() {
-    return queryIp;
+  @Schema(example = "1", description = "Return results that are actions performed by the user indiciated by this User ID")
+  public String getQueryUserId() {
+    return queryUserId;
   }
 
-  public void setQueryIp(String queryIp) {
-    this.queryIp = queryIp;
+  public void setQueryUserId(String queryUserId) {
+    this.queryUserId = queryUserId;
+  }
+
+  public HistoryExportEntity queryFileId(String queryFileId) {
+    this.queryFileId = queryFileId;
+    return this;
+  }
+
+   /**
+   * Return results that are file actions related to the file indicated by this File ID
+   * @return queryFileId
+  **/
+  @Schema(example = "1", description = "Return results that are file actions related to the file indicated by this File ID")
+  public String getQueryFileId() {
+    return queryFileId;
+  }
+
+  public void setQueryFileId(String queryFileId) {
+    this.queryFileId = queryFileId;
   }
 
   public HistoryExportEntity queryParentId(String queryParentId) {
@@ -316,6 +298,24 @@ public class HistoryExportEntity {
     this.queryPath = queryPath;
   }
 
+  public HistoryExportEntity queryFolder(String queryFolder) {
+    this.queryFolder = queryFolder;
+    return this;
+  }
+
+   /**
+   * Return results that are file actions related to files or folders inside this folder path.
+   * @return queryFolder
+  **/
+  @Schema(example = "Folder", description = "Return results that are file actions related to files or folders inside this folder path.")
+  public String getQueryFolder() {
+    return queryFolder;
+  }
+
+  public void setQueryFolder(String queryFolder) {
+    this.queryFolder = queryFolder;
+  }
+
   public HistoryExportEntity querySrc(String querySrc) {
     this.querySrc = querySrc;
     return this;
@@ -332,6 +332,78 @@ public class HistoryExportEntity {
 
   public void setQuerySrc(String querySrc) {
     this.querySrc = querySrc;
+  }
+
+  public HistoryExportEntity queryDestination(String queryDestination) {
+    this.queryDestination = queryDestination;
+    return this;
+  }
+
+   /**
+   * Return results that are file moves with this path as destination.
+   * @return queryDestination
+  **/
+  @Schema(example = "DestFolder", description = "Return results that are file moves with this path as destination.")
+  public String getQueryDestination() {
+    return queryDestination;
+  }
+
+  public void setQueryDestination(String queryDestination) {
+    this.queryDestination = queryDestination;
+  }
+
+  public HistoryExportEntity queryIp(String queryIp) {
+    this.queryIp = queryIp;
+    return this;
+  }
+
+   /**
+   * Filter results by this IP address.
+   * @return queryIp
+  **/
+  @Schema(example = "127.0.0.1", description = "Filter results by this IP address.")
+  public String getQueryIp() {
+    return queryIp;
+  }
+
+  public void setQueryIp(String queryIp) {
+    this.queryIp = queryIp;
+  }
+
+  public HistoryExportEntity queryUsername(String queryUsername) {
+    this.queryUsername = queryUsername;
+    return this;
+  }
+
+   /**
+   * Filter results by this username.
+   * @return queryUsername
+  **/
+  @Schema(example = "jerry", description = "Filter results by this username.")
+  public String getQueryUsername() {
+    return queryUsername;
+  }
+
+  public void setQueryUsername(String queryUsername) {
+    this.queryUsername = queryUsername;
+  }
+
+  public HistoryExportEntity queryFailureType(String queryFailureType) {
+    this.queryFailureType = queryFailureType;
+    return this;
+  }
+
+   /**
+   * If searching for Histories about login failures, this parameter restricts results to failures of this specific type.  Valid values: &#x60;expired_trial&#x60;, &#x60;account_overdue&#x60;, &#x60;locked_out&#x60;, &#x60;ip_mismatch&#x60;, &#x60;password_mismatch&#x60;, &#x60;site_mismatch&#x60;, &#x60;username_not_found&#x60;, &#x60;none&#x60;, &#x60;no_ftp_permission&#x60;, &#x60;no_web_permission&#x60;, &#x60;no_directory&#x60;, &#x60;errno_enoent&#x60;, &#x60;no_sftp_permission&#x60;, &#x60;no_dav_permission&#x60;, &#x60;no_restapi_permission&#x60;, &#x60;key_mismatch&#x60;, &#x60;region_mismatch&#x60;, &#x60;expired_access&#x60;, &#x60;desktop_ip_mismatch&#x60;, &#x60;desktop_api_key_not_used_quickly_enough&#x60;, &#x60;disabled&#x60;, &#x60;country_mismatch&#x60;
+   * @return queryFailureType
+  **/
+  @Schema(example = "bad_password", description = "If searching for Histories about login failures, this parameter restricts results to failures of this specific type.  Valid values: `expired_trial`, `account_overdue`, `locked_out`, `ip_mismatch`, `password_mismatch`, `site_mismatch`, `username_not_found`, `none`, `no_ftp_permission`, `no_web_permission`, `no_directory`, `errno_enoent`, `no_sftp_permission`, `no_dav_permission`, `no_restapi_permission`, `key_mismatch`, `region_mismatch`, `expired_access`, `desktop_ip_mismatch`, `desktop_api_key_not_used_quickly_enough`, `disabled`, `country_mismatch`")
+  public String getQueryFailureType() {
+    return queryFailureType;
+  }
+
+  public void setQueryFailureType(String queryFailureType) {
+    this.queryFailureType = queryFailureType;
   }
 
   public HistoryExportEntity queryTargetId(String queryTargetId) {
@@ -388,42 +460,6 @@ public class HistoryExportEntity {
     this.queryTargetPermission = queryTargetPermission;
   }
 
-  public HistoryExportEntity queryTargetPermissionSet(String queryTargetPermissionSet) {
-    this.queryTargetPermissionSet = queryTargetPermissionSet;
-    return this;
-  }
-
-   /**
-   * If searching for Histories about API keys, this parameter restricts results to API keys with this permission set.
-   * @return queryTargetPermissionSet
-  **/
-  @Schema(example = "desktop_app", description = "If searching for Histories about API keys, this parameter restricts results to API keys with this permission set.")
-  public String getQueryTargetPermissionSet() {
-    return queryTargetPermissionSet;
-  }
-
-  public void setQueryTargetPermissionSet(String queryTargetPermissionSet) {
-    this.queryTargetPermissionSet = queryTargetPermissionSet;
-  }
-
-  public HistoryExportEntity queryTargetPlatform(String queryTargetPlatform) {
-    this.queryTargetPlatform = queryTargetPlatform;
-    return this;
-  }
-
-   /**
-   * If searching for Histories about API keys, this parameter restricts results to API keys associated with this platform.
-   * @return queryTargetPlatform
-  **/
-  @Schema(example = "windows", description = "If searching for Histories about API keys, this parameter restricts results to API keys associated with this platform.")
-  public String getQueryTargetPlatform() {
-    return queryTargetPlatform;
-  }
-
-  public void setQueryTargetPlatform(String queryTargetPlatform) {
-    this.queryTargetPlatform = queryTargetPlatform;
-  }
-
   public HistoryExportEntity queryTargetUserId(String queryTargetUserId) {
     this.queryTargetUserId = queryTargetUserId;
     return this;
@@ -460,40 +496,40 @@ public class HistoryExportEntity {
     this.queryTargetUsername = queryTargetUsername;
   }
 
-  public HistoryExportEntity queryUserId(String queryUserId) {
-    this.queryUserId = queryUserId;
+  public HistoryExportEntity queryTargetPlatform(String queryTargetPlatform) {
+    this.queryTargetPlatform = queryTargetPlatform;
     return this;
   }
 
    /**
-   * Return results that are actions performed by the user indiciated by this User ID
-   * @return queryUserId
+   * If searching for Histories about API keys, this parameter restricts results to API keys associated with this platform.
+   * @return queryTargetPlatform
   **/
-  @Schema(example = "1", description = "Return results that are actions performed by the user indiciated by this User ID")
-  public String getQueryUserId() {
-    return queryUserId;
+  @Schema(example = "windows", description = "If searching for Histories about API keys, this parameter restricts results to API keys associated with this platform.")
+  public String getQueryTargetPlatform() {
+    return queryTargetPlatform;
   }
 
-  public void setQueryUserId(String queryUserId) {
-    this.queryUserId = queryUserId;
+  public void setQueryTargetPlatform(String queryTargetPlatform) {
+    this.queryTargetPlatform = queryTargetPlatform;
   }
 
-  public HistoryExportEntity queryUsername(String queryUsername) {
-    this.queryUsername = queryUsername;
+  public HistoryExportEntity queryTargetPermissionSet(String queryTargetPermissionSet) {
+    this.queryTargetPermissionSet = queryTargetPermissionSet;
     return this;
   }
 
    /**
-   * Filter results by this username.
-   * @return queryUsername
+   * If searching for Histories about API keys, this parameter restricts results to API keys with this permission set.
+   * @return queryTargetPermissionSet
   **/
-  @Schema(example = "jerry", description = "Filter results by this username.")
-  public String getQueryUsername() {
-    return queryUsername;
+  @Schema(example = "desktop_app", description = "If searching for Histories about API keys, this parameter restricts results to API keys with this permission set.")
+  public String getQueryTargetPermissionSet() {
+    return queryTargetPermissionSet;
   }
 
-  public void setQueryUsername(String queryUsername) {
-    this.queryUsername = queryUsername;
+  public void setQueryTargetPermissionSet(String queryTargetPermissionSet) {
+    this.queryTargetPermissionSet = queryTargetPermissionSet;
   }
 
   public HistoryExportEntity resultsUrl(String resultsUrl) {
@@ -514,42 +550,6 @@ public class HistoryExportEntity {
     this.resultsUrl = resultsUrl;
   }
 
-  public HistoryExportEntity startAt(DateTime startAt) {
-    this.startAt = startAt;
-    return this;
-  }
-
-   /**
-   * Start date/time of export range.
-   * @return startAt
-  **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Start date/time of export range.")
-  public DateTime getStartAt() {
-    return startAt;
-  }
-
-  public void setStartAt(DateTime startAt) {
-    this.startAt = startAt;
-  }
-
-  public HistoryExportEntity status(String status) {
-    this.status = status;
-    return this;
-  }
-
-   /**
-   * Status of export.  Will be: &#x60;building&#x60;, &#x60;ready&#x60;, or &#x60;failed&#x60;
-   * @return status
-  **/
-  @Schema(example = "ready", description = "Status of export.  Will be: `building`, `ready`, or `failed`")
-  public String getStatus() {
-    return status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -560,36 +560,36 @@ public class HistoryExportEntity {
       return false;
     }
     HistoryExportEntity historyExportEntity = (HistoryExportEntity) o;
-    return Objects.equals(this.endAt, historyExportEntity.endAt) &&
+    return Objects.equals(this.id, historyExportEntity.id) &&
         Objects.equals(this.historyVersion, historyExportEntity.historyVersion) &&
-        Objects.equals(this.id, historyExportEntity.id) &&
+        Objects.equals(this.startAt, historyExportEntity.startAt) &&
+        Objects.equals(this.endAt, historyExportEntity.endAt) &&
+        Objects.equals(this.status, historyExportEntity.status) &&
         Objects.equals(this.queryAction, historyExportEntity.queryAction) &&
-        Objects.equals(this.queryDestination, historyExportEntity.queryDestination) &&
-        Objects.equals(this.queryFailureType, historyExportEntity.queryFailureType) &&
-        Objects.equals(this.queryFileId, historyExportEntity.queryFileId) &&
-        Objects.equals(this.queryFolder, historyExportEntity.queryFolder) &&
         Objects.equals(this.queryInterface, historyExportEntity.queryInterface) &&
-        Objects.equals(this.queryIp, historyExportEntity.queryIp) &&
+        Objects.equals(this.queryUserId, historyExportEntity.queryUserId) &&
+        Objects.equals(this.queryFileId, historyExportEntity.queryFileId) &&
         Objects.equals(this.queryParentId, historyExportEntity.queryParentId) &&
         Objects.equals(this.queryPath, historyExportEntity.queryPath) &&
+        Objects.equals(this.queryFolder, historyExportEntity.queryFolder) &&
         Objects.equals(this.querySrc, historyExportEntity.querySrc) &&
+        Objects.equals(this.queryDestination, historyExportEntity.queryDestination) &&
+        Objects.equals(this.queryIp, historyExportEntity.queryIp) &&
+        Objects.equals(this.queryUsername, historyExportEntity.queryUsername) &&
+        Objects.equals(this.queryFailureType, historyExportEntity.queryFailureType) &&
         Objects.equals(this.queryTargetId, historyExportEntity.queryTargetId) &&
         Objects.equals(this.queryTargetName, historyExportEntity.queryTargetName) &&
         Objects.equals(this.queryTargetPermission, historyExportEntity.queryTargetPermission) &&
-        Objects.equals(this.queryTargetPermissionSet, historyExportEntity.queryTargetPermissionSet) &&
-        Objects.equals(this.queryTargetPlatform, historyExportEntity.queryTargetPlatform) &&
         Objects.equals(this.queryTargetUserId, historyExportEntity.queryTargetUserId) &&
         Objects.equals(this.queryTargetUsername, historyExportEntity.queryTargetUsername) &&
-        Objects.equals(this.queryUserId, historyExportEntity.queryUserId) &&
-        Objects.equals(this.queryUsername, historyExportEntity.queryUsername) &&
-        Objects.equals(this.resultsUrl, historyExportEntity.resultsUrl) &&
-        Objects.equals(this.startAt, historyExportEntity.startAt) &&
-        Objects.equals(this.status, historyExportEntity.status);
+        Objects.equals(this.queryTargetPlatform, historyExportEntity.queryTargetPlatform) &&
+        Objects.equals(this.queryTargetPermissionSet, historyExportEntity.queryTargetPermissionSet) &&
+        Objects.equals(this.resultsUrl, historyExportEntity.resultsUrl);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(endAt, historyVersion, id, queryAction, queryDestination, queryFailureType, queryFileId, queryFolder, queryInterface, queryIp, queryParentId, queryPath, querySrc, queryTargetId, queryTargetName, queryTargetPermission, queryTargetPermissionSet, queryTargetPlatform, queryTargetUserId, queryTargetUsername, queryUserId, queryUsername, resultsUrl, startAt, status);
+    return Objects.hash(id, historyVersion, startAt, endAt, status, queryAction, queryInterface, queryUserId, queryFileId, queryParentId, queryPath, queryFolder, querySrc, queryDestination, queryIp, queryUsername, queryFailureType, queryTargetId, queryTargetName, queryTargetPermission, queryTargetUserId, queryTargetUsername, queryTargetPlatform, queryTargetPermissionSet, resultsUrl);
   }
 
 
@@ -598,31 +598,31 @@ public class HistoryExportEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class HistoryExportEntity {\n");
     
-    sb.append("    endAt: ").append(toIndentedString(endAt)).append("\n");
-    sb.append("    historyVersion: ").append(toIndentedString(historyVersion)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    historyVersion: ").append(toIndentedString(historyVersion)).append("\n");
+    sb.append("    startAt: ").append(toIndentedString(startAt)).append("\n");
+    sb.append("    endAt: ").append(toIndentedString(endAt)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    queryAction: ").append(toIndentedString(queryAction)).append("\n");
-    sb.append("    queryDestination: ").append(toIndentedString(queryDestination)).append("\n");
-    sb.append("    queryFailureType: ").append(toIndentedString(queryFailureType)).append("\n");
-    sb.append("    queryFileId: ").append(toIndentedString(queryFileId)).append("\n");
-    sb.append("    queryFolder: ").append(toIndentedString(queryFolder)).append("\n");
     sb.append("    queryInterface: ").append(toIndentedString(queryInterface)).append("\n");
-    sb.append("    queryIp: ").append(toIndentedString(queryIp)).append("\n");
+    sb.append("    queryUserId: ").append(toIndentedString(queryUserId)).append("\n");
+    sb.append("    queryFileId: ").append(toIndentedString(queryFileId)).append("\n");
     sb.append("    queryParentId: ").append(toIndentedString(queryParentId)).append("\n");
     sb.append("    queryPath: ").append(toIndentedString(queryPath)).append("\n");
+    sb.append("    queryFolder: ").append(toIndentedString(queryFolder)).append("\n");
     sb.append("    querySrc: ").append(toIndentedString(querySrc)).append("\n");
+    sb.append("    queryDestination: ").append(toIndentedString(queryDestination)).append("\n");
+    sb.append("    queryIp: ").append(toIndentedString(queryIp)).append("\n");
+    sb.append("    queryUsername: ").append(toIndentedString(queryUsername)).append("\n");
+    sb.append("    queryFailureType: ").append(toIndentedString(queryFailureType)).append("\n");
     sb.append("    queryTargetId: ").append(toIndentedString(queryTargetId)).append("\n");
     sb.append("    queryTargetName: ").append(toIndentedString(queryTargetName)).append("\n");
     sb.append("    queryTargetPermission: ").append(toIndentedString(queryTargetPermission)).append("\n");
-    sb.append("    queryTargetPermissionSet: ").append(toIndentedString(queryTargetPermissionSet)).append("\n");
-    sb.append("    queryTargetPlatform: ").append(toIndentedString(queryTargetPlatform)).append("\n");
     sb.append("    queryTargetUserId: ").append(toIndentedString(queryTargetUserId)).append("\n");
     sb.append("    queryTargetUsername: ").append(toIndentedString(queryTargetUsername)).append("\n");
-    sb.append("    queryUserId: ").append(toIndentedString(queryUserId)).append("\n");
-    sb.append("    queryUsername: ").append(toIndentedString(queryUsername)).append("\n");
+    sb.append("    queryTargetPlatform: ").append(toIndentedString(queryTargetPlatform)).append("\n");
+    sb.append("    queryTargetPermissionSet: ").append(toIndentedString(queryTargetPermissionSet)).append("\n");
     sb.append("    resultsUrl: ").append(toIndentedString(resultsUrl)).append("\n");
-    sb.append("    startAt: ").append(toIndentedString(startAt)).append("\n");
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("}");
     return sb.toString();
   }

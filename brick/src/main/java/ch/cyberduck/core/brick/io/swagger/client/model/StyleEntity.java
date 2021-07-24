@@ -23,16 +23,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * Show Style
  */
 @Schema(description = "Show Style")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class StyleEntity {
   @JsonProperty("id")
   private Integer id = null;
 
-  @JsonProperty("logo")
-  private ImageEntity logo = null;
-
   @JsonProperty("path")
   private String path = null;
+
+  @JsonProperty("logo")
+  private ImageEntity logo = null;
 
   @JsonProperty("thumbnail")
   private ImageEntity thumbnail = null;
@@ -55,24 +55,6 @@ public class StyleEntity {
     this.id = id;
   }
 
-  public StyleEntity logo(ImageEntity logo) {
-    this.logo = logo;
-    return this;
-  }
-
-   /**
-   * Get logo
-   * @return logo
-  **/
-  @Schema(description = "")
-  public ImageEntity getLogo() {
-    return logo;
-  }
-
-  public void setLogo(ImageEntity logo) {
-    this.logo = logo;
-  }
-
   public StyleEntity path(String path) {
     this.path = path;
     return this;
@@ -89,6 +71,24 @@ public class StyleEntity {
 
   public void setPath(String path) {
     this.path = path;
+  }
+
+  public StyleEntity logo(ImageEntity logo) {
+    this.logo = logo;
+    return this;
+  }
+
+   /**
+   * Get logo
+   * @return logo
+  **/
+  @Schema(description = "")
+  public ImageEntity getLogo() {
+    return logo;
+  }
+
+  public void setLogo(ImageEntity logo) {
+    this.logo = logo;
   }
 
   public StyleEntity thumbnail(ImageEntity thumbnail) {
@@ -120,14 +120,14 @@ public class StyleEntity {
     }
     StyleEntity styleEntity = (StyleEntity) o;
     return Objects.equals(this.id, styleEntity.id) &&
-        Objects.equals(this.logo, styleEntity.logo) &&
         Objects.equals(this.path, styleEntity.path) &&
+        Objects.equals(this.logo, styleEntity.logo) &&
         Objects.equals(this.thumbnail, styleEntity.thumbnail);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, logo, path, thumbnail);
+    return Objects.hash(id, path, logo, thumbnail);
   }
 
 
@@ -137,8 +137,8 @@ public class StyleEntity {
     sb.append("class StyleEntity {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    logo: ").append(toIndentedString(logo)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
+    sb.append("    logo: ").append(toIndentedString(logo)).append("\n");
     sb.append("    thumbnail: ").append(toIndentedString(thumbnail)).append("\n");
     sb.append("}");
     return sb.toString();

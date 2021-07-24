@@ -23,31 +23,16 @@ import org.joda.time.DateTime;
  * List Bandwidth Snapshots
  */
 @Schema(description = "List Bandwidth Snapshots")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class BandwidthSnapshotEntity {
+  @JsonProperty("id")
+  private Integer id = null;
+
   @JsonProperty("bytes_received")
   private Double bytesReceived = null;
 
   @JsonProperty("bytes_sent")
   private Double bytesSent = null;
-
-  @JsonProperty("created_at")
-  private DateTime createdAt = null;
-
-  @JsonProperty("id")
-  private Integer id = null;
-
-  @JsonProperty("logged_at")
-  private DateTime loggedAt = null;
-
-  @JsonProperty("requests_get")
-  private Double requestsGet = null;
-
-  @JsonProperty("requests_other")
-  private Double requestsOther = null;
-
-  @JsonProperty("requests_put")
-  private Double requestsPut = null;
 
   @JsonProperty("sync_bytes_received")
   private Double syncBytesReceived = null;
@@ -55,8 +40,41 @@ public class BandwidthSnapshotEntity {
   @JsonProperty("sync_bytes_sent")
   private Double syncBytesSent = null;
 
+  @JsonProperty("requests_get")
+  private Double requestsGet = null;
+
+  @JsonProperty("requests_put")
+  private Double requestsPut = null;
+
+  @JsonProperty("requests_other")
+  private Double requestsOther = null;
+
+  @JsonProperty("logged_at")
+  private DateTime loggedAt = null;
+
+  @JsonProperty("created_at")
+  private DateTime createdAt = null;
+
   @JsonProperty("updated_at")
   private DateTime updatedAt = null;
+
+  public BandwidthSnapshotEntity id(Integer id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * Site bandwidth ID
+   * @return id
+  **/
+  @Schema(example = "1", description = "Site bandwidth ID")
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
 
   public BandwidthSnapshotEntity bytesReceived(Double bytesReceived) {
     this.bytesReceived = bytesReceived;
@@ -92,114 +110,6 @@ public class BandwidthSnapshotEntity {
 
   public void setBytesSent(Double bytesSent) {
     this.bytesSent = bytesSent;
-  }
-
-  public BandwidthSnapshotEntity createdAt(DateTime createdAt) {
-    this.createdAt = createdAt;
-    return this;
-  }
-
-   /**
-   * Site bandwidth report created at date/time
-   * @return createdAt
-  **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Site bandwidth report created at date/time")
-  public DateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(DateTime createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public BandwidthSnapshotEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Site bandwidth ID
-   * @return id
-  **/
-  @Schema(example = "1", description = "Site bandwidth ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public BandwidthSnapshotEntity loggedAt(DateTime loggedAt) {
-    this.loggedAt = loggedAt;
-    return this;
-  }
-
-   /**
-   * Time the site bandwidth report was logged
-   * @return loggedAt
-  **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Time the site bandwidth report was logged")
-  public DateTime getLoggedAt() {
-    return loggedAt;
-  }
-
-  public void setLoggedAt(DateTime loggedAt) {
-    this.loggedAt = loggedAt;
-  }
-
-  public BandwidthSnapshotEntity requestsGet(Double requestsGet) {
-    this.requestsGet = requestsGet;
-    return this;
-  }
-
-   /**
-   * Site bandwidth report get requests
-   * @return requestsGet
-  **/
-  @Schema(example = "1", description = "Site bandwidth report get requests")
-  public Double getRequestsGet() {
-    return requestsGet;
-  }
-
-  public void setRequestsGet(Double requestsGet) {
-    this.requestsGet = requestsGet;
-  }
-
-  public BandwidthSnapshotEntity requestsOther(Double requestsOther) {
-    this.requestsOther = requestsOther;
-    return this;
-  }
-
-   /**
-   * Site bandwidth report other requests
-   * @return requestsOther
-  **/
-  @Schema(example = "1", description = "Site bandwidth report other requests")
-  public Double getRequestsOther() {
-    return requestsOther;
-  }
-
-  public void setRequestsOther(Double requestsOther) {
-    this.requestsOther = requestsOther;
-  }
-
-  public BandwidthSnapshotEntity requestsPut(Double requestsPut) {
-    this.requestsPut = requestsPut;
-    return this;
-  }
-
-   /**
-   * Site bandwidth report put requests
-   * @return requestsPut
-  **/
-  @Schema(example = "1", description = "Site bandwidth report put requests")
-  public Double getRequestsPut() {
-    return requestsPut;
-  }
-
-  public void setRequestsPut(Double requestsPut) {
-    this.requestsPut = requestsPut;
   }
 
   public BandwidthSnapshotEntity syncBytesReceived(Double syncBytesReceived) {
@@ -238,6 +148,96 @@ public class BandwidthSnapshotEntity {
     this.syncBytesSent = syncBytesSent;
   }
 
+  public BandwidthSnapshotEntity requestsGet(Double requestsGet) {
+    this.requestsGet = requestsGet;
+    return this;
+  }
+
+   /**
+   * Site bandwidth report get requests
+   * @return requestsGet
+  **/
+  @Schema(example = "1", description = "Site bandwidth report get requests")
+  public Double getRequestsGet() {
+    return requestsGet;
+  }
+
+  public void setRequestsGet(Double requestsGet) {
+    this.requestsGet = requestsGet;
+  }
+
+  public BandwidthSnapshotEntity requestsPut(Double requestsPut) {
+    this.requestsPut = requestsPut;
+    return this;
+  }
+
+   /**
+   * Site bandwidth report put requests
+   * @return requestsPut
+  **/
+  @Schema(example = "1", description = "Site bandwidth report put requests")
+  public Double getRequestsPut() {
+    return requestsPut;
+  }
+
+  public void setRequestsPut(Double requestsPut) {
+    this.requestsPut = requestsPut;
+  }
+
+  public BandwidthSnapshotEntity requestsOther(Double requestsOther) {
+    this.requestsOther = requestsOther;
+    return this;
+  }
+
+   /**
+   * Site bandwidth report other requests
+   * @return requestsOther
+  **/
+  @Schema(example = "1", description = "Site bandwidth report other requests")
+  public Double getRequestsOther() {
+    return requestsOther;
+  }
+
+  public void setRequestsOther(Double requestsOther) {
+    this.requestsOther = requestsOther;
+  }
+
+  public BandwidthSnapshotEntity loggedAt(DateTime loggedAt) {
+    this.loggedAt = loggedAt;
+    return this;
+  }
+
+   /**
+   * Time the site bandwidth report was logged
+   * @return loggedAt
+  **/
+  @Schema(description = "Time the site bandwidth report was logged")
+  public DateTime getLoggedAt() {
+    return loggedAt;
+  }
+
+  public void setLoggedAt(DateTime loggedAt) {
+    this.loggedAt = loggedAt;
+  }
+
+  public BandwidthSnapshotEntity createdAt(DateTime createdAt) {
+    this.createdAt = createdAt;
+    return this;
+  }
+
+   /**
+   * Site bandwidth report created at date/time
+   * @return createdAt
+  **/
+  @Schema(description = "Site bandwidth report created at date/time")
+  public DateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(DateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
   public BandwidthSnapshotEntity updatedAt(DateTime updatedAt) {
     this.updatedAt = updatedAt;
     return this;
@@ -247,7 +247,7 @@ public class BandwidthSnapshotEntity {
    * The last time this site bandwidth report was updated
    * @return updatedAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "The last time this site bandwidth report was updated")
+  @Schema(description = "The last time this site bandwidth report was updated")
   public DateTime getUpdatedAt() {
     return updatedAt;
   }
@@ -266,22 +266,22 @@ public class BandwidthSnapshotEntity {
       return false;
     }
     BandwidthSnapshotEntity bandwidthSnapshotEntity = (BandwidthSnapshotEntity) o;
-    return Objects.equals(this.bytesReceived, bandwidthSnapshotEntity.bytesReceived) &&
+    return Objects.equals(this.id, bandwidthSnapshotEntity.id) &&
+        Objects.equals(this.bytesReceived, bandwidthSnapshotEntity.bytesReceived) &&
         Objects.equals(this.bytesSent, bandwidthSnapshotEntity.bytesSent) &&
-        Objects.equals(this.createdAt, bandwidthSnapshotEntity.createdAt) &&
-        Objects.equals(this.id, bandwidthSnapshotEntity.id) &&
-        Objects.equals(this.loggedAt, bandwidthSnapshotEntity.loggedAt) &&
-        Objects.equals(this.requestsGet, bandwidthSnapshotEntity.requestsGet) &&
-        Objects.equals(this.requestsOther, bandwidthSnapshotEntity.requestsOther) &&
-        Objects.equals(this.requestsPut, bandwidthSnapshotEntity.requestsPut) &&
         Objects.equals(this.syncBytesReceived, bandwidthSnapshotEntity.syncBytesReceived) &&
         Objects.equals(this.syncBytesSent, bandwidthSnapshotEntity.syncBytesSent) &&
+        Objects.equals(this.requestsGet, bandwidthSnapshotEntity.requestsGet) &&
+        Objects.equals(this.requestsPut, bandwidthSnapshotEntity.requestsPut) &&
+        Objects.equals(this.requestsOther, bandwidthSnapshotEntity.requestsOther) &&
+        Objects.equals(this.loggedAt, bandwidthSnapshotEntity.loggedAt) &&
+        Objects.equals(this.createdAt, bandwidthSnapshotEntity.createdAt) &&
         Objects.equals(this.updatedAt, bandwidthSnapshotEntity.updatedAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(bytesReceived, bytesSent, createdAt, id, loggedAt, requestsGet, requestsOther, requestsPut, syncBytesReceived, syncBytesSent, updatedAt);
+    return Objects.hash(id, bytesReceived, bytesSent, syncBytesReceived, syncBytesSent, requestsGet, requestsPut, requestsOther, loggedAt, createdAt, updatedAt);
   }
 
 
@@ -290,16 +290,16 @@ public class BandwidthSnapshotEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class BandwidthSnapshotEntity {\n");
     
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    bytesReceived: ").append(toIndentedString(bytesReceived)).append("\n");
     sb.append("    bytesSent: ").append(toIndentedString(bytesSent)).append("\n");
-    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    loggedAt: ").append(toIndentedString(loggedAt)).append("\n");
-    sb.append("    requestsGet: ").append(toIndentedString(requestsGet)).append("\n");
-    sb.append("    requestsOther: ").append(toIndentedString(requestsOther)).append("\n");
-    sb.append("    requestsPut: ").append(toIndentedString(requestsPut)).append("\n");
     sb.append("    syncBytesReceived: ").append(toIndentedString(syncBytesReceived)).append("\n");
     sb.append("    syncBytesSent: ").append(toIndentedString(syncBytesSent)).append("\n");
+    sb.append("    requestsGet: ").append(toIndentedString(requestsGet)).append("\n");
+    sb.append("    requestsPut: ").append(toIndentedString(requestsPut)).append("\n");
+    sb.append("    requestsOther: ").append(toIndentedString(requestsOther)).append("\n");
+    sb.append("    loggedAt: ").append(toIndentedString(loggedAt)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
     sb.append("}");
     return sb.toString();

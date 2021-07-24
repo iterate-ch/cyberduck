@@ -22,22 +22,28 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * List Locks by path
  */
 @Schema(description = "List Locks by path")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class LockEntity {
+  @JsonProperty("path")
+  private String path = null;
+
+  @JsonProperty("timeout")
+  private Integer timeout = null;
+
   @JsonProperty("depth")
   private String depth = null;
+
+  @JsonProperty("recursive")
+  private Boolean recursive = null;
 
   @JsonProperty("owner")
   private String owner = null;
 
-  @JsonProperty("path")
-  private String path = null;
-
   @JsonProperty("scope")
   private String scope = null;
 
-  @JsonProperty("timeout")
-  private Integer timeout = null;
+  @JsonProperty("exclusive")
+  private Boolean exclusive = null;
 
   @JsonProperty("token")
   private String token = null;
@@ -45,47 +51,14 @@ public class LockEntity {
   @JsonProperty("type")
   private String type = null;
 
+  @JsonProperty("allow_access_by_any_user")
+  private Boolean allowAccessByAnyUser = null;
+
   @JsonProperty("user_id")
   private Integer userId = null;
 
   @JsonProperty("username")
   private String username = null;
-
-  public LockEntity depth(String depth) {
-    this.depth = depth;
-    return this;
-  }
-
-   /**
-   * Lock depth (0 or infinity)
-   * @return depth
-  **/
-  @Schema(example = "infinity", description = "Lock depth (0 or infinity)")
-  public String getDepth() {
-    return depth;
-  }
-
-  public void setDepth(String depth) {
-    this.depth = depth;
-  }
-
-  public LockEntity owner(String owner) {
-    this.owner = owner;
-    return this;
-  }
-
-   /**
-   * Owner of lock.  This can be any arbitrary string.
-   * @return owner
-  **/
-  @Schema(example = "user", description = "Owner of lock.  This can be any arbitrary string.")
-  public String getOwner() {
-    return owner;
-  }
-
-  public void setOwner(String owner) {
-    this.owner = owner;
-  }
 
   public LockEntity path(String path) {
     this.path = path;
@@ -105,16 +78,88 @@ public class LockEntity {
     this.path = path;
   }
 
+  public LockEntity timeout(Integer timeout) {
+    this.timeout = timeout;
+    return this;
+  }
+
+   /**
+   * Lock timeout in seconds
+   * @return timeout
+  **/
+  @Schema(example = "43200", description = "Lock timeout in seconds")
+  public Integer getTimeout() {
+    return timeout;
+  }
+
+  public void setTimeout(Integer timeout) {
+    this.timeout = timeout;
+  }
+
+  public LockEntity depth(String depth) {
+    this.depth = depth;
+    return this;
+  }
+
+   /**
+   * DEPRECATED: Lock depth
+   * @return depth
+  **/
+  @Schema(example = "infinity", description = "DEPRECATED: Lock depth")
+  public String getDepth() {
+    return depth;
+  }
+
+  public void setDepth(String depth) {
+    this.depth = depth;
+  }
+
+  public LockEntity recursive(Boolean recursive) {
+    this.recursive = recursive;
+    return this;
+  }
+
+   /**
+   * Does lock apply to subfolders?
+   * @return recursive
+  **/
+  @Schema(example = "true", description = "Does lock apply to subfolders?")
+  public Boolean isRecursive() {
+    return recursive;
+  }
+
+  public void setRecursive(Boolean recursive) {
+    this.recursive = recursive;
+  }
+
+  public LockEntity owner(String owner) {
+    this.owner = owner;
+    return this;
+  }
+
+   /**
+   * Owner of the lock.  This can be any arbitrary string.
+   * @return owner
+  **/
+  @Schema(example = "user", description = "Owner of the lock.  This can be any arbitrary string.")
+  public String getOwner() {
+    return owner;
+  }
+
+  public void setOwner(String owner) {
+    this.owner = owner;
+  }
+
   public LockEntity scope(String scope) {
     this.scope = scope;
     return this;
   }
 
    /**
-   * Lock scope(shared or exclusive)
+   * DEPRECATED: Lock scope
    * @return scope
   **/
-  @Schema(example = "shared", description = "Lock scope(shared or exclusive)")
+  @Schema(example = "shared", description = "DEPRECATED: Lock scope")
   public String getScope() {
     return scope;
   }
@@ -123,22 +168,22 @@ public class LockEntity {
     this.scope = scope;
   }
 
-  public LockEntity timeout(Integer timeout) {
-    this.timeout = timeout;
+  public LockEntity exclusive(Boolean exclusive) {
+    this.exclusive = exclusive;
     return this;
   }
 
    /**
-   * Lock timeout
-   * @return timeout
+   * Is lock exclusive?
+   * @return exclusive
   **/
-  @Schema(example = "43200", description = "Lock timeout")
-  public Integer getTimeout() {
-    return timeout;
+  @Schema(description = "Is lock exclusive?")
+  public Boolean isExclusive() {
+    return exclusive;
   }
 
-  public void setTimeout(Integer timeout) {
-    this.timeout = timeout;
+  public void setExclusive(Boolean exclusive) {
+    this.exclusive = exclusive;
   }
 
   public LockEntity token(String token) {
@@ -165,16 +210,34 @@ public class LockEntity {
   }
 
    /**
-   * Lock type
+   * DEPRECATED: Lock type
    * @return type
   **/
-  @Schema(example = "write", description = "Lock type")
+  @Schema(example = "write", description = "DEPRECATED: Lock type")
   public String getType() {
     return type;
   }
 
   public void setType(String type) {
     this.type = type;
+  }
+
+  public LockEntity allowAccessByAnyUser(Boolean allowAccessByAnyUser) {
+    this.allowAccessByAnyUser = allowAccessByAnyUser;
+    return this;
+  }
+
+   /**
+   * Can lock be modified by users other than its creator?
+   * @return allowAccessByAnyUser
+  **/
+  @Schema(description = "Can lock be modified by users other than its creator?")
+  public Boolean isAllowAccessByAnyUser() {
+    return allowAccessByAnyUser;
+  }
+
+  public void setAllowAccessByAnyUser(Boolean allowAccessByAnyUser) {
+    this.allowAccessByAnyUser = allowAccessByAnyUser;
   }
 
   public LockEntity userId(Integer userId) {
@@ -223,20 +286,23 @@ public class LockEntity {
       return false;
     }
     LockEntity lockEntity = (LockEntity) o;
-    return Objects.equals(this.depth, lockEntity.depth) &&
-        Objects.equals(this.owner, lockEntity.owner) &&
-        Objects.equals(this.path, lockEntity.path) &&
-        Objects.equals(this.scope, lockEntity.scope) &&
+    return Objects.equals(this.path, lockEntity.path) &&
         Objects.equals(this.timeout, lockEntity.timeout) &&
+        Objects.equals(this.depth, lockEntity.depth) &&
+        Objects.equals(this.recursive, lockEntity.recursive) &&
+        Objects.equals(this.owner, lockEntity.owner) &&
+        Objects.equals(this.scope, lockEntity.scope) &&
+        Objects.equals(this.exclusive, lockEntity.exclusive) &&
         Objects.equals(this.token, lockEntity.token) &&
         Objects.equals(this.type, lockEntity.type) &&
+        Objects.equals(this.allowAccessByAnyUser, lockEntity.allowAccessByAnyUser) &&
         Objects.equals(this.userId, lockEntity.userId) &&
         Objects.equals(this.username, lockEntity.username);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(depth, owner, path, scope, timeout, token, type, userId, username);
+    return Objects.hash(path, timeout, depth, recursive, owner, scope, exclusive, token, type, allowAccessByAnyUser, userId, username);
   }
 
 
@@ -245,13 +311,16 @@ public class LockEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class LockEntity {\n");
     
-    sb.append("    depth: ").append(toIndentedString(depth)).append("\n");
-    sb.append("    owner: ").append(toIndentedString(owner)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
-    sb.append("    scope: ").append(toIndentedString(scope)).append("\n");
     sb.append("    timeout: ").append(toIndentedString(timeout)).append("\n");
+    sb.append("    depth: ").append(toIndentedString(depth)).append("\n");
+    sb.append("    recursive: ").append(toIndentedString(recursive)).append("\n");
+    sb.append("    owner: ").append(toIndentedString(owner)).append("\n");
+    sb.append("    scope: ").append(toIndentedString(scope)).append("\n");
+    sb.append("    exclusive: ").append(toIndentedString(exclusive)).append("\n");
     sb.append("    token: ").append(toIndentedString(token)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    allowAccessByAnyUser: ").append(toIndentedString(allowAccessByAnyUser)).append("\n");
     sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("}");

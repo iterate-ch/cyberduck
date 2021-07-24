@@ -24,22 +24,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * Test webhook.
  */
 @Schema(description = "Test webhook.")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class StatusEntity {
-  @JsonProperty("clickwrap_body")
-  private String clickwrapBody = null;
-
-  @JsonProperty("clickwrap_id")
-  private Integer clickwrapId = null;
-
   @JsonProperty("code")
   private Integer code = null;
-
-  @JsonProperty("data")
-  private AutoEntity data = null;
-
-  @JsonProperty("errors")
-  private ErrorsEntity errors = null;
 
   @JsonProperty("message")
   private String message = null;
@@ -47,41 +35,17 @@ public class StatusEntity {
   @JsonProperty("status")
   private String status = null;
 
-  public StatusEntity clickwrapBody(String clickwrapBody) {
-    this.clickwrapBody = clickwrapBody;
-    return this;
-  }
+  @JsonProperty("data")
+  private AutoEntity data = null;
 
-   /**
-   * Required Clickwrap body
-   * @return clickwrapBody
-  **/
-  @Schema(description = "Required Clickwrap body")
-  public String getClickwrapBody() {
-    return clickwrapBody;
-  }
+  @JsonProperty("errors")
+  private ErrorsEntity errors = null;
 
-  public void setClickwrapBody(String clickwrapBody) {
-    this.clickwrapBody = clickwrapBody;
-  }
+  @JsonProperty("clickwrap_id")
+  private Integer clickwrapId = null;
 
-  public StatusEntity clickwrapId(Integer clickwrapId) {
-    this.clickwrapId = clickwrapId;
-    return this;
-  }
-
-   /**
-   * Required Clickwrap id
-   * @return clickwrapId
-  **/
-  @Schema(example = "1", description = "Required Clickwrap id")
-  public Integer getClickwrapId() {
-    return clickwrapId;
-  }
-
-  public void setClickwrapId(Integer clickwrapId) {
-    this.clickwrapId = clickwrapId;
-  }
+  @JsonProperty("clickwrap_body")
+  private String clickwrapBody = null;
 
   public StatusEntity code(Integer code) {
     this.code = code;
@@ -99,42 +63,6 @@ public class StatusEntity {
 
   public void setCode(Integer code) {
     this.code = code;
-  }
-
-  public StatusEntity data(AutoEntity data) {
-    this.data = data;
-    return this;
-  }
-
-   /**
-   * Get data
-   * @return data
-  **/
-  @Schema(description = "")
-  public AutoEntity getData() {
-    return data;
-  }
-
-  public void setData(AutoEntity data) {
-    this.data = data;
-  }
-
-  public StatusEntity errors(ErrorsEntity errors) {
-    this.errors = errors;
-    return this;
-  }
-
-   /**
-   * Get errors
-   * @return errors
-  **/
-  @Schema(description = "")
-  public ErrorsEntity getErrors() {
-    return errors;
-  }
-
-  public void setErrors(ErrorsEntity errors) {
-    this.errors = errors;
   }
 
   public StatusEntity message(String message) {
@@ -173,6 +101,78 @@ public class StatusEntity {
     this.status = status;
   }
 
+  public StatusEntity data(AutoEntity data) {
+    this.data = data;
+    return this;
+  }
+
+   /**
+   * Get data
+   * @return data
+  **/
+  @Schema(description = "")
+  public AutoEntity getData() {
+    return data;
+  }
+
+  public void setData(AutoEntity data) {
+    this.data = data;
+  }
+
+  public StatusEntity errors(ErrorsEntity errors) {
+    this.errors = errors;
+    return this;
+  }
+
+   /**
+   * Get errors
+   * @return errors
+  **/
+  @Schema(description = "")
+  public ErrorsEntity getErrors() {
+    return errors;
+  }
+
+  public void setErrors(ErrorsEntity errors) {
+    this.errors = errors;
+  }
+
+  public StatusEntity clickwrapId(Integer clickwrapId) {
+    this.clickwrapId = clickwrapId;
+    return this;
+  }
+
+   /**
+   * Required Clickwrap id
+   * @return clickwrapId
+  **/
+  @Schema(example = "1", description = "Required Clickwrap id")
+  public Integer getClickwrapId() {
+    return clickwrapId;
+  }
+
+  public void setClickwrapId(Integer clickwrapId) {
+    this.clickwrapId = clickwrapId;
+  }
+
+  public StatusEntity clickwrapBody(String clickwrapBody) {
+    this.clickwrapBody = clickwrapBody;
+    return this;
+  }
+
+   /**
+   * Required Clickwrap body
+   * @return clickwrapBody
+  **/
+  @Schema(description = "Required Clickwrap body")
+  public String getClickwrapBody() {
+    return clickwrapBody;
+  }
+
+  public void setClickwrapBody(String clickwrapBody) {
+    this.clickwrapBody = clickwrapBody;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -183,18 +183,18 @@ public class StatusEntity {
       return false;
     }
     StatusEntity statusEntity = (StatusEntity) o;
-    return Objects.equals(this.clickwrapBody, statusEntity.clickwrapBody) &&
-        Objects.equals(this.clickwrapId, statusEntity.clickwrapId) &&
-        Objects.equals(this.code, statusEntity.code) &&
+    return Objects.equals(this.code, statusEntity.code) &&
+        Objects.equals(this.message, statusEntity.message) &&
+        Objects.equals(this.status, statusEntity.status) &&
         Objects.equals(this.data, statusEntity.data) &&
         Objects.equals(this.errors, statusEntity.errors) &&
-        Objects.equals(this.message, statusEntity.message) &&
-        Objects.equals(this.status, statusEntity.status);
+        Objects.equals(this.clickwrapId, statusEntity.clickwrapId) &&
+        Objects.equals(this.clickwrapBody, statusEntity.clickwrapBody);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(clickwrapBody, clickwrapId, code, data, errors, message, status);
+    return Objects.hash(code, message, status, data, errors, clickwrapId, clickwrapBody);
   }
 
 
@@ -203,13 +203,13 @@ public class StatusEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class StatusEntity {\n");
     
-    sb.append("    clickwrapBody: ").append(toIndentedString(clickwrapBody)).append("\n");
-    sb.append("    clickwrapId: ").append(toIndentedString(clickwrapId)).append("\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
-    sb.append("    data: ").append(toIndentedString(data)).append("\n");
-    sb.append("    errors: ").append(toIndentedString(errors)).append("\n");
     sb.append("    message: ").append(toIndentedString(message)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    data: ").append(toIndentedString(data)).append("\n");
+    sb.append("    errors: ").append(toIndentedString(errors)).append("\n");
+    sb.append("    clickwrapId: ").append(toIndentedString(clickwrapId)).append("\n");
+    sb.append("    clickwrapBody: ").append(toIndentedString(clickwrapBody)).append("\n");
     sb.append("}");
     return sb.toString();
   }

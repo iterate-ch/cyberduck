@@ -22,20 +22,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * Create user session (log in)
  */
 @Schema(description = "Create user session (log in)")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class SessionEntity {
-  @JsonProperty("allowed_2fa_method_sms")
-  private Boolean allowed2faMethodSms = null;
-
-  @JsonProperty("allowed_2fa_method_totp")
-  private Boolean allowed2faMethodTotp = null;
-
-  @JsonProperty("allowed_2fa_method_u2f")
-  private Boolean allowed2faMethodU2f = null;
-
-  @JsonProperty("allowed_2fa_method_yubi")
-  private Boolean allowed2faMethodYubi = null;
-
   @JsonProperty("id")
   private String id = null;
 
@@ -72,83 +60,23 @@ public class SessionEntity {
   @JsonProperty("two_factor_setup_needed")
   private Boolean twoFactorSetupNeeded = null;
 
+  @JsonProperty("allowed_2fa_method_sms")
+  private Boolean allowed2faMethodSms = null;
+
+  @JsonProperty("allowed_2fa_method_totp")
+  private Boolean allowed2faMethodTotp = null;
+
+  @JsonProperty("allowed_2fa_method_u2f")
+  private Boolean allowed2faMethodU2f = null;
+
+  @JsonProperty("allowed_2fa_method_yubi")
+  private Boolean allowed2faMethodYubi = null;
+
   @JsonProperty("use_provided_modified_at")
   private Boolean useProvidedModifiedAt = null;
 
   @JsonProperty("windows_mode_ftp")
   private Boolean windowsModeFtp = null;
-
-  public SessionEntity allowed2faMethodSms(Boolean allowed2faMethodSms) {
-    this.allowed2faMethodSms = allowed2faMethodSms;
-    return this;
-  }
-
-   /**
-   * Sent only if 2FA setup is needed. Is SMS two factor authentication allowed?
-   * @return allowed2faMethodSms
-  **/
-  @Schema(example = "true", description = "Sent only if 2FA setup is needed. Is SMS two factor authentication allowed?")
-  public Boolean isAllowed2faMethodSms() {
-    return allowed2faMethodSms;
-  }
-
-  public void setAllowed2faMethodSms(Boolean allowed2faMethodSms) {
-    this.allowed2faMethodSms = allowed2faMethodSms;
-  }
-
-  public SessionEntity allowed2faMethodTotp(Boolean allowed2faMethodTotp) {
-    this.allowed2faMethodTotp = allowed2faMethodTotp;
-    return this;
-  }
-
-   /**
-   * Sent only if 2FA setup is needed. Is TOTP two factor authentication allowed?
-   * @return allowed2faMethodTotp
-  **/
-  @Schema(example = "true", description = "Sent only if 2FA setup is needed. Is TOTP two factor authentication allowed?")
-  public Boolean isAllowed2faMethodTotp() {
-    return allowed2faMethodTotp;
-  }
-
-  public void setAllowed2faMethodTotp(Boolean allowed2faMethodTotp) {
-    this.allowed2faMethodTotp = allowed2faMethodTotp;
-  }
-
-  public SessionEntity allowed2faMethodU2f(Boolean allowed2faMethodU2f) {
-    this.allowed2faMethodU2f = allowed2faMethodU2f;
-    return this;
-  }
-
-   /**
-   * Sent only if 2FA setup is needed. Is U2F two factor authentication allowed?
-   * @return allowed2faMethodU2f
-  **/
-  @Schema(example = "true", description = "Sent only if 2FA setup is needed. Is U2F two factor authentication allowed?")
-  public Boolean isAllowed2faMethodU2f() {
-    return allowed2faMethodU2f;
-  }
-
-  public void setAllowed2faMethodU2f(Boolean allowed2faMethodU2f) {
-    this.allowed2faMethodU2f = allowed2faMethodU2f;
-  }
-
-  public SessionEntity allowed2faMethodYubi(Boolean allowed2faMethodYubi) {
-    this.allowed2faMethodYubi = allowed2faMethodYubi;
-    return this;
-  }
-
-   /**
-   * Sent only if 2FA setup is needed. Is Yubikey two factor authentication allowed?
-   * @return allowed2faMethodYubi
-  **/
-  @Schema(example = "true", description = "Sent only if 2FA setup is needed. Is Yubikey two factor authentication allowed?")
-  public Boolean isAllowed2faMethodYubi() {
-    return allowed2faMethodYubi;
-  }
-
-  public void setAllowed2faMethodYubi(Boolean allowed2faMethodYubi) {
-    this.allowed2faMethodYubi = allowed2faMethodYubi;
-  }
 
   public SessionEntity id(String id) {
     this.id = id;
@@ -366,6 +294,78 @@ public class SessionEntity {
     this.twoFactorSetupNeeded = twoFactorSetupNeeded;
   }
 
+  public SessionEntity allowed2faMethodSms(Boolean allowed2faMethodSms) {
+    this.allowed2faMethodSms = allowed2faMethodSms;
+    return this;
+  }
+
+   /**
+   * Sent only if 2FA setup is needed. Is SMS two factor authentication allowed?
+   * @return allowed2faMethodSms
+  **/
+  @Schema(example = "true", description = "Sent only if 2FA setup is needed. Is SMS two factor authentication allowed?")
+  public Boolean isAllowed2faMethodSms() {
+    return allowed2faMethodSms;
+  }
+
+  public void setAllowed2faMethodSms(Boolean allowed2faMethodSms) {
+    this.allowed2faMethodSms = allowed2faMethodSms;
+  }
+
+  public SessionEntity allowed2faMethodTotp(Boolean allowed2faMethodTotp) {
+    this.allowed2faMethodTotp = allowed2faMethodTotp;
+    return this;
+  }
+
+   /**
+   * Sent only if 2FA setup is needed. Is TOTP two factor authentication allowed?
+   * @return allowed2faMethodTotp
+  **/
+  @Schema(example = "true", description = "Sent only if 2FA setup is needed. Is TOTP two factor authentication allowed?")
+  public Boolean isAllowed2faMethodTotp() {
+    return allowed2faMethodTotp;
+  }
+
+  public void setAllowed2faMethodTotp(Boolean allowed2faMethodTotp) {
+    this.allowed2faMethodTotp = allowed2faMethodTotp;
+  }
+
+  public SessionEntity allowed2faMethodU2f(Boolean allowed2faMethodU2f) {
+    this.allowed2faMethodU2f = allowed2faMethodU2f;
+    return this;
+  }
+
+   /**
+   * Sent only if 2FA setup is needed. Is U2F two factor authentication allowed?
+   * @return allowed2faMethodU2f
+  **/
+  @Schema(example = "true", description = "Sent only if 2FA setup is needed. Is U2F two factor authentication allowed?")
+  public Boolean isAllowed2faMethodU2f() {
+    return allowed2faMethodU2f;
+  }
+
+  public void setAllowed2faMethodU2f(Boolean allowed2faMethodU2f) {
+    this.allowed2faMethodU2f = allowed2faMethodU2f;
+  }
+
+  public SessionEntity allowed2faMethodYubi(Boolean allowed2faMethodYubi) {
+    this.allowed2faMethodYubi = allowed2faMethodYubi;
+    return this;
+  }
+
+   /**
+   * Sent only if 2FA setup is needed. Is Yubikey two factor authentication allowed?
+   * @return allowed2faMethodYubi
+  **/
+  @Schema(example = "true", description = "Sent only if 2FA setup is needed. Is Yubikey two factor authentication allowed?")
+  public Boolean isAllowed2faMethodYubi() {
+    return allowed2faMethodYubi;
+  }
+
+  public void setAllowed2faMethodYubi(Boolean allowed2faMethodYubi) {
+    this.allowed2faMethodYubi = allowed2faMethodYubi;
+  }
+
   public SessionEntity useProvidedModifiedAt(Boolean useProvidedModifiedAt) {
     this.useProvidedModifiedAt = useProvidedModifiedAt;
     return this;
@@ -412,11 +412,7 @@ public class SessionEntity {
       return false;
     }
     SessionEntity sessionEntity = (SessionEntity) o;
-    return Objects.equals(this.allowed2faMethodSms, sessionEntity.allowed2faMethodSms) &&
-        Objects.equals(this.allowed2faMethodTotp, sessionEntity.allowed2faMethodTotp) &&
-        Objects.equals(this.allowed2faMethodU2f, sessionEntity.allowed2faMethodU2f) &&
-        Objects.equals(this.allowed2faMethodYubi, sessionEntity.allowed2faMethodYubi) &&
-        Objects.equals(this.id, sessionEntity.id) &&
+    return Objects.equals(this.id, sessionEntity.id) &&
         Objects.equals(this.language, sessionEntity.language) &&
         Objects.equals(this.loginToken, sessionEntity.loginToken) &&
         Objects.equals(this.loginTokenDomain, sessionEntity.loginTokenDomain) &&
@@ -428,13 +424,17 @@ public class SessionEntity {
         Objects.equals(this.sslRequired, sessionEntity.sslRequired) &&
         Objects.equals(this.tlsDisabled, sessionEntity.tlsDisabled) &&
         Objects.equals(this.twoFactorSetupNeeded, sessionEntity.twoFactorSetupNeeded) &&
+        Objects.equals(this.allowed2faMethodSms, sessionEntity.allowed2faMethodSms) &&
+        Objects.equals(this.allowed2faMethodTotp, sessionEntity.allowed2faMethodTotp) &&
+        Objects.equals(this.allowed2faMethodU2f, sessionEntity.allowed2faMethodU2f) &&
+        Objects.equals(this.allowed2faMethodYubi, sessionEntity.allowed2faMethodYubi) &&
         Objects.equals(this.useProvidedModifiedAt, sessionEntity.useProvidedModifiedAt) &&
         Objects.equals(this.windowsModeFtp, sessionEntity.windowsModeFtp);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(allowed2faMethodSms, allowed2faMethodTotp, allowed2faMethodU2f, allowed2faMethodYubi, id, language, loginToken, loginTokenDomain, maxDirListingSize, multipleRegions, readOnly, rootPath, siteId, sslRequired, tlsDisabled, twoFactorSetupNeeded, useProvidedModifiedAt, windowsModeFtp);
+    return Objects.hash(id, language, loginToken, loginTokenDomain, maxDirListingSize, multipleRegions, readOnly, rootPath, siteId, sslRequired, tlsDisabled, twoFactorSetupNeeded, allowed2faMethodSms, allowed2faMethodTotp, allowed2faMethodU2f, allowed2faMethodYubi, useProvidedModifiedAt, windowsModeFtp);
   }
 
 
@@ -443,10 +443,6 @@ public class SessionEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class SessionEntity {\n");
     
-    sb.append("    allowed2faMethodSms: ").append(toIndentedString(allowed2faMethodSms)).append("\n");
-    sb.append("    allowed2faMethodTotp: ").append(toIndentedString(allowed2faMethodTotp)).append("\n");
-    sb.append("    allowed2faMethodU2f: ").append(toIndentedString(allowed2faMethodU2f)).append("\n");
-    sb.append("    allowed2faMethodYubi: ").append(toIndentedString(allowed2faMethodYubi)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    language: ").append(toIndentedString(language)).append("\n");
     sb.append("    loginToken: ").append(toIndentedString(loginToken)).append("\n");
@@ -459,6 +455,10 @@ public class SessionEntity {
     sb.append("    sslRequired: ").append(toIndentedString(sslRequired)).append("\n");
     sb.append("    tlsDisabled: ").append(toIndentedString(tlsDisabled)).append("\n");
     sb.append("    twoFactorSetupNeeded: ").append(toIndentedString(twoFactorSetupNeeded)).append("\n");
+    sb.append("    allowed2faMethodSms: ").append(toIndentedString(allowed2faMethodSms)).append("\n");
+    sb.append("    allowed2faMethodTotp: ").append(toIndentedString(allowed2faMethodTotp)).append("\n");
+    sb.append("    allowed2faMethodU2f: ").append(toIndentedString(allowed2faMethodU2f)).append("\n");
+    sb.append("    allowed2faMethodYubi: ").append(toIndentedString(allowed2faMethodYubi)).append("\n");
     sb.append("    useProvidedModifiedAt: ").append(toIndentedString(useProvidedModifiedAt)).append("\n");
     sb.append("    windowsModeFtp: ").append(toIndentedString(windowsModeFtp)).append("\n");
     sb.append("}");

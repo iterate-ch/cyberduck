@@ -23,55 +23,19 @@ import org.joda.time.DateTime;
  * List Public Keys
  */
 @Schema(description = "List Public Keys")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class PublicKeyEntity {
-  @JsonProperty("created_at")
-  private DateTime createdAt = null;
-
-  @JsonProperty("fingerprint")
-  private String fingerprint = null;
-
   @JsonProperty("id")
   private Integer id = null;
 
   @JsonProperty("title")
   private String title = null;
 
-  public PublicKeyEntity createdAt(DateTime createdAt) {
-    this.createdAt = createdAt;
-    return this;
-  }
+  @JsonProperty("created_at")
+  private DateTime createdAt = null;
 
-   /**
-   * Public key created at date/time
-   * @return createdAt
-  **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Public key created at date/time")
-  public DateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(DateTime createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public PublicKeyEntity fingerprint(String fingerprint) {
-    this.fingerprint = fingerprint;
-    return this;
-  }
-
-   /**
-   * Public key fingerprint
-   * @return fingerprint
-  **/
-  @Schema(example = "43:51:43:a1:b5:fc:8b:b7:0a:3a:a9:b1:0f:66:73:a8", description = "Public key fingerprint")
-  public String getFingerprint() {
-    return fingerprint;
-  }
-
-  public void setFingerprint(String fingerprint) {
-    this.fingerprint = fingerprint;
-  }
+  @JsonProperty("fingerprint")
+  private String fingerprint = null;
 
   public PublicKeyEntity id(Integer id) {
     this.id = id;
@@ -109,6 +73,42 @@ public class PublicKeyEntity {
     this.title = title;
   }
 
+  public PublicKeyEntity createdAt(DateTime createdAt) {
+    this.createdAt = createdAt;
+    return this;
+  }
+
+   /**
+   * Public key created at date/time
+   * @return createdAt
+  **/
+  @Schema(description = "Public key created at date/time")
+  public DateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(DateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public PublicKeyEntity fingerprint(String fingerprint) {
+    this.fingerprint = fingerprint;
+    return this;
+  }
+
+   /**
+   * Public key fingerprint
+   * @return fingerprint
+  **/
+  @Schema(example = "43:51:43:a1:b5:fc:8b:b7:0a:3a:a9:b1:0f:66:73:a8", description = "Public key fingerprint")
+  public String getFingerprint() {
+    return fingerprint;
+  }
+
+  public void setFingerprint(String fingerprint) {
+    this.fingerprint = fingerprint;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -119,15 +119,15 @@ public class PublicKeyEntity {
       return false;
     }
     PublicKeyEntity publicKeyEntity = (PublicKeyEntity) o;
-    return Objects.equals(this.createdAt, publicKeyEntity.createdAt) &&
-        Objects.equals(this.fingerprint, publicKeyEntity.fingerprint) &&
-        Objects.equals(this.id, publicKeyEntity.id) &&
-        Objects.equals(this.title, publicKeyEntity.title);
+    return Objects.equals(this.id, publicKeyEntity.id) &&
+        Objects.equals(this.title, publicKeyEntity.title) &&
+        Objects.equals(this.createdAt, publicKeyEntity.createdAt) &&
+        Objects.equals(this.fingerprint, publicKeyEntity.fingerprint);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(createdAt, fingerprint, id, title);
+    return Objects.hash(id, title, createdAt, fingerprint);
   }
 
 
@@ -136,10 +136,10 @@ public class PublicKeyEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class PublicKeyEntity {\n");
     
-    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
-    sb.append("    fingerprint: ").append(toIndentedString(fingerprint)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
+    sb.append("    fingerprint: ").append(toIndentedString(fingerprint)).append("\n");
     sb.append("}");
     return sb.toString();
   }

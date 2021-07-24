@@ -23,34 +23,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * List Message Comments
  */
 @Schema(description = "List Message Comments")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class MessageCommentEntity {
-  @JsonProperty("body")
-  private String body = null;
-
   @JsonProperty("id")
   private Integer id = null;
 
+  @JsonProperty("body")
+  private String body = null;
+
   @JsonProperty("reactions")
   private MessageCommentReactionEntity reactions = null;
-
-  public MessageCommentEntity body(String body) {
-    this.body = body;
-    return this;
-  }
-
-   /**
-   * Comment body.
-   * @return body
-  **/
-  @Schema(example = "What a great idea, thank you!", description = "Comment body.")
-  public String getBody() {
-    return body;
-  }
-
-  public void setBody(String body) {
-    this.body = body;
-  }
 
   public MessageCommentEntity id(Integer id) {
     this.id = id;
@@ -68,6 +50,24 @@ public class MessageCommentEntity {
 
   public void setId(Integer id) {
     this.id = id;
+  }
+
+  public MessageCommentEntity body(String body) {
+    this.body = body;
+    return this;
+  }
+
+   /**
+   * Comment body.
+   * @return body
+  **/
+  @Schema(example = "What a great idea, thank you!", description = "Comment body.")
+  public String getBody() {
+    return body;
+  }
+
+  public void setBody(String body) {
+    this.body = body;
   }
 
   public MessageCommentEntity reactions(MessageCommentReactionEntity reactions) {
@@ -98,14 +98,14 @@ public class MessageCommentEntity {
       return false;
     }
     MessageCommentEntity messageCommentEntity = (MessageCommentEntity) o;
-    return Objects.equals(this.body, messageCommentEntity.body) &&
-        Objects.equals(this.id, messageCommentEntity.id) &&
+    return Objects.equals(this.id, messageCommentEntity.id) &&
+        Objects.equals(this.body, messageCommentEntity.body) &&
         Objects.equals(this.reactions, messageCommentEntity.reactions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(body, id, reactions);
+    return Objects.hash(id, body, reactions);
   }
 
 
@@ -114,8 +114,8 @@ public class MessageCommentEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class MessageCommentEntity {\n");
     
-    sb.append("    body: ").append(toIndentedString(body)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    body: ").append(toIndentedString(body)).append("\n");
     sb.append("    reactions: ").append(toIndentedString(reactions)).append("\n");
     sb.append("}");
     return sb.toString();

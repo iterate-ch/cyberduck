@@ -12,17 +12,18 @@
 
 package ch.cyberduck.core.brick.io.swagger.client.model;
 
-import org.joda.time.DateTime;
-
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.joda.time.DateTime;
 /**
  * FilesPathBody5
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-11T22:16:14.309804+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class FilesPathBody5 {
   @JsonProperty("provided_mtime")
   private DateTime providedMtime = null;

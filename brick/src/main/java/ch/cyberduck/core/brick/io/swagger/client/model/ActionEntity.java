@@ -25,8 +25,38 @@ import org.joda.time.DateTime;
  * List site full action history.
  */
 @Schema(description = "List site full action history.")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class ActionEntity {
+  @JsonProperty("id")
+  private Integer id = null;
+
+  @JsonProperty("path")
+  private String path = null;
+
+  @JsonProperty("when")
+  private DateTime when = null;
+
+  @JsonProperty("destination")
+  private String destination = null;
+
+  @JsonProperty("display")
+  private String display = null;
+
+  @JsonProperty("ip")
+  private String ip = null;
+
+  @JsonProperty("source")
+  private String source = null;
+
+  @JsonProperty("targets")
+  private List<String> targets = null;
+
+  @JsonProperty("user_id")
+  private Integer userId = null;
+
+  @JsonProperty("username")
+  private String username = null;
+
   /**
    * Type of action
    */
@@ -77,12 +107,6 @@ public class ActionEntity {
 
   }  @JsonProperty("action")
   private ActionEnum action = null;
-
-  @JsonProperty("destination")
-  private String destination = null;
-
-  @JsonProperty("display")
-  private String display = null;
 
   /**
    * Failure type.  If action was a user login or session failure, why did it fail?
@@ -138,9 +162,6 @@ public class ActionEntity {
   }  @JsonProperty("failure_type")
   private FailureTypeEnum failureType = null;
 
-  @JsonProperty("id")
-  private Integer id = null;
-
   /**
    * Interface on which this action occurred.
    */
@@ -184,43 +205,58 @@ public class ActionEntity {
   }  @JsonProperty("interface")
   private InterfaceEnum _interface = null;
 
-  @JsonProperty("ip")
-  private String ip = null;
-
-  @JsonProperty("path")
-  private String path = null;
-
-  @JsonProperty("source")
-  private String source = null;
-
-  @JsonProperty("targets")
-  private List<String> targets = null;
-
-  @JsonProperty("user_id")
-  private Integer userId = null;
-
-  @JsonProperty("username")
-  private String username = null;
-
-  @JsonProperty("when")
-  private DateTime when = null;
-
-  public ActionEntity action(ActionEnum action) {
-    this.action = action;
+  public ActionEntity id(Integer id) {
+    this.id = id;
     return this;
   }
 
    /**
-   * Type of action
-   * @return action
+   * Action ID
+   * @return id
   **/
-  @Schema(example = "create", description = "Type of action")
-  public ActionEnum getAction() {
-    return action;
+  @Schema(example = "1", description = "Action ID")
+  public Integer getId() {
+    return id;
   }
 
-  public void setAction(ActionEnum action) {
-    this.action = action;
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public ActionEntity path(String path) {
+    this.path = path;
+    return this;
+  }
+
+   /**
+   * Path
+   * @return path
+  **/
+  @Schema(example = "path", description = "Path")
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
+  }
+
+  public ActionEntity when(DateTime when) {
+    this.when = when;
+    return this;
+  }
+
+   /**
+   * Action occurrence date/time
+   * @return when
+  **/
+  @Schema(description = "Action occurrence date/time")
+  public DateTime getWhen() {
+    return when;
+  }
+
+  public void setWhen(DateTime when) {
+    this.when = when;
   }
 
   public ActionEntity destination(String destination) {
@@ -259,60 +295,6 @@ public class ActionEntity {
     this.display = display;
   }
 
-  public ActionEntity failureType(FailureTypeEnum failureType) {
-    this.failureType = failureType;
-    return this;
-  }
-
-   /**
-   * Failure type.  If action was a user login or session failure, why did it fail?
-   * @return failureType
-  **/
-  @Schema(example = "none", description = "Failure type.  If action was a user login or session failure, why did it fail?")
-  public FailureTypeEnum getFailureType() {
-    return failureType;
-  }
-
-  public void setFailureType(FailureTypeEnum failureType) {
-    this.failureType = failureType;
-  }
-
-  public ActionEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
-
-   /**
-   * Action ID
-   * @return id
-  **/
-  @Schema(example = "1", description = "Action ID")
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public ActionEntity _interface(InterfaceEnum _interface) {
-    this._interface = _interface;
-    return this;
-  }
-
-   /**
-   * Interface on which this action occurred.
-   * @return _interface
-  **/
-  @Schema(example = "web", description = "Interface on which this action occurred.")
-  public InterfaceEnum getInterface() {
-    return _interface;
-  }
-
-  public void setInterface(InterfaceEnum _interface) {
-    this._interface = _interface;
-  }
-
   public ActionEntity ip(String ip) {
     this.ip = ip;
     return this;
@@ -329,24 +311,6 @@ public class ActionEntity {
 
   public void setIp(String ip) {
     this.ip = ip;
-  }
-
-  public ActionEntity path(String path) {
-    this.path = path;
-    return this;
-  }
-
-   /**
-   * Path
-   * @return path
-  **/
-  @Schema(example = "path", description = "Path")
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(String path) {
-    this.path = path;
   }
 
   public ActionEntity source(String source) {
@@ -429,22 +393,58 @@ public class ActionEntity {
     this.username = username;
   }
 
-  public ActionEntity when(DateTime when) {
-    this.when = when;
+  public ActionEntity action(ActionEnum action) {
+    this.action = action;
     return this;
   }
 
    /**
-   * Action occurrence date/time
-   * @return when
+   * Type of action
+   * @return action
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Action occurrence date/time")
-  public DateTime getWhen() {
-    return when;
+  @Schema(example = "create", description = "Type of action")
+  public ActionEnum getAction() {
+    return action;
   }
 
-  public void setWhen(DateTime when) {
-    this.when = when;
+  public void setAction(ActionEnum action) {
+    this.action = action;
+  }
+
+  public ActionEntity failureType(FailureTypeEnum failureType) {
+    this.failureType = failureType;
+    return this;
+  }
+
+   /**
+   * Failure type.  If action was a user login or session failure, why did it fail?
+   * @return failureType
+  **/
+  @Schema(example = "none", description = "Failure type.  If action was a user login or session failure, why did it fail?")
+  public FailureTypeEnum getFailureType() {
+    return failureType;
+  }
+
+  public void setFailureType(FailureTypeEnum failureType) {
+    this.failureType = failureType;
+  }
+
+  public ActionEntity _interface(InterfaceEnum _interface) {
+    this._interface = _interface;
+    return this;
+  }
+
+   /**
+   * Interface on which this action occurred.
+   * @return _interface
+  **/
+  @Schema(example = "web", description = "Interface on which this action occurred.")
+  public InterfaceEnum getInterface() {
+    return _interface;
+  }
+
+  public void setInterface(InterfaceEnum _interface) {
+    this._interface = _interface;
   }
 
 
@@ -457,24 +457,24 @@ public class ActionEntity {
       return false;
     }
     ActionEntity actionEntity = (ActionEntity) o;
-    return Objects.equals(this.action, actionEntity.action) &&
+    return Objects.equals(this.id, actionEntity.id) &&
+        Objects.equals(this.path, actionEntity.path) &&
+        Objects.equals(this.when, actionEntity.when) &&
         Objects.equals(this.destination, actionEntity.destination) &&
         Objects.equals(this.display, actionEntity.display) &&
-        Objects.equals(this.failureType, actionEntity.failureType) &&
-        Objects.equals(this.id, actionEntity.id) &&
-        Objects.equals(this._interface, actionEntity._interface) &&
         Objects.equals(this.ip, actionEntity.ip) &&
-        Objects.equals(this.path, actionEntity.path) &&
         Objects.equals(this.source, actionEntity.source) &&
         Objects.equals(this.targets, actionEntity.targets) &&
         Objects.equals(this.userId, actionEntity.userId) &&
         Objects.equals(this.username, actionEntity.username) &&
-        Objects.equals(this.when, actionEntity.when);
+        Objects.equals(this.action, actionEntity.action) &&
+        Objects.equals(this.failureType, actionEntity.failureType) &&
+        Objects.equals(this._interface, actionEntity._interface);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(action, destination, display, failureType, id, _interface, ip, path, source, targets, userId, username, when);
+    return Objects.hash(id, path, when, destination, display, ip, source, targets, userId, username, action, failureType, _interface);
   }
 
 
@@ -483,19 +483,19 @@ public class ActionEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class ActionEntity {\n");
     
-    sb.append("    action: ").append(toIndentedString(action)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    path: ").append(toIndentedString(path)).append("\n");
+    sb.append("    when: ").append(toIndentedString(when)).append("\n");
     sb.append("    destination: ").append(toIndentedString(destination)).append("\n");
     sb.append("    display: ").append(toIndentedString(display)).append("\n");
-    sb.append("    failureType: ").append(toIndentedString(failureType)).append("\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    _interface: ").append(toIndentedString(_interface)).append("\n");
     sb.append("    ip: ").append(toIndentedString(ip)).append("\n");
-    sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    source: ").append(toIndentedString(source)).append("\n");
     sb.append("    targets: ").append(toIndentedString(targets)).append("\n");
     sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
-    sb.append("    when: ").append(toIndentedString(when)).append("\n");
+    sb.append("    action: ").append(toIndentedString(action)).append("\n");
+    sb.append("    failureType: ").append(toIndentedString(failureType)).append("\n");
+    sb.append("    _interface: ").append(toIndentedString(_interface)).append("\n");
     sb.append("}");
     return sb.toString();
   }

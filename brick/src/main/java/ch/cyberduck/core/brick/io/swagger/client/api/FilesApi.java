@@ -9,7 +9,6 @@ import javax.ws.rs.core.GenericType;
 
 import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody;
-import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody1;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,7 +128,7 @@ import java.util.Map;
    * @return FileEntity
    * @throws ApiException if fails to make API call
    */
-  public FileEntity patchFilesPath(String path, FilesPathBody1 body) throws ApiException {
+  public FileEntity patchFilesPath(String path, FilesPathBody body) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'path' is set
     if (path == null) {

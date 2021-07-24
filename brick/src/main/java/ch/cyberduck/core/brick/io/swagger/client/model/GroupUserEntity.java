@@ -24,39 +24,39 @@ import java.util.List;
  * Create Group User
  */
 @Schema(description = "Create Group User")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class GroupUserEntity {
-  @JsonProperty("admin")
-  private Boolean admin = null;
+  @JsonProperty("group_name")
+  private String groupName = null;
 
   @JsonProperty("group_id")
   private Integer groupId = null;
 
-  @JsonProperty("group_name")
-  private String groupName = null;
-
   @JsonProperty("user_id")
   private Integer userId = null;
+
+  @JsonProperty("admin")
+  private Boolean admin = null;
 
   @JsonProperty("usernames")
   private List<String> usernames = null;
 
-  public GroupUserEntity admin(Boolean admin) {
-    this.admin = admin;
+  public GroupUserEntity groupName(String groupName) {
+    this.groupName = groupName;
     return this;
   }
 
    /**
-   * Is this user an administrator of this group?
-   * @return admin
+   * Group name
+   * @return groupName
   **/
-  @Schema(example = "true", description = "Is this user an administrator of this group?")
-  public Boolean isAdmin() {
-    return admin;
+  @Schema(example = "My Group", description = "Group name")
+  public String getGroupName() {
+    return groupName;
   }
 
-  public void setAdmin(Boolean admin) {
-    this.admin = admin;
+  public void setGroupName(String groupName) {
+    this.groupName = groupName;
   }
 
   public GroupUserEntity groupId(Integer groupId) {
@@ -77,24 +77,6 @@ public class GroupUserEntity {
     this.groupId = groupId;
   }
 
-  public GroupUserEntity groupName(String groupName) {
-    this.groupName = groupName;
-    return this;
-  }
-
-   /**
-   * Group name
-   * @return groupName
-  **/
-  @Schema(example = "My Group", description = "Group name")
-  public String getGroupName() {
-    return groupName;
-  }
-
-  public void setGroupName(String groupName) {
-    this.groupName = groupName;
-  }
-
   public GroupUserEntity userId(Integer userId) {
     this.userId = userId;
     return this;
@@ -111,6 +93,24 @@ public class GroupUserEntity {
 
   public void setUserId(Integer userId) {
     this.userId = userId;
+  }
+
+  public GroupUserEntity admin(Boolean admin) {
+    this.admin = admin;
+    return this;
+  }
+
+   /**
+   * Is this user an administrator of this group?
+   * @return admin
+  **/
+  @Schema(example = "true", description = "Is this user an administrator of this group?")
+  public Boolean isAdmin() {
+    return admin;
+  }
+
+  public void setAdmin(Boolean admin) {
+    this.admin = admin;
   }
 
   public GroupUserEntity usernames(List<String> usernames) {
@@ -149,16 +149,16 @@ public class GroupUserEntity {
       return false;
     }
     GroupUserEntity groupUserEntity = (GroupUserEntity) o;
-    return Objects.equals(this.admin, groupUserEntity.admin) &&
+    return Objects.equals(this.groupName, groupUserEntity.groupName) &&
         Objects.equals(this.groupId, groupUserEntity.groupId) &&
-        Objects.equals(this.groupName, groupUserEntity.groupName) &&
         Objects.equals(this.userId, groupUserEntity.userId) &&
+        Objects.equals(this.admin, groupUserEntity.admin) &&
         Objects.equals(this.usernames, groupUserEntity.usernames);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(admin, groupId, groupName, userId, usernames);
+    return Objects.hash(groupName, groupId, userId, admin, usernames);
   }
 
 
@@ -167,10 +167,10 @@ public class GroupUserEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class GroupUserEntity {\n");
     
-    sb.append("    admin: ").append(toIndentedString(admin)).append("\n");
-    sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
     sb.append("    groupName: ").append(toIndentedString(groupName)).append("\n");
+    sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
     sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+    sb.append("    admin: ").append(toIndentedString(admin)).append("\n");
     sb.append("    usernames: ").append(toIndentedString(usernames)).append("\n");
     sb.append("}");
     return sb.toString();

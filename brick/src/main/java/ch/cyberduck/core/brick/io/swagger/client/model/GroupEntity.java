@@ -24,16 +24,16 @@ import java.util.List;
  * List Groups
  */
 @Schema(description = "List Groups")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class GroupEntity {
-  @JsonProperty("admin_ids")
-  private String adminIds = null;
-
   @JsonProperty("id")
   private Integer id = null;
 
   @JsonProperty("name")
   private String name = null;
+
+  @JsonProperty("admin_ids")
+  private String adminIds = null;
 
   @JsonProperty("notes")
   private String notes = null;
@@ -43,24 +43,6 @@ public class GroupEntity {
 
   @JsonProperty("usernames")
   private List<String> usernames = null;
-
-  public GroupEntity adminIds(String adminIds) {
-    this.adminIds = adminIds;
-    return this;
-  }
-
-   /**
-   * List of user IDs who are group administrators (separated by commas)
-   * @return adminIds
-  **/
-  @Schema(description = "List of user IDs who are group administrators (separated by commas)")
-  public String getAdminIds() {
-    return adminIds;
-  }
-
-  public void setAdminIds(String adminIds) {
-    this.adminIds = adminIds;
-  }
 
   public GroupEntity id(Integer id) {
     this.id = id;
@@ -96,6 +78,24 @@ public class GroupEntity {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public GroupEntity adminIds(String adminIds) {
+    this.adminIds = adminIds;
+    return this;
+  }
+
+   /**
+   * List of user IDs who are group administrators (separated by commas)
+   * @return adminIds
+  **/
+  @Schema(description = "List of user IDs who are group administrators (separated by commas)")
+  public String getAdminIds() {
+    return adminIds;
+  }
+
+  public void setAdminIds(String adminIds) {
+    this.adminIds = adminIds;
   }
 
   public GroupEntity notes(String notes) {
@@ -178,9 +178,9 @@ public class GroupEntity {
       return false;
     }
     GroupEntity groupEntity = (GroupEntity) o;
-    return Objects.equals(this.adminIds, groupEntity.adminIds) &&
-        Objects.equals(this.id, groupEntity.id) &&
+    return Objects.equals(this.id, groupEntity.id) &&
         Objects.equals(this.name, groupEntity.name) &&
+        Objects.equals(this.adminIds, groupEntity.adminIds) &&
         Objects.equals(this.notes, groupEntity.notes) &&
         Objects.equals(this.userIds, groupEntity.userIds) &&
         Objects.equals(this.usernames, groupEntity.usernames);
@@ -188,7 +188,7 @@ public class GroupEntity {
 
   @Override
   public int hashCode() {
-    return Objects.hash(adminIds, id, name, notes, userIds, usernames);
+    return Objects.hash(id, name, adminIds, notes, userIds, usernames);
   }
 
 
@@ -197,9 +197,9 @@ public class GroupEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class GroupEntity {\n");
     
-    sb.append("    adminIds: ").append(toIndentedString(adminIds)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    adminIds: ").append(toIndentedString(adminIds)).append("\n");
     sb.append("    notes: ").append(toIndentedString(notes)).append("\n");
     sb.append("    userIds: ").append(toIndentedString(userIds)).append("\n");
     sb.append("    usernames: ").append(toIndentedString(usernames)).append("\n");

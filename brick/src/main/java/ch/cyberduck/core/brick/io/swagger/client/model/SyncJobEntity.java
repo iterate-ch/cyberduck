@@ -23,43 +23,25 @@ import org.joda.time.DateTime;
  * List Sync Jobs
  */
 @Schema(description = "List Sync Jobs")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class SyncJobEntity {
-  @JsonProperty("folder_behavior_id")
-  private Integer folderBehaviorId = null;
-
   @JsonProperty("queued_at")
   private DateTime queuedAt = null;
-
-  @JsonProperty("regional_worker_status")
-  private String regionalWorkerStatus = null;
-
-  @JsonProperty("status")
-  private String status = null;
 
   @JsonProperty("updated_at")
   private DateTime updatedAt = null;
 
+  @JsonProperty("status")
+  private String status = null;
+
+  @JsonProperty("regional_worker_status")
+  private String regionalWorkerStatus = null;
+
   @JsonProperty("uuid")
   private String uuid = null;
 
-  public SyncJobEntity folderBehaviorId(Integer folderBehaviorId) {
-    this.folderBehaviorId = folderBehaviorId;
-    return this;
-  }
-
-   /**
-   * Get folderBehaviorId
-   * @return folderBehaviorId
-  **/
-  @Schema(example = "1", description = "")
-  public Integer getFolderBehaviorId() {
-    return folderBehaviorId;
-  }
-
-  public void setFolderBehaviorId(Integer folderBehaviorId) {
-    this.folderBehaviorId = folderBehaviorId;
-  }
+  @JsonProperty("folder_behavior_id")
+  private Integer folderBehaviorId = null;
 
   public SyncJobEntity queuedAt(DateTime queuedAt) {
     this.queuedAt = queuedAt;
@@ -70,7 +52,7 @@ public class SyncJobEntity {
    * Job enqueued at
    * @return queuedAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Job enqueued at")
+  @Schema(description = "Job enqueued at")
   public DateTime getQueuedAt() {
     return queuedAt;
   }
@@ -79,22 +61,22 @@ public class SyncJobEntity {
     this.queuedAt = queuedAt;
   }
 
-  public SyncJobEntity regionalWorkerStatus(String regionalWorkerStatus) {
-    this.regionalWorkerStatus = regionalWorkerStatus;
+  public SyncJobEntity updatedAt(DateTime updatedAt) {
+    this.updatedAt = updatedAt;
     return this;
   }
 
    /**
-   * Most recent reported status of sync worker
-   * @return regionalWorkerStatus
+   * Job updated at
+   * @return updatedAt
   **/
-  @Schema(description = "Most recent reported status of sync worker")
-  public String getRegionalWorkerStatus() {
-    return regionalWorkerStatus;
+  @Schema(description = "Job updated at")
+  public DateTime getUpdatedAt() {
+    return updatedAt;
   }
 
-  public void setRegionalWorkerStatus(String regionalWorkerStatus) {
-    this.regionalWorkerStatus = regionalWorkerStatus;
+  public void setUpdatedAt(DateTime updatedAt) {
+    this.updatedAt = updatedAt;
   }
 
   public SyncJobEntity status(String status) {
@@ -115,22 +97,22 @@ public class SyncJobEntity {
     this.status = status;
   }
 
-  public SyncJobEntity updatedAt(DateTime updatedAt) {
-    this.updatedAt = updatedAt;
+  public SyncJobEntity regionalWorkerStatus(String regionalWorkerStatus) {
+    this.regionalWorkerStatus = regionalWorkerStatus;
     return this;
   }
 
    /**
-   * Job updated at
-   * @return updatedAt
+   * Most recent reported status of sync worker
+   * @return regionalWorkerStatus
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Job updated at")
-  public DateTime getUpdatedAt() {
-    return updatedAt;
+  @Schema(description = "Most recent reported status of sync worker")
+  public String getRegionalWorkerStatus() {
+    return regionalWorkerStatus;
   }
 
-  public void setUpdatedAt(DateTime updatedAt) {
-    this.updatedAt = updatedAt;
+  public void setRegionalWorkerStatus(String regionalWorkerStatus) {
+    this.regionalWorkerStatus = regionalWorkerStatus;
   }
 
   public SyncJobEntity uuid(String uuid) {
@@ -151,6 +133,24 @@ public class SyncJobEntity {
     this.uuid = uuid;
   }
 
+  public SyncJobEntity folderBehaviorId(Integer folderBehaviorId) {
+    this.folderBehaviorId = folderBehaviorId;
+    return this;
+  }
+
+   /**
+   * Get folderBehaviorId
+   * @return folderBehaviorId
+  **/
+  @Schema(example = "1", description = "")
+  public Integer getFolderBehaviorId() {
+    return folderBehaviorId;
+  }
+
+  public void setFolderBehaviorId(Integer folderBehaviorId) {
+    this.folderBehaviorId = folderBehaviorId;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -161,17 +161,17 @@ public class SyncJobEntity {
       return false;
     }
     SyncJobEntity syncJobEntity = (SyncJobEntity) o;
-    return Objects.equals(this.folderBehaviorId, syncJobEntity.folderBehaviorId) &&
-        Objects.equals(this.queuedAt, syncJobEntity.queuedAt) &&
-        Objects.equals(this.regionalWorkerStatus, syncJobEntity.regionalWorkerStatus) &&
-        Objects.equals(this.status, syncJobEntity.status) &&
+    return Objects.equals(this.queuedAt, syncJobEntity.queuedAt) &&
         Objects.equals(this.updatedAt, syncJobEntity.updatedAt) &&
-        Objects.equals(this.uuid, syncJobEntity.uuid);
+        Objects.equals(this.status, syncJobEntity.status) &&
+        Objects.equals(this.regionalWorkerStatus, syncJobEntity.regionalWorkerStatus) &&
+        Objects.equals(this.uuid, syncJobEntity.uuid) &&
+        Objects.equals(this.folderBehaviorId, syncJobEntity.folderBehaviorId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(folderBehaviorId, queuedAt, regionalWorkerStatus, status, updatedAt, uuid);
+    return Objects.hash(queuedAt, updatedAt, status, regionalWorkerStatus, uuid, folderBehaviorId);
   }
 
 
@@ -180,12 +180,12 @@ public class SyncJobEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class SyncJobEntity {\n");
     
-    sb.append("    folderBehaviorId: ").append(toIndentedString(folderBehaviorId)).append("\n");
     sb.append("    queuedAt: ").append(toIndentedString(queuedAt)).append("\n");
-    sb.append("    regionalWorkerStatus: ").append(toIndentedString(regionalWorkerStatus)).append("\n");
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    regionalWorkerStatus: ").append(toIndentedString(regionalWorkerStatus)).append("\n");
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
+    sb.append("    folderBehaviorId: ").append(toIndentedString(folderBehaviorId)).append("\n");
     sb.append("}");
     return sb.toString();
   }

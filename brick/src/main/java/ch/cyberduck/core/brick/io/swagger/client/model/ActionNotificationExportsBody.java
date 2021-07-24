@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
  * ActionNotificationExportsBody
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class ActionNotificationExportsBody {
   @JsonProperty("user_id")
   private Integer userId = null;
@@ -82,7 +82,7 @@ public class ActionNotificationExportsBody {
    * Start date/time of export range.
    * @return startAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Start date/time of export range.")
+  @Schema(description = "Start date/time of export range.")
   public DateTime getStartAt() {
     return startAt;
   }
@@ -100,7 +100,7 @@ public class ActionNotificationExportsBody {
    * End date/time of export range.
    * @return endAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "End date/time of export range.")
+  @Schema(description = "End date/time of export range.")
   public DateTime getEndAt() {
     return endAt;
   }

@@ -22,118 +22,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * List Sso Strategies
  */
 @Schema(description = "List Sso Strategies")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class SsoStrategyEntity {
-  /**
-   * Method used for deprovisioning users.
-   */
-  public enum DeprovisionBehaviorEnum {
-    DISABLE("disable"),
-    DELETE("delete");
-
-    private String value;
-
-    DeprovisionBehaviorEnum(String value) {
-      this.value = value;
-    }
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-    @JsonCreator
-    public static DeprovisionBehaviorEnum fromValue(String text) {
-      for (DeprovisionBehaviorEnum b : DeprovisionBehaviorEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-
-  }  @JsonProperty("deprovision_behavior")
-  private DeprovisionBehaviorEnum deprovisionBehavior = null;
-
-  @JsonProperty("deprovision_groups")
-  private Boolean deprovisionGroups = null;
-
-  @JsonProperty("deprovision_users")
-  private Boolean deprovisionUsers = null;
-
-  @JsonProperty("enabled")
-  private Boolean enabled = null;
-
-  @JsonProperty("id")
-  private Integer id = null;
-
-  @JsonProperty("label")
-  private String label = null;
-
-  @JsonProperty("ldap_base_dn")
-  private String ldapBaseDn = null;
-
-  @JsonProperty("ldap_domain")
-  private String ldapDomain = null;
-
-  @JsonProperty("ldap_host")
-  private String ldapHost = null;
-
-  @JsonProperty("ldap_host_2")
-  private String ldapHost2 = null;
-
-  @JsonProperty("ldap_host_3")
-  private String ldapHost3 = null;
-
-  @JsonProperty("ldap_port")
-  private Integer ldapPort = null;
-
-  @JsonProperty("ldap_secure")
-  private Boolean ldapSecure = null;
-
-  @JsonProperty("ldap_username")
-  private String ldapUsername = null;
-
-  /**
-   * LDAP username field
-   */
-  public enum LdapUsernameFieldEnum {
-    SAMACCOUNTNAME("sAMAccountName"),
-    USERPRINCIPALNAME("userPrincipalName");
-
-    private String value;
-
-    LdapUsernameFieldEnum(String value) {
-      this.value = value;
-    }
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-    @JsonCreator
-    public static LdapUsernameFieldEnum fromValue(String text) {
-      for (LdapUsernameFieldEnum b : LdapUsernameFieldEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-
-  }  @JsonProperty("ldap_username_field")
-  private LdapUsernameFieldEnum ldapUsernameField = null;
-
-  @JsonProperty("logo_url")
-  private String logoUrl = null;
-
   /**
    * SSO Protocol
    */
@@ -218,47 +108,14 @@ public class SsoStrategyEntity {
   }  @JsonProperty("provider")
   private ProviderEnum provider = null;
 
-  @JsonProperty("provision_attachments_permission")
-  private Boolean provisionAttachmentsPermission = null;
+  @JsonProperty("label")
+  private String label = null;
 
-  @JsonProperty("provision_company")
-  private String provisionCompany = null;
+  @JsonProperty("logo_url")
+  private String logoUrl = null;
 
-  @JsonProperty("provision_dav_permission")
-  private Boolean provisionDavPermission = null;
-
-  @JsonProperty("provision_email_signup_groups")
-  private String provisionEmailSignupGroups = null;
-
-  @JsonProperty("provision_ftp_permission")
-  private Boolean provisionFtpPermission = null;
-
-  @JsonProperty("provision_group_default")
-  private String provisionGroupDefault = null;
-
-  @JsonProperty("provision_group_exclusion")
-  private String provisionGroupExclusion = null;
-
-  @JsonProperty("provision_group_inclusion")
-  private String provisionGroupInclusion = null;
-
-  @JsonProperty("provision_group_required")
-  private String provisionGroupRequired = null;
-
-  @JsonProperty("provision_groups")
-  private Boolean provisionGroups = null;
-
-  @JsonProperty("provision_sftp_permission")
-  private Boolean provisionSftpPermission = null;
-
-  @JsonProperty("provision_site_admin_groups")
-  private String provisionSiteAdminGroups = null;
-
-  @JsonProperty("provision_time_zone")
-  private String provisionTimeZone = null;
-
-  @JsonProperty("provision_users")
-  private Boolean provisionUsers = null;
+  @JsonProperty("id")
+  private Integer id = null;
 
   @JsonProperty("saml_provider_cert_fingerprint")
   private String samlProviderCertFingerprint = null;
@@ -313,305 +170,160 @@ public class SsoStrategyEntity {
   }  @JsonProperty("scim_authentication_method")
   private ScimAuthenticationMethodEnum scimAuthenticationMethod = null;
 
+  @JsonProperty("scim_username")
+  private String scimUsername = null;
+
   @JsonProperty("scim_oauth_access_token")
   private String scimOauthAccessToken = null;
 
   @JsonProperty("scim_oauth_access_token_expires_at")
   private String scimOauthAccessTokenExpiresAt = null;
 
-  @JsonProperty("scim_username")
-  private String scimUsername = null;
-
   @JsonProperty("subdomain")
   private String subdomain = null;
 
-  public SsoStrategyEntity deprovisionBehavior(DeprovisionBehaviorEnum deprovisionBehavior) {
-    this.deprovisionBehavior = deprovisionBehavior;
-    return this;
-  }
+  @JsonProperty("provision_users")
+  private Boolean provisionUsers = null;
 
-   /**
+  @JsonProperty("provision_groups")
+  private Boolean provisionGroups = null;
+
+  @JsonProperty("deprovision_users")
+  private Boolean deprovisionUsers = null;
+
+  @JsonProperty("deprovision_groups")
+  private Boolean deprovisionGroups = null;
+
+  /**
    * Method used for deprovisioning users.
-   * @return deprovisionBehavior
-  **/
-  @Schema(example = "disable", description = "Method used for deprovisioning users.")
-  public DeprovisionBehaviorEnum getDeprovisionBehavior() {
-    return deprovisionBehavior;
-  }
+   */
+  public enum DeprovisionBehaviorEnum {
+    DISABLE("disable"),
+    DELETE("delete");
 
-  public void setDeprovisionBehavior(DeprovisionBehaviorEnum deprovisionBehavior) {
-    this.deprovisionBehavior = deprovisionBehavior;
-  }
+    private String value;
 
-  public SsoStrategyEntity deprovisionGroups(Boolean deprovisionGroups) {
-    this.deprovisionGroups = deprovisionGroups;
-    return this;
-  }
+    DeprovisionBehaviorEnum(String value) {
+      this.value = value;
+    }
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
 
-   /**
-   * Auto-deprovision group membership based on group memberships on the SSO side?
-   * @return deprovisionGroups
-  **/
-  @Schema(description = "Auto-deprovision group membership based on group memberships on the SSO side?")
-  public Boolean isDeprovisionGroups() {
-    return deprovisionGroups;
-  }
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+    @JsonCreator
+    public static DeprovisionBehaviorEnum fromValue(String text) {
+      for (DeprovisionBehaviorEnum b : DeprovisionBehaviorEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
 
-  public void setDeprovisionGroups(Boolean deprovisionGroups) {
-    this.deprovisionGroups = deprovisionGroups;
-  }
+  }  @JsonProperty("deprovision_behavior")
+  private DeprovisionBehaviorEnum deprovisionBehavior = null;
 
-  public SsoStrategyEntity deprovisionUsers(Boolean deprovisionUsers) {
-    this.deprovisionUsers = deprovisionUsers;
-    return this;
-  }
+  @JsonProperty("provision_group_default")
+  private String provisionGroupDefault = null;
 
-   /**
-   * Auto-deprovision users?
-   * @return deprovisionUsers
-  **/
-  @Schema(description = "Auto-deprovision users?")
-  public Boolean isDeprovisionUsers() {
-    return deprovisionUsers;
-  }
+  @JsonProperty("provision_group_exclusion")
+  private String provisionGroupExclusion = null;
 
-  public void setDeprovisionUsers(Boolean deprovisionUsers) {
-    this.deprovisionUsers = deprovisionUsers;
-  }
+  @JsonProperty("provision_group_inclusion")
+  private String provisionGroupInclusion = null;
 
-  public SsoStrategyEntity enabled(Boolean enabled) {
-    this.enabled = enabled;
-    return this;
-  }
+  @JsonProperty("provision_group_required")
+  private String provisionGroupRequired = null;
 
-   /**
-   * Is strategy enabled?
-   * @return enabled
-  **/
-  @Schema(example = "true", description = "Is strategy enabled?")
-  public Boolean isEnabled() {
-    return enabled;
-  }
+  @JsonProperty("provision_email_signup_groups")
+  private String provisionEmailSignupGroups = null;
 
-  public void setEnabled(Boolean enabled) {
-    this.enabled = enabled;
-  }
+  @JsonProperty("provision_site_admin_groups")
+  private String provisionSiteAdminGroups = null;
 
-  public SsoStrategyEntity id(Integer id) {
-    this.id = id;
-    return this;
-  }
+  @JsonProperty("provision_attachments_permission")
+  private Boolean provisionAttachmentsPermission = null;
 
-   /**
-   * ID
-   * @return id
-  **/
-  @Schema(example = "1", description = "ID")
-  public Integer getId() {
-    return id;
-  }
+  @JsonProperty("provision_dav_permission")
+  private Boolean provisionDavPermission = null;
 
-  public void setId(Integer id) {
-    this.id = id;
-  }
+  @JsonProperty("provision_ftp_permission")
+  private Boolean provisionFtpPermission = null;
 
-  public SsoStrategyEntity label(String label) {
-    this.label = label;
-    return this;
-  }
+  @JsonProperty("provision_sftp_permission")
+  private Boolean provisionSftpPermission = null;
 
-   /**
-   * Custom label for the SSO provider on the login page.
-   * @return label
-  **/
-  @Schema(example = "My Corporate SSO Provider", description = "Custom label for the SSO provider on the login page.")
-  public String getLabel() {
-    return label;
-  }
+  @JsonProperty("provision_time_zone")
+  private String provisionTimeZone = null;
 
-  public void setLabel(String label) {
-    this.label = label;
-  }
+  @JsonProperty("provision_company")
+  private String provisionCompany = null;
 
-  public SsoStrategyEntity ldapBaseDn(String ldapBaseDn) {
-    this.ldapBaseDn = ldapBaseDn;
-    return this;
-  }
+  @JsonProperty("ldap_base_dn")
+  private String ldapBaseDn = null;
 
-   /**
-   * Base DN for looking up users in LDAP server
-   * @return ldapBaseDn
-  **/
-  @Schema(description = "Base DN for looking up users in LDAP server")
-  public String getLdapBaseDn() {
-    return ldapBaseDn;
-  }
+  @JsonProperty("ldap_domain")
+  private String ldapDomain = null;
 
-  public void setLdapBaseDn(String ldapBaseDn) {
-    this.ldapBaseDn = ldapBaseDn;
-  }
+  @JsonProperty("enabled")
+  private Boolean enabled = null;
 
-  public SsoStrategyEntity ldapDomain(String ldapDomain) {
-    this.ldapDomain = ldapDomain;
-    return this;
-  }
+  @JsonProperty("ldap_host")
+  private String ldapHost = null;
 
-   /**
-   * Domain name that will be appended to LDAP usernames
-   * @return ldapDomain
-  **/
-  @Schema(example = "mysite.com", description = "Domain name that will be appended to LDAP usernames")
-  public String getLdapDomain() {
-    return ldapDomain;
-  }
+  @JsonProperty("ldap_host_2")
+  private String ldapHost2 = null;
 
-  public void setLdapDomain(String ldapDomain) {
-    this.ldapDomain = ldapDomain;
-  }
+  @JsonProperty("ldap_host_3")
+  private String ldapHost3 = null;
 
-  public SsoStrategyEntity ldapHost(String ldapHost) {
-    this.ldapHost = ldapHost;
-    return this;
-  }
+  @JsonProperty("ldap_port")
+  private Integer ldapPort = null;
 
-   /**
-   * LDAP host
-   * @return ldapHost
-  **/
-  @Schema(example = "ldap.site.com", description = "LDAP host")
-  public String getLdapHost() {
-    return ldapHost;
-  }
+  @JsonProperty("ldap_secure")
+  private Boolean ldapSecure = null;
 
-  public void setLdapHost(String ldapHost) {
-    this.ldapHost = ldapHost;
-  }
+  @JsonProperty("ldap_username")
+  private String ldapUsername = null;
 
-  public SsoStrategyEntity ldapHost2(String ldapHost2) {
-    this.ldapHost2 = ldapHost2;
-    return this;
-  }
-
-   /**
-   * LDAP backup host
-   * @return ldapHost2
-  **/
-  @Schema(example = "ldap2.site.com", description = "LDAP backup host")
-  public String getLdapHost2() {
-    return ldapHost2;
-  }
-
-  public void setLdapHost2(String ldapHost2) {
-    this.ldapHost2 = ldapHost2;
-  }
-
-  public SsoStrategyEntity ldapHost3(String ldapHost3) {
-    this.ldapHost3 = ldapHost3;
-    return this;
-  }
-
-   /**
-   * LDAP backup host
-   * @return ldapHost3
-  **/
-  @Schema(example = "ldap3.site.com", description = "LDAP backup host")
-  public String getLdapHost3() {
-    return ldapHost3;
-  }
-
-  public void setLdapHost3(String ldapHost3) {
-    this.ldapHost3 = ldapHost3;
-  }
-
-  public SsoStrategyEntity ldapPort(Integer ldapPort) {
-    this.ldapPort = ldapPort;
-    return this;
-  }
-
-   /**
-   * LDAP port
-   * @return ldapPort
-  **/
-  @Schema(example = "1", description = "LDAP port")
-  public Integer getLdapPort() {
-    return ldapPort;
-  }
-
-  public void setLdapPort(Integer ldapPort) {
-    this.ldapPort = ldapPort;
-  }
-
-  public SsoStrategyEntity ldapSecure(Boolean ldapSecure) {
-    this.ldapSecure = ldapSecure;
-    return this;
-  }
-
-   /**
-   * Use secure LDAP?
-   * @return ldapSecure
-  **/
-  @Schema(example = "true", description = "Use secure LDAP?")
-  public Boolean isLdapSecure() {
-    return ldapSecure;
-  }
-
-  public void setLdapSecure(Boolean ldapSecure) {
-    this.ldapSecure = ldapSecure;
-  }
-
-  public SsoStrategyEntity ldapUsername(String ldapUsername) {
-    this.ldapUsername = ldapUsername;
-    return this;
-  }
-
-   /**
-   * Username for signing in to LDAP server.
-   * @return ldapUsername
-  **/
-  @Schema(example = "[ldap username]", description = "Username for signing in to LDAP server.")
-  public String getLdapUsername() {
-    return ldapUsername;
-  }
-
-  public void setLdapUsername(String ldapUsername) {
-    this.ldapUsername = ldapUsername;
-  }
-
-  public SsoStrategyEntity ldapUsernameField(LdapUsernameFieldEnum ldapUsernameField) {
-    this.ldapUsernameField = ldapUsernameField;
-    return this;
-  }
-
-   /**
+  /**
    * LDAP username field
-   * @return ldapUsernameField
-  **/
-  @Schema(example = "sAMAccountName", description = "LDAP username field")
-  public LdapUsernameFieldEnum getLdapUsernameField() {
-    return ldapUsernameField;
-  }
+   */
+  public enum LdapUsernameFieldEnum {
+    SAMACCOUNTNAME("sAMAccountName"),
+    USERPRINCIPALNAME("userPrincipalName");
 
-  public void setLdapUsernameField(LdapUsernameFieldEnum ldapUsernameField) {
-    this.ldapUsernameField = ldapUsernameField;
-  }
+    private String value;
 
-  public SsoStrategyEntity logoUrl(String logoUrl) {
-    this.logoUrl = logoUrl;
-    return this;
-  }
+    LdapUsernameFieldEnum(String value) {
+      this.value = value;
+    }
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
 
-   /**
-   * URL holding a custom logo for the SSO provider on the login page.
-   * @return logoUrl
-  **/
-  @Schema(example = "https://mysite.files.com/.../logo.png", description = "URL holding a custom logo for the SSO provider on the login page.")
-  public String getLogoUrl() {
-    return logoUrl;
-  }
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+    @JsonCreator
+    public static LdapUsernameFieldEnum fromValue(String text) {
+      for (LdapUsernameFieldEnum b : LdapUsernameFieldEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
 
-  public void setLogoUrl(String logoUrl) {
-    this.logoUrl = logoUrl;
-  }
+  }  @JsonProperty("ldap_username_field")
+  private LdapUsernameFieldEnum ldapUsernameField = null;
 
   public SsoStrategyEntity protocol(ProtocolEnum protocol) {
     this.protocol = protocol;
@@ -649,256 +361,58 @@ public class SsoStrategyEntity {
     this.provider = provider;
   }
 
-  public SsoStrategyEntity provisionAttachmentsPermission(Boolean provisionAttachmentsPermission) {
-    this.provisionAttachmentsPermission = provisionAttachmentsPermission;
+  public SsoStrategyEntity label(String label) {
+    this.label = label;
     return this;
   }
 
    /**
-   * DEPRECATED: Auto-provisioned users get Sharing permission. Use a Group with the Bundle permission instead.
-   * @return provisionAttachmentsPermission
+   * Custom label for the SSO provider on the login page.
+   * @return label
   **/
-  @Schema(example = "true", description = "DEPRECATED: Auto-provisioned users get Sharing permission. Use a Group with the Bundle permission instead.")
-  public Boolean isProvisionAttachmentsPermission() {
-    return provisionAttachmentsPermission;
+  @Schema(example = "My Corporate SSO Provider", description = "Custom label for the SSO provider on the login page.")
+  public String getLabel() {
+    return label;
   }
 
-  public void setProvisionAttachmentsPermission(Boolean provisionAttachmentsPermission) {
-    this.provisionAttachmentsPermission = provisionAttachmentsPermission;
+  public void setLabel(String label) {
+    this.label = label;
   }
 
-  public SsoStrategyEntity provisionCompany(String provisionCompany) {
-    this.provisionCompany = provisionCompany;
+  public SsoStrategyEntity logoUrl(String logoUrl) {
+    this.logoUrl = logoUrl;
     return this;
   }
 
    /**
-   * Default company for auto provisioned users.
-   * @return provisionCompany
+   * URL holding a custom logo for the SSO provider on the login page.
+   * @return logoUrl
   **/
-  @Schema(example = "ACME Corp.", description = "Default company for auto provisioned users.")
-  public String getProvisionCompany() {
-    return provisionCompany;
+  @Schema(example = "https://mysite.files.com/.../logo.png", description = "URL holding a custom logo for the SSO provider on the login page.")
+  public String getLogoUrl() {
+    return logoUrl;
   }
 
-  public void setProvisionCompany(String provisionCompany) {
-    this.provisionCompany = provisionCompany;
+  public void setLogoUrl(String logoUrl) {
+    this.logoUrl = logoUrl;
   }
 
-  public SsoStrategyEntity provisionDavPermission(Boolean provisionDavPermission) {
-    this.provisionDavPermission = provisionDavPermission;
+  public SsoStrategyEntity id(Integer id) {
+    this.id = id;
     return this;
   }
 
    /**
-   * Auto-provisioned users get WebDAV permission?
-   * @return provisionDavPermission
+   * ID
+   * @return id
   **/
-  @Schema(example = "true", description = "Auto-provisioned users get WebDAV permission?")
-  public Boolean isProvisionDavPermission() {
-    return provisionDavPermission;
+  @Schema(example = "1", description = "ID")
+  public Integer getId() {
+    return id;
   }
 
-  public void setProvisionDavPermission(Boolean provisionDavPermission) {
-    this.provisionDavPermission = provisionDavPermission;
-  }
-
-  public SsoStrategyEntity provisionEmailSignupGroups(String provisionEmailSignupGroups) {
-    this.provisionEmailSignupGroups = provisionEmailSignupGroups;
-    return this;
-  }
-
-   /**
-   * Comma-separated list of group names whose members will be created with email_signup authentication.
-   * @return provisionEmailSignupGroups
-  **/
-  @Schema(example = "Employees", description = "Comma-separated list of group names whose members will be created with email_signup authentication.")
-  public String getProvisionEmailSignupGroups() {
-    return provisionEmailSignupGroups;
-  }
-
-  public void setProvisionEmailSignupGroups(String provisionEmailSignupGroups) {
-    this.provisionEmailSignupGroups = provisionEmailSignupGroups;
-  }
-
-  public SsoStrategyEntity provisionFtpPermission(Boolean provisionFtpPermission) {
-    this.provisionFtpPermission = provisionFtpPermission;
-    return this;
-  }
-
-   /**
-   * Auto-provisioned users get FTP permission?
-   * @return provisionFtpPermission
-  **/
-  @Schema(example = "true", description = "Auto-provisioned users get FTP permission?")
-  public Boolean isProvisionFtpPermission() {
-    return provisionFtpPermission;
-  }
-
-  public void setProvisionFtpPermission(Boolean provisionFtpPermission) {
-    this.provisionFtpPermission = provisionFtpPermission;
-  }
-
-  public SsoStrategyEntity provisionGroupDefault(String provisionGroupDefault) {
-    this.provisionGroupDefault = provisionGroupDefault;
-    return this;
-  }
-
-   /**
-   * Comma-separated list of group names for groups to automatically add all auto-provisioned users to.
-   * @return provisionGroupDefault
-  **/
-  @Schema(example = "Employees", description = "Comma-separated list of group names for groups to automatically add all auto-provisioned users to.")
-  public String getProvisionGroupDefault() {
-    return provisionGroupDefault;
-  }
-
-  public void setProvisionGroupDefault(String provisionGroupDefault) {
-    this.provisionGroupDefault = provisionGroupDefault;
-  }
-
-  public SsoStrategyEntity provisionGroupExclusion(String provisionGroupExclusion) {
-    this.provisionGroupExclusion = provisionGroupExclusion;
-    return this;
-  }
-
-   /**
-   * Comma-separated list of group names for groups (with optional wildcards) that will be excluded from auto-provisioning.
-   * @return provisionGroupExclusion
-  **/
-  @Schema(example = "Employees", description = "Comma-separated list of group names for groups (with optional wildcards) that will be excluded from auto-provisioning.")
-  public String getProvisionGroupExclusion() {
-    return provisionGroupExclusion;
-  }
-
-  public void setProvisionGroupExclusion(String provisionGroupExclusion) {
-    this.provisionGroupExclusion = provisionGroupExclusion;
-  }
-
-  public SsoStrategyEntity provisionGroupInclusion(String provisionGroupInclusion) {
-    this.provisionGroupInclusion = provisionGroupInclusion;
-    return this;
-  }
-
-   /**
-   * Comma-separated list of group names for groups (with optional wildcards) that will be auto-provisioned.
-   * @return provisionGroupInclusion
-  **/
-  @Schema(example = "Employees", description = "Comma-separated list of group names for groups (with optional wildcards) that will be auto-provisioned.")
-  public String getProvisionGroupInclusion() {
-    return provisionGroupInclusion;
-  }
-
-  public void setProvisionGroupInclusion(String provisionGroupInclusion) {
-    this.provisionGroupInclusion = provisionGroupInclusion;
-  }
-
-  public SsoStrategyEntity provisionGroupRequired(String provisionGroupRequired) {
-    this.provisionGroupRequired = provisionGroupRequired;
-    return this;
-  }
-
-   /**
-   * Comma or newline separated list of group names (with optional wildcards) to require membership for user provisioning.
-   * @return provisionGroupRequired
-  **/
-  @Schema(description = "Comma or newline separated list of group names (with optional wildcards) to require membership for user provisioning.")
-  public String getProvisionGroupRequired() {
-    return provisionGroupRequired;
-  }
-
-  public void setProvisionGroupRequired(String provisionGroupRequired) {
-    this.provisionGroupRequired = provisionGroupRequired;
-  }
-
-  public SsoStrategyEntity provisionGroups(Boolean provisionGroups) {
-    this.provisionGroups = provisionGroups;
-    return this;
-  }
-
-   /**
-   * Auto-provision group membership based on group memberships on the SSO side?
-   * @return provisionGroups
-  **/
-  @Schema(description = "Auto-provision group membership based on group memberships on the SSO side?")
-  public Boolean isProvisionGroups() {
-    return provisionGroups;
-  }
-
-  public void setProvisionGroups(Boolean provisionGroups) {
-    this.provisionGroups = provisionGroups;
-  }
-
-  public SsoStrategyEntity provisionSftpPermission(Boolean provisionSftpPermission) {
-    this.provisionSftpPermission = provisionSftpPermission;
-    return this;
-  }
-
-   /**
-   * Auto-provisioned users get SFTP permission?
-   * @return provisionSftpPermission
-  **/
-  @Schema(example = "true", description = "Auto-provisioned users get SFTP permission?")
-  public Boolean isProvisionSftpPermission() {
-    return provisionSftpPermission;
-  }
-
-  public void setProvisionSftpPermission(Boolean provisionSftpPermission) {
-    this.provisionSftpPermission = provisionSftpPermission;
-  }
-
-  public SsoStrategyEntity provisionSiteAdminGroups(String provisionSiteAdminGroups) {
-    this.provisionSiteAdminGroups = provisionSiteAdminGroups;
-    return this;
-  }
-
-   /**
-   * Comma-separated list of group names whose members will be created as Site Admins.
-   * @return provisionSiteAdminGroups
-  **/
-  @Schema(example = "Employees", description = "Comma-separated list of group names whose members will be created as Site Admins.")
-  public String getProvisionSiteAdminGroups() {
-    return provisionSiteAdminGroups;
-  }
-
-  public void setProvisionSiteAdminGroups(String provisionSiteAdminGroups) {
-    this.provisionSiteAdminGroups = provisionSiteAdminGroups;
-  }
-
-  public SsoStrategyEntity provisionTimeZone(String provisionTimeZone) {
-    this.provisionTimeZone = provisionTimeZone;
-    return this;
-  }
-
-   /**
-   * Default time zone for auto provisioned users.
-   * @return provisionTimeZone
-  **/
-  @Schema(example = "Eastern Time (US & Canada)", description = "Default time zone for auto provisioned users.")
-  public String getProvisionTimeZone() {
-    return provisionTimeZone;
-  }
-
-  public void setProvisionTimeZone(String provisionTimeZone) {
-    this.provisionTimeZone = provisionTimeZone;
-  }
-
-  public SsoStrategyEntity provisionUsers(Boolean provisionUsers) {
-    this.provisionUsers = provisionUsers;
-    return this;
-  }
-
-   /**
-   * Auto-provision users?
-   * @return provisionUsers
-  **/
-  @Schema(description = "Auto-provision users?")
-  public Boolean isProvisionUsers() {
-    return provisionUsers;
-  }
-
-  public void setProvisionUsers(Boolean provisionUsers) {
-    this.provisionUsers = provisionUsers;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public SsoStrategyEntity samlProviderCertFingerprint(String samlProviderCertFingerprint) {
@@ -1027,6 +541,24 @@ public class SsoStrategyEntity {
     this.scimAuthenticationMethod = scimAuthenticationMethod;
   }
 
+  public SsoStrategyEntity scimUsername(String scimUsername) {
+    this.scimUsername = scimUsername;
+    return this;
+  }
+
+   /**
+   * SCIM username.
+   * @return scimUsername
+  **/
+  @Schema(description = "SCIM username.")
+  public String getScimUsername() {
+    return scimUsername;
+  }
+
+  public void setScimUsername(String scimUsername) {
+    this.scimUsername = scimUsername;
+  }
+
   public SsoStrategyEntity scimOauthAccessToken(String scimOauthAccessToken) {
     this.scimOauthAccessToken = scimOauthAccessToken;
     return this;
@@ -1063,24 +595,6 @@ public class SsoStrategyEntity {
     this.scimOauthAccessTokenExpiresAt = scimOauthAccessTokenExpiresAt;
   }
 
-  public SsoStrategyEntity scimUsername(String scimUsername) {
-    this.scimUsername = scimUsername;
-    return this;
-  }
-
-   /**
-   * SCIM username.
-   * @return scimUsername
-  **/
-  @Schema(description = "SCIM username.")
-  public String getScimUsername() {
-    return scimUsername;
-  }
-
-  public void setScimUsername(String scimUsername) {
-    this.scimUsername = scimUsername;
-  }
-
   public SsoStrategyEntity subdomain(String subdomain) {
     this.subdomain = subdomain;
     return this;
@@ -1099,6 +613,492 @@ public class SsoStrategyEntity {
     this.subdomain = subdomain;
   }
 
+  public SsoStrategyEntity provisionUsers(Boolean provisionUsers) {
+    this.provisionUsers = provisionUsers;
+    return this;
+  }
+
+   /**
+   * Auto-provision users?
+   * @return provisionUsers
+  **/
+  @Schema(description = "Auto-provision users?")
+  public Boolean isProvisionUsers() {
+    return provisionUsers;
+  }
+
+  public void setProvisionUsers(Boolean provisionUsers) {
+    this.provisionUsers = provisionUsers;
+  }
+
+  public SsoStrategyEntity provisionGroups(Boolean provisionGroups) {
+    this.provisionGroups = provisionGroups;
+    return this;
+  }
+
+   /**
+   * Auto-provision group membership based on group memberships on the SSO side?
+   * @return provisionGroups
+  **/
+  @Schema(description = "Auto-provision group membership based on group memberships on the SSO side?")
+  public Boolean isProvisionGroups() {
+    return provisionGroups;
+  }
+
+  public void setProvisionGroups(Boolean provisionGroups) {
+    this.provisionGroups = provisionGroups;
+  }
+
+  public SsoStrategyEntity deprovisionUsers(Boolean deprovisionUsers) {
+    this.deprovisionUsers = deprovisionUsers;
+    return this;
+  }
+
+   /**
+   * Auto-deprovision users?
+   * @return deprovisionUsers
+  **/
+  @Schema(description = "Auto-deprovision users?")
+  public Boolean isDeprovisionUsers() {
+    return deprovisionUsers;
+  }
+
+  public void setDeprovisionUsers(Boolean deprovisionUsers) {
+    this.deprovisionUsers = deprovisionUsers;
+  }
+
+  public SsoStrategyEntity deprovisionGroups(Boolean deprovisionGroups) {
+    this.deprovisionGroups = deprovisionGroups;
+    return this;
+  }
+
+   /**
+   * Auto-deprovision group membership based on group memberships on the SSO side?
+   * @return deprovisionGroups
+  **/
+  @Schema(description = "Auto-deprovision group membership based on group memberships on the SSO side?")
+  public Boolean isDeprovisionGroups() {
+    return deprovisionGroups;
+  }
+
+  public void setDeprovisionGroups(Boolean deprovisionGroups) {
+    this.deprovisionGroups = deprovisionGroups;
+  }
+
+  public SsoStrategyEntity deprovisionBehavior(DeprovisionBehaviorEnum deprovisionBehavior) {
+    this.deprovisionBehavior = deprovisionBehavior;
+    return this;
+  }
+
+   /**
+   * Method used for deprovisioning users.
+   * @return deprovisionBehavior
+  **/
+  @Schema(example = "disable", description = "Method used for deprovisioning users.")
+  public DeprovisionBehaviorEnum getDeprovisionBehavior() {
+    return deprovisionBehavior;
+  }
+
+  public void setDeprovisionBehavior(DeprovisionBehaviorEnum deprovisionBehavior) {
+    this.deprovisionBehavior = deprovisionBehavior;
+  }
+
+  public SsoStrategyEntity provisionGroupDefault(String provisionGroupDefault) {
+    this.provisionGroupDefault = provisionGroupDefault;
+    return this;
+  }
+
+   /**
+   * Comma-separated list of group names for groups to automatically add all auto-provisioned users to.
+   * @return provisionGroupDefault
+  **/
+  @Schema(example = "Employees", description = "Comma-separated list of group names for groups to automatically add all auto-provisioned users to.")
+  public String getProvisionGroupDefault() {
+    return provisionGroupDefault;
+  }
+
+  public void setProvisionGroupDefault(String provisionGroupDefault) {
+    this.provisionGroupDefault = provisionGroupDefault;
+  }
+
+  public SsoStrategyEntity provisionGroupExclusion(String provisionGroupExclusion) {
+    this.provisionGroupExclusion = provisionGroupExclusion;
+    return this;
+  }
+
+   /**
+   * Comma-separated list of group names for groups (with optional wildcards) that will be excluded from auto-provisioning.
+   * @return provisionGroupExclusion
+  **/
+  @Schema(example = "Employees", description = "Comma-separated list of group names for groups (with optional wildcards) that will be excluded from auto-provisioning.")
+  public String getProvisionGroupExclusion() {
+    return provisionGroupExclusion;
+  }
+
+  public void setProvisionGroupExclusion(String provisionGroupExclusion) {
+    this.provisionGroupExclusion = provisionGroupExclusion;
+  }
+
+  public SsoStrategyEntity provisionGroupInclusion(String provisionGroupInclusion) {
+    this.provisionGroupInclusion = provisionGroupInclusion;
+    return this;
+  }
+
+   /**
+   * Comma-separated list of group names for groups (with optional wildcards) that will be auto-provisioned.
+   * @return provisionGroupInclusion
+  **/
+  @Schema(example = "Employees", description = "Comma-separated list of group names for groups (with optional wildcards) that will be auto-provisioned.")
+  public String getProvisionGroupInclusion() {
+    return provisionGroupInclusion;
+  }
+
+  public void setProvisionGroupInclusion(String provisionGroupInclusion) {
+    this.provisionGroupInclusion = provisionGroupInclusion;
+  }
+
+  public SsoStrategyEntity provisionGroupRequired(String provisionGroupRequired) {
+    this.provisionGroupRequired = provisionGroupRequired;
+    return this;
+  }
+
+   /**
+   * Comma or newline separated list of group names (with optional wildcards) to require membership for user provisioning.
+   * @return provisionGroupRequired
+  **/
+  @Schema(description = "Comma or newline separated list of group names (with optional wildcards) to require membership for user provisioning.")
+  public String getProvisionGroupRequired() {
+    return provisionGroupRequired;
+  }
+
+  public void setProvisionGroupRequired(String provisionGroupRequired) {
+    this.provisionGroupRequired = provisionGroupRequired;
+  }
+
+  public SsoStrategyEntity provisionEmailSignupGroups(String provisionEmailSignupGroups) {
+    this.provisionEmailSignupGroups = provisionEmailSignupGroups;
+    return this;
+  }
+
+   /**
+   * Comma-separated list of group names whose members will be created with email_signup authentication.
+   * @return provisionEmailSignupGroups
+  **/
+  @Schema(example = "Employees", description = "Comma-separated list of group names whose members will be created with email_signup authentication.")
+  public String getProvisionEmailSignupGroups() {
+    return provisionEmailSignupGroups;
+  }
+
+  public void setProvisionEmailSignupGroups(String provisionEmailSignupGroups) {
+    this.provisionEmailSignupGroups = provisionEmailSignupGroups;
+  }
+
+  public SsoStrategyEntity provisionSiteAdminGroups(String provisionSiteAdminGroups) {
+    this.provisionSiteAdminGroups = provisionSiteAdminGroups;
+    return this;
+  }
+
+   /**
+   * Comma-separated list of group names whose members will be created as Site Admins.
+   * @return provisionSiteAdminGroups
+  **/
+  @Schema(example = "Employees", description = "Comma-separated list of group names whose members will be created as Site Admins.")
+  public String getProvisionSiteAdminGroups() {
+    return provisionSiteAdminGroups;
+  }
+
+  public void setProvisionSiteAdminGroups(String provisionSiteAdminGroups) {
+    this.provisionSiteAdminGroups = provisionSiteAdminGroups;
+  }
+
+  public SsoStrategyEntity provisionAttachmentsPermission(Boolean provisionAttachmentsPermission) {
+    this.provisionAttachmentsPermission = provisionAttachmentsPermission;
+    return this;
+  }
+
+   /**
+   * DEPRECATED: Auto-provisioned users get Sharing permission. Use a Group with the Bundle permission instead.
+   * @return provisionAttachmentsPermission
+  **/
+  @Schema(example = "true", description = "DEPRECATED: Auto-provisioned users get Sharing permission. Use a Group with the Bundle permission instead.")
+  public Boolean isProvisionAttachmentsPermission() {
+    return provisionAttachmentsPermission;
+  }
+
+  public void setProvisionAttachmentsPermission(Boolean provisionAttachmentsPermission) {
+    this.provisionAttachmentsPermission = provisionAttachmentsPermission;
+  }
+
+  public SsoStrategyEntity provisionDavPermission(Boolean provisionDavPermission) {
+    this.provisionDavPermission = provisionDavPermission;
+    return this;
+  }
+
+   /**
+   * Auto-provisioned users get WebDAV permission?
+   * @return provisionDavPermission
+  **/
+  @Schema(example = "true", description = "Auto-provisioned users get WebDAV permission?")
+  public Boolean isProvisionDavPermission() {
+    return provisionDavPermission;
+  }
+
+  public void setProvisionDavPermission(Boolean provisionDavPermission) {
+    this.provisionDavPermission = provisionDavPermission;
+  }
+
+  public SsoStrategyEntity provisionFtpPermission(Boolean provisionFtpPermission) {
+    this.provisionFtpPermission = provisionFtpPermission;
+    return this;
+  }
+
+   /**
+   * Auto-provisioned users get FTP permission?
+   * @return provisionFtpPermission
+  **/
+  @Schema(example = "true", description = "Auto-provisioned users get FTP permission?")
+  public Boolean isProvisionFtpPermission() {
+    return provisionFtpPermission;
+  }
+
+  public void setProvisionFtpPermission(Boolean provisionFtpPermission) {
+    this.provisionFtpPermission = provisionFtpPermission;
+  }
+
+  public SsoStrategyEntity provisionSftpPermission(Boolean provisionSftpPermission) {
+    this.provisionSftpPermission = provisionSftpPermission;
+    return this;
+  }
+
+   /**
+   * Auto-provisioned users get SFTP permission?
+   * @return provisionSftpPermission
+  **/
+  @Schema(example = "true", description = "Auto-provisioned users get SFTP permission?")
+  public Boolean isProvisionSftpPermission() {
+    return provisionSftpPermission;
+  }
+
+  public void setProvisionSftpPermission(Boolean provisionSftpPermission) {
+    this.provisionSftpPermission = provisionSftpPermission;
+  }
+
+  public SsoStrategyEntity provisionTimeZone(String provisionTimeZone) {
+    this.provisionTimeZone = provisionTimeZone;
+    return this;
+  }
+
+   /**
+   * Default time zone for auto provisioned users.
+   * @return provisionTimeZone
+  **/
+  @Schema(example = "Eastern Time (US & Canada)", description = "Default time zone for auto provisioned users.")
+  public String getProvisionTimeZone() {
+    return provisionTimeZone;
+  }
+
+  public void setProvisionTimeZone(String provisionTimeZone) {
+    this.provisionTimeZone = provisionTimeZone;
+  }
+
+  public SsoStrategyEntity provisionCompany(String provisionCompany) {
+    this.provisionCompany = provisionCompany;
+    return this;
+  }
+
+   /**
+   * Default company for auto provisioned users.
+   * @return provisionCompany
+  **/
+  @Schema(example = "ACME Corp.", description = "Default company for auto provisioned users.")
+  public String getProvisionCompany() {
+    return provisionCompany;
+  }
+
+  public void setProvisionCompany(String provisionCompany) {
+    this.provisionCompany = provisionCompany;
+  }
+
+  public SsoStrategyEntity ldapBaseDn(String ldapBaseDn) {
+    this.ldapBaseDn = ldapBaseDn;
+    return this;
+  }
+
+   /**
+   * Base DN for looking up users in LDAP server
+   * @return ldapBaseDn
+  **/
+  @Schema(description = "Base DN for looking up users in LDAP server")
+  public String getLdapBaseDn() {
+    return ldapBaseDn;
+  }
+
+  public void setLdapBaseDn(String ldapBaseDn) {
+    this.ldapBaseDn = ldapBaseDn;
+  }
+
+  public SsoStrategyEntity ldapDomain(String ldapDomain) {
+    this.ldapDomain = ldapDomain;
+    return this;
+  }
+
+   /**
+   * Domain name that will be appended to LDAP usernames
+   * @return ldapDomain
+  **/
+  @Schema(example = "mysite.com", description = "Domain name that will be appended to LDAP usernames")
+  public String getLdapDomain() {
+    return ldapDomain;
+  }
+
+  public void setLdapDomain(String ldapDomain) {
+    this.ldapDomain = ldapDomain;
+  }
+
+  public SsoStrategyEntity enabled(Boolean enabled) {
+    this.enabled = enabled;
+    return this;
+  }
+
+   /**
+   * Is strategy enabled?
+   * @return enabled
+  **/
+  @Schema(example = "true", description = "Is strategy enabled?")
+  public Boolean isEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
+
+  public SsoStrategyEntity ldapHost(String ldapHost) {
+    this.ldapHost = ldapHost;
+    return this;
+  }
+
+   /**
+   * LDAP host
+   * @return ldapHost
+  **/
+  @Schema(example = "ldap.site.com", description = "LDAP host")
+  public String getLdapHost() {
+    return ldapHost;
+  }
+
+  public void setLdapHost(String ldapHost) {
+    this.ldapHost = ldapHost;
+  }
+
+  public SsoStrategyEntity ldapHost2(String ldapHost2) {
+    this.ldapHost2 = ldapHost2;
+    return this;
+  }
+
+   /**
+   * LDAP backup host
+   * @return ldapHost2
+  **/
+  @Schema(example = "ldap2.site.com", description = "LDAP backup host")
+  public String getLdapHost2() {
+    return ldapHost2;
+  }
+
+  public void setLdapHost2(String ldapHost2) {
+    this.ldapHost2 = ldapHost2;
+  }
+
+  public SsoStrategyEntity ldapHost3(String ldapHost3) {
+    this.ldapHost3 = ldapHost3;
+    return this;
+  }
+
+   /**
+   * LDAP backup host
+   * @return ldapHost3
+  **/
+  @Schema(example = "ldap3.site.com", description = "LDAP backup host")
+  public String getLdapHost3() {
+    return ldapHost3;
+  }
+
+  public void setLdapHost3(String ldapHost3) {
+    this.ldapHost3 = ldapHost3;
+  }
+
+  public SsoStrategyEntity ldapPort(Integer ldapPort) {
+    this.ldapPort = ldapPort;
+    return this;
+  }
+
+   /**
+   * LDAP port
+   * @return ldapPort
+  **/
+  @Schema(example = "1", description = "LDAP port")
+  public Integer getLdapPort() {
+    return ldapPort;
+  }
+
+  public void setLdapPort(Integer ldapPort) {
+    this.ldapPort = ldapPort;
+  }
+
+  public SsoStrategyEntity ldapSecure(Boolean ldapSecure) {
+    this.ldapSecure = ldapSecure;
+    return this;
+  }
+
+   /**
+   * Use secure LDAP?
+   * @return ldapSecure
+  **/
+  @Schema(example = "true", description = "Use secure LDAP?")
+  public Boolean isLdapSecure() {
+    return ldapSecure;
+  }
+
+  public void setLdapSecure(Boolean ldapSecure) {
+    this.ldapSecure = ldapSecure;
+  }
+
+  public SsoStrategyEntity ldapUsername(String ldapUsername) {
+    this.ldapUsername = ldapUsername;
+    return this;
+  }
+
+   /**
+   * Username for signing in to LDAP server.
+   * @return ldapUsername
+  **/
+  @Schema(example = "[ldap username]", description = "Username for signing in to LDAP server.")
+  public String getLdapUsername() {
+    return ldapUsername;
+  }
+
+  public void setLdapUsername(String ldapUsername) {
+    this.ldapUsername = ldapUsername;
+  }
+
+  public SsoStrategyEntity ldapUsernameField(LdapUsernameFieldEnum ldapUsernameField) {
+    this.ldapUsernameField = ldapUsernameField;
+    return this;
+  }
+
+   /**
+   * LDAP username field
+   * @return ldapUsernameField
+  **/
+  @Schema(example = "sAMAccountName", description = "LDAP username field")
+  public LdapUsernameFieldEnum getLdapUsernameField() {
+    return ldapUsernameField;
+  }
+
+  public void setLdapUsernameField(LdapUsernameFieldEnum ldapUsernameField) {
+    this.ldapUsernameField = ldapUsernameField;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -1109,38 +1109,11 @@ public class SsoStrategyEntity {
       return false;
     }
     SsoStrategyEntity ssoStrategyEntity = (SsoStrategyEntity) o;
-    return Objects.equals(this.deprovisionBehavior, ssoStrategyEntity.deprovisionBehavior) &&
-        Objects.equals(this.deprovisionGroups, ssoStrategyEntity.deprovisionGroups) &&
-        Objects.equals(this.deprovisionUsers, ssoStrategyEntity.deprovisionUsers) &&
-        Objects.equals(this.enabled, ssoStrategyEntity.enabled) &&
-        Objects.equals(this.id, ssoStrategyEntity.id) &&
-        Objects.equals(this.label, ssoStrategyEntity.label) &&
-        Objects.equals(this.ldapBaseDn, ssoStrategyEntity.ldapBaseDn) &&
-        Objects.equals(this.ldapDomain, ssoStrategyEntity.ldapDomain) &&
-        Objects.equals(this.ldapHost, ssoStrategyEntity.ldapHost) &&
-        Objects.equals(this.ldapHost2, ssoStrategyEntity.ldapHost2) &&
-        Objects.equals(this.ldapHost3, ssoStrategyEntity.ldapHost3) &&
-        Objects.equals(this.ldapPort, ssoStrategyEntity.ldapPort) &&
-        Objects.equals(this.ldapSecure, ssoStrategyEntity.ldapSecure) &&
-        Objects.equals(this.ldapUsername, ssoStrategyEntity.ldapUsername) &&
-        Objects.equals(this.ldapUsernameField, ssoStrategyEntity.ldapUsernameField) &&
-        Objects.equals(this.logoUrl, ssoStrategyEntity.logoUrl) &&
-        Objects.equals(this.protocol, ssoStrategyEntity.protocol) &&
+    return Objects.equals(this.protocol, ssoStrategyEntity.protocol) &&
         Objects.equals(this.provider, ssoStrategyEntity.provider) &&
-        Objects.equals(this.provisionAttachmentsPermission, ssoStrategyEntity.provisionAttachmentsPermission) &&
-        Objects.equals(this.provisionCompany, ssoStrategyEntity.provisionCompany) &&
-        Objects.equals(this.provisionDavPermission, ssoStrategyEntity.provisionDavPermission) &&
-        Objects.equals(this.provisionEmailSignupGroups, ssoStrategyEntity.provisionEmailSignupGroups) &&
-        Objects.equals(this.provisionFtpPermission, ssoStrategyEntity.provisionFtpPermission) &&
-        Objects.equals(this.provisionGroupDefault, ssoStrategyEntity.provisionGroupDefault) &&
-        Objects.equals(this.provisionGroupExclusion, ssoStrategyEntity.provisionGroupExclusion) &&
-        Objects.equals(this.provisionGroupInclusion, ssoStrategyEntity.provisionGroupInclusion) &&
-        Objects.equals(this.provisionGroupRequired, ssoStrategyEntity.provisionGroupRequired) &&
-        Objects.equals(this.provisionGroups, ssoStrategyEntity.provisionGroups) &&
-        Objects.equals(this.provisionSftpPermission, ssoStrategyEntity.provisionSftpPermission) &&
-        Objects.equals(this.provisionSiteAdminGroups, ssoStrategyEntity.provisionSiteAdminGroups) &&
-        Objects.equals(this.provisionTimeZone, ssoStrategyEntity.provisionTimeZone) &&
-        Objects.equals(this.provisionUsers, ssoStrategyEntity.provisionUsers) &&
+        Objects.equals(this.label, ssoStrategyEntity.label) &&
+        Objects.equals(this.logoUrl, ssoStrategyEntity.logoUrl) &&
+        Objects.equals(this.id, ssoStrategyEntity.id) &&
         Objects.equals(this.samlProviderCertFingerprint, ssoStrategyEntity.samlProviderCertFingerprint) &&
         Objects.equals(this.samlProviderIssuerUrl, ssoStrategyEntity.samlProviderIssuerUrl) &&
         Objects.equals(this.samlProviderMetadataContent, ssoStrategyEntity.samlProviderMetadataContent) &&
@@ -1148,15 +1121,42 @@ public class SsoStrategyEntity {
         Objects.equals(this.samlProviderSloTargetUrl, ssoStrategyEntity.samlProviderSloTargetUrl) &&
         Objects.equals(this.samlProviderSsoTargetUrl, ssoStrategyEntity.samlProviderSsoTargetUrl) &&
         Objects.equals(this.scimAuthenticationMethod, ssoStrategyEntity.scimAuthenticationMethod) &&
+        Objects.equals(this.scimUsername, ssoStrategyEntity.scimUsername) &&
         Objects.equals(this.scimOauthAccessToken, ssoStrategyEntity.scimOauthAccessToken) &&
         Objects.equals(this.scimOauthAccessTokenExpiresAt, ssoStrategyEntity.scimOauthAccessTokenExpiresAt) &&
-        Objects.equals(this.scimUsername, ssoStrategyEntity.scimUsername) &&
-        Objects.equals(this.subdomain, ssoStrategyEntity.subdomain);
+        Objects.equals(this.subdomain, ssoStrategyEntity.subdomain) &&
+        Objects.equals(this.provisionUsers, ssoStrategyEntity.provisionUsers) &&
+        Objects.equals(this.provisionGroups, ssoStrategyEntity.provisionGroups) &&
+        Objects.equals(this.deprovisionUsers, ssoStrategyEntity.deprovisionUsers) &&
+        Objects.equals(this.deprovisionGroups, ssoStrategyEntity.deprovisionGroups) &&
+        Objects.equals(this.deprovisionBehavior, ssoStrategyEntity.deprovisionBehavior) &&
+        Objects.equals(this.provisionGroupDefault, ssoStrategyEntity.provisionGroupDefault) &&
+        Objects.equals(this.provisionGroupExclusion, ssoStrategyEntity.provisionGroupExclusion) &&
+        Objects.equals(this.provisionGroupInclusion, ssoStrategyEntity.provisionGroupInclusion) &&
+        Objects.equals(this.provisionGroupRequired, ssoStrategyEntity.provisionGroupRequired) &&
+        Objects.equals(this.provisionEmailSignupGroups, ssoStrategyEntity.provisionEmailSignupGroups) &&
+        Objects.equals(this.provisionSiteAdminGroups, ssoStrategyEntity.provisionSiteAdminGroups) &&
+        Objects.equals(this.provisionAttachmentsPermission, ssoStrategyEntity.provisionAttachmentsPermission) &&
+        Objects.equals(this.provisionDavPermission, ssoStrategyEntity.provisionDavPermission) &&
+        Objects.equals(this.provisionFtpPermission, ssoStrategyEntity.provisionFtpPermission) &&
+        Objects.equals(this.provisionSftpPermission, ssoStrategyEntity.provisionSftpPermission) &&
+        Objects.equals(this.provisionTimeZone, ssoStrategyEntity.provisionTimeZone) &&
+        Objects.equals(this.provisionCompany, ssoStrategyEntity.provisionCompany) &&
+        Objects.equals(this.ldapBaseDn, ssoStrategyEntity.ldapBaseDn) &&
+        Objects.equals(this.ldapDomain, ssoStrategyEntity.ldapDomain) &&
+        Objects.equals(this.enabled, ssoStrategyEntity.enabled) &&
+        Objects.equals(this.ldapHost, ssoStrategyEntity.ldapHost) &&
+        Objects.equals(this.ldapHost2, ssoStrategyEntity.ldapHost2) &&
+        Objects.equals(this.ldapHost3, ssoStrategyEntity.ldapHost3) &&
+        Objects.equals(this.ldapPort, ssoStrategyEntity.ldapPort) &&
+        Objects.equals(this.ldapSecure, ssoStrategyEntity.ldapSecure) &&
+        Objects.equals(this.ldapUsername, ssoStrategyEntity.ldapUsername) &&
+        Objects.equals(this.ldapUsernameField, ssoStrategyEntity.ldapUsernameField);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(deprovisionBehavior, deprovisionGroups, deprovisionUsers, enabled, id, label, ldapBaseDn, ldapDomain, ldapHost, ldapHost2, ldapHost3, ldapPort, ldapSecure, ldapUsername, ldapUsernameField, logoUrl, protocol, provider, provisionAttachmentsPermission, provisionCompany, provisionDavPermission, provisionEmailSignupGroups, provisionFtpPermission, provisionGroupDefault, provisionGroupExclusion, provisionGroupInclusion, provisionGroupRequired, provisionGroups, provisionSftpPermission, provisionSiteAdminGroups, provisionTimeZone, provisionUsers, samlProviderCertFingerprint, samlProviderIssuerUrl, samlProviderMetadataContent, samlProviderMetadataUrl, samlProviderSloTargetUrl, samlProviderSsoTargetUrl, scimAuthenticationMethod, scimOauthAccessToken, scimOauthAccessTokenExpiresAt, scimUsername, subdomain);
+    return Objects.hash(protocol, provider, label, logoUrl, id, samlProviderCertFingerprint, samlProviderIssuerUrl, samlProviderMetadataContent, samlProviderMetadataUrl, samlProviderSloTargetUrl, samlProviderSsoTargetUrl, scimAuthenticationMethod, scimUsername, scimOauthAccessToken, scimOauthAccessTokenExpiresAt, subdomain, provisionUsers, provisionGroups, deprovisionUsers, deprovisionGroups, deprovisionBehavior, provisionGroupDefault, provisionGroupExclusion, provisionGroupInclusion, provisionGroupRequired, provisionEmailSignupGroups, provisionSiteAdminGroups, provisionAttachmentsPermission, provisionDavPermission, provisionFtpPermission, provisionSftpPermission, provisionTimeZone, provisionCompany, ldapBaseDn, ldapDomain, enabled, ldapHost, ldapHost2, ldapHost3, ldapPort, ldapSecure, ldapUsername, ldapUsernameField);
   }
 
 
@@ -1165,38 +1165,11 @@ public class SsoStrategyEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class SsoStrategyEntity {\n");
     
-    sb.append("    deprovisionBehavior: ").append(toIndentedString(deprovisionBehavior)).append("\n");
-    sb.append("    deprovisionGroups: ").append(toIndentedString(deprovisionGroups)).append("\n");
-    sb.append("    deprovisionUsers: ").append(toIndentedString(deprovisionUsers)).append("\n");
-    sb.append("    enabled: ").append(toIndentedString(enabled)).append("\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    label: ").append(toIndentedString(label)).append("\n");
-    sb.append("    ldapBaseDn: ").append(toIndentedString(ldapBaseDn)).append("\n");
-    sb.append("    ldapDomain: ").append(toIndentedString(ldapDomain)).append("\n");
-    sb.append("    ldapHost: ").append(toIndentedString(ldapHost)).append("\n");
-    sb.append("    ldapHost2: ").append(toIndentedString(ldapHost2)).append("\n");
-    sb.append("    ldapHost3: ").append(toIndentedString(ldapHost3)).append("\n");
-    sb.append("    ldapPort: ").append(toIndentedString(ldapPort)).append("\n");
-    sb.append("    ldapSecure: ").append(toIndentedString(ldapSecure)).append("\n");
-    sb.append("    ldapUsername: ").append(toIndentedString(ldapUsername)).append("\n");
-    sb.append("    ldapUsernameField: ").append(toIndentedString(ldapUsernameField)).append("\n");
-    sb.append("    logoUrl: ").append(toIndentedString(logoUrl)).append("\n");
     sb.append("    protocol: ").append(toIndentedString(protocol)).append("\n");
     sb.append("    provider: ").append(toIndentedString(provider)).append("\n");
-    sb.append("    provisionAttachmentsPermission: ").append(toIndentedString(provisionAttachmentsPermission)).append("\n");
-    sb.append("    provisionCompany: ").append(toIndentedString(provisionCompany)).append("\n");
-    sb.append("    provisionDavPermission: ").append(toIndentedString(provisionDavPermission)).append("\n");
-    sb.append("    provisionEmailSignupGroups: ").append(toIndentedString(provisionEmailSignupGroups)).append("\n");
-    sb.append("    provisionFtpPermission: ").append(toIndentedString(provisionFtpPermission)).append("\n");
-    sb.append("    provisionGroupDefault: ").append(toIndentedString(provisionGroupDefault)).append("\n");
-    sb.append("    provisionGroupExclusion: ").append(toIndentedString(provisionGroupExclusion)).append("\n");
-    sb.append("    provisionGroupInclusion: ").append(toIndentedString(provisionGroupInclusion)).append("\n");
-    sb.append("    provisionGroupRequired: ").append(toIndentedString(provisionGroupRequired)).append("\n");
-    sb.append("    provisionGroups: ").append(toIndentedString(provisionGroups)).append("\n");
-    sb.append("    provisionSftpPermission: ").append(toIndentedString(provisionSftpPermission)).append("\n");
-    sb.append("    provisionSiteAdminGroups: ").append(toIndentedString(provisionSiteAdminGroups)).append("\n");
-    sb.append("    provisionTimeZone: ").append(toIndentedString(provisionTimeZone)).append("\n");
-    sb.append("    provisionUsers: ").append(toIndentedString(provisionUsers)).append("\n");
+    sb.append("    label: ").append(toIndentedString(label)).append("\n");
+    sb.append("    logoUrl: ").append(toIndentedString(logoUrl)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    samlProviderCertFingerprint: ").append(toIndentedString(samlProviderCertFingerprint)).append("\n");
     sb.append("    samlProviderIssuerUrl: ").append(toIndentedString(samlProviderIssuerUrl)).append("\n");
     sb.append("    samlProviderMetadataContent: ").append(toIndentedString(samlProviderMetadataContent)).append("\n");
@@ -1204,10 +1177,37 @@ public class SsoStrategyEntity {
     sb.append("    samlProviderSloTargetUrl: ").append(toIndentedString(samlProviderSloTargetUrl)).append("\n");
     sb.append("    samlProviderSsoTargetUrl: ").append(toIndentedString(samlProviderSsoTargetUrl)).append("\n");
     sb.append("    scimAuthenticationMethod: ").append(toIndentedString(scimAuthenticationMethod)).append("\n");
+    sb.append("    scimUsername: ").append(toIndentedString(scimUsername)).append("\n");
     sb.append("    scimOauthAccessToken: ").append(toIndentedString(scimOauthAccessToken)).append("\n");
     sb.append("    scimOauthAccessTokenExpiresAt: ").append(toIndentedString(scimOauthAccessTokenExpiresAt)).append("\n");
-    sb.append("    scimUsername: ").append(toIndentedString(scimUsername)).append("\n");
     sb.append("    subdomain: ").append(toIndentedString(subdomain)).append("\n");
+    sb.append("    provisionUsers: ").append(toIndentedString(provisionUsers)).append("\n");
+    sb.append("    provisionGroups: ").append(toIndentedString(provisionGroups)).append("\n");
+    sb.append("    deprovisionUsers: ").append(toIndentedString(deprovisionUsers)).append("\n");
+    sb.append("    deprovisionGroups: ").append(toIndentedString(deprovisionGroups)).append("\n");
+    sb.append("    deprovisionBehavior: ").append(toIndentedString(deprovisionBehavior)).append("\n");
+    sb.append("    provisionGroupDefault: ").append(toIndentedString(provisionGroupDefault)).append("\n");
+    sb.append("    provisionGroupExclusion: ").append(toIndentedString(provisionGroupExclusion)).append("\n");
+    sb.append("    provisionGroupInclusion: ").append(toIndentedString(provisionGroupInclusion)).append("\n");
+    sb.append("    provisionGroupRequired: ").append(toIndentedString(provisionGroupRequired)).append("\n");
+    sb.append("    provisionEmailSignupGroups: ").append(toIndentedString(provisionEmailSignupGroups)).append("\n");
+    sb.append("    provisionSiteAdminGroups: ").append(toIndentedString(provisionSiteAdminGroups)).append("\n");
+    sb.append("    provisionAttachmentsPermission: ").append(toIndentedString(provisionAttachmentsPermission)).append("\n");
+    sb.append("    provisionDavPermission: ").append(toIndentedString(provisionDavPermission)).append("\n");
+    sb.append("    provisionFtpPermission: ").append(toIndentedString(provisionFtpPermission)).append("\n");
+    sb.append("    provisionSftpPermission: ").append(toIndentedString(provisionSftpPermission)).append("\n");
+    sb.append("    provisionTimeZone: ").append(toIndentedString(provisionTimeZone)).append("\n");
+    sb.append("    provisionCompany: ").append(toIndentedString(provisionCompany)).append("\n");
+    sb.append("    ldapBaseDn: ").append(toIndentedString(ldapBaseDn)).append("\n");
+    sb.append("    ldapDomain: ").append(toIndentedString(ldapDomain)).append("\n");
+    sb.append("    enabled: ").append(toIndentedString(enabled)).append("\n");
+    sb.append("    ldapHost: ").append(toIndentedString(ldapHost)).append("\n");
+    sb.append("    ldapHost2: ").append(toIndentedString(ldapHost2)).append("\n");
+    sb.append("    ldapHost3: ").append(toIndentedString(ldapHost3)).append("\n");
+    sb.append("    ldapPort: ").append(toIndentedString(ldapPort)).append("\n");
+    sb.append("    ldapSecure: ").append(toIndentedString(ldapSecure)).append("\n");
+    sb.append("    ldapUsername: ").append(toIndentedString(ldapUsername)).append("\n");
+    sb.append("    ldapUsernameField: ").append(toIndentedString(ldapUsernameField)).append("\n");
     sb.append("}");
     return sb.toString();
   }

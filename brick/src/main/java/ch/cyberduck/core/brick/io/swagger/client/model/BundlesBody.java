@@ -25,7 +25,7 @@ import org.joda.time.DateTime;
  * BundlesBody
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class BundlesBody {
   @JsonProperty("user_id")
   private Integer userId = null;
@@ -155,7 +155,7 @@ public class BundlesBody {
    * Bundle expiration date/time
    * @return expiresAt
   **/
-  @Schema(example = "2000-01-01T01:00Z", description = "Bundle expiration date/time")
+  @Schema(description = "Bundle expiration date/time")
   public DateTime getExpiresAt() {
     return expiresAt;
   }

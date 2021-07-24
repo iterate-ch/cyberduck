@@ -23,34 +23,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * List File Comments by path
  */
 @Schema(description = "List File Comments by path")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class FileCommentEntity {
-  @JsonProperty("body")
-  private String body = null;
-
   @JsonProperty("id")
   private Integer id = null;
 
+  @JsonProperty("body")
+  private String body = null;
+
   @JsonProperty("reactions")
   private FileCommentReactionEntity reactions = null;
-
-  public FileCommentEntity body(String body) {
-    this.body = body;
-    return this;
-  }
-
-   /**
-   * Comment body.
-   * @return body
-  **/
-  @Schema(example = "What a great file!", description = "Comment body.")
-  public String getBody() {
-    return body;
-  }
-
-  public void setBody(String body) {
-    this.body = body;
-  }
 
   public FileCommentEntity id(Integer id) {
     this.id = id;
@@ -68,6 +50,24 @@ public class FileCommentEntity {
 
   public void setId(Integer id) {
     this.id = id;
+  }
+
+  public FileCommentEntity body(String body) {
+    this.body = body;
+    return this;
+  }
+
+   /**
+   * Comment body.
+   * @return body
+  **/
+  @Schema(example = "What a great file!", description = "Comment body.")
+  public String getBody() {
+    return body;
+  }
+
+  public void setBody(String body) {
+    this.body = body;
   }
 
   public FileCommentEntity reactions(FileCommentReactionEntity reactions) {
@@ -98,14 +98,14 @@ public class FileCommentEntity {
       return false;
     }
     FileCommentEntity fileCommentEntity = (FileCommentEntity) o;
-    return Objects.equals(this.body, fileCommentEntity.body) &&
-        Objects.equals(this.id, fileCommentEntity.id) &&
+    return Objects.equals(this.id, fileCommentEntity.id) &&
+        Objects.equals(this.body, fileCommentEntity.body) &&
         Objects.equals(this.reactions, fileCommentEntity.reactions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(body, id, reactions);
+    return Objects.hash(id, body, reactions);
   }
 
 
@@ -114,8 +114,8 @@ public class FileCommentEntity {
     StringBuilder sb = new StringBuilder();
     sb.append("class FileCommentEntity {\n");
     
-    sb.append("    body: ").append(toIndentedString(body)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    body: ").append(toIndentedString(body)).append("\n");
     sb.append("    reactions: ").append(toIndentedString(reactions)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -22,10 +22,73 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * LocksPathBody
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
 public class LocksPathBody {
+  @JsonProperty("allow_access_by_any_user")
+  private Boolean allowAccessByAnyUser = null;
+
+  @JsonProperty("exclusive")
+  private Boolean exclusive = null;
+
+  @JsonProperty("recursive")
+  private String recursive = null;
+
   @JsonProperty("timeout")
   private Integer timeout = null;
+
+  public LocksPathBody allowAccessByAnyUser(Boolean allowAccessByAnyUser) {
+    this.allowAccessByAnyUser = allowAccessByAnyUser;
+    return this;
+  }
+
+   /**
+   * Allow lock to be updated by any user?
+   * @return allowAccessByAnyUser
+  **/
+  @Schema(description = "Allow lock to be updated by any user?")
+  public Boolean isAllowAccessByAnyUser() {
+    return allowAccessByAnyUser;
+  }
+
+  public void setAllowAccessByAnyUser(Boolean allowAccessByAnyUser) {
+    this.allowAccessByAnyUser = allowAccessByAnyUser;
+  }
+
+  public LocksPathBody exclusive(Boolean exclusive) {
+    this.exclusive = exclusive;
+    return this;
+  }
+
+   /**
+   * Is lock exclusive?
+   * @return exclusive
+  **/
+  @Schema(description = "Is lock exclusive?")
+  public Boolean isExclusive() {
+    return exclusive;
+  }
+
+  public void setExclusive(Boolean exclusive) {
+    this.exclusive = exclusive;
+  }
+
+  public LocksPathBody recursive(String recursive) {
+    this.recursive = recursive;
+    return this;
+  }
+
+   /**
+   * Does lock apply to subfolders?
+   * @return recursive
+  **/
+  @Schema(description = "Does lock apply to subfolders?")
+  public String getRecursive() {
+    return recursive;
+  }
+
+  public void setRecursive(String recursive) {
+    this.recursive = recursive;
+  }
 
   public LocksPathBody timeout(Integer timeout) {
     this.timeout = timeout;
@@ -55,12 +118,15 @@ public class LocksPathBody {
       return false;
     }
     LocksPathBody locksPathBody = (LocksPathBody) o;
-    return Objects.equals(this.timeout, locksPathBody.timeout);
+    return Objects.equals(this.allowAccessByAnyUser, locksPathBody.allowAccessByAnyUser) &&
+        Objects.equals(this.exclusive, locksPathBody.exclusive) &&
+        Objects.equals(this.recursive, locksPathBody.recursive) &&
+        Objects.equals(this.timeout, locksPathBody.timeout);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(timeout);
+    return Objects.hash(allowAccessByAnyUser, exclusive, recursive, timeout);
   }
 
 
@@ -69,6 +135,9 @@ public class LocksPathBody {
     StringBuilder sb = new StringBuilder();
     sb.append("class LocksPathBody {\n");
     
+    sb.append("    allowAccessByAnyUser: ").append(toIndentedString(allowAccessByAnyUser)).append("\n");
+    sb.append("    exclusive: ").append(toIndentedString(exclusive)).append("\n");
+    sb.append("    recursive: ").append(toIndentedString(recursive)).append("\n");
     sb.append("    timeout: ").append(toIndentedString(timeout)).append("\n");
     sb.append("}");
     return sb.toString();
