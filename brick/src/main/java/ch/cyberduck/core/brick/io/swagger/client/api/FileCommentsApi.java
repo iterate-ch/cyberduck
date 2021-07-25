@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")public class FileCommentsApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T22:25:43.390877+02:00[Europe/Paris]")public class FileCommentsApi {
   private ApiClient apiClient;
 
   public FileCommentsApi() {
@@ -35,6 +35,49 @@ import java.util.Map;
     this.apiClient = apiClient;
   }
 
+  /**
+   * List File Comments by path
+   * List File Comments by path
+   * @param path Path to operate on. (required)
+   * @param cursor Used for pagination.  Send a cursor value to resume an existing list from the point at which you left off.  Get a cursor from an existing list via the X-Files-Cursor-Next header. (optional)
+   * @param perPage Number of records to show per page.  (Max: 10,000, 1,000 or less is recommended). (optional)
+   * @return List&lt;FileCommentEntity&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<FileCommentEntity> commentsListForPath(String path, String cursor, Integer perPage) throws ApiException {
+    Object localVarPostBody = null;
+    // verify the required parameter 'path' is set
+    if (path == null) {
+      throw new ApiException(400, "Missing the required parameter 'path' when calling commentsListForPath");
+    }
+    // create path and map variables
+    String localVarPath = "/file_comments/files/{path}"
+      .replaceAll("\\{" + "path" + "\\}", apiClient.escapeString(path.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "cursor", cursor));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "per_page", perPage));
+
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] {  };
+
+    GenericType<List<FileCommentEntity>> localVarReturnType = new GenericType<List<FileCommentEntity>>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
   /**
    * Delete File Comment
    * Delete File Comment
@@ -71,49 +114,6 @@ import java.util.Map;
     String[] localVarAuthNames = new String[] {  };
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
-  /**
-   * List File Comments by path
-   * List File Comments by path
-   * @param path Path to operate on. (required)
-   * @param cursor Used for pagination.  Send a cursor value to resume an existing list from the point at which you left off.  Get a cursor from an existing list via the X-Files-Cursor-Next header. (optional)
-   * @param perPage Number of records to show per page.  (Max: 10,000, 1,000 or less is recommended). (optional)
-   * @return List&lt;FileCommentEntity&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<FileCommentEntity> fileCommentsListForPath(String path, String cursor, Integer perPage) throws ApiException {
-    Object localVarPostBody = null;
-    // verify the required parameter 'path' is set
-    if (path == null) {
-      throw new ApiException(400, "Missing the required parameter 'path' when calling fileCommentsListForPath");
-    }
-    // create path and map variables
-    String localVarPath = "/file_comments/files/{path}"
-      .replaceAll("\\{" + "path" + "\\}", apiClient.escapeString(path.toString()));
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "cursor", cursor));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "per_page", perPage));
-
-
-    final String[] localVarAccepts = {
-      "application/json"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] {  };
-
-    GenericType<List<FileCommentEntity>> localVarReturnType = new GenericType<List<FileCommentEntity>>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Update File Comment

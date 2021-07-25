@@ -14,17 +14,19 @@ package ch.cyberduck.core.brick.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
+import ch.cyberduck.core.brick.io.swagger.client.model.UsageSnapshotEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.ArrayList;
 import java.util.List;
 import org.joda.time.LocalDate;
 /**
  * List Usage Daily Snapshots
  */
 @Schema(description = "List Usage Daily Snapshots")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-23T20:47:00.742522+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T22:25:43.390877+02:00[Europe/Paris]")
 public class UsageDailySnapshotEntity {
   @JsonProperty("id")
   private Integer id = null;
@@ -36,7 +38,7 @@ public class UsageDailySnapshotEntity {
   private Integer currentStorage = null;
 
   @JsonProperty("usage_by_top_level_dir")
-  private List usageByTopLevelDir = null;
+  private List<UsageSnapshotEntity> usageByTopLevelDir = null;
 
   public UsageDailySnapshotEntity id(Integer id) {
     this.id = id;
@@ -92,8 +94,16 @@ public class UsageDailySnapshotEntity {
     this.currentStorage = currentStorage;
   }
 
-  public UsageDailySnapshotEntity usageByTopLevelDir(List usageByTopLevelDir) {
+  public UsageDailySnapshotEntity usageByTopLevelDir(List<UsageSnapshotEntity> usageByTopLevelDir) {
     this.usageByTopLevelDir = usageByTopLevelDir;
+    return this;
+  }
+
+  public UsageDailySnapshotEntity addUsageByTopLevelDirItem(UsageSnapshotEntity usageByTopLevelDirItem) {
+    if (this.usageByTopLevelDir == null) {
+      this.usageByTopLevelDir = new ArrayList<>();
+    }
+    this.usageByTopLevelDir.add(usageByTopLevelDirItem);
     return this;
   }
 
@@ -102,11 +112,11 @@ public class UsageDailySnapshotEntity {
    * @return usageByTopLevelDir
   **/
   @Schema(description = "Usage broken down by each top-level folder")
-  public List getUsageByTopLevelDir() {
+  public List<UsageSnapshotEntity> getUsageByTopLevelDir() {
     return usageByTopLevelDir;
   }
 
-  public void setUsageByTopLevelDir(List usageByTopLevelDir) {
+  public void setUsageByTopLevelDir(List<UsageSnapshotEntity> usageByTopLevelDir) {
     this.usageByTopLevelDir = usageByTopLevelDir;
   }
 

@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")public class ExternalEventsApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T22:25:43.390877+02:00[Europe/Paris]")public class ExternalEventsApi {
   private ApiClient apiClient;
 
   public ExternalEventsApi() {
@@ -39,13 +39,13 @@ import java.util.Map;
    * List External Events
    * @param cursor Used for pagination.  Send a cursor value to resume an existing list from the point at which you left off.  Get a cursor from an existing list via the X-Files-Cursor-Next header. (optional)
    * @param perPage Number of records to show per page.  (Max: 10,000, 1,000 or less is recommended). (optional)
-   * @param sortBy If set, sort records by the specified field in either &#x27;asc&#x27; or &#x27;desc&#x27; direction (e.g. sort_by[last_login_at]&#x3D;desc). Valid fields are &#x60;remote_server_type&#x60;, &#x60;event_type&#x60;, &#x60;created_at&#x60; or &#x60;status&#x60;. (optional)
-   * @param filter If set, return records where the specifiied field is equal to the supplied value. Valid fields are &#x60;created_at&#x60;, &#x60;event_type&#x60;, &#x60;remote_server_type&#x60; or &#x60;status&#x60;. (optional)
-   * @param filterGt If set, return records where the specifiied field is greater than the supplied value. Valid fields are &#x60;created_at&#x60;, &#x60;event_type&#x60;, &#x60;remote_server_type&#x60; or &#x60;status&#x60;. (optional)
-   * @param filterGteq If set, return records where the specifiied field is greater than or equal to the supplied value. Valid fields are &#x60;created_at&#x60;, &#x60;event_type&#x60;, &#x60;remote_server_type&#x60; or &#x60;status&#x60;. (optional)
-   * @param filterLike If set, return records where the specifiied field is equal to the supplied value. Valid fields are &#x60;created_at&#x60;, &#x60;event_type&#x60;, &#x60;remote_server_type&#x60; or &#x60;status&#x60;. (optional)
-   * @param filterLt If set, return records where the specifiied field is less than the supplied value. Valid fields are &#x60;created_at&#x60;, &#x60;event_type&#x60;, &#x60;remote_server_type&#x60; or &#x60;status&#x60;. (optional)
-   * @param filterLteq If set, return records where the specifiied field is less than or equal to the supplied value. Valid fields are &#x60;created_at&#x60;, &#x60;event_type&#x60;, &#x60;remote_server_type&#x60; or &#x60;status&#x60;. (optional)
+   * @param sortBy If set, sort records by the specified field in either &#x27;asc&#x27; or &#x27;desc&#x27; direction (e.g. sort_by[last_login_at]&#x3D;desc). Valid fields are &#x60;remote_server_type&#x60;, &#x60;event_type&#x60;, &#x60;created_at&#x60;, &#x60;status&#x60;, &#x60;site_id&#x60; or &#x60;folder_behavior_id&#x60;. (optional)
+   * @param filter If set, return records where the specifiied field is equal to the supplied value. Valid fields are &#x60;created_at&#x60;, &#x60;event_type&#x60;, &#x60;remote_server_type&#x60;, &#x60;status&#x60; or &#x60;folder_behavior_id&#x60;. (optional)
+   * @param filterGt If set, return records where the specifiied field is greater than the supplied value. Valid fields are &#x60;created_at&#x60;, &#x60;event_type&#x60;, &#x60;remote_server_type&#x60;, &#x60;status&#x60; or &#x60;folder_behavior_id&#x60;. (optional)
+   * @param filterGteq If set, return records where the specifiied field is greater than or equal to the supplied value. Valid fields are &#x60;created_at&#x60;, &#x60;event_type&#x60;, &#x60;remote_server_type&#x60;, &#x60;status&#x60; or &#x60;folder_behavior_id&#x60;. (optional)
+   * @param filterLike If set, return records where the specifiied field is equal to the supplied value. Valid fields are &#x60;created_at&#x60;, &#x60;event_type&#x60;, &#x60;remote_server_type&#x60;, &#x60;status&#x60; or &#x60;folder_behavior_id&#x60;. (optional)
+   * @param filterLt If set, return records where the specifiied field is less than the supplied value. Valid fields are &#x60;created_at&#x60;, &#x60;event_type&#x60;, &#x60;remote_server_type&#x60;, &#x60;status&#x60; or &#x60;folder_behavior_id&#x60;. (optional)
+   * @param filterLteq If set, return records where the specifiied field is less than or equal to the supplied value. Valid fields are &#x60;created_at&#x60;, &#x60;event_type&#x60;, &#x60;remote_server_type&#x60;, &#x60;status&#x60; or &#x60;folder_behavior_id&#x60;. (optional)
    * @return List&lt;ExternalEventEntity&gt;
    * @throws ApiException if fails to make API call
    */

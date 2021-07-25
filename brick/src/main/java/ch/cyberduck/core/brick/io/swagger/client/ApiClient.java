@@ -51,7 +51,7 @@ import ch.cyberduck.core.brick.io.swagger.client.auth.HttpBasicAuth;
 import ch.cyberduck.core.brick.io.swagger.client.auth.ApiKeyAuth;
 import ch.cyberduck.core.brick.io.swagger.client.auth.OAuth;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-12T12:23:43.971535+02:00[Europe/Paris]")public class ApiClient {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T22:25:43.390877+02:00[Europe/Paris]")public class ApiClient {
   protected Map<String, String> defaultHeaderMap = new HashMap<String, String>();
   protected String basePath = "//app.files.com/api/rest/v1";
   protected boolean debugging = false;

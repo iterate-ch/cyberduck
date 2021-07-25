@@ -7,21 +7,20 @@ import ch.cyberduck.core.brick.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
-import ch.cyberduck.core.brick.io.swagger.client.model.DnsRecordEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T22:25:43.390877+02:00[Europe/Paris]")public class DnsRecordsApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T22:25:43.390877+02:00[Europe/Paris]")public class ActionWebhookFailuresApi {
   private ApiClient apiClient;
 
-  public DnsRecordsApi() {
+  public ActionWebhookFailuresApi() {
     this(Configuration.getDefaultApiClient());
   }
 
-  public DnsRecordsApi(ApiClient apiClient) {
+  public ActionWebhookFailuresApi(ApiClient apiClient) {
     this.apiClient = apiClient;
   }
 
@@ -34,29 +33,30 @@ import java.util.Map;
   }
 
   /**
-   * Show site DNS configuration.
-   * Show site DNS configuration.
-   * @param cursor Used for pagination.  Send a cursor value to resume an existing list from the point at which you left off.  Get a cursor from an existing list via the X-Files-Cursor-Next header. (optional)
-   * @param perPage Number of records to show per page.  (Max: 10,000, 1,000 or less is recommended). (optional)
-   * @return List&lt;DnsRecordEntity&gt;
+   * retry Action Webhook Failure
+   * retry Action Webhook Failure
+   * @param id Action Webhook Failure ID. (required)
    * @throws ApiException if fails to make API call
    */
-  public List<DnsRecordEntity> getDnsRecords(String cursor, Integer perPage) throws ApiException {
+  public void postActionWebhookFailuresIdRetry(Integer id) throws ApiException {
     Object localVarPostBody = null;
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling postActionWebhookFailuresIdRetry");
+    }
     // create path and map variables
-    String localVarPath = "/dns_records";
+    String localVarPath = "/action_webhook_failures/{id}/retry"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "cursor", cursor));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "per_page", perPage));
 
 
     final String[] localVarAccepts = {
-      "application/json"
+      
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -67,7 +67,6 @@ import java.util.Map;
 
     String[] localVarAuthNames = new String[] {  };
 
-    GenericType<List<DnsRecordEntity>> localVarReturnType = new GenericType<List<DnsRecordEntity>>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+    apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
 }
