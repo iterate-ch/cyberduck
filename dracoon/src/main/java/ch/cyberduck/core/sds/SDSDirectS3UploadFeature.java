@@ -221,7 +221,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
                 public void run() {
                     try {
                         final S3FileUploadStatus uploadStatus = new NodesApi(session.getClient())
-                            .requestUploadStatusFiles(createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
+                            .requestUploadStatusFiles(createFileUploadResponse.getUploadId(), StringUtils.EMPTY, null);
                         switch(uploadStatus.getStatus()) {
                             case "finishing":
                                 // Expected

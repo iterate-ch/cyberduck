@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class UploadsApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T23:34:01.480829+02:00[Europe/Paris]")public class UploadsApi {
   private ApiClient apiClient;
 
   public UploadsApi() {
@@ -61,7 +61,6 @@ import java.util.Map;
 
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -83,10 +82,11 @@ import java.util.Map;
 
 The &#x60;resolutionStrategy&#x60; in that case will be always &#x60;autorename&#x60; (required)
    * @param token Upload token (required)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node completeFileUploadByToken(CompleteUploadRequest body, String token) throws ApiException {
+  public Node completeFileUploadByToken(CompleteUploadRequest body, String token, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -106,7 +106,8 @@ The &#x60;resolutionStrategy&#x60; in that case will be always &#x60;autorename&
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-
+    if (xSdsDateFormat != null)
+      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -156,7 +157,6 @@ The &#x60;resolutionStrategy&#x60; in that case will be always &#x60;autorename&
 
     if (contentRange != null)
       localVarHeaderParams.put("Content-Range", apiClient.parameterToString(contentRange));
-
     if (file != null)
       localVarFormParams.put("file", file);
 

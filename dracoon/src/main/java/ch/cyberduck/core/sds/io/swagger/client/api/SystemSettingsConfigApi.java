@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class SystemSettingsConfigApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T23:34:01.480829+02:00[Europe/Paris]")public class SystemSettingsConfigApi {
   private ApiClient apiClient;
 
   public SystemSettingsConfigApi() {
@@ -64,7 +64,6 @@ import java.util.Map;
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -100,7 +99,6 @@ import java.util.Map;
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
 
     final String[] localVarAccepts = {
       "application/json"
@@ -138,7 +136,6 @@ import java.util.Map;
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -175,7 +172,6 @@ import java.util.Map;
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -211,7 +207,6 @@ import java.util.Map;
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
 
     final String[] localVarAccepts = {
       "application/json"
@@ -250,7 +245,6 @@ import java.util.Map;
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
 
     final String[] localVarAccepts = {
       "application/json"
@@ -293,7 +287,6 @@ import java.util.Map;
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -334,7 +327,6 @@ import java.util.Map;
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
 
     final String[] localVarAccepts = {
       "application/json"
@@ -377,7 +369,6 @@ import java.util.Map;
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -418,7 +409,6 @@ import java.util.Map;
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
 
     final String[] localVarAccepts = {
       "application/json"
@@ -462,7 +452,6 @@ import java.util.Map;
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
 
     final String[] localVarAccepts = {
       "application/json"

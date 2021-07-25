@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class AuthApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T23:34:01.480829+02:00[Europe/Paris]")public class AuthApi {
   private ApiClient apiClient;
 
   public AuthApi() {
@@ -76,7 +76,6 @@ import java.util.Map;
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "code", code));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "id_token", idToken));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "state", state));
-
 
 
     final String[] localVarAccepts = {
@@ -139,7 +138,6 @@ import java.util.Map;
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "test", test));
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -181,7 +179,6 @@ import java.util.Map;
 
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -212,7 +209,6 @@ import java.util.Map;
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
 
 
 
@@ -253,7 +249,6 @@ import java.util.Map;
 
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -287,7 +282,6 @@ import java.util.Map;
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
 
 
 
@@ -325,7 +319,6 @@ import java.util.Map;
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
 
 
 
@@ -371,7 +364,6 @@ import java.util.Map;
 
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -407,7 +399,6 @@ import java.util.Map;
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
 
 
 

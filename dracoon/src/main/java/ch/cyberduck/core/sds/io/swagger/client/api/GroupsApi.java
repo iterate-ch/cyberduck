@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class GroupsApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T23:34:01.480829+02:00[Europe/Paris]")public class GroupsApi {
   private ApiClient apiClient;
 
   public GroupsApi() {
@@ -77,7 +77,6 @@ import java.util.Map;
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -122,7 +121,6 @@ import java.util.Map;
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -164,7 +162,6 @@ import java.util.Map;
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -181,7 +178,7 @@ import java.util.Map;
   }
   /**
    * Remove group members
-   * ### Description:   Remove group members.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change groups&lt;/span&gt; required.  ### Postcondition:  Provided users are removed from the user group.  ### Further Information: Batch function.   The provided users are removed from the user group.
+   * ### Description:   Remove group members.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change groups&lt;/span&gt; required.  ### Postcondition:  Provided users are removed from the user group.  ### Further Information: Batch function.   The provided users are removed from the user group. Maximum number of users to remove in one request is 200.
    * @param body  (required)
    * @param groupId Group ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
@@ -213,7 +210,6 @@ import java.util.Map;
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
 
     final String[] localVarAccepts = {
       "application/json"
@@ -259,7 +255,6 @@ import java.util.Map;
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
 
     final String[] localVarAccepts = {
       "application/json"
@@ -309,7 +304,6 @@ import java.util.Map;
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -351,7 +345,6 @@ import java.util.Map;
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
 
     final String[] localVarAccepts = {
       "application/json"
@@ -406,7 +399,6 @@ import java.util.Map;
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -454,7 +446,6 @@ import java.util.Map;
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -496,7 +487,6 @@ import java.util.Map;
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
 
     final String[] localVarAccepts = {
       "application/json"
@@ -547,7 +537,6 @@ import java.util.Map;
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
 
     final String[] localVarAccepts = {
       "application/json"
