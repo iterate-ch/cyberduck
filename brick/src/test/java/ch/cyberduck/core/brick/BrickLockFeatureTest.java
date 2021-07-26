@@ -58,15 +58,17 @@ public class BrickLockFeatureTest extends AbstractBrickTest {
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(new BrickFindFeature(session).find(test));
-        final String lockid = new BrickLockFeature(session).lock(test);
+        final BrickLockFeature feature = new BrickLockFeature(session);
+        final String lockid = feature.lock(test);
         assertNotNull(lockid);
         try {
-            new BrickLockFeature(session).lock(test);
+            feature.lock(test);
             fail();
         }
         catch(LockedException e) {
             // Expected
         }
+        feature.unlock(test, lockid);
         new BrickDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(lockid)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
