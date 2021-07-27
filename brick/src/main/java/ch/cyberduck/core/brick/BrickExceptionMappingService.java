@@ -19,9 +19,12 @@ import ch.cyberduck.core.DefaultSocketExceptionMappingService;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
 
@@ -33,6 +36,10 @@ public class BrickExceptionMappingService extends AbstractExceptionMappingServic
 
     @Override
     public BackgroundException map(final ApiException failure) {
+        switch(failure.getCode()) {
+            case HttpStatus.SC_UNPROCESSABLE_ENTITY:
+                return new LockedException(StringUtils.EMPTY, failure);
+        }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SocketException) {
                 // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
