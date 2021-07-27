@@ -37,7 +37,7 @@ public class BrickLockFeature implements Lock<String> {
         try {
             return new LocksApi(new BrickApiClient(session.getApiKey(), session.getClient()))
                 .postLocksPath(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
-                    new LocksPathBody().exclusive(true)).getToken();
+                    new LocksPathBody().exclusive(true).allowAccessByAnyUser(true)).getToken();
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Failure to write attributes of {0}", e, file);
