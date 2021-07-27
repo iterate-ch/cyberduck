@@ -71,6 +71,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -92,11 +93,13 @@ public class ProfilesPreferencesController extends BundleController {
     /**
      * List of profiles installed
      */
-    private final Map<ProfileDescription, Profile> installed = new LinkedHashMap<>();
+    private final Map<ProfileDescription, Profile> installed
+        = Collections.synchronizedMap(new LinkedHashMap<>());
     /**
      * List of profiles from repository
      */
-    private final Map<ProfileDescription, Profile> repository = new LinkedHashMap<>();
+    private final Map<ProfileDescription, Profile> repository
+        = Collections.synchronizedMap(new LinkedHashMap<>());
 
     @Delegate
     private ProfilesTableDataSource profilesTableDataSource;
