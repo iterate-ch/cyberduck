@@ -82,55 +82,60 @@ After packaging, run `mvn test -DskipITs` to run unit tests but skip integration
 #### Repository Configuration
 Maven artifacts are available in a repository hosted on Amazon S3. 
 - Use the following Maven configuration in your project POM to reference artifacts from Cyberduck
- 
-         <repositories>
-             <repository>
-                 <id>maven.cyberduck.io-release</id>
-                 <url>http://repo.maven.cyberduck.io.s3.amazonaws.com/releases/</url>
-                 <layout>default</layout>
-                 <releases>
-                     <enabled>true</enabled>
-                 </releases>
-                 <snapshots>
-                     <enabled>false</enabled>
-                 </snapshots>
-             </repository>
-         </repositories>
+ ```xml
+<repositories>
+    <repository>
+        <id>maven.cyberduck.io-release</id>
+        <url>http://repo.maven.cyberduck.io.s3.amazonaws.com/releases/</url>
+        <layout>default</layout>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+```
          
 - You will need to add the AWS Maven Wagon to your build using
-
-         <build>
-             <extensions>
-                 <extension>
-                     <groupId>org.springframework.build</groupId>
-                     <artifactId>aws-maven</artifactId>
-                     <version>5.0.0.RELEASE</version>
-                 </extension>
-             </extensions>
-         </build>
+```xml
+<build>
+    <extensions>
+        <extension>
+            <groupId>org.springframework.build</groupId>
+            <artifactId>aws-maven</artifactId>
+            <version>5.0.0.RELEASE</version>
+        </extension>
+    </extensions>
+</build>
+```
 
 #### Artifacts
 - Protocol implementations
-
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>protocols</artifactId>
-            <type>pom</type>
-            <version>7.1.0</version>
-        </dependency>
+```xml
+<dependency>
+    <groupId>ch.cyberduck</groupId>
+    <artifactId>protocols</artifactId>
+    <type>pom</type>
+    <version>7.1.0</version>
+</dependency>
+```
 
 - Cocoa Java Bindings (macOS)
-
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>binding</artifactId>
-            <version>7.1.0</version>
-        </dependency>
+```xml
+<dependency>
+    <groupId>ch.cyberduck</groupId>
+    <artifactId>binding</artifactId>
+    <version>7.1.0</version>
+</dependency>
+```
 
 - Implementations (macOS) using Launch Services, SystemConfiguration, Foundation, Keychain and other API
-
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>libcore</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+```xml
+<dependency>
+    <groupId>ch.cyberduck</groupId>
+    <artifactId>libcore</artifactId>
+    <version>${project.version}</version>
+</dependency>
+```
