@@ -64,6 +64,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus().withLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledLoginCallback());
+        local.delete();
         assertTrue(new BrickFindFeature(session).find(test));
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new BrickCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
@@ -71,7 +72,6 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         assertTrue(new BrickFindFeature(session).find(copy));
         new BrickDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new BrickDeleteFeature(session).delete(Collections.<Path>singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        local.delete();
     }
 
     @Test
@@ -85,6 +85,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus().withLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledLoginCallback());
+        local.delete();
         assertTrue(new BrickFindFeature(session).find(test));
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new BrickTouchFeature(session).touch(copy, new TransferStatus());
@@ -93,7 +94,6 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
         new BrickDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        local.delete();
     }
 
     @Test
@@ -108,6 +108,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus().withLength(random.length);
         new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledLoginCallback());
+        local.delete();
         assertTrue(new BrickFindFeature(session).find(file));
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new BrickCopyFeature(session).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback());
@@ -115,6 +116,5 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         assertTrue(new BrickFindFeature(session).find(copy));
         assertTrue(new BrickFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
         new BrickDeleteFeature(session).delete(Arrays.asList(copy, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        local.delete();
     }
 }
