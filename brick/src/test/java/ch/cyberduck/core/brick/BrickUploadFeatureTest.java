@@ -28,11 +28,9 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -50,19 +48,19 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path test = new Path(root, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final String random = new RandomStringGenerator.Builder().build().generate(1000);
-        IOUtils.write(random, local.getOutputStream(false), Charset.defaultCharset());
+        final byte[] random = RandomUtils.nextBytes(854);
+        IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
-        status.setLength(random.getBytes().length);
+        status.setLength(random.length);
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             count, status, new DisabledLoginCallback());
-        assertEquals(random.getBytes().length, count.getSent());
+        assertEquals(random.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new BrickFindFeature(session).find(test));
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(test);
-        assertEquals(random.getBytes().length, attributes.getSize());
+        assertEquals(random.length, attributes.getSize());
         new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
