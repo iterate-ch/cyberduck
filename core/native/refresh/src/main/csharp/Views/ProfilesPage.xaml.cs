@@ -1,12 +1,10 @@
-﻿using System;
-using System.Reactive.Linq;
-using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
+﻿using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
 using ReactiveUI;
+using System;
+using System.Reactive.Linq;
 
 namespace Ch.Cyberduck.Core.Refresh.Views
 {
-    public abstract class ProfilesPageBase : ReactiveUserControl<ProfilesViewModel> { }
-
     public partial class ProfilesPage
     {
         public ProfilesPage()
@@ -19,8 +17,10 @@ namespace Ch.Cyberduck.Core.Refresh.Views
                 d(this.Bind(ViewModel, vm => vm.FilterText, v => v.Search.Text));
                 d(this.OneWayBind(ViewModel, x => x.Profiles, x => x.profilesList.ItemsSource));
 
-                d(ViewModel.LoadProfiles.Execute().Subscribe());
+                d(ViewModel.LoadProfiles.ExecuteIfPossible().Subscribe());
             });
         }
     }
+
+    public abstract class ProfilesPageBase : ReactiveUserControl<ProfilesViewModel> { }
 }
