@@ -49,7 +49,6 @@
             Icon="icon.ico">
             <ShortcutProperty Key="System.AppUserModel.ID" Value="iterate.Cyberduck" />
           </Shortcut>
-          <netfx:NativeImage Id="ngen_product.exe" Platform="64bit" Priority="3" />
         </File>
 
         <ProgId Id="Cyberduck.Bookmark" Description="Cyberduck Bookmark" Icon="cd_document.ico" Advertise="yes">
@@ -98,15 +97,6 @@
       <Component Id="Cyberduck.Exe.Config">
         <File Source="$(var.cyberduck.TargetDir)/Cyberduck.exe.config" KeyPath="yes" Checksum="yes"/>
       </Component>
-      <Component Id="ExceptionReporter.WinForms">
-          <File Source="$(var.cyberduck.TargetDir)/ExceptionReporter.NET.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="DotNetZip">
-        <File Source="$(var.cyberduck.TargetDir)/DotNetZip.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="SimpleMapi">
-        <File Source="$(var.cyberduck.TargetDir)/SimpleMapi.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
       <Component Id="CustomOpenFileFolderDialog">
         <File Source="$(var.cyberduck.TargetDir)/CustomOpenFileFolderDialog.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
@@ -117,14 +107,7 @@
         <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="Cyberduck.Core.Refresh">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Refresh.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_Cyberduck.Core.Refresh" Platform="64bit" Priority="3" />
-        </File>
-      </Component>
-      <Component Id="Cyberduck.Core.Refresh">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Refresh.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_Cyberduck.Core.Refresh" Platform="64bit" Priority="3" />
-        </File>
+          <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Refresh.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Protocols">
         <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Protocols.dll" KeyPath="yes" Checksum="yes"/>
@@ -158,78 +141,6 @@
         </Component>
         <Component Id="ikvm.localedata">
             <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Localedata.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="DynamicData">
-        <File Source="$(var.cyberduck.TargetDir)/DynamicData.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="Pharmacist.Common">
-        <File Source="$(var.cyberduck.TargetDir)/Pharmacist.Common.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="ReactiveUI">
-        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="ReactiveUI.Events.WPF">
-        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.Events.WPF.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="ReactiveUI.Fody.Helpers">
-        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.Fody.Helpers.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="ReactiveUI.Wpf">
-        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.Wpf.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="Splat">
-        <File Source="$(var.cyberduck.TargetDir)/Splat.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="System.Reactive">
-        <File Source="$(var.cyberduck.TargetDir)/System.Reactive.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="DotNetProjects.Wpf.Extended.Toolkit.dll">
-        <File Source="$(var.cyberduck.TargetDir)/DotNetProjects.Wpf.Extended.Toolkit.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="DynamicData">
-        <File Source="$(var.cyberduck.TargetDir)/DynamicData.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_DynamicData" Platform="64bit" Priority="3" />
-        </File>
-      </Component>
-      <Component Id="Pharmacist.Common">
-        <File Source="$(var.cyberduck.TargetDir)/Pharmacist.Common.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_Pharmacist.Common" Platform="64bit" Priority="3" />
-        </File>
-      </Component>
-      <Component Id="ReactiveUI">
-        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ReactiveUI" Platform="64bit" Priority="3" />
-        </File>
-      </Component>
-      <Component Id="ReactiveUI.Events.WPF">
-        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.Events.WPF.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ReactiveUI.Events.WPF" Platform="64bit" Priority="3" />
-        </File>
-      </Component>
-      <Component Id="ReactiveUI.Fody.Helpers">
-        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.Fody.Helpers.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ReactiveUI.Fody.Helpers" Platform="64bit" Priority="3" />
-        </File>
-      </Component>
-      <Component Id="ReactiveUI.Wpf">
-        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.Wpf.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ReactiveUI.Wpf" Platform="64bit" Priority="3" />
-        </File>
-      </Component>
-      <Component Id="Splat">
-        <File Source="$(var.cyberduck.TargetDir)/Splat.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_Splat" Platform="64bit" Priority="3" />
-        </File>
-      </Component>
-      <Component Id="System.Reactive">
-        <File Source="$(var.cyberduck.TargetDir)/System.Reactive.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_System.Reactive" Platform="64bit" Priority="3" />
-        </File>
-      </Component>
-      <Component Id="DotNetProjects.Wpf.Extended.Toolkit.dll">
-        <File Source="$(var.cyberduck.TargetDir)/DotNetProjects.Wpf.Extended.Toolkit.dll.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_DotNetProjects.Wpf.Extended.Toolkit.dll" Platform="64bit" Priority="3" />
-        </File>
       </Component>
       <Component Id="ikvm.security">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Security.dll" KeyPath="yes" Checksum="yes"/>
@@ -285,18 +196,6 @@
       <Component Id="objectlistview">
         <File Source="$(var.cyberduck.TargetDir)/ObjectListView.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
-      <Component Id="structuremap">
-        <File Source="$(var.cyberduck.TargetDir)/StructureMap.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="WAPICP">
-        <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="WAPICPShell">
-        <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.Shell.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <Component Id="MSTKUWPNotifications">
-        <File Source="$(var.cyberduck.TargetDir)/Microsoft.Toolkit.Uwp.Notifications.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
       <Component Id="ikvm.native">
         <File Source="$(var.cyberduck.TargetDir)/ikvm-native-win32-x64.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
@@ -309,6 +208,72 @@
       <Component Id="sunec">
         <File Source="$(var.cyberduck.TargetDir)/sunec.dll" KeyPath="yes" Checksum="yes" />
       </Component>
+        
+      <!-- NuGet Dependencies -->
+      <!-- DotNetProjects.Extended.Wpf.Toolkit -->
+      <Component Id="DotNetProjects.Wpf.Extended.Toolkit.dll">
+        <File Source="$(var.cyberduck.TargetDir)/DotNetProjects.Wpf.Extended.Toolkit.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <!-- ExceptionReporter -->
+      <Component Id="ExceptionReporter.WinForms">
+        <File Source="$(var.cyberduck.TargetDir)/ExceptionReporter.NET.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="DotNetZip">
+        <File Source="$(var.cyberduck.TargetDir)/DotNetZip.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="SimpleMapi">
+        <File Source="$(var.cyberduck.TargetDir)/SimpleMapi.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <!-- Microsoft.Toolkit.Uwp.Notifications -->
+      <Component Id="MSTKUWPNotifications">
+        <File Source="$(var.cyberduck.TargetDir)/Microsoft.Toolkit.Uwp.Notifications.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <!-- ReactiveUI.Events.WPF -->
+      <Component Id="ReactiveUI.Events.WPF">
+        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.Events.WPF.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <!-- Pharmacist.Common -->
+      <Component Id="Pharmacist.Common">
+        <File Source="$(var.cyberduck.TargetDir)/Pharmacist.Common.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <!-- System.Reactive -->
+      <Component Id="System.Reactive">
+        <File Source="$(var.cyberduck.TargetDir)/System.Reactive.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <!-- ReactiveUI.Fody-->
+      <Component Id="ReactiveUI.Fody.Helpers">
+        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.Fody.Helpers.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <!-- ReactiveUI.WPF-->
+      <Component Id="ReactiveUI.Wpf">
+        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.Wpf.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <!-- ReactiveUI -->
+      <Component Id="ReactiveUI">
+        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <!-- DynamicData -->
+      <Component Id="DynamicData">
+        <File Source="$(var.cyberduck.TargetDir)/DynamicData.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <!-- Splat -->
+      <Component Id="Splat">
+        <File Source="$(var.cyberduck.TargetDir)/Splat.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <!-- StructureMap -->
+      <Component Id="structuremap">
+        <File Source="$(var.cyberduck.TargetDir)/StructureMap.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <!-- WindowsAPICodePack-Core -->
+      <Component Id="WAPICP">
+        <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <!-- WindowsAPICodePack-Shell-->
+      <Component Id="WAPICPShell">
+        <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.Shell.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <!-- /Nuget Dependencies -->
+            
       <Component Id="additional" Guid="c0733025-a4ec-4437-8617-0ace7d29318a">
         <File Source="$(var.cyberduck.TargetDir)/Acknowledgments.rtf" Checksum="yes" />
         <File Source="$(var.cyberduck.TargetDir)/License.txt" Checksum="yes" />
