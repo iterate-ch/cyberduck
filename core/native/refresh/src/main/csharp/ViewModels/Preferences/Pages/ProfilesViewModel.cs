@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using ch.cyberduck.core.profiles;
+﻿using ch.cyberduck.core.profiles;
 using ch.cyberduck.core.serializer.impl.dd;
 using Ch.Cyberduck.Core.Refresh.Models;
 using DynamicData;
@@ -17,10 +8,20 @@ using java.util.concurrent;
 using org.apache.log4j;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 {
     using ch.cyberduck.core;
+    using System.Reactive.Subjects;
 
     public class ProfilesViewModel : ReactiveObject
     {
@@ -40,6 +41,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
             }
 
             Func<CancellationToken, Task<IEnumerable<DescribedProfile>>> pass = CreateHandler(periodicUpdater, reader, installed);
+            BehaviorSubject<bool> initialized = new(false);
             LoadProfiles = ReactiveCommand.CreateFromTask(async (cancel) =>
             {
                 Profiles.Clear();
@@ -50,9 +52,11 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                 }
                 finally
                 {
+                    initialized.OnNext(true);
+
                     Busy = false;
                 }
-            });
+            }, initialized.Select(x => !x));
 
             var profiles = LoadProfiles.ToObservableChangeSet()
                 .Transform(x => new ProfileViewModel(x, this.installed.ContainsKey(x.Description)))
@@ -127,12 +131,12 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
             private readonly ProfilePlistReader reader;
             private readonly ConcurrentDictionary<ProfileDescription, DescribedProfile> repository = new();
 
-            public ICollection<DescribedProfile> List => repository.Values;
-
             public Visitor(ProfilePlistReader reader)
             {
                 this.reader = reader;
             }
+
+            public ICollection<DescribedProfile> List => repository.Values;
 
             public void Reset() => repository.Clear();
 
