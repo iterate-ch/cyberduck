@@ -118,8 +118,8 @@ namespace Ch.Cyberduck.Ui
             public object GetService(Type serviceType, string contract = null)
             {
                 return string.IsNullOrEmpty(contract)
-                    ? ObjectFactory.GetInstance(serviceType)
-                    : ObjectFactory.GetNamedInstance(serviceType, contract);
+                    ? ObjectFactory.TryGetInstance(serviceType)
+                    : ObjectFactory.TryGetInstance(serviceType, contract);
             }
 
             public IEnumerable<object> GetServices(Type serviceType, string contract = null) => ObjectFactory.GetAllInstances(serviceType).Cast<object>();
