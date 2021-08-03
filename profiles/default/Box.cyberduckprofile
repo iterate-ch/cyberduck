@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>box</string>
+        <key>Vendor</key>
+        <string>iterate GmbH</string>
+        <key>Bundled</key>
+        <true/>
+        <key>Default Hostname</key>
+        <string>api.box.com</string>
+        <key>OAuth Authorization Url</key>
+        <string>https://account.box.com/api/oauth2/authorize/</string>
+        <key>OAuth Token Url</key>
+        <string>https://api.box.com/oauth2/token/</string>
+        <key>Scopes</key>
+        <array>
+            <string>root_readwrite</string>
+        </array>
+        <key>OAuth Client ID</key>
+        <string>oiplkl6irbj3ue038yxbigj1d5gaiubw</string>
+        <key>OAuth Client Secret</key>
+        <string>9VXXdKpXFn7wVNlbVylGR9sfB7L73nVM</string>
+        <key>OAuth Redirect Url</key>
+        <string>https://cyberduck.io/oauth/</string>
+        <key>Password Configurable</key>
+        <false/>
+        <key>Username Configurable</key>
+        <false/>
+    </dict>
+</plist>
