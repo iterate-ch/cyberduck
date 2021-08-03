@@ -870,6 +870,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("brick.migration.interval.ms", String.valueOf(500L));
         this.setDefault("brick.migration.interrupt.ms", String.valueOf(10 * 1000L)); // 10sec
         this.setDefault("brick.listing.chunksize", String.valueOf(1000));
+        this.setDefault("brick.upload.multipart.size", String.valueOf(10L * 1024L * 1024L)); // 10MB
+        this.setDefault("brick.upload.multipart.concurrency", String.valueOf(10));
 
         this.setDefault("dropbox.upload.chunksize", String.valueOf(150 * 1024L * 1024L));
         this.setDefault("dropbox.business.enable", String.valueOf(true));

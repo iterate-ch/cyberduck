@@ -61,8 +61,8 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     private final Integer concurrency;
 
     public BrickUploadFeature(final BrickSession session, final Write<Void> writer) {
-        this(session, writer, PreferencesFactory.get().getLong("s3.upload.multipart.size"),
-            PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
+        this(session, writer, PreferencesFactory.get().getLong("brick.upload.multipart.size"),
+            PreferencesFactory.get().getInteger("brick.upload.multipart.concurrency"));
     }
 
     public BrickUploadFeature(final BrickSession session, final Write<Void> writer, final Long partsize, final Integer concurrency) {
