@@ -278,6 +278,12 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     public List<Acl.User> getAvailableAclUsers() {
         return new ArrayList<>(Arrays.asList(
             new Acl.CanonicalUser(),
+            new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED, false) {
+                @Override
+                public String getPlaceholder() {
+                    return LocaleFactory.localizedString("http://acs.amazonaws.com/groups/global/AuthenticatedUsers", "S3");
+                }
+            },
             new Acl.GroupUser(Acl.GroupUser.EVERYONE, false),
             new Acl.EmailUser() {
                 @Override
