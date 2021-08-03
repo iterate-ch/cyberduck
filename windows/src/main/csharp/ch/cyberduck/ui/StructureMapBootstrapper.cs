@@ -17,6 +17,7 @@
 //
 
 using ch.cyberduck.core;
+using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.profiles;
 using Ch.Cyberduck.Core;
@@ -48,8 +49,9 @@ namespace Ch.Cyberduck.Ui
                 x.ForConcreteType<BaseController>();
                 x.Forward<BaseController, ch.cyberduck.core.Controller>();
 
-                x.For<Preferences>().Use(() => PreferencesFactory.get());
-                x.For<ProtocolFactory>().Use(() => ProtocolFactory.get());
+                x.For<Preferences>().Use(PreferencesFactory.get);
+                x.For<ProtocolFactory>().Use(ProtocolFactory.get);
+                x.For<Locale>().Use(LocaleFactory.get);
 
                 x.For<IBrowserView>().Use<BrowserForm>();
                 x.For<IInfoView>().Use<InfoForm>();
