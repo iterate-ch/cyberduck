@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class DownloadsApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T23:34:01.480829+02:00[Europe/Paris]")public class DownloadsApi {
   private ApiClient apiClient;
 
   public DownloadsApi() {
@@ -60,7 +60,6 @@ import java.util.Map;
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
 
 
 
@@ -111,7 +110,6 @@ import java.util.Map;
     if (range != null)
       localVarHeaderParams.put("Range", apiClient.parameterToString(range));
 
-
     final String[] localVarAccepts = {
       "application/octet-stream"
     };
@@ -158,7 +156,6 @@ import java.util.Map;
     if (range != null)
       localVarHeaderParams.put("Range", apiClient.parameterToString(range));
 
-
     final String[] localVarAccepts = {
       "application/octet-stream"
     };
@@ -193,7 +190,6 @@ import java.util.Map;
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
 
 
 
