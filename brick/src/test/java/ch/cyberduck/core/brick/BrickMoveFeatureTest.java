@@ -54,7 +54,7 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         new BrickDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testMoveWithLock() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), test.getName());

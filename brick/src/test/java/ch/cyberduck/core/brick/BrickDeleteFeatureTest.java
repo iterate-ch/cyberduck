@@ -38,7 +38,7 @@ import java.util.EnumSet;
 @Category(IntegrationTest.class)
 public class BrickDeleteFeatureTest extends AbstractBrickTest {
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testDeleteWithLock() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), test.getName());
