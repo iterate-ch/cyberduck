@@ -110,7 +110,7 @@
             <dependency>
                 <groupId>ch.iterate.s3</groupId>
                 <artifactId>jets3t</artifactId>
-                <version>0.9.27</version>
+                <version>0.9.28</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>

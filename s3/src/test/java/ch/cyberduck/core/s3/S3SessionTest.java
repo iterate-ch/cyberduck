@@ -24,10 +24,12 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.jets3t.service.utils.SignatureUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -335,5 +337,11 @@ public class S3SessionTest extends AbstractS3Test {
         assertFalse(S3Session.isAwsHostname("s3.amazonaws.com.cn", false));
         assertTrue(S3Session.isAwsHostname("s3.cn-north-1.amazonaws.com.cn"));
         assertFalse(S3Session.isAwsHostname("s3.cn-north-1.amazonaws.com.cn", false));
+        assertFalse(S3Session.isAwsHostname("vpce-0971cacd1f2.s3.eu-west-1.vpce.amazonaws.com", false));
+    }
+
+    @Test
+    public void testVpcHostname() {
+        assertEquals("eu-west-1", SignatureUtils.awsRegionForRequest(URI.create("https://vpce-1.s3.eu-west-1.vpce.amazonaws.com")));
     }
 }
