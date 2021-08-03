@@ -19,30 +19,21 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.FileActionsApi;
-import ch.cyberduck.core.brick.io.swagger.client.api.FileMigrationsApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileActionEntity;
-import ch.cyberduck.core.brick.io.swagger.client.model.FileMigrationEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.MovePathBody;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
-import com.google.common.util.concurrent.Uninterruptibles;
-
-public class BrickMoveFeature implements Move {
+public class BrickMoveFeature extends BrickFileMigrationFeature implements Move {
     private static final Logger log = Logger.getLogger(BrickMoveFeature.class);
 
     private final BrickSession session;
@@ -63,47 +54,7 @@ public class BrickMoveFeature implements Move {
                 .move(new MovePathBody().destination(StringUtils.removeStart(target.getAbsolute(), String.valueOf(Path.DELIMITER))),
                     StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
             if(entity.getFileMigrationId() != null) {
-                while(true) {
-                    final CountDownLatch signal = new CountDownLatch(1);
-                    final ScheduledThreadPool scheduler = new ScheduledThreadPool();
-                    final long timeout = preferences.getLong("brick.migration.interrupt.ms");
-                    final long start = System.currentTimeMillis();
-                    final AtomicReference<BackgroundException> failure = new AtomicReference<>();
-                    try {
-                        scheduler.repeat(() -> {
-                            try {
-                                if(System.currentTimeMillis() - start > timeout) {
-                                    failure.set(new ConnectionCanceledException(String.format("Interrupt polling for migration key after %d", timeout)));
-                                    signal.countDown();
-                                    return;
-                                }
-                                // Poll status
-                                final FileMigrationEntity.StatusEnum migration = new FileMigrationsApi(client)
-                                    .getFileMigrationsId(entity.getFileMigrationId()).getStatus();
-                                switch(migration) {
-                                    case COMPLETE:
-                                        signal.countDown();
-                                        return;
-                                    default:
-                                        log.warn(String.format("Wait for copy to complete with current status %s", migration));
-                                        break;
-                                }
-                            }
-                            catch(ApiException e) {
-                                log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
-                                failure.set(new BrickExceptionMappingService().map(e));
-                                signal.countDown();
-                            }
-                        }, preferences.getLong("brick.migration.interval.ms"), TimeUnit.MILLISECONDS);
-                        Uninterruptibles.awaitUninterruptibly(signal);
-                        if(null != failure.get()) {
-                            throw failure.get();
-                        }
-                    }
-                    finally {
-                        scheduler.shutdown();
-                    }
-                }
+                this.poll(client, entity);
             }
             return target.withAttributes(file.attributes());
         }
