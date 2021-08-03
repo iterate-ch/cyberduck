@@ -44,6 +44,7 @@
                          Grid.Column="2"
                          Grid.Row="1" />
                 <ListView x:Name="profilesList"
+                          HorizontalContentAlignment="Stretch"
                           Grid.Row="2"
                           Grid.ColumnSpan="3" />
             </Grid>

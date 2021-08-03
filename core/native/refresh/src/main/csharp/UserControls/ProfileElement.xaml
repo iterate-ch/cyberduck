@@ -6,33 +6,33 @@
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                           mc:Ignorable="d">
     <Grid>
-
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-        </Grid.RowDefinitions>
 
         <CheckBox x:Name="Checked"
                   VerticalContentAlignment="Center"
                   HorizontalContentAlignment="Center"
-                  Grid.Column="0"
-                  Grid.RowSpan="2" />
+                  Grid.Column="0" />
         <Image x:Name="ProfileIcon"
                Margin="7,0"
-               Grid.Column="1"
-               Grid.RowSpan="2" />
+               Grid.Column="1" />
 
-        <TextBlock x:Name="Description"
-                   FontWeight="Medium"
-                   Grid.Column="2"
-                   Grid.Row="0" />
-        <TextBlock x:Name="ProtocolType"
-                   Grid.Column="2"
-                   Grid.Row="1" />
+        <StackPanel Grid.Column="2">
+            <TextBlock x:Name="Description"
+                       FontWeight="Medium" />
+            <TextBlock x:Name="ProtocolType" />
+        </StackPanel>
+
+        <Button x:Name="HelpButton"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontFamily="Segoe UI Symbol"
+                Grid.Column="3">
+            &#xE11B;
+        </Button>
     </Grid>
 </local:ProfileElementBase>
