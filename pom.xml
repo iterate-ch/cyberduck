@@ -64,6 +64,7 @@
         <module>cli/windows</module>
         <module>cli/osx</module>
         <module>gmxcloud</module>
+        <module>freenet</module>
     </modules>
 
     <scm>
