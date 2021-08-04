@@ -16,6 +16,7 @@ package ch.cyberduck.core.freenet;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -32,6 +33,9 @@ public class FreenetSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
+        if(type == UrlProvider.class) {
+            return (T) new FreenetUrlProvider();
+        }
         return super.getFeature(type);
     }
 }
