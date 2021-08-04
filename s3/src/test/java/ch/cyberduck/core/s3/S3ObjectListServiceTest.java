@@ -68,15 +68,24 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     public void testDirectory() throws Exception {
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
+        final S3ObjectListService feature = new S3ObjectListService(session);
+        assertTrue(feature.list(bucket, new DisabledListProgressListener()).contains(directory));
+        assertTrue(feature.list(directory, new DisabledListProgressListener()).isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
+        assertFalse(feature.list(bucket, new DisabledListProgressListener()).contains(directory));
+        try {
+            feature.list(directory, new DisabledListProgressListener());
+            fail();
+        }
+        catch(NotfoundException e) {
+
+        }
     }
 
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolder() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        new S3ObjectListService(session).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        new S3ObjectListService(session).list(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
     @Ignore
