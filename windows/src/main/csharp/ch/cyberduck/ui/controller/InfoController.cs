@@ -830,7 +830,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void GroupReadChanged()
         {
             DetachPermissionHandlers();
-            permissions.group.execute = View.GroupRead == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+            permissions.group.read = View.GroupRead == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
             PermissionsChanged();
         }
 
