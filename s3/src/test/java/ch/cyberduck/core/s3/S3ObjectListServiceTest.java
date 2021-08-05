@@ -233,7 +233,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
             }
 
             @Override
-            public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
+            protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
                 final RequestEntityRestStorageService client = super.connect(proxy, hostkey, prompt, cancel);
                 client.getConfiguration().setProperty("s3service.disable-dns-buckets", String.valueOf(true));
                 return client;
