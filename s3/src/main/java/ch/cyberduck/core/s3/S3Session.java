@@ -209,9 +209,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             // Matches s3.cn-north-1.amazonaws.com.cn
             // Matches s3.cn-northwest-1.amazonaws.com.cn
             // Matches s3-us-gov-west-1.amazonaws.com
-            return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?\\.amazonaws\\.com(\\.cn)?");
+            return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com(\\.cn)?");
         }
-        return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?\\.amazonaws\\.com");
+        return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com");
     }
 
     @Override
