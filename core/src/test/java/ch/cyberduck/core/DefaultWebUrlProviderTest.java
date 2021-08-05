@@ -21,38 +21,38 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
-public class WebUrlProviderTest {
+public class DefaultWebUrlProviderTest {
 
     @Test
     public void testToUrl() {
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
-        assertEquals("http://test.cyberduck.ch/", new WebUrlProvider(host).toUrl().getUrl());
+        assertEquals("http://test.cyberduck.ch/", new DefaultWebUrlProvider(host).toUrl().getUrl());
         assertEquals("http://test.cyberduck.ch/my/documentroot/f",
-            new WebUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
+            new DefaultWebUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
     }
 
     @Test
     public void testHttps() {
         final Host host = new Host(new TestProtocol(Scheme.https), "test.cyberduck.ch");
-        assertEquals("https://test.cyberduck.ch/", new WebUrlProvider(host).toUrl().getUrl());
+        assertEquals("https://test.cyberduck.ch/", new DefaultWebUrlProvider(host).toUrl().getUrl());
         assertEquals("https://test.cyberduck.ch/my/documentroot/f",
-            new WebUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
+            new DefaultWebUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
     }
 
     @Test
     public void testCustom() {
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
         host.setWebURL("customhost");
-        assertEquals("http://customhost/", new WebUrlProvider(host).toUrl().getUrl());
+        assertEquals("http://customhost/", new DefaultWebUrlProvider(host).toUrl().getUrl());
         assertEquals("http://customhost/my/documentroot/f",
-            new WebUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
+            new DefaultWebUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
         host.setWebURL("https://customhost/");
-        assertEquals("https://customhost/", new WebUrlProvider(host).toUrl().getUrl());
+        assertEquals("https://customhost/", new DefaultWebUrlProvider(host).toUrl().getUrl());
         assertEquals("https://customhost/my/documentroot/f",
-            new WebUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
+            new DefaultWebUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
         host.setWebURL("https://customhost");
-        assertEquals("https://customhost", new WebUrlProvider(host).toUrl().getUrl());
+        assertEquals("https://customhost", new DefaultWebUrlProvider(host).toUrl().getUrl());
         assertEquals("https://customhost/my/documentroot/f",
-            new WebUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
+            new DefaultWebUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
     }
 }

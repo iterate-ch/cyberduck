@@ -26,7 +26,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.WebUrlProvider;
+import ch.cyberduck.core.DefaultWebUrlProvider;
 
 import java.net.URI;
 import java.text.MessageFormat;
@@ -50,7 +50,7 @@ public class DefaultUrlProvider implements UrlProvider {
             new HostUrlProvider().withUsername(false).get(host), URIEncoder.encode(file.getAbsolute()))),
             DescriptiveUrl.Type.provider,
             MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(Locale.ROOT))));
-        list.addAll(new WebUrlProvider(host).toUrl(file));
+        list.addAll(new DefaultWebUrlProvider(host).toUrl(file));
         return list;
     }
 }

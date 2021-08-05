@@ -16,11 +16,11 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.WebUrlProvider;
+import ch.cyberduck.core.DefaultWebUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class BrickUrlProvider extends WebUrlProvider {
+public class BrickUrlProvider extends DefaultWebUrlProvider {
 
     public BrickUrlProvider(final Host host) {
         super(new Host(host).withWebURL(String.format("https://%s/files/", StringUtils.strip(host.getHostname()))));
