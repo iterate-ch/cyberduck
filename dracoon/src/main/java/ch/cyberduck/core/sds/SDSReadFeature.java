@@ -59,7 +59,7 @@ public class SDSReadFeature implements Read {
             final SDSApiClient client = session.getClient();
             final DownloadTokenGenerateResponse token = new NodesApi(session.getClient()).generateDownloadUrl(Long.valueOf(nodeid.getVersionId(file,
                 new DisabledListProgressListener())), StringUtils.EMPTY);
-            final HttpUriRequest request = new HttpGet(String.format("%s/v4/downloads/%s", client.getBasePath(), token.getToken()));
+            final HttpUriRequest request = new HttpGet(token.getDownloadUrl());
             request.addHeader("X-Sds-Auth-Token", StringUtils.EMPTY);
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
