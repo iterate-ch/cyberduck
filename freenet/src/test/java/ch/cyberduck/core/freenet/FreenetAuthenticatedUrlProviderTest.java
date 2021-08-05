@@ -16,23 +16,19 @@ package ch.cyberduck.core.freenet;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DescriptiveUrlBag;
-import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
-import java.util.EnumSet;
-
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class FreenetAuthenticatedUrlProviderTest extends AbstractFreenetTest {
 
     @Test
     public void testToUrl() {
-        final FreenetAuthenticatedUrlProvider provider = new FreenetAuthenticatedUrlProvider(session.getHost());
-        final DescriptiveUrlBag urls = provider.toUrl(new Path("/", EnumSet.of(Path.Type.directory)));
-        assertFalse(urls.isEmpty());
-        assertNotEquals(DescriptiveUrl.EMPTY, urls.find(DescriptiveUrl.Type.authenticated));
+        final FreenetAuthenticatedUrlProvider provider = new FreenetAuthenticatedUrlProvider();
+        final DescriptiveUrl url = provider.toUrl(session.getHost());
+        assertNotEquals(DescriptiveUrl.EMPTY, url);
+        assertEquals(DescriptiveUrl.Type.authenticated, url.getType());
     }
 }

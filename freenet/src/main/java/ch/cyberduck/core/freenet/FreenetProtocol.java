@@ -17,6 +17,7 @@ package ch.cyberduck.core.freenet;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.WebUrlProvider;
 
 public class FreenetProtocol extends AbstractProtocol {
 
@@ -38,5 +39,13 @@ public class FreenetProtocol extends AbstractProtocol {
     @Override
     public Scheme getScheme() {
         return Scheme.https;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == WebUrlProvider.class) {
+            return (T) new FreenetAuthenticatedUrlProvider();
+        }
+        return super.getFeature(type);
     }
 }
