@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 {
     using ch.cyberduck.core;
+    using Ch.Cyberduck.Core.Refresh.Services;
 
     public class ProfilesViewModel : ReactiveObject
     {
@@ -29,7 +30,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 
         private readonly Dictionary<ProfileDescription, DescribedProfile> installed = new();
 
-        public ProfilesViewModel(PeriodicProfilesUpdater periodicUpdater, LocalProfilesFinder localFinder, ProtocolFactory protocols)
+        public ProfilesViewModel(PeriodicProfilesUpdater periodicUpdater, LocalProfilesFinder localFinder, ProtocolFactory protocols, ProfileListObserver profileListObserver)
         {
             List installed = localFinder.find();
             ProfilePlistReader reader = new(protocols);
@@ -84,6 +85,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                     {
                         protocols.unregister(p.Sender.Profile);
                     }
+                    profileListObserver.RaiseProfilesChanged();
                 });
         }
 

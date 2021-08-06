@@ -14,10 +14,11 @@ namespace Ch.Cyberduck.Core.Refresh.Services
     {
         private readonly ProtocolFactory protocols;
 
-        public WinFormsIconProvider(ProtocolFactory protocols, IconCache iconCache, IIconProviderImageSource imageSource) : base(iconCache, imageSource)
+        public WinFormsIconProvider(ProtocolFactory protocols, ProfileListObserver profileListObserver, IconCache iconCache, IIconProviderImageSource imageSource) : base(iconCache, imageSource)
         {
             this.protocols = protocols;
             BuildProtocolImageList();
+            profileListObserver.ProfilesChanged += ProfileListObserver_ProfilesChanged;
         }
 
         public ImageList ProtocolList { get; } = new ImageList() { ImageSize = new Size(16, 16), ColorDepth = ColorDepth.Depth32Bit };
@@ -279,5 +280,6 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             }
         }
 
+        private void ProfileListObserver_ProfilesChanged(object sender, EventArgs e) => BuildProtocolImageList();
     }
 }
