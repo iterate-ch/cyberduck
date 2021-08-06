@@ -27,7 +27,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -51,14 +50,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<Node> {
     public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final CreateFileUploadResponse uploadResponse = upload.start(file, status);
         final String uploadUrl = uploadResponse.getUploadUrl();
-        final String uploadToken;
-        if(StringUtils.isBlank(uploadResponse.getToken())) {
-            uploadToken = StringUtils.substringAfterLast(uploadUrl, Path.DELIMITER);
-            log.warn(String.format("Parsed upload token %s from URL %s", uploadToken, uploadUrl));
-        }
-        else {
-            uploadToken = uploadResponse.getToken();
-        }
+        final String uploadToken = uploadResponse.getToken();
         final MultipartUploadTokenOutputStream proxy = new MultipartUploadTokenOutputStream(session, nodeid, file, status, uploadUrl);
         return new HttpResponseOutputStream<Node>(new MemorySegementingOutputStream(proxy, PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
             private final AtomicBoolean close = new AtomicBoolean();
