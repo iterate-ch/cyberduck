@@ -7,7 +7,7 @@ namespace Ch.Cyberduck.Core.Refresh.Xaml
 {
     public class Text : MarkupExtension
     {
-        private static Locale locale;
+        private static readonly Locale locale;
 
         static Text()
         {
