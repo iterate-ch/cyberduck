@@ -5,52 +5,19 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Media.Imaging;
-using static System.Drawing.Imaging.PixelFormat;
-using static System.Windows.Media.PixelFormats;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
 {
     using ch.cyberduck.core;
-    using ch.cyberduck.core.features;
 
     public class WinFormsIconProvider : IconProvider<Image>
     {
+        private readonly ProtocolFactory protocols;
+
         public WinFormsIconProvider(ProtocolFactory protocols, IconCache iconCache, IIconProviderImageSource imageSource) : base(iconCache, imageSource)
         {
-            BuildProtocolImageList(protocols);
-        }
-
-        public override Image GetDisk(Protocol protocol, int size)
-            => IconCache.TryGetIcon(protocol, size, out Image image, "Disk")
-            ? image
-            : Get(protocol, protocol.disk(), size, "Disk");
-
-        public override Image GetIcon(Protocol protocol, int size)
-            => IconCache.TryGetIcon(protocol, size, out Image image, "Icon")
-            ? image
-            : Get(protocol, protocol.icon(), size, "Icon");
-
-        protected override Image Get(string name, int size)
-            => Get(name, name, size, default);
-
-        protected override Image Get(string name)
-            => Get(name, name, default);
-
-        private Image Get(object key, string path, string classifier)
-            => IconCache.TryGetIcon(key, out Image image, classifier)
-            ? image
-            : Get(key, path, 0, classifier, true);
-
-        private Image Get(object key, string path, int size, string classifier)
-            => IconCache.TryGetIcon(key, size, out Image image, classifier)
-            ? image
-            : Get(key, path, size, classifier, false);
-
-        private Image Get(object key, string path, int size, string classifier, bool returnDefault)
-        {
-            var images = Get(key, path, classifier, returnDefault, out var image);
-            return image ?? FindNearestFit(images, size, (c, s, i) => c.CacheIcon(key, s, i, classifier));
+            this.protocols = protocols;
+            BuildProtocolImageList();
         }
 
         public ImageList ProtocolList { get; } = new ImageList() { ImageSize = new Size(16, 16), ColorDepth = ColorDepth.Depth32Bit };
@@ -70,6 +37,16 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         }
 
         public Image DefaultBrowser() => GetFileIcon(Utils.GetSystemDefaultBrowser(), false, true, true);
+
+        public override Image GetDisk(Protocol protocol, int size)
+            => IconCache.TryGetIcon(protocol, size, out Image image, "Disk")
+            ? image
+            : Get(protocol, protocol.disk(), size, "Disk");
+
+        public override Image GetIcon(Protocol protocol, int size)
+            => IconCache.TryGetIcon(protocol, size, out Image image, "Icon")
+            ? image
+            : Get(protocol, protocol.icon(), size, "Icon");
 
         public Image GetPath(Path path, int size)
         {
@@ -130,6 +107,20 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
         public Image ResizeImageDangerous(Image image, int size) => new Bitmap(image, new Size(size, size));
 
+        protected override Image Get(string name, int size)
+            => Get(name, name, size, default);
+
+        protected override Image Get(string name)
+            => Get(name, name, default);
+
+        protected override Image Get(IntPtr nativeIcon, CacheIconCallback cacheIcon)
+        {
+            using var icon = Icon.FromHandle(nativeIcon);
+            Image bitmap = icon.ToBitmap();
+            cacheIcon(IconCache, bitmap.Width, bitmap);
+            return bitmap;
+        }
+
         private static Image Overlay(Image original, Image overlay, int size)
         {
             var surface = new Bitmap(original, new Size(size, size));
@@ -138,14 +129,61 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             return surface;
         }
 
-        private void BuildProtocolImageList(ProtocolFactory protocols)
+        private void BuildProtocolImageList()
         {
-            var iterator = ProtocolFactory.get().find().iterator();
+            var iterator = protocols.find().iterator();
+            HashSet<string> removedKeys = new(ProtocolList.Images.Keys.OfType<string>());
             while (iterator.hasNext())
             {
                 var protocol = (Protocol)iterator.next();
-                ProtocolList.Images.Add(protocol.disk(), GetDisk(protocol, 16));
+                var key = protocol.disk();
+                removedKeys.Remove(key);
+                ProtocolList.Images.Add(key, GetDisk(protocol, 16));
             }
+            foreach (var item in removedKeys)
+            {
+                ProtocolList.Images.RemoveByKey(item);
+            }
+        }
+
+        private Image FindNearestFit(IEnumerable<Image> sources, int size, CacheIconCallback cacheCallback)
+        {
+            var nearest = int.MaxValue;
+            Image nearestFit = null;
+
+            foreach (var item in sources)
+            {
+                int d = size - item.Width;
+                if (d == 0)
+                {
+                    return item;
+                }
+
+                if ((d < 0 && (nearest > 0 || nearest < d)) || (nearest > 0 && d < nearest))
+                {
+                    nearest = d;
+                    nearestFit = item;
+                }
+            }
+            nearestFit = new Bitmap(nearestFit, size, size);
+            cacheCallback(IconCache, size, nearestFit);
+            return nearestFit;
+        }
+
+        private Image Get(object key, string path, string classifier)
+            => IconCache.TryGetIcon(key, out Image image, classifier)
+            ? image
+            : Get(key, path, 0, classifier, true);
+
+        private Image Get(object key, string path, int size, string classifier)
+            => IconCache.TryGetIcon(key, size, out Image image, classifier)
+            ? image
+            : Get(key, path, size, classifier, false);
+
+        private Image Get(object key, string path, int size, string classifier, bool returnDefault)
+        {
+            var images = Get(key, path, classifier, returnDefault, out var image);
+            return image ?? FindNearestFit(images, size, (c, s, i) => c.CacheIcon(key, s, i, classifier));
         }
 
         private IEnumerable<Image> Get(object key, string path, string classifier, bool returnDefault, out Image @default)
@@ -186,30 +224,6 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
             @default = image;
             return images;
-        }
-
-        private Image FindNearestFit(IEnumerable<Image> sources, int size, CacheIconCallback cacheCallback)
-        {
-            var nearest = int.MaxValue;
-            Image nearestFit = null;
-
-            foreach (var item in sources)
-            {
-                int d = size - item.Width;
-                if (d == 0)
-                {
-                    return item;
-                }
-
-                if ((d < 0 && (nearest > 0 || nearest < d)) || (nearest > 0 && d < nearest))
-                {
-                    nearest = d;
-                    nearestFit = item;
-                }
-            }
-            nearestFit = new Bitmap(nearestFit, size, size);
-            cacheCallback(IconCache, size, nearestFit);
-            return nearestFit;
         }
 
         private IEnumerable<Image> GetImages(Stream stream, GetCacheIconCallback getCache, CacheIconCallback cacheIcon, out bool dispose)
@@ -265,12 +279,5 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             }
         }
 
-        protected override Image Get(IntPtr nativeIcon, CacheIconCallback cacheIcon)
-        {
-            using var icon = Icon.FromHandle(nativeIcon);
-            Image bitmap = icon.ToBitmap();
-            cacheIcon(IconCache, bitmap.Width, bitmap);
-            return bitmap;
-        }
     }
 }
