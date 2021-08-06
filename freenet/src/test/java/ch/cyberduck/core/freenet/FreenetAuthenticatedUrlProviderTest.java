@@ -16,12 +16,15 @@ package ch.cyberduck.core.freenet;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+@Category(IntegrationTest.class)
 public class FreenetAuthenticatedUrlProviderTest extends AbstractFreenetTest {
 
     @Test
