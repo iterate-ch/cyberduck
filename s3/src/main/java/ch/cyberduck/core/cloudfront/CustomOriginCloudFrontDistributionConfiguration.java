@@ -18,6 +18,7 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultWebUrlProvider;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -29,7 +30,6 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.DefaultWebUrlProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -103,7 +103,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     @Override
     protected URI getOrigin(final Path container, final Distribution.Method method) {
-        final URI url = URI.create(String.format("%s%s", new DefaultWebUrlProvider(origin).toUrl().getUrl(), PathNormalizer.normalize(origin.getDefaultPath(), true)));
+        final URI url = URI.create(String.format("%s%s", new DefaultWebUrlProvider().toUrl(origin).getUrl(), PathNormalizer.normalize(origin.getDefaultPath(), true)));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Use origin %s for distribution %s", url, method));
         }

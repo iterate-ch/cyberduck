@@ -263,7 +263,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenWebUrl()
         {
-            BrowserLauncherFactory.get().open(new DefaultWebUrlProvider(_host).toUrl().getUrl());
+            BrowserLauncherFactory.get().open(new DefaultWebUrlProvider().toUrl(_host).getUrl());
         }
 
         private void View_ChangedEncodingEvent()
@@ -662,7 +662,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.SelectedClientCertificate = LocaleFactory.localizedString("None");
             }
 
-            View.WebUrlButtonToolTip = new DefaultWebUrlProvider(_host).toUrl().getUrl();
+            View.WebUrlButtonToolTip = new DefaultWebUrlProvider().toUrl(_host).getUrl();
             View.WebURL = _host.getWebURL();
             View.Notes = _host.getComment();
             View.TimezoneFieldEnabled = !_host.getProtocol().isUTCTimezone();
@@ -701,7 +701,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 //try to find the favicon in the root folder
                 try
                 {
-                    Uri url = new Uri(new DefaultWebUrlProvider(_host).toUrl().getUrl());
+                    Uri url = new Uri(new DefaultWebUrlProvider().toUrl(_host).getUrl());
                     UriBuilder builder = new UriBuilder(url.Scheme, url.Host, url.Port);
                     _favicon = GetImageFromUrl(builder.Uri + "favicon.ico");
                 }

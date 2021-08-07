@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.HostWebUrlProvider;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
@@ -28,7 +29,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.DefaultWebUrlProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
@@ -69,7 +69,7 @@ public class S3UrlProvider implements UrlProvider {
         else {
             list.add(this.toUrl(file, session.getHost().getProtocol().getScheme(), session.getHost().getPort()));
             list.add(this.toUrl(file, Scheme.http, 80));
-            list.addAll(new DefaultWebUrlProvider(session.getHost()).toUrl(file));
+            list.addAll(new HostWebUrlProvider(session.getHost()).toUrl(file));
         }
         if(file.isFile()) {
             if(!session.getHost().getCredentials().isAnonymousLogin()) {

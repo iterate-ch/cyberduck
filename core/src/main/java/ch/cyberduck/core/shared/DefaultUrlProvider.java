@@ -22,11 +22,11 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.HostWebUrlProvider;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.DefaultWebUrlProvider;
 
 import java.net.URI;
 import java.text.MessageFormat;
@@ -50,7 +50,7 @@ public class DefaultUrlProvider implements UrlProvider {
             new HostUrlProvider().withUsername(false).get(host), URIEncoder.encode(file.getAbsolute()))),
             DescriptiveUrl.Type.provider,
             MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(Locale.ROOT))));
-        list.addAll(new DefaultWebUrlProvider(host).toUrl(file));
+        list.addAll(new HostWebUrlProvider(host).toUrl(file));
         return list;
     }
 }

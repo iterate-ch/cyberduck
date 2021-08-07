@@ -24,50 +24,27 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
-public class DefaultWebUrlProvider implements WebUrlProvider, UrlProvider {
-
-    private final Host host;
-
-    public DefaultWebUrlProvider(final Host host) {
-        this.host = host;
-    }
-
-    @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
-        final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        final DescriptiveUrl base = this.toUrl();
-        list.add(new DescriptiveUrl(URI.create(String.format("%s%s", base.getUrl(), URIEncoder.encode(
-            PathNormalizer.normalize(PathRelativizer.relativize(PathNormalizer.normalize(host.getDefaultPath(), true), file.getAbsolute()))
-            ))).normalize(),
-                base.getType(),
-                base.getHelp())
-        );
-        return list;
-    }
+public class DefaultWebUrlProvider implements WebUrlProvider {
 
     @Override
     public DescriptiveUrl toUrl(final Host bookmark) {
-        return this.toUrl();
-    }
-
-    public DescriptiveUrl toUrl() {
         final String base;
-        if(StringUtils.isBlank(host.getWebURL())) {
-            switch(host.getProtocol().getScheme()) {
+        if(StringUtils.isBlank(bookmark.getWebURL())) {
+            switch(bookmark.getProtocol().getScheme()) {
                 case https:
-                    base = String.format("https://%s/", StringUtils.strip(host.getHostname()));
+                    base = String.format("https://%s/", StringUtils.strip(bookmark.getHostname()));
                     break;
                 default:
-                    base = String.format("http://%s/", StringUtils.strip(host.getHostname()));
+                    base = String.format("http://%s/", StringUtils.strip(bookmark.getHostname()));
                     break;
             }
         }
         else {
-            if(host.getWebURL().matches("^http(s)?://.*$")) {
-                base = host.getWebURL();
+            if(bookmark.getWebURL().matches("^http(s)?://.*$")) {
+                base = bookmark.getWebURL();
             }
             else {
-                base = String.format("http://%s/", host.getWebURL());
+                base = String.format("http://%s/", bookmark.getWebURL());
             }
         }
         final URI uri;

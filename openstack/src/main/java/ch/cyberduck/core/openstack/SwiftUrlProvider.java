@@ -21,6 +21,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
+import ch.cyberduck.core.HostWebUrlProvider;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -28,7 +29,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.DefaultWebUrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
@@ -94,12 +94,12 @@ public class SwiftUrlProvider implements UrlProvider {
                 list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
             }
             else {
-                list.addAll(new DefaultWebUrlProvider(session.getHost()).toUrl(file));
+                list.addAll(new HostWebUrlProvider(session.getHost()).toUrl(file));
                 list.add(new DescriptiveUrl(
-                        URI.create(region.getStorageUrl(containerService.getContainer(file).getName(), containerService.getKey(file)).toString()),
-                        DescriptiveUrl.Type.provider,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
-                                session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
+                    URI.create(region.getStorageUrl(containerService.getContainer(file).getName(), containerService.getKey(file)).toString()),
+                    DescriptiveUrl.Type.provider,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                        session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
                 ));
                 // In one hour
                 list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.HOURS.toSeconds(1))));

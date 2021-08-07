@@ -33,13 +33,13 @@ import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.core.DefaultWebUrlProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
-import ch.cyberduck.core.DefaultWebUrlProvider;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -254,7 +254,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
             @Override
             public void change(Host bookmark) {
                 updateField(webURLField, bookmark.getWebURL());
-                cell.setPlaceholderString(new DefaultWebUrlProvider(bookmark).toUrl().getUrl());
+                cell.setPlaceholderString(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
             }
         });
     }
@@ -282,7 +282,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
                                 favicon = IconCacheFactory.<NSImage>get().iconNamed(f, 16);
                             }
                             else {
-                                String url = String.format("%sfavicon.ico", new DefaultWebUrlProvider(bookmark).toUrl().getUrl());
+                                String url = String.format("%sfavicon.ico", new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
                                 // Default favicon location
                                 final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(url));
                                 if(null == data) {
@@ -304,14 +304,14 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
                         }
                     });
                 }
-                webUrlImage.setToolTip(new DefaultWebUrlProvider(bookmark).toUrl().getUrl());
+                webUrlImage.setToolTip(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
             }
         });
     }
 
     @Action
     public void webUrlButtonClicked(final NSButton sender) {
-        BrowserLauncherFactory.get().open(new DefaultWebUrlProvider(bookmark).toUrl().getUrl());
+        BrowserLauncherFactory.get().open(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
     }
 
     @Override
