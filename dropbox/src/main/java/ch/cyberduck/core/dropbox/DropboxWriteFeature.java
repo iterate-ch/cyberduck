@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -45,17 +45,16 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
 
     private final DropboxSession session;
     private final Long chunksize;
-
-    private final PathContainerService containerService
-        = new DropboxPathContainerService();
+    private final PathContainerService containerService;
 
     public DropboxWriteFeature(final DropboxSession session) {
-        this(session, PreferencesFactory.get().getLong("dropbox.upload.chunksize"));
+        this(session, new HostPreferences(session.getHost()).getLong("dropbox.upload.chunksize"));
     }
 
     public DropboxWriteFeature(final DropboxSession session, final Long chunksize) {
         this.session = session;
         this.chunksize = chunksize;
+        this.containerService = new DropboxPathContainerService(session);
     }
 
     @Override

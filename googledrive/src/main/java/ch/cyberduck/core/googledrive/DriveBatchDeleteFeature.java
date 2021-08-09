@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.client.HttpResponseException;
@@ -57,20 +57,20 @@ public class DriveBatchDeleteFeature implements Delete {
             try {
                 if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
                     session.getClient().teamdrives().delete(fileid.getFileId(file, new DisabledListProgressListener()))
-                        .queue(batch, new DeleteBatchCallback<Void>(file, failures, callback));
+                        .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
                 }
                 else {
-                    if(PreferencesFactory.get().getBoolean("googledrive.delete.trash")) {
+                    if(new HostPreferences(session.getHost()).getBoolean("googledrive.delete.trash")) {
                         final File properties = new File();
                         properties.setTrashed(true);
                         session.getClient().files().update(fileid.getFileId(file, new DisabledListProgressListener()), properties)
-                            .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
-                            .queue(batch, new DeleteBatchCallback<File>(file, failures, callback));
+                            .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                            .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
                     }
                     else {
                         session.getClient().files().delete(fileid.getFileId(file, new DisabledListProgressListener()))
-                            .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
-                            .queue(batch, new DeleteBatchCallback<Void>(file, failures, callback));
+                            .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                            .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
                     }
                 }
                 fileid.cache(file, null);

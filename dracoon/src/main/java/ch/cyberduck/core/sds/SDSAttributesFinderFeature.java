@@ -28,7 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNode;
@@ -61,7 +61,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     private final SDSNodeIdProvider nodeid;
 
     public SDSAttributesFinderFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
-        this(session, nodeid, PreferencesFactory.get().getBoolean("sds.versioning.references.enable"));
+        this(session, nodeid, new HostPreferences(session.getHost()).getBoolean("sds.versioning.references.enable"));
     }
 
     public SDSAttributesFinderFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final boolean references) {
@@ -72,7 +72,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return this.find(file, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
+        return this.find(file, listener, new HostPreferences(session.getHost()).getInteger("sds.listing.chunksize"));
     }
 
     protected PathAttributes find(final Path file, final ListProgressListener listener, final int chunksize) throws BackgroundException {

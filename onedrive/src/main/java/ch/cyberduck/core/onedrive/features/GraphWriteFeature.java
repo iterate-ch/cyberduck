@@ -26,8 +26,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -47,9 +46,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class GraphWriteFeature implements Write<Void> {
     private static final Logger log = Logger.getLogger(GraphWriteFeature.class);
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
 
@@ -65,8 +61,8 @@ public class GraphWriteFeature implements Write<Void> {
             final DriveItem oneDriveFile = new DriveItem(folder, URIEncoder.encode(file.getName()));
             final UploadSession upload = Files.createUploadSession(oneDriveFile);
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, status);
-            final int partsize = preferences.getInteger("onedrive.upload.multipart.partsize.minimum")
-                * preferences.getInteger("onedrive.upload.multipart.partsize.factor");
+            final int partsize = new HostPreferences(session.getHost()).getInteger("onedrive.upload.multipart.partsize.minimum")
+                * new HostPreferences(session.getHost()).getInteger("onedrive.upload.multipart.partsize.factor");
             return new HttpResponseOutputStream<Void>(new MemorySegementingOutputStream(proxy, partsize)) {
                 @Override
                 public Void getStatus() {

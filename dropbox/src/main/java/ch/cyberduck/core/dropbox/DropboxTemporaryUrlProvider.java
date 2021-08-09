@@ -39,12 +39,11 @@ public class DropboxTemporaryUrlProvider implements PromptUrlProvider<Void, Void
     private static final Logger log = Logger.getLogger(DropboxTemporaryUrlProvider.class);
 
     private final DropboxSession session;
-
-    private final PathContainerService containerService
-        = new DropboxPathContainerService();
+    private final PathContainerService containerService;
 
     public DropboxTemporaryUrlProvider(final DropboxSession session) {
         this.session = session;
+        this.containerService = new DropboxPathContainerService(session);
     }
 
     @Override

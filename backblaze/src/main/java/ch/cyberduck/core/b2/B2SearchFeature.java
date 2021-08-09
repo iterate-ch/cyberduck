@@ -25,7 +25,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -69,7 +69,7 @@ public class B2SearchFeature implements Search {
                     final B2ListFilesResponse response = session.getClient().listFileNames(
                         fileid.getVersionId(container, listener),
                         startFilename,
-                        PreferencesFactory.get().getInteger("b2.listing.chunksize"),
+                        new HostPreferences(session.getHost()).getInteger("b2.listing.chunksize"),
                         prefix, null);
                     for(B2FileInfoResponse info : response.getFiles()) {
                         if(PathNormalizer.name(info.getFileName()).startsWith(regex.toPattern().pattern())) {

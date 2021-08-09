@@ -44,6 +44,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
@@ -380,7 +381,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         config.setLogging(new StreamingLoggingConfig()
             .withEnabled(distribution.isLogging())
             .withBucket(loggingTarget)
-            .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
+            .withPrefix(new HostPreferences(session.getHost()).getProperty("cloudfront.logging.prefix"))
         );
         return client.createStreamingDistribution(new CreateStreamingDistributionRequest(config)).getStreamingDistribution();
     }
@@ -424,7 +425,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             .withEnabled(distribution.isLogging())
             .withIncludeCookies(true)
             .withBucket(loggingTarget)
-            .withPrefix(preferences.getProperty("cloudfront.logging.prefix")
+            .withPrefix(new HostPreferences(session.getHost()).getProperty("cloudfront.logging.prefix")
             ));
         return client.createDistribution(new CreateDistributionRequest(config)).getDistribution();
     }
@@ -479,7 +480,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 .withEnabled(distribution.isLogging())
                 .withIncludeCookies(true)
                 .withBucket(loggingTarget)
-                .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
+                .withPrefix(new HostPreferences(session.getHost()).getProperty("cloudfront.logging.prefix"))
             );
         }
         return client.createDistribution(new CreateDistributionRequest(config)).getDistribution();
@@ -511,7 +512,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 .withEnabled(distribution.isLogging())
                 .withIncludeCookies(true)
                 .withBucket(loggingTarget)
-                .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
+                .withPrefix(new HostPreferences(session.getHost()).getProperty("cloudfront.logging.prefix"))
             );
         }
         return client.updateDistribution(new UpdateDistributionRequest(config, distribution.getId(), response.getETag()));
@@ -539,7 +540,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             config.setLogging(new StreamingLoggingConfig()
                 .withEnabled(distribution.isLogging())
                 .withBucket(loggingTarget)
-                .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
+                .withPrefix(new HostPreferences(session.getHost()).getProperty("cloudfront.logging.prefix"))
             );
         }
         return client.updateStreamingDistribution(new UpdateStreamingDistributionRequest(config, distribution.getId(), response.getETag()));
@@ -567,7 +568,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             .withEnabled(distribution.isLogging())
             .withIncludeCookies(true)
             .withBucket(loggingTarget)
-            .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
+            .withPrefix(new HostPreferences(session.getHost()).getProperty("cloudfront.logging.prefix"))
         );
         return client.updateDistribution(new UpdateDistributionRequest(config, distribution.getId(), response.getETag()));
     }

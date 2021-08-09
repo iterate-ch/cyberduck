@@ -29,7 +29,7 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -67,7 +67,7 @@ public class AzureUrlProvider implements PromptUrlProvider<Void, Void> {
 
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
-        return this.createSignedUrl(file, PreferencesFactory.get().getInteger("s3.url.expire.seconds"));
+        return this.createSignedUrl(file, new HostPreferences(session.getHost()).getInteger("s3.url.expire.seconds"));
     }
 
     @Override

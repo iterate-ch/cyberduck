@@ -45,8 +45,8 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -87,11 +87,9 @@ import com.github.sardine.impl.handler.VoidResponseHandler;
 public class DAVSession extends HttpSession<DAVClient> {
     private static final Logger log = Logger.getLogger(DAVSession.class);
 
-    private RedirectCallback redirect
-        = new PreferencesRedirectCallback();
-
-    private final Preferences preferences
-        = PreferencesFactory.get();
+    private final RedirectCallback redirect;
+    private final PreferencesReader preferences
+        = new HostPreferences(host);
 
     private ListService list = new DAVListService(this, new DAVAttributesFinderFeature(this));
     private Read read = new DAVReadFeature(this);
@@ -100,7 +98,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     private Find find = new DAVFindFeature(this);
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, trust, key);
+        this(host, trust, key, new PreferencesRedirectCallback());
     }
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final RedirectCallback redirect) {

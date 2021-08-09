@@ -65,7 +65,7 @@ public class SwiftListServiceTest extends AbstractSwiftTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new SwiftObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(session, regionService)),
+        new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new SwiftSmallObjectUploadFeature(session, new SwiftWriteFeature(session, regionService)),
             new SwiftAttributesFinderFeature(session)), new SwiftWriteFeature(session, regionService), cryptomator).touch(test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new SwiftObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
         cryptomator.getFeature(session, Delete.class, new SwiftDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

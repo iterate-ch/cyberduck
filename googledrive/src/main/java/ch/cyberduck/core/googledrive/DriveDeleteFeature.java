@@ -20,7 +20,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -50,15 +50,15 @@ public class DriveDeleteFeature implements Delete {
                     session.getClient().teamdrives().delete(fileid.getFileId(file, new DisabledListProgressListener())).execute();
                 }
                 else {
-                    if(PreferencesFactory.get().getBoolean("googledrive.delete.trash")) {
+                    if(new HostPreferences(session.getHost()).getBoolean("googledrive.delete.trash")) {
                         final File properties = new File();
                         properties.setTrashed(true);
                         session.getClient().files().update(fileid.getFileId(file, new DisabledListProgressListener()), properties)
-                            .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                            .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
                     }
                     else {
                         session.getClient().files().delete(fileid.getFileId(file, new DisabledListProgressListener()))
-                            .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                            .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
                     }
                 }
                 fileid.cache(file, null);

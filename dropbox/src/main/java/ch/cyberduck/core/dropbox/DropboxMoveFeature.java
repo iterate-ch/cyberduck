@@ -32,12 +32,11 @@ import com.dropbox.core.v2.files.RelocationResult;
 public class DropboxMoveFeature implements Move {
 
     private final DropboxSession session;
-
-    private final PathContainerService containerService
-        = new DropboxPathContainerService();
+    private final PathContainerService containerService;
 
     public DropboxMoveFeature(final DropboxSession session) {
         this.session = session;
+        this.containerService = new DropboxPathContainerService(session);
     }
 
     @Override

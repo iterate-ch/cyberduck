@@ -23,7 +23,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Redundancy;
-import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -37,7 +37,6 @@ import java.util.Set;
 public class S3StorageClassFeature implements Redundancy {
 
     private final S3Session session;
-    private final Preferences preferences = PreferencesFactory.get();
     private final PathContainerService containerService;
 
     public static final Set<String> STORAGE_CLASS_LIST = new LinkedHashSet<>(Arrays.asList(
@@ -56,7 +55,7 @@ public class S3StorageClassFeature implements Redundancy {
 
     @Override
     public String getDefault() {
-        return PreferencesFactory.get().getProperty("s3.storage.class");
+        return new HostPreferences(session.getHost()).getProperty("s3.storage.class");
     }
 
     @Override
@@ -68,8 +67,8 @@ public class S3StorageClassFeature implements Redundancy {
     public String getClass(final Path file) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final String key = String.format("s3.storageclass.%s", containerService.getContainer(file).getName());
-            if(StringUtils.isNotBlank(preferences.getProperty(key))) {
-                return preferences.getProperty(key);
+            if(StringUtils.isNotBlank(new HostPreferences(session.getHost()).getProperty(key))) {
+                return new HostPreferences(session.getHost()).getProperty(key);
             }
             return S3Object.STORAGE_CLASS_STANDARD;
         }
@@ -86,7 +85,7 @@ public class S3StorageClassFeature implements Redundancy {
     public void setClass(final Path file, final String redundancy) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final String key = String.format("s3.storageclass.%s", containerService.getContainer(file).getName());
-            preferences.setProperty(key, redundancy);
+            PreferencesFactory.get().setProperty(key, redundancy);
         }
         if(file.isFile() || file.isPlaceholder()) {
             try {

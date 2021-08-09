@@ -19,7 +19,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Map;
@@ -39,7 +39,7 @@ public class B2MetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getDefault(final Local file) {
-        final Map<String, String> metadata = PreferencesFactory.get().getMap("b2.metadata.default");
+        final Map<String, String> metadata = new HostPreferences(session.getHost()).getMap("b2.metadata.default");
         metadata.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(file.attributes().getModificationDate()));
         return metadata;
     }

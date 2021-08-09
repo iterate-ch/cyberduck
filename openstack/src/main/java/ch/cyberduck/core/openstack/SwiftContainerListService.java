@@ -25,8 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
@@ -45,10 +44,6 @@ public class SwiftContainerListService implements RootListService {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 
     private final SwiftSession session;
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
-
     private final SwiftLocationFeature.SwiftRegion region;
 
     public SwiftContainerListService(final SwiftSession session, final SwiftLocationFeature.SwiftRegion region) {
@@ -63,7 +58,7 @@ public class SwiftContainerListService implements RootListService {
         }
         try {
             final AttributedList<Path> containers = new AttributedList<>();
-            final int limit = preferences.getInteger("openstack.list.container.limit");
+            final int limit = new HostPreferences(session.getHost()).getInteger("openstack.list.container.limit");
             final Client client = session.getClient();
             for(final Region r : client.getRegions()) {
                 if(region.getIdentifier() != null) {

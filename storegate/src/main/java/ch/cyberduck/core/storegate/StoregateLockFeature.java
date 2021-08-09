@@ -19,7 +19,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Lock;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FileLocksApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileLock;
@@ -41,7 +41,7 @@ public class StoregateLockFeature implements Lock<String> {
     public String lock(final Path file) throws BackgroundException {
         try {
             final FileLockRequest request = new FileLockRequest();
-            request.setExpire(new DateTime().plusMillis(PreferencesFactory.get().getInteger("storegate.lock.ttl")));
+            request.setExpire(new DateTime().plusMillis(new HostPreferences(session.getHost()).getInteger("storegate.lock.ttl")));
             request.setOwner(session.getHost().getCredentials().getUsername());
             final FileLock lock = new FileLocksApi(this.session.getClient()).fileLocksCreateLock(fileid.getFileId(file,
                 new DisabledListProgressListener()), request);

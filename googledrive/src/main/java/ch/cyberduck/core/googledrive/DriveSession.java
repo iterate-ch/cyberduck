@@ -33,7 +33,7 @@ import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -74,7 +74,7 @@ public class DriveSession extends HttpSession<Drive> {
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
-            PreferencesFactory.get().getInteger("googledrive.limit.requests.second")
+            new HostPreferences(host).getInteger("googledrive.limit.requests.second")
         )));
         this.transport = new ApacheHttpTransport(configuration.build());
         final UseragentProvider ua = new PreferencesUseragentProvider();

@@ -19,7 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
@@ -40,6 +40,6 @@ public class GraphItemListService extends AbstractItemListService {
     @Override
     protected Iterator<DriveItem.Metadata> getIterator(final Path directory) throws BackgroundException {
         final DriveItem folder = session.getItem(directory);
-        return Files.getFiles(folder, PreferencesFactory.get().getInteger("onedrive.listing.chunksize"));
+        return Files.getFiles(folder, new HostPreferences(session.getHost()).getInteger("onedrive.listing.chunksize"));
     }
 }

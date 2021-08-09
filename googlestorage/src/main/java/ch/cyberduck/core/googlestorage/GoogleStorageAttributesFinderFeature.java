@@ -29,7 +29,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -52,7 +52,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
     private final boolean references;
 
     public GoogleStorageAttributesFinderFeature(final GoogleStorageSession session) {
-        this(session, PreferencesFactory.get().getBoolean("googlestorage.versioning.references.enable"));
+        this(session, new HostPreferences(session.getHost()).getBoolean("googlestorage.versioning.references.enable"));
     }
 
     public GoogleStorageAttributesFinderFeature(final GoogleStorageSession session, final boolean references) {

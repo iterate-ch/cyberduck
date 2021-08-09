@@ -28,7 +28,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Redundancy;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -53,7 +53,7 @@ public class S3MetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getDefault(final Local local) {
-        return PreferencesFactory.get().getMap("s3.metadata.default");
+        return new HostPreferences(session.getHost()).getMap("s3.metadata.default");
     }
 
     @Override

@@ -23,8 +23,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -37,7 +36,6 @@ public class S3BucketCreateService {
 
     private final S3Session session;
     private final PathContainerService containerService;
-    private final Preferences preferences = PreferencesFactory.get();
 
     public S3BucketCreateService(final S3Session session) {
         this.session = session;
@@ -51,7 +49,7 @@ public class S3BucketCreateService {
             }
         }
         AccessControlList acl;
-        if(preferences.getProperty("s3.acl.default").equals("public-read")) {
+        if(new HostPreferences(session.getHost()).getProperty("s3.acl.default").equals("public-read")) {
             acl = AccessControlList.REST_CANNED_PUBLIC_READ;
         }
         else {

@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.log4j.Logger;
 
@@ -36,9 +36,11 @@ import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(SwiftSmallObjectUploadFeature.class);
+    private final SwiftSession session;
 
-    public SwiftSmallObjectUploadFeature(final Write<StorageObject> writer) {
+    public SwiftSmallObjectUploadFeature(final SwiftSession session, final Write<StorageObject> writer) {
         super(writer);
+        this.session = session;
     }
 
     @Override
@@ -55,7 +57,7 @@ public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObje
     @Override
     protected MessageDigest digest() throws IOException {
         MessageDigest digest = null;
-        if(PreferencesFactory.get().getBoolean("queue.upload.checksum.calculate")) {
+        if(new HostPreferences(session.getHost()).getBoolean("queue.upload.checksum.calculate")) {
             try {
                 digest = MessageDigest.getInstance("MD5");
             }

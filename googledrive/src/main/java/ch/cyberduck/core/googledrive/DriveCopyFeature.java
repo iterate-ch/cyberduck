@@ -20,7 +20,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -44,7 +44,7 @@ public class DriveCopyFeature implements Copy {
             final File copy = session.getClient().files().copy(fileid.getFileId(source, new DisabledListProgressListener()), new File()
                 .setParents(Collections.singletonList(fileid.getFileId(target.getParent(), new DisabledListProgressListener())))
                 .setName(target.getName()))
-                .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
             fileid.cache(target, copy.getId());
             return target.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(copy));
         }

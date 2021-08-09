@@ -31,12 +31,11 @@ import com.dropbox.core.v2.files.DbxUserFilesRequests;
 public class DropboxCopyFeature implements Copy {
 
     private final DropboxSession session;
-
-    private final PathContainerService containerService
-        = new DropboxPathContainerService();
+    private final PathContainerService containerService;
 
     public DropboxCopyFeature(DropboxSession session) {
         this.session = session;
+        this.containerService = new DropboxPathContainerService(session);
     }
 
     @Override
