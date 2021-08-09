@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -42,7 +43,6 @@ import ch.cyberduck.core.storegate.io.swagger.client.api.SettingsApi;
 import ch.cyberduck.core.storegate.io.swagger.client.api.UsersApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.ExtendedUser;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
-import ch.cyberduck.core.storegate.provider.HttpComponentsProvider;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
