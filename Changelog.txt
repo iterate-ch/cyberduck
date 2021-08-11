@@ -1,7 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
-7.10
+7.10.1
+- [Bugfix] Unable to access team drive set as default path in bookmark (Google Drive)
+- [Bugfix] Login failure with file transfers using multiple connectios (FTP)
+
+7.10.0
 - [Feature] Preference to set default storage class (Google Storage) (#11521)
 - [Feature] Preference to set default bucket region (Google Storage)
 - [Feature] Preference to set predefined set of grantees and permissions for new files (S3, Google Storage)

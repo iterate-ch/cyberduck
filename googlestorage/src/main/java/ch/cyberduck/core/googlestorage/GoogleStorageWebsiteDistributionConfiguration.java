@@ -28,7 +28,7 @@ import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -120,7 +120,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
             // Enable website endpoint
             session.getClient().buckets().patch(container.getName(), new Bucket()
                 .setLogging(new Bucket.Logging()
-                    .setLogObjectPrefix(distribution.isEnabled() ? PreferencesFactory.get().getProperty("google.logging.prefix") : null)
+                    .setLogObjectPrefix(distribution.isEnabled() ? new HostPreferences(session.getHost()).getProperty("google.logging.prefix") : null)
                     .setLogBucket(StringUtils.isNotBlank(distribution.getLoggingContainer()) ? distribution.getLoggingContainer() : container.getName()))
                 .setWebsite(
                     distribution.isEnabled() ? new Bucket.Website().setMainPageSuffix(suffix) : null

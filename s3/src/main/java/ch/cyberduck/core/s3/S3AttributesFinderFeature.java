@@ -35,7 +35,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -64,7 +64,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
     private final boolean references;
 
     public S3AttributesFinderFeature(final S3Session session) {
-        this(session, PreferencesFactory.get().getBoolean("s3.versioning.references.enable"));
+        this(session, new HostPreferences(session.getHost()).getBoolean("s3.versioning.references.enable"));
     }
 
     public S3AttributesFinderFeature(final S3Session session, final boolean references) {

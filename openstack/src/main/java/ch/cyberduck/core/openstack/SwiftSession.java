@@ -70,7 +70,7 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public Client connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected Client connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         // Always inject new pool to builder on connect because the pool is shutdown on disconnect
         final HttpClientBuilder pool = builder.build(proxy, this, prompt);
         pool.disableContentCompression();

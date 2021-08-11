@@ -23,7 +23,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
@@ -36,12 +36,12 @@ public class StoregateListService implements ListService {
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
-
-    private final int chunksize = PreferencesFactory.get().getInteger("storegate.listing.chunksize");
+    private final int chunksize;
 
     public StoregateListService(final StoregateSession session, final StoregateIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
+        this.chunksize = new HostPreferences(session.getHost()).getInteger("storegate.listing.chunksize");
     }
 
     @Override

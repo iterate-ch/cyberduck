@@ -11,8 +11,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -39,9 +38,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> {
     private static final Logger log = Logger.getLogger(S3MultipartWriteFeature.class);
-
-    private final Preferences preferences
-        = PreferencesFactory.get();
 
     private final PathContainerService containerService;
     private final S3Session session;
@@ -70,7 +66,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
         }
         final MultipartOutputStream proxy = new MultipartOutputStream(multipart, file, status);
         return new HttpResponseOutputStream<MultipartUpload>(new MemorySegementingOutputStream(proxy,
-            preferences.getInteger("s3.upload.multipart.size"))) {
+            new HostPreferences(session.getHost()).getInteger("s3.upload.multipart.size"))) {
             @Override
             public MultipartUpload getStatus() {
                 return multipart;

@@ -27,7 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.apache.log4j.Logger;
@@ -68,12 +68,12 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
 
     @Override
     public Acl getDefault(final Local file) {
-        return Acl.toAcl(PreferencesFactory.get().getProperty("s3.acl.default"));
+        return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("s3.acl.default"));
     }
 
     @Override
     public Acl getDefault(final EnumSet<Path.Type> type) {
-        return Acl.toAcl(PreferencesFactory.get().getProperty("s3.acl.default"));
+        return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("s3.acl.default"));
     }
 
     @Override
@@ -278,6 +278,12 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     public List<Acl.User> getAvailableAclUsers() {
         return new ArrayList<>(Arrays.asList(
             new Acl.CanonicalUser(),
+            new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED, false) {
+                @Override
+                public String getPlaceholder() {
+                    return LocaleFactory.localizedString("http://acs.amazonaws.com/groups/global/AuthenticatedUsers", "S3");
+                }
+            },
             new Acl.GroupUser(Acl.GroupUser.EVERYONE, false),
             new Acl.EmailUser() {
                 @Override

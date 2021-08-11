@@ -52,7 +52,7 @@ public class AbstractBrickTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new BrickProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
             this.getClass().getResourceAsStream("/Brick.cyberduckprofile"));
-        final Host host = new Host(profile, "mountainduck.brickftp.com", new Credentials(
+        final Host host = new Host(profile, "mountainduck.files.com", new Credentials(
             System.getProperties().getProperty("brick.user"), System.getProperties().getProperty("brick.password")
         ));
         session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());

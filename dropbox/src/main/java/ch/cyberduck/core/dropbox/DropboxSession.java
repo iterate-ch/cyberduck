@@ -43,7 +43,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -68,9 +68,6 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
 
     private final UseragentProvider useragent
         = new PreferencesUseragentProvider();
-
-    private final DropboxPathContainerService containerService
-        = new DropboxPathContainerService();
 
     private OAuth2RequestInterceptor authorizationService;
     private Lock<String> locking = null;
@@ -127,7 +124,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(Class<T> type) {
         if(type == ListService.class) {
-            return PreferencesFactory.get().getBoolean("dropbox.business.enable") ?
+            return new HostPreferences(host).getBoolean("dropbox.business.enable") ?
                 (T) new DropboxRootListService(this) : (T) new DropboxListService(this);
         }
         if(type == Read.class) {
@@ -185,7 +182,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     }
 
     public CustomDbxRawClientV2 getClient(final Path file) {
-        return this.getClient(containerService.getNamespace(file));
+        return this.getClient(new DropboxPathContainerService(this).getNamespace(file));
     }
 
     /**

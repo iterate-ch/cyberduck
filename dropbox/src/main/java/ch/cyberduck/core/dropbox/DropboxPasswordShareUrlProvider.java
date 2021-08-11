@@ -41,12 +41,11 @@ public class DropboxPasswordShareUrlProvider implements PromptUrlProvider<Void, 
     private static final Logger log = Logger.getLogger(DropboxPasswordShareUrlProvider.class);
 
     private final DropboxSession session;
-
-    private final PathContainerService containerService
-        = new DropboxPathContainerService();
+    private final PathContainerService containerService;
 
     public DropboxPasswordShareUrlProvider(final DropboxSession session) {
         this.session = session;
+        this.containerService = new DropboxPathContainerService(session);
     }
 
     @Override

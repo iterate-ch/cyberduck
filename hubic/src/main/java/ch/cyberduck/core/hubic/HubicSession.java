@@ -49,7 +49,7 @@ public class HubicSession extends SwiftSession {
     }
 
     @Override
-    public Client connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected Client connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol())
             .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());

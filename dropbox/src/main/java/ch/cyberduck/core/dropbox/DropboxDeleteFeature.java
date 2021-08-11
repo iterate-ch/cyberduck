@@ -30,12 +30,11 @@ import com.dropbox.core.v2.files.DbxUserFilesRequests;
 public class DropboxDeleteFeature implements Delete {
 
     private final DropboxSession session;
-
-    private final PathContainerService containerService
-        = new DropboxPathContainerService();
+    private final PathContainerService containerService;
 
     public DropboxDeleteFeature(final DropboxSession session) {
         this.session = session;
+        this.containerService = new DropboxPathContainerService(session);
     }
 
     @Override

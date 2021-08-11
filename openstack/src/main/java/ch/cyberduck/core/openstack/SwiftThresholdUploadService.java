@@ -26,8 +26,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -42,16 +41,13 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
 
     private final SwiftSession session;
     private final SwiftRegionService regionService;
-
     private final Long threshold;
-
-    private final Preferences preferences = PreferencesFactory.get();
 
     private Write<StorageObject> writer;
 
     public SwiftThresholdUploadService(final SwiftSession session, final SwiftRegionService regionService,
                                        final SwiftWriteFeature writer) {
-        this(session, regionService, writer, PreferencesFactory.get().getLong("openstack.upload.largeobject.threshold"));
+        this(session, regionService, writer, new HostPreferences(session.getHost()).getLong("openstack.upload.largeobject.threshold"));
     }
 
 
@@ -74,23 +70,23 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
                                 final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final Upload<StorageObject> feature;
         if(status.getLength() > threshold) {
-            if(!preferences.getBoolean("openstack.upload.largeobject")) {
+            if(!new HostPreferences(session.getHost()).getBoolean("openstack.upload.largeobject")) {
                 // Disabled by user
-                if(status.getLength() < preferences.getLong("openstack.upload.largeobject.required.threshold")) {
+                if(status.getLength() < new HostPreferences(session.getHost()).getLong("openstack.upload.largeobject.required.threshold")) {
                     log.warn("Large upload is disabled with property openstack.upload.largeobject");
-                    return new SwiftSmallObjectUploadFeature(writer).upload(file, local, throttle, listener, status, callback);
+                    return new SwiftSmallObjectUploadFeature(session, writer).upload(file, local, throttle, listener, status, callback);
                 }
             }
             feature = new SwiftLargeObjectUploadFeature(session, regionService, writer,
-                    preferences.getLong("openstack.upload.largeobject.size"),
-                    preferences.getInteger("openstack.upload.largeobject.concurrency"));
+                new HostPreferences(session.getHost()).getLong("openstack.upload.largeobject.size"),
+                new HostPreferences(session.getHost()).getInteger("openstack.upload.largeobject.concurrency"));
         }
         else {
-            feature = new SwiftSmallObjectUploadFeature(writer);
+            feature = new SwiftSmallObjectUploadFeature(session, writer);
         }
         // Previous segments to delete
         final List<Path> segments = new ArrayList<>();
-        if(preferences.getBoolean("openstack.upload.largeobject.cleanup")) {
+        if(new HostPreferences(session.getHost()).getBoolean("openstack.upload.largeobject.cleanup")) {
             if(!status.isAppend()) {
                 // Cleanup if necessary
                 segments.addAll(new SwiftSegmentService(session, regionService).list(file));

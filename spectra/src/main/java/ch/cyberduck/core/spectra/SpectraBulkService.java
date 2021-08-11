@@ -27,7 +27,7 @@ import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.transfer.Transfer;
@@ -266,7 +266,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             if(chunks.isEmpty()) {
                 log.info(String.format("Still missing chunks for file %s for job %s", file.getName(), job));
                 throw new RetriableAccessDeniedException(String.format("Missing chunks for job %s", job),
-                    Duration.ofSeconds(PreferencesFactory.get().getInteger("spectra.retry.delay")));
+                    Duration.ofSeconds(new HostPreferences(session.getHost()).getInteger("spectra.retry.delay")));
             }
             if(log.isInfoEnabled()) {
                 log.info(String.format("Server returned %d chunks for %s", chunks.size(), file));

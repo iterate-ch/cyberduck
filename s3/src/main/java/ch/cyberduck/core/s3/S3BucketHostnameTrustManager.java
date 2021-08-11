@@ -15,8 +15,6 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -32,9 +30,6 @@ public class S3BucketHostnameTrustManager extends ThreadLocalHostnameDelegatingT
      * Test for pattern of bucket name containing dot
      */
     private final Pattern pattern = Pattern.compile("([a-z0-9.-]+\\.)([a-z0-9.-]+\\.s3(\\.dualstack)?(\\.[a-z0-9-]+)?.amazonaws.com)");
-
-    private final Preferences preferences
-        = PreferencesFactory.get();
 
     public S3BucketHostnameTrustManager(final X509TrustManager delegate, final String hostname) {
         super(delegate, hostname);

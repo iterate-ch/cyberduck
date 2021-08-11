@@ -18,6 +18,8 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.Test;
 
@@ -31,7 +33,7 @@ public class DropboxPathContainerServiceTest {
 
     @Test
     public void testGetKeyWithNamespace() {
-        final DropboxPathContainerService s = new DropboxPathContainerService().withNamespace(true);
+        final DropboxPathContainerService s = new DropboxPathContainerService(new DropboxSession(new Host(new DropboxProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager())).withNamespace(true);
         assertEquals("ns:r", s.getKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withFileId("r"))));
         assertEquals("ns:r/f", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withFileId("r")), "f", EnumSet.of(Path.Type.file))));
         assertEquals("ns:a", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withFileId("r")),
@@ -41,7 +43,7 @@ public class DropboxPathContainerServiceTest {
 
     @Test
     public void testGetKey() {
-        final DropboxPathContainerService s = new DropboxPathContainerService();
+        final DropboxPathContainerService s = new DropboxPathContainerService(new DropboxSession(new Host(new DropboxProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
         assertEquals("", s.getKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withFileId("r"))));
         assertEquals("/f", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withFileId("r")), "f", EnumSet.of(Path.Type.file))));
         assertEquals("/Business", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withFileId("r")),
@@ -53,7 +55,7 @@ public class DropboxPathContainerServiceTest {
 
     @Test
     public void testNamespace() {
-        final DropboxPathContainerService s = new DropboxPathContainerService();
+        final DropboxPathContainerService s = new DropboxPathContainerService(new DropboxSession(new Host(new DropboxProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
         final Host host = new Host(new DropboxProtocol());
         assertEquals(PathRoot.namespaceId("r"), s.getNamespace(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withFileId("r"))));
         assertEquals(PathRoot.namespaceId("r"), s.getNamespace(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withFileId("r")), "f", EnumSet.of(Path.Type.file))));
