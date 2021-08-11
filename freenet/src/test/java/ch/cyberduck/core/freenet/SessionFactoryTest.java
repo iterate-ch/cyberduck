@@ -1,7 +1,7 @@
-package ch.cyberduck.core.brick;
+package ch.cyberduck.core.freenet;
 
 /*
- * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,13 +16,20 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostWebUrlProvider;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
-import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
 
-public class BrickUrlProvider extends HostWebUrlProvider {
+import static org.junit.Assert.assertNotNull;
 
-    public BrickUrlProvider(final Host host) {
-        super(new Host(host).withWebURL(String.format("https://%s/files/", StringUtils.strip(host.getHostname()))));
+public class SessionFactoryTest {
+
+    @Test
+    public void testCreateSession() {
+        assertNotNull(SessionFactory.create(new Host(new FreenetProtocol()),
+            new DefaultX509TrustManager(), new DefaultX509KeyManager()
+        ));
     }
 }

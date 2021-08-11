@@ -377,6 +377,9 @@ public abstract class AbstractProtocol implements Protocol {
         if(type == PathContainerService.class) {
             return (T) new RootPathContainerService();
         }
+        if(type == WebUrlProvider.class) {
+            return (T) new DefaultWebUrlProvider();
+        }
         return null;
     }
 }

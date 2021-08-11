@@ -300,6 +300,7 @@ public interface Protocol extends Comparable<Protocol> {
         nextcloud,
         manta,
         gmxcloud,
+        freenet,
         ctera
     }
 
