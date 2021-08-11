@@ -26,7 +26,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -65,8 +65,8 @@ public class B2LargeCopyFeature implements Copy {
     private final Integer concurrency;
 
     public B2LargeCopyFeature(final B2Session session, final B2VersionIdProvider fileid) {
-        this(session, fileid, PreferencesFactory.get().getLong("b2.copy.largeobject.size"),
-            PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency"));
+        this(session, fileid, new HostPreferences(session.getHost()).getLong("b2.copy.largeobject.size"),
+            new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.concurrency"));
     }
 
     public B2LargeCopyFeature(final B2Session session, final B2VersionIdProvider fileid, final Long partSize, final Integer concurrency) {

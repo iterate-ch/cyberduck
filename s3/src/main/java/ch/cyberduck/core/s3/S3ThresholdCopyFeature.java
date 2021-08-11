@@ -20,20 +20,14 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public class S3ThresholdCopyFeature extends S3CopyFeature {
 
-    private final Preferences preferences
-            = PreferencesFactory.get();
-
     private final S3Session session;
     private final S3AccessControlListFeature accessControlListFeature;
-
-    private final Long multipartThreshold
-            = preferences.getLong("s3.upload.multipart.required.threshold");
+    private final Long multipartThreshold;
 
     public S3ThresholdCopyFeature(final S3Session session) {
         this(session, new S3AccessControlListFeature(session));
@@ -43,6 +37,7 @@ public class S3ThresholdCopyFeature extends S3CopyFeature {
         super(session, accessControlListFeature);
         this.session = session;
         this.accessControlListFeature = accessControlListFeature;
+        this.multipartThreshold = new HostPreferences(session.getHost()).getLong("s3.upload.multipart.required.threshold");
     }
 
     public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {

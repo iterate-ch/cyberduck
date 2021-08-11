@@ -24,7 +24,7 @@ import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -70,7 +70,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
     public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, status);
         return new HttpResponseOutputStream<List<StorageObject>>(new MemorySegementingOutputStream(proxy,
-            PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"))) {
+            new HostPreferences(session.getHost()).getInteger("openstack.upload.largeobject.size.minimum"))) {
             @Override
             public List<StorageObject> getStatus() {
                 return proxy.getCompleted();

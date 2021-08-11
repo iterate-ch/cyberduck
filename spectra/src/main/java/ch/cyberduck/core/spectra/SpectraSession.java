@@ -40,7 +40,7 @@ public class SpectraSession extends S3Session {
     }
 
     @Override
-    public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
+    protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
         final RequestEntityRestStorageService client = super.connect(proxy, hostkey, prompt, cancel);
         final Jets3tProperties configuration = client.getConfiguration();
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));

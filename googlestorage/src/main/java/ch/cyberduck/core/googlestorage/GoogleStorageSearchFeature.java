@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Search;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -40,7 +40,7 @@ public class GoogleStorageSearchFeature implements Search {
         final AttributedList<Path> objects;
         try {
             objects = new GoogleStorageObjectListService(session).list(workdir, listener, null,
-                PreferencesFactory.get().getInteger("googlestorage.listing.chunksize"));
+                new HostPreferences(session.getHost()).getInteger("googlestorage.listing.chunksize"));
         }
         catch(NotfoundException e) {
             return AttributedList.emptyList();

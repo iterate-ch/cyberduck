@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -63,7 +63,7 @@ public class SDSDeleteFeature implements Delete {
     @Override
     public boolean isSupported(final Path file) {
         if(containerService.isContainer(file)) {
-            if(PreferencesFactory.get().getBoolean("sds.delete.dataroom.enable")) {
+            if(new HostPreferences(session.getHost()).getBoolean("sds.delete.dataroom.enable")) {
                 // Need the query permission on the parent data room if file itself is subroom
                 return new SDSPermissionsFeature(session, nodeid).containsRole(containerService.getContainer(file.getParent()),
                     SDSPermissionsFeature.MANAGE_ROLE);

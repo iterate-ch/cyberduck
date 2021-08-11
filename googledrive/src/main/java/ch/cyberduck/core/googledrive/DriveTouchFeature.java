@@ -21,7 +21,7 @@ import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class DriveTouchFeature implements Touch<VersionId> {
                 .setName(file.getName())
                 .setMimeType(status.getMime())
                 .setParents(Collections.singletonList(fileid.getFileId(file.getParent(), new DisabledListProgressListener()))));
-            final File execute = insert.setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+            final File execute = insert.setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
             execute.setVersion(1L);
             fileid.cache(file, execute.getId());
             return file.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));

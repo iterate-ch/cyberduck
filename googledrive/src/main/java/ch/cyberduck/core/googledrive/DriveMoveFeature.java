@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
@@ -59,7 +59,7 @@ public class DriveMoveFeature implements Move {
                 properties.setMimeType(status.getMime());
                 result = session.getClient().files().update(id, properties)
                     .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
-                    .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                    .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
                     .execute();
             }
             if(!file.getParent().equals(renamed.getParent())) {
@@ -67,7 +67,7 @@ public class DriveMoveFeature implements Move {
                 final StringBuilder previousParents = new StringBuilder();
                 final File reference = session.getClient().files().get(id)
                     .setFields("parents")
-                    .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                    .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
                     .execute();
                 for(String parent : reference.getParents()) {
                     previousParents.append(parent).append(',');
@@ -77,7 +77,7 @@ public class DriveMoveFeature implements Move {
                     .setAddParents(fileid.getFileId(renamed.getParent(), new DisabledListProgressListener()))
                     .setRemoveParents(previousParents.toString())
                     .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
-                    .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                    .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
                     .execute();
             }
             fileid.cache(file, null);

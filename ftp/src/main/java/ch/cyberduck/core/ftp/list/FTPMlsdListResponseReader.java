@@ -46,7 +46,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
 
     @Override
     public AttributedList<Path> read(final Path directory, final List<String> replies, final ListProgressListener listener) throws FTPInvalidListException {
-        final AttributedList<Path> children = new AttributedList<Path>();
+        final AttributedList<Path> children = new AttributedList<>();
         // At least one entry successfully parsed
         boolean success = false;
         for(String line : replies) {
@@ -234,10 +234,10 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
     protected Map<String, Map<String, String>> parseFacts(final String line) {
         final Pattern p = Pattern.compile("\\s?(\\S+\\=\\S+;)*\\s(.*)");
         final Matcher result = p.matcher(line);
-        final Map<String, Map<String, String>> file = new HashMap<String, Map<String, String>>();
+        final Map<String, Map<String, String>> file = new HashMap<>();
         if(result.matches()) {
             final String filename = result.group(2);
-            final Map<String, String> facts = new HashMap<String, String>();
+            final Map<String, String> facts = new HashMap<>();
             for(String fact : result.group(1).split(";")) {
                 String key = StringUtils.substringBefore(fact, "=");
                 if(StringUtils.isBlank(key)) {

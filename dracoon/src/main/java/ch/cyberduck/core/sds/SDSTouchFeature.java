@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -70,7 +70,7 @@ public class SDSTouchFeature implements Touch<Node> {
             return false;
         }
         if(workdir.attributes().getQuota() != -1) {
-            if(workdir.attributes().getQuota() <= workdir.attributes().getSize() + PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize")) {
+            if(workdir.attributes().getQuota() <= workdir.attributes().getSize() + new HostPreferences(session.getHost()).getInteger("sds.upload.multipart.chunksize")) {
                 log.warn(String.format("Quota %d exceeded with %d in %s", workdir.attributes().getQuota(), workdir.attributes().getSize(), workdir));
                 return false;
             }

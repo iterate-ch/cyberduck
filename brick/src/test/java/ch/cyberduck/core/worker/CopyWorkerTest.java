@@ -19,20 +19,23 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.brick.AbstractBrickTest;
-import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
-import ch.cyberduck.core.dav.DAVDirectoryFeature;
-import ch.cyberduck.core.dav.DAVFindFeature;
-import ch.cyberduck.core.dav.DAVUploadFeature;
-import ch.cyberduck.core.dav.DAVWriteFeature;
+import ch.cyberduck.core.brick.BrickDirectoryFeature;
+import ch.cyberduck.core.brick.BrickFindFeature;
+import ch.cyberduck.core.brick.BrickUploadFeature;
+import ch.cyberduck.core.brick.BrickWriteFeature;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -51,15 +54,20 @@ public class CopyWorkerTest extends AbstractBrickTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<>(new DAVUploadFeature(new DAVWriteFeature(session)),
-            new DAVAttributesFinderFeature(session)).touch(source, new TransferStatus());
-        assertTrue(new DAVFindFeature(session).find(source));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), source.getName());
+        final byte[] random = RandomUtils.nextBytes(3247);
+        IOUtils.write(random, local.getOutputStream(false));
+        final TransferStatus status = new TransferStatus().withLength(random.length);
+        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(source, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+            new DisabledStreamListener(), status, new DisabledLoginCallback());
+        assertTrue(new BrickFindFeature(session).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new DAVFindFeature(session).find(source));
-        assertTrue(new DAVFindFeature(session).find(target));
+        assertTrue(new BrickFindFeature(session).find(source));
+        assertTrue(new BrickFindFeature(session).find(target));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), PathCache.empty(), new DisabledProgressListener()).run(session);
         session.close();
+        local.delete();
     }
 
     @Test
@@ -67,40 +75,51 @@ public class CopyWorkerTest extends AbstractBrickTest {
 
         final Path home = new DefaultHomeFinderService(session).find();
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<>(new DAVUploadFeature(new DAVWriteFeature(session)),
-            new DAVAttributesFinderFeature(session)).touch(sourceFile, new TransferStatus());
-        assertTrue(new DAVFindFeature(session).find(sourceFile));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), sourceFile.getName());
+        final byte[] random = RandomUtils.nextBytes(3247);
+        IOUtils.write(random, local.getOutputStream(false));
+        final TransferStatus status = new TransferStatus().withLength(random.length);
+        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+            new DisabledStreamListener(), status, new DisabledLoginCallback());
+        assertTrue(new BrickFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DAVDirectoryFeature(session).mkdir(targetFolder, new TransferStatus());
-        assertTrue(new DAVFindFeature(session).find(targetFolder));
+        new BrickDirectoryFeature(session).mkdir(targetFolder, new TransferStatus());
+        assertTrue(new BrickFindFeature(session).find(targetFolder));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new DAVFindFeature(session).find(sourceFile));
-        assertTrue(new DAVFindFeature(session).find(targetFile));
+        assertTrue(new BrickFindFeature(session).find(sourceFile));
+        assertTrue(new BrickFindFeature(session).find(targetFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
         session.close();
+        local.delete();
     }
 
     @Test
     public void testCopyDirectory() throws Exception {
 
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path sourceFile = new DefaultTouchFeature<>(new DAVUploadFeature(new DAVWriteFeature(session)),
-            new DAVAttributesFinderFeature(session)).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new DAVFindFeature(session).find(folder));
-        assertTrue(new DAVFindFeature(session).find(sourceFile));
+        final Path folder = new BrickDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), sourceFile.getName());
+        final byte[] random = RandomUtils.nextBytes(3247);
+        IOUtils.write(random, local.getOutputStream(false));
+        final TransferStatus status = new TransferStatus().withLength(random.length);
+        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+            new DisabledStreamListener(), status, new DisabledLoginCallback());
+        assertTrue(new BrickFindFeature(session).find(folder));
+        assertTrue(new BrickFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new DAVFindFeature(session).find(targetFolder));
-        assertTrue(new DAVFindFeature(session).find(targetFile));
-        assertTrue(new DAVFindFeature(session).find(folder));
-        assertTrue(new DAVFindFeature(session).find(sourceFile));
+        assertTrue(new BrickFindFeature(session).find(targetFolder));
+        assertTrue(new BrickFindFeature(session).find(targetFile));
+        assertTrue(new BrickFindFeature(session).find(folder));
+        assertTrue(new BrickFindFeature(session).find(sourceFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFile), PathCache.empty(), new DisabledProgressListener()).run(session);
         session.close();
+        local.delete();
     }
 }

@@ -25,7 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +55,7 @@ public class SwiftMetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getDefault(final Local local) {
-        return PreferencesFactory.get().getMap("openstack.metadata.default");
+        return new HostPreferences(session.getHost()).getMap("openstack.metadata.default");
     }
 
     @Override

@@ -26,7 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public class CTERAProtocol extends AbstractProtocol {
 
-    public static final String CTERA_REDIRECT_URI = String.format("%s:websso", PreferencesFactory.get().getProperty("oauth.handler.scheme"));
+    public static final String CTERA_REDIRECT_URI = String.format("%s:websso",
+        PreferencesFactory.get().getProperty("oauth.handler.scheme"));
 
     @Override
     public Type getType() {

@@ -28,7 +28,7 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.Header;
@@ -56,7 +56,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
     private final boolean expect;
 
     public DAVWriteFeature(final DAVSession session) {
-        this(session, PreferencesFactory.get().getBoolean("webdav.expect-continue"));
+        this(session, new HostPreferences(session.getHost()).getBoolean("webdav.expect-continue"));
     }
 
     public DAVWriteFeature(final DAVSession session, final boolean expect) {

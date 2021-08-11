@@ -39,12 +39,11 @@ public class DropboxLockFeature implements Lock<String> {
     private static final Logger log = Logger.getLogger(DropboxSession.class);
 
     private final DropboxSession session;
-
-    private final PathContainerService containerService
-        = new DropboxPathContainerService();
+    private final PathContainerService containerService;
 
     public DropboxLockFeature(final DropboxSession session) {
         this.session = session;
+        this.containerService = new DropboxPathContainerService(session);
     }
 
     @Override

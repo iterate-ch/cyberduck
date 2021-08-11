@@ -19,16 +19,13 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.util.EnumSet;
 
@@ -43,11 +40,7 @@ import com.microsoft.azure.storage.blob.ContainerListingDetails;
 public class AzureContainerListService implements RootListService {
 
     private final AzureSession session;
-
     private final OperationContext context;
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
 
     public AzureContainerListService(final AzureSession session, final OperationContext context) {
         this.session = session;
@@ -59,18 +52,18 @@ public class AzureContainerListService implements RootListService {
         ResultSegment<CloudBlobContainer> result;
         ResultContinuation token = null;
         try {
-            final AttributedList<Path> containers = new AttributedList<Path>();
+            final AttributedList<Path> containers = new AttributedList<>();
             do {
                 final BlobRequestOptions options = new BlobRequestOptions();
                 result = session.getClient().listContainersSegmented(null, ContainerListingDetails.NONE,
-                        preferences.getInteger("azure.listing.chunksize"), token,
-                        options, context);
+                    new HostPreferences(session.getHost()).getInteger("azure.listing.chunksize"), token,
+                    options, context);
                 for(CloudBlobContainer container : result.getResults()) {
                     final PathAttributes attributes = new PathAttributes();
                     attributes.setETag(container.getProperties().getEtag());
                     attributes.setModificationDate(container.getProperties().getLastModified().getTime());
                     containers.add(new Path(PathNormalizer.normalize(container.getName()),
-                            EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
+                        EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
                 }
                 listener.chunk(directory, containers);
                 token = result.getContinuationToken();

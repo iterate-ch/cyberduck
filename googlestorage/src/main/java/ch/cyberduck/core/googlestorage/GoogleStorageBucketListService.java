@@ -21,8 +21,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -32,7 +31,6 @@ import com.google.api.services.storage.model.Buckets;
 
 public class GoogleStorageBucketListService implements ListService {
 
-    private final Preferences preferences = PreferencesFactory.get();
     private final GoogleStorageSession session;
     private final GoogleStorageAttributesFinderFeature attributes;
 
@@ -44,12 +42,12 @@ public class GoogleStorageBucketListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            final AttributedList<Path> buckets = new AttributedList<Path>();
+            final AttributedList<Path> buckets = new AttributedList<>();
             Buckets response;
             String page = null;
             do {
                 response = session.getClient().buckets().list(session.getHost().getCredentials().getUsername())
-                    .setMaxResults(preferences.getLong("googlestorage.listing.chunksize"))
+                    .setMaxResults(new HostPreferences(session.getHost()).getLong("googlestorage.listing.chunksize"))
                     .setPageToken(page)
                     .execute();
                 if(null != response.getItems()) {

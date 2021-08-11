@@ -34,12 +34,11 @@ import com.dropbox.core.v2.files.FileMetadata;
 public class DropboxReadFeature implements Read {
 
     private final DropboxSession session;
-
-    private final PathContainerService containerService
-        = new DropboxPathContainerService();
+    private final PathContainerService containerService;
 
     public DropboxReadFeature(final DropboxSession session) {
         this.session = session;
+        this.containerService = new DropboxPathContainerService(session);
     }
 
     @Override

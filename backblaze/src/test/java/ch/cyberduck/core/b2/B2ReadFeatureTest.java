@@ -125,7 +125,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        final BaseB2Response reply = new B2SingleUploadService(new B2WriteFeature(session, fileid)).upload(
+        final BaseB2Response reply = new B2SingleUploadService(session, new B2WriteFeature(session, fileid)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
             new TransferStatus().withLength(content.length),
             new DisabledConnectionCallback());
@@ -157,7 +157,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new B2SingleUploadService(new B2WriteFeature(session, fileid)).upload(
+        new B2SingleUploadService(session, new B2WriteFeature(session, fileid)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
             new TransferStatus().withLength(content.length),
             new DisabledConnectionCallback());

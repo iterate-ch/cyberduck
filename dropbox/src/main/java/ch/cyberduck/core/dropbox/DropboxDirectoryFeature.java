@@ -29,12 +29,11 @@ import com.dropbox.core.v2.files.DbxUserFilesRequests;
 public class DropboxDirectoryFeature implements Directory<String> {
 
     private final DropboxSession session;
-
-    private final PathContainerService containerService
-        = new DropboxPathContainerService();
+    private final PathContainerService containerService;
 
     public DropboxDirectoryFeature(final DropboxSession session) {
         this.session = session;
+        this.containerService = new DropboxPathContainerService(session);
     }
 
     @Override

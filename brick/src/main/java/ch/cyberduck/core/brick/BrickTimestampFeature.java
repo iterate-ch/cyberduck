@@ -15,36 +15,34 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.date.RFC1123DateFormatter;
-import ch.cyberduck.core.dav.DAVTimestampFeature;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.brick.io.swagger.client.ApiException;
+import ch.cyberduck.core.brick.io.swagger.client.api.FilesApi;
+import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.w3c.dom.Element;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 
-import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
+public class BrickTimestampFeature extends DefaultTimestampFeature {
 
-import com.github.sardine.DavResource;
-import com.github.sardine.util.SardineUtil;
-
-public class BrickTimestampFeature extends DAVTimestampFeature {
-
-    private static final String MS_NAMESPACE_URI = "http://brickftp.com/ns";
-    private static final String MS_NAMESPACE_PREFIX = "s";
-    private static final String MS_NAMESPACE_LASTMODIFIED = "provided_mtime";
-
-    public static final QName LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE = new QName(MS_NAMESPACE_URI, MS_NAMESPACE_LASTMODIFIED, MS_NAMESPACE_PREFIX);
+    private final BrickSession session;
 
     public BrickTimestampFeature(final BrickSession session) {
-        super(session);
+        this.session = session;
     }
 
-    protected List<Element> getCustomProperties(final DavResource resource, final Long modified) {
-        final List<Element> props = new ArrayList<>();
-        final Element element = SardineUtil.createElement(LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE);
-        element.setTextContent(new RFC1123DateFormatter().format(modified, TimeZone.getTimeZone("GMT")));
-        props.add(element);
-        return props;
+    @Override
+    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
+        try {
+            new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+                .patchFilesPath(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
+                    new FilesPathBody().providedMtime(new DateTime(status.getTimestamp())));
+        }
+        catch(ApiException e) {
+            throw new BrickExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+        }
     }
 }
