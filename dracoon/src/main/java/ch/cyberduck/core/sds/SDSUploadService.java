@@ -29,6 +29,7 @@ import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UploadsApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
@@ -64,7 +65,12 @@ public class SDSUploadService {
         this.nodeid = nodeid;
     }
 
-    public String start(final Path file, final TransferStatus status) throws BackgroundException {
+    /**
+     * @param file   Remote path
+     * @param status Length and modification date for file uploaded
+     * @return Uplaod URI
+     */
+    public CreateFileUploadResponse start(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final CreateFileUploadRequest body = new CreateFileUploadRequest()
                 .size(-1 == status.getLength() ? null : status.getLength())
@@ -80,13 +86,21 @@ public class SDSUploadService {
                     }
                 }
             }
-            return new NodesApi(session.getClient()).createFileUploadChannel(body, StringUtils.EMPTY).getToken();
+            return new NodesApi(session.getClient()).createFileUploadChannel(body, StringUtils.EMPTY);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file);
         }
     }
 
+    /**
+     * Complete file upload
+     *
+     * @param file        Remote path
+     * @param uploadToken Upload token
+     * @param status      Transfer status
+     * @return Node Id from server
+     */
     public Node complete(final Path file, final String uploadToken, final TransferStatus status) throws BackgroundException {
         try {
             final CompleteUploadRequest body = new CompleteUploadRequest()
@@ -131,6 +145,12 @@ public class SDSUploadService {
         }
     }
 
+    /**
+     * Cancel file upload
+     *
+     * @param file        Remote path
+     * @param uploadToken Upload token
+     */
     public void cancel(final Path file, final String uploadToken) throws BackgroundException {
         log.warn(String.format("Cancel failed upload %s for %s", uploadToken, file));
         try {

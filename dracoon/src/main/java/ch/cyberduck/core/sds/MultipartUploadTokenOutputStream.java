@@ -51,17 +51,17 @@ public class MultipartUploadTokenOutputStream extends OutputStream {
     private final SDSNodeIdProvider nodeid;
     private final Path file;
     private final TransferStatus overall;
-    private final String uploadToken;
+    private final String uploadUrl;
     private final AtomicReference<BackgroundException> canceled = new AtomicReference<>();
 
     private Long offset = 0L;
     private final Long length;
 
-    public MultipartUploadTokenOutputStream(final SDSSession session, final SDSNodeIdProvider nodeid, final Path file, final TransferStatus status, final String uploadToken) {
+    public MultipartUploadTokenOutputStream(final SDSSession session, final SDSNodeIdProvider nodeid, final Path file, final TransferStatus status, final String uploadUrl) {
         this.session = session;
         this.nodeid = nodeid;
         this.file = file;
-        this.uploadToken = uploadToken;
+        this.uploadUrl = uploadUrl;
         this.overall = status;
         this.length = status.getOffset() + status.getLength();
     }
@@ -84,7 +84,7 @@ public class MultipartUploadTokenOutputStream extends OutputStream {
                 public Void call() throws BackgroundException {
                     final SDSApiClient client = session.getClient();
                     try {
-                        final HttpPost request = new HttpPost(String.format("%s/v4/uploads/%s", client.getBasePath(), uploadToken));
+                        final HttpPost request = new HttpPost(uploadUrl);
                         request.setEntity(entity);
                         request.setHeader(HttpHeaders.CONTENT_TYPE, MimeTypeService.DEFAULT_CONTENT_TYPE);
                         request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
@@ -140,7 +140,7 @@ public class MultipartUploadTokenOutputStream extends OutputStream {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("MultipartUploadTokenOutputStream{");
-        sb.append("uploadToken='").append(uploadToken).append('\'');
+        sb.append("uploadUrl='").append(uploadUrl).append('\'');
         sb.append(", file=").append(file);
         sb.append(", offset=").append(offset);
         sb.append(", length=").append(length);
