@@ -2,7 +2,7 @@ Cyberduck
 https://cyberduck.io/
 
 7.10.1
-- [Feature] Support S3 interface endpoints (AWSPrivateLink for Amazon S3) (#11735)
+- [Feature] Support S3 interface endpoints (AWS PrivateLink for Amazon S3) (#11735)
 - [Feature] Updated support for Files.com using proprietary REST API (Files.com)
 - [Feature] Allow override of protocol specific settings in connection profiles
 - [Bugfix] Unable to access team drive set as default path in bookmark (Google Drive)
