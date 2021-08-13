@@ -81,6 +81,7 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
     protected CloseableHttpClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setServiceUnavailableRetryStrategy(new BrickUnauthorizedRetryStrategy(this, prompt, cancel));
+        configuration.disableRedirectHandling();
         return configuration.build();
     }
 
