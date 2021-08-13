@@ -17,6 +17,7 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -35,8 +36,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class BrickUploadFeatureTest extends AbstractBrickTest {
@@ -48,52 +48,35 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path test = new Path(root, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final byte[] random = RandomUtils.nextBytes(854);
-        IOUtils.write(random, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus();
-        status.setLength(random.length);
-        status.setMime("text/plain");
-        final BytecountStreamListener count = new BytecountStreamListener();
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-            count, status, new DisabledLoginCallback());
-        assertEquals(random.length, count.getSent());
-        assertTrue(status.isComplete());
-        assertTrue(new BrickFindFeature(session).find(test));
-        final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(test);
-        assertEquals(random.length, attributes.getSize());
-        new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        local.delete();
-    }
-
-    @Test
-    public void testUploadTwoParts() throws Exception {
-        // 5L * 1024L * 1024L
-        final BrickUploadFeature feature = new BrickUploadFeature(session, new BrickWriteFeature(session), 5242880L, 5);
-        final Path root = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(root, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final int length = 5242881;
+        final int length = 854;
         final byte[] content = RandomUtils.nextBytes(length);
         IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
+        status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, null);
+        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+            count, status, new DisabledLoginCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new BrickFindFeature(session).find(test));
-        assertEquals(content.length, new BrickAttributesFinderFeature(session).find(test).getSize());
+        final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(test);
+        assertEquals(content.length, attributes.getSize());
+        final byte[] compare = new byte[length];
+        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().withLength(length), new DisabledConnectionCallback()), compare);
+        assertArrayEquals(content, compare);
         new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
 
     @Test
     public void testUploadMultipleParts() throws Exception {
-        final BrickUploadFeature feature = new BrickUploadFeature(session, new BrickWriteFeature(session), 10485760L, 5);
+        // 5L * 1024L * 1024L
+        final BrickUploadFeature feature = new BrickUploadFeature(session, new BrickWriteFeature(session), 5242880L, 5);
         final Path root = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(root, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final int length = 11242881;
+        final int length = 5242881;
         final byte[] content = RandomUtils.nextBytes(length);
         IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
