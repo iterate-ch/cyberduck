@@ -38,6 +38,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
@@ -172,6 +173,9 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
     public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
             return (T) new BrickUploadFeature(this, new BrickWriteFeature(this));
+        }
+        if(type == MultipartWrite.class) {
+            return (T) new BrickMultipartWriteFeature(this);
         }
         if(type == Write.class) {
             return (T) new BrickWriteFeature(this);
