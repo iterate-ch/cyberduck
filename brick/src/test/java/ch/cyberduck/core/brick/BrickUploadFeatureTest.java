@@ -70,7 +70,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
     }
 
     @Test
-    public void testUploadMultipleParts() throws Exception {
+    public void testUploadTwoParts() throws Exception {
         // 5L * 1024L * 1024L
         final BrickUploadFeature feature = new BrickUploadFeature(session, new BrickWriteFeature(session), 5242880L, 5);
         final Path root = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -94,4 +94,27 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         local.delete();
     }
 
+    @Test
+    public void testUploadMultipleParts() throws Exception {
+        final BrickUploadFeature feature = new BrickUploadFeature(session, new BrickWriteFeature(session), 10485760L, 5);
+        final Path root = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(root, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final int length = 11242881;
+        final byte[] content = RandomUtils.nextBytes(length);
+        IOUtils.write(content, local.getOutputStream(false));
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        final BytecountStreamListener count = new BytecountStreamListener();
+        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, null);
+        assertEquals(content.length, count.getSent());
+        assertTrue(status.isComplete());
+        assertTrue(new BrickFindFeature(session).find(test));
+        assertEquals(content.length, new BrickAttributesFinderFeature(session).find(test).getSize());
+        final byte[] compare = new byte[length];
+        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().withLength(length), new DisabledConnectionCallback()), compare);
+        assertArrayEquals(content, compare);
+        new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        local.delete();
+    }
 }
