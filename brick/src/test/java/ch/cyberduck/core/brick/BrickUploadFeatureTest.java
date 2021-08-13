@@ -17,7 +17,6 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -36,7 +35,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class BrickUploadFeatureTest extends AbstractBrickTest {
@@ -48,23 +48,19 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path test = new Path(root, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final int length = 854;
-        final byte[] content = RandomUtils.nextBytes(length);
-        IOUtils.write(content, local.getOutputStream(false));
+        final byte[] random = RandomUtils.nextBytes(854);
+        IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
-        status.setLength(content.length);
+        status.setLength(random.length);
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             count, status, new DisabledLoginCallback());
-        assertEquals(content.length, count.getSent());
+        assertEquals(random.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new BrickFindFeature(session).find(test));
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(test);
-        assertEquals(content.length, attributes.getSize());
-        final byte[] compare = new byte[length];
-        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().withLength(length), new DisabledConnectionCallback()), compare);
-        assertArrayEquals(content, compare);
+        assertEquals(random.length, attributes.getSize());
         new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
@@ -87,9 +83,6 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         assertTrue(status.isComplete());
         assertTrue(new BrickFindFeature(session).find(test));
         assertEquals(content.length, new BrickAttributesFinderFeature(session).find(test).getSize());
-        final byte[] compare = new byte[length];
-        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().withLength(length), new DisabledConnectionCallback()), compare);
-        assertArrayEquals(content, compare);
         new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
