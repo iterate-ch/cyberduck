@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -124,6 +125,9 @@ public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
                             }
                             catch(IOException e) {
                                 throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+                            }
+                            finally {
+                                new DefaultStreamCloser().close(proxy);
                             }
                             ref = uploadPartEntity.getRef();
                             return status;
