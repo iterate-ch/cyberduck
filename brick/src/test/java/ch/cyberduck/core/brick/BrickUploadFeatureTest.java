@@ -43,7 +43,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
 
     @Test
     public void testUploadSmallPart() throws Exception {
-        final BrickUploadFeature feature = new BrickUploadFeature(session, new BrickWriteFeature(session), 5 * 1024L, 2);
+        final BrickUploadFeature feature = new BrickUploadFeature(session, new BrickWriteFeature(session), 5 * 1024L * 1024L, 2);
         final Path root = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         final Path test = new Path(root, name, EnumSet.of(Path.Type.file));
@@ -71,7 +71,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
 
     @Test
     public void testUploadSinglePart() throws Exception {
-        final BrickUploadFeature feature = new BrickUploadFeature(session, new BrickWriteFeature(session), 5 * 1024L, 2);
+        final BrickUploadFeature feature = new BrickUploadFeature(session, new BrickWriteFeature(session), 5 * 1024L * 1024L, 2);
         final Path root = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         final Path test = new Path(root, name, EnumSet.of(Path.Type.file));
@@ -100,7 +100,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
     @Test
     public void testUploadMultipleParts() throws Exception {
         // 5L * 1024L * 1024L
-        final BrickUploadFeature feature = new BrickUploadFeature(session, new BrickWriteFeature(session), 5242880L, 5);
+        final BrickUploadFeature feature = new BrickUploadFeature(session, new BrickWriteFeature(session), 5 * 1024L * 1024L, 5);
         final Path root = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(root, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
