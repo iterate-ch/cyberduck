@@ -40,7 +40,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
 
     @Test
     public void testUploadSinglePart() throws Exception {
-        final S3MultipartUploadService service = new S3MultipartUploadService(session, new S3WriteFeature(session), 5 * 1024L, 2);
+        final S3MultipartUploadService service = new S3MultipartUploadService(session, new S3WriteFeature(session), 5 * 1024L * 1024L, 2);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = String.format(" %s.txt", UUID.randomUUID().toString());
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -69,7 +69,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
 
     @Test
     public void testUploadSinglePartEncrypted() throws Exception {
-        final S3MultipartUploadService service = new S3MultipartUploadService(session, new S3WriteFeature(session), 5 * 1024L, 2);
+        final S3MultipartUploadService service = new S3MultipartUploadService(session, new S3WriteFeature(session), 5 * 1024L * 1024L, 2);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -101,7 +101,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
     public void testUploadInvalidContainer() throws Exception {
-        final S3MultipartUploadService m = new S3MultipartUploadService(session, new S3WriteFeature(session), 5 * 1024L, 1);
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, new S3WriteFeature(session), 5 * 1024L * 1024L, 1);
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -112,7 +112,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     @Test
     public void testMultipleParts() throws Exception {
         // 5L * 1024L * 1024L
-        final S3MultipartUploadService m = new S3MultipartUploadService(session, new S3WriteFeature(session), 5242880L, 5);
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, new S3WriteFeature(session), 5 * 1024L * 1024L, 5);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -134,7 +134,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     @Test
     public void testMultiplePartsWithSHA256Checksum() throws Exception {
         // 5L * 1024L * 1024L
-        final S3MultipartUploadService m = new S3MultipartUploadService(session, new S3WriteFeature(session), 5242880L, 5);
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, new S3WriteFeature(session), 5 * 1024L * 1024L, 5);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
