@@ -31,6 +31,7 @@ public class BrickThresholdUploadFeature implements Upload<Void> {
 
     public BrickThresholdUploadFeature(final BrickSession session) {
         this.session = session;
+        this.writer = new BrickWriteFeature(session);
     }
 
     @Override
