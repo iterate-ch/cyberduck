@@ -55,7 +55,7 @@ public class BrickReadFeature implements Read {
         try {
             final FileEntity entity = new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient()))
                 .download(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
-                    "redirect", null, null, null);
+                    null, null, null, null);
             final HttpUriRequest request = new HttpGet(entity.getDownloadUri());
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
