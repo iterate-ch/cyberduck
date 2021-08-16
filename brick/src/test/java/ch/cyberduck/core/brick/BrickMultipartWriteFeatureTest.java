@@ -20,6 +20,7 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -60,6 +61,8 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         out.close();
         assertNull(out.getStatus());
         assertTrue(new BrickFindFeature(session).find(file));
+        final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(file);
+        assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
         final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -86,6 +89,8 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         out.close();
         assertNull(out.getStatus());
         assertTrue(new BrickFindFeature(session).find(file));
+        final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(file);
+        assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
         final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -108,6 +113,8 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         in.close();
         out.close();
         assertTrue(new DefaultFindFeature(session).find(file));
+        final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(file);
+        assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
         final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
