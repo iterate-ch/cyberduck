@@ -22,10 +22,12 @@ import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.FileActionsApi;
 import ch.cyberduck.core.brick.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.BeginUploadPathBody;
+import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileUploadPartEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -43,6 +45,7 @@ import org.joda.time.DateTime;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -87,16 +90,13 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             long remaining = status.getLength();
             String ref = null;
             for(int partNumber = 1; remaining > 0; partNumber++) {
-                final List<FileUploadPartEntity> uploadPartEntities = new FileActionsApi(new BrickApiClient(session.getApiKey(), session.getClient()))
-                    .beginUpload(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)), new BeginUploadPathBody().ref(ref).part(partNumber));
-                for(FileUploadPartEntity uploadPartEntity : uploadPartEntities) {
-                    final long length = Math.min(Math.max(size / (MAXIMUM_UPLOAD_PARTS - 1), partsize), remaining);
-                    parts.add(this.submit(pool, file, local, throttle, listener, status,
-                        uploadPartEntity.getUploadUri(), partNumber, offset, length, callback));
-                    remaining -= length;
-                    offset += length;
-                    ref = uploadPartEntity.getRef();
-                }
+                final FileUploadPartEntity uploadPartEntity = this.continueUpload(file, ref, partNumber);
+                final long length = Math.min(Math.max(size / (MAXIMUM_UPLOAD_PARTS - 1), partsize), remaining);
+                parts.add(this.submit(pool, file, local, throttle, listener, status,
+                    uploadPartEntity.getUploadUri(), partNumber, offset, length, callback));
+                remaining -= length;
+                offset += length;
+                ref = uploadPartEntity.getRef();
             }
             for(Future<TransferStatus> future : parts) {
                 try {
@@ -115,22 +115,48 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                     throw new BackgroundException(e.getCause());
                 }
             }
-            new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).postFilesPath(new FilesPathBody()
+            this.completeUpload(file, ref, status, checksums);
+            // Mark parent status as complete
+            status.setComplete();
+            return null;
+        }
+        finally {
+            // Cancel future tasks
+            pool.shutdown(false);
+        }
+    }
+
+    protected FileUploadPartEntity startUpload(final Path file) throws BackgroundException {
+        return this.continueUpload(file, null, 1);
+    }
+
+    protected FileUploadPartEntity continueUpload(final Path file, final String ref, final int partNumber) throws BackgroundException {
+        final List<FileUploadPartEntity> uploadPartEntities;
+        try {
+            uploadPartEntities = new FileActionsApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+                .beginUpload(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)), new BeginUploadPathBody().ref(ref).part(partNumber));
+        }
+        catch(ApiException e) {
+            throw new BrickExceptionMappingService().map("Upload {0} failed", e, file);
+        }
+        final Optional<FileUploadPartEntity> entity = uploadPartEntities.stream().findFirst();
+        if(!entity.isPresent()) {
+            throw new NotfoundException(file.getAbsolute());
+        }
+        return entity.get();
+    }
+
+    protected FileEntity completeUpload(final Path file, final String ref, final TransferStatus status, final List<TransferStatus> checksums) throws BackgroundException {
+        try {
+            return new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).postFilesPath(new FilesPathBody()
                 .etagsEtag(checksums.stream().map(s -> s.getChecksum().hash).collect(Collectors.toList()))
                 .etagsPart(checksums.stream().map(TransferStatus::getPart).collect(Collectors.toList()))
                 .providedMtime(new DateTime(status.getTimestamp()))
                 .ref(ref)
                 .action("end"), StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
-            // Mark parent status as complete
-            status.setComplete();
-            return null;
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Upload {0} failed", e, file);
-        }
-        finally {
-            // Cancel future tasks
-            pool.shutdown(false);
         }
     }
 

@@ -16,24 +16,15 @@ package ch.cyberduck.core.brick;/*
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.brick.io.swagger.client.ApiException;
-import ch.cyberduck.core.brick.io.swagger.client.api.FileActionsApi;
-import ch.cyberduck.core.brick.io.swagger.client.api.FilesApi;
-import ch.cyberduck.core.brick.io.swagger.client.model.BeginUploadPathBody;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileUploadPartEntity;
-import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-
 import java.io.IOException;
-import java.util.List;
+import java.util.Collections;
 
 public class BrickTouchFeature implements Touch<Void> {
 
@@ -46,27 +37,16 @@ public class BrickTouchFeature implements Touch<Void> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final List<FileUploadPartEntity> uploadPartEntities = new FileActionsApi(new BrickApiClient(session.getApiKey(), session.getClient()))
-                .beginUpload(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)), new BeginUploadPathBody().parts(1).part(1));
-            for(FileUploadPartEntity uploadPartEntity : uploadPartEntities) {
-                status
-                    .segment(true)
-                    .withLength(0L)
-                    .withOffset(0L);
-                status.setUrl(uploadPartEntity.getUploadUri());
-                status.setPart(1);
-                new BrickWriteFeature(session).write(file, status, new DisabledConnectionCallback()).close();
-                final FileEntity entity = new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).postFilesPath(
-                    new FilesPathBody()
-                        .providedMtime(new DateTime(System.currentTimeMillis()))
-                        .action("end").ref(uploadPartEntity.getRef()),
-                    StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
-                return file.withAttributes(new BrickAttributesFinderFeature(session).toAttributes(entity));
-            }
-            throw new NotfoundException(file.getAbsolute());
-        }
-        catch(ApiException e) {
-            throw new BrickExceptionMappingService().map("Cannot create {0}", e, file);
+            final BrickUploadFeature upload = new BrickUploadFeature(session, new BrickWriteFeature(session));
+            final FileUploadPartEntity uploadPartEntity = upload.startUpload(file);
+            status.withLength(0L).withOffset(0L);
+            status.setUrl(uploadPartEntity.getUploadUri());
+            status.setSegment(true);
+            status.setTimestamp(System.currentTimeMillis());
+            status.setPart(1);
+            new BrickWriteFeature(session).write(file, status, new DisabledConnectionCallback()).close();
+            final FileEntity entity = upload.completeUpload(file, uploadPartEntity.getRef(), status, Collections.singletonList(status));
+            return file.withAttributes(new BrickAttributesFinderFeature(session).toAttributes(entity));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
