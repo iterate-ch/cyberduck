@@ -37,6 +37,7 @@ import ch.cyberduck.core.sds.io.swagger.client.api.PublicApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.AlgorithmVersionInfo;
 import ch.cyberduck.core.sds.io.swagger.client.model.AlgorithmVersionInfoList;
+import ch.cyberduck.core.sds.io.swagger.client.model.ClassificationPoliciesConfig;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateKeyPairRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.GeneralSettingsInfo;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
@@ -119,6 +120,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<GeneralSettingsInfo> generalSettingsInfo
+        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
+
+    private final ExpiringObjectHolder<ClassificationPoliciesConfig> classificationPolicies
         = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<SoftwareVersionData> softwareVersion
@@ -571,6 +575,25 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
         }
         return generalSettingsInfo.get();
+    }
+
+    public ClassificationPoliciesConfig shareClassificationsPolicies() throws BackgroundException {
+        if(classificationPolicies.get() == null) {
+            final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
+            if(matcher.matches()) {
+                if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.30))) >= 0) {
+                    try {
+                        classificationPolicies.set(new ConfigApi(client).requestClassificationPoliciesConfigInfo(StringUtils.EMPTY));
+                    }
+                    catch(ApiException e) {
+                        // Precondition: Right "Config Read" required.
+                        log.warn(String.format("Failure %s reading configuration", e.getMessage()));
+                        throw new SDSExceptionMappingService(nodeid).map(e);
+                    }
+                }
+            }
+        }
+        return classificationPolicies.get();
     }
 
     public UserKeyPair.Version requiredKeyPairVersion() {

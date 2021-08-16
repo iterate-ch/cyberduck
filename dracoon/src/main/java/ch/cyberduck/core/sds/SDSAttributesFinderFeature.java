@@ -48,6 +48,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     public static final String KEY_CNT_DOWNLOADSHARES = "count_downloadshares";
     public static final String KEY_CNT_UPLOADSHARES = "count_uploadshares";
     public static final String KEY_ENCRYPTED = "encrypted";
+    public static final String KEY_CLASSIFICATION = "classification";
 
     private final PathContainerService containerService
         = new SDSPathContainerService();
@@ -186,6 +187,9 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         }
         if(null != node.isIsEncrypted()) {
             custom.put(KEY_ENCRYPTED, String.valueOf(node.isIsEncrypted()));
+        }
+        if(null != node.getClassification()) {
+            custom.put(KEY_CLASSIFICATION, String.valueOf(node.getClassification().getValue()));
         }
         attributes.setCustom(custom);
         return attributes;
