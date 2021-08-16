@@ -34,7 +34,7 @@ public class FreenetSession extends DAVSession {
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == UrlProvider.class) {
-            return (T) new FreenetUrlProvider();
+            return (T) new FreenetUrlProvider(host);
         }
         return super.getFeature(type);
     }
