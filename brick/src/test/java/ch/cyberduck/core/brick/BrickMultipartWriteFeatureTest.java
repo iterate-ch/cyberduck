@@ -72,6 +72,34 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
     }
 
     @Test
+    public void testWriteSmallPart() throws Exception {
+        final BrickMultipartWriteFeature feature = new BrickMultipartWriteFeature(session, 5 * 1024 * 1024);
+        final Path container = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final TransferStatus status = new TransferStatus();
+        status.setLength(-1L);
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final byte[] content = RandomUtils.nextBytes(56);
+        final ByteArrayInputStream in = new ByteArrayInputStream(content);
+        final TransferStatus progress = new TransferStatus();
+        final BytecountStreamListener count = new BytecountStreamListener();
+        new StreamCopier(new TransferStatus(), progress).withListener(count).transfer(in, out);
+        assertEquals(content.length, count.getSent());
+        in.close();
+        out.close();
+        assertNull(out.getStatus());
+        assertTrue(new BrickFindFeature(session).find(file));
+        final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(file);
+        assertEquals(content.length, attributes.getSize());
+        final byte[] compare = new byte[content.length];
+        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        IOUtils.readFully(stream, compare);
+        stream.close();
+        assertArrayEquals(content, compare);
+        new BrickDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testWriteMultipleParts() throws Exception {
         final BrickMultipartWriteFeature feature = new BrickMultipartWriteFeature(session, 5 * 1024 * 1024);
         final Path container = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
