@@ -26,7 +26,6 @@ import ch.cyberduck.core.brick.io.swagger.client.model.FileUploadPartEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -46,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     private static final Logger log = Logger.getLogger(BrickUploadFeature.class);
@@ -57,17 +57,19 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
 
     private final BrickSession session;
 
+    private final BrickWriteFeature writer;
     private final Long partsize;
     private final Integer concurrency;
 
-    public BrickUploadFeature(final BrickSession session, final Write<Void> writer) {
+    public BrickUploadFeature(final BrickSession session, final BrickWriteFeature writer) {
         this(session, writer, PreferencesFactory.get().getLong("brick.upload.multipart.size"),
             PreferencesFactory.get().getInteger("brick.upload.multipart.concurrency"));
     }
 
-    public BrickUploadFeature(final BrickSession session, final Write<Void> writer, final Long partsize, final Integer concurrency) {
+    public BrickUploadFeature(final BrickSession session, final BrickWriteFeature writer, final Long partsize, final Integer concurrency) {
         super(writer);
         this.session = session;
+        this.writer = writer;
         this.partsize = partsize;
         this.concurrency = concurrency;
     }
@@ -80,6 +82,7 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             // Full size of file
             final long size = status.getLength() + status.getOffset();
             final List<Future<TransferStatus>> parts = new ArrayList<>();
+            final List<TransferStatus> checksums = new ArrayList<>();
             long offset = 0;
             long remaining = status.getLength();
             String ref = null;
@@ -97,7 +100,7 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             }
             for(Future<TransferStatus> future : parts) {
                 try {
-                    final TransferStatus part = future.get();
+                    checksums.add(future.get());
                 }
                 catch(InterruptedException e) {
                     log.error("Part upload failed with interrupt failure");
@@ -113,6 +116,8 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                 }
             }
             new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).postFilesPath(new FilesPathBody()
+                .etagsEtag(checksums.stream().map(s -> s.getChecksum().hash).collect(Collectors.toList()))
+                .etagsPart(checksums.stream().map(TransferStatus::getPart).collect(Collectors.toList()))
                 .providedMtime(new DateTime(status.getTimestamp()))
                 .ref(ref)
                 .action("end"), StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
@@ -144,6 +149,7 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                     .segment(true)
                     .withLength(length)
                     .withOffset(offset);
+                status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
                 status.setUrl(url);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());

@@ -17,9 +17,11 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -27,6 +29,7 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -42,6 +45,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 public class BrickWriteFeature extends AbstractHttpWriteFeature<Void> {
     private static final Logger log = Logger.getLogger(BrickWriteFeature.class);
@@ -71,7 +75,14 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<Void> {
                                     if(log.isInfoEnabled()) {
                                         log.info(String.format("Received response %s for part number %d", response, status.getPart()));
                                     }
-                                    status.setChecksum(Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"')));
+                                    if(HashAlgorithm.md5.equals(status.getChecksum().algorithm)) {
+                                        final Checksum etag = Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"'));
+                                        if(!status.getChecksum().equals(etag)) {
+                                            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                                                MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
+                                                    etag.algorithm.toString(), status.getChecksum().hash, etag.hash));
+                                        }
+                                    }
                                     return null;
                                 }
                                 else {
