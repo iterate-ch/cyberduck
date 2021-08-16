@@ -171,7 +171,7 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
-            return (T) new BrickUploadFeature(this, new BrickWriteFeature(this));
+            return (T) new BrickThresholdUploadFeature(this);
         }
         if(type == MultipartWrite.class) {
             return (T) new BrickMultipartWriteFeature(this);
