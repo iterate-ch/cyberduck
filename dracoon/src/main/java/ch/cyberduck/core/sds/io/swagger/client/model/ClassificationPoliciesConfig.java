@@ -14,65 +14,36 @@ package ch.cyberduck.core.sds.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.cyberduck.core.sds.io.swagger.client.model.Range;
-import ch.cyberduck.core.sds.io.swagger.client.model.UploadShare;
+import ch.cyberduck.core.sds.io.swagger.client.model.ShareClassificationPolicies;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.ArrayList;
-import java.util.List;
 /**
- * List of Upload Shares
+ * Set of classification policies
  */
-@Schema(description = "List of Upload Shares")
+@Schema(description = "Set of classification policies")
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")
-public class UploadShareList {
-  @JsonProperty("range")
-  private Range range = null;
+public class ClassificationPoliciesConfig {
+  @JsonProperty("shareClassificationPolicies")
+  private ShareClassificationPolicies shareClassificationPolicies = null;
 
-  @JsonProperty("items")
-  private List<UploadShare> items = new ArrayList<>();
-
-  public UploadShareList range(Range range) {
-    this.range = range;
+  public ClassificationPoliciesConfig shareClassificationPolicies(ShareClassificationPolicies shareClassificationPolicies) {
+    this.shareClassificationPolicies = shareClassificationPolicies;
     return this;
   }
 
    /**
-   * Get range
-   * @return range
+   * Get shareClassificationPolicies
+   * @return shareClassificationPolicies
   **/
-  @Schema(required = true, description = "")
-  public Range getRange() {
-    return range;
+  @Schema(description = "")
+  public ShareClassificationPolicies getShareClassificationPolicies() {
+    return shareClassificationPolicies;
   }
 
-  public void setRange(Range range) {
-    this.range = range;
-  }
-
-  public UploadShareList items(List<UploadShare> items) {
-    this.items = items;
-    return this;
-  }
-
-  public UploadShareList addItemsItem(UploadShare itemsItem) {
-    this.items.add(itemsItem);
-    return this;
-  }
-
-   /**
-   * List of Upload Shares
-   * @return items
-  **/
-  @Schema(required = true, description = "List of Upload Shares")
-  public List<UploadShare> getItems() {
-    return items;
-  }
-
-  public void setItems(List<UploadShare> items) {
-    this.items = items;
+  public void setShareClassificationPolicies(ShareClassificationPolicies shareClassificationPolicies) {
+    this.shareClassificationPolicies = shareClassificationPolicies;
   }
 
 
@@ -84,24 +55,22 @@ public class UploadShareList {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UploadShareList uploadShareList = (UploadShareList) o;
-    return Objects.equals(this.range, uploadShareList.range) &&
-        Objects.equals(this.items, uploadShareList.items);
+    ClassificationPoliciesConfig classificationPoliciesConfig = (ClassificationPoliciesConfig) o;
+    return Objects.equals(this.shareClassificationPolicies, classificationPoliciesConfig.shareClassificationPolicies);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(range, items);
+    return Objects.hash(shareClassificationPolicies);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class UploadShareList {\n");
+    sb.append("class ClassificationPoliciesConfig {\n");
     
-    sb.append("    range: ").append(toIndentedString(range)).append("\n");
-    sb.append("    items: ").append(toIndentedString(items)).append("\n");
+    sb.append("    shareClassificationPolicies: ").append(toIndentedString(shareClassificationPolicies)).append("\n");
     sb.append("}");
     return sb.toString();
   }

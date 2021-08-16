@@ -11,7 +11,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.ChunkUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import java.io.File;
-import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse507;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T23:34:01.480829+02:00[Europe/Paris]")public class UploadsApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")public class UploadsApi {
   private ApiClient apiClient;
 
   public UploadsApi() {
@@ -135,15 +134,15 @@ The &#x60;resolutionStrategy&#x60; in that case will be always &#x60;autorename&
    * Range Requests
    * @see <a href="https://tools.ietf.org/html/rfc7233">Upload file Documentation</a>
    */
-  public ChunkUploadResponse uploadFileByTokenAsBinary1(File file, String token, String contentRange) throws ApiException {
+  public ChunkUploadResponse uploadFileByTokenAsMultipart1(File file, String token, String contentRange) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'file' is set
     if (file == null) {
-      throw new ApiException(400, "Missing the required parameter 'file' when calling uploadFileByTokenAsBinary1");
+      throw new ApiException(400, "Missing the required parameter 'file' when calling uploadFileByTokenAsMultipart1");
     }
     // verify the required parameter 'token' is set
     if (token == null) {
-      throw new ApiException(400, "Missing the required parameter 'token' when calling uploadFileByTokenAsBinary1");
+      throw new ApiException(400, "Missing the required parameter 'token' when calling uploadFileByTokenAsMultipart1");
     }
     // create path and map variables
     String localVarPath = "/v4/uploads/{token}"

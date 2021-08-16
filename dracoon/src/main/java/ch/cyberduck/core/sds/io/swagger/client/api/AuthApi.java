@@ -11,7 +11,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse400;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginResponse;
-import ch.cyberduck.core.sds.io.swagger.client.model.OpenIdAuthResources;
 import ch.cyberduck.core.sds.io.swagger.client.model.RadiusChallengeResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.RecoverUserNameRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.ResetPasswordRequest;
@@ -23,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T23:34:01.480829+02:00[Europe/Paris]")public class AuthApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")public class AuthApi {
   private ApiClient apiClient;
 
   public AuthApi() {
@@ -262,43 +261,6 @@ import java.util.Map;
     String[] localVarAuthNames = new String[] {  };
 
     apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
-  /**
-   * Request OpenID Connect authentication resources
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.3.0&lt;/h3&gt;  ### Description:   Provides information about OpenID Connect authentication options.  ### Precondition: None.  ### Postcondition: List of available OpenID Connect Providers is returned.  ### Further Information: Empty list is returned if OpenID Connect is **NOT** configured.
-   * @return OpenIdAuthResources
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   * OpenID Specifications
-   * @see <a href="http://openid.net/developers/specs">Request OpenID Connect authentication resources Documentation</a>
-   */
-  @Deprecated
-  public OpenIdAuthResources requestOpenIdAuthResources() throws ApiException {
-    Object localVarPostBody = null;
-    // create path and map variables
-    String localVarPath = "/v4/auth/openid/resources";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-
-    final String[] localVarAccepts = {
-      "application/json"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] {  };
-
-    GenericType<OpenIdAuthResources> localVarReturnType = new GenericType<OpenIdAuthResources>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Request password reset
