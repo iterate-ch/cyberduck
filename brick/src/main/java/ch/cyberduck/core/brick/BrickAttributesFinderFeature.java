@@ -68,6 +68,9 @@ public class BrickAttributesFinderFeature implements AttributesFinder {
         if(entity.getProvidedMtime() != null) {
             attr.setModificationDate(entity.getProvidedMtime().getMillis());
         }
+        else if(entity.getMtime() != null) {
+            attr.setModificationDate(entity.getMtime().getMillis());
+        }
         return attr;
     }
 }

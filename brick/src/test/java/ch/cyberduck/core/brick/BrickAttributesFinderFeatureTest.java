@@ -53,7 +53,7 @@ public class BrickAttributesFinderFeatureTest extends AbstractBrickTest {
     public void testFindRoot() throws Exception {
         final BrickAttributesFinderFeature f = new BrickAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)));
-        assertEquals(PathAttributes.EMPTY, attributes);
+        assertNotEquals(PathAttributes.EMPTY, attributes);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class BrickAttributesFinderFeatureTest extends AbstractBrickTest {
         final BrickAttributesFinderFeature f = new BrickAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(-1L, attributes.getSize());
-        assertEquals(-1L, attributes.getModificationDate());
+        assertNotEquals(-1L, attributes.getModificationDate());
         assertNull(attributes.getChecksum().algorithm);
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());
