@@ -19,6 +19,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -42,7 +43,7 @@ public class AzureCopyFeature implements Copy {
     private final AzureSession session;
 
     private final PathContainerService containerService
-        = new AzurePathContainerService();
+        = new DirectoryDelimiterPathContainerService();
 
     public AzureCopyFeature(final AzureSession session) {
         this.session = session;

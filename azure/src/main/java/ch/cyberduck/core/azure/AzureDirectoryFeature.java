@@ -18,6 +18,7 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -39,7 +40,7 @@ import com.azure.core.exception.HttpResponseException;
 public class AzureDirectoryFeature implements Directory<Void> {
 
     private final PathContainerService containerService
-        = new AzurePathContainerService();
+        = new DirectoryDelimiterPathContainerService();
 
     private final AzureSession session;
 
@@ -51,7 +52,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
                 // Container name must be lower case.

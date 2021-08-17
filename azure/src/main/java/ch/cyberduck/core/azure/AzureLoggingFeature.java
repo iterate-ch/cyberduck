@@ -28,6 +28,7 @@ import java.util.EnumSet;
 
 import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.models.BlobAnalyticsLogging;
+import com.azure.storage.blob.models.BlobRetentionPolicy;
 import com.azure.storage.blob.models.BlobServiceProperties;
 
 public class AzureLoggingFeature implements Logging {
@@ -63,6 +64,8 @@ public class AzureLoggingFeature implements Logging {
         try {
             final BlobServiceProperties properties = session.getClient().getProperties();
             properties.setLogging(new BlobAnalyticsLogging()
+                .setVersion("2.0")
+                .setRetentionPolicy(new BlobRetentionPolicy().setEnabled(false))
                 .setDelete(configuration.isEnabled())
                 .setRead(configuration.isEnabled())
                 .setWrite(configuration.isEnabled())

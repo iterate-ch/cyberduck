@@ -16,24 +16,18 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.azure.AbstractAzureTest;
 import ch.cyberduck.core.azure.AzureAttributesFinderFeature;
 import ch.cyberduck.core.azure.AzureDeleteFeature;
 import ch.cyberduck.core.azure.AzureFindFeature;
 import ch.cyberduck.core.azure.AzureListService;
-import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.azure.AzureReadFeature;
-import ch.cyberduck.core.azure.AzureSession;
 import ch.cyberduck.core.azure.AzureWriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
@@ -42,7 +36,6 @@ import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -72,12 +65,6 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
 
     @Test
     public void testWrite() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
-        ));
-        final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(1048576);
         status.setLength(content.length);
@@ -98,10 +85,10 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         out.close();
         assertTrue(new CryptoFindFeature(session, new AzureFindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoListService(session, new AzureListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new AzureWriteFeature(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session)), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new AzureWriteFeature(session, new AzureFindFeature(session), new AzureAttributesFinderFeature(session)), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, new CryptoWriteFeature<>(session, new AzureWriteFeature(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session)), cryptomator).append(test, status).size, 0L);
+        assertEquals(content.length, new CryptoWriteFeature<>(session, new AzureWriteFeature(session, new AzureFindFeature(session), new AzureAttributesFinderFeature(session)), cryptomator).append(test, status).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        final InputStream in = new CryptoReadFeature(session, new AzureReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new AzureReadFeature(session), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

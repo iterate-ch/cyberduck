@@ -27,7 +27,20 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.azure.apache.ApacheHttpClient;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -82,7 +95,7 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
     }
 
     @Override
-    public BlobServiceClient connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) throws BackgroundException {
+    protected BlobServiceClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder pool = builder.build(proxy, this, prompt);
         final BlobServiceClientBuilder builder = new BlobServiceClientBuilder();
         // Pseudo credentials to pass internal validation
@@ -179,9 +192,6 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
         }
         if(type == Logging.class) {
             return (T) new AzureLoggingFeature(this);
-        }
-        if(type == Home.class) {
-            return (T) new AzureHomeFinderService(this);
         }
         if(type == Move.class) {
             return (T) new AzureMoveFeature(this);

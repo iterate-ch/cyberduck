@@ -19,6 +19,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -33,7 +34,7 @@ public class AzureMoveFeature implements Move {
     private final AzureSession session;
 
     private final PathContainerService containerService
-        = new AzurePathContainerService();
+        = new DirectoryDelimiterPathContainerService();
 
     public AzureMoveFeature(final AzureSession session) {
         this.session = session;
@@ -46,7 +47,7 @@ public class AzureMoveFeature implements Move {
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        final Path copy = new AzureCopyFeature(session).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
+        final Path copy = new AzureCopyFeature(session).copy(file, renamed, status, connectionCallback);
         new AzureDeleteFeature(session).delete(Collections.singletonList(file), connectionCallback, callback);
         return copy;
     }

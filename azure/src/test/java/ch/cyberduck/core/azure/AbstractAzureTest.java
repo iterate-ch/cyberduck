@@ -21,13 +21,23 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.cryptomator.CryptoVault;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runners.Parameterized;
 
 public class AbstractAzureTest {
 
     protected AzureSession session;
+
+    @Parameterized.Parameters(name = "vaultVersion = {0}")
+    public static Object[] data() {
+        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, 7};
+    }
+
+    @Parameterized.Parameter
+    public int vaultVersion;
 
     @After
     public void disconnect() throws Exception {

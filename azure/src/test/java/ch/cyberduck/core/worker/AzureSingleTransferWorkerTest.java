@@ -63,7 +63,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SingleTransferWorkerTest {
+public class AzureSingleTransferWorkerTest {
 
     @Test
     public void testDownload() throws Exception {
@@ -90,13 +90,13 @@ public class SingleTransferWorkerTest {
         final Local localFile = TemporaryFileServiceFactory.get().create(test);
         {
             final byte[] content = RandomUtils.nextBytes(39864);
-            final TransferStatus writeStatus = new TransferStatus().length(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
+            final TransferStatus writeStatus = new TransferStatus().withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
             final StatusOutputStream out = new AzureWriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         }
         final byte[] content = RandomUtils.nextBytes(39864);
-        final TransferStatus writeStatus = new TransferStatus().exists(true).length(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
+        final TransferStatus writeStatus = new TransferStatus().exists(true).withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
         final StatusOutputStream<Void> out = new AzureWriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
