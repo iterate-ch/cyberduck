@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * PreviewEntity
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T22:25:43.390877+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-17T09:08:22.070861+02:00[Europe/Zurich]")
 public class PreviewEntity {
   @JsonProperty("id")
   private Integer id = null;
@@ -37,7 +37,7 @@ public class PreviewEntity {
   private String type = null;
 
   @JsonProperty("size")
-  private Integer size = null;
+  private Long size = null;
 
   public PreviewEntity id(Integer id) {
     this.id = id;
@@ -111,7 +111,7 @@ public class PreviewEntity {
     this.type = type;
   }
 
-  public PreviewEntity size(Integer size) {
+  public PreviewEntity size(Long size) {
     this.size = size;
     return this;
   }
@@ -121,11 +121,11 @@ public class PreviewEntity {
    * @return size
   **/
   @Schema(example = "1024", description = "Preview size")
-  public Integer getSize() {
+  public Long getSize() {
     return size;
   }
 
-  public void setSize(Integer size) {
+  public void setSize(Long size) {
     this.size = size;
   }
 

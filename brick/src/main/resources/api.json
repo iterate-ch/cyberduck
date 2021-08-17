@@ -25854,7 +25854,7 @@
                     "size": {
                         "type": "integer",
                         "description": "File/Folder size",
-                        "format": "int32",
+                        "format": "int64",
                         "example": 1024
                     },
                     "mtime": {
@@ -25946,7 +25946,7 @@
                     "size": {
                         "type": "integer",
                         "description": "Preview size",
-                        "format": "int32",
+                        "format": "int64",
                         "example": 1024
                     }
                 },
@@ -30485,7 +30485,7 @@
                     "size": {
                         "type": "integer",
                         "description": "Size of file.",
-                        "format": "int32",
+                        "format": "int64",
                         "x-ms-summary": "Size of file."
                     },
                     "structure": {
