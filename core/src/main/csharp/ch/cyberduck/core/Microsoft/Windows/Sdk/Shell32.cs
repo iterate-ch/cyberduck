@@ -2,6 +2,9 @@
 
 namespace Ch.Cyberduck.Core.Microsoft.Windows.Sdk
 {
+    using Storage.FileSystem;
+    using UI.Shell;
+
     partial class PInvoke
     {
         public static unsafe nuint SHGetFileInfo(string pszPath, FILE_FLAGS_AND_ATTRIBUTES dwFileAttributes, in SHFILEINFOW sfi, SHGFI_FLAGS uFlags)

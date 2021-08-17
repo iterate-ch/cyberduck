@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace Ch.Cyberduck.Core.Microsoft.Windows.Sdk
 {
+    using Foundation;
+
     partial class PInvoke
     {
         /// <inheritdoc cref = "AssocCreate(Guid, Guid*, void **)"/>

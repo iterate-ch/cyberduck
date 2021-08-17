@@ -4,13 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Ch.Cyberduck.Core.Microsoft.Windows.Sdk
 {
-    public partial struct HICON : IDisposable
-    {
-        public void Dispose()
-        {
-            PInvoke.DestroyIcon(this);
-        }
-    }
+    using Foundation;
 
     partial class PInvoke
     {
