@@ -24,7 +24,7 @@ import org.joda.time.DateTime;
  * List Folders by path
  */
 @Schema(description = "List Folders by path")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T22:25:43.390877+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-17T09:08:22.070861+02:00[Europe/Zurich]")
 public class FileEntity {
   @JsonProperty("path")
   private String path = null;
@@ -36,7 +36,7 @@ public class FileEntity {
   private String type = null;
 
   @JsonProperty("size")
-  private Integer size = null;
+  private Long size = null;
 
   @JsonProperty("mtime")
   private DateTime mtime = null;
@@ -128,7 +128,7 @@ public class FileEntity {
     this.type = type;
   }
 
-  public FileEntity size(Integer size) {
+  public FileEntity size(Long size) {
     this.size = size;
     return this;
   }
@@ -138,11 +138,11 @@ public class FileEntity {
    * @return size
   **/
   @Schema(example = "1024", description = "File/Folder size")
-  public Integer getSize() {
+  public Long getSize() {
     return size;
   }
 
-  public void setSize(Integer size) {
+  public void setSize(Long size) {
     this.size = size;
   }
 
