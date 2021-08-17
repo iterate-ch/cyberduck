@@ -32,4 +32,22 @@ public class StringAppenderTest {
         assertEquals("Message).", new StringAppender().append("Message)").toString());
         assertEquals("m.", new StringAppender().append("m").append(" ").toString());
     }
+
+    @Test
+    public void testAppendNewLine() {
+        assertEquals("", new StringAppender().append("\n").toString());
+        assertEquals("t.", new StringAppender().append("t").append("\n").toString());
+    }
+
+    @Test
+    public void testAppendEmpty() {
+        assertEquals("", new StringAppender().append("").toString());
+        assertEquals("t.", new StringAppender().append("t").append("").toString());
+    }
+
+    @Test
+    public void testAppendNull() {
+        assertEquals("", new StringAppender().append(null).toString());
+        assertEquals("t.", new StringAppender().append("t").append(null).toString());
+    }
 }
