@@ -53,14 +53,14 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Debug|Designer.ActiveCfg = Debug|Any CPU
-		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Debug|Designer.Build.0 = Debug|Any CPU
-		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Debug|x64.Build.0 = Debug|Any CPU
-		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Release|Designer.ActiveCfg = Release|Any CPU
-		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Release|Designer.Build.0 = Release|Any CPU
-		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Release|x64.ActiveCfg = Release|Any CPU
-		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Release|x64.Build.0 = Release|Any CPU
+		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Debug|Designer.ActiveCfg = Debug|x86
+		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Debug|Designer.Build.0 = Debug|x86
+		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Debug|x64.ActiveCfg = Debug|x64
+		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Debug|x64.Build.0 = Debug|x64
+		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Release|Designer.ActiveCfg = Release|x86
+		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Release|Designer.Build.0 = Release|x86
+		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Release|x64.ActiveCfg = Release|x64
+		{89D94AC6-3D04-4B67-A39B-C1DEFB8A1766}.Release|x64.Build.0 = Release|x64
 		{1926AB55-690C-4081-99D5-170847C206D9}.Debug|Designer.ActiveCfg = Debug|x64
 		{1926AB55-690C-4081-99D5-170847C206D9}.Debug|x64.ActiveCfg = Debug|x64
 		{1926AB55-690C-4081-99D5-170847C206D9}.Debug|x64.Build.0 = Debug|x64
