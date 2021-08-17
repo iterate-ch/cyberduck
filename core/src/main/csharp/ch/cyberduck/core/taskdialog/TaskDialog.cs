@@ -1,16 +1,20 @@
 ﻿using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Foundation;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.Controls;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.WindowsAndMessaging;
 using System;
 using System.Buffers;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk._TASKDIALOG_FLAGS;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.TASKDIALOG_NOTIFICATIONS;
 
 namespace Ch.Cyberduck.Core.TaskDialog
 {
+    using static _TASKDIALOG_FLAGS;
+    using static PInvoke;
+    using static TASKDIALOG_NOTIFICATIONS;
+
     /// <summary>
     /// The signature of the callback that recieves notificaitons from a Task Dialog.
     /// </summary>

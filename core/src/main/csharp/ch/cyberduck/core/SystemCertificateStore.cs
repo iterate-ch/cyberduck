@@ -1,28 +1,26 @@
-﻿// 
+﻿//
 // Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
+//
 
-using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.Controls;
 using Ch.Cyberduck.Core.Ssl;
 using Ch.Cyberduck.Core.TaskDialog;
 using java.io;
@@ -30,14 +28,48 @@ using java.security;
 using java.security.cert;
 using java.util;
 using org.apache.log4j;
+using System;
+using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using X509Certificate = java.security.cert.X509Certificate;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.TASKDIALOG_NOTIFICATIONS;
 
 namespace Ch.Cyberduck.Core
 {
+    using static TASKDIALOG_NOTIFICATIONS;
+
     public class SystemCertificateStore : CertificateStore
     {
         private static readonly Logger Log = Logger.getLogger(typeof(SystemCertificateStore).FullName);
+
+        public static X509Certificate2 ConvertCertificate(X509Certificate certificate)
+        {
+            return new X509Certificate2(certificate.getEncoded());
+        }
+
+        public static X509Certificate ConvertCertificate(X509Certificate2 certificate)
+        {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            return (X509Certificate)cf.generateCertificate(new ByteArrayInputStream(certificate.RawData));
+        }
+
+        public static IList<string> ListAliases()
+        {
+            X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+            IList<string> certs = new List<string>();
+            try
+            {
+                store.Open(OpenFlags.ReadOnly);
+                foreach (X509Certificate2 certificate in store.Certificates)
+                {
+                    certs.Add(certificate.GetNameInfo(X509NameType.SimpleName, false));
+                }
+            }
+            finally
+            {
+                store.Close();
+            }
+            return certs;
+        }
 
         public X509Certificate choose(CertificateIdentityCallback prompt, string[] keyTypes, Principal[] issuers, Host bookmark)
         {
@@ -185,36 +217,6 @@ namespace Ch.Cyberduck.Core
                 }
             }
             return true;
-        }
-
-        public static IList<string> ListAliases()
-        {
-            X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
-            IList<string> certs = new List<string>();
-            try
-            {
-                store.Open(OpenFlags.ReadOnly);
-                foreach (X509Certificate2 certificate in store.Certificates)
-                {
-                    certs.Add(certificate.GetNameInfo(X509NameType.SimpleName, false));
-                }
-            }
-            finally
-            {
-                store.Close();
-            }
-            return certs;
-        }
-
-        public static X509Certificate2 ConvertCertificate(X509Certificate certificate)
-        {
-            return new X509Certificate2(certificate.getEncoded());
-        }
-
-        public static X509Certificate ConvertCertificate(X509Certificate2 certificate)
-        {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(certificate.RawData));
         }
 
         private void AddCertificate(X509Certificate2 cert, StoreName storeName)

@@ -1,12 +1,15 @@
 ﻿using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.GetWindowLongPtr_nIndex;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.WINDOWS_EX_STYLE;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.WINDOWS_STYLE;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.SetWindowPos_uFlags;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Foundation;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.WindowsAndMessaging;
 
 namespace Ch.Cyberduck.Core.TaskDialog
 {
+    using static PInvoke;
+    using static SET_WINDOW_POS_FLAGS;
+    using static WINDOW_EX_STYLE;
+    using static WINDOW_LONG_PTR_INDEX;
+    using static WINDOW_STYLE;
+
     /// <summary>
     /// Provides safe Win32 API wrapper calls for various actions not directly
     /// supported by WPF classes out of the box.

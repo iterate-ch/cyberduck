@@ -20,10 +20,12 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.Shell;
 
 namespace Ch.Cyberduck.Core.Local
 {
+    using static PInvoke;
+
     public unsafe sealed class ExplorerRevealService : RevealService
     {
         public bool reveal(ch.cyberduck.core.Local l)

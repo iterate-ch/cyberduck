@@ -19,8 +19,8 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.CredentialManager;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Security.Credentials;
 using java.lang;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using org.apache.log4j;
 using System;
 using System.Collections.Generic;
@@ -28,6 +28,8 @@ using System.Collections.Generic;
 namespace Ch.Cyberduck.Core
 {
     using System.Text;
+    using static CRED_PERSIST;
+    using static CRED_TYPE;
 
     public class CredentialManagerPasswordStore : HostPasswordStore
     {
@@ -186,7 +188,7 @@ namespace Ch.Cyberduck.Core
             }
             var winCred = new WindowsCredentialManagerCredential(
                 credential.getUsername(), credential.getPassword(),
-                CRED_TYPE.CRED_TYPE_GENERIC, 0, CRED_PERSIST.CRED_PERSIST_ENTERPRISE,
+                CRED_TYPE_GENERIC, 0, CRED_PERSIST_ENTERPRISE,
                 additionalInfo);
             WinCredentialManager.SaveCredentials(target.AbsoluteUri, winCred);
         }

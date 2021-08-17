@@ -1,17 +1,19 @@
 ﻿using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Foundation;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.Controls;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.WindowsAndMessaging;
 using System;
 using System.Drawing;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Constants;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.SetWindowPos_uFlags;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.TASKDIALOG_ELEMENTS;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.TASKDIALOG_ICON_ELEMENTS;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.TASKDIALOG_MESSAGES;
 
 namespace Ch.Cyberduck.Core.TaskDialog
 {
+    using static Constants;
+    using static PInvoke;
+    using static SET_WINDOW_POS_FLAGS;
+    using static TASKDIALOG_ELEMENTS;
+    using static TASKDIALOG_ICON_ELEMENTS;
+    using static TASKDIALOG_MESSAGES;
+
     partial class TaskDialog
     {
         /// <summary>

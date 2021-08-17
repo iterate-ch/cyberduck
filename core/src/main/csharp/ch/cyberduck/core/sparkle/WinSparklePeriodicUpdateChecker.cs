@@ -20,17 +20,19 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Security;
+using Microsoft.Win32.SafeHandles;
 using org.apache.log4j;
 using System;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.TOKEN_ELEVATION_TYPE;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.TOKEN_INFORMATION_CLASS;
-using Microsoft.Win32.SafeHandles;
 
 namespace Ch.Cyberduck.Core.Sparkle
 {
+    using static PInvoke;
+    using static TOKEN_ELEVATION_TYPE;
+    using static TOKEN_INFORMATION_CLASS;
+
     public unsafe class WinSparklePeriodicUpdateChecker : AbstractPeriodicUpdateChecker, IDisposable
     {
         private static readonly Logger Log = Logger.getLogger(typeof(WinSparklePeriodicUpdateChecker).Name);

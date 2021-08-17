@@ -21,6 +21,7 @@ using System.Runtime.InteropServices;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.Shell;
 using System.Runtime.CompilerServices;
 
 namespace Ch.Cyberduck.Core.Local

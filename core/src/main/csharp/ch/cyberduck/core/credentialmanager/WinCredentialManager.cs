@@ -17,6 +17,8 @@
 //
 
 using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Security;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Security.Credentials;
 using org.apache.log4j;
 using System;
 using System.Buffers;
@@ -119,9 +121,9 @@ namespace Ch.Cyberduck.Core.CredentialManager
             {
                 TargetName = target,
                 UserName = credential.UserName,
-                Type = (uint)credential.Type,
-                Flags = (uint)credential.Flags,
-                Persist = (uint)credential.Persist,
+                Type = credential.Type,
+                Flags = credential.Flags,
+                Persist = credential.Persist,
             };
 
             if (!string.IsNullOrWhiteSpace(credential.Password))

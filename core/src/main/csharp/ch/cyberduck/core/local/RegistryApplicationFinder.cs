@@ -1,84 +1,49 @@
-﻿// 
+﻿//
 // Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
+//
 
+using ch.cyberduck.core.cache;
+using ch.cyberduck.core.local;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Foundation;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.Shell;
+using java.util;
+using Microsoft.Win32;
+using org.apache.commons.io;
+using org.apache.log4j;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using ch.cyberduck.core.cache;
-using ch.cyberduck.core.local;
-using java.util;
-using Microsoft.Win32;
-using org.apache.commons.io;
-using org.apache.log4j;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Constants;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.ASSOCSTR;
 
 namespace Ch.Cyberduck.Core.Local
 {
+    using static ASSOCSTR;
+    using static Constants;
+    using static PInvoke;
+
     public unsafe class RegistryApplicationFinder : ApplicationFinder
     {
-        private static readonly Guid CLSID_QueryAssociations = new Guid("a07034fd-6caa-4954-ac3f-97a27216f98a");
-        private static readonly Logger Log = Logger.getLogger(typeof(RegistryApplicationFinder).Name);
-
         private static readonly LRUCache applicationNameCache = LRUCache.build(100);
+        private static readonly Guid CLSID_QueryAssociations = new Guid("a07034fd-6caa-4954-ac3f-97a27216f98a");
         private static readonly LRUCache defaultApplicationCache = LRUCache.build(100);
         private static readonly LRUCache defaultApplicationListCache = LRUCache.build(100);
-
-        //vormals GetApplicationNameForExe
-        public Application getDescription(string application)
-        {
-            if (Utils.IsBlank(application))
-            {
-                return Application.notfound;
-            }
-            if (!applicationNameCache.contains(application))
-            {
-                string path = WindowsApplicationLauncher.GetExecutableCommand(application);
-                if (File.Exists(path))
-                {
-                    FileVersionInfo info = FileVersionInfo.GetVersionInfo(path);
-                    if (Utils.IsBlank(info.FileDescription))
-                    {
-                        // Does not contain version information
-                        applicationNameCache.put(application, new Application(
-                                application.ToLower(),
-                                FilenameUtils.getName(application)));
-                    }
-                    else
-                    {
-                        applicationNameCache.put(application, new Application(
-                                application.ToLower(),
-                                info.FileDescription));
-                    }
-                }
-                else
-                {
-                    applicationNameCache.put(application, new Application(
-                            application.ToLower(),
-                            FilenameUtils.getName(application)));
-                }
-            }
-            return applicationNameCache.get(application) as Application;
-        }
+        private static readonly Logger Log = Logger.getLogger(typeof(RegistryApplicationFinder).Name);
 
         public Application find(String filename)
         {
@@ -101,7 +66,7 @@ namespace Ch.Cyberduck.Core.Local
             {
                 defaultApplicationCache.put(extension, getDescription(exe));
             }
-            // Step 2 / Check registry 
+            // Step 2 / Check registry
             if (null == exe)
             {
                 try
@@ -207,9 +172,74 @@ namespace Ch.Cyberduck.Core.Local
             return Utils.ConvertToJavaList(defaultApplicationListCache.get(extension) as IList<Application>);
         }
 
+        //vormals GetApplicationNameForExe
+        public Application getDescription(string application)
+        {
+            if (Utils.IsBlank(application))
+            {
+                return Application.notfound;
+            }
+            if (!applicationNameCache.contains(application))
+            {
+                string path = WindowsApplicationLauncher.GetExecutableCommand(application);
+                if (File.Exists(path))
+                {
+                    FileVersionInfo info = FileVersionInfo.GetVersionInfo(path);
+                    if (Utils.IsBlank(info.FileDescription))
+                    {
+                        // Does not contain version information
+                        applicationNameCache.put(application, new Application(
+                                application.ToLower(),
+                                FilenameUtils.getName(application)));
+                    }
+                    else
+                    {
+                        applicationNameCache.put(application, new Application(
+                                application.ToLower(),
+                                info.FileDescription));
+                    }
+                }
+                else
+                {
+                    applicationNameCache.put(application, new Application(
+                            application.ToLower(),
+                            FilenameUtils.getName(application)));
+                }
+            }
+            return applicationNameCache.get(application) as Application;
+        }
+
         public bool isInstalled(Application application)
         {
             return Utils.IsNotBlank(application.getIdentifier()) && File.Exists(application.getIdentifier());
+        }
+
+        /// <summary>
+        /// Extract edit command, fallback is the open command
+        /// </summary>
+        /// <param name="root">expected substructure shell/edit/command or shell/open/command</param>
+        /// <returns>null if not found</returns>
+        private string GetEditCommand(RegistryKey root)
+        {
+            if (null != root)
+            {
+                using (var editSk = root.OpenSubKey("shell\\edit\\command"))
+                {
+                    if (null != editSk)
+                    {
+                        return (string)editSk.GetValue(String.Empty);
+                    }
+
+                    using (var openSk = root.OpenSubKey("shell\\open\\command"))
+                    {
+                        if (null != openSk)
+                        {
+                            return (string)openSk.GetValue(String.Empty);
+                        }
+                    }
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -250,35 +280,6 @@ namespace Ch.Cyberduck.Core.Local
             {
                 return null;
             }
-        }
-
-
-        /// <summary>
-        /// Extract edit command, fallback is the open command
-        /// </summary>
-        /// <param name="root">expected substructure shell/edit/command or shell/open/command</param>
-        /// <returns>null if not found</returns>
-        private string GetEditCommand(RegistryKey root)
-        {
-            if (null != root)
-            {
-                using (var editSk = root.OpenSubKey("shell\\edit\\command"))
-                {
-                    if (null != editSk)
-                    {
-                        return (string)editSk.GetValue(String.Empty);
-                    }
-
-                    using (var openSk = root.OpenSubKey("shell\\open\\command"))
-                    {
-                        if (null != openSk)
-                        {
-                            return (string)openSk.GetValue(String.Empty);
-                        }
-                    }
-                }
-            }
-            return null;
         }
     }
 }
