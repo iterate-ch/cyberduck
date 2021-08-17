@@ -40,6 +40,12 @@ public class StringAppenderTest {
     }
 
     @Test
+    public void testAppendControlChar() {
+        assertEquals("", new StringAppender().append("\u000F").toString());
+        assertEquals("t.", new StringAppender().append("t").append("\u000F").toString());
+    }
+
+    @Test
     public void testAppendEmpty() {
         assertEquals("", new StringAppender().append("").toString());
         assertEquals("t.", new StringAppender().append("t").append("").toString());
