@@ -19,7 +19,7 @@
         <PackageReference Update="ExceptionReporter " Version="2.4.2" />
         <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.2.0" />
         <PackageReference Update="Microsoft.Toolkit.Uwp.Notifications" Version="2.0.0" />
-        <PackageReference Update="Microsoft.Windows.CsWin32" Version="0.1.422-beta" />
+        <PackageReference Update="Microsoft.Windows.CsWin32" Version="0.1.506-beta" />
         <PackageReference Update="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2005" />
         <PackageReference Update="nunit" Version="2.7.0" />
         <PackageReference Update="NUnit.Runners" Version="2.7.0" GeneratePathProperty="true" />
