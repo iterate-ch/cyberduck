@@ -4,17 +4,17 @@
 // Compile with:
 // C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe VirtualDesktop.cs
 
+using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.UI.Shell;
 using System;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.PInvoke;
 
 // Based on http://stackoverflow.com/a/32417530, Windows 10 SDK and github project VirtualDesktop
-
 namespace Ch.Cyberduck.Ui.Core.VirtualDesktop.Windows1809
 {
+    using static PInvoke;
+
     [ComImport]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [Guid("372E1D3B-38D3-42E4-A15B-8AB2B178F513")]

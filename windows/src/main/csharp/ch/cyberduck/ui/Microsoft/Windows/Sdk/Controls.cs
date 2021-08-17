@@ -1,4 +1,4 @@
-﻿using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+﻿using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Foundation;
 using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Microsoft.Windows.Sdk

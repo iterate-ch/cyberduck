@@ -1,10 +1,4 @@
-﻿<Project>
-
-    <PropertyGroup>
-        <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    </PropertyGroup>
-
-    <Import Project="Sdk.props" Sdk="Microsoft.Net.Sdk.WindowsDesktop" />
+﻿<Project Sdk="Microsoft.Net.Sdk.WindowsDesktop">
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
@@ -112,7 +106,5 @@
         <Generator>PublicResXFileCodeGenerator</Generator>
       </EmbeddedResource>
     </ItemGroup>
-
-    <Import Project="Sdk.targets" Sdk="Microsoft.Net.Sdk.WindowsDesktop" />
 
 </Project>

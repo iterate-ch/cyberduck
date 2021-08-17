@@ -16,29 +16,16 @@
 // feedback@cyberduck.io
 //
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.ServiceModel;
-using System.ServiceModel.Description;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.azure;
 using ch.cyberduck.core.b2;
-using ch.cyberduck.core.manta;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.brick;
 using ch.cyberduck.core.ctera;
-using ch.cyberduck.core.nextcloud;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.dropbox;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.googledrive;
 using ch.cyberduck.core.googlestorage;
@@ -46,10 +33,14 @@ using ch.cyberduck.core.hubic;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.irods;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.manta;
+using ch.cyberduck.core.nextcloud;
 using ch.cyberduck.core.nio;
 using ch.cyberduck.core.notification;
+using ch.cyberduck.core.oauth;
 using ch.cyberduck.core.onedrive;
 using ch.cyberduck.core.openstack;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.sds;
@@ -61,25 +52,29 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.updater;
 using ch.cyberduck.core.urlhandler;
-using ch.cyberduck.core.pool;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 using Ch.Cyberduck.Core.Sparkle;
-using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Core.Contracts;
-using Ch.Cyberduck.Ui.Core.Preferences;
-using Ch.Cyberduck.Ui.Core.UWP;
+using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Foundation;
+using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.UI.Shell;
 using java.util;
 using Microsoft.WindowsAPICodePack.Shell;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using org.apache.log4j;
 using StructureMap;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.ServiceModel;
+using System.ServiceModel.Description;
+using System.Threading;
+using System.Windows.Forms;
 using Windows.Services.Store;
-using ch.cyberduck.core.exception;
 using Application = ch.cyberduck.core.local.Application;
-using ArrayList = System.Collections.ArrayList;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
-using ch.cyberduck.core.oauth;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -849,7 +844,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             var storeContext = StoreContext.GetDefault();
             var initWindow = (IInitializeWithWindow)(object)storeContext;
-            initWindow.Initialize(MainForm.Handle);
+            initWindow.Initialize((HWND)MainForm.Handle);
         }
 
         private void OnStartup(object state)

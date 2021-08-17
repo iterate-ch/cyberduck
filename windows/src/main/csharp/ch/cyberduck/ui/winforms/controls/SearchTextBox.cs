@@ -16,19 +16,20 @@
 // yves@cyberduck.ch
 // 
 
+using ch.cyberduck.core;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.WindowsAndMessaging;
+using Ch.Cyberduck.Ui.Winforms.Controls.Design;
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Security.Permissions;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Winforms.Controls.Design;
-using ch.cyberduck.core;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.WINDOWS_STYLE;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.WINDOWS_EX_STYLE;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
+    using static WINDOW_EX_STYLE;
+    using static WINDOW_STYLE;
+
     /// <summary>
     /// Vista style search box. Thanks, Nick Berardi.
     /// </summary>

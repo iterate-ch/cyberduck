@@ -16,19 +16,20 @@
 // yves@cyberduck.ch
 // 
 
+using BrightIdeasSoftware;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Foundation;
 using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using BrightIdeasSoftware;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
 using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Constants;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
+    using static PInvoke;
     /// <summary>
     /// ListView with embedded controls support
     /// </summary>

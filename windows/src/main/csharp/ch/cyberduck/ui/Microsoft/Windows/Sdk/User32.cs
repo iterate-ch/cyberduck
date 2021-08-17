@@ -2,6 +2,9 @@
 
 namespace Ch.Cyberduck.Ui.Microsoft.Windows.Sdk
 {
+    using Foundation;
+    using UI.WindowsAndMessaging;
+
     partial class PInvoke
     {
         public unsafe static void GetWindowThreadProcessId(nint hwnd, out int processId)

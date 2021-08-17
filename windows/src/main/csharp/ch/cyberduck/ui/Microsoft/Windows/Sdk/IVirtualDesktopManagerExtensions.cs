@@ -1,7 +1,9 @@
 ﻿using System;
 
-namespace Ch.Cyberduck.Ui.Microsoft.Windows.Sdk
+namespace Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.UI.Shell
 {
+    using Foundation;
+
     public static partial class FriendlyOverloadExtensions
     {
         public static Guid GetWindowDesktopId(this IVirtualDesktopManager @this, nint hwnd)

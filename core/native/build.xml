@@ -40,6 +40,7 @@
     <target name="restore" depends="init-msbuild, version">
         <msbuild buildfile="../src/main/csharp/Cyberduck.Core.Native.csproj">
             <target name="Restore" />
+            <property name="Platform" value="x64" />
         </msbuild>
         <msbuild buildfile="../src/test/csharp/Cyberduck.Core.Test.csproj">
             <target name="Restore" />
@@ -54,6 +55,7 @@
             <property name="Version" value="${version}.${revision}" />
             <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="Platform" value="x64" />
         </msbuild>
     </target>
 

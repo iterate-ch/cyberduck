@@ -42,6 +42,7 @@ using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.UI.Shell;
 using Ch.Cyberduck.Ui.Winforms;
 using java.lang;
 using java.text;

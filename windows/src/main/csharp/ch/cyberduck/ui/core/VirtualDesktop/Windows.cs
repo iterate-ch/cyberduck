@@ -5,14 +5,16 @@
 // C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe VirtualDesktop.cs
 
 using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.UI.Shell;
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.PInvoke;
 
 // Based on http://stackoverflow.com/a/32417530, Windows 10 SDK and github project VirtualDesktop
 namespace Ch.Cyberduck.Ui.Core.VirtualDesktop.Windows16071709
 {
+    using static PInvoke;
+
     [ComImport]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [Guid("9AC0B5C8-1484-4C5B-9533-4134A0F97CEA")]

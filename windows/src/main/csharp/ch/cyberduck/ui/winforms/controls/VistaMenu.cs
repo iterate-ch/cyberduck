@@ -16,13 +16,14 @@
 // yves@cyberduck.ch
 //
 using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Graphics.Gdi;
+using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.UI.WindowsAndMessaging;
 using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.PInvoke;
 
 //VistaMenu v1.8.1, created by Wyatt O'Day
 //Visit: http://wyday.com/vistamenu/
@@ -30,6 +31,8 @@ using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
+    using static PInvoke;
+
     [ProvideProperty("Image", typeof(MenuItem))]
     public partial class VistaMenu : Component, IExtenderProvider, ISupportInitialize
     {

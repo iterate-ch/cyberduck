@@ -1,20 +1,24 @@
 ﻿using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Foundation;
+using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.System.Com;
+using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.UI.Shell;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.CLSCTX;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Constants;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.DROPIMAGETYPE;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.DVASPECT;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.PInvoke;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.TYMED;
+using Forms = System.Windows.Forms;
 
 namespace Ch.Cyberduck.Ui.Microsoft.Windows.Sdk
 {
-    using Forms = System.Windows.Forms;
+    using static CLSCTX;
+    using static Constants;
+    using static DROPIMAGETYPE;
+    using static DVASPECT;
+    using static PInvoke;
+    using static TYMED;
+    using System.Com;
 
     public unsafe static class DropTargetHelper
     {
@@ -24,7 +28,7 @@ namespace Ch.Cyberduck.Ui.Microsoft.Windows.Sdk
 
         static DropTargetHelper()
         {
-            CoCreateInstance(CLSID_DragDropHelper, null, (uint)CLSCTX_INPROC_SERVER, out s_instance).ThrowOnFailure();
+            CoCreateInstance(CLSID_DragDropHelper, null, CLSCTX_INPROC_SERVER, out s_instance).ThrowOnFailure();
         }
 
         public static void DragEnter(Control control, Forms.IDataObject data, in Point cursorOffset, DragDropEffects effect)
@@ -90,8 +94,8 @@ namespace Ch.Cyberduck.Ui.Microsoft.Windows.Sdk
 
             DROPDESCRIPTION dropDescription = default;
             dropDescription.type = type;
-            MemoryMarshal.Cast<char, ushort>(descriptionMessage.AsSpan()).CopyTo(dropDescription.szMessage.AsSpan());
-            MemoryMarshal.Cast<char, ushort>(descriptionInsert.AsSpan()).CopyTo(dropDescription.szInsert.AsSpan());
+            descriptionMessage.AsSpan().CopyTo(dropDescription.szMessage.AsSpan());
+            descriptionInsert.AsSpan().CopyTo(dropDescription.szInsert.AsSpan());
 
             STGMEDIUM medium = default;
             medium.pUnkForRelease = null;

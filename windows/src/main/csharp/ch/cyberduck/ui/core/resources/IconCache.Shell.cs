@@ -10,13 +10,17 @@
 //
 // Bug fixes, suggestions and comments should be sent to: feedback@cyberduck.io
 using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Storage.FileSystem;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.Shell;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.WindowsAndMessaging;
 using System.Drawing;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.FILE_FLAGS_AND_ATTRIBUTES;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.SHGFI_FLAGS;
 
 namespace Ch.Cyberduck.Ui.Core.Resources
 {
+    using static FILE_FLAGS_AND_ATTRIBUTES;
+    using static PInvoke;
+    using static SHGFI_FLAGS;
+
     partial class IconCache
     {
         /// <summary>
@@ -58,7 +62,7 @@ namespace Ch.Cyberduck.Ui.Core.Resources
             {
                 return null;
             }
-            using (shfi.hIcon)
+            using (new HIconHandle(shfi.hIcon))
             {
                 return CloneIcon(shfi.hIcon);
             }
@@ -97,7 +101,7 @@ namespace Ch.Cyberduck.Ui.Core.Resources
             {
                 return null;
             }
-            using (shfi.hIcon)
+            using (new HIconHandle(shfi.hIcon))
             {
                 return CloneIcon(shfi.hIcon);
             }
@@ -137,7 +141,7 @@ namespace Ch.Cyberduck.Ui.Core.Resources
                 return null;
             }
 
-            using (shfi.hIcon)
+            using (new HIconHandle(shfi.hIcon))
             {
                 return CloneIcon(shfi.hIcon);
             }

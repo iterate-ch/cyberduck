@@ -16,17 +16,19 @@
 // feedback@cyberduck.io
 // 
 
-using System;
-using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.Controls;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.TASKDIALOG_NOTIFICATIONS;
+using System;
+using System.Windows.Forms;
 
 namespace Ch.Cyberduck.Ui.Core
 {
+    using static TASKDIALOG_NOTIFICATIONS;
+
     public class Utils
     {
         public static TaskDialogResult CommandBox(IWin32Window owner, string title, string mainInstruction,

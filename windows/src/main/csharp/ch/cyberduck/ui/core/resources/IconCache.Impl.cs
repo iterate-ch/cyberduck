@@ -10,7 +10,7 @@
 //
 // Bug fixes, suggestions and comments should be sent to: feedback@cyberduck.io
 
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.WindowsAndMessaging;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -95,8 +95,8 @@ namespace Ch.Cyberduck.Ui.Core.Resources
                 {
                     // Always dispose loaded image when working with icons
                     using (fileBitmap)
-                    using (var hIcon = new HICON(fileBitmap.GetHicon()))
-                    using (var icon = Icon.FromHandle(hIcon.Value))
+                    using (var hIcon = new HIconHandle((HICON)fileBitmap.GetHicon()))
+                    using (var icon = Icon.FromHandle(hIcon))
                     using (var nested = new Icon(icon, size, size))
                     {
                         image = nested.ToBitmap();

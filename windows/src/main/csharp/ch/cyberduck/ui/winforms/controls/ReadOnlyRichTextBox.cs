@@ -15,7 +15,6 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 //
-using System;
 using System.Drawing;
 using System.Windows.Forms;
 using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
@@ -41,7 +40,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             get
             {
                 CreateParams p = base.CreateParams;
-                if (LoadLibrary("msftedit.dll") != IntPtr.Zero)
+                
+                if (!LoadLibrary("msftedit.dll").IsInvalid)
                 {
                     p.ClassName = "RICHEDIT50W";
                 }
