@@ -57,7 +57,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>io.swagger.core.v3</groupId>
+            <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
         </dependency>
     </dependencies>
@@ -79,8 +79,8 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>io.swagger.codegen.v3</groupId>
-                        <artifactId>swagger-codegen-maven-plugin</artifactId>
+                        <groupId>org.openapitools</groupId>
+                        <artifactId>openapi-generator-maven-plugin</artifactId>
                         <executions>
                             <execution>
                                 <goals>
@@ -88,7 +88,7 @@
                                 </goals>
                                 <configuration>
                                     <inputSpec>https://duck.dracoon.com/api/spec_v4/</inputSpec>
-                                    <language>java</language>
+                                    <generatorName>java</generatorName>
                                     <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.sds.io.swagger.client.model</modelPackage>
                                     <apiPackage>ch.cyberduck.core.sds.io.swagger.client.api</apiPackage>

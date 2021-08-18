@@ -593,6 +593,11 @@
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
                     <version>3.0.27</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.openapitools</groupId>
+                    <artifactId>openapi-generator-maven-plugin</artifactId>
+                    <version>5.2.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
