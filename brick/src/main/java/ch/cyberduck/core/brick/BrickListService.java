@@ -61,9 +61,10 @@ public class BrickListService implements ListService {
                 }
                 if(client.getResponseHeaders().containsKey("X-Files-Cursor")) {
                     final Optional<String> header = client.getResponseHeaders().get("X-Files-Cursor").stream().findFirst();
-                    if(header.isPresent()) {
-                        cursor = header.get();
-                    }
+                    cursor = header.orElse(null);
+                }
+                else {
+                    cursor = null;
                 }
                 listener.chunk(directory, children);
             }
