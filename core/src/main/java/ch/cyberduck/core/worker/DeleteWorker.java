@@ -95,18 +95,22 @@ public class DeleteWorker extends Worker<List<Path>> {
         // Compile recursive list
         final Map<Path, TransferStatus> recursive = new LinkedHashMap<>();
         if(file.isFile() || file.isSymbolicLink()) {
-            final Path copy = new Path(file);
             switch(host.getProtocol().getType()) {
                 case s3:
                     if(!file.attributes().isDuplicate()) {
                         if(!file.getType().contains(Path.Type.upload)) {
                             // Add delete marker
+                            final Path marker = new Path(file);
                             log.debug(String.format("Nullify version to add delete marker for %s", file));
-                            copy.attributes().setVersionId(null);
+                            marker.attributes().setVersionId(null);
+                            recursive.put(marker, new TransferStatus().withLockId(this.getLockId(marker)));
                         }
                     }
+                    break;
+                default:
+                    recursive.put(file, new TransferStatus().withLockId(this.getLockId(file)));
+                    break;
             }
-            recursive.put(copy, new TransferStatus().withLockId(this.getLockId(copy)));
         }
         else if(file.isDirectory()) {
             if(!delete.isRecursive()) {
