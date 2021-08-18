@@ -65,7 +65,7 @@ public class ConfigRoomRequest {
     @JsonCreator
     public static NewGroupMemberAcceptanceEnum fromValue(String text) {
       for (NewGroupMemberAcceptanceEnum b : NewGroupMemberAcceptanceEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }
@@ -102,9 +102,9 @@ public class ConfigRoomRequest {
       return String.valueOf(value);
     }
     @JsonCreator
-    public static ClassificationEnum fromValue(String text) {
+    public static ClassificationEnum fromValue(Integer text) {
       for (ClassificationEnum b : ClassificationEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }

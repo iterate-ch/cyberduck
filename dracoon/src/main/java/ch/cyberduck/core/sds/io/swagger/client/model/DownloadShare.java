@@ -113,9 +113,9 @@ public class DownloadShare {
       return String.valueOf(value);
     }
     @JsonCreator
-    public static ClassificationEnum fromValue(String text) {
+    public static ClassificationEnum fromValue(Integer text) {
       for (ClassificationEnum b : ClassificationEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }

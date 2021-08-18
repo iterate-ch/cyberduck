@@ -83,7 +83,7 @@ public class CreateOpenIdIdpConfigRequest {
     @JsonCreator
     public static FlowEnum fromValue(String text) {
       for (FlowEnum b : FlowEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }
@@ -126,7 +126,7 @@ public class CreateOpenIdIdpConfigRequest {
     @JsonCreator
     public static UserInfoSourceEnum fromValue(String text) {
       for (UserInfoSourceEnum b : UserInfoSourceEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }
