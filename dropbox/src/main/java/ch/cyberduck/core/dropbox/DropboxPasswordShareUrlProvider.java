@@ -23,6 +23,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
@@ -30,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.List;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.sharing.DbxUserSharingRequests;
@@ -51,32 +53,54 @@ public class DropboxPasswordShareUrlProvider implements PromptUrlProvider<Void, 
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
-            final Host bookmark = session.getHost();
-            final SharedLinkSettings.Builder settings = SharedLinkSettings.newBuilder();
             try {
-                settings.withLinkPassword(callback.prompt(bookmark,
-                    LocaleFactory.localizedString("Passphrase", "Cryptomator"),
-                    MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
-                    new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword());
-                settings.withRequestedVisibility(RequestedVisibility.PASSWORD);
+                final Host bookmark = session.getHost();
+                final SharedLinkSettings.Builder settings = SharedLinkSettings.newBuilder();
+                try {
+                    settings.withLinkPassword(callback.prompt(bookmark,
+                        LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                        MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
+                        new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword());
+                    settings.withRequestedVisibility(RequestedVisibility.PASSWORD);
+                }
+                catch(LoginCanceledException e) {
+                    // Ignore no password set
+                    settings.withRequestedVisibility(RequestedVisibility.PUBLIC);
+                }
+                final SharedLinkMetadata share = new DbxUserSharingRequests(session.getClient(file))
+                    .createSharedLinkWithSettings(containerService.getKey(file),
+                        settings.build());
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Created shared link %s", share));
+                }
+                return new DescriptiveUrl(URI.create(share.getUrl()), DescriptiveUrl.Type.signed,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                        LocaleFactory.localizedString("Password Share", "Dropbox"))
+                );
             }
-            catch(LoginCanceledException e) {
-                // Ignore no password set
-                settings.withRequestedVisibility(RequestedVisibility.PUBLIC);
+            catch(DbxException e) {
+                throw new DropboxExceptionMappingService().map(e);
             }
-            final SharedLinkMetadata share = new DbxUserSharingRequests(session.getClient(file))
-                .createSharedLinkWithSettings(containerService.getKey(file),
-                    settings.build());
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Created shared link %s", share));
-            }
-            return new DescriptiveUrl(URI.create(share.getUrl()), DescriptiveUrl.Type.signed,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
-                    LocaleFactory.localizedString("Password Share", "Dropbox"))
-            );
         }
-        catch(DbxException e) {
-            throw new DropboxExceptionMappingService().map(e);
+        catch(ConflictException e) {
+            // Shared link already exists
+            try {
+                final List<SharedLinkMetadata> links = new DbxUserSharingRequests(session.getClient(file))
+                    .listSharedLinksBuilder().withDirectOnly(true).withPath(containerService.getKey(file)).start().getLinks();
+                for(SharedLinkMetadata share : links) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Return existing shared link %s", share));
+                    }
+                    return new DescriptiveUrl(URI.create(share.getUrl()), DescriptiveUrl.Type.signed,
+                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                            LocaleFactory.localizedString("Password Share", "Dropbox"))
+                    );
+                }
+                throw e;
+            }
+            catch(DbxException f) {
+                throw e;
+            }
         }
     }
 
