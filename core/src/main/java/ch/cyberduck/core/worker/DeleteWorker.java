@@ -81,6 +81,10 @@ public class DeleteWorker extends Worker<List<Path>> {
             }
             recursive.putAll(this.compile(session.getHost(), delete, list, new WorkerListProgressListener(this, listener), file));
         }
+        // Iterate again to delete any files that can be omitted when recursive operation is supported
+        if(delete.isRecursive()) {
+            recursive.keySet().removeIf(f -> recursive.keySet().stream().anyMatch(f::isChild));
+        }
         delete.delete(recursive, prompt, new Delete.Callback() {
             @Override
             public void delete(final Path file) {

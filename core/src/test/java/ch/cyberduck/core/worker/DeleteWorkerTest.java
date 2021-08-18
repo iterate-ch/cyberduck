@@ -29,7 +29,7 @@ import static org.junit.Assert.fail;
 public class DeleteWorkerTest {
 
     @Test
-    public void testCompile() throws Exception {
+    public void testCompileDefault() throws Exception {
         final Session session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
@@ -42,11 +42,6 @@ public class DeleteWorkerTest {
                             assertEquals(new Path("/t/d/b", EnumSet.of(Path.Type.file)), new ArrayList<>(files.keySet()).get(1));
                             assertEquals(new Path("/t/d", EnumSet.of(Path.Type.directory)), new ArrayList<>(files.keySet()).get(2));
                             assertEquals(new Path("/t", EnumSet.of(Path.Type.directory)), new ArrayList<>(files.keySet()).get(3));
-                        }
-
-                        @Override
-                        public boolean isRecursive() {
-                            return false;
                         }
                     };
                 }
@@ -74,6 +69,104 @@ public class DeleteWorkerTest {
             Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))), PathCache.empty(),
             new DisabledProgressListener());
         assertEquals(4, worker.run(session).size());
+    }
+
+    @Test
+    public void testCompileRecursiveDeleteSupported() throws Exception {
+        final Session session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Delete.class) {
+                    return (T) new Delete() {
+                        @Override
+                        public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
+                            assertEquals(1, files.size());
+                            assertEquals(new Path("/t", EnumSet.of(Path.Type.directory)), new ArrayList<>(files.keySet()).get(0));
+                        }
+
+                        @Override
+                        public boolean isRecursive() {
+                            return true;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                if(file.equals(new Path("/t", EnumSet.of(Path.Type.directory)))) {
+                    return new AttributedList<Path>(Arrays.asList(
+                        new Path("/t/a", EnumSet.of(Path.Type.file)),
+                        new Path("/t/d", EnumSet.of(Path.Type.directory))
+                    ));
+                }
+                if(file.equals(new Path("/t/d", EnumSet.of(Path.Type.directory)))) {
+                    return new AttributedList<Path>(Collections.singletonList(
+                        new Path("/t/d/b", EnumSet.of(Path.Type.file))
+                    ));
+                }
+                fail();
+                return null;
+            }
+        };
+        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
+            Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))), PathCache.empty(),
+            new DisabledProgressListener());
+        assertEquals(1, worker.run(session).size());
+    }
+
+    @Test
+    public void testCompileRecursiveDeleteSupportedMultipleFilesAsArgument() throws Exception {
+        final Session session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Delete.class) {
+                    return (T) new Delete() {
+                        @Override
+                        public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
+                            assertEquals(1, files.size());
+                            assertEquals(new Path("/t", EnumSet.of(Path.Type.directory)), new ArrayList<>(files.keySet()).get(0));
+                        }
+
+                        @Override
+                        public boolean isRecursive() {
+                            return true;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                if(file.equals(new Path("/t", EnumSet.of(Path.Type.directory)))) {
+                    return new AttributedList<Path>(Arrays.asList(
+                        new Path("/t/a", EnumSet.of(Path.Type.file)),
+                        new Path("/t/d", EnumSet.of(Path.Type.directory))
+                    ));
+                }
+                if(file.equals(new Path("/t/d", EnumSet.of(Path.Type.directory)))) {
+                    return new AttributedList<Path>(Collections.singletonList(
+                        new Path("/t/d/b", EnumSet.of(Path.Type.file))
+                    ));
+                }
+                fail();
+                return null;
+            }
+        };
+        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
+            Arrays.asList(
+                new Path("/t", EnumSet.of(Path.Type.directory)),
+                new Path("/t/a", EnumSet.of(Path.Type.file)),
+                new Path("/t/d", EnumSet.of(Path.Type.directory)),
+                new Path("/t/d", EnumSet.of(Path.Type.directory)),
+                new Path("/t/d/b", EnumSet.of(Path.Type.file))
+            ), PathCache.empty(),
+            new DisabledProgressListener());
+        assertEquals(1, worker.run(session).size());
     }
 
     @Test
