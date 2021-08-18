@@ -57,7 +57,7 @@ public class SyslogConfig {
     @JsonCreator
     public static ProtocolEnum fromValue(String text) {
       for (ProtocolEnum b : ProtocolEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }

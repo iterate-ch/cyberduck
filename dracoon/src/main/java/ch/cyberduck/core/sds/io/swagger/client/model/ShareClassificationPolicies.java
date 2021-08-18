@@ -49,9 +49,9 @@ public class ShareClassificationPolicies {
       return String.valueOf(value);
     }
     @JsonCreator
-    public static ClassificationRequiresSharePasswordEnum fromValue(String text) {
+    public static ClassificationRequiresSharePasswordEnum fromValue(Integer text) {
       for (ClassificationRequiresSharePasswordEnum b : ClassificationRequiresSharePasswordEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }

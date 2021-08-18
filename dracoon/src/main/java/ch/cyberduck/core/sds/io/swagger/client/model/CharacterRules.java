@@ -55,7 +55,7 @@ public class CharacterRules {
     @JsonCreator
     public static MustContainCharactersEnum fromValue(String text) {
       for (MustContainCharactersEnum b : MustContainCharactersEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }

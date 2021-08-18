@@ -49,7 +49,7 @@ public class EncryptionInfo {
     @JsonCreator
     public static UserKeyStateEnum fromValue(String text) {
       for (UserKeyStateEnum b : UserKeyStateEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }
@@ -84,7 +84,7 @@ public class EncryptionInfo {
     @JsonCreator
     public static RoomKeyStateEnum fromValue(String text) {
       for (RoomKeyStateEnum b : RoomKeyStateEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }
@@ -119,7 +119,7 @@ public class EncryptionInfo {
     @JsonCreator
     public static DataSpaceKeyStateEnum fromValue(String text) {
       for (DataSpaceKeyStateEnum b : DataSpaceKeyStateEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }
