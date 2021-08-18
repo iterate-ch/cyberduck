@@ -43,15 +43,18 @@ public class BrickListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        return this.list(directory, listener, PreferencesFactory.get().getInteger("brick.listing.chunksize"));
+    }
+
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<>();
             String cursor = null;
             List<FileEntity> response;
             final BrickApiClient client = new BrickApiClient(session.getApiKey(), session.getClient());
             do {
-                response = new FoldersApi(client).foldersListForPath(StringUtils.removeStart(directory.getAbsolute(), String.valueOf(Path.DELIMITER)), cursor,
-                    PreferencesFactory.get().getInteger("brick.listing.chunksize"),
-                    null, null, null, null, null, null);
+                response = new FoldersApi(client).foldersListForPath(StringUtils.removeStart(directory.getAbsolute(), String.valueOf(Path.DELIMITER)),
+                    cursor, chunksize, null, null, null, null, null, null);
                 for(FileEntity entity : response) {
                     children.add(new Path(entity.getPath(), EnumSet.of("directory".equals(entity.getType()) ? Path.Type.directory : Path.Type.file),
                         attributes.toAttributes(entity)));
