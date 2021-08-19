@@ -58,9 +58,6 @@ public class CloudFrontDistributionConfigurationPreloader extends OneTimeSchedul
                 if(Distribution.WEBSITE.equals(method)) {
                     continue;
                 }
-                if(Distribution.WEBSITE_CDN.equals(method)) {
-                    continue;
-                }
                 final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
                 if(distribution.isEnabled()) {
                     if(log.isInfoEnabled()) {
