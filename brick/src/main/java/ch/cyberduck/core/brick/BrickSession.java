@@ -82,6 +82,7 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
     protected CloseableHttpClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setServiceUnavailableRetryStrategy(new BrickUnauthorizedRetryStrategy(this, prompt, cancel));
+        configuration.addInterceptorLast(new BrickPreferencesRequestInterceptor());
         return configuration.build();
     }
 
@@ -220,4 +221,5 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
         }
         return super._getFeature(type);
     }
+
 }
