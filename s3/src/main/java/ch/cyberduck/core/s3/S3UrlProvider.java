@@ -26,9 +26,12 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
@@ -40,22 +43,27 @@ import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 public class S3UrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(S3UrlProvider.class);
 
-    private final PathContainerService containerService;
-    private final HostPasswordStore store;
     private final S3Session session;
+    private final PathContainerService containerService;
+    private final Map<Path, Set<Distribution>> distributions;
+    private final HostPasswordStore store;
 
-    public S3UrlProvider(final S3Session session) {
-        this(session, PasswordStoreFactory.get());
+    public S3UrlProvider(final S3Session session, final Map<Path, Set<Distribution>> distributions) {
+        this(session, distributions, PasswordStoreFactory.get());
     }
 
-    public S3UrlProvider(final S3Session session, final HostPasswordStore store) {
+    public S3UrlProvider(final S3Session session, final Map<Path, Set<Distribution>> distributions, final HostPasswordStore store) {
         this.session = session;
+        this.distributions = distributions;
         this.store = store;
         this.containerService = session.getFeature(PathContainerService.class);
     }
@@ -94,11 +102,22 @@ public class S3UrlProvider implements UrlProvider {
                 }
             }
         }
+        // URL for applications with s3:/ scheme registered
         list.add(new DescriptiveUrl(URI.create(String.format("s3://%s%s",
             containerService.getContainer(file).getName(),
             file.isRoot() ? Path.DELIMITER : containerService.isContainer(file) ? Path.DELIMITER : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
             DescriptiveUrl.Type.provider,
             MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "S3")));
+        // Filter by matching container name
+        final Optional<Set<Distribution>> filtered = distributions.entrySet().stream().filter(entry ->
+                new SimplePathPredicate(containerService.getContainer(file)).test(entry.getKey()))
+            .map(Map.Entry::getValue).findFirst();
+        if(filtered.isPresent()) {
+            // Add CloudFront distributions
+            for(Distribution distribution : filtered.get()) {
+                list.addAll(new DistributionUrlProvider(distribution).toUrl(file));
+            }
+        }
         return list;
     }
 

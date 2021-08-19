@@ -19,8 +19,6 @@ package ch.cyberduck.core.cloudfront;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DefaultPathPredicate;
-import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
@@ -29,13 +27,11 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.aws.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
@@ -65,8 +61,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
@@ -90,13 +84,9 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     private final ClientConfiguration configuration;
     private final Location locationFeature;
 
-    private final Map<Path, Distribution> distributions;
-
-    public CloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
-                                               final Map<Path, Distribution> distributions) {
+    public CloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
         this.session = session;
         this.bookmark = session.getHost();
-        this.distributions = distributions;
         this.configuration = new CustomClientConfiguration(bookmark,
             new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key);
         this.locationFeature = session.getFeature(Location.class);
@@ -107,39 +97,13 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         return LocaleFactory.localizedString("Amazon CloudFront", "S3");
     }
 
-    @Override
-    public String getName(final Distribution.Method method) {
-        return this.getName();
-    }
-
-    @Override
-    public String getHostname() {
-        return "cloudfront.amazonaws.com";
-    }
-
     /**
      * @param method Distribution method
      * @return Origin server hostname. This is not the same as the container for custom origin configurations and
      * website endpoints. <bucketname>.s3.amazonaws.com
      */
-    protected URI getOrigin(final Path container, final Distribution.Method method) {
+    protected URI getOrigin(final Path container, final Distribution.Method method) throws BackgroundException {
         return URI.create(String.format("http://%s.%s", container.getName(), bookmark.getProtocol().getDefaultHostname()));
-    }
-
-    @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
-        final Path container = session.getFeature(PathContainerService.class).getContainer(file);
-        // Filter including region
-        final Optional<Path> byRegion = distributions.keySet().stream().filter(new DefaultPathPredicate(container)).findFirst();
-        if(byRegion.isPresent()) {
-            return new DistributionUrlProvider(distributions.get(byRegion.get())).toUrl(file);
-        }
-        // Filter by matching container name
-        final Optional<Path> byName = distributions.keySet().stream().filter(new SimplePathPredicate(container)).findFirst();
-        if(byName.isPresent()) {
-            return new DistributionUrlProvider(distributions.get(byName.get())).toUrl(file);
-        }
-        return DescriptiveUrlBag.empty();
     }
 
     @Override
@@ -160,7 +124,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     new ListStreamingDistributionsRequest()).getStreamingDistributionList().getItems()) {
                     final S3Origin config = d.getS3Origin();
                     if(config != null) {
-                        final URI origin = getOrigin(container, method);
+                        final URI origin = this.getOrigin(container, method);
                         if(config.getDomainName().equals(origin.getHost())) {
                             // We currently only support one distribution per bucket
                             return readStreamingDistribution(client, d, container, method);
@@ -175,8 +139,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     for(Origin o : d.getOrigins().getItems()) {
                         final S3OriginConfig config = o.getS3OriginConfig();
                         if(config != null) {
-                            final URI origin = getOrigin(container, method);
-                            if(o.getDomainName().equals(origin.getHost())) {
+                            if(o.getDomainName().equals(this.getOrigin(container, method).getHost())) {
                                 // We currently only support one distribution per bucket
                                 return readDownloadDistribution(client, d, container, method);
                             }
@@ -184,15 +147,13 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     }
                 }
             }
-            else if(method.equals(Distribution.CUSTOM)
-                || method.equals(Distribution.WEBSITE_CDN)) {
-                for(DistributionSummary d : client.listDistributions(
-                    new ListDistributionsRequest()).getDistributionList().getItems()) {
+            else if(method.equals(Distribution.CUSTOM) || method.equals(Distribution.WEBSITE_CDN)) {
+                for(DistributionSummary d : client.listDistributions(new ListDistributionsRequest()).getDistributionList().getItems()) {
+                    final URI origin = this.getOrigin(container, method);
                     for(Origin o : d.getOrigins().getItems()) {
                         // Listing all distributions and look for custom origin
                         final CustomOriginConfig config = o.getCustomOriginConfig();
                         if(config != null) {
-                            final URI origin = getOrigin(container, method);
                             if(o.getDomainName().equals(origin.getHost())) {
                                 // We currently only support one distribution per bucket
                                 return readDownloadDistribution(client, d, container, method);
@@ -201,9 +162,9 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     }
                 }
             }
-            final URI origin = getOrigin(container, method);
+            final URI origin = this.getOrigin(container, method);
             // Return disabled configuration
-            return new Distribution(origin, method, false);
+            return new Distribution(method, this.getName(), origin, false);
         }
         catch(AmazonClientException e) {
             throw new AmazonServiceExceptionMappingService().map("Cannot read CDN configuration", e);
@@ -362,7 +323,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     protected StreamingDistribution createStreamingDistribution(final Path container, final Distribution distribution)
         throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Create new %s distribution", distribution.getMethod().toString()));
+            log.debug(String.format("Create new %s distribution", distribution));
         }
         final AmazonCloudFront client = this.client(container);
         final URI origin = this.getOrigin(container, distribution.getMethod());
@@ -389,7 +350,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     protected com.amazonaws.services.cloudfront.model.Distribution createDownloadDistribution(final Path container, final Distribution distribution)
         throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Create new %s distribution", distribution.getMethod().toString()));
+            log.debug(String.format("Create new %s distribution", distribution));
         }
         final AmazonCloudFront client = this.client(container);
         final URI origin = this.getOrigin(container, distribution.getMethod());
@@ -493,7 +454,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
+            log.debug(String.format("Update %s distribution with origin %s", distribution, origin));
         }
         final AmazonCloudFront client = this.client(container);
         final GetDistributionConfigResult response = client.getDistributionConfig(new GetDistributionConfigRequest(distribution.getId()));
@@ -522,7 +483,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
+            log.debug(String.format("Update %s distribution with origin %s", distribution, origin));
         }
         final AmazonCloudFront client = this.client(container);
         final GetStreamingDistributionConfigResult response = client.getStreamingDistributionConfig(new GetStreamingDistributionConfigRequest(distribution.getId()));
@@ -550,7 +511,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
+            log.debug(String.format("Update %s distribution with origin %s", distribution, origin));
         }
         final AmazonCloudFront client = this.client(container);
         final GetDistributionConfigResult response = client.getDistributionConfig(new GetDistributionConfigRequest(distribution.getId()));
@@ -577,7 +538,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
+            log.debug(String.format("Update %s distribution with origin %s", distribution, origin));
         }
         final AmazonCloudFront client = this.client(container);
         client.deleteDistribution(new DeleteDistributionRequest(distribution.getId(), distribution.getEtag()));
@@ -587,7 +548,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
+            log.debug(String.format("Update %s distribution with origin %s", distribution, origin));
         }
         final AmazonCloudFront client = this.client(container);
         client.deleteStreamingDistribution(new DeleteStreamingDistributionRequest(distribution.getId(), distribution.getEtag()));
@@ -609,7 +570,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         try {
             final GetStreamingDistributionConfigResult response = client.getStreamingDistributionConfig(new GetStreamingDistributionConfigRequest(summary.getId()));
             final StreamingDistributionConfig configuration = response.getStreamingDistributionConfig();
-            final Distribution distribution = new Distribution(this.getOrigin(container, method), method, summary.isEnabled());
+            final Distribution distribution = new Distribution(method, this.getName(), this.getOrigin(container, method), summary.isEnabled());
             distribution.setId(summary.getId());
             distribution.setDeployed("Deployed".equals(summary.getStatus()));
             distribution.setUrl(URI.create(String.format("%s://%s%s", method.getScheme(), summary.getDomainName(), method.getContext())));
@@ -649,7 +610,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         try {
             final GetDistributionConfigResult response = client.getDistributionConfig(new GetDistributionConfigRequest(summary.getId()));
             final DistributionConfig configuration = response.getDistributionConfig();
-            final Distribution distribution = new Distribution(this.getOrigin(container, method), method, summary.isEnabled());
+            final Distribution distribution = new Distribution(method, this.getName(), this.getOrigin(container, method), summary.isEnabled());
             distribution.setId(summary.getId());
             distribution.setDeployed("Deployed".equals(summary.getStatus()));
             distribution.setUrl(URI.create(String.format("%s://%s%s", method.getScheme(), summary.getDomainName(), method.getContext())));
