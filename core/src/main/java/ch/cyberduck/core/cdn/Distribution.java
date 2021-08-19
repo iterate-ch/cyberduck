@@ -166,7 +166,7 @@ public class Distribution {
     }
 
     /**
-     * Website endpoint for S3
+     * Website configuration for S3 bucket
      */
     public static final Method WEBSITE = new Method() {
         public String toString() {
@@ -185,7 +185,7 @@ public class Distribution {
     };
 
     /**
-     * Website configuration endpoint with custom origin CDN
+     * CloudFront distribution with S3 Bucket with website configuration as origin
      */
     public static final Method WEBSITE_CDN = new Method() {
         public String toString() {
@@ -203,6 +203,9 @@ public class Distribution {
         }
     };
 
+    /**
+     * Default CloudFront distribution
+     */
     public static final Method DOWNLOAD = new Method() {
         public String toString() {
             return LocaleFactory.localizedString("Download (HTTP) CDN", "S3");
@@ -219,6 +222,9 @@ public class Distribution {
         }
     };
 
+    /**
+     * CloudFront distribution with custom origin server
+     */
     public static final Method CUSTOM = new Method() {
         public String toString() {
             return LocaleFactory.localizedString("Custom Origin Server (HTTP/HTTPS) CDN", "S3");
