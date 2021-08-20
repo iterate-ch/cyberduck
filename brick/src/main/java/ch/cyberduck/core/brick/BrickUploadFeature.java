@@ -133,7 +133,7 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     protected FileUploadPartEntity continueUpload(final Path file, final String ref, final int partNumber) throws BackgroundException {
         final List<FileUploadPartEntity> uploadPartEntities;
         try {
-            uploadPartEntities = new FileActionsApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+            uploadPartEntities = new FileActionsApi(new BrickApiClient(session))
                 .beginUpload(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)), new BeginUploadPathBody().ref(ref).part(partNumber));
         }
         catch(ApiException e) {
@@ -148,7 +148,7 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
 
     protected FileEntity completeUpload(final Path file, final String ref, final TransferStatus status, final List<TransferStatus> checksums) throws BackgroundException {
         try {
-            return new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).postFilesPath(new FilesPathBody()
+            return new FilesApi(new BrickApiClient(session)).postFilesPath(new FilesPathBody()
                 .etagsEtag(checksums.stream().map(s -> s.getChecksum().hash).collect(Collectors.toList()))
                 .etagsPart(checksums.stream().map(TransferStatus::getPart).collect(Collectors.toList()))
                 .providedMtime(new DateTime(status.getTimestamp()))

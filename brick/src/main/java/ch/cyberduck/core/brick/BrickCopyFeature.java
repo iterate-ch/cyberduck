@@ -43,7 +43,7 @@ public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy 
     @Override
     public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final BrickApiClient client = new BrickApiClient(session.getApiKey(), session.getClient());
+            final BrickApiClient client = new BrickApiClient(session);
             if(status.isExists()) {
                 new BrickDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }

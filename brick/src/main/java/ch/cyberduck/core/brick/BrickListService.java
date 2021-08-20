@@ -51,7 +51,7 @@ public class BrickListService implements ListService {
             final AttributedList<Path> children = new AttributedList<>();
             String cursor = null;
             List<FileEntity> response;
-            final BrickApiClient client = new BrickApiClient(session.getApiKey(), session.getClient());
+            final BrickApiClient client = new BrickApiClient(session);
             do {
                 response = new FoldersApi(client).foldersListForPath(StringUtils.removeStart(directory.getAbsolute(), String.valueOf(Path.DELIMITER)),
                     cursor, chunksize, null, null, null, null, null, null);

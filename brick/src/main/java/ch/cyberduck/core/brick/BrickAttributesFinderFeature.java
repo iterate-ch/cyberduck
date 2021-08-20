@@ -37,7 +37,7 @@ public class BrickAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            final FileEntity entity = new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+            final FileEntity entity = new FilesApi(new BrickApiClient(session))
                 .download(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
                     "stat", null, false, false);
             switch(entity.getType()) {
