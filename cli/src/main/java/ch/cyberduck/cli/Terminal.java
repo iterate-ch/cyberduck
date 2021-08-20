@@ -19,6 +19,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.brick.BrickProtocol;
+import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.ctera.CTERAProtocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
@@ -76,6 +77,7 @@ import ch.cyberduck.core.vault.VaultRegistryFactory;
 import ch.cyberduck.core.worker.AttributesWorker;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.DeleteWorker;
+import ch.cyberduck.core.worker.DistributionPurgeWorker;
 import ch.cyberduck.core.worker.HomeFinderWorker;
 import ch.cyberduck.core.worker.LoadVaultWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
@@ -342,6 +344,8 @@ public class Terminal {
                     return this.delete(source, remote);
                 case mkdir:
                     return this.mkdir(source, remote, input.getOptionValue(TerminalOptionsBuilder.Params.region.name()));
+                case purge:
+                    return this.purge(source, remote);
             }
             switch(action) {
                 case download:
@@ -485,6 +489,19 @@ public class Terminal {
             worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, progress);
         }
         final SessionBackgroundAction<List<Path>> action = new TerminalBackgroundAction<>(controller, session, worker);
+        try {
+            this.execute(action);
+        }
+        catch(TerminalBackgroundException e) {
+            return Exit.failure;
+        }
+        return Exit.success;
+    }
+
+    protected Exit purge(final SessionPool session, final Path remote) {
+        final DistributionPurgeWorker purge = new DistributionPurgeWorker(Collections.singletonList(remote),
+            new TerminalLoginCallback(reader), Distribution.DOWNLOAD);
+        final SessionBackgroundAction<Boolean> action = new TerminalBackgroundAction<>(controller, session, purge);
         try {
             this.execute(action);
         }
