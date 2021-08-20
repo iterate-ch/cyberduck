@@ -22,7 +22,6 @@ import ch.cyberduck.binding.application.NSEvent;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.pool.SessionPool;
@@ -51,10 +50,6 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
             list.addAll(provider.toUrl(selected).filter(
                 DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
                 DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated));
-        }
-        final DistributionConfiguration feature = pool.getFeature(DistributionConfiguration.class);
-        if(feature != null) {
-            list.addAll(feature.toUrl(selected));
         }
         return list;
     }

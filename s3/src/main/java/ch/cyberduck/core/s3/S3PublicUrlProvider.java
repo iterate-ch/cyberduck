@@ -21,6 +21,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.jets3t.service.acl.Permission;
 
@@ -51,7 +52,7 @@ public class S3PublicUrlProvider implements PromptUrlProvider<Void, Void> {
             permission.addAll(everyone, read);
             acl.setPermission(file, permission);
         }
-        return new S3UrlProvider(session).toUrl(file).find(DescriptiveUrl.Type.provider);
+        return new DefaultUrlProvider(session.getHost()).toUrl(file).find(DescriptiveUrl.Type.provider);
     }
 
     @Override

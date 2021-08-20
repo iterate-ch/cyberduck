@@ -49,22 +49,32 @@ public class DistributionUrlProvider implements UrlProvider {
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         list.add(new DescriptiveUrl(this.toUrl(file, distribution.getOrigin()), DescriptiveUrl.Type.origin,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Origin", "Info"))));
+            MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
+                distribution.getName(),
+                LocaleFactory.localizedString("Origin", "Info"))));
         if(distribution.getUrl() != null) {
             list.add(new DescriptiveUrl(this.toUrl(file, distribution.getUrl()), DescriptiveUrl.Type.cdn,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(distribution.getMethod().toString(), "S3"))));
+                MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
+                    distribution.getName(),
+                    LocaleFactory.localizedString(distribution.getMethod().toString(), "S3"))));
         }
         if(distribution.getSslUrl() != null) {
             list.add(new DescriptiveUrl(this.toUrl(file, distribution.getSslUrl()), DescriptiveUrl.Type.cdn,
-                    String.format("%s (SSL)", MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
+                String.format("%s (SSL)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
+                    distribution.getName(),
+                    LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
         }
         if(distribution.getStreamingUrl() != null) {
             list.add(new DescriptiveUrl(this.toUrl(file, distribution.getStreamingUrl()), DescriptiveUrl.Type.cdn,
-                    String.format("%s (Streaming)", MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
+                String.format("%s (Streaming)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
+                    distribution.getName(),
+                    LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
         }
         if(distribution.getiOSstreamingUrl() != null) {
             list.add(new DescriptiveUrl(this.toUrl(file, distribution.getiOSstreamingUrl()), DescriptiveUrl.Type.cdn,
-                    String.format("%s (iOS Streaming)", MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
+                String.format("%s (iOS Streaming)", MessageFormat.format(LocaleFactory.localizedString("{0} {1} URL"),
+                    distribution.getName(),
+                    LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
         }
         list.addAll(this.toCnameUrl(file));
         return list;
@@ -96,7 +106,7 @@ public class DistributionUrlProvider implements UrlProvider {
      * @return CNAME to distribution
      */
     private List<DescriptiveUrl> toCnameUrl(final Path file) {
-        final List<DescriptiveUrl> urls = new ArrayList<DescriptiveUrl>();
+        final List<DescriptiveUrl> urls = new ArrayList<>();
         for(String cname : distribution.getCNAMEs()) {
             final StringBuilder b = new StringBuilder();
             b.append(String.format("%s://%s", distribution.getMethod().getScheme(), cname)).append(distribution.getMethod().getContext());
@@ -104,7 +114,10 @@ public class DistributionUrlProvider implements UrlProvider {
                 b.append(Path.DELIMITER).append(URIEncoder.encode(containerService.getKey(file)));
             }
             urls.add(new DescriptiveUrl(URI.create(b.toString()).normalize(), DescriptiveUrl.Type.cname,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(distribution.getMethod().toString(), "S3"))));
+                MessageFormat.format(LocaleFactory.localizedString("{0} {1} {2} URL"),
+                    distribution.getName(),
+                    LocaleFactory.localizedString(distribution.getMethod().toString(), "S3"),
+                    LocaleFactory.localizedString("CNAME", "S3"))));
         }
         return urls;
     }

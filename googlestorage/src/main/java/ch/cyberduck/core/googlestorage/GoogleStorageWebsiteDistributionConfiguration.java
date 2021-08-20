@@ -15,7 +15,6 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -24,7 +23,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -62,36 +60,22 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     }
 
     @Override
-    public String getName(Distribution.Method method) {
-        return method.toString();
-    }
-
-    @Override
     public String getName() {
         return LocaleFactory.localizedString("Website Configuration", "S3");
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
-        final Distribution distribution = new Distribution(URI.create(String.format("%s://%s.%s",
-            Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(), this.getHostname())),
-            Distribution.DOWNLOAD, false);
-        distribution.setUrl(URI.create(String.format("%s://%s.%s", Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(),
-            this.getHostname())));
-        return new DistributionUrlProvider(distribution).toUrl(file);
-    }
-
-    @Override
     public Distribution read(final Path file, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
         final Path container = containerService.getContainer(file);
-        final URI origin = URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), this.getHostname()));
+        final URI origin = URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(),
+            session.getHost().getProtocol().getDefaultHostname()));
         try {
             final Bucket configuration = session.getClient().buckets().get(container.getName()).execute();
             final Bucket.Website website = configuration.getWebsite();
-            final Distribution distribution = new Distribution(
-                origin, method, website != null);
+            final Distribution distribution = new Distribution(method, this.getName(), origin, website != null);
             if(website != null) {
-                distribution.setUrl(URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), this.getHostname())));
+                distribution.setUrl(URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(),
+                    session.getHost().getProtocol().getDefaultHostname())));
                 distribution.setStatus(LocaleFactory.localizedString("Deployed", "S3"));
                 distribution.setIndexDocument(website.getMainPageSuffix());
             }
@@ -141,10 +125,5 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
             return (T) new GoogleStorageLoggingFeature(session);
         }
         return null;
-    }
-
-    @Override
-    public String getHostname() {
-        return session.getHost().getProtocol().getDefaultHostname();
     }
 }

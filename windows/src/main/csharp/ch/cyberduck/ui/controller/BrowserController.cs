@@ -631,24 +631,6 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     }
                 }
-                UrlProvider distributionConfiguration =
-                    ((UrlProvider) Session.getFeature(typeof(DistributionConfiguration)));
-                if (distributionConfiguration != null)
-                {
-                    for (int i = 0; i < distributionConfiguration.toUrl(SelectedPath).size(); i++)
-                    {
-                        DescriptiveUrl descUrl =
-                            (DescriptiveUrl) distributionConfiguration.toUrl(SelectedPath).toArray()[i];
-                        KeyValuePair<String, List<String>> entry =
-                            new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
-                        items.Add(entry);
-                        foreach (Path path in selected)
-                        {
-                            entry.Value.Add(
-                                ((DescriptiveUrl) distributionConfiguration.toUrl(path).toArray()[i]).getUrl());
-                        }
-                    }
-                }
             }
             return items;
         }
