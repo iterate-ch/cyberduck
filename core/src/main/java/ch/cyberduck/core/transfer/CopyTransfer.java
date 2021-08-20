@@ -85,6 +85,7 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public Transfer withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
 

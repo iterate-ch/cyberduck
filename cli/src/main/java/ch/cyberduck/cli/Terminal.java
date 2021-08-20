@@ -361,7 +361,7 @@ public class Terminal {
                         new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)),
                         VaultRegistryFactory.create(new TerminalPasswordCallback()));
                     return this.transfer(login, new CopyTransfer(
-                            host, target, Collections.singletonMap(remote, new CommandLinePathParser(input, protocols).parse(input.getOptionValues(action.name())[1]))),
+                            host, target, Collections.singletonMap(remote, new CommandLinePathParser(input, protocols).parse(input.getOptionValues(action.name())[1]))).withCache(cache),
                         source, destination);
                 default:
                     throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
