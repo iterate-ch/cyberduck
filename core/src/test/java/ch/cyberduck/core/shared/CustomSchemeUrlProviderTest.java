@@ -44,4 +44,17 @@ public class CustomSchemeUrlProviderTest {
         assertTrue(list.contains(new DescriptiveUrl(URI.create("c1://localhost/file"))));
         assertTrue(list.contains(new DescriptiveUrl(URI.create("c2://localhost/file"))));
     }
+
+    @Test
+    public void testHelp() {
+        Host host = new Host(new TestProtocol() {
+            public String[] getSchemes() {
+                return new String[]{"s"};
+            }
+        }, "localhost");
+        Path path = new Path("/file", EnumSet.of(Path.Type.file));
+        final DescriptiveUrlBag list = new CustomSchemeUrlProvider(host).toUrl(path).filter(DescriptiveUrl.Type.provider);
+        assertEquals(1, list.size());
+        assertEquals("S URL", list.find(DescriptiveUrl.Type.provider).getHelp());
+    }
 }
