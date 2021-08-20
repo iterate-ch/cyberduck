@@ -23,6 +23,7 @@ import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -75,7 +76,7 @@ public class GoogleStorageVersioningFeature implements Versioning {
 
     @Override
     public void revert(final Path file) throws BackgroundException {
-        new GoogleStorageCopyFeature(session).copy(file, file, new TransferStatus(), new DisabledConnectionCallback());
+        new GoogleStorageCopyFeature(session).copy(file, file, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
     }
 
     @Override

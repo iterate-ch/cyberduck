@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -60,7 +61,7 @@ public class SDSDelegatingMoveFeature implements Move {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Move %s to %s using copy feature %s", source, target, copy));
             }
-            final Path c = copy.copy(source, target, status, connectionCallback);
+            final Path c = copy.copy(source, target, status, connectionCallback, new DisabledStreamListener());
             // Delete source file after copy is complete
             final Delete delete = new SDSDeleteFeature(session, nodeid);
             if(delete.isSupported(source)) {

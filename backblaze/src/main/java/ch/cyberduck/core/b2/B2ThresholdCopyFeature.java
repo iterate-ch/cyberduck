@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -42,12 +43,12 @@ public class B2ThresholdCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         if(new B2ThresholdUploadService(session, fileid, threshold).threshold(status.getLength())) {
-            return new B2LargeCopyFeature(session, fileid).copy(source, target, status, callback);
+            return new B2LargeCopyFeature(session, fileid).copy(source, target, status, callback, listener);
         }
         else {
-            return new B2CopyFeature(session, fileid).copy(source, target, status, callback);
+            return new B2CopyFeature(session, fileid).copy(source, target, status, callback, listener);
         }
     }
 

@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -37,16 +38,16 @@ public class SDSDelegatingCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         if(proxy.isSupported(source, target)) {
-            return proxy.copy(source, target, status, callback);
+            return proxy.copy(source, target, status, callback, listener);
         }
         // Copy between encrypted and unencrypted data room
         if(SDSNodeIdProvider.isEncrypted(target)) {
             // File key must be set for new upload
             status.setFilekey(nodeid.getFileKey());
         }
-        final Path result = copy.copy(source, target, status, callback);
+        final Path result = copy.copy(source, target, status, callback, listener);
         nodeid.cache(target, null);
         return result.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(result));
     }

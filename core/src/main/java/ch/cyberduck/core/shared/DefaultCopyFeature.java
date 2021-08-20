@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
@@ -42,7 +43,7 @@ public class DefaultCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         InputStream in;
         StatusOutputStream out;
         in = from.getFeature(Read.class).read(source, new TransferStatus(status), callback);
@@ -52,7 +53,7 @@ public class DefaultCopyFeature implements Copy {
             write = to.getFeature(Write.class);
         }
         out = write.write(target, status, callback);
-        new StreamCopier(status, status).transfer(in, out);
+        new StreamCopier(status, status).withListener(listener).transfer(in, out);
         final Object reply = out.getStatus();
         return target.withAttributes(new PathAttributes(target.attributes())
             .withVersionId(null)

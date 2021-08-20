@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -50,7 +51,7 @@ public class GraphCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         final CopyOperation copyOperation = new CopyOperation();
         if(!StringUtils.equals(source.getName(), target.getName())) {
             copyOperation.rename(target.getName());
@@ -66,6 +67,7 @@ public class GraphCopyFeature implements Copy {
                 statusObject.getOperation(),
                 statusObject.getPercentage(),
                 statusObject.getStatus())));
+            listener.sent(status.getLength());
             target.attributes().setFileId(null);
             final PathAttributes attr = attributes.find(target);
             fileid.cache(target, attr.getFileId());

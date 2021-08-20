@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -84,7 +85,7 @@ public class S3MoveFeature implements Move {
         }
         else {
             try {
-                copy = new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.withLength(source.attributes().getSize()), connectionCallback);
+                copy = new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.withLength(source.attributes().getSize()), connectionCallback, new DisabledStreamListener());
                 // Copy source path and nullify version id to add a delete marker
                 delete.delete(Collections.singletonMap(new Path(source).withAttributes(new PathAttributes(source.attributes()).withVersionId(null)), status),
                     connectionCallback, callback);

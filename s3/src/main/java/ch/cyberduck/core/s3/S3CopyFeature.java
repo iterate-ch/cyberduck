@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -54,7 +55,7 @@ public class S3CopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         if(null == status.getStorageClass()) {
             // Keep same storage class
             status.setStorageClass(new S3StorageClassFeature(session).getClass(source));
@@ -76,18 +77,19 @@ public class S3CopyFeature implements Copy {
         destination.setAcl(accessControlListFeature.toAcl(source, status.getAcl()));
         destination.setBucketName(containerService.getContainer(target).getName());
         destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, accessControlListFeature).getMetadata(source)));
-        final String version = this.copy(source, destination, status);
+        final String version = this.copy(source, destination, status, listener);
         target.attributes().setVersionId(version);
         return target;
     }
 
-    protected String copy(final Path source, final S3Object destination, final TransferStatus status) throws BackgroundException {
+    protected String copy(final Path source, final S3Object destination, final TransferStatus status, final StreamListener listener) throws BackgroundException {
         try {
             // Copying object applying the metadata of the original
             final Map<String, Object> stringObjectMap = session.getClient().copyVersionedObject(source.attributes().getVersionId(),
                 containerService.getContainer(source).getName(),
                 containerService.getKey(source),
                 destination.getBucketName(), destination, false);
+            listener.sent(status.getLength());
             final Map complete = (Map) stringObjectMap.get(Constants.KEY_FOR_COMPLETE_METADATA);
             return (String) complete.get(Constants.AMZ_VERSION_ID);
         }
