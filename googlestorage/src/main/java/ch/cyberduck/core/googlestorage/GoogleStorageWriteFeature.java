@@ -145,7 +145,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                             switch(putResponse.getStatusLine().getStatusCode()) {
                                 case HttpStatus.SC_OK:
                                 case HttpStatus.SC_CREATED:
-                                    try (JsonReader reader = new JsonReader(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8))) {
+                                    try (JsonReader reader = new JsonReader(new InputStreamReader(
+                                        putResponse.getEntity().getContent(), StandardCharsets.UTF_8))) {
                                         reader.beginObject();
                                         while(reader.hasNext()) {
                                             final String name = reader.nextName();
@@ -161,7 +162,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                                     break;
                                 default:
                                     throw new DefaultHttpResponseExceptionMappingService().map(
-                                        new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                        new HttpResponseException(putResponse.getStatusLine().getStatusCode(),
+                                            putResponse.getStatusLine().getReasonPhrase()));
                             }
                         }
                         finally {
