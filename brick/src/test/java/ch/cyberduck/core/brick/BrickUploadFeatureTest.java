@@ -110,7 +110,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, null);
+        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new BrickFindFeature(session).find(test));
