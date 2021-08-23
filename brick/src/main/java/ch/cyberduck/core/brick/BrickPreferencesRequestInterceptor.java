@@ -36,7 +36,10 @@ public class BrickPreferencesRequestInterceptor implements HttpRequestIntercepto
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-        request.addHeader(new BasicHeader("X-User-Agent", this.toValue(preferences)));
+        final String value = this.toValue(preferences);
+        if(StringUtils.isNotBlank(value)) {
+            request.addHeader(new BasicHeader("X-User-Agent", value));
+        }
     }
 
     protected String toValue(final Preferences preferences) {
