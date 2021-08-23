@@ -1,6 +1,13 @@
 Cyberduck
 https://cyberduck.io/
 
+7.10.2
+- [Feature] Add --purge option to invalidate files in Amazon CloudFront distributions and OpenStack Swift (X-CDN-Enabled header) (#11767)
+- [Bugfix] Links for CloudFront distributions and S3 website endpoints are missing in the Copy URL and Open URL menu (S3) (#11764)
+- [Bugfix] Failure downloading files (Files.com)
+- [Bugfix] Return existing share URL when found (Dropbox) (#11209)
+- [Bugfix] Select origin bucket for logging target with missing permission to list all buckets (S3) (#17755)
+
 7.10.1
 - [Feature] Support S3 interface endpoints (AWS PrivateLink for Amazon S3) (#11735)
 - [Feature] Updated support for Files.com using proprietary REST API (Files.com)
