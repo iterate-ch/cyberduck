@@ -129,7 +129,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                                 break;
                             default:
                                 throw new DefaultHttpResponseExceptionMappingService().map(
-                                    new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                    new HttpResponseException(response.getStatusLine().getStatusCode(),
+                                        new GoogleStorageExceptionMappingService().parse(response)));
                         }
                     }
                     finally {
@@ -163,7 +164,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                                 default:
                                     throw new DefaultHttpResponseExceptionMappingService().map(
                                         new HttpResponseException(putResponse.getStatusLine().getStatusCode(),
-                                            putResponse.getStatusLine().getReasonPhrase()));
+                                            new GoogleStorageExceptionMappingService().parse(putResponse)));
                             }
                         }
                         finally {
@@ -172,7 +173,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                     }
                     else {
                         throw new DefaultHttpResponseExceptionMappingService().map(
-                            new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                            new HttpResponseException(response.getStatusLine().getStatusCode(),
+                                new GoogleStorageExceptionMappingService().parse(response)));
                     }
                     return new VersionId(null);
                 }
