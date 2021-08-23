@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -43,6 +44,21 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
+
+    @Test
+    public void testWriteInvalidStorageClass() throws Exception {
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus();
+        status.setStorageClass("invalid");
+        try {
+            new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            fail();
+        }
+        catch(BackgroundException e) {
+            assertEquals("Invalid Value. Please contact your web hosting service provider for assistance.", e.getDetail());
+        }
+    }
 
     @Test
     public void testWritePublicReadCannedPublicAcl() throws Exception {
