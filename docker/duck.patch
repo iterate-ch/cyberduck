@@ -1,0 +1,27 @@
+--- a/cli/linux/build.xml
++++ b/cli/linux/build.xml
+@@ -50,10 +50,7 @@
+         <copy file="${setup}/deb/duck.postrm" tofile="${build.resources}/postrm"/>
+         <copy file="${license}" tofile="${build.resources}/copyright"/>
+         <antcall target="jpackage">
+-            <param name="type" value="rpm"/>
+-        </antcall>
+-        <antcall target="jpackage">
+-            <param name="type" value="deb"/>
++            <param name="type" value="app-image"/>
+         </antcall>
+     </target>
+ 
+@@ -96,12 +93,6 @@
+             <arg value="${app.name}"/>
+             <arg value="--vendor"/>
+             <arg value="cyberduck.io"/>
+-            <arg value="--license-file"/>
+-            <arg value="${license}"/>
+-            <arg value="--linux-deb-maintainer"/>
+-            <arg value="&lt;feedback@cyberduck.io&gt;"/>
+-            <arg value="--linux-rpm-license-type"/>
+-            <arg value="GPL"/>
+             <arg value="--type"/>
+             <arg value="${type}"/>
+             <arg value="--verbose"/>
