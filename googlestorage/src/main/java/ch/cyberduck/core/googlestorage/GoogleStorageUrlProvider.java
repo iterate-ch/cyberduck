@@ -61,7 +61,7 @@ public class GoogleStorageUrlProvider implements UrlProvider {
                 false);
             distribution.setUrl(URI.create(String.format("%s://%s.%s", Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(),
                 session.getHost().getProtocol().getDefaultHostname())));
-            return new DistributionUrlProvider(distribution).toUrl(file);
+            list.addAll(new DistributionUrlProvider(distribution).toUrl(file));
         }
         // gsutil URI
         list.add(new DescriptiveUrl(URI.create(String.format("gs://%s%s",
