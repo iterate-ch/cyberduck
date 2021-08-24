@@ -67,7 +67,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     }
 
     @Override
-    public Acl getDefault(final Local file) {
+    public Acl getDefault(final Path file, final Local local) {
         return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("s3.acl.default"));
     }
 
