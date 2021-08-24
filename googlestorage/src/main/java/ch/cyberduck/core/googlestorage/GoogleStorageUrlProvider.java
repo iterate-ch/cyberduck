@@ -63,6 +63,12 @@ public class GoogleStorageUrlProvider implements UrlProvider {
                 session.getHost().getProtocol().getDefaultHostname())));
             return new DistributionUrlProvider(distribution).toUrl(file);
         }
+        // gsutil URI
+        list.add(new DescriptiveUrl(URI.create(String.format("gs://%s%s",
+            containerService.getContainer(file).getName(),
+            file.isRoot() ? Path.DELIMITER : containerService.isContainer(file) ? Path.DELIMITER : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
+            DescriptiveUrl.Type.provider,
+            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), session.getHost().getProtocol().getName())));
         return list;
     }
 }
