@@ -93,8 +93,7 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
             credentials = host.getCredentials();
         }
         else {
-            // No prompt on explicit connect
-            credentials = this.pair(host, new DisabledConnectionCallback(), cancel);
+            credentials = this.pair(host, prompt, cancel);
             credentials.setSaved(true);
         }
         apiKey = credentials.getPassword();
