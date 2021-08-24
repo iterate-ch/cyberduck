@@ -2264,6 +2264,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.cannedAclPopupGoogleStorage = b;
         this.cannedAclPopupGoogleStorage.setAutoenablesItems(false);
         this.cannedAclPopupGoogleStorage.removeAllItems();
+        this.cannedAclPopupGoogleStorage.addItemWithTitle(LocaleFactory.localizedString("None"));
+        this.cannedAclPopupGoogleStorage.lastItem().setRepresentedObject(StringUtils.EMPTY);
         for(Acl acl : GoogleStorageAccessControlListFeature.CANNED_LIST) {
             this.cannedAclPopupGoogleStorage.addItemWithTitle(LocaleFactory.localizedString(acl.getCannedString(), "S3"));
             this.cannedAclPopupGoogleStorage.lastItem().setRepresentedObject(acl.getCannedString());

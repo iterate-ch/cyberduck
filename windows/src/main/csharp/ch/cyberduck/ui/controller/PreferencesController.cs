@@ -1110,6 +1110,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             var canned = Utils.ConvertFromJavaList<Acl>(GoogleStorageAccessControlListFeature.CANNED_LIST);
             IList<KeyValuePair<string, string>> acls = new List<KeyValuePair<string, string>>();
+            acls.Add(new KeyValuePair<string, string>(String.Empty, LocaleFactory.localizedString("None")));
             foreach (var acl in canned)
             {
                 acls.Add(new KeyValuePair<string, string>(acl.getCannedString(),
