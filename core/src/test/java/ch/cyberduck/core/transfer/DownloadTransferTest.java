@@ -179,7 +179,7 @@ public class DownloadTransferTest {
             @Override
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> d, final TransferAction action, final ProgressListener listener) {
                 return new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                    new NullTransferSession(new Host(new TestProtocol())), new DownloadFilterOptions(), new DefaultDownloadFeature(source.getFeature(Read.class)) {
+                    new NullTransferSession(new Host(new TestProtocol())), new DownloadFilterOptions(host), new DefaultDownloadFeature(source.getFeature(Read.class)) {
                     @Override
                     public boolean offset(final Path file) {
                         return true;

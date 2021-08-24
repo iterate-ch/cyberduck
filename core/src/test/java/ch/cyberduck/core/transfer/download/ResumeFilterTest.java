@@ -53,9 +53,10 @@ public class ResumeFilterTest {
 
     @Test
     public void testPrepareFile() throws Exception {
-        final NullSession session = new NullTransferSession(new Host(new TestProtocol()));
+        final Host host = new Host(new TestProtocol());
+        final NullSession session = new NullTransferSession(host);
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
-                new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
+            new DownloadFilterOptions(host), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
             public boolean offset(final Path file) {
                 return true;
@@ -92,9 +93,10 @@ public class ResumeFilterTest {
 
     @Test
     public void testPrepareDirectoryExists() throws Exception {
-        final NullSession session = new NullTransferSession(new Host(new TestProtocol()));
+        final Host host = new Host(new TestProtocol());
+        final NullSession session = new NullTransferSession(host);
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
-                new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
+            new DownloadFilterOptions(host), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
             public boolean offset(final Path file) {
                 return true;
@@ -123,9 +125,10 @@ public class ResumeFilterTest {
 
     @Test
     public void testPrepareDirectoryExistsFalse() throws Exception {
-        final NullSession session = new NullTransferSession(new Host(new TestProtocol()));
+        final Host host = new Host(new TestProtocol());
+        final NullSession session = new NullTransferSession(host);
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
-                new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
+            new DownloadFilterOptions(host), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
             public boolean offset(final Path file) {
                 return true;

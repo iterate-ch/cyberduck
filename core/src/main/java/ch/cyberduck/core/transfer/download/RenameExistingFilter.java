@@ -38,7 +38,7 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(RenameExistingFilter.class);
 
     public RenameExistingFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session, new DownloadFilterOptions());
+        super(symlinkResolver, session, new DownloadFilterOptions(session.getHost()));
     }
 
     public RenameExistingFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,

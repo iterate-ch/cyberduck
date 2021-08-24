@@ -120,8 +120,9 @@ public class OverwriteFilterTest {
 
     @Test
     public void testTemporary() throws Exception {
-        final OverwriteFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())),
-            new UploadFilterOptions().withTemporary(true));
+        final Host host = new Host(new TestProtocol());
+        final OverwriteFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(host),
+            new UploadFilterOptions(host).withTemporary(true));
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus(), new DisabledProgressListener());
         assertNotNull(status.getRename());

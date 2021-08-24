@@ -92,8 +92,9 @@ public class ResumeFilterTest {
 
     @Test
     public void testPrepareFalse() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())),
-            new UploadFilterOptions().withTemporary(true));
+        final Host host = new Host(new TestProtocol());
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(host),
+            new UploadFilterOptions(host).withTemporary(true));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         t.attributes().setSize(7L);
         final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
@@ -103,14 +104,15 @@ public class ResumeFilterTest {
 
     @Test
     public void testPrepare() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())) {
+        final Host host = new Host(new TestProtocol());
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(host) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final Path f = new Path("t", EnumSet.of(Path.Type.file));
                 f.attributes().setSize(7L);
                 return new AttributedList<>(Collections.<Path>singletonList(f));
             }
-        }, new UploadFilterOptions().withTemporary(true));
+        }, new UploadFilterOptions(host).withTemporary(true));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(t, new NullLocal("t") {
             @Override
@@ -136,8 +138,9 @@ public class ResumeFilterTest {
 
     @Test
     public void testPrepare0() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())),
-            new UploadFilterOptions().withTemporary(true));
+        final Host host = new Host(new TestProtocol());
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(host),
+            new UploadFilterOptions(host).withTemporary(true));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         t.attributes().setSize(0L);
         final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
@@ -148,7 +151,8 @@ public class ResumeFilterTest {
 
     @Test
     public void testAppendEqualSize() throws Exception {
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+        final Host host = new Host(new TestProtocol());
+        final NullSession session = new NullSession(host) {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
@@ -158,7 +162,7 @@ public class ResumeFilterTest {
             }
         };
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-            new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)));
+            new UploadFilterOptions(host).withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)));
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         assertFalse(f.accept(t, new NullLocal("t") {
@@ -186,7 +190,8 @@ public class ResumeFilterTest {
 
     @Test
     public void testAppendSmallerSize() throws Exception {
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+        final Host host = new Host(new TestProtocol());
+        final NullSession session = new NullSession(host) {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
@@ -196,7 +201,7 @@ public class ResumeFilterTest {
             }
         };
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-            new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<>(new NullWriteFeature(session)));
+            new UploadFilterOptions(host).withTemporary(true), new DefaultUploadFeature<>(new NullWriteFeature(session)));
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         final NullLocal l = new NullLocal("t") {
@@ -229,7 +234,8 @@ public class ResumeFilterTest {
 
     @Test
     public void testAppendLargerSize() throws Exception {
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+        final Host host = new Host(new TestProtocol());
+        final NullSession session = new NullSession(host) {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
@@ -239,7 +245,7 @@ public class ResumeFilterTest {
             }
         };
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-            new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<>(new NullWriteFeature(session)));
+            new UploadFilterOptions(host).withTemporary(true), new DefaultUploadFeature<>(new NullWriteFeature(session)));
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         final NullLocal l = new NullLocal("t") {
