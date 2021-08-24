@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -36,6 +37,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -45,18 +47,38 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
 
-    @Test
+    @Test(expected = InteroperabilityException.class)
     public void testWriteInvalidStorageClass() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         status.setStorageClass("invalid");
         try {
-            new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback()).close();
             fail();
         }
         catch(BackgroundException e) {
             assertEquals("Invalid Value. Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
+    }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testWriteCannedAclUniformBucketLevelAccess() throws Exception {
+        final Path container = new Path("cyberduck-test-eu-uniform-access", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus();
+        status.setAcl(Acl.CANNED_PRIVATE);
+        try {
+            new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback()).close();
+            fail();
+        }
+        catch(IOException e) {
+            assertEquals(InteroperabilityException.class, e.getCause().getClass());
+            InteroperabilityException failure = (InteroperabilityException) e.getCause();
+            assertEquals("Cannot insert legacy ACL for an object when uniform bucket-level access is enabled. Read more at https://cloud.google.com/storage/docs/uniform-bucket-level-access. Please contact your web hosting service provider for assistance.",
+                failure.getDetail());
+            throw failure;
         }
     }
 
