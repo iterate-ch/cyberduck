@@ -37,7 +37,7 @@ public class TrashFilter extends AbstractDownloadFilter {
             = LocalTrashFactory.get();
 
     public TrashFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session, new DownloadFilterOptions());
+        super(symlinkResolver, session, new DownloadFilterOptions(session.getHost()));
     }
 
     public TrashFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,

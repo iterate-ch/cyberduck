@@ -64,7 +64,7 @@ public class UploadTransfer extends Transfer {
     private Cache<Path> cache
         = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
-    private UploadFilterOptions options = new UploadFilterOptions();
+    private UploadFilterOptions options = new UploadFilterOptions(host);
 
     public UploadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)),

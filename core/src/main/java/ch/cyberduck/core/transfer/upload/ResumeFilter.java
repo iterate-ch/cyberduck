@@ -39,7 +39,7 @@ public class ResumeFilter extends AbstractUploadFilter {
     private final Upload<?> upload;
 
     public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
-        this(symlinkResolver, session, new UploadFilterOptions());
+        this(symlinkResolver, session, new UploadFilterOptions(session.getHost()));
     }
 
     public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,

@@ -30,7 +30,7 @@ public class SkipFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(SkipFilter.class);
 
     public SkipFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
-        this(symlinkResolver, session, new UploadFilterOptions());
+        this(symlinkResolver, session, new UploadFilterOptions(session.getHost()));
     }
 
     public SkipFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,

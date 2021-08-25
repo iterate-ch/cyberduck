@@ -69,7 +69,7 @@ public class EditOpenWorker extends Worker<Transfer> {
         this.callback = callback;
         this.quit = quit;
         this.notification = notification;
-        final DownloadFilterOptions options = new DownloadFilterOptions();
+        final DownloadFilterOptions options = new DownloadFilterOptions(bookmark);
         options.quarantine = false;
         options.wherefrom = false;
         options.open = false;
