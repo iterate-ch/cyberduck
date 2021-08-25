@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -45,7 +46,7 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
         final TransferStatus status = new TransferStatus();
         new DriveTouchFeature(session, fileid).touch(test, status);
         final Path copy = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Path target = new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
+        final Path target = new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertNotEquals(test.attributes().getVersionId(), target.attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
@@ -63,7 +64,7 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         new DriveTouchFeature(session, fileid).touch(copy, status);
-        final Path target = new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
+        final Path target = new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertNotEquals(test.attributes().getVersionId(), target.attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));

@@ -24,6 +24,7 @@ import ch.cyberduck.core.brick.io.swagger.client.model.FileActionEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +42,7 @@ public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy 
     }
 
     @Override
-    public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final BrickApiClient client = new BrickApiClient(session);
             if(status.isExists()) {
@@ -50,6 +51,7 @@ public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy 
             final FileActionEntity entity = new FileActionsApi(client)
                 .copy(new CopyPathBody().destination(StringUtils.removeStart(target.getAbsolute(), String.valueOf(Path.DELIMITER))),
                     StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
+            listener.sent(status.getLength());
             if(entity.getFileMigrationId() != null) {
                 this.poll(client, entity);
             }

@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpRange;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
@@ -69,7 +70,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
     }
 
     @Override
-    protected String copy(final Path source, final S3Object destination, final TransferStatus status) throws BackgroundException {
+    protected String copy(final Path source, final S3Object destination, final TransferStatus status, final StreamListener listener) throws BackgroundException {
         try {
             final List<MultipartPart> completed = new ArrayList<MultipartPart>();
             // ID for the initiated multipart upload.
@@ -93,7 +94,9 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             }
             for(Future<MultipartPart> future : parts) {
                 try {
-                    completed.add(future.get());
+                    final MultipartPart part = future.get();
+                    completed.add(part);
+                    listener.sent(part.getSize());
                 }
                 catch(InterruptedException e) {
                     log.error("Part upload failed with interrupt failure");

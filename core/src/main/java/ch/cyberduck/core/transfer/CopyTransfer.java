@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -46,8 +47,8 @@ import java.util.Map;
 public class CopyTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(CopyTransfer.class);
 
-    private final Filter<Path> filter = new NullFilter<Path>();
-    private final Comparator<Path> comparator = new NullComparator<Path>();
+    private final Filter<Path> filter = new NullFilter<>();
+    private final Comparator<Path> comparator = new NullComparator<>();
 
     private Cache<Path> cache
         = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
@@ -73,10 +74,10 @@ public class CopyTransfer extends Transfer {
 
     public CopyTransfer(final Host source, final Host destination,
                         final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
-        super(source, new ArrayList<TransferItem>(), bandwidth);
+        super(source, new ArrayList<>(), bandwidth);
         this.destination = destination;
         this.selected = selected;
-        this.mapping = new HashMap<Path, Path>(selected);
+        this.mapping = new HashMap<>(selected);
         for(Path f : selected.keySet()) {
             roots.add(new TransferItem(f));
 
@@ -193,7 +194,7 @@ public class CopyTransfer extends Transfer {
         for(Path p : list) {
             mapping.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));
         }
-        final List<TransferItem> nullified = new ArrayList<TransferItem>();
+        final List<TransferItem> nullified = new ArrayList<>();
         for(Path p : list) {
             nullified.add(new TransferItem(p));
         }
@@ -258,13 +259,27 @@ public class CopyTransfer extends Transfer {
         else {
             // Transfer
             final Copy feature = new DefaultCopyFeature(session).withTarget(destination);
-            feature.copy(source, mapping.get(source), segment, connectionCallback);
-            this.addTransferred(segment.getLength());
+            feature.copy(source, mapping.get(source), segment, connectionCallback, new CopyStreamListener(this, streamListener));
         }
     }
 
     @Override
     public void normalize() {
         //
+    }
+
+    private static final class CopyStreamListener extends DelegateStreamListener {
+        private final CopyTransfer transfer;
+
+        public CopyStreamListener(final CopyTransfer transfer, final StreamListener delegate) {
+            super(delegate);
+            this.transfer = transfer;
+        }
+
+        @Override
+        public void sent(final long bytes) {
+            transfer.addTransferred(bytes);
+            super.sent(bytes);
+        }
     }
 }

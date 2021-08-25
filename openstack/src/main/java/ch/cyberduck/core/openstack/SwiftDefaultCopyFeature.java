@@ -22,10 +22,10 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -48,7 +48,7 @@ public class SwiftDefaultCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             // Copies file
             // If segmented file, copies manifest (creating a link between new object and original segments)
@@ -56,6 +56,7 @@ public class SwiftDefaultCopyFeature implements Copy {
             session.getClient().copyObject(regionService.lookup(source),
                 containerService.getContainer(source).getName(), containerService.getKey(source),
                 containerService.getContainer(target).getName(), containerService.getKey(target));
+            listener.sent(status.getLength());
             // Copy original file attributes
             return target.withAttributes(source.attributes());
         }
