@@ -7,6 +7,8 @@ https://cyberduck.io/
 - [Bugfix] Failure downloading files (Files.com)
 - [Bugfix] Return existing share URL when found (Dropbox) (#11209)
 - [Bugfix] Select origin bucket for logging target with missing permission to list all buckets (S3) (#17755)
+- [Bugfix] Unable to upload to buckets with uniform bucket-level access enabled (Google Storage) (#11766)
+- [Bugfix] Missing progress information when copying file (#11019)
 
 7.10.1
 - [Feature] Support S3 interface endpoints (AWS PrivateLink for Amazon S3) (#11735)
