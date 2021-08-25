@@ -357,6 +357,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         final String originId = String.format("%s-%s", preferences.getProperty("application.name"), new AlphanumericRandomStringService().random());
         final DistributionConfig config = new DistributionConfig(new AlphanumericRandomStringService().random(), distribution.isEnabled())
             .withComment(originId)
+            .withViewerCertificate(new ViewerCertificate().withCloudFrontDefaultCertificate(true))
             .withOrigins(new Origins()
                 .withQuantity(1)
                 .withItems(new Origin()
@@ -408,6 +409,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         final String originId = String.format("%s-%s", preferences.getProperty("application.name"), new AlphanumericRandomStringService().random());
         final DistributionConfig config = new DistributionConfig(new AlphanumericRandomStringService().random(), distribution.isEnabled())
             .withComment(originId)
+            .withViewerCertificate(new ViewerCertificate().withCloudFrontDefaultCertificate(true))
             .withOrigins(new Origins()
                 .withQuantity(1)
                 .withItems(new Origin()
