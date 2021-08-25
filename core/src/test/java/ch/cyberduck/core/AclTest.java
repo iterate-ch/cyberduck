@@ -19,8 +19,7 @@ package ch.cyberduck.core;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 public class AclTest {
 
@@ -30,13 +29,20 @@ public class AclTest {
                 new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1"))),
                 new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1"))));
         assertNotEquals(
-                new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1"))),
-                new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-2"), new Acl.Role("r-1"))));
+            new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1"))),
+            new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-2"), new Acl.Role("r-1"))));
         assertNotEquals(
-                new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1"))),
-                new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-2"))));
+            new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1"))),
+            new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-2"))));
         assertNotEquals(
-                new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1")), new Acl.UserAndRole(new Acl.CanonicalUser("i-2"), new Acl.Role("r-1"))),
-                new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-2"))));
+            new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1")), new Acl.UserAndRole(new Acl.CanonicalUser("i-2"), new Acl.Role("r-1"))),
+            new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-2"))));
+    }
+
+    @Test
+    public void testCanned() {
+        assertSame(Acl.EMPTY, Acl.toAcl(""));
+        assertSame(Acl.EMPTY, Acl.toAcl("none"));
+        assertSame(Acl.CANNED_PRIVATE, Acl.toAcl("private"));
     }
 }

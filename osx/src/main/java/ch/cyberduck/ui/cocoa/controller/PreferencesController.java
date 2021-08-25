@@ -2198,7 +2198,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.cannedAclPopup.setAutoenablesItems(false);
         this.cannedAclPopup.removeAllItems();
         this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
-        this.cannedAclPopup.lastItem().setRepresentedObject(StringUtils.EMPTY);
+        this.cannedAclPopup.lastItem().setRepresentedObject("none");
         for(Acl acl : S3AccessControlListFeature.CANNED_LIST) {
             this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString(acl.getCannedString(), "S3"));
             this.cannedAclPopup.lastItem().setRepresentedObject(acl.getCannedString());
@@ -2267,7 +2267,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.cannedAclPopupGoogleStorage.setAutoenablesItems(false);
         this.cannedAclPopupGoogleStorage.removeAllItems();
         this.cannedAclPopupGoogleStorage.addItemWithTitle(LocaleFactory.localizedString("None"));
-        this.cannedAclPopupGoogleStorage.lastItem().setRepresentedObject(StringUtils.EMPTY);
+        this.cannedAclPopupGoogleStorage.lastItem().setRepresentedObject("none");
         for(Acl acl : GoogleStorageAccessControlListFeature.CANNED_LIST) {
             this.cannedAclPopupGoogleStorage.addItemWithTitle(LocaleFactory.localizedString(acl.getCannedString(), "S3"));
             this.cannedAclPopupGoogleStorage.lastItem().setRepresentedObject(acl.getCannedString());
