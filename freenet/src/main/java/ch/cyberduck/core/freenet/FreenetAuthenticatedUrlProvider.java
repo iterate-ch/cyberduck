@@ -72,7 +72,9 @@ public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
                     CertificateStoreFactory.get());
                 final CloseableHttpClient client = new HttpConnectionPoolBuilder(
                     target, new ThreadLocalHostnameDelegatingTrustManager(trust, target.getHostname()), key, ProxyFactory.get()
-                ).build(ProxyFactory.get().find(new ProxyHostUrlProvider().get(target)), new DisabledTranscriptListener(), new DisabledLoginCallback()).build();
+                ).build(ProxyFactory.get().find(new ProxyHostUrlProvider().get(target)), new DisabledTranscriptListener(), new DisabledLoginCallback())
+                    .setUserAgent(new FreenetUserAgentProvider().get())
+                    .build();
                 final String username = bookmark.getCredentials().getUsername();
                 final String password;
                 if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {

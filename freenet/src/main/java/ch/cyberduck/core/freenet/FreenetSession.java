@@ -16,11 +16,21 @@ package ch.cyberduck.core.freenet;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.dav.DAVClient;
+import ch.cyberduck.core.dav.DAVRedirectStrategy;
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.http.PreferencesRedirectCallback;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
 public class FreenetSession extends DAVSession {
@@ -28,6 +38,15 @@ public class FreenetSession extends DAVSession {
 
     public FreenetSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
+    }
+
+    @Override
+    protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        // Always inject new pool to builder on connect because the pool is shutdown on disconnect
+        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
+        configuration.setUserAgent(new FreenetUserAgentProvider().get());
+        return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
 
     @Override
