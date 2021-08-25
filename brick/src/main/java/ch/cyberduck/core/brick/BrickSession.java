@@ -53,6 +53,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
@@ -131,12 +132,15 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
                              final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
                 prompt.warn(bookmark, title, message, defaultButton, cancelButton, preference);
                 try {
-                    if(!BrowserLauncherFactory.get().open(
-                        String.format("%s/login_from_desktop?pairing_key=%s&platform=%s&computer=%s",
-                            new HostUrlProvider().withUsername(false).withPath(false).get(host),
-                            token,
-                            URIEncoder.encode(new PreferencesUseragentProvider().get()), URIEncoder.encode(InetAddress.getLocalHost().getHostName()))
-                    )) {
+                    final StringBuilder url = new StringBuilder(String.format("%s/login_from_desktop?pairing_key=%s&platform=%s&computer=%s",
+                        new HostUrlProvider().withUsername(false).withPath(false).get(host),
+                        token,
+                        URIEncoder.encode(new PreferencesUseragentProvider().get()),
+                        URIEncoder.encode(InetAddress.getLocalHost().getHostName())));
+                    if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
+                        url.append(String.format("&username=%s", URIEncoder.encode(bookmark.getCredentials().getUsername())));
+                    }
+                    if(!BrowserLauncherFactory.get().open(url.toString())) {
                         throw new LoginCanceledException();
                     }
                 }
