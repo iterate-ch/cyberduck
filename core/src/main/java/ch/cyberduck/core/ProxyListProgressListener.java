@@ -40,7 +40,7 @@ public class ProxyListProgressListener implements ListProgressListener {
     }
 
     @Override
-    public ListProgressListener reset() {
+    public ListProgressListener reset() throws ConnectionCanceledException {
         return this;
     }
 }
