@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.WebUrlProvider;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -86,7 +85,7 @@ public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
                 response = new PasswordTokenRequest(new ApacheHttpTransport(client),
                     new GsonFactory(), new GenericUrl("https://oauth.freenet.de/oauth/token"), username, password)
                     .setClientAuthentication(new BasicAuthentication("desktop_client", "6LIGIHuOSkznLomu5xw0EPPBJOXb2jLp"))
-                    .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
+                    .setRequestInitializer(new UserAgentHttpRequestInitializer(new FreenetUserAgentProvider()))
                     .execute();
                 final FreenetTemporaryLoginResponse login = this.getLoginSession(client, response.getAccessToken());
                 return new DescriptiveUrl(URI.create(login.urls.login), DescriptiveUrl.Type.authenticated);
