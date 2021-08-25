@@ -71,7 +71,16 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
     }
 
     @Override
-    public Acl getDefault(final Local file) {
+    public Acl getDefault(final Path file, final Local local) {
+        try {
+            final Bucket configuration = session.getClient().buckets().get(containerService.getContainer(file).getName()).execute();
+            if(configuration.getIamConfiguration().getUniformBucketLevelAccess().getEnabled()) {
+                return Acl.EMPTY;
+            }
+        }
+        catch(IOException e) {
+            log.warn("Failure reading bucket IAM configuration");
+        }
         return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("googlestorage.acl.default"));
     }
 
