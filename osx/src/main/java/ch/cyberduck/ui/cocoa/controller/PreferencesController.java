@@ -2197,6 +2197,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.cannedAclPopup = b;
         this.cannedAclPopup.setAutoenablesItems(false);
         this.cannedAclPopup.removeAllItems();
+        this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+        this.cannedAclPopup.lastItem().setRepresentedObject(StringUtils.EMPTY);
         for(Acl acl : S3AccessControlListFeature.CANNED_LIST) {
             this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString(acl.getCannedString(), "S3"));
             this.cannedAclPopup.lastItem().setRepresentedObject(acl.getCannedString());
