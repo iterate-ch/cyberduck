@@ -45,8 +45,8 @@ public class GoogleStorageDeleteFeature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        try {
-            for(Path file : files.keySet()) {
+        for(Path file : files.keySet()) {
+            try {
                 callback.delete(file);
                 if(containerService.isContainer(file)) {
                     session.getClient().buckets().delete(file.getName()).execute();
@@ -68,9 +68,9 @@ public class GoogleStorageDeleteFeature implements Delete {
                     request.execute();
                 }
             }
-        }
-        catch(IOException e) {
-            throw new GoogleStorageExceptionMappingService().map(e);
+            catch(IOException e) {
+                throw new GoogleStorageExceptionMappingService().map("Cannot delete {0}", e, file);
+            }
         }
     }
 

@@ -73,7 +73,7 @@ public class StoregateDeleteFeature implements Delete {
                 fileid.cache(file.getKey(), null);
             }
             catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
+                throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file.getKey());
             }
         }
     }
