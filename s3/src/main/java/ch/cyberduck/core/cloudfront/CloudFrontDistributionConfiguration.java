@@ -127,7 +127,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                         final URI origin = this.getOrigin(container, method);
                         if(config.getDomainName().equals(origin.getHost())) {
                             // We currently only support one distribution per bucket
-                            return readStreamingDistribution(client, d, container, method);
+                            return this.readStreamingDistribution(client, d, container, method);
                         }
                     }
                 }
@@ -141,7 +141,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                         if(config != null) {
                             if(o.getDomainName().equals(this.getOrigin(container, method).getHost())) {
                                 // We currently only support one distribution per bucket
-                                return readDownloadDistribution(client, d, container, method);
+                                return this.readDownloadDistribution(client, d, container, method);
                             }
                         }
                     }
@@ -156,7 +156,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                         if(config != null) {
                             if(o.getDomainName().equals(origin.getHost())) {
                                 // We currently only support one distribution per bucket
-                                return readDownloadDistribution(client, d, container, method);
+                                return this.readDownloadDistribution(client, d, container, method);
                             }
                         }
                     }
@@ -181,26 +181,26 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     log.debug(String.format("No existing distribution found for method %s", distribution.getMethod()));
                 }
                 if(distribution.getMethod().equals(Distribution.STREAMING)) {
-                    distribution.setId(createStreamingDistribution(container, distribution).getId());
+                    distribution.setId(this.createStreamingDistribution(container, distribution).getId());
                 }
                 else if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {
-                    distribution.setId(createDownloadDistribution(container, distribution).getId());
+                    distribution.setId(this.createDownloadDistribution(container, distribution).getId());
                 }
                 else if(distribution.getMethod().equals(Distribution.CUSTOM)
                     || distribution.getMethod().equals(Distribution.WEBSITE_CDN)) {
-                    distribution.setId(createCustomDistribution(container, distribution).getId());
+                    distribution.setId(this.createCustomDistribution(container, distribution).getId());
                 }
             }
             else {
                 if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {
-                    distribution.setEtag(updateDownloadDistribution(container, distribution).getETag());
+                    distribution.setEtag(this.updateDownloadDistribution(container, distribution).getETag());
                 }
                 else if(distribution.getMethod().equals(Distribution.STREAMING)) {
-                    distribution.setEtag(updateStreamingDistribution(container, distribution).getETag());
+                    distribution.setEtag(this.updateStreamingDistribution(container, distribution).getETag());
                 }
                 else if(distribution.getMethod().equals(Distribution.CUSTOM)
                     || distribution.getMethod().equals(Distribution.WEBSITE_CDN)) {
-                    distribution.setEtag(updateCustomDistribution(container, distribution).getETag());
+                    distribution.setEtag(this.updateCustomDistribution(container, distribution).getETag());
                 }
             }
         }
