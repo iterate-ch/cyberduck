@@ -28,8 +28,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -72,8 +72,7 @@ public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
                     CertificateStoreFactory.get());
                 final CloseableHttpClient client = new HttpConnectionPoolBuilder(
                     target, new ThreadLocalHostnameDelegatingTrustManager(trust, target.getHostname()), key, ProxyFactory.get()
-                )
-                    .build(Proxy.DIRECT, new DisabledTranscriptListener(), new DisabledLoginCallback()).build();
+                ).build(ProxyFactory.get().find(new ProxyHostUrlProvider().get(target)), new DisabledTranscriptListener(), new DisabledLoginCallback()).build();
                 final String username = bookmark.getCredentials().getUsername();
                 final String password;
                 if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
