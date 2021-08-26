@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 
 import static org.junit.Assert.*;
 
@@ -61,6 +62,22 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
             assertEquals("Invalid Value. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
+    }
+
+    @Test
+    public void testWriteCustomMetadata() throws Exception {
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus();
+        final HashMap<String, String> metadata = new HashMap<>();
+        metadata.put("k1", "v1");
+        status.setMetadata(metadata);
+        new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback()).close();
+        assertEquals(metadata, new GoogleStorageMetadataFeature(session).getMetadata(test));
+        metadata.put("k2", "v2");
+        new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback()).close();
+        assertEquals(metadata, new GoogleStorageMetadataFeature(session).getMetadata(test));
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = InteroperabilityException.class)
