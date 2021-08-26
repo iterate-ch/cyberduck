@@ -104,7 +104,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                     metadata.append(String.format("{\"name\": \"%s\"", containerService.getKey(file)));
                     metadata.append(",\"metadata\": {");
                     for(Map.Entry<String, String> item : status.getMetadata().entrySet()) {
-                        metadata.append(String.format("\"%s\": \"%s\"", item.getKey(), item.getValue()));
+                        metadata.append(String.format("\"%s\": \"%s\",", item.getKey(), item.getValue()));
                     }
                     metadata.append("}");
                     if(StringUtils.isNotBlank(status.getMime())) {
