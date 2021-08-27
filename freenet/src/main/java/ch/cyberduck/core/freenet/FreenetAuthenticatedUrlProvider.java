@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
@@ -86,6 +87,8 @@ public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
                     new GsonFactory(), new GenericUrl("https://oauth.freenet.de/oauth/token"), username, password)
                     .setClientAuthentication(new BasicAuthentication("desktop_client", "6LIGIHuOSkznLomu5xw0EPPBJOXb2jLp"))
                     .setRequestInitializer(new UserAgentHttpRequestInitializer(new FreenetUserAgentProvider()))
+                    .set("world", new HostPreferences(bookmark).getProperty("world"))
+                    .set("webLogin", Boolean.TRUE)
                     .execute();
                 final FreenetTemporaryLoginResponse login = this.getLoginSession(client, response.getAccessToken());
                 return new DescriptiveUrl(URI.create(login.urls.login), DescriptiveUrl.Type.authenticated);
