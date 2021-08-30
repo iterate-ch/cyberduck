@@ -23,14 +23,17 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
+@Category(IntegrationTest.class)
 public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
