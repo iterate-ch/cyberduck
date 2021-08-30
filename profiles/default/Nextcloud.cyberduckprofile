@@ -24,11 +24,11 @@
         <key>Bundled</key>
         <true/>
         <key>Description</key>
-        <string>Nextcloud &amp; ownCloud</string>
+        <string>Nextcloud</string>
         <key>Default Nickname</key>
         <string>Nextcloud</string>
         <key>Default Path</key>
-        <string>/remote.php/webdav/</string>
+        <string>/remote.php/dav/files</string>
         <key>Path Configurable</key>
         <true/>
         <key>Hostname Configurable</key>
