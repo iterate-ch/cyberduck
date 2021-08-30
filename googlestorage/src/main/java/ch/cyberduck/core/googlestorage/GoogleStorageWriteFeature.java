@@ -20,6 +20,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.date.RFC3339DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -50,6 +51,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.TimeZone;
 
 import com.google.gson.stream.JsonReader;
 
@@ -112,6 +114,10 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                     }
                     if(StringUtils.isNotBlank(status.getStorageClass())) {
                         metadata.append(String.format(", \"storageClass\": \"%s\"", status.getStorageClass()));
+                    }
+                    if(null != status.getTimestamp()) {
+                        metadata.append(String.format(", \"customTime\": \"%s\"",
+                            new RFC3339DateFormatter().format(status.getTimestamp(), TimeZone.getTimeZone("UTC"))));
                     }
                     metadata.append("}");
                     request.setEntity(new StringEntity(metadata.toString(),
@@ -199,6 +205,11 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
     @Override
     public boolean temporary() {
         return false;
+    }
+
+    @Override
+    public boolean timestamp() {
+        return true;
     }
 
     @Override
