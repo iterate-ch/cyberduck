@@ -49,6 +49,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.google.gson.stream.JsonReader;
@@ -103,8 +104,12 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                     final StringBuilder metadata = new StringBuilder();
                     metadata.append(String.format("{\"name\": \"%s\"", containerService.getKey(file)));
                     metadata.append(",\"metadata\": {");
-                    for(Map.Entry<String, String> item : status.getMetadata().entrySet()) {
-                        metadata.append(String.format("\"%s\": \"%s\",", item.getKey(), item.getValue()));
+                    for(Iterator<Map.Entry<String, String>> iter = status.getMetadata().entrySet().iterator(); iter.hasNext(); ) {
+                        final Map.Entry<String, String> item = iter.next();
+                        metadata.append(String.format("\"%s\": \"%s\"", item.getKey(), item.getValue()));
+                        if(iter.hasNext()) {
+                            metadata.append(",");
+                        }
                     }
                     metadata.append("}");
                     if(StringUtils.isNotBlank(status.getMime())) {
