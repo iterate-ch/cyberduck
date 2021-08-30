@@ -157,6 +157,9 @@ public class GoogleStorageSession extends HttpSession<Storage> {
         if(type == Redundancy.class) {
             return (T) new GoogleStorageStorageClassFeature(this);
         }
+        if(type == Timestamp.class) {
+            return (T) new GoogleStorageTimestampFeature(this);
+        }
         return super._getFeature(type);
     }
 }
