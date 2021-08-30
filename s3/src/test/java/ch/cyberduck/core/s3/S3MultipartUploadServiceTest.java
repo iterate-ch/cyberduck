@@ -1,6 +1,5 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -38,30 +37,6 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class S3MultipartUploadServiceTest extends AbstractS3Test {
-
-    @Test
-    public void testUploadZeroLength() throws Exception {
-        final S3MultipartUploadService service = new S3MultipartUploadService(session, new S3WriteFeature(session), 5 * 1024L * 1024L, 2);
-        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final String name = new AlphanumericRandomStringService().random();
-        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final String random = new RandomStringGenerator.Builder().build().generate(0);
-        IOUtils.write(random, local.getOutputStream(false), Charset.defaultCharset());
-        final TransferStatus status = new TransferStatus();
-        status.setLength(random.getBytes().length);
-        status.setMime("text/plain");
-        final BytecountStreamListener count = new BytecountStreamListener();
-        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-            count, status, new DisabledLoginCallback());
-        assertEquals(random.getBytes().length, count.getSent());
-        assertTrue(status.isComplete());
-        assertTrue(new S3FindFeature(session).find(test));
-        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
-        assertEquals(random.getBytes().length, attributes.getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        local.delete();
-    }
 
     @Test
     public void testUploadSinglePart() throws Exception {
