@@ -41,6 +41,7 @@ import ch.cyberduck.core.onedrive.OneDriveProtocol;
 import ch.cyberduck.core.onedrive.SharepointProtocol;
 import ch.cyberduck.core.onedrive.SharepointSiteProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.owncloud.OwncloudProtocol;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -103,6 +104,7 @@ public final class MainApplication {
                 new StoregateProtocol(),
                 new BrickProtocol(),
                 new NextcloudProtocol(),
+                new OwncloudProtocol(),
                 new CTERAProtocol()
             );
             protocols.loadDefaultProfiles();

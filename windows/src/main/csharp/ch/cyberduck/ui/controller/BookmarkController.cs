@@ -547,7 +547,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
-                    EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.dracoon, Protocol.Type.brick)))
+                    EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.owncloud, Protocol.Type.dracoon, Protocol.Type.brick)))
                 .toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),

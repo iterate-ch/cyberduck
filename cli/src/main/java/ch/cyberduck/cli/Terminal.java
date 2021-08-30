@@ -50,6 +50,7 @@ import ch.cyberduck.core.onedrive.OneDriveProtocol;
 import ch.cyberduck.core.onedrive.SharepointProtocol;
 import ch.cyberduck.core.onedrive.SharepointSiteProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.owncloud.OwncloudProtocol;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -153,6 +154,7 @@ public class Terminal {
             new StoregateProtocol(),
             new BrickProtocol(),
             new NextcloudProtocol(),
+            new OwncloudProtocol(),
             new CTERAProtocol()
         );
         this.options = options;
