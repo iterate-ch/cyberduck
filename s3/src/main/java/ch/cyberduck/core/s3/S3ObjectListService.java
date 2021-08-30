@@ -46,11 +46,18 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
     private final S3Session session;
     private final S3AttributesFinderFeature attributes;
 
+    private final boolean metadata;
+
     public S3ObjectListService(final S3Session session) {
+        this(session, new HostPreferences(session.getHost()).getBoolean("s3.listing.metadata.enable"));
+    }
+
+    public S3ObjectListService(final S3Session session, final boolean metadata) {
         super(session);
         this.session = session;
         this.attributes = new S3AttributesFinderFeature(session);
         this.containerService = session.getFeature(PathContainerService.class);
+        this.metadata = metadata;
     }
 
     @Override
@@ -96,17 +103,20 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                     }
                     final EnumSet<Path.Type> types = object.getKey().endsWith(String.valueOf(Path.DELIMITER))
                         ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
-                    final Path file;
+                    final Path f;
                     final PathAttributes attr = attributes.toAttributes(object);
                     // Copy bucket location
                     attr.setRegion(bucket.attributes().getRegion());
                     if(null == delimiter) {
-                        file = new Path(String.format("%s%s", bucket.getAbsolute(), key), types, attr);
+                        f = new Path(String.format("%s%s", bucket.getAbsolute(), key), types, attr);
                     }
                     else {
-                        file = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(key), types, attr);
+                        f = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(key), types, attr);
                     }
-                    children.add(file);
+                    if(metadata) {
+                        f.withAttributes(attributes.find(f));
+                    }
+                    children.add(f);
                 }
                 final String[] prefixes = chunk.getCommonPrefixes();
                 for(String common : prefixes) {
@@ -118,16 +128,18 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
-                    final Path file;
-                    final PathAttributes attributes = new PathAttributes();
+                    final Path f;
+                    final PathAttributes attr = new PathAttributes();
+                    attr.setRegion(bucket.attributes().getRegion());
                     if(null == delimiter) {
-                        file = new Path(String.format("%s%s", bucket.getAbsolute(), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+                        f = new Path(String.format("%s%s", bucket.getAbsolute(), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder),
+                            attr);
                     }
                     else {
-                        file = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+                        f = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder),
+                            attr);
                     }
-                    attributes.setRegion(bucket.attributes().getRegion());
-                    children.add(file);
+                    children.add(f);
                 }
                 priorLastKey = null != chunk.getPriorLastKey() ? URIEncoder.decode(chunk.getPriorLastKey()) : null;
                 listener.chunk(directory, children);

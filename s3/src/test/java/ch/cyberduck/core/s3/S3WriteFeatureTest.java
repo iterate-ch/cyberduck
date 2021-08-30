@@ -2,10 +2,13 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
@@ -48,6 +51,34 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         assertTrue(new S3AccessControlListFeature(session)
             .getPermission(test).asList().contains(new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteCustomTimestamp() throws Exception {
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus().withTimestamp(1630305150672L);
+        final byte[] content = RandomUtils.nextBytes(1033);
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        status.setLength(content.length);
+        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        test.withAttributes(new S3AttributesFinderFeature(session).toAttributes(out.getStatus()));
+        assertTrue(new S3FindFeature(session).find(test));
+        assertEquals(1630305150672L, new S3AttributesFinderFeature(session).find(test).getModificationDate());
+        assertEquals(1630305150672L, new S3ObjectListService(session, true).list(container,
+            new DisabledListProgressListener()).find(new DefaultPathPredicate(test)).attributes().getModificationDate());
+        assertEquals(1630305150672L, new S3VersionedObjectListService(session, 1, false, true).list(container,
+            new DisabledListProgressListener()).find(new DefaultPathPredicate(test)).attributes().getModificationDate());
+        assertNotEquals(1630305150672L, new S3ObjectListService(session, false).list(container,
+            new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getModificationDate());
+        assertNotEquals(1630305150672L, new S3VersionedObjectListService(session, 1, false, false).list(container,
+            new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getModificationDate());
+        final Path moved = new S3MoveFeature(session).move(test, new Path(container,
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertEquals(1630305150672L, new S3AttributesFinderFeature(session).find(moved).getModificationDate());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

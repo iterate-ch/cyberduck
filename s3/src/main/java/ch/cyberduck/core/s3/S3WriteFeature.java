@@ -129,6 +129,10 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                 status.setAcl(Acl.EMPTY);
             }
         }
+        if(status.getTimestamp() != null) {
+            // Interoperable with rsync
+            object.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
+        }
         return object;
     }
 
@@ -154,6 +158,11 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     @Override
     public boolean temporary() {
         return false;
+    }
+
+    @Override
+    public boolean timestamp() {
+        return true;
     }
 
     @Override

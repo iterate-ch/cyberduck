@@ -57,8 +57,17 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
 
     private final PathContainerService containerService;
     private final S3Session session;
+    private final S3AttributesFinderFeature attributes;
     private final Integer concurrency;
+
+    /**
+     * Reference previous versions in file attributes
+     */
     private final boolean references;
+    /**
+     * Use HEAD request for every object found to add complete metadata in file attributes
+     */
+    private final boolean metadata;
 
     public S3VersionedObjectListService(final S3Session session) {
         this(session, new HostPreferences(session.getHost()).getInteger("s3.listing.concurrency"),
@@ -69,17 +78,23 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         this(session, new HostPreferences(session.getHost()).getInteger("s3.listing.concurrency"), references);
     }
 
+    public S3VersionedObjectListService(final S3Session session, final Integer concurrency, final boolean references) {
+        this(session, concurrency, references, new HostPreferences(session.getHost()).getBoolean("s3.listing.metadata.enable"));
+    }
+
     /**
      * @param session     Connection
      * @param concurrency Number of threads to handle prefixes
      * @param references  Set references of previous versions in file attributes
      */
-    public S3VersionedObjectListService(final S3Session session, final Integer concurrency, final boolean references) {
+    public S3VersionedObjectListService(final S3Session session, final Integer concurrency, final boolean references, final boolean metadata) {
         super(session);
         this.session = session;
+        this.attributes = new S3AttributesFinderFeature(session);
         this.concurrency = concurrency;
         this.references = references;
         this.containerService = session.getFeature(PathContainerService.class);
+        this.metadata = metadata;
     }
 
     @Override
@@ -112,31 +127,34 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         hasDirectoryPlaceholder = true;
                         continue;
                     }
-                    final PathAttributes attributes = new PathAttributes();
-                    attributes.setVersionId(marker.getVersionId());
+                    final PathAttributes attr = new PathAttributes();
+                    attr.setVersionId(marker.getVersionId());
                     if(!StringUtils.equals(lastKey, key)) {
                         // Reset revision for next file
                         revision = 0L;
                     }
-                    attributes.setRevision(++revision);
-                    attributes.setDuplicate(marker.isDeleteMarker() && marker.isLatest() || !marker.isLatest());
+                    attr.setRevision(++revision);
+                    attr.setDuplicate(marker.isDeleteMarker() && marker.isLatest() || !marker.isLatest());
                     if(marker.isDeleteMarker()) {
-                        attributes.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, String.valueOf(true)));
+                        attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, String.valueOf(true)));
                     }
-                    attributes.setModificationDate(marker.getLastModified().getTime());
-                    attributes.setRegion(bucket.attributes().getRegion());
+                    attr.setModificationDate(marker.getLastModified().getTime());
+                    attr.setRegion(bucket.attributes().getRegion());
                     if(marker instanceof S3Version) {
                         final S3Version object = (S3Version) marker;
-                        attributes.setSize(object.getSize());
+                        attr.setSize(object.getSize());
                         if(StringUtils.isNotBlank(object.getEtag())) {
-                            attributes.setETag(object.getEtag());
+                            attr.setETag(object.getEtag());
                         }
                         if(StringUtils.isNotBlank(object.getStorageClass())) {
-                            attributes.setStorageClass(object.getStorageClass());
+                            attr.setStorageClass(object.getStorageClass());
                         }
                     }
                     final Path f = new Path(directory.isDirectory() ? directory : directory.getParent(),
-                        PathNormalizer.name(key), EnumSet.of(Path.Type.file), attributes);
+                        PathNormalizer.name(key), EnumSet.of(Path.Type.file), attr);
+                    if(metadata) {
+                        f.withAttributes(attributes.find(f));
+                    }
                     children.add(f);
                     lastKey = key;
                 }
