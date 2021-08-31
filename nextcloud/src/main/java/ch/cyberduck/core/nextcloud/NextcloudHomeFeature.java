@@ -33,7 +33,7 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
 
     @Override
     public Path find() throws BackgroundException {
-        return new Path(new Path(bookmark.getProtocol().getDefaultPath(), EnumSet.of(Path.Type.directory)),
+        return new Path(new Path("/remote.php/dav/files", EnumSet.of(Path.Type.directory)),
             URIEncoder.encode(bookmark.getCredentials().getUsername()), EnumSet.of(Path.Type.directory));
     }
 }
