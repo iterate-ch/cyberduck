@@ -130,8 +130,8 @@ public class BrickPairingSchedulerFeature {
                 }
             }
             final Credentials credentials = host.getCredentials();
-            if(json.has("username")) {
-                credentials.setUsername(json.getAsJsonPrimitive("username").getAsString());
+            if(json.has("user_username")) {
+                credentials.setUsername(json.getAsJsonPrimitive("user_username").getAsString());
             }
             else {
                 throw new LoginFailureException(String.format("Invalid response for pairing key %s", token));
