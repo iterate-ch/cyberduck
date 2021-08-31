@@ -27,8 +27,6 @@
         <string>Nextcloud</string>
         <key>Default Nickname</key>
         <string>Nextcloud</string>
-        <key>Default Path</key>
-        <string>/remote.php/dav/files</string>
         <key>Path Configurable</key>
         <true/>
         <key>Hostname Configurable</key>
