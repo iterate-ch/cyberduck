@@ -1,7 +1,7 @@
-package ch.cyberduck.core.nextcloud;
+package ch.cyberduck.core.owncloud;
 
 /*
- * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,25 +18,24 @@ package ch.cyberduck.core.nextcloud;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.nextcloud.NextcloudShareProvider;
+import ch.cyberduck.core.nextcloud.NextcloudUrlProvider;
+import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-public class NextcloudSession extends DAVSession {
+public class OwncloudSession extends DAVSession {
 
-    public NextcloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+    public OwncloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
-        if(type == Home.class) {
-            return (T) new NextcloudHomeFeature(host);
-        }
         if(type == Lock.class) {
             // https://github.com/nextcloud/server/issues/1308
             return null;
