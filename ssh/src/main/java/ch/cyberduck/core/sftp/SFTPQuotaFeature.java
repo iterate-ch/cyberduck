@@ -18,6 +18,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.apache.log4j.Logger;
 
@@ -40,7 +41,7 @@ public class SFTPQuotaFeature implements Quota {
 
     @Override
     public Space get() throws BackgroundException {
-        final Path home = new SFTPHomeDirectoryService(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         if(this.isSpaceAvailableExtensionAvailable()) {
             try {
                 return this.getSpaceAvailable(session.sftp(), home);
