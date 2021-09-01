@@ -68,7 +68,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                     .Throttle(TimeSpan.FromMilliseconds(725))
                     .DistinctUntilChanged()
                     .Select(Filter))
-                .Sort(SortExpressionComparer<ProfileViewModel>.Ascending(x => x.Description))
+                .Sort(SortExpressionComparer<ProfileViewModel>.Ascending(x => x.Profile))
                 .ObserveOnDispatcher()
                 .Bind(Profiles)
                 .Subscribe();
