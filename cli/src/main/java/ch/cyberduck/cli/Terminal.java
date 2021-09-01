@@ -502,7 +502,7 @@ public class Terminal {
 
     protected Exit purge(final SessionPool session, final Path remote) {
         final DistributionPurgeWorker purge = new DistributionPurgeWorker(Collections.singletonList(remote),
-            new TerminalLoginCallback(reader), Distribution.DOWNLOAD);
+            new TerminalLoginCallback(reader), Distribution.DOWNLOAD, Distribution.WEBSITE_CDN, Distribution.CUSTOM);
         final SessionBackgroundAction<Boolean> action = new TerminalBackgroundAction<>(controller, session, purge);
         try {
             this.execute(action);
