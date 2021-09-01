@@ -621,7 +621,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     if(this.generalSettingsInfo().isUseS3Storage()) {
                         final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
                         if(matcher.matches()) {
-                            if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.22))) >= 0) {
+                            if(new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0) {
                                 return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this, nodeid));
                             }
                         }
