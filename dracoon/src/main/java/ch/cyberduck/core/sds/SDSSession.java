@@ -581,7 +581,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(classificationPolicies.get() == null) {
             final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
             if(matcher.matches()) {
-                if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.30))) >= 0) {
+                if(new Version(matcher.group(1)).compareTo(new Version("4.30")) >= 0) {
                     try {
                         classificationPolicies.set(new ConfigApi(client).requestClassificationPoliciesConfigInfo(StringUtils.EMPTY));
                     }
