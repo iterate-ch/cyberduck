@@ -22,7 +22,6 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CustomerData;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.shared.PathAttributesHomeFeature;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -43,8 +42,7 @@ public class SDSQuotaFeature implements Quota {
     @Override
     public Space get() throws BackgroundException {
         try {
-            final Path home = new PathAttributesHomeFeature(new DefaultHomeFinderService(session),
-                new SDSAttributesFinderFeature(session, nodeid), new SDSPathContainerService()).find();
+            final Path home = new DefaultHomeFinderService(session).find();
             if(!home.isRoot()) {
                 if(-1L == home.attributes().getQuota()) {
                     log.warn(String.format("No quota set for node %s", home));
