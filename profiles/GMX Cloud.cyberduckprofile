@@ -1,18 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-    <key>Protocol</key>
-    <string>davs</string>
-    <key>Vendor</key>
-    <string>gmx</string>
-    <key>Description</key>
-    <string>GMX Cloud (WebDAV)</string>
-    <key>Default Hostname</key>
-    <string>webdav.mc.gmx.net</string>
-    <key>Username Placeholder</key>
-    <string>GMX Kundennummer</string>
-    <key>Help</key>
-    <string>https://www.gmx.net/produkte/cloud/speicher-erweitern/</string>
-</dict>
+    <dict>
+        <key>Protocol</key>
+        <string>gmxcloud</string>
+        <key>Vendor</key>
+        <string>gmx</string>
+        <key>Description</key>
+        <string>GMX Cloud</string>
+        <key>Scheme</key>
+        <string>https</string>
+        <key>Default Port</key>
+        <string>443</string>
+        <key>Username Placeholder</key>
+        <string>Username</string>
+        <key>Password Placeholder</key>
+        <string>Password</string>
+        <key>Default Hostname</key>
+        <string>os-webde.ui-onlinestorage.net</string>
+        <key>Default Nickname</key>
+        <string>GMX Cloud</string>
+        <key>Hostname Configurable</key>
+        <false/>
+        <key>Port Configurable</key>
+        <false/>
+        <key>Anonymous Configurable</key>
+        <false/>
+        <key>Path Configurable</key>
+        <false/>
+        <key>Certificate Configurable</key>
+        <false/>
+        <key>Username Configurable</key>
+        <false/>
+        <key>Password Configurable</key>
+        <false/>
+        <key>OAuth Authorization Url</key>
+        <string>https://oauth2-qa.gmx.net/authorize</string>
+        <key>OAuth Token Url</key>
+        <string>https://oauth2-qa.gmx.net/token</string>
+        <key>OAuth Redirect Url</key>
+        <string>/identity/redirect/?redirect_uri=x-storegatedrive-action:oauth</string>
+        <key>OAuth Client ID</key>
+        <string>gmxdach_pccloudsynctool_qa</string>
+        <key>OAuth Client Secret</key>
+        <string>xIQSromWgQE6GWhdi7cFSda8r0iSTOzuhmVJxb3k</string>
+        <key>Scopes</key>
+        <array>
+            <string>onlinestorage_user_meta_read</string>
+            <string>onlinestorage_user_meta_write</string>
+        </array>
+    </dict>
 </plist>
