@@ -478,7 +478,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 userAccount.set(new UserAccountWrapper(new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null)));
             }
             catch(ApiException e) {
-                log.warn(String.format("Failure updating user info. %s", e.getMessage()));
+                log.warn(String.format("Failure updating user info. %s", new SDSExceptionMappingService(nodeid).map(e)));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -510,7 +510,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     log.debug(String.format("User does not have a keypair for version %s", UserKeyPair.Version.RSA2048.getValue()));
                 }
                 else {
-                    log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
+                    log.warn(String.format("Failure updating user key pair. %s", new SDSExceptionMappingService(nodeid).map(e)));
                     throw new SDSExceptionMappingService(nodeid).map(e);
                 }
             }
@@ -542,7 +542,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 softwareVersion.set(new PublicApi(client).requestSoftwareVersion(null));
             }
             catch(ApiException e) {
-                log.warn(String.format("Failure %s updating software version", e.getMessage()));
+                log.warn(String.format("Failure %s updating software version", new SDSExceptionMappingService(nodeid).map(e)));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -556,7 +556,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             catch(ApiException e) {
                 // Precondition: Right "Config Read" required.
-                log.warn(String.format("Failure %s reading system defaults", e.getMessage()));
+                log.warn(String.format("Failure %s reading system defaults", new SDSExceptionMappingService(nodeid).map(e)));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -570,7 +570,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             catch(ApiException e) {
                 // Precondition: Right "Config Read" required.
-                log.warn(String.format("Failure %s reading configuration", e.getMessage()));
+                log.warn(String.format("Failure %s reading configuration", new SDSExceptionMappingService(nodeid).map(e)));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -587,7 +587,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     }
                     catch(ApiException e) {
                         // Precondition: Right "Config Read" required.
-                        log.warn(String.format("Failure %s reading configuration", e.getMessage()));
+                        log.warn(String.format("Failure %s reading configuration", new SDSExceptionMappingService(nodeid).map(e)));
                         throw new SDSExceptionMappingService(nodeid).map(e);
                     }
                 }
