@@ -70,7 +70,7 @@ public class BrickPairingSchedulerFeature {
         this.cancel = cancel;
     }
 
-    public Credentials repeat(final PasswordCallback callback) {
+    public void repeat(final PasswordCallback callback) {
         final long timeout = preferences.getLong("brick.pairing.interrupt.ms");
         final long start = System.currentTimeMillis();
         scheduler.repeat(() -> {
@@ -81,7 +81,7 @@ public class BrickPairingSchedulerFeature {
                 this.operate(callback);
             }
             catch(ConnectionCanceledException e) {
-                log.warn("Cancel processing scheduled task. %s", e);
+                log.warn(String.format("Cancel processing scheduled task. %s", e.getMessage()), e);
                 callback.close(null);
                 this.shutdown();
             }
@@ -91,7 +91,6 @@ public class BrickPairingSchedulerFeature {
                 this.shutdown();
             }
         }, preferences.getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS);
-        return null;
     }
 
     /**

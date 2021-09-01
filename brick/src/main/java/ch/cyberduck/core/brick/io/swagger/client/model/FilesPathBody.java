@@ -25,7 +25,7 @@ import org.joda.time.DateTime;
  * FilesPathBody
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T22:25:43.390877+02:00[Europe/Paris]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-17T09:08:22.070861+02:00[Europe/Zurich]")
 public class FilesPathBody {
   @JsonProperty("action")
   private String action = null;
@@ -58,7 +58,7 @@ public class FilesPathBody {
   private Integer restart = null;
 
   @JsonProperty("size")
-  private Integer size = null;
+  private Long size = null;
 
   @JsonProperty("structure")
   private String structure = null;
@@ -256,7 +256,7 @@ public class FilesPathBody {
     this.restart = restart;
   }
 
-  public FilesPathBody size(Integer size) {
+  public FilesPathBody size(Long size) {
     this.size = size;
     return this;
   }
@@ -266,11 +266,11 @@ public class FilesPathBody {
    * @return size
   **/
   @Schema(description = "Size of file.")
-  public Integer getSize() {
+  public Long getSize() {
     return size;
   }
 
-  public void setSize(Integer size) {
+  public void setSize(Long size) {
     this.size = size;
   }
 

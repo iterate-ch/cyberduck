@@ -15,6 +15,7 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -28,7 +29,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
@@ -36,9 +36,19 @@ import static org.junit.Assert.assertEquals;
 public class BrickTimestampFeatureTest extends AbstractBrickTest {
 
     @Test
-    public void testSetTimestamp() throws Exception {
-        final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new BrickTouchFeature(session).touch(file, new TransferStatus());
+    public void testSetTimestampFile() throws Exception {
+        final Path file = new BrickTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        new BrickTimestampFeature(session).setTimestamp(file, 5000L);
+        assertEquals(5000L, new BrickAttributesFinderFeature(session).find(file).getModificationDate());
+        assertEquals(5000L, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSetTimestampDirectory() throws Exception {
+        final Path file = new BrickDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(),
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new BrickTimestampFeature(session).setTimestamp(file, 5000L);
         assertEquals(5000L, new BrickAttributesFinderFeature(session).find(file).getModificationDate());
         assertEquals(5000L, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());

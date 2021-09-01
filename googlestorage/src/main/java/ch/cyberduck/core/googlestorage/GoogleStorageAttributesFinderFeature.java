@@ -36,7 +36,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import com.google.api.client.util.DateTime;
 import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.StorageObject;
@@ -142,9 +141,14 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
         if(object.getSize() != null) {
             attributes.setSize(object.getSize().longValue());
         }
-        final DateTime lastmodified = object.getTimeCreated();
-        if(lastmodified != null) {
-            attributes.setModificationDate(lastmodified.getValue());
+        if(object.getTimeCreated() != null) {
+            attributes.setCreationDate(object.getTimeCreated().getValue());
+        }
+        if(object.getUpdated() != null) {
+            attributes.setModificationDate(object.getUpdated().getValue());
+        }
+        if(object.getCustomTime() != null) {
+            attributes.setModificationDate(object.getCustomTime().getValue());
         }
         attributes.setStorageClass(object.getStorageClass());
         if(StringUtils.isNotBlank(object.getEtag())) {

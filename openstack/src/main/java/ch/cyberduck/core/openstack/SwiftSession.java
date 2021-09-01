@@ -44,10 +44,11 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -61,9 +62,8 @@ public class SwiftSession extends HttpSession<Client> {
     private final SwiftRegionService regionService
         = new SwiftRegionService(this);
 
-    private Map<Region, AccountInfo> accounts = Collections.emptyMap();
-    private Map<Path, Distribution> distributions = Collections.emptyMap();
-
+    private final Map<Region, AccountInfo> accounts = new ConcurrentHashMap<>();
+    private final Map<Path, Set<Distribution>> distributions = new ConcurrentHashMap<>();
 
     public SwiftSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -173,10 +173,23 @@ public class SwiftSession extends HttpSession<Client> {
                     return null;
                 }
             }
-            return (T) new SwiftDistributionConfiguration(this, distributions, regionService);
+            return (T) new SwiftDistributionConfiguration(this, regionService) {
+                @Override
+                public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
+                    final Distribution distribution = super.read(container, method, prompt);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Cache distribution %s", distribution));
+                    }
+                    // Replace previously cached value
+                    final Set<Distribution> cached = distributions.getOrDefault(container, new HashSet<>());
+                    cached.add(distribution);
+                    distributions.put(container, cached);
+                    return distribution;
+                }
+            };
         }
         if(type == UrlProvider.class) {
-            return (T) new SwiftUrlProvider(this, accounts, regionService);
+            return (T) new SwiftUrlProvider(this, accounts, regionService, distributions);
         }
         if(type == Find.class) {
             return (T) new SwiftFindFeature(this);
@@ -189,15 +202,13 @@ public class SwiftSession extends HttpSession<Client> {
                 new SwiftAccountLoader(this) {
                     @Override
                     public Map<Region, AccountInfo> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
-                        return accounts = super.operate(callback, container);
+                        final Map<Region, AccountInfo> result = super.operate(callback, container);
+                        // Only executed single time
+                        accounts.putAll(result);
+                        return result;
                     }
                 },
-                new SwiftDistributionConfigurationLoader(this) {
-                    @Override
-                    public Map<Path, Distribution> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
-                        return distributions = super.operate(callback, container);
-                    }
-                });
+                new SwiftDistributionConfigurationLoader(this));
         }
         return super._getFeature(type);
     }

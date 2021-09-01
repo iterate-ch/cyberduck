@@ -46,7 +46,7 @@ public class BrickMoveFeature extends BrickFileMigrationFeature implements Move 
     @Override
     public Path move(final Path file, final Path target, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final BrickApiClient client = new BrickApiClient(session.getApiKey(), session.getClient());
+            final BrickApiClient client = new BrickApiClient(session);
             if(status.isExists()) {
                 new BrickDeleteFeature(session).delete(Collections.singletonList(target), callback, delete);
             }

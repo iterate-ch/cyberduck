@@ -100,8 +100,9 @@ public class CryptoSFTPSingleTransferWorkerTest extends AbstractSFTPTest {
             }
         }));
         PreferencesFactory.get().setProperty("factory.vault.class", CryptoVault.class.getName());
-        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(dir1, localDirectory1)), new NullFilter<>())
-            .withOptions(new UploadFilterOptions().withTimestamp(true));
+        final Host host = new Host(new TestProtocol());
+        final Transfer t = new UploadTransfer(host, Collections.singletonList(new TransferItem(dir1, localDirectory1)), new NullFilter<>())
+            .withOptions(new UploadFilterOptions(host).withTimestamp(true));
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {

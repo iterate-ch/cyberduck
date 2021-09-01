@@ -19,8 +19,11 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import java.net.URI;
@@ -28,10 +31,12 @@ import java.text.MessageFormat;
 
 public class GoogleStorageUrlProvider implements UrlProvider {
 
+    private final PathContainerService containerService;
     private final GoogleStorageSession session;
 
     public GoogleStorageUrlProvider(final GoogleStorageSession session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     /**
@@ -48,9 +53,22 @@ public class GoogleStorageUrlProvider implements UrlProvider {
         if(file.isFile()) {
             // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
             list.add(new DescriptiveUrl(URI.create(String.format("https://storage.cloud.google.com%s",
-                    URIEncoder.encode(file.getAbsolute()))), DescriptiveUrl.Type.authenticated,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Authenticated"))));
+                URIEncoder.encode(file.getAbsolute()))), DescriptiveUrl.Type.authenticated,
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Authenticated"))));
+            // Website configuration
+            final Distribution distribution = new Distribution(Distribution.DOWNLOAD, URI.create(String.format("%s://%s.%s",
+                Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(), session.getHost().getProtocol().getDefaultHostname())),
+                false);
+            distribution.setUrl(URI.create(String.format("%s://%s.%s", Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(),
+                session.getHost().getProtocol().getDefaultHostname())));
+            list.addAll(new DistributionUrlProvider(distribution).toUrl(file));
         }
+        // gsutil URI
+        list.add(new DescriptiveUrl(URI.create(String.format("gs://%s%s",
+            containerService.getContainer(file).getName(),
+            file.isRoot() ? Path.DELIMITER : containerService.isContainer(file) ? Path.DELIMITER : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
+            DescriptiveUrl.Type.provider,
+            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), session.getHost().getProtocol().getName())));
         return list;
     }
 }

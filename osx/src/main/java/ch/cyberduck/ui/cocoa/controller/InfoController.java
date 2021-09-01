@@ -33,6 +33,7 @@ import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
@@ -2184,9 +2185,10 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new WorkerBackgroundAction<>(controller, session, new ReadDistributionWorker(files, prompt, method) {
                 @Override
                 public void cleanup(final Distribution distribution) {
-                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
+                    // Cache distribution
+
                     distributionEnableButton.setTitle(MessageFormat.format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
-                        cdn.getName(distribution.getMethod())));
+                        distribution.getName()));
                     distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                     distributionStatusField.setAttributedStringValue(NSMutableAttributedString.create(distribution.getStatus(), TRUNCATE_MIDDLE_ATTRIBUTES));
 
@@ -2212,9 +2214,8 @@ public class InfoController extends ToolbarWindowController {
                     if(null == distributionLoggingPopup.selectedItem()) {
                         distributionLoggingPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
                     }
-                    final DescriptiveUrl origin = cdn.toUrl(file).find(DescriptiveUrl.Type.origin);
-                    if(!origin.equals(DescriptiveUrl.EMPTY)) {
-                        distributionOriginField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(origin));
+                    if(distribution.getOrigin() != null) {
+                        distributionOriginField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(distribution.getOrigin().toString()));
                     }
                     // Concatenate URLs
                     if(numberOfFiles() > 1) {
@@ -2223,9 +2224,8 @@ public class InfoController extends ToolbarWindowController {
                         distributionCnameUrlField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
                     }
                     else {
-                        final DescriptiveUrl url = cdn.toUrl(file).find(DescriptiveUrl.Type.cdn);
-                        if(!url.equals(DescriptiveUrl.EMPTY)) {
-                            distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
+                        if(distribution.getUrl() != null) {
+                            distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(distribution.getUrl().toString()));
                             distributionUrlField.setToolTip(LocaleFactory.localizedString("CDN URL"));
                         }
                         else {
@@ -2241,19 +2241,17 @@ public class InfoController extends ToolbarWindowController {
                     }
                     else {
                         distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
-                        final DescriptiveUrl url = cdn.toUrl(file).find(DescriptiveUrl.Type.cname);
+                        final DescriptiveUrl url = new DistributionUrlProvider(distribution).toUrl(file).find(DescriptiveUrl.Type.cname);
                         if(!url.equals(DescriptiveUrl.EMPTY)) {
                             // We only support one CNAME URL to be displayed
                             distributionCnameUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
                             distributionCnameUrlField.setToolTip(LocaleFactory.localizedString("CDN URL"));
                         }
                     }
-                    if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
-                        for(Path next : distribution.getRootDocuments()) {
-                            if(next.isFile()) {
-                                distributionDefaultRootPopup.addItemWithTitle(next.getName());
-                                distributionDefaultRootPopup.lastItem().setRepresentedObject(next.getName());
-                            }
+                    for(Path next : distribution.getRootDocuments()) {
+                        if(next.isFile()) {
+                            distributionDefaultRootPopup.addItemWithTitle(next.getName());
+                            distributionDefaultRootPopup.lastItem().setRepresentedObject(next.getName());
                         }
                     }
                     if(StringUtils.isNotBlank(distribution.getIndexDocument())) {

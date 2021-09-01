@@ -59,8 +59,8 @@ public class CryptoAclPermission implements AclPermission {
     }
 
     @Override
-    public Acl getDefault(final Local file) {
-        return delegate.getDefault(file);
+    public Acl getDefault(final Path file, final Local local) {
+        return delegate.getDefault(file, local);
     }
 
     @Override

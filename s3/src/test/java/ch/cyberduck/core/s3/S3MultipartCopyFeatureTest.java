@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -56,7 +57,7 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
         final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session, new S3AccessControlListFeature(session));
-        feature.copy(test, copy, status, new DisabledConnectionCallback());
+        feature.copy(test, copy, status, new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -80,7 +81,7 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
         final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session, new S3AccessControlListFeature(session));
-        feature.copy(test, copy, status, new DisabledConnectionCallback());
+        feature.copy(test, copy, status, new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

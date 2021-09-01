@@ -66,7 +66,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
     private final UploadFilterOptions options;
 
     public AbstractCopyFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
-        this(source, destination, files, new UploadFilterOptions());
+        this(source, destination, files, new UploadFilterOptions(destination.getHost()));
     }
 
     public AbstractCopyFilter(final Session<?> source, final Session<?> destination,

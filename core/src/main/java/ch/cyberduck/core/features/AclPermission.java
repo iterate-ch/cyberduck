@@ -43,10 +43,11 @@ public interface AclPermission {
     List<Acl.Role> getAvailableAclRoles(List<Path> files);
 
     /**
-     * @param file File on local disk
+     * @param file  Remote file
+     * @param local File on local disk
      * @return Default ACL to set for file
      */
-    Acl getDefault(Local file);
+    Acl getDefault(final Path file, Local local);
 
     /**
      * @param type File or folder

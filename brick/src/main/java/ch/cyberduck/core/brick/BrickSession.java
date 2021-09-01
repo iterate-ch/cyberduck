@@ -38,6 +38,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
@@ -52,6 +53,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
@@ -81,6 +83,7 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
     protected CloseableHttpClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setServiceUnavailableRetryStrategy(new BrickUnauthorizedRetryStrategy(this, prompt, cancel));
+        configuration.addInterceptorLast(new BrickPreferencesRequestInterceptor());
         return configuration.build();
     }
 
@@ -91,8 +94,7 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
             credentials = host.getCredentials();
         }
         else {
-            // No prompt on explicit connect
-            credentials = this.pair(host, new DisabledConnectionCallback(), cancel);
+            credentials = this.pair(host, prompt, cancel);
             credentials.setSaved(true);
         }
         apiKey = credentials.getPassword();
@@ -130,12 +132,15 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
                              final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
                 prompt.warn(bookmark, title, message, defaultButton, cancelButton, preference);
                 try {
-                    if(!BrowserLauncherFactory.get().open(
-                        String.format("%s/login_from_desktop?pairing_key=%s&platform=%s&computer=%s",
-                            new HostUrlProvider().withUsername(false).withPath(false).get(host),
-                            token,
-                            URIEncoder.encode(new PreferencesUseragentProvider().get()), URIEncoder.encode(InetAddress.getLocalHost().getHostName()))
-                    )) {
+                    final StringBuilder url = new StringBuilder(String.format("%s/login_from_desktop?pairing_key=%s&platform=%s&computer=%s",
+                        new HostUrlProvider().withUsername(false).withPath(false).get(host),
+                        token,
+                        URIEncoder.encode(new PreferencesUseragentProvider().get()),
+                        URIEncoder.encode(InetAddress.getLocalHost().getHostName())));
+                    if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
+                        url.append(String.format("&username=%s", URIEncoder.encode(bookmark.getCredentials().getUsername())));
+                    }
+                    if(!BrowserLauncherFactory.get().open(url.toString())) {
                         throw new LoginCanceledException();
                     }
                 }
@@ -170,7 +175,10 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
-            return (T) new BrickUploadFeature(this, new BrickWriteFeature(this));
+            return (T) new BrickThresholdUploadFeature(this);
+        }
+        if(type == MultipartWrite.class) {
+            return (T) new BrickMultipartWriteFeature(this);
         }
         if(type == Write.class) {
             return (T) new BrickWriteFeature(this);
@@ -216,4 +224,5 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
         }
         return super._getFeature(type);
     }
+
 }

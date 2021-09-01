@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.List;
@@ -43,15 +44,15 @@ public class SwiftSegmentCopyService implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         final SwiftSegmentService segmentService = new SwiftSegmentService(session);
         final List<Path> segments = segmentService.list(source);
         if(segments.isEmpty()) {
-            return new SwiftDefaultCopyFeature(session, regionService).copy(source, target, status, callback);
+            return new SwiftDefaultCopyFeature(session, regionService).copy(source, target, status, callback, listener);
         }
         else {
             return new SwiftLargeObjectCopyFeature(session, regionService, segmentService)
-                .copy(source, segments, target, status, callback);
+                .copy(source, segments, target, status, callback, listener);
         }
     }
 

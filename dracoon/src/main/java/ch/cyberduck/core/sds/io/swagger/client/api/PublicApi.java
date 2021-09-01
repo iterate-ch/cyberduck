@@ -15,7 +15,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.CreateShareUploadChannelRes
 import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import java.io.File;
 import ch.cyberduck.core.sds.io.swagger.client.model.GeneratePresignedUrlsRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse507;
 import ch.cyberduck.core.sds.io.swagger.client.model.OpenIdAuthInfo;
 import ch.cyberduck.core.sds.io.swagger.client.model.PresignedUrlList;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadShare;
@@ -35,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-07-25T23:34:01.480829+02:00[Europe/Paris]")public class PublicApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")public class PublicApi {
   private ApiClient apiClient;
 
   public PublicApi() {
@@ -559,7 +558,7 @@ import java.util.Map;
   }
   /**
    * Request public Upload Share information
-   * ### Description:   Provides information about the desired Upload Share.  ### Precondition: Only &#x60;userUserPublicKeyList&#x60; is returned to the users who owns one of the following permissions: &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt;  ### Postcondition: None.  ### Further Information: If no password is set, the returned information is reduced to the following attributes (if available):  * &#x60;name&#x60; * &#x60;maxSlots&#x60; * &#x60;createdAt&#x60; * &#x60;isProtected&#x60; * &#x60;isEncrypted&#x60; * &#x60;showUploadedFiles&#x60; * &#x60;userUserPublicKeyList&#x60; (if parent is end-to-end encrypted)  Only if the password is transmitted as &#x60;X-Sds-Share-Password&#x60; header, all values are returned. 
+   * ### Description:   Provides information about the desired Upload Share.  ### Precondition: Only &#x60;userUserPublicKeyList&#x60; is returned to the users who owns one of the following permissions: &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt;  ### Postcondition: None.  ### Further Information: If no password is set, the returned information is reduced to the following attributes (if available):  * &#x60;name&#x60; * &#x60;createdAt&#x60; * &#x60;isProtected&#x60; * &#x60;isEncrypted&#x60; * &#x60;showUploadedFiles&#x60; * &#x60;userUserPublicKeyList&#x60; (if parent is end-to-end encrypted)  Only if the password is transmitted as &#x60;X-Sds-Share-Password&#x60; header, all values are returned. 
    * @param accessKey Access key (required)
    * @param xSdsSharePassword Upload share password. Should be base64-encoded.  Plain X-Sds-Share-Passwords are *deprecated* and will be removed in the future (optional)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
@@ -795,22 +794,22 @@ import java.util.Map;
    * @param accessKey Access key (required)
    * @param uploadId Upload channel ID (required)
    * @param file  (optional)
-   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @param contentRange Content-Range   e.g. &#x60;bytes 0-999/3980&#x60; (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @return ChunkUploadResponse
    * @throws ApiException if fails to make API call
    * Range Requests
    * @see <a href="https://tools.ietf.org/html/rfc7233">Upload file Documentation</a>
    */
-  public ChunkUploadResponse uploadFileAsBinaryPublic1(String accessKey, String uploadId, File file, String xSdsDateFormat, String contentRange) throws ApiException {
+  public ChunkUploadResponse uploadFileAsMultipartPublic1(String accessKey, String uploadId, File file, String contentRange, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'accessKey' is set
     if (accessKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'accessKey' when calling uploadFileAsBinaryPublic1");
+      throw new ApiException(400, "Missing the required parameter 'accessKey' when calling uploadFileAsMultipartPublic1");
     }
     // verify the required parameter 'uploadId' is set
     if (uploadId == null) {
-      throw new ApiException(400, "Missing the required parameter 'uploadId' when calling uploadFileAsBinaryPublic1");
+      throw new ApiException(400, "Missing the required parameter 'uploadId' when calling uploadFileAsMultipartPublic1");
     }
     // create path and map variables
     String localVarPath = "/v4/public/shares/uploads/{access_key}/{upload_id}"
@@ -823,10 +822,10 @@ import java.util.Map;
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsDateFormat != null)
-      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
     if (contentRange != null)
       localVarHeaderParams.put("Content-Range", apiClient.parameterToString(contentRange));
+    if (xSdsDateFormat != null)
+      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
     if (file != null)
       localVarFormParams.put("file", file);
 

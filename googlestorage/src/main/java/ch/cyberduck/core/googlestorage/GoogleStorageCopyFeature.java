@@ -22,6 +22,7 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +46,7 @@ public class GoogleStorageCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final Storage.Objects.Get request = session.getClient().objects().get(containerService.getContainer(source).getName(), containerService.getKey(source));
             if(StringUtils.isNotBlank(source.attributes().getVersionId())) {
@@ -55,6 +56,7 @@ public class GoogleStorageCopyFeature implements Copy {
             final Storage.Objects.Rewrite rewrite = session.getClient().objects().rewrite(containerService.getContainer(source).getName(), containerService.getKey(source),
                 containerService.getContainer(target).getName(), containerService.getKey(target), storageObject);
             final RewriteResponse response = rewrite.execute();
+            listener.sent(status.getLength());
             // Include this field (from the previous rewrite response) on each rewrite request after the first one,
             // until the rewrite response 'done' flag is true.
             while(!rewrite.setRewriteToken(response.getRewriteToken()).execute().getDone()) {

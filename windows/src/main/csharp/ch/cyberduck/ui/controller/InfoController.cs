@@ -1759,12 +1759,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         _infoController.DetachDistributionHandlers();
                         Path container = _infoController.containerService.getContainer(_infoController.SelectedPath);
-                        DistributionConfiguration cdn =
-                            (DistributionConfiguration)
-                            _controller.Session.getFeature(typeof(DistributionConfiguration));
                         view.DistributionTitle =
                             String.Format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
-                                cdn.getName(view.DistributionDeliveryMethod));
+                                distribution.getName());
                         //Path file = _infoController.SelectedPath;
                         view.Distribution = distribution.isEnabled();
                         view.DistributionStatus = distribution.getStatus();
@@ -1801,10 +1798,9 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             view.DistributionLoggingPopup = LocaleFactory.localizedString("None");
                         }
-                        DescriptiveUrl origin = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.origin);
-                        if (!origin.equals(DescriptiveUrl.EMPTY))
+                        if (distribution.getOrigin() != null)
                         {
-                            view.DistributionOrigin = origin.getUrl();
+                            view.DistributionOrigin = distribution.getOrigin().toString();
                         }
                         // Concatenate URLs
                         if (_infoController.NumberOfFiles > 1)
@@ -1815,10 +1811,9 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                         else
                         {
-                            DescriptiveUrl url = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.cdn);
-                            if (!url.equals(DescriptiveUrl.EMPTY))
+                            if (distribution.getUrl() != null)
                             {
-                                view.DistributionUrl = url.getUrl();
+                                view.DistributionUrl = distribution.getUrl().toString();
                                 view.DistributionUrlEnabled = true;
                                 view.DistributionUrlTooltip = LocaleFactory.localizedString("CDN URL");
                             }
@@ -1838,7 +1833,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         else
                         {
                             view.DistributionCname = string.Join(" ", cnames);
-                            DescriptiveUrl url = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.cname);
+                            DescriptiveUrl url = new DistributionUrlProvider(distribution).toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.cname);
                             if (!url.equals(DescriptiveUrl.EMPTY))
                             {
                                 // We only support one CNAME URL to be displayed
@@ -1850,21 +1845,18 @@ namespace Ch.Cyberduck.Ui.Controller
                         KeyValuePair<string, string> noneEntry =
                             new KeyValuePair<string, string>(LocaleFactory.localizedString("None"), String.Empty);
 
-                        if (cdn.getFeature(typeof(Index), view.DistributionDeliveryMethod) != null)
+                        List<KeyValuePair<string, string>> defaultRoots = new List<KeyValuePair<string, string>>
                         {
-                            List<KeyValuePair<string, string>> defaultRoots = new List<KeyValuePair<string, string>>
+                            noneEntry
+                        };
+                        foreach (Path next in Utils.ConvertFromJavaList<Path>(distribution.getRootDocuments()))
+                        {
+                            if (next.isFile())
                             {
-                                noneEntry
-                            };
-                            foreach (Path next in Utils.ConvertFromJavaList<Path>(distribution.getRootDocuments()))
-                            {
-                                if (next.isFile())
-                                {
-                                    defaultRoots.Add(new KeyValuePair<string, string>(next.getName(), next.getName()));
-                                }
+                                defaultRoots.Add(new KeyValuePair<string, string>(next.getName(), next.getName()));
                             }
-                            view.PopulateDefaultRoot(defaultRoots);
                         }
+                        view.PopulateDefaultRoot(defaultRoots);
                         String defaultRoot = distribution.getIndexDocument();
                         if (Utils.IsNotBlank(defaultRoot))
                         {

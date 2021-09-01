@@ -98,7 +98,8 @@ public class OverwriteFilterTest {
         final boolean[] permissionWrite = new boolean[1];
         final Path target = new Path("a", EnumSet.of(Path.Type.file));
         files.put(source, target);
-        OverwriteFilter f = new OverwriteFilter(new NullTransferSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())) {
+        final Host host = new Host(new TestProtocol());
+        OverwriteFilter f = new OverwriteFilter(new NullTransferSession(host), new NullSession(host) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
@@ -138,7 +139,7 @@ public class OverwriteFilterTest {
                 }
                 return super._getFeature(type);
             }
-        }, files, new UploadFilterOptions().withPermission(true).withTimestamp(true));
+        }, files, new UploadFilterOptions(host).withPermission(true).withTimestamp(true));
         final TransferStatus status = f.prepare(source, null, new TransferStatus(), new DisabledProgressListener());
         f.complete(source, null, new TransferOptions(), status, new DisabledProgressListener());
         assertFalse(permissionWrite[0]);

@@ -59,8 +59,8 @@ public class VaultRegistryAclPermissionFeature implements AclPermission {
     }
 
     @Override
-    public Acl getDefault(final Local file) {
-        return proxy.getDefault(file);
+    public Acl getDefault(final Path file, final Local local) {
+        return proxy.getDefault(file, local);
     }
 
     @Override

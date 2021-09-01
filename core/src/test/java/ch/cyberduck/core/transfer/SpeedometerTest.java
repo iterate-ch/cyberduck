@@ -1,9 +1,11 @@
 package ch.cyberduck.core.transfer;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class SpeedometerTest {
 
     @Test

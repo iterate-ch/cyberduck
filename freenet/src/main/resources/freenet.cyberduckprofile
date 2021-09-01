@@ -37,6 +37,10 @@
         <true/>
         <key>Anonymous Configurable</key>
         <false/>
+        <key>Properties</key>
+        <array>
+            <string>world=2</string>
+        </array>
         <key>Icon</key>
         <string>
             TU0AKgAAGyAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAgKADAAQAAAABAAAAgAAAAACAAC

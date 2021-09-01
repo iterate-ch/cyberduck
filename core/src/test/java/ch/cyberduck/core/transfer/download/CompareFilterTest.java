@@ -42,7 +42,7 @@ public class CompareFilterTest {
     @Test
     public void testAcceptEqual() throws Exception {
         final CompareFilter filter = new CompareFilter(new DisabledDownloadSymlinkResolver(),
-            new NullSession(new Host(new TestProtocol())), new DownloadFilterOptions(), new DisabledProgressListener(),
+            new NullSession(new Host(new TestProtocol())), new DownloadFilterOptions(new Host(new TestProtocol())), new DisabledProgressListener(),
             new DefaultComparePathFilter(
                 new NullSession(new Host(new TestProtocol())), null) {
                 @Override
@@ -60,7 +60,7 @@ public class CompareFilterTest {
     @Test
     public void testAcceptDirectory() throws Exception {
         final CompareFilter filter = new CompareFilter(new DisabledDownloadSymlinkResolver(),
-            new NullSession(new Host(new TestProtocol())), new DownloadFilterOptions(), new DisabledProgressListener(),
+            new NullSession(new Host(new TestProtocol())), new DownloadFilterOptions(new Host(new TestProtocol())), new DisabledProgressListener(),
             new DefaultComparePathFilter(
                 new NullSession(new Host(new TestProtocol())), null) {
                 @Override

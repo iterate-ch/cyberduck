@@ -15,6 +15,7 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
@@ -47,9 +48,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
     public void testUploadInvalidContainer() throws Exception {
-        final S3ThresholdUploadService m = new S3ThresholdUploadService(session,
-            5 * 1024L
-        );
+        final S3ThresholdUploadService m = new S3ThresholdUploadService(session, 5 * 1024L);
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -59,9 +58,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
 
     @Test
     public void testUploadSinglePartEuCentral() throws Exception {
-        final S3ThresholdUploadService service = new S3ThresholdUploadService(session,
-            5 * 1024L
-        );
+        final S3ThresholdUploadService service = new S3ThresholdUploadService(session, 5 * 1024L);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString();
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -90,10 +87,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
 
     @Test
     public void testUploadSinglePartUsEast() throws Exception {
-        final S3ThresholdUploadService service = new S3ThresholdUploadService(session,
-            5 * 1024L
-
-        );
+        final S3ThresholdUploadService service = new S3ThresholdUploadService(session, 5 * 1024L);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString();
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -116,6 +110,30 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        local.delete();
+    }
+
+    @Test
+    public void testUploadZeroLength() throws Exception {
+        final S3ThresholdUploadService service = new S3ThresholdUploadService(session, 5 * 1024L);
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final String name = new AlphanumericRandomStringService().random();
+        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
+        final String random = new RandomStringGenerator.Builder().build().generate(0);
+        IOUtils.write(random, local.getOutputStream(false), Charset.defaultCharset());
+        final TransferStatus status = new TransferStatus();
+        status.setLength(random.getBytes().length);
+        status.setMime("text/plain");
+        final BytecountStreamListener count = new BytecountStreamListener();
+        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+            count, status, new DisabledLoginCallback());
+        assertEquals(random.getBytes().length, count.getSent());
+        assertTrue(status.isComplete());
+        assertTrue(new S3FindFeature(session).find(test));
+        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
+        assertEquals(random.getBytes().length, attributes.getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }

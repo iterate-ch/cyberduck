@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
@@ -58,7 +59,7 @@ public class VaultRegistryMoveFeature implements Move {
         }
         else {
             // Moving files from or into vault requires to pass through encryption features using copy operation
-            final Path copy = session.getFeature(Copy.class).withTarget(destination).copy(source, target, status, callback);
+            final Path copy = session.getFeature(Copy.class).withTarget(destination).copy(source, target, status, callback, new DisabledStreamListener());
             // Delete source file after copy is complete
             session.getFeature(Delete.class).delete(Collections.singletonMap(source, status), callback, delete);
             return copy;

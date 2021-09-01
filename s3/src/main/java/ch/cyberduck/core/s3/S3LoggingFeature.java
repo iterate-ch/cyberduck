@@ -33,6 +33,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketLoggingStatus;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 public class S3LoggingFeature implements Logging {
@@ -57,16 +58,17 @@ public class S3LoggingFeature implements Logging {
         }
         try {
             final StorageBucketLoggingStatus status
-                    = session.getClient().getBucketLoggingStatusImpl(bucket.getName());
+                = session.getClient().getBucketLoggingStatusImpl(bucket.getName());
             final LoggingConfiguration configuration = new LoggingConfiguration(status.isLoggingEnabled(),
-                    status.getTargetBucketName());
+                status.getTargetBucketName());
             try {
                 configuration.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(
-                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                        new DisabledListProgressListener()).toList());
+                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                    new DisabledListProgressListener()).toList());
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
+                configuration.setContainers(Collections.singletonList(bucket));
             }
             return configuration;
         }
@@ -88,7 +90,7 @@ public class S3LoggingFeature implements Logging {
         final Path bucket = containerService.getContainer(file);
         try {
             final S3BucketLoggingStatus status = new S3BucketLoggingStatus(
-                    StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : bucket.getName(), null);
+                StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : bucket.getName(), null);
             if(configuration.isEnabled()) {
                 status.setLogfilePrefix(new HostPreferences(session.getHost()).getProperty("s3.logging.prefix"));
             }

@@ -37,7 +37,7 @@ public class BrickTimestampFeature extends DefaultTimestampFeature {
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+            new FilesApi(new BrickApiClient(session))
                 .patchFilesPath(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
                     new FilesPathBody().providedMtime(new DateTime(status.getTimestamp())));
         }

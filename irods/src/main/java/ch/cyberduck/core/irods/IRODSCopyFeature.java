@@ -21,6 +21,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +41,7 @@ public class IRODSCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final ch.cyberduck.core.transfer.TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final ch.cyberduck.core.transfer.TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory()
@@ -54,7 +55,10 @@ public class IRODSCopyFeature implements Copy {
 
                     @Override
                     public void overallStatusCallback(final TransferStatus transferStatus) {
-                        //
+                        switch(transferStatus.getTransferState()) {
+                            case OVERALL_COMPLETION:
+                                listener.sent(status.getLength());
+                        }
                     }
 
                     @Override

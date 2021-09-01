@@ -74,6 +74,10 @@ public final class TerminalOptionsBuilder {
             .longOpt(TerminalAction.edit.name())
             .desc("Edit file in external editor")
             .hasArg().argName("url").build());
+        actionGroup.addOption(Option.builder()
+            .longOpt(TerminalAction.purge.name())
+            .desc("Invalidate file in CDN")
+            .hasArg().argName("url").build());
         actionGroup.addOption(Option.builder("V")
             .longOpt(TerminalAction.version.name())
             .desc("Show version number and quit.").build());

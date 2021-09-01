@@ -1,7 +1,6 @@
 package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -28,14 +27,13 @@ public class SwiftDistributionConfigurationTest extends AbstractSwiftTest {
 
     @Test
     public void testGetName() throws Exception {
-        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session, Collections.emptyMap());
+        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         assertEquals("Akamai", configuration.getName());
-        assertEquals("Akamai", configuration.getName(Distribution.DOWNLOAD));
     }
 
     @Test
     public void testFeatures() throws Exception {
-        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session, Collections.emptyMap());
+        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         assertNotNull(configuration.getFeature(Purge.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(Index.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(DistributionLogging.class, Distribution.DOWNLOAD));
@@ -44,9 +42,8 @@ public class SwiftDistributionConfigurationTest extends AbstractSwiftTest {
 
     @Test
     public void testWriteDownloadConfigurationRackspace() throws Exception {
-        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session,
-            new SwiftDistributionConfigurationLoader(session).operate(new DisabledPasswordCallback(),
-                new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))));
+        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session
+        );
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(container, new TransferStatus().withRegion("ORD"));
         configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginCallback());
@@ -56,9 +53,8 @@ public class SwiftDistributionConfigurationTest extends AbstractSwiftTest {
 
     @Test
     public void testWriteWebsiteConfigurationRackspace() throws Exception {
-        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session,
-            new SwiftDistributionConfigurationLoader(session).operate(new DisabledPasswordCallback(),
-                new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))));
+        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session
+        );
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(container, new TransferStatus().withRegion("ORD"));
         final Distribution config = new Distribution(Distribution.WEBSITE, true);

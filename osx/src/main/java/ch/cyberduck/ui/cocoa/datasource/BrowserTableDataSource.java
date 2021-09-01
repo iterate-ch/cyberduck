@@ -636,7 +636,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != url) {
             final Local destination = LocalFactory.get(url.path());
-            final DownloadFilterOptions options = new DownloadFilterOptions();
+            final DownloadFilterOptions options = new DownloadFilterOptions(controller.getSession().getHost());
             if(destination.isChild(new TemporarySupportDirectoryFinder().find())) {
                 options.icon = false;
                 options.segments = false;

@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -43,11 +44,12 @@ public class B2CopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final B2FileResponse response = session.getClient().copyFile(fileid.getVersionId(source, new DisabledListProgressListener()),
                 fileid.getVersionId(containerService.getContainer(target), new DisabledListProgressListener()),
                 containerService.getKey(target));
+            listener.sent(status.getLength());
             fileid.cache(target, response.getFileId());
             return target.withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
         }

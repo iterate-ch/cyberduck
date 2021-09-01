@@ -43,12 +43,12 @@ public abstract class DefaultAclFeature implements AclPermission {
     }
 
     @Override
-    public Acl getDefault(final Local file) {
+    public Acl getDefault(final Path file, final Local local) {
         if(preferences.getBoolean("queue.upload.permissions.default")) {
-            return this.getDefault(file.getType());
+            return this.getDefault(local.getType());
         }
         // Read permissions from local file
-        return this.toAcl(file.attributes().getPermission());
+        return this.toAcl(local.attributes().getPermission());
     }
 
     private Acl toAcl(final Permission permission) {

@@ -21,6 +21,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
@@ -41,16 +42,16 @@ public class VaultRegistryCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         if(registry.find(session, source).equals(Vault.DISABLED)) {
-            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(destination).copy(source, copy, status, callback);
+            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(destination).copy(source, copy, status, callback, listener);
         }
         else if(registry.find(session, copy).equals(Vault.DISABLED)) {
-            return registry.find(session, source).getFeature(session, Copy.class, proxy).withTarget(destination).copy(source, copy, status, callback);
+            return registry.find(session, source).getFeature(session, Copy.class, proxy).withTarget(destination).copy(source, copy, status, callback, listener);
         }
         else {
             // Move files inside vault. May use server side copy.
-            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(destination).copy(source, copy, status, callback);
+            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(destination).copy(source, copy, status, callback, listener);
         }
     }
 

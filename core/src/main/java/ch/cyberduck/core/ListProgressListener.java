@@ -20,7 +20,20 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 public interface ListProgressListener extends ProgressListener {
+    /**
+     * Notify with latest chunk added to list received from server
+     *
+     * @param folder Directory
+     * @param list   Index of files received from server
+     * @throws ConnectionCanceledException Interrupt reading from server if possible
+     */
     void chunk(Path folder, AttributedList<Path> list) throws ConnectionCanceledException;
 
-    ListProgressListener reset();
+    /**
+     * Reset listener status for reuse
+     *
+     * @return Self
+     * @throws ConnectionCanceledException Interrupt reading from server if possible
+     */
+    ListProgressListener reset() throws ConnectionCanceledException;
 }

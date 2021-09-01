@@ -16,6 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -29,7 +30,6 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -40,7 +40,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     @Test
     public void testWrite() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GoogleStorageTouchFeature(session).touch(test, new TransferStatus());
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = f.getPermission(test);
@@ -62,9 +62,23 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     }
 
     @Test
+    public void testReadBucketUniformBucketLevelAccess() throws Exception {
+        final Path container = new Path("cyberduck-test-eu-uniform-access", EnumSet.of(Path.Type.directory));
+        final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
+        final Acl acl = f.getPermission(container);
+        assertEquals(Acl.EMPTY, acl);
+        assertEquals(Acl.EMPTY, f.getDefault(container, null));
+        final Path test = new GoogleStorageTouchFeature(session).touch(new Path(new Path(container,
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(Acl.EMPTY, f.getPermission(test));
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testReadWithDelimiter() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
-        final Path test = new GoogleStorageTouchFeature(session).touch(new Path(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new GoogleStorageTouchFeature(session).touch(new Path(new Path(container,
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         assertNotNull(f.getPermission(test));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -73,7 +87,8 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     @Test
     public void testReadDirectoryPlaceholder() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
-        final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(new Path(container,
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         assertNotNull(f.getPermission(placeholder));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -82,7 +97,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         f.getPermission(test);
     }
@@ -90,7 +105,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     @Test(expected = NotfoundException.class)
     public void testWriteNotFound() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = new Acl();
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));

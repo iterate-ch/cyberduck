@@ -50,7 +50,6 @@ public class DefaultTouchFeature<T> implements Touch<T> {
         final Local temp = TemporaryFileServiceFactory.get().create(file);
         LocalTouchFactory.get().touch(temp);
         try {
-
             final T reply = feature.upload(file, temp,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledConnectionCallback());

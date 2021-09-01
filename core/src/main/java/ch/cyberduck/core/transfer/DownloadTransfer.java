@@ -67,7 +67,7 @@ public class DownloadTransfer extends Transfer {
     private Cache<Path> cache
         = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
-    private DownloadFilterOptions options = new DownloadFilterOptions();
+    private DownloadFilterOptions options = new DownloadFilterOptions(host);
 
     public DownloadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)),
