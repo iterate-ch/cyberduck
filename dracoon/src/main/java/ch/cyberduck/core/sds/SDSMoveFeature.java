@@ -147,7 +147,7 @@ public class SDSMoveFeature implements Move {
                     final SoftwareVersionData version = session.softwareVersion();
                     final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
                     if(matcher.matches()) {
-                        if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.14))) < 0) {
+                        if(new Version(matcher.group(1)).compareTo(new Version("4.14")) < 0) {
                             // SDS-1055
                             return false;
                         }
