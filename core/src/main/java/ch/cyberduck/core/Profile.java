@@ -606,7 +606,7 @@ public class Profile implements Protocol {
 
     @Override
     public int compareTo(final Protocol o) {
-        return this.getIdentifier().compareTo(o.getIdentifier());
+        return new ProtocolComparator(this).compareTo(o);
     }
 
     @Override
