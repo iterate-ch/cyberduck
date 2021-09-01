@@ -57,7 +57,6 @@ import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -139,12 +138,12 @@ public class ProfilesPreferencesController extends BundleController {
     public void searchFieldTextDidEndEditing(final NSNotification notification) {
         final String input = searchField.stringValue();
         if(StringUtils.isBlank(input)) {
-            this.profilesTableDataSource.withSource(repository.keySet());
+            this.profilesTableDataSource.withSource(toList(repository.entrySet()));
         }
         else {
             // Setup search filter
-            this.profilesTableDataSource.withSource(repository.entrySet().stream().filter(
-                new SearchProtocolPredicate(input)).map(Map.Entry::getKey).collect(Collectors.toSet()));
+            this.profilesTableDataSource.withSource(toList(
+                repository.entrySet().stream().filter(new SearchProtocolPredicate(input)).collect(Collectors.toSet())));
         }
         // Reload with current cache
         this.profilesTableView.reloadData();
@@ -152,7 +151,7 @@ public class ProfilesPreferencesController extends BundleController {
 
     public void setProfilesTableView(final NSOutlineView profilesTableView) {
         this.profilesTableView = profilesTableView;
-        this.profilesTableDataSource = new ProfilesTableDataSource().withSource(repository.keySet());
+        this.profilesTableDataSource = new ProfilesTableDataSource().withSource(toList(repository.entrySet()));
         this.profilesTableView.setDataSource(profilesTableDataSource.id());
         this.profilesTableDelegate = new ProfilesTableDelegate(profilesTableView.tableColumnWithIdentifier("Default"));
         this.profilesTableView.setDelegate(profilesTableDelegate.id());
@@ -212,7 +211,7 @@ public class ProfilesPreferencesController extends BundleController {
 
                 @Override
                 public void cleanup() {
-                    profilesTableDataSource.withSource(repository.keySet());
+                    profilesTableDataSource.withSource(toList(repository.entrySet()));
                     profilesTableView.reloadData();
                     progressIndicator.stopAnimation(null);
                 }
@@ -259,7 +258,7 @@ public class ProfilesPreferencesController extends BundleController {
 
         @Override
         public String outlineView_typeSelectStringForTableColumn_item(final NSOutlineView view, final NSTableColumn tableColumn, final NSObject item) {
-            final ProfileDescription description = fromChecksum(item);
+            final ProfileDescription description = this.fromChecksum(item);
             if(null == description) {
                 return null;
             }
@@ -278,7 +277,7 @@ public class ProfilesPreferencesController extends BundleController {
 
         @Override
         public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView t, NSCell cell, ID rect, NSTableColumn c, NSObject item, NSPoint mouseLocation) {
-            final ProfileDescription description = fromChecksum(item);
+            final ProfileDescription description = this.fromChecksum(item);
             if(null == description) {
                 return null;
             }
@@ -327,7 +326,7 @@ public class ProfilesPreferencesController extends BundleController {
 
         @Override
         public boolean outlineView_shouldSelectItem(final NSOutlineView view, final NSObject item) {
-            final ProfileDescription description = fromChecksum(item);
+            final ProfileDescription description = this.fromChecksum(item);
             if(null == description) {
                 return false;
             }
@@ -335,7 +334,7 @@ public class ProfilesPreferencesController extends BundleController {
         }
 
         public NSView outlineView_viewForTableColumn_item(final NSOutlineView outlineView, final NSTableColumn tableColumn, final NSObject item) {
-            final ProfileDescription description = fromChecksum(item);
+            final ProfileDescription description = this.fromChecksum(item);
             if(null == description) {
                 return null;
             }
@@ -357,12 +356,15 @@ public class ProfilesPreferencesController extends BundleController {
         }
     }
 
+    /**
+     * Data source returning checksums of profiles as items
+     */
     public static final class ProfilesTableDataSource extends OutlineDataSource {
 
         private List<ProfileDescription> profiles;
 
-        public ProfilesTableDataSource withSource(final Set<ProfileDescription> source) {
-            this.profiles = new ArrayList<>(source);
+        public ProfilesTableDataSource withSource(final List<ProfileDescription> source) {
+            this.profiles = source;
             return this;
         }
 
@@ -507,5 +509,18 @@ public class ProfilesPreferencesController extends BundleController {
         protected String getBundleName() {
             return "Profile";
         }
+    }
+
+    /**
+     * Sort and map profiles
+     *
+     * @param repository Profiles
+     * @return List of profile descriptions sorted by value
+     */
+    public static List<ProfileDescription> toList(final Set<Map.Entry<ProfileDescription, Profile>> repository) {
+        return repository.stream()
+            .sorted(Map.Entry.comparingByValue())
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toList());
     }
 }
