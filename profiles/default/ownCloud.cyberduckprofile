@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+  ~ Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
   ~ https://cyberduck.io/
   ~
   ~ This program is free software; you can redistribute it and/or modify
@@ -18,15 +18,17 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>nextcloud</string>
+        <string>owncloud</string>
         <key>Vendor</key>
         <string>iterate GmbH</string>
         <key>Bundled</key>
         <true/>
         <key>Description</key>
-        <string>Nextcloud</string>
+        <string>ownCloud</string>
         <key>Default Nickname</key>
-        <string>Nextcloud</string>
+        <string>ownCloud</string>
+        <key>Default Path</key>
+        <string>/remote.php/webdav/</string>
         <key>Path Configurable</key>
         <true/>
         <key>Hostname Configurable</key>

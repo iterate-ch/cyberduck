@@ -32,5 +32,7 @@ public class VersionTest {
         assertEquals(1, new Version("4.22").compareTo(new Version("4.12")));
         assertEquals(1, new Version("4.22").compareTo(new Version("4.12.9")));
         assertEquals(1, new Version("4.22").compareTo(new Version("4.12.9-LTS")));
+        assertEquals(-1, new Version("4.20").compareTo(new Version("4.30")));
+        assertEquals(0, new Version("4.30").compareTo(new Version("4.30")));
     }
 }

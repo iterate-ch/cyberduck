@@ -298,6 +298,7 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
         storegate,
         brick,
         nextcloud,
+        owncloud,
         manta,
         gmxcloud,
         freenet,

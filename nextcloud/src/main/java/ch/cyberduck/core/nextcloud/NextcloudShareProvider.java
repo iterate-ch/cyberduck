@@ -24,6 +24,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.PromptUrlProvider;
@@ -47,9 +48,9 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class NextcloudShareProvider implements PromptUrlProvider {
 
-    private final NextcloudSession session;
+    private final DAVSession session;
 
-    public NextcloudShareProvider(final NextcloudSession session) {
+    public NextcloudShareProvider(final DAVSession session) {
         this.session = session;
     }
 
