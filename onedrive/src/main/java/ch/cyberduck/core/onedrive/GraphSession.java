@@ -22,11 +22,38 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.FileIdProvider;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
+import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.onedrive.features.*;
+import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.GraphBufferWriteFeature;
+import ch.cyberduck.core.onedrive.features.GraphCopyFeature;
+import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
+import ch.cyberduck.core.onedrive.features.GraphFindFeature;
+import ch.cyberduck.core.onedrive.features.GraphMoveFeature;
+import ch.cyberduck.core.onedrive.features.GraphPromptUrlProvider;
+import ch.cyberduck.core.onedrive.features.GraphQuotaFeature;
+import ch.cyberduck.core.onedrive.features.GraphReadFeature;
+import ch.cyberduck.core.onedrive.features.GraphTimestampFeature;
+import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
+import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -146,7 +173,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
+        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
         try {
             user = Users.get(User.getCurrent(client), User.Select.CreationType, User.Select.UserPrincipalName);
             final String account = user.getUserPrincipalName();

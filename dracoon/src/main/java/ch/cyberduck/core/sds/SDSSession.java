@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -287,7 +288,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         log.warn(String.format("Failure to parse software version %s", version));
                     }
                 }
-                authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
+                authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
                 break;
             case radius:
                 final Credentials additional = prompt.prompt(host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
