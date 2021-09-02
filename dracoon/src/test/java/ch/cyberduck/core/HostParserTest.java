@@ -32,9 +32,7 @@ public class HostParserTest {
     public void testParseUsernameFromUrlEvent() throws Exception {
         final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
             new Local("../profiles/DRACOON (Email Address).cyberduckprofile"));
-        assertEquals(0, new Host(new SDSProtocol(), "duck.dracoon.com", 443, "/key", new Credentials(
-            "post@iterate.ch"
-        ))
+        assertEquals(0, new Host(profile, "duck.dracoon.com", 443, "/key", new Credentials("post@iterate.ch"))
             .compareTo(new HostParser(new ProtocolFactory(new HashSet<>(Arrays.asList(new SDSProtocol(), profile)))).get(
                 "dracoon://post%40iterate.ch@duck.dracoon.com/key")));
     }

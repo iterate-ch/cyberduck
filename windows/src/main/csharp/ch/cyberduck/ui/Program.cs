@@ -1,29 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Pipes;
-using System.Linq;
-using System.Reflection;
-using System.ServiceModel;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web;
-using System.Windows.Forms;
-using ch.cyberduck.core.ctera;
+﻿using ch.cyberduck.core.ctera;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core.Contracts;
 using Ch.Cyberduck.Ui.Core.Preferences;
-using com.google.api.client.util;
-using OAuth2AuthorizationService = ch.cyberduck.core.oauth.OAuth2AuthorizationService;
+using StructureMap;
+using System;
+using System.IO;
+using System.ServiceModel;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web;
+using System.Windows.Forms;
 
 namespace Ch.Cyberduck.Ui
 {
-    static class Program
+    internal static class Program
     {
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             bool newInstance;
             Mutex mutex = new Mutex(true, "iterate/cyberduck.io", out newInstance);
@@ -128,7 +122,8 @@ namespace Ch.Cyberduck.Ui
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
-                Application.Run(MainController.Application);
+                StructureMapBootstrapper.Bootstrap();
+                Application.Run(ObjectFactory.GetInstance<MainController>());
             }
             else
             {

@@ -107,8 +107,7 @@ public final class MainApplication {
                 new OwncloudProtocol(),
                 new CTERAProtocol()
             );
-            protocols.loadDefaultProfiles();
-
+            protocols.load();
             final MainController c = new MainController();
             // Must implement NSApplicationDelegate protocol
             app.setDelegate(c.id());

@@ -25,9 +25,12 @@ using ch.cyberduck.core.googlestorage;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using Ch.Cyberduck.Core.Refresh.Views;
+using StructureMap;
+using static Ch.Cyberduck.ImageHelper;
 using Application = ch.cyberduck.core.local.Application;
+using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -56,21 +59,22 @@ namespace Ch.Cyberduck.Ui.Winforms
             MaximumSize = new Size(MaxWidth, MaxHeight);
             MinimumSize = new Size(MinWidth, MinHeight);
 
-            generalButton.Image = IconCache.IconForName("general", 32);
-            browserButton.Image = IconCache.IconForName("browser", 32);
-            transfersButton.Image = IconCache.IconForName("queue", 32);
-            editStripButton.Image = IconCache.IconForName("pencil", 32);
-            sftpButton.Image = IconCache.IconForName("ftp", 32);
-            s3Button.Image = IconCache.IconForName("s3", 32);
-            googleCloudButton.Image = IconCache.IconForName("googlestorage", 32);
-            bandwidthButton.Image = IconCache.IconForName("bandwidth", 32);
-            connectionButton.Image = IconCache.IconForName("connection", 32);
-            cryptomatorButton.Image = IconCache.IconForName("cryptomator", 32);
-            updateButton.Image = IconCache.IconForName("update", 32);
-            languageButton.Image = IconCache.IconForName("language", 32);
+            generalButton.Image = Images.General.Size(32);
+            browserButton.Image = Images.Browser.Size(32);
+            transfersButton.Image = Images.Queue.Size(32);
+            editStripButton.Image = Images.Pencil.Size(32);
+            sftpButton.Image = Images.FTP.Size(32);
+            profilesButton.Image = Images.CyberduckDocument.Size(32);
+            s3Button.Image = Images.S3.Size(32);
+            googleCloudButton.Image = Images.GoogleStorage.Size(32);
+            bandwidthButton.Image = Images.Bandwidth.Size(32);
+            connectionButton.Image = Images.Connect.Size(32);
+            cryptomatorButton.Image = Images.Cryptomator.Size(32);
+            updateButton.Image = Images.Update.Size(32);
+            languageButton.Image = Images.Language.Size(32);
 
-            connectBookmarkCombobox.ICImageList = ProtocolIconsImageList();
-            defaultProtocolCombobox.ICImageList = ProtocolIconsImageList();
+            connectBookmarkCombobox.ICImageList = IconProvider.ProtocolList;
+            defaultProtocolCombobox.ICImageList = IconProvider.ProtocolList;
 
             googleCloudButton.Text = new GoogleStorageProtocol().getName();
             showDownloadFolderDialogButton.Text = LocaleFactory.localizedString("Choose") + "…";
@@ -126,6 +130,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             generalButton_Click(this, EventArgs.Empty);
             toolStrip.Renderer = new FirefoxStyleRenderer();
 
+            var profilesViewModel = ObjectFactory.GetInstance<ProfilesViewModel>();
+            var profilesPage = ObjectFactory.GetInstance<ProfilesPage>();
+            profilesPage.ViewModel = profilesViewModel;
+            profilesPageHost.Child = profilesPage;
+
             //todo
             CenterToParent();
 
@@ -134,12 +143,12 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public override string[] BundleNames
         {
-            get { return new[] {"Preferences"}; }
+            get { return new[] { "Preferences" }; }
         }
 
         public Application DefaultEditor
         {
-            get { return (Application) editorComboBox.SelectedValue; }
+            get { return (Application)editorComboBox.SelectedValue; }
             set
             {
                 editorComboBox.SelectedValue = value;
@@ -161,7 +170,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public Host DefaultBookmark
         {
-            get { return (Host) connectBookmarkCombobox.SelectedValue; }
+            get { return (Host)connectBookmarkCombobox.SelectedValue; }
             set
             {
                 if (null != value)
@@ -253,7 +262,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public Host.TransferType TransferMode
         {
-            get { return (Host.TransferType) transferFilesCombobox.SelectedValue; }
+            get { return (Host.TransferType)transferFilesCombobox.SelectedValue; }
             set { transferFilesCombobox.SelectedValue = value; }
         }
 
@@ -629,7 +638,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string DefaultS3BucketLocation
         {
-            get { return (string) defaultBucketLocationCombobox.SelectedValue; }
+            get { return (string)defaultBucketLocationCombobox.SelectedValue; }
             set { defaultBucketLocationCombobox.SelectedValue = value; }
         }
         public string DefaultGoogleBucketLocation
@@ -640,7 +649,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string DefaultEncryption
         {
-            get { return (string) defaultEncryptionComboBox.SelectedValue; }
+            get { return (string)defaultEncryptionComboBox.SelectedValue; }
             set { defaultEncryptionComboBox.SelectedValue = value; }
         }
         public string DefaultS3ACL
@@ -656,13 +665,13 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public float DefaultDownloadThrottle
         {
-            get { return (float) defaultDownloadThrottleCombobox.SelectedValue; }
+            get { return (float)defaultDownloadThrottleCombobox.SelectedValue; }
             set { defaultDownloadThrottleCombobox.SelectedValue = value; }
         }
 
         public float DefaultUploadThrottle
         {
-            get { return (float) defaultUploadThrottleCombobox.SelectedValue; }
+            get { return (float)defaultUploadThrottleCombobox.SelectedValue; }
             set { defaultUploadThrottleCombobox.SelectedValue = value; }
         }
 
@@ -695,7 +704,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string UpdateFeed
         {
-            get { return (string) updateFeedComboBox.SelectedValue; }
+            get { return (string)updateFeedComboBox.SelectedValue; }
             set { updateFeedComboBox.SelectedValue = value; }
         }
 
@@ -808,13 +817,13 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public int BookmarkSize
         {
-            get { return (int) bookmarkSizeComboBox.SelectedValue; }
+            get { return (int)bookmarkSizeComboBox.SelectedValue; }
             set { bookmarkSizeComboBox.SelectedValue = value; }
         }
 
         public string DefaultS3StorageClass
         {
-            get { return (string) defaultStorageClassComboBox.SelectedValue; }
+            get { return (string)defaultStorageClassComboBox.SelectedValue; }
             set { defaultStorageClassComboBox.SelectedValue = value; }
         }
         public string DefaultGoogleStorageClass
@@ -844,8 +853,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (triple.Key.getIdentifier() != null)
                 {
                     imageList.Images.Add(triple.Value,
-                        IconCache.GetAppImage(triple.Key.getIdentifier(),
-                            IconCache.IconSize.Small));
+                        IconProvider.GetFileIcon(triple.Key.getIdentifier(), false, true, true));
                 }
             }
             editorComboBox.ICImageList = imageList;
@@ -968,13 +976,13 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public Protocol DefaultProtocol
         {
-            get { return (Protocol) defaultProtocolCombobox.SelectedValue; }
+            get { return (Protocol)defaultProtocolCombobox.SelectedValue; }
             set { defaultProtocolCombobox.SelectedValue = value; }
         }
 
         public string CurrentLocale
         {
-            get { return (string) languageComboBox.SelectedValue; }
+            get { return (string)languageComboBox.SelectedValue; }
             set { languageComboBox.SelectedValue = value; }
         }
 
@@ -1590,6 +1598,16 @@ namespace Ch.Cyberduck.Ui.Winforms
                 DisableAll();
                 googleCloudButton.Checked = true;
                 panelManager.SelectedPanel = managedGoogleCloudPanel;
+            }
+        }
+
+        private void profilesButton_Click(object sender, EventArgs e)
+        {
+            if (!profilesButton.Checked)
+            {
+                DisableAll();
+                profilesButton.Checked = true;
+                panelManager.SelectedPanel = managedProfilesPanel;
             }
         }
     }

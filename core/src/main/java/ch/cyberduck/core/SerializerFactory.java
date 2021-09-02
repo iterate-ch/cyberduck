@@ -20,17 +20,17 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.Serializer;
 
-public class SerializerFactory extends Factory<Serializer> {
+public class SerializerFactory<S extends Serializer> extends Factory<S> {
 
     public SerializerFactory() {
         super("factory.serializer.class");
     }
 
-    public SerializerFactory(final Class<Serializer> impl) {
+    public SerializerFactory(final Class<S> impl) {
         super(impl);
     }
 
     public static Serializer get() {
-        return new SerializerFactory().create();
+        return new SerializerFactory<>().create();
     }
 }

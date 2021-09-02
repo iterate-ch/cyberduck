@@ -16,19 +16,19 @@
 // feedback@cyberduck.io
 // 
 
+using ch.cyberduck.core;
+using ch.cyberduck.core.features;
+using ch.cyberduck.core.threading;
+using ch.cyberduck.core.vault;
+using ch.cyberduck.core.worker;
+using ch.cyberduck.ui.browser;
+using Ch.Cyberduck.Core;
+using java.util;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using ch.cyberduck.core;
-using ch.cyberduck.core.features;
-using ch.cyberduck.core.threading;
-using ch.cyberduck.core.worker;
-using ch.cyberduck.core.vault;
-using ch.cyberduck.ui.browser;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Core.Resources;
-using java.util;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -44,7 +44,7 @@ namespace Ch.Cyberduck.Ui.Controller
             _view.ValidateInput += ValidateInputEventHandler;
         }
 
-        public override Image IconView => IconCache.IconForName("cryptomator", 64);
+        public override Image IconView => Images.Cryptomator.Size(64);
 
         private bool ValidateInputEventHandler()
         {

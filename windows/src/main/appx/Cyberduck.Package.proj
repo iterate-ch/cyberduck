@@ -59,6 +59,9 @@
     <LayoutFile Include="$(OutputPath)\Cyberduck.Core.Native.dll">
       <PackagePath>$(PackageLayout)\Cyberduck.Core.Native.dll</PackagePath>
     </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Cyberduck.Core.Refresh.dll">
+      <PackagePath>$(PackageLayout)\Cyberduck.Core.Refresh.dll</PackagePath>
+    </LayoutFile>
     <LayoutFile Include="$(OutputPath)\Cyberduck.Protocols.dll">
       <PackagePath>$(PackageLayout)\Cyberduck.Protocols.dll</PackagePath>
     </LayoutFile>
@@ -181,6 +184,33 @@
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\sunec.dll">
       <PackagePath>$(PackageLayout)\sunec.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\DotNetProjects.Wpf.Extended.Toolkit.dll">
+      <PackagePath>$(PackageLayout)\DotNetProjects.Wpf.Extended.Toolkit.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\DynamicData.dll">
+      <PackagePath>$(PackageLayout)\DynamicData.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Pharmacist.Common.dll">
+      <PackagePath>$(PackageLayout)\Pharmacist.Common.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\ReactiveUI.dll">
+      <PackagePath>$(PackageLayout)\ReactiveUI.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\ReactiveUI.Events.WPF.dll">
+      <PackagePath>$(PackageLayout)\ReactiveUI.Events.WPF.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\ReactiveUI.Fody.Helpers.dll">
+      <PackagePath>$(PackageLayout)\ReactiveUI.Fody.Helpers.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\ReactiveUI.Wpf.dll">
+      <PackagePath>$(PackageLayout)\ReactiveUI.Wpf.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Splat.dll">
+      <PackagePath>$(PackageLayout)\Splat.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\System.Reactive.dll">
+      <PackagePath>$(PackageLayout)\System.Reactive.dll</PackagePath>
     </LayoutFile>
 
     <LayoutFile Include="$(OutputPath)Acknowledgments.rtf">

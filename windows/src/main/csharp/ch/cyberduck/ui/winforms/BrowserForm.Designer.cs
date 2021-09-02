@@ -34,7 +34,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BrowserForm));
             this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
             this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.newBrowserMainMenuItem = new System.Windows.Forms.MenuItem();
@@ -1121,7 +1120,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // toolStripProgress
             // 
             this.toolStripProgress.AutoSize = false;
-            this.toolStripProgress.Image = ((System.Drawing.Image)(resources.GetObject("toolStripProgress.Image")));
             this.toolStripProgress.Margin = new System.Windows.Forms.Padding(2, 3, 0, 2);
             this.toolStripProgress.Name = "toolStripProgress";
             this.toolStripProgress.Size = new System.Drawing.Size(16, 17);
@@ -1135,7 +1133,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // securityToolStripStatusLabel
             // 
-            this.securityToolStripStatusLabel.Image = ((System.Drawing.Image)(resources.GetObject("securityToolStripStatusLabel.Image")));
             this.securityToolStripStatusLabel.Name = "securityToolStripStatusLabel";
             this.securityToolStripStatusLabel.Padding = new System.Windows.Forms.Padding(0, 0, 7, 0);
             this.securityToolStripStatusLabel.Size = new System.Drawing.Size(23, 17);
@@ -1845,7 +1842,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // historyToolStripMenuItem
             // 
             this.historyToolStripMenuItem.DropDown = this.historyMenuStrip;
-            this.historyToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("historyToolStripMenuItem.Image")));
             this.historyToolStripMenuItem.Name = "historyToolStripMenuItem";
             this.historyToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.historyToolStripMenuItem.Text = "History";
@@ -1861,7 +1857,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.bonjourToolStripMenuItem.DropDown = this.bonjourMenuStrip;
             this.bonjourToolStripMenuItem.Enabled = false;
-            this.bonjourToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("bonjourToolStripMenuItem.Image")));
             this.bonjourToolStripMenuItem.Name = "bonjourToolStripMenuItem";
             this.bonjourToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.bonjourToolStripMenuItem.Text = "Bonjour";
@@ -2023,7 +2018,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // editToolStripSplitButton
             // 
             this.editToolStripSplitButton.DropDown = this.editorMenuStrip;
-            this.editToolStripSplitButton.Image = ((System.Drawing.Image)(resources.GetObject("editToolStripSplitButton.Image")));
             this.editToolStripSplitButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.editToolStripSplitButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.editToolStripSplitButton.Name = "editToolStripSplitButton";
@@ -2077,7 +2071,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // openConnectionToolStripButton
             // 
-            this.openConnectionToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("openConnectionToolStripButton.Image")));
             this.openConnectionToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.openConnectionToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.openConnectionToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -2109,7 +2102,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // actionToolStripDropDownButton
             // 
             this.actionToolStripDropDownButton.DropDown = this.contextMenuStrip;
-            this.actionToolStripDropDownButton.Image = ((System.Drawing.Image)(resources.GetObject("actionToolStripDropDownButton.Image")));
             this.actionToolStripDropDownButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.actionToolStripDropDownButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.actionToolStripDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -2333,7 +2325,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // infoToolStripButton
             // 
-            this.infoToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("infoToolStripButton.Image")));
             this.infoToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.infoToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.infoToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -2344,7 +2335,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // refreshToolStripButton
             // 
-            this.refreshToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("refreshToolStripButton.Image")));
             this.refreshToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.refreshToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.refreshToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -2360,7 +2350,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // openInBrowserToolStripButton
             // 
-            this.openInBrowserToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("openInBrowserToolStripButton.Image")));
             this.openInBrowserToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.openInBrowserToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.openInBrowserToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -2391,7 +2380,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // deleteToolStripButton
             // 
-            this.deleteToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("deleteToolStripButton.Image")));
             this.deleteToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.deleteToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.deleteToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -2407,7 +2395,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // downloadToolStripButton
             // 
-            this.downloadToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("downloadToolStripButton.Image")));
             this.downloadToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.downloadToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.downloadToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -2418,7 +2405,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // uploadToolStripButton
             // 
-            this.uploadToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("uploadToolStripButton.Image")));
             this.uploadToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.uploadToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.uploadToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -2429,7 +2415,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // transfersToolStripButton
             // 
-            this.transfersToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("transfersToolStripButton.Image")));
             this.transfersToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.transfersToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.transfersToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -2440,7 +2425,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // cryptomatorToolStripButton
             // 
-            this.cryptomatorToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("cryptomatorToolStripButton.Image")));
             this.cryptomatorToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.cryptomatorToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.cryptomatorToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -2452,7 +2436,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // logToolStripButton
             // 
-            this.logToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("logToolStripButton.Image")));
             this.logToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.logToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.logToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -2464,7 +2447,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // disconnectStripButton
             // 
             this.disconnectStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.disconnectStripButton.Image = ((System.Drawing.Image)(resources.GetObject("disconnectStripButton.Image")));
             this.disconnectStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.disconnectStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.disconnectStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -2780,7 +2762,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.newBookmarkToolStripButton.AutoSize = false;
             this.newBookmarkToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.newBookmarkToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("newBookmarkToolStripButton.Image")));
             this.newBookmarkToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.newBookmarkToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.newBookmarkToolStripButton.Margin = new System.Windows.Forms.Padding(16, 1, 0, 2);
@@ -2792,7 +2773,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.editBookmarkToolStripButton.AutoSize = false;
             this.editBookmarkToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.editBookmarkToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("editBookmarkToolStripButton.Image")));
             this.editBookmarkToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.editBookmarkToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.editBookmarkToolStripButton.Name = "editBookmarkToolStripButton";
@@ -2803,7 +2783,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.deleteBookmarkToolStripButton.AutoSize = false;
             this.deleteBookmarkToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.deleteBookmarkToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("deleteBookmarkToolStripButton.Image")));
             this.deleteBookmarkToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.deleteBookmarkToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteBookmarkToolStripButton.Margin = new System.Windows.Forms.Padding(-1, 1, 0, 2);
@@ -2872,7 +2851,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browserToolStripButton.AutoSize = false;
             this.browserToolStripButton.AutoToolTip = false;
             this.browserToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.browserToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("browserToolStripButton.Image")));
             this.browserToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.browserToolStripButton.Margin = new System.Windows.Forms.Padding(2, 1, 2, 2);
             this.browserToolStripButton.Name = "browserToolStripButton";
@@ -2885,7 +2863,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bookmarksToolStripButton.AutoSize = false;
             this.bookmarksToolStripButton.AutoToolTip = false;
             this.bookmarksToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.bookmarksToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("bookmarksToolStripButton.Image")));
             this.bookmarksToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.bookmarksToolStripButton.Margin = new System.Windows.Forms.Padding(2, 1, 2, 2);
             this.bookmarksToolStripButton.Name = "bookmarksToolStripButton";
@@ -2898,7 +2875,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.historyToolStripButton.AutoSize = false;
             this.historyToolStripButton.AutoToolTip = false;
             this.historyToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.historyToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("historyToolStripButton.Image")));
             this.historyToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.historyToolStripButton.Margin = new System.Windows.Forms.Padding(2, 1, 2, 2);
             this.historyToolStripButton.Name = "historyToolStripButton";
@@ -2911,7 +2887,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bonjourToolStripButton.AutoSize = false;
             this.bonjourToolStripButton.AutoToolTip = false;
             this.bonjourToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.bonjourToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("bonjourToolStripButton.Image")));
             this.bonjourToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.bonjourToolStripButton.Margin = new System.Windows.Forms.Padding(2, 1, 5, 2);
             this.bonjourToolStripButton.Name = "bonjourToolStripButton";
@@ -2940,7 +2915,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // parentPathButton
             // 
             this.parentPathButton.FlatAppearance.BorderSize = 0;
-            this.parentPathButton.Image = ((System.Drawing.Image)(resources.GetObject("parentPathButton.Image")));
             this.parentPathButton.Location = new System.Drawing.Point(867, 3);
             this.parentPathButton.Name = "parentPathButton";
             this.parentPathButton.Size = new System.Drawing.Size(35, 25);
@@ -2962,7 +2936,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // historyForwardButton
             // 
             this.historyForwardButton.FlatAppearance.BorderSize = 0;
-            this.historyForwardButton.Image = ((System.Drawing.Image)(resources.GetObject("historyForwardButton.Image")));
             this.historyForwardButton.Location = new System.Drawing.Point(173, 3);
             this.historyForwardButton.Name = "historyForwardButton";
             this.historyForwardButton.Size = new System.Drawing.Size(35, 25);
@@ -2973,7 +2946,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.historyBackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.historyBackButton.FlatAppearance.BorderSize = 0;
-            this.historyBackButton.Image = ((System.Drawing.Image)(resources.GetObject("historyBackButton.Image")));
             this.historyBackButton.Location = new System.Drawing.Point(132, 3);
             this.historyBackButton.Name = "historyBackButton";
             this.historyBackButton.Size = new System.Drawing.Size(35, 25);

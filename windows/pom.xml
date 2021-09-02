@@ -157,6 +157,12 @@
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Core.Refresh</artifactId>
+                    <type>dll</type>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Protocols</artifactId>
                     <type>dll</type>
                     <version>${project.version}</version>

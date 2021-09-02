@@ -25,10 +25,9 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Core.Resources;
-using Ch.Cyberduck.Ui.Winforms;
-using Ch.Cyberduck.Core.Date;
 using java.util;
+using static Ch.Cyberduck.ImageHelper;
+using System.Drawing;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -71,10 +70,9 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (path.isVolume())
             {
-                return IconCache.GetProtocolDisk(_controller.Session.getHost().getProtocol(),
-                    IconCache.IconSize.Small);
+                return IconProvider.GetDisk(_controller.Session.getHost().getProtocol(), 16);
             }
-            return IconCache.IconForPath(path, IconCache.IconSize.Small);
+            return IconProvider.GetPath(path, 16);
         }
 
         public object GetModified(Path path)

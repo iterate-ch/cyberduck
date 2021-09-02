@@ -2,22 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>Protocol</key>
-	<string>s3</string>
-	<key>Vendor</key>
-	<string>oracle-ap-chuncheon-1</string>
-	<key>Description</key>
-	<string>Oracle Cloud Infrastructure</string>
-	<key>Default Hostname</key>
-	<string>&lt;namespace&gt;.compat.objectstorage.ap-chuncheon-1.oraclecloud.com</string>
-	<key>Hostname Configurable</key>
-	<true/>
+    <key>Protocol</key>
+    <string>s3</string>
+    <key>Vendor</key>
+    <string>oracle-ap-chuncheon-1</string>
+    <key>Description</key>
+    <string>Oracle Cloud Infrastructure (ap-chuncheon-1)</string>
+    <key>Default Hostname</key>
+    <string>&lt;namespace&gt;.compat.objectstorage.ap-chuncheon-1.oraclecloud.com</string>
+    <key>Hostname Configurable</key>
+    <true/>
     <key>Port Configurable</key>
     <false/>
-	<key>Username Placeholder</key>
-	<string>Access Key</string>
-	<key>Password Placeholder</key>
-	<string>Secret Key</string>
+    <key>Username Placeholder</key>
+    <string>Access Key</string>
+    <key>Password Placeholder</key>
+    <string>Secret Key</string>
 	<key>Authorization</key>
 	<string>AWS4HMACSHA256</string>
 	<key>Region</key>

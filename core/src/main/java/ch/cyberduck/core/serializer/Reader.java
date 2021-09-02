@@ -23,6 +23,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
+import java.io.InputStream;
+
 public interface Reader<S extends Serializable> {
 
     /**
@@ -39,4 +41,13 @@ public interface Reader<S extends Serializable> {
      * @throws AccessDeniedException If the file is not readable
      */
     S read(Local file) throws AccessDeniedException;
+
+    /**
+     * Read the serialized item from the given stream
+     *
+     * @param in A valid dictionary
+     * @return Deserialized item
+     * @throws AccessDeniedException If the file is not readable
+     */
+    S read(InputStream in) throws AccessDeniedException;
 }

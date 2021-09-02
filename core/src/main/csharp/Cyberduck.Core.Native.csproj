@@ -48,17 +48,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.strings" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />
-        <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.strings.1" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />
-        <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.txt" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />
-    </ItemGroup>
-
-    <ItemGroup>
         <None Update="ch\cyberduck\properties\Settings.settings">
             <Generator>SettingsSingleFileGenerator</Generator>
             <LastGenOutput>Settings.Designer.cs</LastGenOutput>
             <CustomToolNamespace>Ch.Cyberduck.Properties</CustomToolNamespace>
         </None>
     </ItemGroup>
-
 </Project>

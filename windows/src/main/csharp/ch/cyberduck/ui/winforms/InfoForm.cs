@@ -27,6 +27,7 @@ using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.lang;
 using String = System.String;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -37,6 +38,19 @@ namespace Ch.Cyberduck.Ui.Winforms
         public InfoForm()
         {
             InitializeComponent();
+
+            aclAnimation.Image = Images.TryGet(_ => _.ThrobberSmall);
+            distributionAnimation.Image = Images.TryGet(_ => _.ThrobberSmall);
+            metadataAnimation.Image = Images.TryGet(_ => _.ThrobberSmall);
+            permissionAnimation.Image = Images.TryGet(_ => _.ThrobberSmall);
+            s3Animation.Image = Images.TryGet(_ => _.ThrobberSmall);
+            sizeAnimation.Image = Images.TryGet(_ => _.ThrobberSmall);
+
+            addAclButton.Image = Images.TryGet(_ => _.Advanced).Size(20);
+            addHeaderButton.Image = Images.TryGet(_ => _.Advanced).Size(20);
+            generalButton.Image = Images.TryGet(_ => _.Info);
+            metadataButton.Image = Images.TryGet(_ => _.Pencil);
+            permissionsButton.Image = Images.TryGet(_ => _.Permissions);
 
             Load += delegate
             {

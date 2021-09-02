@@ -233,26 +233,20 @@ public class Terminal {
         });
         if(input.hasOption(TerminalOptionsBuilder.Params.profile.name())) {
             final String file = input.getOptionValue(TerminalOptionsBuilder.Params.profile.name());
-            final Protocol profile;
             try {
-                profile = ProfileReaderFactory.get().read(LocalFactory.get(file));
-            }
-            catch(AccessDeniedException e) {
-                console.printf("%s%n", e.getDetail(false));
-                return Exit.failure;
-            }
-            if(null != profile) {
+                final Profile profile = ProfileReaderFactory.get().read(LocalFactory.get(file));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Register profile %s", profile));
                 }
                 protocols.register(profile);
             }
-            else {
-                protocols.loadDefaultProfiles();
+            catch(AccessDeniedException e) {
+                console.printf("%s%n", e.getDetail(false));
+                return Exit.failure;
             }
         }
         else {
-            protocols.loadDefaultProfiles();
+            protocols.load();
         }
         if(input.hasOption(TerminalAction.help.name())) {
             TerminalHelpPrinter.print(options);

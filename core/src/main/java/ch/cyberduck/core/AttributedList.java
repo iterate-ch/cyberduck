@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * A sortable list with a map to lookup values by key.
@@ -207,6 +208,10 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
 
     public List<E> toList() {
         return impl;
+    }
+
+    public Stream<E> toStream() {
+        return impl.parallelStream();
     }
 
     public int indexOf(final E e) {

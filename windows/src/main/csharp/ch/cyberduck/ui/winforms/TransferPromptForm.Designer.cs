@@ -270,7 +270,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // animation
             // 
             this.animation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.animation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
+            this.animation.Image = global::Ch.Cyberduck.ImageHelper.ThrobberSmall;
             this.animation.Location = new System.Drawing.Point(13, 282);
             this.animation.Name = "animation";
             this.animation.Size = new System.Drawing.Size(24, 20);

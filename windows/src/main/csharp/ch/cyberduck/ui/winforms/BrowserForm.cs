@@ -16,16 +16,6 @@
 // feedback@cyberduck.io
 // 
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
@@ -38,17 +28,27 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
-using Ch.Cyberduck.Ui.Core.Resources;
+using Ch.Cyberduck.Ui.Core.Contracts;
 using Ch.Cyberduck.Ui.Winforms.Commondialog;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using org.apache.commons.io;
 using org.apache.commons.lang3;
 using org.apache.log4j;
+using StructureMap;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
+using static Ch.Cyberduck.ImageHelper;
 using Application = ch.cyberduck.core.local.Application;
 using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
-using StructureMap;
-using Ch.Cyberduck.Ui.Core.Contracts;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -75,30 +75,63 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
+            toolStripProgress.Image = Images.TryGet(_ => _.Throbber);
+
+            deleteBookmarkToolStripButton.Image = Images.TryGet(_ => _.Remove).Size(22);
+            editBookmarkToolStripButton.Image = Images.TryGet(_ => _.Edit).Size(22);
+            newBookmarkToolStripButton.Image = Images.TryGet(_ => _.Add).Size(22);
+
+            historyBackButton.Image = Images.TryGet(_ => _.NavBackward).Size(11);
+            historyForwardButton.Image = Images.TryGet(_ => _.NavForward).Size(11);
+            parentPathButton.Image = Images.TryGet(_ => _.NavUp).Size(11);
+
+            bonjourToolStripMenuItem.Image = Images.TryGet(_ => _.Rendezvous);
+            historyToolStripMenuItem.Image = Images.TryGet(_ => _.History);
+
+            actionToolStripDropDownButton.Image = Images.TryGet(_ => _.Advanced).Size(32);
+            bonjourToolStripButton.Image = Images.TryGet(_ => _.Rendezvous).Size(32);
+            bookmarksToolStripButton.Image = Images.TryGet(_ => _.Bookmarks).Size(32);
+            browserToolStripButton.Image = Images.TryGet(_ => _.Outline).Size(32);
+            cryptomatorToolStripButton.Image = Images.TryGet(_ => _.Cryptomator).Size(32);
+            deleteToolStripButton.Image = Images.TryGet(_ => _.Delete).Size(32);
+            disconnectStripButton.Image = Images.TryGet(_ => _.Eject).Size(32);
+            downloadToolStripButton.Image = Images.TryGet(_ => _.Download).Size(32);
+            editToolStripSplitButton.Image = Images.TryGet(_ => _.Pencil).Size(32);
+            historyToolStripButton.Image = Images.TryGet(_ => _.History).Size(32);
+            infoToolStripButton.Image = Images.TryGet(_ => _.Info).Size(32);
+            logToolStripButton.Image = Images.TryGet(_ => _.Log).Size(32);
+            openConnectionToolStripButton.Image = Images.TryGet(_ => _.Connect).Size(32);
+            openInBrowserToolStripButton.Image = Images.TryGet(_ => _.Browser).Size(32);
+            refreshToolStripButton.Image = Images.TryGet(_ => _.Reload).Size(32);
+            transfersToolStripButton.Image = Images.TryGet(_ => _.Queue).Size(32);
+            uploadToolStripButton.Image = Images.TryGet(_ => _.Upload).Size(32);
+
+            securityToolStripStatusLabel.Image = Images.TryGet(_ => _.Locked);
+
             ToolStripManager.RenderMode = ToolStripManagerRenderMode.System;
 
             BookmarkMenuCollectionListener bookmarkMenuCollectionListener = new BookmarkMenuCollectionListener(this,
-                ProtocolIconsImageList().Images);
+                IconProvider.ProtocolList.Images);
             BookmarkCollection.defaultCollection().addListener(bookmarkMenuCollectionListener);
             MenuCollectionListener historyMenuCollectionListener = new MenuCollectionListener(this, historyMainMenuItem,
                 HistoryCollection.defaultCollection(),
                 LocaleFactory.localizedString("None"),
-                ProtocolIconsImageList().Images);
+                IconProvider.ProtocolList.Images);
             HistoryCollection.defaultCollection().addListener(historyMenuCollectionListener);
             MenuCollectionListener bonjourMenuCollectionListener = new MenuCollectionListener(this, bonjourMainMenuItem,
                 RendezvousCollection.defaultCollection(),
                 LocaleFactory.localizedString("None"),
-                ProtocolIconsImageList().Images);
+                IconProvider.ProtocolList.Images);
             RendezvousCollection.defaultCollection().addListener(bonjourMenuCollectionListener);
 
             if (!DesignMode)
             {
-                vistaMenu1.SetImage(newBookmarkMainMenuItem, IconCache.IconForName("bookmark", 16));
-                vistaMenu1.SetImage(historyMainMenuItem, IconCache.IconForName("history", 16));
-                vistaMenu1.SetImage(bonjourMainMenuItem, IconCache.IconForName("rendezvous", 16));
-                vistaMenu1.SetImage(transfersMainMenuItem, IconCache.IconForName("queue", 16));
+                vistaMenu1.SetImage(newBookmarkMainMenuItem, Images.Bookmark.Size(16));
+                vistaMenu1.SetImage(historyMainMenuItem, Images.History.Size(16));
+                vistaMenu1.SetImage(bonjourMainMenuItem, Images.Rendezvous.Size(16));
+                vistaMenu1.SetImage(transfersMainMenuItem, Images.Queue.Size(16));
 
-                newFolderToolStripButton.Image = IconCache.IconForName("folderplus", 32);
+                newFolderToolStripButton.Image = Images.FolderPlus.Size(32);
             }
 
             toolBar.ContextMenu = toolbarContextMenu1;
@@ -179,9 +212,9 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             UpdateBookmarks();
 
-            newBookmarkToolStripButton.Tag = ResourcesBundle.addPressed;
-            editBookmarkToolStripButton.Tag = ResourcesBundle.editPressed;
-            deleteBookmarkToolStripButton.Tag = ResourcesBundle.removePressed;
+            newBookmarkToolStripButton.Tag = (Image)Images.AddPressed.Size(22);
+            editBookmarkToolStripButton.Tag = (Image)Images.EditPressed.Size(22);
+            deleteBookmarkToolStripButton.Tag = (Image)Images.RemovePressed.Size(22);
 
             browserToolStripButton.ToolTipText = LocaleFactory.localizedString("Browser", "Preferences");
             bookmarksToolStripButton.ToolTipText = LocaleFactory.localizedString("Bookmarks", "Browser");
@@ -198,7 +231,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             openInTerminalToolStripMenuItem.Text = String.Format(LocaleFactory.localizedString("Open in {0}"), file);
             ;
             openInTerminalToolbarMenuItem.Text = String.Format(LocaleFactory.localizedString("Open in {0}"), file);
-            openInTerminalToolStripButton.Image = IconCache.IconForFilename(command, IconCache.IconSize.Large);
+            openInTerminalToolStripButton.Image = IconProvider.GetFileIcon(command, false, true, true);
 
             ConfigureToolbar();
             ConfigureFileCommands();
@@ -562,14 +595,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 if (_lastActivityRunning != value)
                 {
-                    if (value && disconnectStripButton.Image != ResourcesBundle.stop)
+                    if (value && disconnectStripButton.Image != (Image)Images.Stop)
                     {
-                        disconnectStripButton.Image = ResourcesBundle.stop;
+                        disconnectStripButton.Image = Images.Stop;
                         disconnectStripButton.Text = LocaleFactory.localizedString("Stop");
                     }
-                    else if (!value && disconnectStripButton.Image != ResourcesBundle.eject)
+                    else if (!value && disconnectStripButton.Image != (Image)Images.Eject)
                     {
-                        disconnectStripButton.Image = ResourcesBundle.eject;
+                        disconnectStripButton.Image = Images.Eject;
                         disconnectStripButton.Text = LocaleFactory.localizedString("Disconnect");
                     }
                     _lastActivityRunning = value;
@@ -1049,7 +1082,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public bool SecureConnection
         {
-            set { securityToolStripStatusLabel.Image = IconCache.IconForName(value ? "locked" : "unlocked"); }
+            set { securityToolStripStatusLabel.Image = value ? Images.Locked : Images.Unlocked; }
         }
 
         private void AddContextMenu(RichTextBox rtb)
@@ -1112,7 +1145,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 MenuItem item = mainItem.MenuItems.Add(LocaleFactory.localizedString("Default"));
                 item.Click += delegate { EditEvent(null); };
                 //todo refactor! no direct IconCache access.
-                vistaMenu1.SetImage(item, IconCache.ResizeImage(editToolStripSplitButton.Image, 16));
+                vistaMenu1.SetImage(item, IconProvider.ResizeImageDangerous(editToolStripSplitButton.Image, 16));
                 SetShortcutText(item, editWithToolStripMenuItem, null);
             }
             IList<Application> editors = GetEditorsForSelection();
@@ -1126,8 +1159,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 item.Tag = app.getIdentifier();
                 item.Click += delegate { EditEvent(item.Tag as String); };
                 vistaMenu1.UpdateParent(mainItem);
-                vistaMenu1.SetImage(item,
-                    IconCache.GetAppImage(app.getIdentifier(), IconCache.IconSize.Small));
+                vistaMenu1.SetImage(item, IconProvider.GetFileIcon(app.getIdentifier(), false, false, true));
             }
             vistaMenu1.UpdateParent(browserContextMenu);
         }
@@ -1151,7 +1183,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 ToolStripItem item = new ToolStripMenuItem(app.getName());
                 item.Tag = app.getIdentifier();
-                item.Image = IconCache.GetAppImage(app.getIdentifier(), IconCache.IconSize.Small);
+                item.Image = IconProvider.GetFileIcon(app.getIdentifier(), false, false, true);
                 item.Click += (o, args) => EditEvent(item.Tag as String);
                 editorMenuStrip.Items.Add(item);
             }
@@ -1797,11 +1829,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(new ToolStripItem[] {disconnectToolStripMenuItem, disconnectStripButton},
                 new[] {disconnectMainMenuItem}, (sender, args) => Disconnect(), () => ValidateDisconnect());
 
-            vistaMenu1.SetImage(refreshMainMenuItem, IconCache.IconForName("reload", 16));
-            vistaMenu1.SetImage(refreshBrowserContextMenuItem, IconCache.IconForName("reload", 16));
-            refreshContextToolStripMenuItem.Image = IconCache.IconForName("reload", 16);
-            vistaMenu1.SetImage(stopMainMenuItem, IconCache.IconForName("stop", 16));
-            vistaMenu1.SetImage(disconnectMainMenuItem, IconCache.IconForName("eject", 16));
+            vistaMenu1.SetImage(refreshMainMenuItem, Images.Reload.Size(16));
+            vistaMenu1.SetImage(refreshBrowserContextMenuItem, Images.Reload.Size(16));
+            refreshContextToolStripMenuItem.Image = Images.Reload.Size(16);
+            vistaMenu1.SetImage(stopMainMenuItem, Images.Stop.Size(16));
+            vistaMenu1.SetImage(disconnectMainMenuItem, Images.Eject.Size(16));
         }
 
         private void ConfigureViewCommands()
@@ -2148,31 +2180,31 @@ namespace Ch.Cyberduck.Ui.Winforms
                 (sender, args) => Exit(),
                 () => true);
 
-            vistaMenu1.SetImage(openConnectionMainMenuItem, IconCache.IconForName("connect", 16));
-            vistaMenu1.SetImage(infoMainMenuItem, IconCache.IconForName("info", 16));
-            vistaMenu1.SetImage(infoBrowserContextMenuItem, IconCache.IconForName("info", 16));
-            infoContextToolStripMenuItem.Image = IconCache.IconForName("info", 16);
-            vistaMenu1.SetImage(editMainMenuItem, IconCache.IconForName("pencil", 16));
-            vistaMenu1.SetImage(editBrowserContextMenuItem, IconCache.IconForName("pencil", 16));
-            editContextToolStripMenuItem.Image = IconCache.IconForName("pencil", 16);
-            vistaMenu1.SetImage(deleteMainMenuItem, IconCache.IconForName("delete", 16));
-            vistaMenu1.SetImage(deleteBrowserContextMenuItem, IconCache.IconForName("delete", 16));
-            deleteContextToolStripMenuItem.Image = IconCache.IconForName("delete", 16);
-            vistaMenu1.SetImage(newFolderMainMenuItem, IconCache.IconForName("folderplus", 16));
-            vistaMenu1.SetImage(newFolderBrowserContextMenuItem, IconCache.IconForName("folderplus", 16));
-            newFolderContextToolStripMenuItem.Image = IconCache.IconForName("folderplus", 16);
-            vistaMenu1.SetImage(newVaultMainMenuItem, IconCache.IconForName("cryptomator", 16));
-            vistaMenu1.SetImage(newVaultBrowserContextMenuItem, IconCache.IconForName("cryptomator", 16));
-            newVaultContextToolStripMenuItem.Image = IconCache.IconForName("cryptomator", 16);
-            vistaMenu1.SetImage(downloadMainMenuItem, IconCache.IconForName("download", 16));
-            vistaMenu1.SetImage(downloadBrowserContextMenuItem, IconCache.IconForName("download", 16));
-            downloadContextToolStripMenuItem.Image = IconCache.IconForName("download", 16);
-            vistaMenu1.SetImage(uploadMainMenuItem, IconCache.IconForName("upload", 16));
-            vistaMenu1.SetImage(uploadBrowserContextMenuItem, IconCache.IconForName("upload", 16));
-            uploadContextToolStripMenuItem.Image = IconCache.IconForName("upload", 16);
-            vistaMenu1.SetImage(synchronizeMainMenuItem, IconCache.IconForName("sync", 16));
-            vistaMenu1.SetImage(synchronizeBrowserContextMenuItem, IconCache.IconForName("sync", 16));
-            synchronizeContextToolStripMenuItem.Image = IconCache.IconForName("sync", 16);
+            vistaMenu1.SetImage(openConnectionMainMenuItem, Images.Connect.Size(16));
+            vistaMenu1.SetImage(infoMainMenuItem, Images.Info.Size(16));
+            vistaMenu1.SetImage(infoBrowserContextMenuItem, Images.Info.Size(16));
+            infoContextToolStripMenuItem.Image = Images.Info.Size(16);
+            vistaMenu1.SetImage(editMainMenuItem, Images.Pencil.Size(16));
+            vistaMenu1.SetImage(editBrowserContextMenuItem, Images.Pencil.Size(16));
+            editContextToolStripMenuItem.Image = Images.Pencil.Size(16);
+            vistaMenu1.SetImage(deleteMainMenuItem, Images.Delete.Size(16));
+            vistaMenu1.SetImage(deleteBrowserContextMenuItem, Images.Delete.Size(16));
+            deleteContextToolStripMenuItem.Image = Images.Delete.Size(16);
+            vistaMenu1.SetImage(newFolderMainMenuItem, Images.FolderPlus.Size(16));
+            vistaMenu1.SetImage(newFolderBrowserContextMenuItem, Images.FolderPlus.Size(16));
+            newFolderContextToolStripMenuItem.Image = Images.FolderPlus.Size(16);
+            vistaMenu1.SetImage(newVaultMainMenuItem, Images.Cryptomator.Size( 16));
+            vistaMenu1.SetImage(newVaultBrowserContextMenuItem, Images.Cryptomator.Size(16));
+            newVaultContextToolStripMenuItem.Image = Images.Cryptomator.Size(16);
+            vistaMenu1.SetImage(downloadMainMenuItem, Images.Download.Size( 16));
+            vistaMenu1.SetImage(downloadBrowserContextMenuItem, Images.Download.Size(16));
+            downloadContextToolStripMenuItem.Image = Images.Download.Size(16);
+            vistaMenu1.SetImage(uploadMainMenuItem, Images.Upload.Size(16));
+            vistaMenu1.SetImage(uploadBrowserContextMenuItem, Images.Upload.Size(16));
+            uploadContextToolStripMenuItem.Image = Images.Upload.Size(16);
+            vistaMenu1.SetImage(synchronizeMainMenuItem, Images.Sync.Size(16));
+            vistaMenu1.SetImage(synchronizeBrowserContextMenuItem, Images.Sync.Size(16));
+            synchronizeContextToolStripMenuItem.Image = Images.Sync.Size(16);
         }
 
         private void SaveUiSettings()
@@ -2354,7 +2386,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             bookmarkToolStripMenuItem.DropDownItems.Clear();
             bookmarkToolStripMenuItem.DropDownItems.AddRange(fix.ToArray());
 
-            ImageList.ImageCollection icons = ProtocolIconsImageList().Images;
+            ImageList.ImageCollection icons = IconProvider.ProtocolList.Images;
 
             List<ToolStripItem> items = new List<ToolStripItem>();
             foreach (Host bookmark in bookmarks)
@@ -2375,7 +2407,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             historyMenuStrip.Items.Clear();
             if (history.Count > 0)
             {
-                ImageList.ImageCollection icons = ProtocolIconsImageList().Images;
+                ImageList.ImageCollection icons = IconProvider.ProtocolList.Images;
 
                 List<ToolStripItem> items = new List<ToolStripItem>();
                 foreach (Host h in history)

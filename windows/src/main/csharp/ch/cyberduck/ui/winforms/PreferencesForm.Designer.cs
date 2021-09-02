@@ -254,11 +254,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox15 = new System.Windows.Forms.GroupBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.cryptomatorAutoDetectCheckBox = new System.Windows.Forms.CheckBox();
+            this.managedProfilesPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
+            this.profilesPageHost = new System.Windows.Forms.Integration.ElementHost();
             this.toolStrip = new Ch.Cyberduck.Ui.Winforms.Controls.ClickThroughToolStrip();
             this.generalButton = new System.Windows.Forms.ToolStripButton();
             this.browserButton = new System.Windows.Forms.ToolStripButton();
             this.transfersButton = new System.Windows.Forms.ToolStripButton();
             this.editStripButton = new System.Windows.Forms.ToolStripButton();
+            this.profilesButton = new System.Windows.Forms.ToolStripButton();
             this.sftpButton = new System.Windows.Forms.ToolStripButton();
             this.s3Button = new System.Windows.Forms.ToolStripButton();
             this.googleCloudButton = new System.Windows.Forms.ToolStripButton();
@@ -371,6 +374,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel24.SuspendLayout();
             this.groupBox15.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
+            this.managedProfilesPanel.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -401,6 +405,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager.Controls.Add(this.managedTransfersPanel);
             this.panelManager.Controls.Add(this.managedGoogleCloudPanel);
             this.panelManager.Controls.Add(this.managedCryptomatorPanel);
+            this.panelManager.Controls.Add(this.managedProfilesPanel);
             this.panelManager.Location = new System.Drawing.Point(12, 76);
             this.panelManager.Name = "panelManager";
             this.panelManager.SelectedIndex = 10;
@@ -3337,6 +3342,25 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cryptomatorAutoDetectCheckBox.UseVisualStyleBackColor = true;
             this.cryptomatorAutoDetectCheckBox.CheckedChanged += new System.EventHandler(this.cryptomatorAutoDetectCheckBox_CheckedChanged);
             // 
+            // managedProfilesPanel
+            // 
+            this.managedProfilesPanel.Controls.Add(this.profilesPageHost);
+            this.managedProfilesPanel.Location = new System.Drawing.Point(0, 0);
+            this.managedProfilesPanel.Name = "managedProfilesPanel";
+            this.managedProfilesPanel.Size = new System.Drawing.Size(0, 0);
+            this.managedProfilesPanel.Text = "managedPanel1";
+            // 
+            // profilesPageHost
+            // 
+            this.profilesPageHost.BackColorTransparent = true;
+            this.profilesPageHost.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.profilesPageHost.Location = new System.Drawing.Point(0, 0);
+            this.profilesPageHost.Name = "profilesPageHost";
+            this.profilesPageHost.Size = new System.Drawing.Size(0, 0);
+            this.profilesPageHost.TabIndex = 0;
+            this.profilesPageHost.Text = "elementHost1";
+            this.profilesPageHost.Child = null;
+            // 
             // toolStrip
             // 
             this.toolStrip.CanOverflow = false;
@@ -3347,6 +3371,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browserButton,
             this.transfersButton,
             this.editStripButton,
+            this.profilesButton,
             this.sftpButton,
             this.s3Button,
             this.googleCloudButton,
@@ -3409,6 +3434,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editStripButton.Text = "Editor";
             this.editStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.editStripButton.Click += new System.EventHandler(this.editStripButton_Click);
+            // 
+            // profilesButton
+            // 
+            this.profilesButton.AutoToolTip = false;
+            this.profilesButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.profilesButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.profilesButton.Name = "profilesButton";
+            this.profilesButton.Size = new System.Drawing.Size(50, 66);
+            this.profilesButton.Text = "Profiles";
+            this.profilesButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.profilesButton.Click += new System.EventHandler(this.profilesButton_Click);
             // 
             // sftpButton
             // 
@@ -3713,6 +3749,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox15.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
+            this.managedProfilesPanel.ResumeLayout(false);
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -3958,5 +3995,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel49;
         private System.Windows.Forms.ComboBox defaultGoogleACLComboBox;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.ToolStripButton profilesButton;
+        private ManagedPanel managedProfilesPanel;
+        private System.Windows.Forms.Integration.ElementHost profilesPageHost;
     }
 }
