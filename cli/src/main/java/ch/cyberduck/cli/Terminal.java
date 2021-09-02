@@ -33,6 +33,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.gmxcloud.GmxcloudProtocol;
 import ch.cyberduck.core.googledrive.DriveProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.hubic.HubicProtocol;
@@ -155,7 +156,8 @@ public class Terminal {
             new BrickProtocol(),
             new NextcloudProtocol(),
             new OwncloudProtocol(),
-            new CTERAProtocol()
+            new CTERAProtocol(),
+            new GmxcloudProtocol()
         );
         this.options = options;
         if(log.isInfoEnabled()) {

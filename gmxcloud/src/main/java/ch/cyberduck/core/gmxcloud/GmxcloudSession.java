@@ -16,8 +16,7 @@ package ch.cyberduck.core.gmxcloud;/*
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.MacUniqueIdService;
-import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
@@ -29,8 +28,12 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -55,9 +58,15 @@ public class GmxcloudSession extends HttpSession<Client> {
     @Override
     protected Client connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host)
-            .withParameter("userAgentB64", Base64.encodeToString(new PreferencesUseragentProvider().get().getBytes(StandardCharsets.UTF_8), false))
-            .withParameter("deviceNameB64", Base64.encodeToString(new MacUniqueIdService().getUUID().getBytes(StandardCharsets.UTF_8), false));
+        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) {
+                request.addHeader(HttpHeaders.AUTHORIZATION,
+                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
+            }
+        }).build(), host)
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()
+            );
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         configuration.addInterceptorLast(authorizationService);
         final CloseableHttpClient apache = configuration.build();
@@ -71,14 +80,16 @@ public class GmxcloudSession extends HttpSession<Client> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.PasswordGrant));
+        final OAuthTokens tokens = authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode);
+        authorizationService.setTokens(tokens);
+
         // TODO service target auflösen via "https://os-mc.ui-onlinestorage.net/serviceTarget/onlinestorage.qa.mc"
         // curl -v -Hx-ui-api-key:$apikey -Hx-ui-app:curl/1 -H"Authorization: Bearer $accessToken" https://os-webde.ui-onlinestorage.net/serviceTarget/onlinestorage.qa.webde
     }
 
     @Override
     protected void logout() throws BackgroundException {
-        //
+        client.close();
     }
 
     @Override

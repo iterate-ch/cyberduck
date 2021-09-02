@@ -16,8 +16,11 @@
         <string>Username</string>
         <key>Password Placeholder</key>
         <string>Password</string>
+        <!-- Service Discovery Host -->
         <key>Default Hostname</key>
         <string>os-webde.ui-onlinestorage.net</string>
+        <key>Context</key>
+        <string>/serviceTarget/onlinestorage.qa.mc</string>
         <key>Default Nickname</key>
         <string>GMX Cloud</string>
         <key>Hostname Configurable</key>
@@ -35,19 +38,23 @@
         <key>Password Configurable</key>
         <false/>
         <key>OAuth Authorization Url</key>
-        <string>https://oauth2-qa.gmx.net/authorize</string>
+        <string>https://oauth2.gmx.net/authorize</string>
         <key>OAuth Token Url</key>
-        <string>https://oauth2-qa.gmx.net/token</string>
+        <string>https://oauth2.gmx.net/token</string>
         <key>OAuth Redirect Url</key>
-        <string>/identity/redirect/?redirect_uri=x-storegatedrive-action:oauth</string>
+        <string>x-gmxcloud-action:oauth</string>
         <key>OAuth Client ID</key>
-        <string>gmxdach_pccloudsynctool_qa</string>
+        <string>gmxdach_pccloudsynctool_live</string>
         <key>OAuth Client Secret</key>
-        <string>xIQSromWgQE6GWhdi7cFSda8r0iSTOzuhmVJxb3k</string>
-        <key>Scopes</key>
+        <string>EviUQITLj4CW6kgSyai3i52MunsuAJASM1GP7s0M</string>
+        <key>Properties</key>
         <array>
-            <string>onlinestorage_user_meta_read</string>
-            <string>onlinestorage_user_meta_write</string>
+            <string>apikey_win=0-MAMCLOUDSYNCPC-18835-0-8a944ad765ea19a1</string>
+            <string>apikey_macos=0-MAMCLOUDSYNCMAC-18835-0-0e2145c0c94e5679</string>
+        </array>
+        <key>Schemes</key>
+        <array>
+            <string>gmxcloud</string>
         </array>
     </dict>
 </plist>
