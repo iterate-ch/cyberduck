@@ -86,9 +86,12 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        if(!host.getCredentials().isPasswordAuthentication()) {
-            final Credentials credentials = this.pair(host, prompt, cancel);
-            credentials.setSaved(true);
+        final Credentials credentials = host.getCredentials();
+        if(credentials.isPasswordAuthentication()) {
+            retryHandler.setApiKey(credentials.getPassword());
+        }
+        else {
+            this.pair(host, prompt, cancel).setSaved(true);
             retryHandler.setApiKey(credentials.getPassword());
         }
     }
