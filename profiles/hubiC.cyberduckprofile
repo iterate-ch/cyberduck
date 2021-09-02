@@ -37,5 +37,7 @@
         <string>IIm0EkjdyPquS9SpIZXAdNlGbcf3mL9s3UiOFLnWLeTxLosjvAHGIbomvAcBZQb2</string>
         <key>OAuth Redirect Url</key>
         <string>https://cyberduck.io/oauth</string>
+        <key>Help</key>
+        <string>https://trac.cyberduck.io/wiki/help/en/howto/hubic</string>
     </dict>
 </plist>

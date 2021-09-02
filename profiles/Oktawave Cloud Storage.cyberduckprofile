@@ -18,5 +18,7 @@
         <string>Login</string>
         <key>Password Placeholder</key>
         <string>Password</string>
+        <key>Help</key>
+        <string>https://trac.cyberduck.io/wiki/help/en/howto/oktawave</string>
     </dict>
 </plist>
