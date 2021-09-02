@@ -20,7 +20,6 @@ import ch.cyberduck.core.brick.io.swagger.client.ApiClient;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.JSON;
 import ch.cyberduck.core.brick.io.swagger.client.Pair;
-import ch.cyberduck.core.brick.io.swagger.client.auth.ApiKeyAuth;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -38,10 +37,7 @@ import java.util.Map;
 
 public class BrickApiClient extends ApiClient {
 
-    private final BrickSession session;
-
     public BrickApiClient(final BrickSession session) {
-        this.session = session;
         this.setHttpClient(ClientBuilder.newClient(new ClientConfig()
             .register(new InputStreamProvider())
             .register(MultiPartFeature.class)
@@ -74,8 +70,6 @@ public class BrickApiClient extends ApiClient {
 
     @Override
     protected void updateParamsForAuth(final String[] authNames, final List<Pair> queryParams, final Map<String, String> headerParams) {
-        final ApiKeyAuth authentication = new ApiKeyAuth("header", "X-FilesAPI-Key");
-        authentication.setApiKey(session.getApiKey());
-        authentication.applyToParams(queryParams, headerParams);
+        // Handled in interceptor
     }
 }
