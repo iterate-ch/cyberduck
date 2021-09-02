@@ -69,35 +69,28 @@ import com.google.common.util.concurrent.Uninterruptibles;
 public class BrickSession extends HttpSession<CloseableHttpClient> {
     private static final Logger log = Logger.getLogger(BrickSession.class);
 
-    private String apiKey;
+    private BrickUnauthorizedRetryStrategy retryHandler;
 
     public BrickSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
 
-    public String getApiKey() {
-        return apiKey;
-    }
-
     @Override
     protected CloseableHttpClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        configuration.setServiceUnavailableRetryStrategy(new BrickUnauthorizedRetryStrategy(this, prompt, cancel));
+        configuration.setServiceUnavailableRetryStrategy(retryHandler = new BrickUnauthorizedRetryStrategy(this, prompt, cancel));
+        configuration.addInterceptorLast(retryHandler);
         configuration.addInterceptorLast(new BrickPreferencesRequestInterceptor());
         return configuration.build();
     }
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Credentials credentials;
-        if(host.getCredentials().isPasswordAuthentication()) {
-            credentials = host.getCredentials();
-        }
-        else {
-            credentials = this.pair(host, prompt, cancel);
+        if(!host.getCredentials().isPasswordAuthentication()) {
+            final Credentials credentials = this.pair(host, prompt, cancel);
             credentials.setSaved(true);
+            retryHandler.setApiKey(credentials.getPassword());
         }
-        apiKey = credentials.getPassword();
     }
 
     @Override
