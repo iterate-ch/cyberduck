@@ -29,7 +29,14 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.SocketException;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 public class BrickExceptionMappingService extends AbstractExceptionMappingService<ApiException> {
     private static final Logger log = Logger.getLogger(BrickExceptionMappingService.class);
@@ -56,6 +63,33 @@ public class BrickExceptionMappingService extends AbstractExceptionMappingServic
                 return new ConnectionCanceledException(cause);
             }
         }
-        return new DefaultHttpResponseExceptionMappingService().map(failure, new StringBuilder(), failure.getCode());
+        final StringBuilder buffer = new StringBuilder();
+        this.parse(buffer, failure.getResponseBody());
+        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
+    }
+
+    private void parse(final StringBuilder buffer, final String message) {
+        if(StringUtils.isBlank(message)) {
+            return;
+        }
+        try {
+            final JsonElement element = JsonParser.parseReader(new StringReader(message));
+            if(element.isJsonObject()) {
+                final JsonObject json = element.getAsJsonObject();
+                final JsonPrimitive error = json.getAsJsonPrimitive("error");
+                if(null == error) {
+                    this.append(buffer, message);
+                }
+                else {
+                    this.append(buffer, error.getAsString());
+                }
+            }
+            if(element.isJsonPrimitive()) {
+                this.append(buffer, element.getAsString());
+            }
+        }
+        catch(JsonParseException e) {
+            // Ignore
+        }
     }
 }
