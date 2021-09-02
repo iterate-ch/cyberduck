@@ -38,5 +38,7 @@
         <array>
             <string>fr-par</string>
         </array>
+        <key>Help</key>
+        <string>https://trac.cyberduck.io/wiki/help/en/howto/scaleway</string>
     </dict>
 </plist>
