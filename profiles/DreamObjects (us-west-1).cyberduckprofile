@@ -8,26 +8,28 @@
     <string>dreamhost-us-east-1</string>
 	<key>Description</key>
 	<string>DreamObjects Cloud Storage (S3)</string>
-	<key>Default Hostname</key>
+    <key>Default Hostname</key>
     <string>objects-us-east-1.dream.io</string>
     <key>Port Configurable</key>
     <false/>
-	<key>Username Placeholder</key>
-	<string>Access Key</string>
-	<key>Password Placeholder</key>
-	<string>Secret Key</string>
+    <key>Username Placeholder</key>
+    <string>Access Key</string>
+    <key>Password Placeholder</key>
+    <string>Secret Key</string>
     <key>Authorization</key>
     <string>AWS2</string>
-	<key>Disk</key>
-	<string>
-    TU0AKgAEOSiAACBQOCQWDQeEQmFQuGQ2HQ+IRGJROKRWLReMRmNRuOR2PR+QSGRSOSSWTSeUSmVS
-    uWS2XS+YTGZTOaTWbTecTmdTueT2fT+gUGhUOiUWjUekUmlUumU2nU+oVGpVOqVWrVesVmtVuuV2
-    vV+wWGxWOyWWzWe0Wm1Wu2W23W+4XG5XO6XW7Xe8Xm9Xu+X2/X/AYHBYPCYXDYfEYnFYvGY3HY/I
-    ZHJZPKZXLZfMZnNZvOZ3PZ/QaHRaPSaXTafUanVavWa3Xa/YbHZbPabXbbfcbndbveb3fb/gcHhc
-    PicXjcfkcnlcvmc3nc/odHpdPqdXrdfsdntdvud3vd/weHxePyeXzef0en1ev2e33e/4fH5fP6fX
-    7ff8fn9fv+f3/P/AEAwFAcCQLA0DwRBMFQXBkGwdB8IQjCUJwpCsLQvDEMw1DcOQ7D0PxBEMRRHE
-    kSxNE8URTFUVxZFsXRfGEYxlGcaRrG0bxxHMdR3Hkex9H8gSDIUhyJIsjSPJEkyVJcmSbJ0nyhKM
-    pSnKkqytK8sSzLUty5LsvS/MEwzFMcyTLM0zzRNM1TXNk2zdN84TjOU5zpOs7TvPE8z1Pc+T7P0/
+    <key>Help</key>
+    <string>https://trac.cyberduck.io/wiki/help/en/howto/dreamobjects</string>
+    <key>Disk</key>
+    <string>
+        TU0AKgAEOSiAACBQOCQWDQeEQmFQuGQ2HQ+IRGJROKRWLReMRmNRuOR2PR+QSGRSOSSWTSeUSmVS
+        uWS2XS+YTGZTOaTWbTecTmdTueT2fT+gUGhUOiUWjUekUmlUumU2nU+oVGpVOqVWrVesVmtVuuV2
+        vV+wWGxWOyWWzWe0Wm1Wu2W23W+4XG5XO6XW7Xe8Xm9Xu+X2/X/AYHBYPCYXDYfEYnFYvGY3HY/I
+        ZHJZPKZXLZfMZnNZvOZ3PZ/QaHRaPSaXTafUanVavWa3Xa/YbHZbPabXbbfcbndbveb3fb/gcHhc
+        PicXjcfkcnlcvmc3nc/odHpdPqdXrdfsdntdvud3vd/weHxePyeXzef0en1ev2e33e/4fH5fP6fX
+        7ff8fn9fv+f3/P/AEAwFAcCQLA0DwRBMFQXBkGwdB8IQjCUJwpCsLQvDEMw1DcOQ7D0PxBEMRRHE
+        kSxNE8URTFUVxZFsXRfGEYxlGcaRrG0bxxHMdR3Hkex9H8gSDIUhyJIsjSPJEkyVJcmSbJ0nyhKM
+        pSnKkqytK8sSzLUty5LsvS/MEwzFMcyTLM0zzRNM1TXNk2zdN84TjOU5zpOs7TvPE8z1Pc+T7P0/
     0BQNBUHQlC0NQ9EUTRVF0ZRtHUfSFI0lSdKUrS1L0xTNNU3TlO09T9QVDUVR1JUtTVPVFUwuANWA
     DVVX1hWNZVmup/1sf9aVzXSk1bV1d1/YFg2FYa7VvXFiWRZKE16hlmI3Z1lWjaVp2pWljI5a6J2z
     atuUvaCC2+glv3CgdyIMDF0BeBF1ggEIQhAHyCBBeYfoRdAMBcBN9Ahbt+39f+ATmdx3HecJ44Oc
