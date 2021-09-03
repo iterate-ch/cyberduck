@@ -21,7 +21,6 @@ package ch.cyberduck.core.serializer;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,14 +46,8 @@ public class LocalDictionary {
             return null;
         }
         final Local file = LocalFactory.get(path);
-        // Legacy support. Bookmarks are now saved in user defaults instead.
-        if(StringUtils.isNotBlank(dict.stringForKey(String.format("%s Bookmark", PreferencesFactory.get().getProperty("application.name"))))) {
-            file.setBookmark(dict.stringForKey(String.format("%s Bookmark", PreferencesFactory.get().getProperty("application.name"))));
-        }
-        else {
-            if(StringUtils.isNotBlank(dict.stringForKey("Bookmark"))) {
-                file.setBookmark(dict.stringForKey("Bookmark"));
-            }
+        if(StringUtils.isNotBlank(dict.stringForKey("Bookmark"))) {
+            file.setBookmark(dict.stringForKey("Bookmark"));
         }
         return file;
     }
