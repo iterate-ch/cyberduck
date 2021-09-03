@@ -1,60 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-    <dict>
-        <key>Protocol</key>
-        <string>gmxcloud</string>
-        <key>Vendor</key>
-        <string>gmx</string>
-        <key>Description</key>
-        <string>GMX Cloud</string>
-        <key>Scheme</key>
-        <string>https</string>
-        <key>Default Port</key>
-        <string>443</string>
-        <key>Username Placeholder</key>
-        <string>Username</string>
-        <key>Password Placeholder</key>
-        <string>Password</string>
-        <!-- Service Discovery Host -->
-        <key>Default Hostname</key>
-        <string>os-webde.ui-onlinestorage.net</string>
-        <key>Context</key>
-        <string>/serviceTarget/onlinestorage.qa.mc</string>
-        <key>Default Nickname</key>
-        <string>GMX Cloud</string>
-        <key>Hostname Configurable</key>
-        <false/>
-        <key>Port Configurable</key>
-        <false/>
-        <key>Anonymous Configurable</key>
-        <false/>
-        <key>Path Configurable</key>
-        <false/>
-        <key>Certificate Configurable</key>
-        <false/>
-        <key>Username Configurable</key>
-        <false/>
-        <key>Password Configurable</key>
-        <false/>
-        <key>OAuth Authorization Url</key>
-        <string>https://oauth2.gmx.net/authorize</string>
-        <key>OAuth Token Url</key>
-        <string>https://oauth2.gmx.net/token</string>
-        <key>OAuth Redirect Url</key>
-        <string>x-gmxcloud-action:oauth</string>
-        <key>OAuth Client ID</key>
-        <string>gmxdach_pccloudsynctool_live</string>
-        <key>OAuth Client Secret</key>
-        <string>EviUQITLj4CW6kgSyai3i52MunsuAJASM1GP7s0M</string>
-        <key>Properties</key>
-        <array>
-            <string>apikey_win=0-MAMCLOUDSYNCPC-18835-0-8a944ad765ea19a1</string>
-            <string>apikey_macos=0-MAMCLOUDSYNCMAC-18835-0-0e2145c0c94e5679</string>
-        </array>
-        <key>Schemes</key>
-        <array>
-            <string>gmxcloud</string>
-        </array>
-    </dict>
+<dict>
+    <key>Protocol</key>
+    <string>davs</string>
+    <key>Vendor</key>
+    <string>gmx</string>
+    <key>Description</key>
+    <string>GMX Cloud (WebDAV)</string>
+    <key>Default Hostname</key>
+    <string>webdav.mc.gmx.net</string>
+    <key>Username Placeholder</key>
+    <string>GMX Kundennummer</string>
+    <key>Help</key>
+    <string>https://www.gmx.net/produkte/cloud/speicher-erweitern/</string>
+</dict>
 </plist>
