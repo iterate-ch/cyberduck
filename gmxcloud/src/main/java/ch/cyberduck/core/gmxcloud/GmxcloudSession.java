@@ -80,7 +80,7 @@ public class GmxcloudSession extends HttpSession<Client> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final OAuthTokens tokens = authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode);
+        final OAuthTokens tokens = authorizationService.refresh(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
         authorizationService.setTokens(tokens);
 
         // TODO service target auflösen via "https://os-mc.ui-onlinestorage.net/serviceTarget/onlinestorage.qa.mc"

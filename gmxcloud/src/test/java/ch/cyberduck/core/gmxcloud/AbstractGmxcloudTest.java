@@ -52,10 +52,10 @@ public class AbstractGmxcloudTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new GmxcloudProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
             this.getClass().getResourceAsStream("/GMX Cloud.cyberduckprofile"));
-        final Host host = new Host(profile, "os-webde.ui-onlinestorage.net", new Credentials(
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
             System.getProperties().getProperty("gmxcloud.user"), System.getProperties().getProperty("gmxcloud.password")
         ));
-        final GmxcloudSession session = new GmxcloudSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session = new GmxcloudSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
