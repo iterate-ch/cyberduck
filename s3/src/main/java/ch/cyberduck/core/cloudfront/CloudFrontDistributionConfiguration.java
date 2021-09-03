@@ -243,30 +243,32 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     public void invalidate(final Path container, final Distribution.Method method, final List<Path> files, final LoginCallback prompt) throws BackgroundException {
         try {
             final Distribution d = this.read(container, method, prompt);
-            final List<String> keys = new ArrayList<>();
-            for(Path file : files) {
-                if(session.getFeature(PathContainerService.class).isContainer(file)) {
-                    // To invalidate all of the objects in a distribution
-                    keys.add(String.format("%s*", Path.DELIMITER));
-                }
-                else {
-                    if(file.isDirectory()) {
-                        // The *, which replaces 0 or more characters, must be the last character in the invalidation path
-                        keys.add(String.format("/%s*", session.getFeature(PathContainerService.class).getKey(file)));
+            if(d.isEnabled()) {
+                final List<String> keys = new ArrayList<>();
+                for(Path file : files) {
+                    if(session.getFeature(PathContainerService.class).isContainer(file)) {
+                        // To invalidate all of the objects in a distribution
+                        keys.add(String.format("%s*", Path.DELIMITER));
                     }
                     else {
-                        keys.add(String.format("/%s", session.getFeature(PathContainerService.class).getKey(file)));
+                        if(file.isDirectory()) {
+                            // The *, which replaces 0 or more characters, must be the last character in the invalidation path
+                            keys.add(String.format("/%s*", session.getFeature(PathContainerService.class).getKey(file)));
+                        }
+                        else {
+                            keys.add(String.format("/%s", session.getFeature(PathContainerService.class).getKey(file)));
+                        }
                     }
                 }
-            }
-            if(keys.isEmpty()) {
-                log.warn("No keys selected for invalidation");
-            }
-            else {
-                final AmazonCloudFront client = this.client(container);
-                client.createInvalidation(new CreateInvalidationRequest(d.getId(),
-                    new InvalidationBatch(new Paths().withItems(keys).withQuantity(keys.size()), new AlphanumericRandomStringService().random())
-                ));
+                if(keys.isEmpty()) {
+                    log.warn("No keys selected for invalidation");
+                }
+                else {
+                    final AmazonCloudFront client = this.client(container);
+                    client.createInvalidation(new CreateInvalidationRequest(d.getId(),
+                        new InvalidationBatch(new Paths().withItems(keys).withQuantity(keys.size()), new AlphanumericRandomStringService().random())
+                    ));
+                }
             }
         }
         catch(AmazonClientException e) {
