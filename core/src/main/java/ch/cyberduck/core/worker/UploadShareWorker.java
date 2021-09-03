@@ -33,7 +33,7 @@ public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
 
     private final Path file;
     private final Options options;
-    private PasswordCallback callback;
+    private final PasswordCallback callback;
 
     public UploadShareWorker(final Path file, final Options options, final PasswordCallback callback) {
         this.file = file;
@@ -48,6 +48,11 @@ public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
             log.debug(String.format("Run with feature %s", provider));
         }
         return provider.toUploadUrl(file, options, callback);
+    }
+
+    @Override
+    public DescriptiveUrl initialize() {
+        return DescriptiveUrl.EMPTY;
     }
 
     @Override
