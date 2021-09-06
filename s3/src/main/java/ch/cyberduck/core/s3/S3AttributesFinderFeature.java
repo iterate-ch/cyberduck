@@ -220,6 +220,9 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 metadata.put(entry.getKey(), entry.getValue().toString());
             }
             attributes.setMetadata(metadata);
+            if(object.containsMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE)) {
+                attributes.setModificationDate(Long.parseLong(object.getUserMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE).toString()));
+            }
         }
         return attributes;
     }

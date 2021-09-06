@@ -216,4 +216,9 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
             return sb.toString();
         }
     }
+
+    @Override
+    public boolean timestamp() {
+        return true;
+    }
 }

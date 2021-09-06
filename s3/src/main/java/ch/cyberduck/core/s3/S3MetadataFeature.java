@@ -70,6 +70,9 @@ public class S3MetadataFeature implements Headers {
             try {
                 final StorageObject target = new StorageObject(containerService.getKey(file));
                 target.replaceAllMetadata(new HashMap<>(status.getMetadata()));
+                if(status.getTimestamp() != null) {
+                    target.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
+                }
                 try {
                     // Apply non standard ACL
                     target.setAcl(accessControlListFeature.toAcl(file, accessControlListFeature.getPermission(file)));

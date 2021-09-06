@@ -79,6 +79,8 @@ public class S3CopyFeature implements Copy {
         destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, accessControlListFeature).getMetadata(source)));
         final String version = this.copy(source, destination, status, listener);
         target.attributes().setVersionId(version);
+        target.attributes().setMetadata(source.attributes().getMetadata());
+        target.attributes().setModificationDate(source.attributes().getModificationDate());
         return target;
     }
 
