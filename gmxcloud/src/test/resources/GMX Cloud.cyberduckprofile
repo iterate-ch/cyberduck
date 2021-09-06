@@ -62,6 +62,11 @@
         <string>gmxdach_pccloudsynctool_live</string>
         <key>OAuth Client Secret</key>
         <string>EviUQITLj4CW6kgSyai3i52MunsuAJASM1GP7s0M</string>
+        <key>Scopes</key>
+        <array>
+            <string>onlinestorage_user_meta_read</string>
+            <string>onlinestorage_user_meta_write</string>
+        </array>
         <key>Properties</key>
         <array>
             <string>apikey.windows=0-MAMCLOUDSYNCPC-18835-0-8a944ad765ea19a1</string>
