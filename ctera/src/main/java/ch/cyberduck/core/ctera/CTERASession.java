@@ -55,6 +55,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.AbstractResponseHandler;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
@@ -113,6 +114,16 @@ public class CTERASession extends DAVSession {
         if(StringUtils.isBlank(credentials.getUsername())) {
             credentials.setUsername(this.getCurrentSession().username);
             credentials.setSaved(true);
+        }
+    }
+
+    @Override
+    protected void logout() throws BackgroundException {
+        try {
+            this.logoutCurrentSession();
+        }
+        finally {
+            super.logout();
         }
     }
 
@@ -280,6 +291,16 @@ public class CTERASession extends DAVSession {
                     return mapper.readValue(entity.getContent(), PortalSession.class);
                 }
             });
+        }
+        catch(IOException e) {
+            throw new HttpExceptionMappingService().map(e);
+        }
+    }
+
+    private void logoutCurrentSession() throws BackgroundException {
+        final HttpPost request = new HttpPost("/ServicesPortal/api/logout?format=jsonext");
+        try {
+            client.execute(request, new BasicResponseHandler());
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);

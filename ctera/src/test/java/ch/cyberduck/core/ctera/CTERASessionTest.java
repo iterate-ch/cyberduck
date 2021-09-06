@@ -54,6 +54,7 @@ public class CTERASessionTest {
         assertEquals("mountainduck@cterasendbox1.onmicrosoft.com", host.getCredentials().getUsername());
         assertTrue(host.getCredentials().isSaved());
         new DAVListService(session).list(new Path(host.getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        session.close();
     }
 
     @Test
@@ -70,5 +71,6 @@ public class CTERASessionTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(System.getProperty("ctera.user"), host.getCredentials().getUsername());
         new DAVListService(session).list(new Path(host.getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        session.close();
     }
 }
