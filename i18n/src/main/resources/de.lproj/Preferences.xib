@@ -1721,7 +1721,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Default ACL" translatesAutoresizingMaskIntoConstraints="NO" id="413-ca-YoL">
+                <box fixedFrame="YES" title="Standard Zugriffssteuerungsliste" translatesAutoresizingMaskIntoConstraints="NO" id="413-ca-YoL">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Sgq-Kr-VcS">
@@ -1740,7 +1740,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dmt-yG-0WL">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the predefined set of grantees and permissions to apply to new buckets and files." id="Qg3-4s-tpR">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Auswahl von vordefinierten Genehmigungen und Berechtigungen für Buckets und Dateien." id="Qg3-4s-tpR">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1919,7 +1919,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Default ACL" translatesAutoresizingMaskIntoConstraints="NO" id="y8O-CF-T0G">
+                <box fixedFrame="YES" title="Standard Zugriffssteuerungsliste" translatesAutoresizingMaskIntoConstraints="NO" id="y8O-CF-T0G">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="wuK-Me-6mi">
@@ -1938,7 +1938,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lB4-Ql-F2I">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the predefined set of grantees and permissions to apply to new buckets and files." id="4Yf-WE-fsN">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Auswahl von vordefinierten Genehmigungen und Berechtigungen für Buckets und Dateien." id="4Yf-WE-fsN">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
