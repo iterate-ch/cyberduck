@@ -37,6 +37,8 @@
         <string>Key ID</string>
         <key>Password Placeholder</key>
         <string>Application Key</string>
+        <key>Help</key>
+        <string>https://help.cyberduck.io/b2</string>
         <key>Icon</key>
         <string>
             TU0AKgAANxSAACBQOCQWDQeEQmFQuGQ2HQ+IRGJROKRWLReMRmNRuOR2PR+QSGRSOSSWTS

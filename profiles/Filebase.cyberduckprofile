@@ -24,6 +24,8 @@
         <array>
             <string>us-east-1</string>
         </array>
+        <key>Help</key>
+        <string>https://trac.cyberduck.io/wiki/help/en/howto/filebase</string>
         <key>Disk</key>
         <string>
             TU0AKgADBBgAAqACAAQAAAABAAAEAKADAAQAAAABAAAEAAAAAACAACBQOCQWDQeEQmFQuG

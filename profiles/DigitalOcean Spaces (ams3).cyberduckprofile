@@ -37,6 +37,8 @@
         <string>Secret Key</string>
         <key>Authorization</key>
         <string>AWS4HMACSHA256</string>
+        <key>Help</key>
+        <string>https://trac.cyberduck.io/wiki/help/en/howto/digitalocean</string>
         <key>Disk</key>
         <string>
             TU0AKgAANtCAACBQOCQWDQeEQmFQuGQ2HQ+IRGJROKRWLReMRmNRuOR2PR+QSGRSOSSWTS
