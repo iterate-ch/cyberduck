@@ -861,6 +861,8 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("storegate.lock.ttl", String.valueOf(24 * 3600000)); // 24 hours
         this.setDefault("storegate.login.hint", StringUtils.EMPTY); // login_hint parameter
 
+        this.setDefault("ctera.attach.devicetype", "DriveConnect"); // Mobile
+
         this.setDefault("oauth.browser.open.warn", String.valueOf(false));
 
         this.setDefault("brick.pairing.nickname.configure", String.valueOf(false));

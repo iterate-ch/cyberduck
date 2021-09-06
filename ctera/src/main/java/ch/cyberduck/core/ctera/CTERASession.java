@@ -40,6 +40,7 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -177,7 +178,7 @@ public class CTERASession extends DAVSession {
         try {
             attach.setEntity(
                 new StringEntity(
-                    getAttachmentAsString(activationCode, null,
+                    getAttachmentAsString(activationCode, new HostPreferences(host).getProperty("ctera.attach.devicetype"), null,
                         URIEncoder.encode(InetAddress.getLocalHost().getHostName()), new MacUniqueIdService().getUUID()),
                     ContentType.create("application/xml", StandardCharsets.UTF_8.name()
                     )
@@ -194,7 +195,7 @@ public class CTERASession extends DAVSession {
         try {
             attach.setEntity(
                 new StringEntity(
-                    getAttachmentAsString(null, password,
+                    getAttachmentAsString(null, new HostPreferences(host).getProperty("ctera.attach.devicetype"), password,
                         URIEncoder.encode(InetAddress.getLocalHost().getHostName()), new MacUniqueIdService().getUUID()),
                     ContentType.create("application/xml", StandardCharsets.UTF_8.name()
                     )
@@ -285,7 +286,7 @@ public class CTERASession extends DAVSession {
         }
     }
 
-    private static Attachment getAttachment(final String activationCode, final String password, final String hostname, final String mac) {
+    private static Attachment getAttachment(final String activationCode, final String attachDeviceType, final String password, final String hostname, final String mac) {
         final Attachment attachment = new Attachment();
         final ArrayList<Attachment.Attribute> attributes = new ArrayList<>();
         attachment.setAttributes(attributes);
@@ -307,7 +308,7 @@ public class CTERASession extends DAVSession {
         params.setAtt(paramsAttributes);
         final Attachment.Attribute deviceType = new Attachment.Attribute();
         deviceType.setId("deviceType");
-        deviceType.setVal("DriveConnect");
+        deviceType.setVal(attachDeviceType);
         paramsAttributes.add(deviceType);
         final Attachment.Attribute deviceMac = new Attachment.Attribute();
         deviceMac.setId("deviceMac");
@@ -329,9 +330,9 @@ public class CTERASession extends DAVSession {
         return attachment;
     }
 
-    private static String getAttachmentAsString(final String activationCode, final String password,
+    private static String getAttachmentAsString(final String activationCode, final String attachDeviceType, final String password,
                                                 final String hostname, final String mac) throws JsonProcessingException {
-        final Attachment attachment = getAttachment(activationCode, password, hostname, mac);
+        final Attachment attachment = getAttachment(activationCode, attachDeviceType, password, hostname, mac);
         final XmlMapper xmlMapper = new XmlMapper();
         return xmlMapper.writeValueAsString(attachment);
     }
