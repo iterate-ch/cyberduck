@@ -182,7 +182,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
      */
     protected String getWebsiteHostname(final Path bucket) throws BackgroundException {
         // Geographical location
-        final Location.Name location = new S3LocationFeature(session).getLocation(bucket);
+        final Location.Name location = new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(bucket);
         // US Standard
         final String endpoint;
         if(Location.unknown == location) {
