@@ -60,7 +60,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
             }, initialized.Select(x => !x));
 
             var profiles = LoadProfiles.ToObservableChangeSet()
-                .Transform(x => new ProfileViewModel(x, this.installed.ContainsKey(x.Description)))
+                .Transform(x => new ProfileViewModel(x, this.installed.ContainsKey(x.Description) && x.Profile.isEnabled()))
                 .AsObservableList();
 
             profiles.Connect()
