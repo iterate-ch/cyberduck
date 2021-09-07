@@ -16,6 +16,9 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.MemoryPreferences;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.Test;
@@ -192,5 +195,28 @@ public class ProtocolFactoryTest {
         final ProtocolFactory f = new ProtocolFactory(Stream.of(baseProtocol, overrideProtocol).collect(Collectors.toSet()));
         assertEquals(overrideProtocol, f.forName("test", "test-provider2"));
         assertEquals(baseProtocol, f.forName("test", "test-provider1"));
+    }
+
+    @Test
+    public void testRegisterUnregisterIsEnabled() throws Exception {
+        Preferences preferences = new MemoryPreferences();
+        PreferencesFactory.set(preferences);
+        final ProtocolFactory factory = new ProtocolFactory(Stream.of(new TestProtocol() {
+            @Override
+            public Type getType() {
+                return Type.s3;
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
+        }).collect(Collectors.toSet()));
+        final ProfilePlistReader reader = new ProfilePlistReader(factory);
+        Profile profile = reader.read(new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile"));
+        factory.register(profile);
+        assertTrue(profile.isEnabled());
+        factory.unregister(profile);
+        assertFalse(profile.isEnabled());
     }
 }
