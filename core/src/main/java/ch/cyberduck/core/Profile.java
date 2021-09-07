@@ -86,7 +86,7 @@ public class Profile implements Protocol {
         final String protocol = this.value("Protocol");
         final String vendor = this.value("Vendor");
         if(StringUtils.isNotBlank(protocol) && StringUtils.isNotBlank(vendor)) {
-            final String property = PreferencesFactory.get().getProperty(String.format("profiles.%s.%s.enabled", protocol, vendor));
+            final String property = PreferencesFactory.get().getProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled", protocol, vendor)));
             if(null == property) {
                 // Not previously configured. Assume enabled
                 return true;
