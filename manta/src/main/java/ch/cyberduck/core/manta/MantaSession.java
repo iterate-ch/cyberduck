@@ -86,7 +86,7 @@ public class MantaSession extends HttpSession<MantaClient> {
             if(host.getCredentials().isPublicKeyAuthentication()) {
                 config.setMantaKeyId(new MantaPublicKeyAuthentication(this).authenticate(host, prompt, cancel));
             }
-            else {
+            if(host.getCredentials().isPasswordAuthentication()) {
                 config.setPassword(host.getCredentials().getPassword());
             }
             config.setNoAuth(false);
