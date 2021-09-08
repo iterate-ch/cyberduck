@@ -91,7 +91,8 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
             retryHandler.setApiKey(credentials.getPassword());
         }
         else {
-            this.pair(host, prompt, cancel).setSaved(true);
+            // No prompt on explicit connect
+            this.pair(host, new DisabledConnectionCallback(), cancel).setSaved(true);
             retryHandler.setApiKey(credentials.getPassword());
         }
     }
