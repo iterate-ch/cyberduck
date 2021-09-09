@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -75,7 +76,7 @@ public final class ProtocolFactory {
      * @param profiles   Third party profiles directory in application support
      */
     public ProtocolFactory(final Set<Protocol> registered, final Local bundle, final Local profiles) {
-        this.registered = registered;
+        this.registered = new HashSet<>(registered);
         this.bundle = bundle;
         this.profiles = profiles;
     }
