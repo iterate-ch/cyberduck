@@ -1,7 +1,7 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.profiles;
 
 /*
- * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,24 +15,26 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.profiles.ProfileDescription;
+import ch.cyberduck.core.Protocol;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Map;
 import java.util.function.Predicate;
 
-public class SearchProtocolPredicate implements Predicate<Map.Entry<ProfileDescription, Profile>> {
+public class SearchProfilePredicate implements Predicate<ProfileDescription> {
 
     private final String input;
 
-    public SearchProtocolPredicate(final String input) {
+    public SearchProfilePredicate(final String input) {
         this.input = input;
     }
 
     @Override
-    public boolean test(final Map.Entry<ProfileDescription, Profile> entry) {
-        final Protocol protocol = entry.getValue();
+    public boolean test(final ProfileDescription entry) {
+        if(!entry.getProfile().isPresent()) {
+            return false;
+        }
+        final Protocol protocol = entry.getProfile().get();
         for(String i : StringUtils.split(input, StringUtils.SPACE)) {
             if(StringUtils.containsIgnoreCase(protocol.getName(), i)
                 || StringUtils.containsIgnoreCase(protocol.getDescription(), i)
