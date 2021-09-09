@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
@@ -34,6 +35,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class RemoteProfilesFinderTest {
 
@@ -53,6 +55,9 @@ public class RemoteProfilesFinderTest {
         // Check for versions
         assertFalse(stream.stream().filter(ProfileDescription::isLatest).collect(Collectors.toSet()).isEmpty());
         assertFalse(stream.stream().filter(description -> !description.isLatest()).collect(Collectors.toSet()).isEmpty());
+        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("30298e0b4a1bd3ce954289281347c6ad"))));
+        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("ed214eca3b4521a6d567326b2e6e24e4"))));
+        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("283e922b59c8e716608763364dc63fb4"))));
         session.close();
     }
 }
