@@ -154,7 +154,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
                 else {
                     try {
                         new FilesApi(new BrickApiClient(session)).postFilesPath(new FilesPathBody()
-                            .providedMtime(new DateTime(overall.getTimestamp()))
+                            .providedMtime(null != overall.getTimestamp() ? new DateTime(overall.getTimestamp()) : null)
                             .etagsEtag(checksums.stream().map(s -> s.getChecksum().hash).collect(Collectors.toList()))
                             .etagsPart(checksums.stream().map(TransferStatus::getPart).collect(Collectors.toList()))
                             .ref(ref)

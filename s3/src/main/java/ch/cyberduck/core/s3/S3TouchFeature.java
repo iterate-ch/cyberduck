@@ -51,7 +51,9 @@ public class S3TouchFeature implements Touch<StorageObject> {
         final S3Object metadata = (S3Object) out.getStatus();
         final PathAttributes attr = new S3AttributesFinderFeature(session).toAttributes(metadata);
         attr.setMetadata(status.getMetadata());
-        attr.setModificationDate(status.getTimestamp());
+        if(null != status.getTimestamp()) {
+            attr.setModificationDate(status.getTimestamp());
+        }
         return file.withAttributes(attr);
     }
 

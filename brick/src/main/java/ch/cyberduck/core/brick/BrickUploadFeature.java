@@ -152,7 +152,7 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             return new FilesApi(new BrickApiClient(session)).postFilesPath(new FilesPathBody()
                 .etagsEtag(checksums.stream().map(s -> s.getChecksum().hash).collect(Collectors.toList()))
                 .etagsPart(checksums.stream().map(TransferStatus::getPart).collect(Collectors.toList()))
-                .providedMtime(new DateTime(status.getTimestamp()))
+                .providedMtime(null != status.getTimestamp() ? new DateTime(status.getTimestamp()) : null)
                 .ref(ref)
                 .action("end"), StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
         }
