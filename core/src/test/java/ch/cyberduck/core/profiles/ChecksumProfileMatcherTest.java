@@ -22,6 +22,7 @@ import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.junit.Test;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,24 +32,43 @@ import static org.junit.Assert.assertTrue;
 public class ChecksumProfileMatcherTest {
 
     @Test
-    public void compare() throws Exception {
+    public void testLocalOnly() throws Exception {
         // Local only profile
-        assertFalse(new ChecksumProfileMatcher(Stream.of(new ProfileDescription("Profile.cyberduckprofile", Checksum.NONE, null)).collect(Collectors.toList()))
-            .compare(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null)).isPresent());
+        final ProfileDescription local = new ProfileDescription(
+            new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null);
+        assertFalse(new ChecksumProfileMatcher(Stream.<ProfileDescription>empty().collect(Collectors.toSet())).compare(local).isPresent());
+    }
+
+    @Test
+    public void testEqual() throws Exception {
         // Managed profile
-        assertFalse(new ChecksumProfileMatcher(Stream.of(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null)).collect(Collectors.toList()))
-            .compare(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null)).isPresent());
-        assertTrue(new ChecksumProfileMatcher(Stream.of(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null) {
+        final ProfileDescription remote = new ProfileDescription(
+            new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null) {
+            @Override
+            public boolean isLatest() {
+                return true;
+            }
+        };
+        final ProfileDescription local = new ProfileDescription(
+            new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null);
+        assertFalse(new ChecksumProfileMatcher(Stream.of(remote).collect(Collectors.toSet())).compare(local).isPresent());
+    }
+
+    @Test
+    public void testNewerVersionFound() throws Exception {
+        final ProfileDescription local = new ProfileDescription(new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null);
+        final ProfileDescription remote = new ProfileDescription(
+            new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null) {
             @Override
             public boolean isLatest() {
                 return false;
             }
 
             @Override
-            public Local getProfile() {
-                return new NullLocal("Profile.cyberduckprofile");
+            public Optional<Local> getFile() {
+                return Optional.of(new NullLocal("Profile.cyberduckprofile"));
             }
-        }).collect(Collectors.toList()))
-            .compare(new ProfileDescription("Profile.cyberduckprofile", new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null)).isPresent());
+        };
+        assertTrue(new ChecksumProfileMatcher(Stream.of(remote).collect(Collectors.toSet())).compare(local).isPresent());
     }
 }

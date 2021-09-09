@@ -17,29 +17,32 @@ package ch.cyberduck.core.profiles;
 
 import org.apache.log4j.Logger;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
- * Compare checksums with all versions found in repository
+ * Match checksum with all versions found in repository
  */
 public class ChecksumProfileMatcher implements ProfileMatcher {
     private static final Logger log = Logger.getLogger(ChecksumProfileMatcher.class.getName());
 
-    private final List<ProfileDescription> repository;
+    /**
+     * Remote list of profiles
+     */
+    private final Set<ProfileDescription> repository;
 
     /**
      * @param repository Profiles from remote repository
      */
-    public ChecksumProfileMatcher(final List<ProfileDescription> repository) {
+    public ChecksumProfileMatcher(final Set<ProfileDescription> repository) {
         this.repository = repository;
     }
 
     /**
-     * Filter locally installed profiles by matching filename only
+     * Filter locally installed profiles by matching checksum
      *
-     * @param next Description of profile installed
-     * @return Non null if matching profile is found on disk with checksum mismatch
+     * @param next Description of profile installed in application support directory
+     * @return Non-null if matching profile is found in remote list and not latest version
      */
     @Override
     public Optional<ProfileDescription> compare(final ProfileDescription next) {
