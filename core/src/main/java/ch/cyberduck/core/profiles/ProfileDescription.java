@@ -16,21 +16,29 @@ package ch.cyberduck.core.profiles;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.apache.log4j.Logger;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Profile metadata
  */
 public class ProfileDescription {
-    private final LazyInitializer<Checksum> checksum;
-    private final LazyInitializer<Local> profile;
+    private static final Logger log = Logger.getLogger(ProfileDescription.class);
 
-    public ProfileDescription(final String name, final Checksum checksum, final Local profile) {
+    private final LazyInitializer<Checksum> checksum;
+    private final LazyInitializer<Local> local;
+    private final LazyInitializer<Profile> profile;
+
+    public ProfileDescription(final Checksum checksum, final Local local) {
         this(new LazyInitializer<Checksum>() {
             @Override
             protected Checksum initialize() {
@@ -39,14 +47,26 @@ public class ProfileDescription {
         }, new LazyInitializer<Local>() {
             @Override
             protected Local initialize() {
-                return profile;
+                return local;
             }
         });
     }
 
-    public ProfileDescription(final LazyInitializer<Checksum> checksum, final LazyInitializer<Local> profile) {
+    public ProfileDescription(final LazyInitializer<Checksum> checksum, final LazyInitializer<Local> local) {
         this.checksum = checksum;
-        this.profile = profile;
+        this.local = local;
+        this.profile = new LazyInitializer<Profile>() {
+            @Override
+            protected Profile initialize() throws ConcurrentException {
+                try {
+                    return new ProfilePlistReader().read(local.get());
+                }
+                catch(AccessDeniedException e) {
+                    log.warn(String.format("Failure %s reading profile %s", e, e));
+                    throw new ConcurrentException(e);
+                }
+            }
+        };
     }
 
     public Checksum getChecksum() {
@@ -58,12 +78,21 @@ public class ProfileDescription {
         }
     }
 
-    public Local getProfile() {
+    public Optional<Local> getFile() {
         try {
-            return profile.get();
+            return Optional.of(local.get());
         }
         catch(ConcurrentException e) {
-            return null;
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Profile> getProfile() {
+        try {
+            return Optional.of(profile.get());
+        }
+        catch(ConcurrentException e) {
+            return Optional.empty();
         }
     }
 
@@ -98,11 +127,15 @@ public class ProfileDescription {
         return true;
     }
 
+    public boolean isInstalled() {
+        return false;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ProfileDescription{");
         sb.append("checksum=").append(checksum);
-        sb.append(", profile=").append(profile);
+        sb.append(", profile=").append(local);
         sb.append('}');
         return sb.toString();
     }
