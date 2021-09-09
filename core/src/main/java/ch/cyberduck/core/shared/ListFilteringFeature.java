@@ -70,7 +70,7 @@ public abstract class ListFilteringFeature {
 
         @Override
         public boolean test(final Path f) {
-            if(StringUtils.isNotBlank(f.attributes().getVersionId())) {
+            if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
                 // Search with specific version and region
                 return new DefaultPathPredicate(file).test(f);
             }
