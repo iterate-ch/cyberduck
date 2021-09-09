@@ -29,6 +29,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -39,7 +41,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.EnumSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -60,8 +61,8 @@ public class RemoteProfilesFinder implements ProfilesFinder {
                 log.info(String.format("Fetch profiles from %s", session.getHost()));
             }
             final ProfileFilter filter = new ProfileFilter();
-            final AttributedList<Path> list = session.getFeature(ListService.class).list(new Path(
-                session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            final AttributedList<Path> list = session.getFeature(ListService.class).list(new DelegatingHomeFeature(
+                new DefaultPathHomeFeature(session.getHost())).find(), new DisabledListProgressListener());
             return list.filter(filter).toStream().map(file -> visitor.visit(new RemoteProfileDescription(file,
                 new LazyInitializer<Local>() {
                     @Override
