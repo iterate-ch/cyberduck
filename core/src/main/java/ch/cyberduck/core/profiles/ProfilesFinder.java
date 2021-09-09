@@ -36,6 +36,9 @@ public interface ProfilesFinder {
             }
         };
 
+        /**
+         * Download and parse profile
+         */
         Visitor Prefetch = description -> {
             description.getProfile();
             return description;
