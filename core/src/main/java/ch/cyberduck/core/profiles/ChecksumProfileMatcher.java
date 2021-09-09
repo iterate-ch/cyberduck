@@ -17,6 +17,7 @@ package ch.cyberduck.core.profiles;
 
 import org.apache.log4j.Logger;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -48,7 +49,7 @@ public class ChecksumProfileMatcher implements ProfileMatcher {
     public Optional<ProfileDescription> compare(final ProfileDescription next) {
         // Filter out profiles with matching checksum
         final Optional<ProfileDescription> found = repository.stream()
-            .filter(description -> description.getChecksum().equals(next.getChecksum()))
+            .filter(description -> Objects.equals(description.getChecksum(), next.getChecksum()))
             .findFirst();
         if(found.isPresent()) {
             // Found matching checksum. Determine if latest version
@@ -57,7 +58,7 @@ public class ChecksumProfileMatcher implements ProfileMatcher {
                 return Optional.empty();
             }
             else {
-                // Read latest profile from server as we found matching checksum for previous version
+                // Read last profile version from server as we found matching checksum for previous version
                 return found;
             }
         }
