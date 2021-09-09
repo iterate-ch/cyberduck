@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -49,25 +50,39 @@ public final class ProtocolFactory {
     }
 
     private final Set<Protocol> registered;
+
     private final Local bundle;
+    private final Local profiles;
 
     public ProtocolFactory() {
         this(new LinkedHashSet<>());
     }
 
-    public ProtocolFactory(final Set<Protocol> protocols) {
-        this(LocalFactory.get(ApplicationResourcesFinderFactory.get().find(),
-            PreferencesFactory.get().getProperty("profiles.folder.name")), protocols);
+    /**
+     * @param registered Default registered set of protocols
+     */
+    public ProtocolFactory(final Set<Protocol> registered) {
+        this(registered,
+            LocalFactory.get(ApplicationResourcesFinderFactory.get().find(),
+                PreferencesFactory.get().getProperty("profiles.folder.name")),
+            LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
+                PreferencesFactory.get().getProperty("profiles.folder.name")));
     }
 
-    public ProtocolFactory(final Local bundle, final Set<Protocol> protocols) {
+    /**
+     * @param registered Default registered set of protocols
+     * @param bundle     Directory with default profiles in application installation directory
+     * @param profiles   Third party profiles directory in application support
+     */
+    public ProtocolFactory(final Set<Protocol> registered, final Local bundle, final Local profiles) {
+        this.registered = registered;
         this.bundle = bundle;
-        this.registered = protocols;
+        this.profiles = profiles;
     }
 
     public void register(Protocol... protocols) {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Register protocols %s", protocols));
+            log.info(String.format("Register protocols %s", Arrays.toString(protocols)));
         }
         // Order determines list in connection dropdown
         Collections.addAll(registered, protocols);
@@ -79,7 +94,7 @@ public final class ProtocolFactory {
     public void load() {
         this.load(new LocalProfilesFinder(bundle));
         // Load thirdparty protocols
-        this.load(new LocalProfilesFinder());
+        this.load(new LocalProfilesFinder(profiles));
     }
 
     /**
@@ -89,17 +104,9 @@ public final class ProtocolFactory {
      */
     public void load(final ProfilesFinder finder) {
         try {
-            final ProfilePlistReader reader = new ProfilePlistReader(this);
             for(ProfileDescription description : finder.find()) {
-                Local e = description.getProfile();
-                if(e != null) {
-                    try {
-                        registered.add(reader.read(e));
-                    }
-                    catch(AccessDeniedException f) {
-                        log.warn(String.format("Failure %s reading profile %s", e, e));
-                    }
-                }
+                final Optional<Profile> profile = description.getProfile();
+                profile.ifPresent(registered::add);
             }
         }
         catch(AccessDeniedException e) {
@@ -108,43 +115,63 @@ public final class ProtocolFactory {
     }
 
     /**
-     * Register profile and write to application support directory
+     * Register profile and copy to application support directory
      *
-     * @param file Profile
+     * @param file Connection profile to install
+     * @return Installation location in application support directory
      */
-    public void register(final Local file) {
+    public Local register(final Local file) {
         try {
             final Profile profile = new ProfilePlistReader(this).read(file);
             if(null == profile) {
                 log.error("Attempt to register unknown protocol");
-                return;
+                return null;
             }
             if(log.isInfoEnabled()) {
                 log.info(String.format("Register profile %s", profile));
             }
             registered.add(profile);
             preferences.setProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled", profile.getProtocol(), profile.getProvider())), true);
-            final Local directory = LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
-                PreferencesFactory.get().getProperty("profiles.folder.name"));
-            if(!directory.exists()) {
-                new DefaultLocalDirectoryFeature().mkdir(directory);
+            if(!profiles.exists()) {
+                new DefaultLocalDirectoryFeature().mkdir(profiles);
             }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Save profile %s to %s", profile, directory));
+                log.debug(String.format("Save profile %s to %s", profile, profiles));
             }
-            file.copy(LocalFactory.get(directory, file.getName()));
+            if(!file.isChild(profiles)) {
+                final Local target = LocalFactory.get(profiles, file.getName());
+                file.copy(target);
+                return target;
+            }
+            return file;
         }
         catch(AccessDeniedException e) {
             log.error(String.format("Failure %s reading profile %s", e, file));
+            return null;
         }
     }
 
-    public void unregister(final Profile profile) {
-        if(registered.remove(profile)) {
-            preferences.setProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled", profile.getProtocol(), profile.getProvider())), false);
+    /**
+     * Remove connection profile
+     *
+     * @param file File in application support directory
+     */
+    public void unregister(final Local file) {
+        try {
+            final Profile profile = new ProfilePlistReader(this).read(file);
+            if(null == profile) {
+                log.error("Attempt to unregister unknown protocol");
+                return;
+            }
+            if(registered.remove(profile)) {
+                preferences.setProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled", profile.getProtocol(), profile.getProvider())), false);
+            }
+            else {
+                log.warn(String.format("Failure removing protocol %s", profile));
+            }
         }
-        else {
-            log.warn(String.format("Failure removing protocol %s", profile));
+        catch(AccessDeniedException e) {
+            log.error(String.format("Failure %s reading profile %s", e, file));
         }
     }
 
@@ -251,6 +278,7 @@ public final class ProtocolFactory {
         final StringBuilder sb = new StringBuilder("ProtocolFactory{");
         sb.append("registered=").append(registered);
         sb.append(", bundle=").append(bundle);
+        sb.append(", profiles=").append(profiles);
         sb.append('}');
         return sb.toString();
     }
