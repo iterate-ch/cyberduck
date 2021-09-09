@@ -3,10 +3,11 @@
 [![GitHub commit](https://img.shields.io/github/last-commit/iterate-ch/cyberduck)](https://github.com/iterate-ch/cyberduck/commits/master)
 [![GitHub license](https://img.shields.io/badge/license-GPL-blue.svg)](https://raw.githubusercontent.com/iterate-ch/cyberduck/master/LICENSE)
 [![Build Status](https://github.com/iterate-ch/cyberduck/workflows/Unit%20Tests/badge.svg?branch=master)](https://github.com/iterate-ch/cyberduck/actions)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/608be33d6e1941858b17984518a4a44b)](https://www.codacy.com/app/dkocher/cyberduck?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=iterate-ch/cyberduck&amp;utm_campaign=Badge_Grade)
 [![Twitter](https://img.shields.io/badge/twitter-@cyberduckapp-blue.svg?style=flat)](http://twitter.com/cyberduckapp)
 
 Libre file transfer client for macOS and Windows. Command line interface (CLI) for Linux, macOS and Windows.
+
+<img src="https://cdn.cyberduck.io/img/cyberduck-icon-rect-512.png" alt="Cyberduck Icon" width="400px"/>
 
 ## Prerequisites
 
@@ -15,6 +16,7 @@ Libre file transfer client for macOS and Windows. Command line interface (CLI) f
 - Apache Maven 3.5 or later
 
 ### macOS
+
 - [Xcode 12](https://developer.apple.com/xcode/download/) or later
 
 ### Windows
