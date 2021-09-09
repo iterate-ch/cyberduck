@@ -314,7 +314,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
           Lowercase folder name to use when looking for profiles in user support directory
          */
         this.setDefault("profiles.folder.name", "Profiles");
-        this.setDefault("profiles.discovery.updater.enable", String.valueOf(true));
+        this.setDefault("profiles.discovery.updater.enable", String.valueOf(false));
         this.setDefault("profiles.discovery.updater.url", "s3:/profiles.cyberduck.io");
 
         /*
