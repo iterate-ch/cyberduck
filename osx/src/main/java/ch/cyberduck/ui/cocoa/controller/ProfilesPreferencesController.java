@@ -35,19 +35,18 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
-import ch.cyberduck.core.SearchProtocolPredicate;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.profiles.LocalProfilesFinder;
-import ch.cyberduck.core.profiles.PeriodicProfilesUpdater;
+import ch.cyberduck.core.profiles.LocalProfileDescription;
 import ch.cyberduck.core.profiles.ProfileDescription;
 import ch.cyberduck.core.profiles.ProfilesFinder;
+import ch.cyberduck.core.profiles.ProfilesSynchronizeWorker;
+import ch.cyberduck.core.profiles.ProfilesWorkerBackgroundAction;
+import ch.cyberduck.core.profiles.SearchProfilePredicate;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
-import ch.cyberduck.core.threading.AbstractBackgroundAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -55,17 +54,15 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSPoint;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 public class ProfilesPreferencesController extends BundleController {
@@ -77,12 +74,7 @@ public class ProfilesPreferencesController extends BundleController {
     private final Preferences preferences = PreferencesFactory.get();
 
     /**
-     * List of profiles installed
-     */
-    private final Map<ProfileDescription, Profile> installed
-        = Collections.synchronizedMap(new LinkedHashMap<>());
-    /**
-     * List of profiles from repository
+     * Synchronized ist of available profiles
      */
     private final Map<ProfileDescription, Profile> repository
         = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -138,12 +130,12 @@ public class ProfilesPreferencesController extends BundleController {
     public void searchFieldTextDidEndEditing(final NSNotification notification) {
         final String input = searchField.stringValue();
         if(StringUtils.isBlank(input)) {
-            this.profilesTableDataSource.withSource(toList(repository.entrySet()));
+            this.profilesTableDataSource.withSource(toSorted(repository.keySet()));
         }
         else {
             // Setup search filter
-            this.profilesTableDataSource.withSource(toList(
-                repository.entrySet().stream().filter(new SearchProtocolPredicate(input)).collect(Collectors.toSet())));
+            this.profilesTableDataSource.withSource(toSorted(
+                repository.keySet().stream().filter(new SearchProfilePredicate(input)).collect(Collectors.toSet())));
         }
         // Reload with current cache
         this.profilesTableView.reloadData();
@@ -151,7 +143,7 @@ public class ProfilesPreferencesController extends BundleController {
 
     public void setProfilesTableView(final NSOutlineView profilesTableView) {
         this.profilesTableView = profilesTableView;
-        this.profilesTableDataSource = new ProfilesTableDataSource().withSource(toList(repository.entrySet()));
+        this.profilesTableDataSource = new ProfilesTableDataSource().withSource(toSorted(repository.keySet()));
         this.profilesTableView.setDataSource(profilesTableDataSource.id());
         this.profilesTableDelegate = new ProfilesTableDelegate(profilesTableView.tableColumnWithIdentifier("Default"));
         this.profilesTableView.setDelegate(profilesTableDelegate.id());
@@ -170,52 +162,22 @@ public class ProfilesPreferencesController extends BundleController {
     public void awakeFromNib() {
         try {
             progressIndicator.startAnimation(null);
-            final List<ProfileDescription> installed = new LocalProfilesFinder().find();
             final ProfilePlistReader reader = new ProfilePlistReader(protocols);
-            for(ProfileDescription description : installed) {
-                try {
-                    this.installed.put(description, reader.read(description.getProfile()));
-                }
-                catch(AccessDeniedException e) {
-                    log.warn(String.format("Failure %s reading profile %s", e, description));
-                }
-            }
-            final Future<List<ProfileDescription>> synchronize = new PeriodicProfilesUpdater(this).synchronize(installed, new ProfilesFinder.Visitor() {
-                @Override
-                public ProfileDescription visit(final ProfileDescription description) {
-                    if(description.isLatest()) {
-                        // Fetch contents
-                        final Local profile = description.getProfile();
-                        if(profile != null) {
-                            try {
-                                repository.put(description, reader.read(profile));
-                            }
-                            catch(AccessDeniedException e) {
-                                log.warn(String.format("Failure %s reading profile %s", e, description));
+            this.background(new ProfilesWorkerBackgroundAction(this,
+                new ProfilesSynchronizeWorker(protocols, ProfilesFinder.Visitor.Prefetch) {
+                    @Override
+                    public void cleanup(final Set<ProfileDescription> set) {
+                        for(ProfileDescription description : set) {
+                            if(description.getProfile().isPresent()) {
+                                repository.put(description, description.getProfile().get());
                             }
                         }
+                        profilesTableDataSource.withSource(toSorted(repository.keySet()));
+                        profilesTableView.reloadData();
+                        progressIndicator.stopAnimation(null);
                     }
-                    return description;
-                }
-            });
-            this.background(new AbstractBackgroundAction<List<ProfileDescription>>() {
-                @Override
-                public List<ProfileDescription> run() throws BackgroundException {
-                    try {
-                        return synchronize.get();
-                    }
-                    catch(InterruptedException | ExecutionException e) {
-                        throw new BackgroundException(e);
-                    }
-                }
-
-                @Override
-                public void cleanup() {
-                    profilesTableDataSource.withSource(toList(repository.entrySet()));
-                    profilesTableView.reloadData();
-                    progressIndicator.stopAnimation(null);
-                }
-            });
+                })
+            );
         }
         catch(BackgroundException e) {
             log.error(String.format("Failure %s retrieving profiles", e));
@@ -273,15 +235,6 @@ public class ProfilesPreferencesController extends BundleController {
         @Override
         public void deleteKeyPressed(final ID sender) {
 
-        }
-
-        @Override
-        public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView t, NSCell cell, ID rect, NSTableColumn c, NSObject item, NSPoint mouseLocation) {
-            final ProfileDescription description = this.fromChecksum(item);
-            if(null == description) {
-                return null;
-            }
-            return repository.get(description).getDefaultHostname();
         }
 
         @Override
@@ -470,8 +423,7 @@ public class ProfilesPreferencesController extends BundleController {
             this.checkbox.setState(NSCell.NSOnState);
             this.checkbox.setTarget(this.id());
             this.checkbox.setAction(Foundation.selector("profileCheckboxClicked:"));
-            if(installed.containsKey(description)) {
-                final Profile profile = installed.get(description);
+            if(description.isInstalled()) {
                 this.checkbox.setEnabled(!profile.isBundled());
                 this.checkbox.setState(profile.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
             }
@@ -490,13 +442,16 @@ public class ProfilesPreferencesController extends BundleController {
         @Action
         public void profileCheckboxClicked(final NSButton sender) {
             boolean enabled = sender.state() == NSCell.NSOnState;
-            if(enabled) {
-                // Update with latest version from repository
-                protocols.register(description.getProfile());
-            }
-            else {
-                // Uninstall profile
-                protocols.unregister(profile);
+            final Optional<Local> file = description.getFile();
+            if(file.isPresent()) {
+                if(enabled) {
+                    // Update with last version from repository
+                    repository.put(new LocalProfileDescription(protocols.register(file.get())), profile);
+                }
+                else {
+                    // Uninstall profile
+                    protocols.unregister(file.get());
+                }
             }
         }
 
@@ -514,13 +469,13 @@ public class ProfilesPreferencesController extends BundleController {
     /**
      * Sort and map profiles
      *
-     * @param repository Profiles
+     * @param profiles Profiles
      * @return List of profile descriptions sorted by value
      */
-    public static List<ProfileDescription> toList(final Set<Map.Entry<ProfileDescription, Profile>> repository) {
-        return repository.stream()
-            .sorted(Map.Entry.comparingByValue())
-            .map(Map.Entry::getKey)
+    private static List<ProfileDescription> toSorted(final Set<ProfileDescription> profiles) {
+        return profiles.stream()
+            .filter(description -> description.getProfile().isPresent())
+            .sorted(Comparator.comparing(o -> o.getProfile().get()))
             .collect(Collectors.toList());
     }
 }
