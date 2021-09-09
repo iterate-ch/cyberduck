@@ -33,7 +33,7 @@ public class CachingFindFeature implements Find {
         if(!file.isRoot()) {
             if(cache.isCached(file.getParent())) {
                 final AttributedList<Path> list = cache.get(file.getParent());
-                final Path found = list.find(new SimplePathPredicate(file));
+                final Path found = list.find(new DefaultPathPredicate(file));
                 return null != found;
             }
         }

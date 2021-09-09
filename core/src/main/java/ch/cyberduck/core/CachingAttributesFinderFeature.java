@@ -34,7 +34,7 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(cache.isCached(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.find(new SimplePathPredicate(file));
+            final Path found = list.find(new DefaultPathPredicate(file));
             if(null != found) {
                 return found.attributes();
             }
