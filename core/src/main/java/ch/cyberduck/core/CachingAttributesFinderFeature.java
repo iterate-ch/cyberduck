@@ -44,10 +44,10 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
             if(cache != PathCache.empty()) {
                 final AttributedList<Path> list = cache.get(file.getParent());
                 if(list == AttributedList.<Path>emptyList()) {
-                    cache.put(file.getParent(), new AttributedList<>(Collections.singletonList(file.withAttributes(attributes))));
+                    cache.put(file.getParent(), new AttributedList<>(Collections.singletonList(new Path(file).withAttributes(attributes))));
                 }
                 else {
-                    list.add(file.withAttributes(attributes));
+                    list.add(new Path(file).withAttributes(attributes));
                 }
             }
         }
