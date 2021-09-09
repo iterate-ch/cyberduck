@@ -1,4 +1,6 @@
-package ch.cyberduck.core.profiles;/*
+package ch.cyberduck.core.profiles;
+
+/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -15,14 +17,14 @@ package ch.cyberduck.core.profiles;/*
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 
-import java.util.List;
+import java.util.Set;
 
 public interface ProfilesFinder {
-    default List<ProfileDescription> find() throws AccessDeniedException {
+    default Set<ProfileDescription> find() throws AccessDeniedException {
         return this.find(Visitor.Noop);
     }
 
-    List<ProfileDescription> find(Visitor visitor) throws AccessDeniedException;
+    Set<ProfileDescription> find(Visitor visitor) throws AccessDeniedException;
 
     interface Visitor {
         ProfileDescription visit(ProfileDescription description);
