@@ -1,6 +1,20 @@
 Cyberduck
 https://cyberduck.io/
 
+8.0.0
+- [Feature] Allow to manage additional connection profiles in Preferences (#10823)
+- [Feature] Support for PEM ASN.1 encoded private keys (SFTP)
+- [Feature] Support for host certificate keys handling @cert-authority in known_hosts (SFTP)
+- [Feature] New default connection profile for ownCloud
+- [Feature] Retain modification date in metadata for uploads (Google Storage) (#11784)
+- [Feature] Retain modification date in metadata for uploads (S3) (#11784)
+- [Feature] Add --purge option to invalidate files in Amazon CloudFront distributions and OpenStack Swift (X-CDN-Enabled header) (#11767)
+- [Feature] New default connection profile (ownCloud)
+- [Bugfix] Change default path for NextCloud connections to include username (#11787)
+- [Bugfix] Failed to overwrite upload of object with custom metadata (Google Storage) (#11781)
+- [Bugfix] Skip duplicate file versions in output (Cyberduck CLI) (#11786)
+- [Bugfix] Fails to use selected private key file outside of ~/.ssh folder (SFTP, Mac App Store) (#11782)
+
 7.10.2
 - [Feature] Add --purge option to invalidate files in Amazon CloudFront distributions and OpenStack Swift (X-CDN-Enabled header) (#11767)
 - [Bugfix] Links for CloudFront distributions and S3 website endpoints are missing in the Copy URL and Open URL menu (S3) (#11764)
