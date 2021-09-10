@@ -27,11 +27,7 @@ public final class ProtocolComparator implements Comparable<Protocol> {
     public int compareTo(final Protocol o) {
         final int byType = protocol.getType().compareTo(o.getType());
         if(0 == byType) {
-            final int byScheme = protocol.getScheme().compareTo(o.getScheme());
-            if(0 == byScheme) {
-                return protocol.getDescription().compareTo(o.getDescription());
-            }
-            return byScheme;
+            return protocol.getDescription().compareTo(o.getDescription());
         }
         return byType;
     }
