@@ -92,7 +92,13 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             String ref = null;
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final FileUploadPartEntity uploadPartEntity = this.continueUpload(file, ref, partNumber);
-                final long length = Math.min(Math.max(size / (MAXIMUM_UPLOAD_PARTS - 1), partsize), remaining);
+                final long length;
+                if(uploadPartEntity.isParallelParts()) {
+                    length = Math.min(Math.max(size / (MAXIMUM_UPLOAD_PARTS - 1), partsize), remaining);
+                }
+                else {
+                    length = remaining;
+                }
                 parts.add(this.submit(pool, file, local, throttle, listener, status,
                     uploadPartEntity.getUploadUri(), partNumber, offset, length, callback));
                 remaining -= length;
