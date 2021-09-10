@@ -256,9 +256,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             throw new TransferCanceledException();
         }
         if(prompt.isSelected(new TransferItem(file, local))) {
-            return this.submit(new RetryTransferCallable(transfer.getSource(),
-                preferences.getInteger("transfer.connection.retry"), preferences.getInteger("transfer.connection.retry.delay")) {
-
+            return this.submit(new RetryTransferCallable(transfer.getSource()) {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     parent.validate();
@@ -368,9 +366,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                 if(segment.isComplete()) {
                     continue;
                 }
-                this.submit(new RetryTransferCallable(transfer.getSource(),
-                    preferences.getInteger("transfer.connection.retry"), preferences.getInteger("transfer.connection.retry.delay")) {
-
+                this.submit(new RetryTransferCallable(transfer.getSource()) {
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         status.validate();
