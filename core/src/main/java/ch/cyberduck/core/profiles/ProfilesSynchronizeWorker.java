@@ -26,6 +26,7 @@ import ch.cyberduck.core.worker.Worker;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -57,6 +58,11 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
         this.registry = registry;
         this.directory = directory;
         this.visitor = visitor;
+    }
+
+    @Override
+    public Set<ProfileDescription> initialize() {
+        return Collections.emptySet();
     }
 
     @Override
