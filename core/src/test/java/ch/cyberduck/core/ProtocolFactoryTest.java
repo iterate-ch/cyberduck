@@ -215,9 +215,9 @@ public class ProtocolFactoryTest {
         final ProfilePlistReader reader = new ProfilePlistReader(factory);
         final Local file = new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile");
         Profile profile = reader.read(file);
-        factory.register(profile);
+        factory.register(file);
         assertTrue(profile.isEnabled());
-        factory.unregister(file);
+        factory.unregister(profile);
         assertFalse(profile.isEnabled());
         assertTrue(file.exists());
     }

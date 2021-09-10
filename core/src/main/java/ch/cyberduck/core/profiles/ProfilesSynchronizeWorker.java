@@ -81,21 +81,16 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
                 // Found matching checksum for profile in remote list which is not marked as latest version
                 log.warn(String.format("Override %s with latest profile verison %s", local, match));
                 // Remove previous version
-                final Optional<Local> previous = local.getFile();
-                if(previous.isPresent()) {
-                    registry.unregister(previous.get());
-                    // Register updated profile by copying temporary file to application support
-                    final Optional<Local> current = match.get().getFile();
-                    // Prefetch profile from server
-                    current.ifPresent(value -> {
-                        final LocalProfileDescription d = new LocalProfileDescription(registry.register(value));
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Add synched profile %s", d));
-                        }
-                        returned.add(d);
-                        visitor.visit(d);
-                    });
-                }
+                local.getProfile().ifPresent(registry::unregister);
+                // Register updated profile by copying temporary file to application support
+                match.get().getFile().ifPresent(value -> {
+                    final LocalProfileDescription d = new LocalProfileDescription(registry.register(value));
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Add synched profile %s", d));
+                    }
+                    returned.add(d);
+                    visitor.visit(d);
+                });
             }
             else {
                 if(log.isDebugEnabled()) {
