@@ -52,11 +52,6 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
      */
     private int backoff;
 
-    public AbstractRetryCallable(final Host host) {
-        this(host, PreferencesFactory.get().getInteger("connection.retry"),
-            PreferencesFactory.get().getInteger("connection.retry.delay"));
-    }
-
     public AbstractRetryCallable(final Host host, final int retry, final int delay) {
         this.host = host;
         this.retry = retry;
