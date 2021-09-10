@@ -72,7 +72,6 @@ namespace Ch.Cyberduck.Ui
                 x.For<IProgressView>().Use<TransferControl>();
                 x.For<ICommandView>().Use<CommandForm>();
                 x.For<IDonationController>().Use<DonationController>();
-                x.For<LocalProfilesFinder>().Use(() => new LocalProfilesFinder());
                 x.For<PeriodicProfilesUpdater>().Use(ctx => new PeriodicProfilesUpdater(ctx.GetInstance<ch.cyberduck.core.Controller>()));
 
                 x.ForSingletonOf<IIconProviderImageSource>().Use<CyberduckImageSource>();
