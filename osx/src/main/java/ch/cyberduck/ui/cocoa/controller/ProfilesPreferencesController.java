@@ -442,16 +442,15 @@ public class ProfilesPreferencesController extends BundleController {
         @Action
         public void profileCheckboxClicked(final NSButton sender) {
             boolean enabled = sender.state() == NSCell.NSOnState;
-            final Optional<Local> file = description.getFile();
-            if(file.isPresent()) {
-                if(enabled) {
-                    // Update with last version from repository
-                    repository.put(new LocalProfileDescription(protocols.register(file.get())), profile);
-                }
-                else {
-                    // Uninstall profile
-                    protocols.unregister(file.get());
-                }
+            if(enabled) {
+                final Optional<Local> file = description.getFile();
+                // Update with last version from repository
+                file.ifPresent(local -> repository.put(new LocalProfileDescription(protocols.register(local)), profile));
+            }
+            else {
+                final Optional<Profile> profile = description.getProfile();
+                // Uninstall profile
+                profile.ifPresent(protocols::unregister);
             }
         }
 

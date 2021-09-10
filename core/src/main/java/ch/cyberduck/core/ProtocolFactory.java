@@ -155,24 +155,14 @@ public final class ProtocolFactory {
     /**
      * Remove connection profile
      *
-     * @param file File in application support directory
+     * @param profile Connection profile
      */
-    public void unregister(final Local file) {
-        try {
-            final Profile profile = new ProfilePlistReader(this).read(file);
-            if(null == profile) {
-                log.error("Attempt to unregister unknown protocol");
-                return;
-            }
-            if(registered.remove(profile)) {
-                preferences.setProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled", profile.getProtocol(), profile.getProvider())), false);
-            }
-            else {
-                log.warn(String.format("Failure removing protocol %s", profile));
-            }
+    public void unregister(final Profile profile) {
+        if(registered.remove(profile)) {
+            preferences.setProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled", profile.getProtocol(), profile.getProvider())), false);
         }
-        catch(AccessDeniedException e) {
-            log.error(String.format("Failure %s reading profile %s", e, file));
+        else {
+            log.warn(String.format("Failure removing protocol %s", profile));
         }
     }
 
