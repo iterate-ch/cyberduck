@@ -15,16 +15,16 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.Set;
 
 public interface ProfilesFinder {
-    default Set<ProfileDescription> find() throws AccessDeniedException {
+    default Set<ProfileDescription> find() throws BackgroundException {
         return this.find(Visitor.Noop);
     }
 
-    Set<ProfileDescription> find(Visitor visitor) throws AccessDeniedException;
+    Set<ProfileDescription> find(Visitor visitor) throws BackgroundException;
 
     interface Visitor {
         ProfileDescription visit(ProfileDescription description);

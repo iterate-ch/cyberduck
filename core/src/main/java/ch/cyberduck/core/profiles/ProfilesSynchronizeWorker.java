@@ -62,7 +62,12 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
 
     @Override
     public Set<ProfileDescription> initialize() {
-        return Collections.emptySet();
+        try {
+            return new LocalProfilesFinder(directory).find();
+        }
+        catch(BackgroundException e) {
+            return Collections.emptySet();
+        }
     }
 
     @Override

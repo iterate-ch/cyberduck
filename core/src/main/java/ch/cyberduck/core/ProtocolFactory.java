@@ -16,6 +16,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -110,7 +111,7 @@ public final class ProtocolFactory {
                 profile.ifPresent(registered::add);
             }
         }
-        catch(AccessDeniedException e) {
+        catch(BackgroundException e) {
             log.warn(String.format("Failure %s reading profiles from %s", finder, e));
         }
     }

@@ -24,7 +24,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
@@ -55,48 +54,43 @@ public class RemoteProfilesFinder implements ProfilesFinder {
     }
 
     @Override
-    public Set<ProfileDescription> find(final Visitor visitor) throws AccessDeniedException {
-        try {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Fetch profiles from %s", session.getHost()));
-            }
-            final ProfileFilter filter = new ProfileFilter();
-            final AttributedList<Path> list = session.getFeature(ListService.class).list(new DelegatingHomeFeature(
-                new DefaultPathHomeFeature(session.getHost())).find(), new DisabledListProgressListener());
-            return list.filter(filter).toStream().map(file -> visitor.visit(new RemoteProfileDescription(file,
-                new LazyInitializer<Local>() {
-                    @Override
-                    protected Local initialize() throws ConcurrentException {
+    public Set<ProfileDescription> find(final Visitor visitor) throws BackgroundException {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Fetch profiles from %s", session.getHost()));
+        }
+        final ProfileFilter filter = new ProfileFilter();
+        final AttributedList<Path> list = session.getFeature(ListService.class).list(new DelegatingHomeFeature(
+            new DefaultPathHomeFeature(session.getHost())).find(), new DisabledListProgressListener());
+        return list.filter(filter).toStream().map(file -> visitor.visit(new RemoteProfileDescription(file,
+            new LazyInitializer<Local>() {
+                @Override
+                protected Local initialize() throws ConcurrentException {
+                    try {
+                        final Read read = session.getFeature(Read.class);
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Download profile %s", file));
+                        }
+                        final InputStream in = read.read(file.withAttributes(new PathAttributes(file.attributes())
+                            // Read latest version
+                            .withVersionId(null)), new TransferStatus(), new DisabledConnectionCallback());
+                        final Local temp = TemporaryFileServiceFactory.get().create(file.getName());
+                        new DefaultLocalTouchFeature().touch(temp);
+                        final OutputStream out = temp.getOutputStream(false);
                         try {
-                            final Read read = session.getFeature(Read.class);
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Download profile %s", file));
-                            }
-                            final InputStream in = read.read(file.withAttributes(new PathAttributes(file.attributes())
-                                // Read latest version
-                                .withVersionId(null)), new TransferStatus(), new DisabledConnectionCallback());
-                            final Local temp = TemporaryFileServiceFactory.get().create(file.getName());
-                            new DefaultLocalTouchFeature().touch(temp);
-                            final OutputStream out = temp.getOutputStream(false);
-                            try {
-                                IOUtils.copy(in, out);
-                            }
-                            finally {
-                                in.close();
-                                out.close();
-                            }
-                            return temp;
+                            IOUtils.copy(in, out);
                         }
-                        catch(BackgroundException | IOException e) {
-                            throw new ConcurrentException(e);
+                        finally {
+                            in.close();
+                            out.close();
                         }
+                        return temp;
+                    }
+                    catch(BackgroundException | IOException e) {
+                        throw new ConcurrentException(e);
                     }
                 }
-            ))).collect(Collectors.toSet());
-        }
-        catch(BackgroundException e) {
-            throw new AccessDeniedException(e.getDetail(), e);
-        }
+            }
+        ))).collect(Collectors.toSet());
     }
 
     private static final class ProfileFilter implements Filter<Path> {
