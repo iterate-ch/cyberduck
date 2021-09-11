@@ -70,14 +70,12 @@ public abstract class ListFilteringFeature {
 
         @Override
         public boolean test(final Path f) {
-            if(StringUtils.isNotBlank(f.attributes().getVersionId())) {
+            if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
                 // Search with specific version and region
-                if(new DefaultPathPredicate(file).test(f)) {
-                    return true;
-                }
+                return new DefaultPathPredicate(file).test(f);
             }
             if(f.attributes().isDuplicate()) {
-                // Filter previous versions and delete markers
+                // Filter previous versions and delete markers when searching for no specific version
                 return false;
             }
             switch(session.getCaseSensitivity()) {
