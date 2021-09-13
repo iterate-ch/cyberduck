@@ -160,7 +160,7 @@ public final class ProtocolFactory {
      * @return List of registered protocols matching search criteria.
      */
     public List<Protocol> find(final Predicate<Protocol> search) {
-        return registered.stream().filter(search).sorted().collect(Collectors.toList());
+        return registered.stream().filter(search).collect(Collectors.toList());
     }
 
     /**
@@ -196,8 +196,11 @@ public final class ProtocolFactory {
                     enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
                         // Fallback for bug in 6.1
                         enabled.stream().filter(protocol -> StringUtils.equals(String.format("%s-%s", protocol.getIdentifier(), protocol.getProvider()), identifier)).findFirst().orElse(
-                            // Matching scheme with fallback to generic protocol type
-                            this.forScheme(enabled, identifier, enabled.stream().filter(protocol -> StringUtils.equals(protocol.getType().name(), identifier)).findFirst().orElse(null))
+                                // Matching bundled first with identifier match
+                                enabled.stream().filter(protocol -> protocol.isBundled() && StringUtils.equals(protocol.getIdentifier(), identifier)).findFirst().orElse(
+                                        // Matching scheme with fallback to generic protocol type
+                                        this.forScheme(enabled, identifier, enabled.stream().filter(protocol -> StringUtils.equals(protocol.getType().name(), identifier)).findFirst().orElse(null))
+                                )
                         )
                     )
                 )

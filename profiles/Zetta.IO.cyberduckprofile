@@ -6,8 +6,6 @@
        <string>swift</string>
        <key>Vendor</key>
        <string>zettaio</string>
-       <key>Type</key>
-       <string>swift</string>
        <key>Name</key>
        <string>Object Storage</string>
        <key>Description</key>

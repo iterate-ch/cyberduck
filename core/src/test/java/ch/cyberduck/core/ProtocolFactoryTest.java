@@ -98,7 +98,12 @@ public class ProtocolFactoryTest {
 
             @Override
             public String getProvider() {
-                return "provider_1";
+                return "default";
+            }
+
+            @Override
+            public boolean isBundled() {
+                return true;
             }
         };
         final TestProtocol dav_provider2 = new TestProtocol(Scheme.dav) {
@@ -114,7 +119,7 @@ public class ProtocolFactoryTest {
         };
         final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav_provider1, dav_provider2)));
         assertEquals(dav_provider1, f.forName("dav"));
-        assertEquals(dav_provider1, f.forName("dav", "provider_1"));
+        assertEquals(dav_provider1, f.forName("dav", "default"));
         assertEquals(dav_provider1, f.forName("dav", "g"));
         assertEquals(dav_provider2, f.forName("dav", "provider_2"));
     }

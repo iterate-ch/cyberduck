@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 public class CommandLineUriParserTest {
 
@@ -89,19 +90,23 @@ public class CommandLineUriParserTest {
     public void testCustomProvider() throws Exception {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
-        final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Collections.singletonList(new SwiftProtocol())));
+        final SwiftProtocol protocol = new SwiftProtocol();
+        final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Collections.singletonList(protocol)));
         final Profile rackspace = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile"));
-        assertEquals(new SwiftProtocol(), rackspace.getProtocol());
+        assertSame(protocol, rackspace.getProtocol());
         factory.register(rackspace);
         final Profile generic = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Openstack Swift (Keystone 2).cyberduckprofile"));
-        assertEquals(new SwiftProtocol(), generic.getProtocol());
+        assertSame(protocol, generic.getProtocol());
         factory.register(generic);
+        assertSame(rackspace, factory.forName("swift", "rackspace"));
+        assertSame(generic, factory.forName("swift", "openstack-keystone2"));
+
         assertEquals(rackspace, new CommandLineUriParser(input, factory).parse("rackspace://container//").getProtocol());
         assertEquals(0, new Host(rackspace, "identity.api.rackspacecloud.com", 443, "/container")
             .compareTo(new CommandLineUriParser(input, factory).parse("rackspace://container/")));
 
-        assertEquals(generic, new CommandLineUriParser(input, factory).parse("swift://auth.cloud.ovh.net/container/").getProtocol());
+        assertEquals(generic, new CommandLineUriParser(input, factory).parse("openstack-keystone2://auth.cloud.ovh.net/container/").getProtocol());
         assertEquals(0, new Host(generic, "auth.cloud.ovh.net", 443, "/container")
-            .compareTo(new CommandLineUriParser(input, factory).parse("swift://auth.cloud.ovh.net/container/")));
+            .compareTo(new CommandLineUriParser(input, factory).parse("openstack-keystone2://auth.cloud.ovh.net/container/")));
     }
 }
