@@ -160,7 +160,7 @@ public final class ProtocolFactory {
      * @return List of registered protocols matching search criteria.
      */
     public List<Protocol> find(final Predicate<Protocol> search) {
-        return registered.stream().filter(search).sorted().collect(Collectors.toList());
+        return registered.stream().filter(search).collect(Collectors.toList());
     }
 
     /**
