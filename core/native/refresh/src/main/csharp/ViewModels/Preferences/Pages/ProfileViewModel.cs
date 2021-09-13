@@ -1,7 +1,6 @@
 ﻿using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.profiles;
-using Ch.Cyberduck.Core.Refresh.Models;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System.Reactive;
@@ -10,15 +9,11 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 {
     public class ProfileViewModel : ReactiveObject
     {
-        public ProfileViewModel(DescribedProfile profile, bool installed)
+        public ProfileViewModel(ProfileDescription profile)
         {
-            Profile = profile.Profile;
-            ProfileDescription = profile.Description;
-            Installed = installed;
-
-            Description = profile.Profile.getDescription();
-            Name = profile.Profile.getName();
-            DefaultHostName = profile.Profile.getDefaultHostname();
+            ProfileDescription = profile;
+            Profile = (Profile)profile.getProfile().get();
+            Installed = profile.isInstalled() && Profile.isEnabled();
 
             OpenHelp = ReactiveCommand.Create(() =>
             {
@@ -26,16 +21,16 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
             });
         }
 
-        public string DefaultHostName { get; }
+        public string DefaultHostName => Profile.getDefaultHostname();
 
-        public string Description { get; }
+        public string Description => Profile.getDescription();
 
         [Reactive]
         public bool Installed { get; set; }
 
         public bool IsBundled => Profile.isBundled();
 
-        public string Name { get; }
+        public string Name => Profile.getName();
 
         public ReactiveCommand<Unit, Unit> OpenHelp { get; }
 

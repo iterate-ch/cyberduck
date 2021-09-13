@@ -1,28 +1,24 @@
-﻿using ch.cyberduck.core.profiles;
-using ch.cyberduck.core.serializer.impl.dd;
+﻿using ch.cyberduck.core;
+using ch.cyberduck.core.profiles;
 using Ch.Cyberduck.Core.Refresh.Models;
+using Ch.Cyberduck.Core.Refresh.Services;
 using DynamicData;
 using DynamicData.Binding;
-using java.util;
-using java.util.concurrent;
 using org.apache.log4j;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 {
-    using ch.cyberduck.core;
-    using Ch.Cyberduck.Core.Refresh.Services;
+    using java.util;
 
     public class ProfilesViewModel : ReactiveObject
     {
@@ -30,44 +26,37 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 
         private readonly Dictionary<ProfileDescription, DescribedProfile> installed = new();
 
-        public ProfilesViewModel(PeriodicProfilesUpdater periodicUpdater, LocalProfilesFinder localFinder, ProtocolFactory protocols, ProfileListObserver profileListObserver)
+        public ProfilesViewModel(ProtocolFactory protocols, ProfileListObserver profileListObserver, Controller controller)
         {
-            List installed = localFinder.find();
-            ProfilePlistReader reader = new(protocols);
-            Iterator iterator = installed.iterator();
-            while (iterator.hasNext())
-            {
-                ProfileDescription current = (ProfileDescription)iterator.next();
-                this.installed[current] = new DescribedProfile(current, (Profile)reader.read(current.getProfile()));
-            }
-
-            Func<CancellationToken, Task<IEnumerable<DescribedProfile>>> pass = CreateHandler(periodicUpdater, reader, installed);
             BehaviorSubject<bool> initialized = new(false);
-            LoadProfiles = ReactiveCommand.CreateFromTask(async (cancel) =>
+            LoadProfiles = ReactiveCommand.CreateFromTask(async () =>
             {
-                Profiles.Clear();
+                TaskCompletionSource<IEnumerable<ProfileDescription>> result = new();
+                var worker = new InternalProfilesSynchronizeWorker(protocols, result);
+                var action = new ProfilesWorkerBackgroundAction(controller, worker);
+                controller.background(action);
+
                 try
                 {
                     Busy = true;
-                    return await pass(cancel);
+                    return await result.Task;
                 }
                 finally
                 {
-                    initialized.OnNext(true);
-
                     Busy = false;
                 }
             }, initialized.Select(x => !x));
 
             var profiles = LoadProfiles.ToObservableChangeSet()
-                .Transform(x => new ProfileViewModel(x, this.installed.ContainsKey(x.Description) && x.Profile.isEnabled()))
+                .Filter(x => x.getProfile().isPresent())
+                .Filter(this.WhenAnyValue(v => v.FilterText)
+                    .Throttle(TimeSpan.FromMilliseconds(500))
+                    .DistinctUntilChanged()
+                    .Select(v => (Func<ProfileDescription, bool>)new SearchProfilePredicate(v).test))
+                .Transform(x => new ProfileViewModel(x))
                 .AsObservableList();
 
             profiles.Connect()
-                .Filter(this.WhenAnyValue(v => v.FilterText)
-                    .Throttle(TimeSpan.FromMilliseconds(725))
-                    .DistinctUntilChanged()
-                    .Select(Filter))
                 .Sort(SortExpressionComparer<ProfileViewModel>.Ascending(x => x.Profile))
                 .ObserveOnDispatcher()
                 .Bind(Profiles)
@@ -79,7 +68,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                 {
                     if (p.Value)
                     {
-                        protocols.register(p.Sender.ProfileDescription.getProfile());
+                        protocols.register(p.Sender.Profile);
                     }
                     else
                     {
@@ -95,73 +84,20 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
         [Reactive]
         public string FilterText { get; set; }
 
-        public ReactiveCommand<Unit, IEnumerable<DescribedProfile>> LoadProfiles { get; }
+        public ReactiveCommand<Unit, IEnumerable<ProfileDescription>> LoadProfiles { get; }
 
         public BindingList<ProfileViewModel> Profiles { get; } = new();
 
-        private static Func<CancellationToken, Task<IEnumerable<DescribedProfile>>> CreateHandler(PeriodicProfilesUpdater updater, ProfilePlistReader reader, List installed)
+        private class InternalProfilesSynchronizeWorker : ProfilesSynchronizeWorker
         {
-            Visitor visitor = new(reader);
-            return async (cancel) =>
-            {
-                visitor.Reset();
-                Future future = updater.synchronize(installed, visitor);
-                using (cancel.Register(() => future.cancel(true)))
-                {
-                    await Task.Run(future.get, cancel);
-                }
-                return visitor.List;
-            };
-        }
+            private readonly TaskCompletionSource<IEnumerable<ProfileDescription>> completionSource;
 
-        private static Func<ProfileViewModel, bool> Filter(string input)
-        {
-            if (string.IsNullOrWhiteSpace(input))
+            public InternalProfilesSynchronizeWorker(ProtocolFactory protocolFactory, TaskCompletionSource<IEnumerable<ProfileDescription>> completionSource) : base(protocolFactory, ProfilesFinder.Visitor.Prefetch)
             {
-                return _ => true;
-            }
-            var split = input.Split(' ');
-            bool Filter(string input) => split.Any(s => input.IndexOf(s, StringComparison.OrdinalIgnoreCase) != -1);
-            return p => Filter(p.Profile.getName())
-                || Filter(p.Profile.getDescription())
-                || Filter(p.Profile.getDefaultHostname())
-                || Filter(p.Profile.getProvider());
-        }
-
-        private class Visitor : ProfilesFinder.Visitor
-        {
-            private readonly ProfilePlistReader reader;
-            private readonly ConcurrentDictionary<ProfileDescription, DescribedProfile> repository = new();
-
-            public Visitor(ProfilePlistReader reader)
-            {
-                this.reader = reader;
+                this.completionSource = completionSource;
             }
 
-            public ICollection<DescribedProfile> List => repository.Values;
-
-            public void Reset() => repository.Clear();
-
-            public ProfileDescription visit(ProfileDescription description)
-            {
-                if (description.isLatest())
-                {
-                    Local profile = description.getProfile();
-                    if (profile != null)
-                    {
-                        try
-                        {
-                            repository[description] = new DescribedProfile(description, (Profile)reader.read(profile));
-                        }
-                        catch (Exception e)
-                        {
-                            log.warn(string.Format("Failure {0} reading profile {1}", e, description));
-                        }
-                    }
-                }
-
-                return description;
-            }
+            public override void cleanup(object result) => completionSource.SetResult(Utils.ConvertFromJavaList<ProfileDescription>((Collection)result));
         }
     }
 }

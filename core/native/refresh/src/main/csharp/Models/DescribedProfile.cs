@@ -5,10 +5,10 @@ namespace Ch.Cyberduck.Core.Refresh.Models
 {
     public class DescribedProfile
     {
-        public DescribedProfile(ProfileDescription description, Profile profile)
+        public DescribedProfile(ProfileDescription description)
         {
-            Profile = profile;
             Description = description;
+            Profile = (Profile)description.getProfile().get();
         }
 
         public ProfileDescription Description { get; }

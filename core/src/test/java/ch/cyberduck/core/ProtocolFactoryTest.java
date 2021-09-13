@@ -218,10 +218,12 @@ public class ProtocolFactoryTest {
             }
         }).collect(Collectors.toSet()));
         final ProfilePlistReader reader = new ProfilePlistReader(factory);
-        Profile profile = reader.read(new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile"));
-        factory.register(profile);
+        final Local file = new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile");
+        Profile profile = reader.read(file);
+        factory.register(file);
         assertTrue(profile.isEnabled());
         factory.unregister(profile);
         assertFalse(profile.isEnabled());
+        assertTrue(file.exists());
     }
 }
