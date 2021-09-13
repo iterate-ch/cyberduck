@@ -21,6 +21,7 @@ import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -44,7 +45,7 @@ public abstract class ListFilteringFeature {
     protected Path search(final Path file, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = session._getFeature(ListService.class).list(file.getParent(), listener);
         // Try to match path only as the version might have changed in the meantime
-        final Path found = list.find(new ListFilteringPredicate(session, file));
+        final Path found = list.find(new ListFilteringPredicate(session.getCaseSensitivity(), file));
         if(null == found) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("File %s not found in directory listing", file));
@@ -58,13 +59,13 @@ public abstract class ListFilteringFeature {
         return found;
     }
 
-    private static final class ListFilteringPredicate extends DefaultPathPredicate {
-        private final Session<?> session;
+    protected static final class ListFilteringPredicate extends DefaultPathPredicate {
+        private final Protocol.Case sensitivity;
         private final Path file;
 
-        public ListFilteringPredicate(final Session<?> session, final Path file) {
+        public ListFilteringPredicate(final Protocol.Case sensitivity, final Path file) {
             super(file);
-            this.session = session;
+            this.sensitivity = sensitivity;
             this.file = file;
         }
 
@@ -78,7 +79,7 @@ public abstract class ListFilteringFeature {
                 // Filter previous versions and delete markers when searching for no specific version
                 return false;
             }
-            switch(session.getCaseSensitivity()) {
+            switch(sensitivity) {
                 case sensitive:
                     return new SimplePathPredicate(file).test(f);
                 case insensitive:
