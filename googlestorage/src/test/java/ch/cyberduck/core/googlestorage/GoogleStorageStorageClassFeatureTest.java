@@ -40,12 +40,13 @@ public class GoogleStorageStorageClassFeatureTest extends AbstractGoogleStorageT
     @Test
     public void testGetClasses() {
         assertArrayEquals(Arrays.asList(
-            "STANDARD",
-            "MULTI_REGIONAL",
-            "REGIONAL",
-            "NEARLINE",
-            "COLDLINE").toArray(),
-            new GoogleStorageStorageClassFeature(session).getClasses().toArray());
+                        "STANDARD",
+                        "MULTI_REGIONAL",
+                        "REGIONAL",
+                        "NEARLINE",
+                        "COLDLINE",
+                        "ARCHIVE").toArray(),
+                new GoogleStorageStorageClassFeature(session).getClasses().toArray());
     }
 
     @Test(expected = NotfoundException.class)
@@ -61,7 +62,7 @@ public class GoogleStorageStorageClassFeatureTest extends AbstractGoogleStorageT
         final TransferStatus status = new TransferStatus();
         status.setStorageClass("MULTI_REGIONAL");
         final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)),
-            status);
+                status);
         final GoogleStorageStorageClassFeature feature = new GoogleStorageStorageClassFeature(session);
         assertEquals("MULTI_REGIONAL", feature.getClass(test));
         feature.setClass(test, "MULTI_REGIONAL");

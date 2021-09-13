@@ -94,7 +94,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
             assertEquals(InteroperabilityException.class, e.getCause().getClass());
             InteroperabilityException failure = (InteroperabilityException) e.getCause();
             assertEquals("Cannot insert legacy ACL for an object when uniform bucket-level access is enabled. Read more at https://cloud.google.com/storage/docs/uniform-bucket-level-access. Please contact your web hosting service provider for assistance.",
-                failure.getDetail());
+                    failure.getDetail());
             throw failure;
         }
     }
@@ -113,7 +113,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
         assertNotNull(out.getStatus().id);
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new GoogleStorageAccessControlListFeature(session)
-            .getPermission(test).asList().contains(new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))));
+                .getPermission(test).asList().contains(new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -131,7 +131,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
         assertNotNull(out.getStatus().id);
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertFalse(new GoogleStorageAccessControlListFeature(session)
-            .getPermission(test).asList().contains(new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))));
+                .getPermission(test).asList().contains(new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -173,6 +173,29 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
             final PathAttributes attributes = new GoogleStorageAttributesFinderFeature(session).find(test);
             assertEquals(content.length, attributes.getSize());
         }
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteArchiveStorageClass() throws Exception {
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = RandomUtils.nextBytes(2048);
+        status.setLength(content.length);
+        status.setMime("application/octet-stream");
+        status.setStorageClass("ARCHIVE");
+        final HttpResponseOutputStream<VersionId> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        assertNotNull(out.getStatus().id);
+        assertTrue(new GoogleStorageFindFeature(session).find(test));
+        assertEquals("ARCHIVE", new GoogleStorageStorageClassFeature(session).getClass(test));
+        final byte[] buffer = new byte[content.length];
+        final InputStream in = new GoogleStorageReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        IOUtils.readFully(in, buffer);
+        in.close();
+        assertArrayEquals(content, buffer);
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
