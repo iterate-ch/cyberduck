@@ -98,7 +98,12 @@ public class ProtocolFactoryTest {
 
             @Override
             public String getProvider() {
-                return "provider_1";
+                return "default";
+            }
+
+            @Override
+            public boolean isBundled() {
+                return true;
             }
         };
         final TestProtocol dav_provider2 = new TestProtocol(Scheme.dav) {
