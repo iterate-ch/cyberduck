@@ -108,9 +108,10 @@ public class DeleteWorker extends Worker<List<Path>> {
                             log.debug(String.format("Nullify version to add delete marker for %s", file));
                             marker.attributes().setVersionId(null);
                             recursive.put(marker, new TransferStatus().withLockId(this.getLockId(marker)));
+                            break;
                         }
                     }
-                    break;
+                    // Break through for default
                 default:
                     recursive.put(file, new TransferStatus().withLockId(this.getLockId(file)));
                     break;
