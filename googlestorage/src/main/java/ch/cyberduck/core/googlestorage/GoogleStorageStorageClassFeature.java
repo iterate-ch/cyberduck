@@ -38,11 +38,12 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
     private final PathContainerService containerService;
 
     public static final LinkedHashSet<String> STORAGE_CLASS_LIST = new LinkedHashSet<>(Arrays.asList(
-        S3Object.STORAGE_CLASS_STANDARD,
-        "MULTI_REGIONAL",
-        "REGIONAL",
-        "NEARLINE",
-        "COLDLINE")
+            S3Object.STORAGE_CLASS_STANDARD,
+            "MULTI_REGIONAL",
+            "REGIONAL",
+            "NEARLINE",
+            "COLDLINE",
+            "ARCHIVE")
     );
 
     public GoogleStorageStorageClassFeature(final GoogleStorageSession session) {
@@ -71,13 +72,13 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
             if(containerService.isContainer(file)) {
                 // Changing the default storage class of a bucket
                 session.getClient().buckets().patch(containerService.getContainer(file).getName(),
-                    new Bucket().setStorageClass(redundancy)
+                        new Bucket().setStorageClass(redundancy)
                 ).execute();
             }
             else {
                 final RewriteResponse response = session.getClient().objects().rewrite(containerService.getContainer(file).getName(),
-                    containerService.getKey(file), containerService.getContainer(file).getName(), containerService.getKey(file),
-                    new StorageObject().setStorageClass(redundancy)
+                        containerService.getKey(file), containerService.getContainer(file).getName(), containerService.getKey(file),
+                        new StorageObject().setStorageClass(redundancy)
                 ).execute();
                 file.attributes().setVersionId(String.valueOf(response.getResource().getGeneration()));
             }
