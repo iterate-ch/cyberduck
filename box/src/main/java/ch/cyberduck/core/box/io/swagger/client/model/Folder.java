@@ -12,15 +12,14 @@
 
 package ch.cyberduck.core.box.io.swagger.client.model;
 
+import org.joda.time.DateTime;
+
 import java.util.Objects;
-import java.util.Arrays;
-import ch.cyberduck.core.box.io.swagger.client.model.FolderFolderUploadEmail;
-import ch.cyberduck.core.box.io.swagger.client.model.FolderMini;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.joda.time.DateTime;
 /**
  * A standard representation of a folder, as returned from any folder API endpoints by default
  */
@@ -67,7 +66,7 @@ public class Folder extends FolderMini implements OneOfMetadataQueryResultsEntri
   private Object ownedBy = null;
 
   @JsonProperty("shared_link")
-  private Object sharedLink = null;
+  private String sharedLink = null;
 
   @JsonProperty("folder_upload_email")
   private FolderFolderUploadEmail folderUploadEmail = null;
@@ -347,7 +346,7 @@ public class Folder extends FolderMini implements OneOfMetadataQueryResultsEntri
     this.ownedBy = ownedBy;
   }
 
-  public Folder sharedLink(Object sharedLink) {
+  public Folder sharedLink(String sharedLink) {
     this.sharedLink = sharedLink;
     return this;
   }
@@ -357,11 +356,11 @@ public class Folder extends FolderMini implements OneOfMetadataQueryResultsEntri
    * @return sharedLink
   **/
   @Schema(description = "")
-  public Object getSharedLink() {
+  public String getSharedLink() {
     return sharedLink;
   }
 
-  public void setSharedLink(Object sharedLink) {
+  public void setSharedLink(String sharedLink) {
     this.sharedLink = sharedLink;
   }
 

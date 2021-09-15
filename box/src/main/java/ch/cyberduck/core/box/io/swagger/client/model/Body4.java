@@ -28,7 +28,7 @@ public class Body4 {
   private String name = null;
 
   @JsonProperty("size")
-  private Integer size = null;
+  private Long size = null;
 
   @JsonProperty("parent")
   private AllOfbody4Parent parent = null;
@@ -51,7 +51,7 @@ public class Body4 {
     this.name = name;
   }
 
-  public Body4 size(Integer size) {
+  public Body4 size(Long size) {
     this.size = size;
     return this;
   }
@@ -61,11 +61,11 @@ public class Body4 {
    * @return size
   **/
   @Schema(example = "1024", description = "The size of the file in bytes")
-  public Integer getSize() {
+  public Long getSize() {
     return size;
   }
 
-  public void setSize(Integer size) {
+  public void setSize(Long size) {
     this.size = size;
   }
 

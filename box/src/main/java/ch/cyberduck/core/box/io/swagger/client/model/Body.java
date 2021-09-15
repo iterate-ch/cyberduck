@@ -35,10 +35,10 @@ public class Body {
   private String description = null;
 
   @JsonProperty("parent")
-  private AllOfbodyParent parent = null;
+  private FoldersfolderIdParent parent = null;
 
   @JsonProperty("shared_link")
-  private AllOfbodySharedLink sharedLink = null;
+  private FilesfileIdaddSharedLinkSharedLink sharedLink = null;
 
   @JsonProperty("lock")
   private FilesfileIdLock lock = null;
@@ -85,7 +85,7 @@ public class Body {
     this.description = description;
   }
 
-  public Body parent(AllOfbodyParent parent) {
+  public Body parent(FoldersfolderIdParent parent) {
     this.parent = parent;
     return this;
   }
@@ -95,15 +95,15 @@ public class Body {
    * @return parent
   **/
   @Schema(description = "")
-  public AllOfbodyParent getParent() {
+  public FoldersfolderIdParent getParent() {
     return parent;
   }
 
-  public void setParent(AllOfbodyParent parent) {
+  public void setParent(FoldersfolderIdParent parent) {
     this.parent = parent;
   }
 
-  public Body sharedLink(AllOfbodySharedLink sharedLink) {
+  public Body sharedLink(FilesfileIdaddSharedLinkSharedLink sharedLink) {
     this.sharedLink = sharedLink;
     return this;
   }
@@ -113,11 +113,11 @@ public class Body {
    * @return sharedLink
   **/
   @Schema(description = "")
-  public AllOfbodySharedLink getSharedLink() {
+  public FilesfileIdaddSharedLinkSharedLink getSharedLink() {
     return sharedLink;
   }
 
-  public void setSharedLink(AllOfbodySharedLink sharedLink) {
+  public void setSharedLink(FilesfileIdaddSharedLinkSharedLink sharedLink) {
     this.sharedLink = sharedLink;
   }
 

@@ -30,7 +30,7 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
   private String description = null;
 
   @JsonProperty("size")
-  private Integer size = null;
+  private Long size = null;
 
   @JsonProperty("path_collection")
   private Object pathCollection = null;
@@ -63,7 +63,7 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
   private Object ownedBy = null;
 
   @JsonProperty("shared_link")
-  private Object sharedLink = null;
+  private String sharedLink = null;
 
   @JsonProperty("parent")
   private Object parent = null;
@@ -121,7 +121,7 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
     this.description = description;
   }
 
-  public File size(Integer size) {
+  public File size(Long size) {
     this.size = size;
     return this;
   }
@@ -131,11 +131,11 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
    * @return size
   **/
   @Schema(example = "629644", description = "The file size in bytes. Be careful parsing this integer as it can get very large and cause an integer overflow.")
-  public Integer getSize() {
+  public Long getSize() {
     return size;
   }
 
-  public void setSize(Integer size) {
+  public void setSize(Long size) {
     this.size = size;
   }
 
@@ -319,7 +319,7 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
     this.ownedBy = ownedBy;
   }
 
-  public File sharedLink(Object sharedLink) {
+  public File sharedLink(String sharedLink) {
     this.sharedLink = sharedLink;
     return this;
   }
@@ -329,11 +329,11 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
    * @return sharedLink
   **/
   @Schema(description = "")
-  public Object getSharedLink() {
+  public String getSharedLink() {
     return sharedLink;
   }
 
-  public void setSharedLink(Object sharedLink) {
+  public void setSharedLink(String sharedLink) {
     this.sharedLink = sharedLink;
   }
 

@@ -13,11 +13,8 @@
 package ch.cyberduck.core.box.io.swagger.client.model;
 
 import java.util.Objects;
-import java.util.Arrays;
-import ch.cyberduck.core.box.io.swagger.client.model.FileBase;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * A mini representation of a file, used when nested under another resource.
@@ -35,7 +32,7 @@ public class FileMini extends FileBase {
   private String sha1 = null;
 
   @JsonProperty("file_version")
-  private Object fileVersion = null;
+  private FileVersionMini fileVersion = null;
 
   public FileMini sequenceId(Object sequenceId) {
     this.sequenceId = sequenceId;
@@ -91,7 +88,7 @@ public class FileMini extends FileBase {
     this.sha1 = sha1;
   }
 
-  public FileMini fileVersion(Object fileVersion) {
+  public FileMini fileVersion(FileVersionMini fileVersion) {
     this.fileVersion = fileVersion;
     return this;
   }
@@ -101,11 +98,11 @@ public class FileMini extends FileBase {
    * @return fileVersion
   **/
   @Schema(description = "")
-  public Object getFileVersion() {
+  public FileVersionMini getFileVersion() {
     return fileVersion;
   }
 
-  public void setFileVersion(Object fileVersion) {
+  public void setFileVersion(FileVersionMini fileVersion) {
     this.fileVersion = fileVersion;
   }
 

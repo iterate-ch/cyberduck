@@ -76,7 +76,7 @@ public class Body15 {
   private FoldersfolderIdParent parent = null;
 
   @JsonProperty("shared_link")
-  private AllOfbody15SharedLink sharedLink = null;
+  private FoldersfolderIdaddSharedLinkSharedLink sharedLink = null;
 
   @JsonProperty("folder_upload_email")
   private AllOfbody15FolderUploadEmail folderUploadEmail = null;
@@ -183,7 +183,7 @@ public class Body15 {
     this.parent = parent;
   }
 
-  public Body15 sharedLink(AllOfbody15SharedLink sharedLink) {
+  public Body15 sharedLink(FoldersfolderIdaddSharedLinkSharedLink sharedLink) {
     this.sharedLink = sharedLink;
     return this;
   }
@@ -193,11 +193,11 @@ public class Body15 {
    * @return sharedLink
   **/
   @Schema(description = "")
-  public AllOfbody15SharedLink getSharedLink() {
+  public FoldersfolderIdaddSharedLinkSharedLink getSharedLink() {
     return sharedLink;
   }
 
-  public void setSharedLink(AllOfbody15SharedLink sharedLink) {
+  public void setSharedLink(FoldersfolderIdaddSharedLinkSharedLink sharedLink) {
     this.sharedLink = sharedLink;
   }
 
