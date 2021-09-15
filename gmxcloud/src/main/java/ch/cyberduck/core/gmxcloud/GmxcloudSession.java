@@ -78,6 +78,13 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
             );
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         configuration.addInterceptorLast(authorizationService);
+        configuration.addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) {
+                request.addHeader(new BasicHeader("x-ui-api-key", new HostPreferences(host)
+                        .getProperty(String.format("apikey.%s", Factory.Platform.getDefault().name()))));
+            }
+        });
         return configuration.build();
     }
 
@@ -97,8 +104,6 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
             url.append(context);
             // Determine RestFS URL from service discovery
             final HttpGet request = new HttpGet(url.toString());
-            request.addHeader(new BasicHeader("x-ui-api-key", new HostPreferences(host)
-                .getProperty(String.format("apikey.%s", Factory.Platform.getDefault().name()))));
             final CloseableHttpResponse response = client.execute(request);
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_OK:
