@@ -223,7 +223,6 @@
 		47DE47952598F2D400B18BCB /* preferences-ftp.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47DE47892598F2D300B18BCB /* preferences-ftp.pdf */; };
 		47DE47962598F2D400B18BCB /* preferences-connection.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47DE478A2598F2D300B18BCB /* preferences-connection.pdf */; };
 		47DE47972598F2D400B18BCB /* preferences-browser.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47DE478B2598F2D300B18BCB /* preferences-browser.pdf */; };
-		47DE47982598F2D400B18BCB /* preferences-pencil.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47DE478C2598F2D300B18BCB /* preferences-pencil.pdf */; };
 		47DE47992598F2D400B18BCB /* preferences-bandwidth.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47DE478D2598F2D300B18BCB /* preferences-bandwidth.pdf */; };
 		47DE479A2598F2D400B18BCB /* preferences-queue.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47DE478E2598F2D400B18BCB /* preferences-queue.pdf */; };
 		47DE479B2598F2D400B18BCB /* preferences-s3.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47DE478F2598F2D400B18BCB /* preferences-s3.pdf */; };
@@ -232,6 +231,7 @@
 		47DE479E2598F2D400B18BCB /* preferences-sftp.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47DE47922598F2D400B18BCB /* preferences-sftp.pdf */; };
 		47DE479F2598F2D400B18BCB /* preferences-language.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47DE47932598F2D400B18BCB /* preferences-language.pdf */; };
 		47DE47A02598F2D400B18BCB /* preferences-general.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47DE47942598F2D400B18BCB /* preferences-general.pdf */; };
+		47E3685C26F36DC600BBC32A /* preferences-editor.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47E3685B26F36DC600BBC32A /* preferences-editor.pdf */; };
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
 		47ED775F1CEA1314009EBA0A /* transferstop.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47ED775E1CEA1314009EBA0A /* transferstop.pdf */; };
 		47EEFDC72386ECD100A3CAB0 /* UnifiedSystemLogAppender.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EEFDC52386ECD100A3CAB0 /* UnifiedSystemLogAppender.h */; };
@@ -1529,7 +1529,6 @@
 		47DE47892598F2D300B18BCB /* preferences-ftp.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = "preferences-ftp.pdf"; path = "toolbar/preferences-ftp.pdf"; sourceTree = "<group>"; };
 		47DE478A2598F2D300B18BCB /* preferences-connection.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = "preferences-connection.pdf"; path = "toolbar/preferences-connection.pdf"; sourceTree = "<group>"; };
 		47DE478B2598F2D300B18BCB /* preferences-browser.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = "preferences-browser.pdf"; path = "toolbar/preferences-browser.pdf"; sourceTree = "<group>"; };
-		47DE478C2598F2D300B18BCB /* preferences-pencil.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = "preferences-pencil.pdf"; path = "toolbar/preferences-pencil.pdf"; sourceTree = "<group>"; };
 		47DE478D2598F2D300B18BCB /* preferences-bandwidth.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = "preferences-bandwidth.pdf"; path = "toolbar/preferences-bandwidth.pdf"; sourceTree = "<group>"; };
 		47DE478E2598F2D400B18BCB /* preferences-queue.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = "preferences-queue.pdf"; path = "toolbar/preferences-queue.pdf"; sourceTree = "<group>"; };
 		47DE478F2598F2D400B18BCB /* preferences-s3.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = "preferences-s3.pdf"; path = "toolbar/preferences-s3.pdf"; sourceTree = "<group>"; };
@@ -1597,6 +1596,7 @@
 		47E2B22E22691AC800FD2E74 /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = i18n/src/main/resources/hu.lproj/Cryptomator.strings; sourceTree = "<group>"; };
 		47E2B23122691AC800FD2E74 /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = i18n/src/main/resources/hu.lproj/S3.strings; sourceTree = "<group>"; };
 		47E2B23422691AC900FD2E74 /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = i18n/src/main/resources/hu.lproj/Status.strings; sourceTree = "<group>"; };
+		47E3685B26F36DC600BBC32A /* preferences-editor.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = "preferences-editor.pdf"; path = "toolbar/preferences-editor.pdf"; sourceTree = "<group>"; };
 		47E9875F0D689A280077733F /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = i18n/src/main/resources/en.lproj/S3.strings; sourceTree = "<group>"; };
 		47ED775E1CEA1314009EBA0A /* transferstop.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = transferstop.pdf; path = toolbar/transferstop.pdf; sourceTree = "<group>"; };
 		47EEFDC52386ECD100A3CAB0 /* UnifiedSystemLogAppender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnifiedSystemLogAppender.h; path = core/src/main/objc/UnifiedSystemLogAppender.h; sourceTree = SOURCE_ROOT; };
@@ -2031,8 +2031,8 @@
 				47DE47912598F2D400B18BCB /* preferences-cryptomator.pdf */,
 				47DE47892598F2D300B18BCB /* preferences-ftp.pdf */,
 				47DE47942598F2D400B18BCB /* preferences-general.pdf */,
+				47E3685B26F36DC600BBC32A /* preferences-editor.pdf */,
 				47DE47932598F2D400B18BCB /* preferences-language.pdf */,
-				47DE478C2598F2D300B18BCB /* preferences-pencil.pdf */,
 				47DE478E2598F2D400B18BCB /* preferences-queue.pdf */,
 				47DE478F2598F2D400B18BCB /* preferences-s3.pdf */,
 				47DE47922598F2D400B18BCB /* preferences-sftp.pdf */,
@@ -2405,6 +2405,7 @@
 				476730ED16108E1300B28D35 /* plus.tiff in Resources */,
 				476730EE16108E1300B28D35 /* privatefolderbadge.tiff in Resources */,
 				474960691CD75C9700B020C9 /* editor.pdf in Resources */,
+				47E3685C26F36DC600BBC32A /* preferences-editor.pdf in Resources */,
 				476730EF16108E1300B28D35 /* queue.tiff in Resources */,
 				476730F016108E1300B28D35 /* readonlyfolderbadge.tiff in Resources */,
 				478DB2681DF3418D00BEAA45 /* unlockedbadge.tiff in Resources */,
@@ -2448,7 +2449,6 @@
 				475C6D5A170C9214006535BB /* googlestorage.tiff in Resources */,
 				47C35B0B26247FE4002AABBD /* Profiles.xib in Resources */,
 				47CE3BFA1799309F0031DB9F /* transfer-copy.tiff in Resources */,
-				47DE47982598F2D400B18BCB /* preferences-pencil.pdf in Resources */,
 				475B22EF25B0DB17005D7887 /* cyberduck-application-rect.icns in Resources */,
 				47F9380F1D7F63CE00108AB5 /* dropbox.tiff in Resources */,
 				47CE3BFB1799309F0031DB9F /* transfer-move.tiff in Resources */,
