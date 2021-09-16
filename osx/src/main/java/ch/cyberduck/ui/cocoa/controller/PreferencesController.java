@@ -184,7 +184,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.addPanel(views, PreferencesToolbarItem.general, panelGeneral);
         this.addPanel(views, PreferencesToolbarItem.browser, panelBrowser);
         this.addPanel(views, PreferencesToolbarItem.queue, panelTransfer);
-        this.addPanel(views, PreferencesToolbarItem.pencil, panelEditor);
+        this.addPanel(views, PreferencesToolbarItem.editor, panelEditor);
         if(preferences.getBoolean(String.format("preferences.%s.enable", PreferencesToolbarItem.profiles.name()))) {
             profilesPanelController.loadBundle();
             this.addPanel(views, PreferencesToolbarItem.profiles, profilesPanelController.getPanel());
@@ -216,7 +216,7 @@ public class PreferencesController extends ToolbarWindowController {
                 return LocaleFactory.localizedString("Transfers", "Preferences");
             }
         },
-        pencil {
+        editor {
             @Override
             public String label() {
                 return LocaleFactory.localizedString("Editor", "Preferences");
@@ -276,7 +276,7 @@ public class PreferencesController extends ToolbarWindowController {
                 break;
             case browser:
                 break;
-            case pencil:
+            case editor:
                 this.updateEditorCombobox();
                 break;
             case ftp:

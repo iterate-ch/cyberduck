@@ -1139,7 +1139,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("preferences.sftp.enable", String.valueOf(true));
         this.setDefault("preferences.ftp.enable", String.valueOf(true));
         this.setDefault("preferences.profiles.enable", String.valueOf(true));
-        this.setDefault("preferences.pencil.enable", String.valueOf(true));
+        this.setDefault("preferences.editor.enable", String.valueOf(true));
         this.setDefault("preferences.connection.enable", String.valueOf(true));
         this.setDefault("preferences.bandwidth.enable", String.valueOf(true));
         this.setDefault("preferences.language.enable", String.valueOf(true));
