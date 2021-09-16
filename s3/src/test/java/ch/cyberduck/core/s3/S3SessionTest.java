@@ -233,26 +233,6 @@ public class S3SessionTest extends AbstractS3Test {
             .getConfiguration().getBoolProperty("s3service.disable-dns-buckets", true));
     }
 
-    @Test
-    public void testBucketVirtualHostStyleEucalyptusDefaultHost() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname());
-        assertFalse(new S3Session(host).connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
-            .getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false));
-    }
-
-    @Test
-    public void testBucketVirtualHostStyleEucalyptusCustomDeployment() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
-        final Host host = new Host(profile, "ec.cyberduck.io");
-        assertFalse(new S3Session(host).connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
-            .getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false));
-    }
-
     @Test(expected = LoginFailureException.class)
     @Ignore
     public void testTemporaryAccessToken() throws Exception {
