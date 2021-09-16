@@ -1,5 +1,4 @@
-﻿using ch.cyberduck.core;
-using ch.cyberduck.core.profiles;
+﻿using ch.cyberduck.core.profiles;
 using Ch.Cyberduck.Core.Refresh.Models;
 using Ch.Cyberduck.Core.Refresh.Services;
 using DynamicData;
@@ -19,7 +18,6 @@ using System.Threading.Tasks;
 namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 {
     using ch.cyberduck.core;
-    using java.util;
 
     public class ProfilesViewModel : ReactiveObject
     {
@@ -107,7 +105,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                 this.completionSource = completionSource;
             }
 
-            public override void cleanup(object result) => completionSource.SetResult(Utils.ConvertFromJavaList<ProfileDescription>((Collection)result));
+            public override void cleanup(object result) => completionSource.SetResult(Utils.ConvertFromJavaList<ProfileDescription>((java.util.Collection)result));
         }
     }
 }
