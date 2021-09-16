@@ -1145,6 +1145,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("preferences.bandwidth.enable", String.valueOf(true));
         this.setDefault("preferences.language.enable", String.valueOf(true));
         this.setDefault("preferences.update.enable", String.valueOf(true));
+        this.setDefault("preferences.cryptomator.enable", String.valueOf(true));
 
     }
 

@@ -203,7 +203,9 @@ public class PreferencesController extends ToolbarWindowController {
         }
         this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.bandwidth), panelBandwidth);
         this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.connection), panelAdvanced);
-        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.cryptomator), panelCryptomator);
+        if(preferences.getBoolean("cryptomator.enable")) {
+            this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.cryptomator), panelCryptomator);
+        }
         this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.update), panelUpdate);
         this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.language), panelLanguage);
         return views;
