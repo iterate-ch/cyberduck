@@ -31,6 +31,10 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
             BehaviorSubject<bool> initialized = new(false);
             LoadProfiles = ReactiveCommand.CreateFromTask(async () =>
             {
+                // doesn't handle failures.
+                // On Cyberduck: Requires restarting Cyberduck, as the Preferences-window is cached.
+                // On Mountain Duck: everytime navigating to the view reruns LoadProfiles.
+                initialized.OnNext(true);
                 TaskCompletionSource<IEnumerable<ProfileDescription>> result = new();
                 var worker = new InternalProfilesSynchronizeWorker(protocols, result);
                 var action = new ProfilesWorkerBackgroundAction(controller, worker);
