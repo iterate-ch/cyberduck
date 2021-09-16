@@ -303,8 +303,25 @@
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <excludes>*.xib</excludes>
+                    <excludes>
+                        <exclude>*.xib</exclude>
+                    </excludes>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>i18n</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>i18n</classifier>
+                            <includes>
+                                <include>*.xib</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
