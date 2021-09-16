@@ -92,12 +92,6 @@ public class PreferencesController extends ToolbarWindowController {
         return "Preferences";
     }
 
-    @Override
-    public void loadBundle() {
-        profilesPanelController.loadBundle();
-        super.loadBundle();
-    }
-
     @Outlet
     protected NSView panelGeneral;
     @Outlet
@@ -187,23 +181,30 @@ public class PreferencesController extends ToolbarWindowController {
     @Override
     protected Map<Label, NSView> getPanels() {
         final Map<Label, NSView> views = new LinkedHashMap<>();
-        views.put(new Label(PreferencesToolbarItem.general.name(), PreferencesToolbarItem.general.label()), panelGeneral);
-        views.put(new Label(PreferencesToolbarItem.browser.name(), PreferencesToolbarItem.browser.label()), panelBrowser);
-        views.put(new Label(PreferencesToolbarItem.queue.name(), PreferencesToolbarItem.queue.label()), panelTransfer);
-        views.put(new Label(PreferencesToolbarItem.pencil.name(), PreferencesToolbarItem.pencil.label()), panelEditor);
-        views.put(new Label(PreferencesToolbarItem.profiles.name(), PreferencesToolbarItem.profiles.label()), profilesPanelController.getPanel());
-        views.put(new Label(PreferencesToolbarItem.ftp.name(), PreferencesToolbarItem.ftp.label()), panelFTP);
-        views.put(new Label(PreferencesToolbarItem.sftp.name(), PreferencesToolbarItem.sftp.label()), panelSFTP);
-        views.put(new Label(PreferencesToolbarItem.s3.name(), PreferencesToolbarItem.s3.label()), panelS3);
-        views.put(new Label(PreferencesToolbarItem.googlestorage.name(), PreferencesToolbarItem.googlestorage.label()), panelGoogleStorage);
-        views.put(new Label(PreferencesToolbarItem.bandwidth.name(), PreferencesToolbarItem.bandwidth.label()), panelBandwidth);
-        views.put(new Label(PreferencesToolbarItem.connection.name(), PreferencesToolbarItem.connection.label()), panelAdvanced);
-        views.put(new Label(PreferencesToolbarItem.cryptomator.name(), PreferencesToolbarItem.cryptomator.label()), panelCryptomator);
-        if(null != preferences.getDefault("SUExpectsDSASignature")) {
-            views.put(new Label(PreferencesToolbarItem.update.name(), PreferencesToolbarItem.update.label()), panelUpdate);
+        this.addPanel(views, PreferencesToolbarItem.general, panelGeneral);
+        this.addPanel(views, PreferencesToolbarItem.browser, panelBrowser);
+        this.addPanel(views, PreferencesToolbarItem.queue, panelTransfer);
+        this.addPanel(views, PreferencesToolbarItem.pencil, panelEditor);
+        if(preferences.getBoolean(String.format("preferences.%s.enable", PreferencesToolbarItem.profiles.name()))) {
+            profilesPanelController.loadBundle();
+            this.addPanel(views, PreferencesToolbarItem.profiles, profilesPanelController.getPanel());
         }
-        views.put(new Label(PreferencesToolbarItem.language.name(), PreferencesToolbarItem.language.label()), panelLanguage);
+        this.addPanel(views, PreferencesToolbarItem.ftp,  panelFTP);
+        this.addPanel(views, PreferencesToolbarItem.sftp, panelSFTP);
+        this.addPanel(views, PreferencesToolbarItem.s3,  panelS3);
+        this.addPanel(views, PreferencesToolbarItem.googlestorage,  panelGoogleStorage);
+        this.addPanel(views, PreferencesToolbarItem.bandwidth,  panelBandwidth);
+        this.addPanel(views, PreferencesToolbarItem.connection,  panelAdvanced);
+        this.addPanel(views, PreferencesToolbarItem.cryptomator, panelCryptomator);
+        this.addPanel(views, PreferencesToolbarItem.update, panelUpdate);
+        this.addPanel(views, PreferencesToolbarItem.language, panelLanguage);
         return views;
+    }
+
+    private void addPanel(final Map<Label, NSView> views, final PreferencesToolbarItem item, final NSView panel) {
+        if(preferences.getBoolean(String.format("preferences.%s.enable", item.name()))) {
+            views.put(new Label(item.name(), item.label()), panel);
+        }
     }
 
     protected enum PreferencesToolbarItem {
