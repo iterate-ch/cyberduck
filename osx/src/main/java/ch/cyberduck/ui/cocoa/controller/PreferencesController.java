@@ -181,29 +181,43 @@ public class PreferencesController extends ToolbarWindowController {
     @Override
     protected Map<Label, NSView> getPanels() {
         final Map<Label, NSView> views = new LinkedHashMap<>();
-        this.addPanel(views, PreferencesToolbarItem.general, panelGeneral);
-        this.addPanel(views, PreferencesToolbarItem.browser, panelBrowser);
-        this.addPanel(views, PreferencesToolbarItem.queue, panelTransfer);
-        this.addPanel(views, PreferencesToolbarItem.editor, panelEditor);
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.general), panelGeneral);
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.browser), panelBrowser);
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.queue), panelTransfer);
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.editor), panelEditor);
         if(preferences.getBoolean(String.format("preferences.%s.enable", PreferencesToolbarItem.profiles.name()))) {
             profilesPanelController.loadBundle();
-            this.addPanel(views, PreferencesToolbarItem.profiles, profilesPanelController.getPanel());
+            this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.profiles), profilesPanelController.getPanel());
         }
-        this.addPanel(views, PreferencesToolbarItem.ftp,  panelFTP);
-        this.addPanel(views, PreferencesToolbarItem.sftp, panelSFTP);
-        this.addPanel(views, PreferencesToolbarItem.s3,  panelS3);
-        this.addPanel(views, PreferencesToolbarItem.googlestorage,  panelGoogleStorage);
-        this.addPanel(views, PreferencesToolbarItem.bandwidth,  panelBandwidth);
-        this.addPanel(views, PreferencesToolbarItem.connection,  panelAdvanced);
-        this.addPanel(views, PreferencesToolbarItem.cryptomator, panelCryptomator);
-        this.addPanel(views, PreferencesToolbarItem.update, panelUpdate);
-        this.addPanel(views, PreferencesToolbarItem.language, panelLanguage);
+        if(null != ProtocolFactory.get().forName(Protocol.Type.ftp.name())) {
+            this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.ftp), panelFTP);
+        }
+        if(null != ProtocolFactory.get().forName(Protocol.Type.sftp.name())) {
+            this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.sftp), panelSFTP);
+        }
+        if(null != ProtocolFactory.get().forName(Protocol.Type.s3.name())) {
+            this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.s3), panelS3);
+        }
+        if(null != ProtocolFactory.get().forName(Protocol.Type.googlestorage.name())) {
+            this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.googlestorage), panelGoogleStorage);
+        }
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.bandwidth), panelBandwidth);
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.connection), panelAdvanced);
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.cryptomator), panelCryptomator);
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.update), panelUpdate);
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.language), panelLanguage);
         return views;
     }
 
-    private void addPanel(final Map<Label, NSView> views, final PreferencesToolbarItem item, final NSView panel) {
-        if(preferences.getBoolean(String.format("preferences.%s.enable", item.name()))) {
-            views.put(new Label(item.name(), item.label()), panel);
+    protected void addPanel(final Map<Label, NSView> views, final Label label, final NSView panel) {
+        if(preferences.getBoolean(String.format("preferences.%s.enable", label.identifier))) {
+            views.put(label, panel);
+        }
+    }
+
+    protected static class PreferencesLabel extends Label {
+        public PreferencesLabel(final PreferencesToolbarItem item) {
+            super(item.name(), item.label());
         }
     }
 
@@ -273,8 +287,6 @@ public class PreferencesController extends ToolbarWindowController {
             case queue:
                 this.chmodDownloadTypePopupChanged(this.chmodDownloadTypePopup);
                 this.chmodUploadTypePopupChanged(this.chmodUploadTypePopup);
-                break;
-            case browser:
                 break;
             case editor:
                 this.updateEditorCombobox();

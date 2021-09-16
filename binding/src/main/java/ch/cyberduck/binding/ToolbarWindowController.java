@@ -41,6 +41,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A window controller with a toolbar populated from a tabbed view.
@@ -69,13 +70,30 @@ public abstract class ToolbarWindowController extends WindowController implement
         super.windowDidBecomeKey(notification);
     }
 
-    protected static final class Label {
+    protected static class Label {
         public String identifier;
         public String label;
 
         public Label(final String identifier, final String label) {
             this.identifier = identifier;
             this.label = label;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(!(o instanceof Label)) {
+                return false;
+            }
+            final Label label = (Label) o;
+            return Objects.equals(identifier, label.identifier);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(identifier);
         }
     }
 
