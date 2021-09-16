@@ -51,7 +51,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(file.isRoot()) {
+        if (!session.isAccessible(file)) {
             return PathAttributes.EMPTY;
         }
         final DriveItem item = session.getItem(file);
