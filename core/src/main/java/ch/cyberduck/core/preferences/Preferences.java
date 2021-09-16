@@ -1136,6 +1136,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("preferences.browser.enable", String.valueOf(true));
         this.setDefault("preferences.queue.enable", String.valueOf(true));
         this.setDefault("preferences.s3.enable", String.valueOf(true));
+        this.setDefault("preferences.googlestorage.enable", String.valueOf(true));
         this.setDefault("preferences.sftp.enable", String.valueOf(true));
         this.setDefault("preferences.ftp.enable", String.valueOf(true));
         this.setDefault("preferences.profiles.enable", String.valueOf(true));
@@ -1143,8 +1144,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("preferences.connection.enable", String.valueOf(true));
         this.setDefault("preferences.bandwidth.enable", String.valueOf(true));
         this.setDefault("preferences.language.enable", String.valueOf(true));
-        this.setDefault("preferences.s3.enable", String.valueOf(true));
-        this.setDefault("preferences.googlestorage.enable", String.valueOf(true));
         this.setDefault("preferences.update.enable", String.valueOf(true));
 
     }
