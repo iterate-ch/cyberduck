@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 
 namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 {
+    using ch.cyberduck.core;
     using java.util;
 
     public class ProfilesViewModel : ReactiveObject
@@ -72,7 +73,12 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                 {
                     if (p.Value)
                     {
-                        protocols.register(p.Sender.Profile);
+                        var file = p.Sender.ProfileDescription.getFile();
+                        if (file.isPresent())
+                        {
+                            var local = (Local)file.get();
+                            protocols.register(local);
+                        }
                     }
                     else
                     {
