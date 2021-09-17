@@ -103,4 +103,23 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
             throw e;
         }
     }
+
+    @Test(expected = NotfoundException.class)
+    public void testDeletedWithMarker() throws Exception {
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new GoogleStorageTouchFeature(session).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(test.attributes().getVersionId());
+        assertNotEquals(PathAttributes.EMPTY, new GoogleStorageAttributesFinderFeature(session).find(test));
+        // Add delete marker
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        assertTrue(new GoogleStorageAttributesFinderFeature(session).find(test).isDuplicate());
+        try {
+            // Noncurrent versions only appear in requests that explicitly call for object versions to be included
+            new GoogleStorageAttributesFinderFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY));
+            fail();
+        }
+        catch(NotfoundException e) {
+            throw e;
+        }
+    }
 }
