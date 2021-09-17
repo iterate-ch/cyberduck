@@ -1,5 +1,4 @@
-﻿using ch.cyberduck.core;
-using ch.cyberduck.core.profiles;
+﻿using ch.cyberduck.core.profiles;
 using Ch.Cyberduck.Core.Refresh.Models;
 using Ch.Cyberduck.Core.Refresh.Services;
 using DynamicData;
@@ -18,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 {
-    using java.util;
+    using ch.cyberduck.core;
 
     public class ProfilesViewModel : ReactiveObject
     {
@@ -31,6 +30,10 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
             BehaviorSubject<bool> initialized = new(false);
             LoadProfiles = ReactiveCommand.CreateFromTask(async () =>
             {
+                // doesn't handle failures.
+                // On Cyberduck: Requires restarting Cyberduck, as the Preferences-window is cached.
+                // On Mountain Duck: everytime navigating to the view reruns LoadProfiles.
+                initialized.OnNext(true);
                 TaskCompletionSource<IEnumerable<ProfileDescription>> result = new();
                 var worker = new InternalProfilesSynchronizeWorker(protocols, result);
                 var action = new ProfilesWorkerBackgroundAction(controller, worker);
@@ -68,7 +71,12 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                 {
                     if (p.Value)
                     {
-                        protocols.register(p.Sender.Profile);
+                        var file = p.Sender.ProfileDescription.getFile();
+                        if (file.isPresent())
+                        {
+                            var local = (Local)file.get();
+                            protocols.register(local);
+                        }
                     }
                     else
                     {
@@ -97,7 +105,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                 this.completionSource = completionSource;
             }
 
-            public override void cleanup(object result) => completionSource.SetResult(Utils.ConvertFromJavaList<ProfileDescription>((Collection)result));
+            public override void cleanup(object result) => completionSource.SetResult(Utils.ConvertFromJavaList<ProfileDescription>((java.util.Collection)result));
         }
     }
 }
