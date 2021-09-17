@@ -223,9 +223,36 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     public void testRedirectWithNoLocationHeader() throws Exception {
         final Path container = new Path("profiles.cyberduck.io", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "S3 (HTTP).cyberduckprofile", EnumSet.of(Path.Type.file),
-            new PathAttributes().withVersionId("4ajsLHgDubdGpoOjd1XCY1m4K5IUOfMY"));
+                new PathAttributes().withVersionId("4ajsLHgDubdGpoOjd1XCY1m4K5IUOfMY"));
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals("30298e0b4a1bd3ce954289281347c6ad", attributes.getChecksum().hash);
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testDeleted() throws Exception {
+        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new S3TouchFeature(session).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(test.attributes().getVersionId());
+        assertNotEquals(PathAttributes.EMPTY, new S3AttributesFinderFeature(session).find(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        try {
+            new S3AttributesFinderFeature(session).find(test);
+            fail();
+        }
+        catch(NotfoundException e) {
+            throw e;
+        }
+    }
+
+    @Test
+    public void testDeletedWithMarker() throws Exception {
+        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new S3TouchFeature(session).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(test.attributes().getVersionId());
+        assertNotEquals(PathAttributes.EMPTY, new S3AttributesFinderFeature(session).find(test));
+        // Add delete marker
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3AttributesFinderFeature(session).find(test).getCustom().containsKey(KEY_DELETE_MARKER));
     }
 }
