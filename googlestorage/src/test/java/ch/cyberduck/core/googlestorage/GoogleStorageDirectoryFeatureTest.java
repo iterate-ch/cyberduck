@@ -16,6 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -31,6 +32,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -52,6 +54,8 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new GoogleStorageFindFeature(session).find(test));
+        assertFalse(new DefaultFindFeature(session).find(test));
     }
 
     @Test
