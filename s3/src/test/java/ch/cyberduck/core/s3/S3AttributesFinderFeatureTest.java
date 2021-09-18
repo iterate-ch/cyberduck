@@ -117,16 +117,6 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
             assertEquals(versionId, marker.getVersionId());
         }
         {
-            final PathAttributes marker = new S3AttributesFinderFeature(session).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY));
-            for(Path version : marker.getVersions()) {
-                assertTrue(version.attributes().isDuplicate());
-            }
-            assertTrue(marker.isDuplicate());
-            assertTrue(marker.getCustom().containsKey(KEY_DELETE_MARKER));
-            assertNotNull(marker.getVersionId());
-            assertNotEquals(versionId, marker.getVersionId());
-        }
-        {
             final PathAttributes marker = new S3AttributesFinderFeature(session, true).find(testWithVersionId);
             for(Path version : marker.getVersions()) {
                 assertTrue(version.attributes().isDuplicate());
@@ -137,14 +127,22 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
             assertEquals(versionId, marker.getVersionId());
         }
         {
-            final PathAttributes marker = new S3AttributesFinderFeature(session, true).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY));
-            for(Path version : marker.getVersions()) {
-                assertTrue(version.attributes().isDuplicate());
+            try {
+                new S3AttributesFinderFeature(session).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY));
+                fail();
             }
-            assertTrue(marker.isDuplicate());
-            assertTrue(marker.getCustom().containsKey(KEY_DELETE_MARKER));
-            assertNotNull(marker.getVersionId());
-            assertNotEquals(versionId, marker.getVersionId());
+            catch(NotfoundException e) {
+                // Delete marker
+            }
+        }
+        {
+            try {
+                new S3AttributesFinderFeature(session, true).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY));
+                fail();
+            }
+            catch(NotfoundException e) {
+                // Delete marker
+            }
         }
     }
 
@@ -254,5 +252,6 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         // Add delete marker
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertTrue(new S3AttributesFinderFeature(session).find(test).getCustom().containsKey(KEY_DELETE_MARKER));
+        assertFalse(new S3FindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
     }
 }

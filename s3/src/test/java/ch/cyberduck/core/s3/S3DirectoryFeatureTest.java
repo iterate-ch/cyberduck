@@ -17,19 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.AsciiRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
@@ -158,6 +146,29 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertFalse(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
         assertFalse(new DefaultFindFeature(session).find(test));
         assertFalse(new S3FindFeature(session).find(test));
+    }
+
+    @Test
+    public void testDirectoryDeleteWithVersioning() throws Exception {
+        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path parent = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket,
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(parent,
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertNotNull(test.attributes().getVersionId());
+        assertTrue(test.isPlaceholder());
+        // Only placeholder is found in list output with no version id set
+        final Path placeholder = new S3ListService(session).list(parent, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
+        assertTrue(placeholder.isPlaceholder());
+        assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new DefaultFindFeature(session).find(test));
+        // This will only cause a delete marker being added
+        new S3DefaultDeleteFeature(session).delete(Arrays.asList(new Path(test).withAttributes(PathAttributes.EMPTY), parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        // Specific version is still found
+        assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertFalse(new S3FindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
+        assertFalse(new DefaultFindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
     }
 
     @Test
