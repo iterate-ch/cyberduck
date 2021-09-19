@@ -4,10 +4,12 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -253,5 +255,11 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertTrue(new S3AttributesFinderFeature(session).find(test).getCustom().containsKey(KEY_DELETE_MARKER));
         assertFalse(new S3FindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
+        // Test reading delete marker itself
+        final Path marker = new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
+        assertTrue(marker.attributes().isDuplicate());
+        assertTrue(marker.attributes().getCustom().containsKey(KEY_DELETE_MARKER));
+        assertTrue(new S3AttributesFinderFeature(session).find(marker).getCustom().containsKey(KEY_DELETE_MARKER));
+        assertTrue(new S3FindFeature(session).find(marker));
     }
 }

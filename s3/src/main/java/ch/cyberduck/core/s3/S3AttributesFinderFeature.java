@@ -88,6 +88,14 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                     containerService.getContainer(file).getName(), containerService.getKey(file)));
             }
             catch(ServiceException e) {
+                switch(e.getResponseCode()) {
+                    case 405:
+                        // Only DELETE method is allowed for delete markers
+                        attr = new PathAttributes();
+                        attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                        attr.setDuplicate(true);
+                        return attr;
+                }
                 throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
             if(StringUtils.isNotBlank(attr.getVersionId())) {
