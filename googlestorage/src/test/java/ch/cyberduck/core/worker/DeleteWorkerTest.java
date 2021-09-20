@@ -24,6 +24,7 @@ import ch.cyberduck.core.googlestorage.AbstractGoogleStorageTest;
 import ch.cyberduck.core.googlestorage.GoogleStorageDirectoryFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageFindFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageTouchFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -40,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 public class DeleteWorkerTest extends AbstractGoogleStorageTest {
 
     @Test
-    public void testMoveFolder() throws Exception {
+    public void testDelete() throws Exception {
         final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new GoogleStorageDirectoryFeature(session).mkdir(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -50,6 +51,8 @@ public class DeleteWorkerTest extends AbstractGoogleStorageTest {
         assertTrue(new GoogleStorageFindFeature(session).find(file));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), PathCache.empty(), new DisabledProgressListener()).run(session);
         assertFalse(new GoogleStorageFindFeature(session).find(file));
+        assertFalse(new DefaultFindFeature(session).find(file));
         assertFalse(new GoogleStorageFindFeature(session).find(folder));
+        assertFalse(new DefaultFindFeature(session).find(folder));
     }
 }
