@@ -159,7 +159,13 @@ public class B2ObjectListService implements ListService {
         );
         final long timestamp = response.getUploadTimestamp();
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
-            attributes.setModificationDate(Long.parseLong(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
+            final String value = response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS);
+            try {
+                attributes.setModificationDate(Long.parseLong(value));
+            }
+            catch(NumberFormatException e) {
+                log.warn(String.format("Failure parsing src_last_modified_millis with value %s", value));
+            }
         }
         else {
             attributes.setModificationDate(timestamp);
