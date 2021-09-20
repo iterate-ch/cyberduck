@@ -2,9 +2,9 @@
                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                        xmlns:local="clr-namespace:Ch.Cyberduck.Core.Refresh.Views"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                        xmlns:local="clr-namespace:Ch.Cyberduck.Core.Refresh.Views"
                         xmlns:xaml="clr-namespace:Ch.Cyberduck.Core.Refresh.Xaml"
                         mc:Ignorable="d"
                         d:DesignHeight="450"
@@ -50,6 +50,7 @@
             </Grid>
         </Grid>
 
-        <xctk:BusyIndicator x:Name="Status" />
+        <xctk:BusyIndicator x:Name="Status"
+                            BusyContent="{x:Null}" />
     </Grid>
 </local:ProfilesPageBase>
