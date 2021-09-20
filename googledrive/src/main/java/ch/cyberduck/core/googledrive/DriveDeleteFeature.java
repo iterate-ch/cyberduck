@@ -50,7 +50,8 @@ public class DriveDeleteFeature implements Delete {
                     session.getClient().teamdrives().delete(fileid.getFileId(file, new DisabledListProgressListener())).execute();
                 }
                 else {
-                    if(new HostPreferences(session.getHost()).getBoolean("googledrive.delete.trash")) {
+                    if(!file.attributes().isHidden()
+                            && new HostPreferences(session.getHost()).getBoolean("googledrive.delete.trash")) {
                         final File properties = new File();
                         properties.setTrashed(true);
                         session.getClient().files().update(fileid.getFileId(file, new DisabledListProgressListener()), properties)
