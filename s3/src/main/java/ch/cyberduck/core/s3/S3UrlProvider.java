@@ -77,7 +77,10 @@ public class S3UrlProvider implements UrlProvider {
         else {
             list.add(this.toUrl(file, session.getHost().getProtocol().getScheme(), session.getHost().getPort()));
             list.add(this.toUrl(file, Scheme.http, 80));
-            list.addAll(new HostWebUrlProvider(session.getHost()).toUrl(file));
+            if(StringUtils.isNotBlank(session.getHost().getWebURL())) {
+                // Only include when custom domain is configured
+                list.addAll(new HostWebUrlProvider(session.getHost()).toUrl(file));
+            }
         }
         if(file.isFile()) {
             if(!session.getHost().getCredentials().isAnonymousLogin()) {
