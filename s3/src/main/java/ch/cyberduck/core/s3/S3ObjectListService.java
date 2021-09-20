@@ -132,12 +132,12 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                     final PathAttributes attr = new PathAttributes();
                     attr.setRegion(bucket.attributes().getRegion());
                     if(null == delimiter) {
-                        f = new Path(String.format("%s%s", bucket.getAbsolute(), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder),
-                            attr);
+                        f = new Path(String.format("%s%s", bucket.getAbsolute(), key),
+                                EnumSet.of(Path.Type.directory, Path.Type.placeholder), attr);
                     }
                     else {
-                        f = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder),
-                            attr);
+                        f = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(key),
+                                EnumSet.of(Path.Type.directory, Path.Type.placeholder), attr);
                     }
                     children.add(f);
                 }
