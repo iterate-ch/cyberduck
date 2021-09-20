@@ -31,6 +31,7 @@ import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.unicode.NFDNormalizer;
@@ -101,6 +102,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         final PathAttributes attr = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(test.attributes().getVersionId(), attr.getVersionId());
         assertEquals(1632127025217L, attr.getModificationDate());
+        assertEquals(1632127025217L, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
         final byte[] compare = new byte[content.length];
         final InputStream stream = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
