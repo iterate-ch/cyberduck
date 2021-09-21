@@ -88,6 +88,9 @@ public class GraphCopyFeature implements Copy {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
+        if(!session.isAccessible(target, true)) {
+            return false;
+        }
         if(!session.isAccessible(source, false)) {
             return false;
         }
