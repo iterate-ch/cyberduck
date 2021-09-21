@@ -83,11 +83,18 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             attributes.setRegion(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(file).getIdentifier());
             return attributes;
         }
+        if(file.getType().contains(Path.Type.upload)) {
+            final Write.Append append = new S3WriteFeature(session).append(file, new TransferStatus());
+            if(append.append) {
+                return new PathAttributes().withSize(append.size);
+            }
+            throw new NotfoundException(file.getAbsolute());
+        }
         try {
             PathAttributes attr;
             try {
                 attr = this.toAttributes(session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
-                    containerService.getContainer(file).getName(), containerService.getKey(file)));
+                        containerService.getContainer(file).getName(), containerService.getKey(file)));
             }
             catch(ServiceException e) {
                 if(null != e.getResponseHeaders()) {
@@ -161,10 +168,6 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 }
                 // Found common prefix
                 return PathAttributes.EMPTY;
-            }
-            final Write.Append append = new S3WriteFeature(session).append(file, new TransferStatus());
-            if(append.append) {
-                return new PathAttributes().withSize(append.size);
             }
             throw e;
         }
