@@ -140,12 +140,12 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final Path room = new DriveDirectoryFeature(session, fileid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new DriveTouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final String latestnodeid = test.attributes().getVersionId();
+        final String latestnodeid = test.attributes().getFileId();
         assertNotNull(latestnodeid);
         // Assume previously seen but changed on server
         fileid.cache(test, String.valueOf(RandomUtils.nextLong()));
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
-        assertEquals(latestnodeid, f.find(test).getVersionId());
+        assertEquals(latestnodeid, f.find(test).getFileId());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
