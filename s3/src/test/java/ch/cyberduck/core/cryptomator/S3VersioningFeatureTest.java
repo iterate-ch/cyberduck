@@ -39,7 +39,6 @@ import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
-import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3MultipartWriteFeature;
 import ch.cyberduck.core.s3.S3TouchFeature;
@@ -75,8 +74,6 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(
-                bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributesFinder f = new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator);
         final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session), new S3WriteFeature(session), cryptomator).touch(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -105,6 +102,6 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         assertEquals(2, reverted.getVersions().size());
         assertEquals(test.attributes().getSize(), reverted.getSize());
         assertEquals(content.length, reverted.getVersions().get(0).attributes().getSize());
-        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(directory, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
