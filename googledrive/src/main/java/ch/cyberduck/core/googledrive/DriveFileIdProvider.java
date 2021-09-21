@@ -104,21 +104,6 @@ public class DriveFileIdProvider implements FileIdProvider {
         cache.clear();
     }
 
-    public static final class IgnoreTrashedPathPredicate extends SimplePathPredicate {
-        public IgnoreTrashedPathPredicate(final Path file) {
-            super(file);
-        }
-
-        @Override
-        public boolean test(final Path test) {
-            if(test.attributes().isDuplicate()) {
-                // Ignore trashed files
-                return false;
-            }
-            return super.test(test);
-        }
-    }
-
     private static final class IgnoreTrashedComparator implements Comparator<Path> {
         @Override
         public int compare(final Path o1, final Path o2) {
