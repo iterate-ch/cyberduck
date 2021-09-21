@@ -87,7 +87,7 @@ public class DefaultPathPredicateTest {
         final Path t = new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId("1"));
         assertTrue(new DefaultPathPredicate(t).test(t));
         assertTrue(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId("1"))));
-        assertTrue(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId("2"))));
+        assertFalse(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId("2"))));
     }
 
     @Test
