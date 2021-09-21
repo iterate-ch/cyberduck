@@ -153,7 +153,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         final long expiry = preferences.getLong(String.format("%s.oauth.expiry", bookmark.getProtocol().getIdentifier()));
         final String prefix = this.getOAuthPrefix(bookmark);
-        final String hostname = getOAuthHostname(bookmark);
+        final String hostname = this.getOAuthHostname(bookmark);
         try {
             return new OAuthTokens(this.getPassword(bookmark.getProtocol().getScheme(),
                 bookmark.getPort(), hostname,
