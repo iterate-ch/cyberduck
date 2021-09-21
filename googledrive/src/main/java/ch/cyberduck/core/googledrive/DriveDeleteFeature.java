@@ -57,7 +57,7 @@ public class DriveDeleteFeature implements Delete {
                     session.getClient().teamdrives().delete(fileid.getFileId(file, new DisabledListProgressListener())).execute();
                 }
                 else {
-                    if(!file.attributes().isHidden() && trashing) {
+                    if(!file.attributes().isDuplicate() && trashing) {
                         final File properties = new File();
                         properties.setTrashed(true);
                         session.getClient().files().update(fileid.getFileId(file, new DisabledListProgressListener()), properties)
