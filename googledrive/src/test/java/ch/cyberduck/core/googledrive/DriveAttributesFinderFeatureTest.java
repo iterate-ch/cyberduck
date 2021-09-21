@@ -145,7 +145,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         // Assume previously seen but changed on server
         fileid.cache(test, String.valueOf(RandomUtils.nextLong()));
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
-        assertEquals(latestnodeid, f.find(test).getFileId());
+        assertEquals(latestnodeid, f.find(new Path(test).withAttributes(PathAttributes.EMPTY)).getFileId());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

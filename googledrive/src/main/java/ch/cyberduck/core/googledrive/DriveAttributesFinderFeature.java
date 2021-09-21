@@ -22,11 +22,11 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.shared.ListFilteringFeature;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.commons.io.FilenameUtils;
@@ -77,7 +77,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
         else {
             list = new FileidDriveListService(session, fileid, query).list(file.getParent(), listener);
         }
-        final Path found = list.find(new SimplePathPredicate(file));
+        final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(session.getCaseSensitivity(), file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
@@ -108,9 +108,6 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
             if(!DRIVE_FOLDER.equals(f.getMimeType()) && !StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
                 attributes.setSize(f.getSize());
             }
-        }
-        if(f.getVersion() != null) {
-            attributes.setVersionId(String.valueOf(f.getVersion()));
         }
         if(f.getModifiedTime() != null) {
             attributes.setModificationDate(f.getModifiedTime().getValue());
