@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.onedrive.features.GraphLockFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -173,9 +172,6 @@ public class OneDriveSession extends GraphSession {
         }
         if(type == UrlProvider.class) {
             return (T) new OneDriveUrlProvider();
-        }
-        if(type == Home.class) {
-            return (T) new OneDriveHomeFinderService();
         }
         if(type == Lock.class) {
             // this is a hack. Graph creationType can be present, but `null`, which is totally valid.
