@@ -141,9 +141,9 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
-        assertTrue(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
+        assertTrue(new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
+        assertFalse(new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
         assertFalse(new DefaultFindFeature(session).find(test));
         assertFalse(new S3FindFeature(session).find(test));
     }
