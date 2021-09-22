@@ -68,7 +68,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
                 assertNotEquals(-1L, p.attributes().getSize());
                 assertNotNull(p.attributes().getETag());
                 assertNotNull(p.attributes().getStorageClass());
-                assertEquals("null", p.attributes().getVersionId());
+                assertNull(p.attributes().getVersionId());
             }
         }
     }
@@ -119,7 +119,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         }
         session.getFeature(Versioning.class).setConfiguration(bucket, new DisabledPasswordCallback(),
                 new VersioningConfiguration(true));
-        assertEquals("null", new DefaultAttributesFinderFeature(session).find(file).getVersionId());
+        assertNull(new DefaultAttributesFinderFeature(session).find(file).getVersionId());
         {
             final byte[] content = new RandomStringGenerator.Builder().build().generate(1024).getBytes(StandardCharsets.UTF_8);
             final TransferStatus status = new TransferStatus();

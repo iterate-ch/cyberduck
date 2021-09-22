@@ -128,7 +128,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         continue;
                     }
                     final PathAttributes attr = new PathAttributes();
-                    attr.setVersionId(marker.getVersionId());
+                    attr.setVersionId("null".equals(marker.getVersionId()) ? null : marker.getVersionId());
                     if(!StringUtils.equals(lastKey, key)) {
                         // Reset revision for next file
                         revision = 0L;
@@ -235,27 +235,27 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         return pool.execute(new BackgroundExceptionCallable<Path>() {
             @Override
             public Path call() throws BackgroundException {
-                final PathAttributes attributes = new PathAttributes();
-                attributes.setRegion(bucket.attributes().getRegion());
+                final PathAttributes attr = new PathAttributes();
+                attr.setRegion(bucket.attributes().getRegion());
                 final Path prefix = new Path(directory, PathNormalizer.name(common),
-                    EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+                        EnumSet.of(Path.Type.directory, Path.Type.placeholder), attr);
                 try {
                     final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
-                        bucket.getName(), common, null, 1,
-                        null, null, false);
+                            bucket.getName(), common, null, 1,
+                            null, null, false);
                     if(versions.getItems().length == 1) {
                         final BaseVersionOrDeleteMarker version = versions.getItems()[0];
                         if(URIEncoder.decode(version.getKey()).equals(common)) {
-                            attributes.setVersionId(version.getVersionId());
+                            attr.setVersionId("null".equals(version.getVersionId()) ? null : version.getVersionId());
                             if(version.isDeleteMarker()) {
-                                attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                                attr.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                             }
                         }
                         // no placeholder but objects inside - need to check if all of them are deleted
                         final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
                             null, 1, null, false);
                         if(unversioned.getObjects().length == 0) {
-                            attributes.setDuplicate(true);
+                            attr.setDuplicate(true);
                         }
                     }
                     return prefix;
