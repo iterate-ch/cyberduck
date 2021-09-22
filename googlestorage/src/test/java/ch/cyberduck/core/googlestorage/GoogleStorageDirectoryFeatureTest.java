@@ -18,7 +18,9 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -27,11 +29,12 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest {
@@ -45,20 +48,33 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
     }
 
     @Test
-    public void testDirectory() throws Exception {
+    public void testDirectoryDeleteWithVersioning() throws Exception {
         final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path parent = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket,
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(parent,
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertNotNull(test.attributes().getVersionId());
+        // Only placeholder is found in list output with no version id set
+        assertTrue(test.isPlaceholder());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
-        new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        // This will only cause a delete marker being added
+        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(new Path(test).withAttributes(PathAttributes.EMPTY), parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        // Specific version is still found
+        assertTrue(new GoogleStorageFindFeature(session).find(test));
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertFalse(new GoogleStorageFindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
+        assertFalse(new DefaultFindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
+        assertTrue(new GoogleStorageAttributesFinderFeature(session).find(new Path(test)).isDuplicate());
+        assertTrue(new DefaultAttributesFinderFeature(session).find(new Path(test)).isDuplicate());
     }
 
     @Test
     public void testDirectoryWhitespace() throws Exception {
         final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket,
-            String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

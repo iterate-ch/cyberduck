@@ -50,8 +50,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKER;
-import static org.jets3t.service.Constants.AMZ_DELETE_MARKER;
-import static org.jets3t.service.Constants.AMZ_VERSION_ID;
 
 public class S3AttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(S3AttributesFinderFeature.class);
@@ -97,21 +95,15 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                         containerService.getContainer(file).getName(), containerService.getKey(file)));
             }
             catch(ServiceException e) {
-                if(null != e.getResponseHeaders()) {
-                    if(e.getResponseHeaders().containsKey(AMZ_DELETE_MARKER)) {
-                        // Attempting to retrieve object with delete marker and no version id in request
-                        attr = new PathAttributes().withVersionId(e.getResponseHeaders().get(AMZ_VERSION_ID));
+                switch(e.getResponseCode()) {
+                    case 405:
+                        // Only DELETE method is allowed for delete markers
+                        attr = new PathAttributes();
                         attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                         attr.setDuplicate(true);
                         return attr;
-                    }
-                    else {
-                        throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-                    }
                 }
-                else {
-                    throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-                }
+                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
             if(StringUtils.isNotBlank(attr.getVersionId())) {
                 if(references) {

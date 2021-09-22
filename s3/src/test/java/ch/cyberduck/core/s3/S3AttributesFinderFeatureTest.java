@@ -4,10 +4,12 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -117,16 +119,6 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
             assertEquals(versionId, marker.getVersionId());
         }
         {
-            final PathAttributes marker = new S3AttributesFinderFeature(session).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY));
-            for(Path version : marker.getVersions()) {
-                assertTrue(version.attributes().isDuplicate());
-            }
-            assertTrue(marker.isDuplicate());
-            assertTrue(marker.getCustom().containsKey(KEY_DELETE_MARKER));
-            assertNotNull(marker.getVersionId());
-            assertNotEquals(versionId, marker.getVersionId());
-        }
-        {
             final PathAttributes marker = new S3AttributesFinderFeature(session, true).find(testWithVersionId);
             for(Path version : marker.getVersions()) {
                 assertTrue(version.attributes().isDuplicate());
@@ -137,14 +129,22 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
             assertEquals(versionId, marker.getVersionId());
         }
         {
-            final PathAttributes marker = new S3AttributesFinderFeature(session, true).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY));
-            for(Path version : marker.getVersions()) {
-                assertTrue(version.attributes().isDuplicate());
+            try {
+                new S3AttributesFinderFeature(session).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY));
+                fail();
             }
-            assertTrue(marker.isDuplicate());
-            assertTrue(marker.getCustom().containsKey(KEY_DELETE_MARKER));
-            assertNotNull(marker.getVersionId());
-            assertNotEquals(versionId, marker.getVersionId());
+            catch(NotfoundException e) {
+                // Delete marker
+            }
+        }
+        {
+            try {
+                new S3AttributesFinderFeature(session, true).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY));
+                fail();
+            }
+            catch(NotfoundException e) {
+                // Delete marker
+            }
         }
     }
 
@@ -223,9 +223,43 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     public void testRedirectWithNoLocationHeader() throws Exception {
         final Path container = new Path("profiles.cyberduck.io", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "S3 (HTTP).cyberduckprofile", EnumSet.of(Path.Type.file),
-            new PathAttributes().withVersionId("4ajsLHgDubdGpoOjd1XCY1m4K5IUOfMY"));
+                new PathAttributes().withVersionId("4ajsLHgDubdGpoOjd1XCY1m4K5IUOfMY"));
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals("30298e0b4a1bd3ce954289281347c6ad", attributes.getChecksum().hash);
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testDeleted() throws Exception {
+        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new S3TouchFeature(session).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(test.attributes().getVersionId());
+        assertNotEquals(PathAttributes.EMPTY, new S3AttributesFinderFeature(session).find(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        try {
+            new S3AttributesFinderFeature(session).find(test);
+            fail();
+        }
+        catch(NotfoundException e) {
+            throw e;
+        }
+    }
+
+    @Test
+    public void testDeletedWithMarker() throws Exception {
+        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new S3TouchFeature(session).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(test.attributes().getVersionId());
+        assertNotEquals(PathAttributes.EMPTY, new S3AttributesFinderFeature(session).find(test));
+        // Add delete marker
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3AttributesFinderFeature(session).find(test).getCustom().containsKey(KEY_DELETE_MARKER));
+        assertFalse(new S3FindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
+        // Test reading delete marker itself
+        final Path marker = new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
+        assertTrue(marker.attributes().isDuplicate());
+        assertTrue(marker.attributes().getCustom().containsKey(KEY_DELETE_MARKER));
+        assertTrue(new S3AttributesFinderFeature(session).find(marker).getCustom().containsKey(KEY_DELETE_MARKER));
+        assertTrue(new S3FindFeature(session).find(marker));
     }
 }

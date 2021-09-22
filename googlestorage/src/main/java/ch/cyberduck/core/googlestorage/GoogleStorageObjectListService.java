@@ -60,14 +60,14 @@ public class GoogleStorageObjectListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return this.list(directory, listener, String.valueOf(Path.DELIMITER),
-            new HostPreferences(session.getHost()).getInteger("googlestorage.listing.chunksize"));
+                new HostPreferences(session.getHost()).getInteger("googlestorage.listing.chunksize"));
     }
 
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {
         try {
             final Path bucket = containerService.getContainer(directory);
             final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-                containerService.getContainer(directory)
+                    containerService.getContainer(directory)
             ) : VersioningConfiguration.empty();
             final AttributedList<Path> objects = new AttributedList<>();
             Objects response;
@@ -77,13 +77,13 @@ public class GoogleStorageObjectListService implements ListService {
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             do {
                 response = session.getClient().objects().list(bucket.getName())
-                    .setPageToken(page)
-                    // lists all versions of an object as distinct results. The default is false
-                    .setVersions(versioning.isEnabled())
-                    .setMaxResults((long) chunksize)
-                    .setDelimiter(delimiter)
-                    .setPrefix(this.createPrefix(directory))
-                    .execute();
+                        .setPageToken(page)
+                        // lists all versions of an object as distinct results. The default is false
+                        .setVersions(versioning.isEnabled())
+                        .setMaxResults((long) chunksize)
+                        .setDelimiter(delimiter)
+                        .setPrefix(this.createPrefix(directory))
+                        .execute();
                 if(response.getItems() != null) {
                     for(StorageObject object : response.getItems()) {
                         final String key = PathNormalizer.normalize(object.getName());
@@ -101,13 +101,14 @@ public class GoogleStorageObjectListService implements ListService {
                             revision = 0L;
                         }
                         final EnumSet<Path.Type> types = object.getName().endsWith(String.valueOf(Path.DELIMITER))
-                            ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
+                                ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                         final Path file;
                         final PathAttributes attr = attributes.toAttributes(object, versioning);
                         attr.setRevision(++revision);
                         // Copy bucket location
                         attr.setRegion(bucket.attributes().getRegion());
                         if(null == delimiter) {
+                            // When searching for files recursively
                             file = new Path(String.format("%s%s", bucket.getAbsolute(), key), types, attr);
                         }
                         else {
@@ -147,13 +148,21 @@ public class GoogleStorageObjectListService implements ListService {
                         }
                         final Path file;
                         final PathAttributes attributes = new PathAttributes();
+                        attributes.setRegion(bucket.attributes().getRegion());
                         if(null == delimiter) {
+                            // When searching for files recursively
                             file = new Path(String.format("%s%s", bucket.getAbsolute(), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                         }
                         else {
                             file = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                         }
-                        attributes.setRegion(bucket.attributes().getRegion());
+                        if(versioning.isEnabled()) {
+                            // Because directory still contains delete marker the prefix is found
+                            if(!hasDirectoryPlaceholder) {
+                                // Mark as duplicate if not returned as item
+                                attributes.setDuplicate(true);
+                            }
+                        }
                         objects.add(file);
                     }
                 }

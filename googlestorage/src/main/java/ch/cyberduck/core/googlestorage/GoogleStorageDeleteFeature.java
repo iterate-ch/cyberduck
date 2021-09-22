@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -51,13 +52,10 @@ public class GoogleStorageDeleteFeature implements Delete {
                 if(containerService.isContainer(file)) {
                     session.getClient().buckets().delete(file.getName()).execute();
                 }
-                else if(file.isPlaceholder()) {
-                    log.warn(String.format("Do not attempt to delete placeholder %s", file));
-                }
-                else {
+                if(file.isFile() || file.isPlaceholder()) {
                     final Storage.Objects.Delete request = session.getClient().objects().delete(containerService.getContainer(file).getName(), containerService.getKey(file));
                     final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-                        containerService.getContainer(file)
+                            containerService.getContainer(file)
                     ) : VersioningConfiguration.empty();
                     if(versioning.isEnabled()) {
                         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
@@ -69,7 +67,14 @@ public class GoogleStorageDeleteFeature implements Delete {
                 }
             }
             catch(IOException e) {
-                throw new GoogleStorageExceptionMappingService().map("Cannot delete {0}", e, file);
+                final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Cannot delete {0}", e, file);
+                if(file.isPlaceholder()) {
+                    if(failure instanceof NotfoundException) {
+                        // No placeholder file may exist but we just have a common prefix
+                        return;
+                    }
+                }
+                throw failure;
             }
         }
     }
