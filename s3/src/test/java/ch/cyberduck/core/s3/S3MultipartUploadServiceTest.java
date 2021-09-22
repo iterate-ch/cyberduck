@@ -2,10 +2,12 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -180,8 +182,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
                         };
                     }
                 },
-                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status,
-                new DisabledLoginCallback());
+                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status,
+                    new DisabledLoginCallback());
         }
         catch(BackgroundException e) {
             // Expected
@@ -190,12 +192,16 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertTrue(interrupt.get());
         assertEquals(10L * 1024L * 1024L, count.getSent());
         assertFalse(status.isComplete());
-        assertTrue(new S3FindFeature(session).find(test));
-        assertEquals(10L * 1024L * 1024L, new S3AttributesFinderFeature(session).find(test).getSize());
+        final Path upload = new S3ListService(session).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
+        assertTrue(new S3FindFeature(session).find(upload));
+        assertNotNull(upload);
+        assertTrue(upload.getType().contains(Path.Type.upload));
+        assertTrue(new S3FindFeature(session).find(upload));
+        assertEquals(10L * 1024L * 1024L, new S3AttributesFinderFeature(session).find(upload).getSize());
         final TransferStatus append = new TransferStatus().append(true).withLength(2L * 1024L * 1024L).withOffset(10L * 1024L * 1024L);
         new S3MultipartUploadService(session, new S3WriteFeature(session), 10L * 1024L * 1024L, 1).upload(test, local,
-            new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, append,
-            new DisabledConnectionCallback());
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, append,
+                new DisabledConnectionCallback());
         assertEquals(12L * 1024L * 1024L, count.getSent());
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
