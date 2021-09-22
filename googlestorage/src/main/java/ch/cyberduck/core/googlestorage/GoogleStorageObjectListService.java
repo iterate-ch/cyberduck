@@ -91,7 +91,7 @@ public class GoogleStorageObjectListService implements ListService {
                             log.warn(String.format("Skipping prefix %s", key));
                             continue;
                         }
-                        if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
+                        if(new SimplePathPredicate(new Path(bucket, key, EnumSet.of(Path.Type.directory))).test(directory)) {
                             // Placeholder object, skip
                             hasDirectoryPlaceholder = true;
                             continue;
