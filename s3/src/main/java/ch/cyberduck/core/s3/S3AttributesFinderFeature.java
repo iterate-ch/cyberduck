@@ -118,7 +118,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                     try {
                         // Add references to previous versions
                         final AttributedList<Path> list = new S3VersionedObjectListService(session, true).list(file, new DisabledListProgressListener());
-                        final Path versioned = list.find(new DefaultPathPredicate(file));
+                        final Path versioned = list.find(new DefaultPathPredicate(new Path(file).withAttributes(attr)));
                         if(null != versioned) {
                             attr.setDuplicate(versioned.attributes().isDuplicate());
                             attr.setVersions(versioned.attributes().getVersions());
