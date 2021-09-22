@@ -52,12 +52,12 @@ public class CommandLineUriParserTest {
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTP.cyberduckprofile")));
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTPS.cyberduckprofile")));
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile")));
-        assertEquals(0, new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
-            .compareTo(new CommandLineUriParser(input, factory).parse("s3:AWS456@cyberduck-test/key")));
-        assertEquals(0, new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
-            .compareTo(new CommandLineUriParser(input, factory).parse("s3://AWS456@/cyberduck-test/key")));
+        assertEquals(0, new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test", new Credentials("AWS456", null))
+                .compareTo(new CommandLineUriParser(input, factory).parse("s3:AWS456@cyberduck-test/key")));
+        assertEquals(0, new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test", new Credentials("AWS456", null))
+                .compareTo(new CommandLineUriParser(input, factory).parse("s3://AWS456@/cyberduck-test/key")));
         assertEquals(0, new Host(new FTPTLSProtocol(), "cyberduck.io", 55, "/folder", new Credentials("anonymous", null))
-            .compareTo(new CommandLineUriParser(input, factory).parse("ftps://cyberduck.io:55/folder")));
+                .compareTo(new CommandLineUriParser(input, factory).parse("ftps://cyberduck.io:55/folder/")));
     }
 
     @Test
@@ -66,8 +66,8 @@ public class CommandLineUriParserTest {
         final CommandLine input = parser.parse(new Options(), new String[]{});
         final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Collections.singleton(new SwiftProtocol())));
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile")));
-        assertEquals(0, new Host(factory.forName("rackspace"), "identity.api.rackspacecloud.com", 443, "/cdn.cyberduck.ch/", new Credentials("u", null))
-            .compareTo(new CommandLineUriParser(input, factory).parse("rackspace://u@cdn.cyberduck.ch/")));
+        assertEquals(0, new Host(factory.forName("rackspace"), "identity.api.rackspacecloud.com", 443, "/cdn.cyberduck.ch", new Credentials("u", null))
+                .compareTo(new CommandLineUriParser(input, factory).parse("rackspace://u@cdn.cyberduck.ch/")));
 
     }
 
@@ -82,8 +82,8 @@ public class CommandLineUriParserTest {
         )));
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Azure.cyberduckprofile")));
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/DAVS.cyberduckprofile")));
-        assertEquals(0, new Host(new DAVSSLProtocol(), "ftp.gnu.org", 443, "/gnu/wget/wget-1.19.1.tar.gz", new Credentials("anonymous", null))
-            .compareTo(new CommandLineUriParser(input, factory).parse("https://ftp.gnu.org/gnu/wget/wget-1.19.1.tar.gz")));
+        assertEquals(0, new Host(new DAVSSLProtocol(), "ftp.gnu.org", 443, "/gnu/wget", new Credentials("anonymous", null))
+                .compareTo(new CommandLineUriParser(input, factory).parse("https://ftp.gnu.org/gnu/wget/wget-1.19.1.tar.gz")));
     }
 
     @Test
