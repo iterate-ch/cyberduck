@@ -152,13 +152,14 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
-        assertEquals(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory)), new DefaultHomeFinderService(session).find());
+        assertTrue(new SimplePathPredicate(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory)))
+                .test(new DefaultHomeFinderService(session).find()));
         final AttributedList<Path> list
-            = new S3ObjectListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
+                = new S3ObjectListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("/dist.springframework.org/release/SWF", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        assertNotNull(list.find(new SimplePathPredicate(new Path("/dist.springframework.org/release/SWF", EnumSet.of(Path.Type.directory, Path.Type.placeholder)))));
         session.close();
     }
 
