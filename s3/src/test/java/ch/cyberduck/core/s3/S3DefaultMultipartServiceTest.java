@@ -72,7 +72,6 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
         final MultipartUpload first = session.getClient().multipartStartUpload(container.getName(), object);
         assertNotNull(first);
         assertEquals(first.getUploadId(), service.find(directory).iterator().next().getUploadId());
-        assertTrue(service.find(container).isEmpty());
         assertFalse(new S3FindFeature(session).find(file));
         final Path upload = new S3ListService(session).list(directory, new DisabledListProgressListener()).find(new SimplePathPredicate(file));
         assertTrue(new S3FindFeature(session).find(upload));
@@ -83,7 +82,6 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
         Thread.sleep(2000L);
         final MultipartUpload second = session.getClient().multipartStartUpload(container.getName(), object);
         assertNotNull(second);
-        assertTrue(service.find(container).isEmpty());
         final MultipartUpload multipart = service.find(file).iterator().next();
         assertNotNull(multipart);
         assertEquals(second.getUploadId(), multipart.getUploadId());
