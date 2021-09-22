@@ -181,7 +181,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         continue;
                     }
                     final String key = PathNormalizer.normalize(URIEncoder.decode(common));
-                    if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
+                    if(new SimplePathPredicate(new Path(bucket, key, EnumSet.of(Path.Type.directory))).test(directory)) {
                         continue;
                     }
                     folders.add(this.submit(pool, bucket, directory, URIEncoder.decode(common)));

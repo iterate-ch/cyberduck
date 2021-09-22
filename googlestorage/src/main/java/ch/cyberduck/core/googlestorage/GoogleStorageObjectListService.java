@@ -143,7 +143,7 @@ public class GoogleStorageObjectListService implements ListService {
                             continue;
                         }
                         final String key = PathNormalizer.normalize(prefix);
-                        if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
+                        if(new SimplePathPredicate(new Path(bucket, key, EnumSet.of(Path.Type.directory))).test(directory)) {
                             continue;
                         }
                         final Path file;
