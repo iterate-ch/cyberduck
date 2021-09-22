@@ -655,7 +655,7 @@ public class Host implements Serializable, Comparable<Host> {
         else if(credentials.compareTo(o.credentials) > 0) {
             return 1;
         }
-        return 0;
+        return StringUtils.compare(defaultpath, o.defaultpath);
     }
 
     @Override
