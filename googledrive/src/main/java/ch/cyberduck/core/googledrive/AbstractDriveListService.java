@@ -107,11 +107,7 @@ public abstract class AbstractDriveListService implements ListService {
                     // Use placeholder type to mark Google Apps document to download as web link file
                     final EnumSet<Path.Type> type = this.toType(f);
                     for(Path parent : this.parents(directory, f)) {
-                        final Path child = new Path(parent, filename, type, properties);
-                        if(f.getExplicitlyTrashed()) {
-                            properties.setDuplicate(true);
-                        }
-                        children.add(child);
+                        children.add(new Path(parent, filename, type, properties));
                     }
                 }
                 listener.chunk(directory, children);

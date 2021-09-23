@@ -40,10 +40,10 @@ public class DefaultPathPredicate implements CacheReference<Path> {
                 qualifier += file.attributes().getRegion();
             }
         }
+        if(StringUtils.isNotBlank(file.attributes().getFileId())) {
+            qualifier += file.attributes().getFileId();
+        }
         if(file.isFile()) {
-            if(StringUtils.isNotBlank(file.attributes().getFileId())) {
-                qualifier += file.attributes().getFileId();
-            }
             if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
                 qualifier += file.attributes().getVersionId();
             }

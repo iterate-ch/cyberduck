@@ -59,7 +59,7 @@ public abstract class ListFilteringFeature {
         return found;
     }
 
-    protected static final class ListFilteringPredicate extends DefaultPathPredicate {
+    public static final class ListFilteringPredicate extends DefaultPathPredicate {
         private final Protocol.Case sensitivity;
         private final Path file;
 
@@ -71,7 +71,8 @@ public abstract class ListFilteringFeature {
 
         @Override
         public boolean test(final Path f) {
-            if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+            if(StringUtils.isNotBlank(file.attributes().getVersionId())
+                    || StringUtils.isNotBlank(file.attributes().getFileId())) {
                 // Search with specific version and region
                 return super.test(f);
             }
