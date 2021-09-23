@@ -10,10 +10,16 @@ https://cyberduck.io/
 - [Feature] Retain modification date in metadata for uploads (S3) (#11784)
 - [Feature] Add --purge option to invalidate files in Amazon CloudFront distributions and OpenStack Swift (X-CDN-Enabled header) (#11767)
 - [Feature] New default connection profile (ownCloud)
+- [Feature] Build package in AppImage format (CLI) (#11762)
 - [Bugfix] Change default path for NextCloud connections to include username (#11787)
 - [Bugfix] Failed to overwrite upload of object with custom metadata (Google Storage) (#11781)
 - [Bugfix] Skip duplicate file versions in output (Cyberduck CLI) (#11786)
 - [Bugfix] Fails to use selected private key file outside of ~/.ssh folder (SFTP, Mac App Store) (#11782)
+- [Bugfix] Unable to delete folders (Google Storage) (#11808)
+- [Bugfix] Allow to set Glacier storage class (Google Storage) (#11521)
+- [Bugfix] Unable to remove delete marker (S3) (#11803)
+- [Bugfix] Taskbar shows incorrect number of transfers (Windows) (#11813)
+- [Bugfix] Allow to delete trashed files (Google Drive) (#11816)
 
 7.10.2
 - [Feature] Add --purge option to invalidate files in Amazon CloudFront distributions and OpenStack Swift (X-CDN-Enabled header) (#11767)
