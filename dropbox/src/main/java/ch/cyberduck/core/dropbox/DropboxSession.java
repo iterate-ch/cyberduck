@@ -134,7 +134,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
             return (T) new DropboxWriteFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new DropboxUploadFeature(new DropboxWriteFeature(this));
+            return (T) new DropboxUploadFeature(this, new DropboxWriteFeature(this));
         }
         if(type == Directory.class) {
             return (T) new DropboxDirectoryFeature(this);
