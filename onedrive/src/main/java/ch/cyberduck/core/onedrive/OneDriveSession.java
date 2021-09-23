@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.onedrive.features.GraphLockFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -115,17 +114,42 @@ public class OneDriveSession extends GraphSession {
         }
 
         final ContainerItem containerItem = getContainer(file);
-        // Rename not possible in /Shared, items inside subfolder can be renamed
 
+        // Operations using container access:
+        // touch, directory
+        // copy, move: Only for target check
+        // Operations not using container access:
+        // copy, move: For source check.
+
+        // For touch/directory:
+        // Allow inside any directory that is either /My Files or a subfolder of /Shared.
+
+        // For copy/move
+        // Allow from a non-container item to a container-item.
+        // e.g.
+        // * /My Files/Folder/ToBeMoved to /My Files
+        // * /Shared/Shared Folder/Nested/ToBeMoved to /Shared/Shared Folder/
+
+        // Test for Container.
         if(containerItem.isDrive()) {
+            // Is /My Files.
+            // Tests whether container access is used, orelse deny access to /My Files.
             return container || !containerItem.getContainerPath().map(file::equals).orElse(false);
         }
         else {
-            Optional<Boolean> predicate = containerItem.getCollectionPath().map(o -> file.equals(o));
+            // Check for /Shared-path
+            // Catches modification of items in /Shared
+            Optional<Boolean> predicate = containerItem.getCollectionPath().map(file::equals);
             if(!container) {
-                predicate = predicate.map(o -> o || file.getParent().equals(o));
+                // Append condition to /Shared-path check for
+                // If file parent is /Shared then return inaccessible below
+                // Cannot modify items in /Shared/*, but /Shared/**/*
+                // User must not be able to rename, move or copy first level of /Shared.
+                predicate = predicate.map(o -> o || containerItem.getCollectionPath().map(file.getParent()::equals).get());
             }
-            return !predicate.orElse(false);
+            // Fallback to deny access for invalid paths (/Invalid).
+            // Logic is upside down. Predicate determines whether to block access. Flip it.
+            return !predicate.orElse(true);
         }
     }
 
@@ -148,9 +172,6 @@ public class OneDriveSession extends GraphSession {
         }
         if(type == UrlProvider.class) {
             return (T) new OneDriveUrlProvider();
-        }
-        if(type == Home.class) {
-            return (T) new OneDriveHomeFinderService();
         }
         if(type == Lock.class) {
             // this is a hack. Graph creationType can be present, but `null`, which is totally valid.
