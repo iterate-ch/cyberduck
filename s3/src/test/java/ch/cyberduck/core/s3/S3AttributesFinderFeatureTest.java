@@ -227,6 +227,8 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals("30298e0b4a1bd3ce954289281347c6ad", attributes.getChecksum().hash);
+        assertTrue(session.getClient().getRegionEndpointCache().containsRegionForBucketName("profiles.cyberduck.io"));
+        assertEquals("eu-west-1", session.getClient().getRegionEndpointCache().getRegionForBucketName("profiles.cyberduck.io"));
     }
 
     @Test(expected = NotfoundException.class)

@@ -50,6 +50,7 @@ import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -133,15 +134,18 @@ public class RequestEntityRestStorageService extends RestS3Service {
                     String uri = request.getRequestLine().getUri();
                     for(Location.Name region : session.getHost().getProtocol().getRegions()) {
                         if(StringUtils.contains(uri, region.getIdentifier())) {
-                            final HttpUriRequest uriRequest = RequestBuilder.copy(request).setUri(StringUtils.replace(uri, region.getIdentifier(), header.getValue())).build();
-                            log.warn(String.format("Retry request with URI %s", uriRequest.getURI()));
+                            final HttpUriRequest redirect = RequestBuilder.copy(request).setUri(StringUtils.replace(uri, region.getIdentifier(), header.getValue())).build();
+                            log.warn(String.format("Retry request with URI %s", redirect.getURI()));
                             try {
-                                authorizer.authorizeHttpRequest(uriRequest, context, null);
+                                authorizer.authorizeHttpRequest(redirect, context, null);
                             }
                             catch(ServiceException e) {
                                 throw new RedirectException(e.getMessage(), e);
                             }
-                            return uriRequest;
+                            // Update cache with new region
+                            regionEndpointCache.putRegionForBucketName(ServiceUtils.findBucketNameInHostname(((HttpUriRequest) request).getURI().getHost(),
+                                    properties.getStringProperty("s3service.s3-endpoint", session.getHost().getHostname())), header.getValue());
+                            return redirect;
                         }
                     }
                 }
