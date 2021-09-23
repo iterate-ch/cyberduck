@@ -73,7 +73,7 @@ public abstract class ListFilteringFeature {
         public boolean test(final Path f) {
             if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
                 // Search with specific version and region
-                return new DefaultPathPredicate(file).test(f);
+                return super.test(f);
             }
             if(f.attributes().isDuplicate()) {
                 // Filter previous versions and delete markers when searching for no specific version
