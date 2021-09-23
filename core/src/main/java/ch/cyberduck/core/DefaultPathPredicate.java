@@ -43,8 +43,10 @@ public class DefaultPathPredicate implements CacheReference<Path> {
         if(StringUtils.isNotBlank(file.attributes().getFileId())) {
             qualifier += file.attributes().getFileId();
         }
-        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            qualifier += file.attributes().getVersionId();
+        if(file.isFile()) {
+            if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+                qualifier += file.attributes().getVersionId();
+            }
         }
         reference = "[" + type + "]" + "-" + qualifier + normalizer.normalize(file.getAbsolute());
     }
