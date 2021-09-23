@@ -133,8 +133,8 @@ public class RequestEntityRestStorageService extends RestS3Service {
                     String uri = request.getRequestLine().getUri();
                     for(Location.Name region : session.getHost().getProtocol().getRegions()) {
                         if(StringUtils.contains(uri, region.getIdentifier())) {
-                            log.warn(String.format("Retry request with URI %s", uri));
                             final HttpUriRequest uriRequest = RequestBuilder.copy(request).setUri(StringUtils.replace(uri, region.getIdentifier(), header.getValue())).build();
+                            log.warn(String.format("Retry request with URI %s", uriRequest.getURI()));
                             try {
                                 authorizer.authorizeHttpRequest(uriRequest, context, null);
                             }
