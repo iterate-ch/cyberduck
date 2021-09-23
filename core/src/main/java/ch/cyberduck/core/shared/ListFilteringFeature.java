@@ -17,13 +17,13 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
+import ch.cyberduck.core.CaseSensitivePathPredicate;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +81,7 @@ public abstract class ListFilteringFeature {
             }
             switch(sensitivity) {
                 case sensitive:
-                    return new SimplePathPredicate(file).test(f);
+                    return new CaseSensitivePathPredicate(file).test(f);
                 case insensitive:
                     return new CaseInsensitivePathPredicate(file).test(f);
             }
