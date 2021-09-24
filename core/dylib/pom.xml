@@ -124,7 +124,6 @@
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>libjnidispatch</artifactId>
-            <classifier>x86_64</classifier>
             <type>dylib</type>
             <version>${jna-version}</version>
             <scope>runtime</scope>
