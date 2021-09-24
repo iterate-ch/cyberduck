@@ -320,6 +320,7 @@ public class MainController extends BundleController implements NSApplication.De
         columns.put(String.format("browser.column.%s", BrowserColumn.permission.name()), BrowserColumn.permission.toString());
         columns.put(String.format("browser.column.%s", BrowserColumn.region.name()), BrowserColumn.region.toString());
         columns.put(String.format("browser.column.%s", BrowserColumn.version.name()), BrowserColumn.version.toString());
+        columns.put(String.format("browser.column.%s", BrowserColumn.checksum.name()), BrowserColumn.checksum.toString());
         columns.put(String.format("browser.column.%s", BrowserColumn.storageclass.name()), BrowserColumn.storageclass.toString());
         for(Map.Entry<String, String> entry : columns.entrySet()) {
             NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent(entry.getValue(),

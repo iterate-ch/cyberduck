@@ -338,6 +338,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnRegion = ((Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn)(new Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn()));
             this.treeColumnStorageClass = ((Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn)(new Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn()));
             this.treeColumnVersion = ((Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn)(new Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn()));
+            this.treeColumnChecksum = ((Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn)(new Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn()));
             this.transcriptBox = new System.Windows.Forms.RichTextBox();
             this.managedBookmarkPanel2 = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.bookmarkListView = new Ch.Cyberduck.Ui.Winforms.Controls.LineSeparatedObjectListView();
@@ -2557,6 +2558,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.AllColumns.Add(this.treeColumnRegion);
             this.browser.AllColumns.Add(this.treeColumnStorageClass);
             this.browser.AllColumns.Add(this.treeColumnVersion);
+            this.browser.AllColumns.Add(this.treeColumnChecksum);
             this.browser.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.browser.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
             this.browser.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -2671,6 +2673,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnVersion.IsEditable = false;
             this.treeColumnVersion.IsVisible = false;
             this.treeColumnVersion.Text = "Version";
+            //
+            // treeColumnChecksum
+            // 
+            this.treeColumnChecksum.CellPadding = null;
+            this.treeColumnChecksum.DisplayIndex = 10;
+            this.treeColumnChecksum.IsEditable = false;
+            this.treeColumnChecksum.IsVisible = false;
+            this.treeColumnChecksum.Text = "Checksum";
             // 
             // transcriptBox
             // 
@@ -3509,6 +3519,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private SortComparatorOLVColumn treeColumnRegion;
         private SortComparatorOLVColumn treeColumnStorageClass;
         private SortComparatorOLVColumn treeColumnVersion;
+        private SortComparatorOLVColumn treeColumnChecksum;
         private System.Windows.Forms.ToolStripMenuItem infoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem activitiyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem transfersToolStripMenuItem;

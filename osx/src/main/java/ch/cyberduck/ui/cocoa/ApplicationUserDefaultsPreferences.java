@@ -84,6 +84,8 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         this.setDefault(String.format("browser.column.%s.width", BrowserColumn.version.name()), String.valueOf(80));
         this.setDefault(String.format("browser.column.%s", BrowserColumn.storageclass.name()), String.valueOf(false));
         this.setDefault(String.format("browser.column.%s.width", BrowserColumn.storageclass.name()), String.valueOf(80));
+        this.setDefault(String.format("browser.column.%s", BrowserColumn.checksum.name()), String.valueOf(false));
+        this.setDefault(String.format("browser.column.%s.width", BrowserColumn.checksum.name()), String.valueOf(80));
 
         this.setDefault("browser.sort.column", BrowserColumn.filename.name());
         this.setDefault("website.store", "macappstore://itunes.apple.com/app/id409222199?mt=12");

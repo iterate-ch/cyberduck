@@ -51,6 +51,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.keychain.SFCertificatePanel;
 import ch.cyberduck.core.keychain.SecurityFunctions;
 import ch.cyberduck.core.local.Application;
@@ -1475,6 +1476,18 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.version.name())));
+            table.addTableColumn(c);
+        }
+        {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.checksum.name());
+            c.headerCell().setStringValue(BrowserColumn.checksum.toString());
+            c.setMinWidth(50);
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
+                BrowserColumn.checksum.name())));
+            c.setMaxWidth(500);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            c.setDataCell(textCellPrototype);
+            c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.checksum.name())));
             table.addTableColumn(c);
         }
         {
@@ -2997,6 +3010,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.version.name()))) {
                 copy.append(",").append(next.attributes().getVersionId());
+            }
+            if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.checksum.name()))) {
+                copy.append(",");
+                if(Checksum.NONE != next.attributes().getChecksum()) {
+                    copy.append(",").append(next.attributes().getChecksum().hash);
+                }
             }
             if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.storageclass.name()))) {
                 copy.append(",").append(next.attributes().getStorageClass());
