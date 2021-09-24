@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="18122" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="18122"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -72,6 +72,8 @@
                 <outlet property="infoWindowAsInspectorCheckbox" destination="83" id="472"/>
                 <outlet property="keychainCheckbox" destination="53" id="473"/>
                 <outlet property="languagePopup" destination="412" id="474"/>
+                <outlet property="logCheckbox" destination="P74-g6-epb" id="eph3AhWo"/>
+                <outlet property="logShowButton" destination="cdn-DG-bwU" id="cae3maiZ"/>
                 <outlet property="openAfterDownloadCheckbox" destination="103" id="476"/>
                 <outlet property="openUntitledBrowserCheckbox" destination="36" id="477"/>
                 <outlet property="panelAdvanced" destination="280" id="478"/>
@@ -218,7 +220,7 @@
             </view>
             <point key="canvasLocation" x="7" y="147"/>
         </window>
-        <customView id="30">
+        <customView id="30" userLabel="Panel Browser">
             <rect key="frame" x="0.0" y="0.0" width="507" height="417"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
@@ -234,7 +236,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="35" id="33">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="34">
                                         <items>
                                             <menuItem title=" " state="on" id="35"/>
@@ -309,7 +311,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="52" id="50">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="51">
                                         <items>
                                             <menuItem title=" " state="on" id="52"/>
@@ -357,7 +359,7 @@
             </subviews>
             <point key="canvasLocation" x="-581" y="662"/>
         </customView>
-        <customView id="61">
+        <customView id="61" userLabel="Panel General">
             <rect key="frame" x="0.0" y="0.0" width="507" height="422"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
@@ -373,7 +375,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" title="Používať malé ikony" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="66" id="64">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="65">
                                         <items>
                                             <menuItem title="Používať malé ikony" state="on" id="66"/>
@@ -524,7 +526,7 @@
             </subviews>
             <point key="canvasLocation" x="-6" y="701"/>
         </customView>
-        <customView id="99">
+        <customView id="99" userLabel="Panel Transfers">
             <rect key="frame" x="0.0" y="0.0" width="507" height="412"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
@@ -589,7 +591,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <popUpButtonCell key="cell" type="push" title="Nadviazaním nového spojenia" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="144" id="142">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="menu"/>
+                                            <font key="font" metaFont="system"/>
                                             <menu key="menu" title="Iné zobrazenia" id="143">
                                                 <items>
                                                     <menuItem title="Nadviazaním nového spojenia" state="on" id="144"/>
@@ -629,7 +631,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="114" id="112">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="menu"/>
+                                            <font key="font" metaFont="system"/>
                                             <menu key="menu" title="Iné zobrazenia" id="113">
                                                 <items>
                                                     <menuItem title=" " state="on" id="114"/>
@@ -664,7 +666,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="130" id="128">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="menu"/>
+                                            <font key="font" metaFont="system"/>
                                             <menu key="menu" title="Iné zobrazenia" id="129">
                                                 <items>
                                                     <menuItem title=" " state="on" id="130"/>
@@ -693,7 +695,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="138" id="136">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="menu"/>
+                                            <font key="font" metaFont="system"/>
                                             <menu key="menu" title="Iné zobrazenia" id="137">
                                                 <items>
                                                     <menuItem title=" " state="on" id="138"/>
@@ -1177,11 +1179,11 @@
                                                 </textView>
                                             </subviews>
                                         </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="249">
+                                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="249">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
-                                        <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="250">
+                                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="250">
                                             <rect key="frame" x="-30" y="1" width="15" height="56"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
@@ -1236,11 +1238,11 @@
                                                 </textView>
                                             </subviews>
                                         </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="254">
+                                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="254">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
-                                        <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="255">
+                                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="255">
                                             <rect key="frame" x="-30" y="1" width="15" height="56"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
@@ -1253,12 +1255,12 @@
             </subviews>
             <point key="canvasLocation" x="139.5" y="1183"/>
         </customView>
-        <customView id="264">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
+        <customView id="264" userLabel="Panel FTP">
+            <rect key="frame" x="0.0" y="0.0" width="507" height="248"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <box fixedFrame="YES" title="Obslužný program protokolu" translatesAutoresizingMaskIntoConstraints="NO" id="265">
-                    <rect key="frame" x="17" y="16" width="473" height="97"/>
+                    <rect key="frame" x="17" y="131" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="XGo-5u-0m0">
                         <rect key="frame" x="3" y="3" width="467" height="79"/>
@@ -1269,7 +1271,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="269" id="267">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="268">
                                         <items>
                                             <menuItem title=" " state="on" id="269"/>
@@ -1289,10 +1291,43 @@
                         </subviews>
                     </view>
                 </box>
+                <box fixedFrame="YES" title="Kódovanie textu" translatesAutoresizingMaskIntoConstraints="NO" id="281">
+                    <rect key="frame" x="17" y="16" width="473" height="111"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <view key="contentView" id="pwh-9x-TZR">
+                        <rect key="frame" x="3" y="3" width="467" height="93"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="282">
+                                <rect key="frame" x="9" y="8" width="197" height="26"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="285" id="283">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <menu key="menu" title="Iné zobrazenia" id="284">
+                                        <items>
+                                            <menuItem title=" " state="on" id="285"/>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                            </popUpButton>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="286">
+                                <rect key="frame" x="9" y="40" width="451" height="41"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="287">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <string key="title">Nastavené kódovanie textu sa použije na prevod znakov v názvoch súborov zobrazovaných v prehliadači. Malo by zodpovedať kódovaniu použitému na serveri.</string>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                </box>
             </subviews>
-            <point key="canvasLocation" x="-435" y="1048"/>
+            <point key="canvasLocation" x="-435.5" y="1105"/>
         </customView>
-        <customView id="272">
+        <customView id="272" userLabel="Panel SFTP">
             <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
@@ -1308,7 +1343,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="277" id="275">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="276">
                                         <items>
                                             <menuItem title=" " state="on" id="277"/>
@@ -1331,45 +1366,12 @@
             </subviews>
             <point key="canvasLocation" x="-1010" y="1008"/>
         </customView>
-        <customView id="280">
-            <rect key="frame" x="0.0" y="0.0" width="508" height="383"/>
+        <customView id="280" userLabel="Panel Connection">
+            <rect key="frame" x="0.0" y="0.0" width="507" height="366"/>
             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
             <subviews>
-                <box fixedFrame="YES" title="Kódovanie textu" translatesAutoresizingMaskIntoConstraints="NO" id="281">
-                    <rect key="frame" x="17" y="252" width="472" height="111"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="N8s-vX-pXb">
-                        <rect key="frame" x="3" y="3" width="466" height="93"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="282">
-                                <rect key="frame" x="9" y="8" width="197" height="26"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="285" id="283">
-                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="Iné zobrazenia" id="284">
-                                        <items>
-                                            <menuItem title=" " state="on" id="285"/>
-                                        </items>
-                                    </menu>
-                                </popUpButtonCell>
-                            </popUpButton>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="286">
-                                <rect key="frame" x="9" y="40" width="451" height="41"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="287">
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <string key="title">Nastavené kódovanie textu sa použije na prevod znakov v názvoch súborov zobrazovaných v prehliadači. Malo by zodpovedať kódovaniu použitému na serveri.</string>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </subviews>
-                    </view>
-                </box>
                 <box fixedFrame="YES" title="Proxy servery" translatesAutoresizingMaskIntoConstraints="NO" id="288">
-                    <rect key="frame" x="17" y="16" width="473" height="94"/>
+                    <rect key="frame" x="17" y="114" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nIK-94-OGK">
                         <rect key="frame" x="3" y="3" width="467" height="76"/>
@@ -1395,7 +1397,7 @@
                     </view>
                 </box>
                 <box fixedFrame="YES" title="Časové limity" translatesAutoresizingMaskIntoConstraints="NO" id="293">
-                    <rect key="frame" x="17" y="114" width="473" height="134"/>
+                    <rect key="frame" x="17" y="212" width="473" height="134"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Tuf-VX-07Q">
                         <rect key="frame" x="3" y="3" width="467" height="116"/>
@@ -1481,11 +1483,37 @@
                         </subviews>
                     </view>
                 </box>
+                <box fixedFrame="YES" title="Log" translatesAutoresizingMaskIntoConstraints="NO" id="lZs-z3-3nW">
+                    <rect key="frame" x="17" y="16" width="473" height="94"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <view key="contentView" id="Qz9-Ok-1iw">
+                        <rect key="frame" x="3" y="3" width="467" height="76"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="P74-g6-epb">
+                                <rect key="frame" x="10" y="48" width="445" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Enable debug log" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Ocq-JC-4Gq">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cdn-DG-bwU">
+                                <rect key="frame" x="166" y="4" width="130" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Show in Finder" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Pw4-rQ-xRd">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                        </subviews>
+                    </view>
+                </box>
             </subviews>
-            <point key="canvasLocation" x="-1156" y="685"/>
+            <point key="canvasLocation" x="-1156.5" y="676"/>
         </customView>
         <userDefaultsController representsSharedInstance="YES" id="314"/>
-        <customView id="315">
+        <customView id="315" userLabel="Panel Update">
             <rect key="frame" x="0.0" y="0.0" width="507" height="165"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
@@ -1530,7 +1558,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="325">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="326"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1540,7 +1568,7 @@
             </subviews>
             <point key="canvasLocation" x="-1302" y="346"/>
         </customView>
-        <customView id="327">
+        <customView id="327" userLabel="Panel Bandwidth">
             <rect key="frame" x="0.0" y="0.0" width="507" height="183"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
@@ -1582,7 +1610,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="339" id="336">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="337">
                                         <items>
                                             <menuItem title="neobmedzená šírka pásma" tag="-1" id="338"/>
@@ -1607,7 +1635,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="346" id="343">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="344">
                                         <items>
                                             <menuItem title="neobmedzená šírka pásma" tag="-1" id="345"/>
@@ -1633,7 +1661,7 @@
             </subviews>
             <point key="canvasLocation" x="-1448" y="107"/>
         </customView>
-        <customView id="349">
+        <customView id="349" userLabel="Panel S3">
             <rect key="frame" x="0.0" y="0.0" width="507" height="436"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
@@ -1649,7 +1677,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="352">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="353"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1677,7 +1705,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="358">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="359"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1705,7 +1733,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="364">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="365"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1733,7 +1761,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="Nln-7K-rM6">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="LOt-Ur-gZL"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1752,7 +1780,7 @@
             </subviews>
             <point key="canvasLocation" x="-1594.5" y="-168"/>
         </customView>
-        <customView id="368">
+        <customView id="368" userLabel="Panel Editor">
             <rect key="frame" x="0.0" y="0.0" width="507" height="168"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
@@ -1768,7 +1796,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="373" id="371">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="372">
                                         <items>
                                             <menuItem title=" " state="on" id="373"/>
@@ -1799,7 +1827,7 @@
             </subviews>
             <point key="canvasLocation" x="-86" y="1542"/>
         </customView>
-        <customView id="408">
+        <customView id="408" userLabel="Panel Language">
             <rect key="frame" x="0.0" y="0.0" width="507" height="134"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
@@ -1824,7 +1852,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="413">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="414"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1875,7 +1903,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="Yox-e4-qNs">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="diO-fA-NtZ"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1903,7 +1931,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="3pD-c1-mdX">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="8oB-mo-TeL"/>
                                 </popUpButtonCell>
                             </popUpButton>
@@ -1931,7 +1959,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="K6E-Rf-5sb">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Iné zobrazenia" id="rw5-0E-6t1"/>
                                 </popUpButtonCell>
                             </popUpButton>
