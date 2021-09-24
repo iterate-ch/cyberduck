@@ -55,12 +55,11 @@ public class RemoteProfilesFinderTest {
         final RemoteProfilesFinder finder = new RemoteProfilesFinder(session);
         final Set<ProfileDescription> stream = finder.find();
         assertFalse(stream.isEmpty());
-        // Check for versions
+        // Check for versions of S3 (HTTP).cyberduckprofile
         assertFalse(stream.stream().filter(ProfileDescription::isLatest).collect(Collectors.toSet()).isEmpty());
         assertFalse(stream.stream().filter(description -> !description.isLatest()).collect(Collectors.toSet()).isEmpty());
-        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("30298e0b4a1bd3ce954289281347c6ad"))));
-        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("ed214eca3b4521a6d567326b2e6e24e4"))));
-        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("283e922b59c8e716608763364dc63fb4"))));
+        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("b9afd8d6da91e7b520559fa9eaac54c1"))));
+        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("19ecbfe2d8f09644197c1ef53e207792"))));
         session.close();
     }
 }
