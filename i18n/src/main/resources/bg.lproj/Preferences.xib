@@ -126,7 +126,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="272" y="168" width="507" height="518"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1025"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
             <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -220,12 +220,12 @@
             </view>
             <point key="canvasLocation" x="7" y="147"/>
         </window>
-        <customView id="30" userLabel="Panel Browser">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="417"/>
+        <customView id="30" userLabel="Panel General">
+            <rect key="frame" x="0.0" y="0.0" width="507" height="312"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <box fixedFrame="YES" title="Браузър" translatesAutoresizingMaskIntoConstraints="NO" id="31">
-                    <rect key="frame" x="17" y="222" width="473" height="175"/>
+                    <rect key="frame" x="17" y="117" width="473" height="175"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nXa-rF-OQT">
                         <rect key="frame" x="3" y="3" width="467" height="157"/>
@@ -290,79 +290,6 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Свръзка" translatesAutoresizingMaskIntoConstraints="NO" id="46">
-                    <rect key="frame" x="17" y="16" width="473" height="202"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="jTZ-Rs-0Ac">
-                        <rect key="frame" x="3" y="3" width="467" height="184"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="47">
-                                <rect key="frame" x="17" y="38" width="244" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Протокол по подразбиране:" id="48">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="49">
-                                <rect key="frame" x="263" y="33" width="195" height="26"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="52" id="50">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                    <menu key="menu" title="Други изгледи" id="51">
-                                        <items>
-                                            <menuItem title=" " state="on" id="52"/>
-                                        </items>
-                                    </menu>
-                                </popUpButtonCell>
-                            </popUpButton>
-                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="53">
-                                <rect key="frame" x="10" y="157" width="179" height="18"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Посредством „Keychain”" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="54">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                            </button>
-                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="55">
-                                <rect key="frame" x="10" y="99" width="237" height="18"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Потвърждаване на изключването" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="56">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                            </button>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="57">
-                                <rect key="frame" x="9" y="123" width="449" height="27"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Пароли да се търсят в „Keychain”. При успешно влизане паролата винаги да се записва в „Keychain”." id="58">
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="59">
-                                <rect key="frame" x="9" y="65" width="449" height="27"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Да се пита преди затваряне на свързан прозорец на браузър." id="60">
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </subviews>
-                    </view>
-                </box>
-            </subviews>
-            <point key="canvasLocation" x="-581" y="662"/>
-        </customView>
-        <customView id="61" userLabel="Panel General">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="422"/>
-            <autoresizingMask key="autoresizingMask"/>
-            <subviews>
                 <box fixedFrame="YES" title="Отметки" translatesAutoresizingMaskIntoConstraints="NO" id="62">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
@@ -373,12 +300,12 @@
                             <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="63">
                                 <rect key="frame" x="9" y="8" width="200" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                                <popUpButtonCell key="cell" type="push" title="Малки икони" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="66" id="64">
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="64">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                     <menu key="menu" title="Други изгледи" id="65">
                                         <items>
-                                            <menuItem title="Малки икони" state="on" id="66"/>
+                                            <menuItem title="Малки икони" id="66"/>
                                             <menuItem title="Средни икони" tag="1" id="67"/>
                                             <menuItem title="Големи икони" tag="2" id="68"/>
                                         </items>
@@ -397,8 +324,15 @@
                         </subviews>
                     </view>
                 </box>
+            </subviews>
+            <point key="canvasLocation" x="-581.5" y="609"/>
+        </customView>
+        <customView id="61" userLabel="Panel Browser">
+            <rect key="frame" x="0.0" y="0.0" width="507" height="321"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
                 <box fixedFrame="YES" title="Външност" translatesAutoresizingMaskIntoConstraints="NO" id="71">
-                    <rect key="frame" x="17" y="117" width="473" height="95"/>
+                    <rect key="frame" x="17" y="16" width="473" height="95"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="PyB-9Z-fc6">
                         <rect key="frame" x="3" y="3" width="467" height="77"/>
@@ -432,7 +366,7 @@
                     </view>
                 </box>
                 <box fixedFrame="YES" title="Общо" translatesAutoresizingMaskIntoConstraints="NO" id="78">
-                    <rect key="frame" x="17" y="216" width="473" height="186"/>
+                    <rect key="frame" x="17" y="115" width="473" height="186"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="zSl-Q7-PPX">
                         <rect key="frame" x="3" y="3" width="467" height="168"/>
@@ -524,7 +458,7 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-6" y="701"/>
+            <point key="canvasLocation" x="-6.5" y="650.5"/>
         </customView>
         <customView id="99" userLabel="Panel Transfers">
             <rect key="frame" x="0.0" y="0.0" width="507" height="412"/>
@@ -1367,9 +1301,75 @@
             <point key="canvasLocation" x="-1010" y="1008"/>
         </customView>
         <customView id="280" userLabel="Panel Connection">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="366"/>
+            <rect key="frame" x="0.0" y="0.0" width="507" height="544"/>
             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
             <subviews>
+                <box fixedFrame="YES" title="Свръзка" translatesAutoresizingMaskIntoConstraints="NO" id="46">
+                    <rect key="frame" x="17" y="350" width="473" height="174"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <view key="contentView" id="jTZ-Rs-0Ac">
+                        <rect key="frame" x="3" y="3" width="467" height="156"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="53">
+                                <rect key="frame" x="8" y="90" width="179" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Посредством „Keychain”" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="54">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="55">
+                                <rect key="frame" x="8" y="32" width="237" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Потвърждаване на изключването" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="56">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Iv8-tk-Wkx">
+                                <rect key="frame" x="7" y="56" width="449" height="27"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Пароли да се търсят в „Keychain”. При успешно влизане паролата винаги да се записва в „Keychain”." id="58">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tJC-cb-GKG">
+                                <rect key="frame" x="7" y="116" width="244" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Протокол по подразбиране:" id="48">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="49">
+                                <rect key="frame" x="253" y="111" width="195" height="26"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="bv6-7A-srz">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <menu key="menu" title="Други изгледи" id="51">
+                                        <items>
+                                            <menuItem title=" " id="52"/>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                            </popUpButton>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kiy-ac-4ub">
+                                <rect key="frame" x="7" y="11" width="442" height="14"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Да се пита преди затваряне на свързан прозорец на браузър." id="60">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                </box>
                 <box fixedFrame="YES" title="Посредници" translatesAutoresizingMaskIntoConstraints="NO" id="288">
                     <rect key="frame" x="17" y="114" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
@@ -1405,7 +1405,7 @@
                         <subviews>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="294">
                                 <rect key="frame" x="48" y="88" width="303" height="14"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Времетраене на установяването на свръзки (секунди):" id="295">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1414,12 +1414,12 @@
                             </textField>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="296">
                                 <rect key="frame" x="407" y="35" width="15" height="22"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="30" doubleValue="1" id="297"/>
                             </stepper>
                             <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="298">
                                 <rect key="frame" x="356" y="37" width="45" height="19"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="299">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -1428,7 +1428,7 @@
                             </textField>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="300">
                                 <rect key="frame" x="67" y="13" width="284" height="14"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Брой повторения:" id="301">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1437,7 +1437,7 @@
                             </textField>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="302">
                                 <rect key="frame" x="67" y="39" width="284" height="14"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="със закъснение (секунди):" id="303">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1446,7 +1446,7 @@
                             </textField>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="304">
                                 <rect key="frame" x="10" y="62" width="324" height="18"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Повторение на неуспешни мрежови операции" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="305">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -1454,12 +1454,12 @@
                             </button>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="306">
                                 <rect key="frame" x="407" y="9" width="15" height="22"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="9" doubleValue="1" id="307"/>
                             </stepper>
                             <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="308">
                                 <rect key="frame" x="356" y="11" width="45" height="19"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="309">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -1468,12 +1468,12 @@
                             </textField>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="310">
                                 <rect key="frame" x="407" y="84" width="15" height="22"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" minValue="10" maxValue="120" doubleValue="60" id="311"/>
                             </stepper>
                             <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="312">
                                 <rect key="frame" x="356" y="86" width="45" height="19"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="313">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -1510,7 +1510,7 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-1156.5" y="676"/>
+            <point key="canvasLocation" x="-1156.5" y="551"/>
         </customView>
         <userDefaultsController representsSharedInstance="YES" id="314"/>
         <customView id="315" userLabel="Panel Update">
