@@ -155,7 +155,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
             }
             else {
                 // Only for AWS set endpoint to region specific
-                if(requestParameters == null || !requestParameters.containsKey("location")) {
+                if(StringUtils.isNotBlank(bucketName) && (requestParameters == null || !requestParameters.containsKey("location"))) {
                     try {
                         // Determine region for bucket using cache
                         final Location.Name region = new S3LocationFeature(session, regionEndpointCache).getLocation(bucketName);
@@ -179,6 +179,22 @@ public class RequestEntityRestStorageService extends RestS3Service {
                     catch(BackgroundException e) {
                         // Ignore failure reading location for bucket
                         log.error(String.format("Failure %s determining bucket location for %s", e, bucketName));
+                    }
+                }
+                else {
+                    if(StringUtils.isNotBlank(session.getHost().getRegion())) {
+                        // Use default region
+                        final String endpoint;
+                        if(preferences.getBoolean("s3.endpoint.dualstack.enable")) {
+                            endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv6"), session.getHost().getRegion());
+                        }
+                        else {
+                            endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv4"), session.getHost().getRegion());
+                        }
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Set endpoint to %s", endpoint));
+                        }
+                        properties.setProperty("s3service.s3-endpoint", endpoint);
                     }
                 }
             }
