@@ -28,8 +28,10 @@ import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,6 +39,7 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class ProfilesSynchronizeWorkerTest {
 
     @Test
