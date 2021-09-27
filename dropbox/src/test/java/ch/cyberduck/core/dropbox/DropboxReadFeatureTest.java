@@ -46,6 +46,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import com.dropbox.core.v2.files.FileMetadata;
+
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -89,7 +91,7 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<String>(new DropboxWriteFeature(session)).upload(
+        new DefaultUploadFeature<>(new DropboxWriteFeature(session)).upload(
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
             new TransferStatus().withLength(content.length),
             new DisabledConnectionCallback());
@@ -120,7 +122,7 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final DropboxWriteFeature writer = new DropboxWriteFeature(session);
-        final HttpResponseOutputStream<String> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<FileMetadata> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         final CountingInputStream in = new CountingInputStream(new DropboxReadFeature(session).read(test, status, new DisabledConnectionCallback()));
