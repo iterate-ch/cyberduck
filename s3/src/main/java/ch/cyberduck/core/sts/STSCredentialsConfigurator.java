@@ -75,7 +75,7 @@ public class STSCredentialsConfigurator {
         final Credentials credentials = new Credentials(host.getCredentials());
         // Find matching profile name or AWS access key in ~/.aws/credentials
         final Local file = LocalFactory.get(LocalFactory.get(LocalFactory.get(), ".aws"), "credentials");
-        // Profile can be null – the default profile from the configuration will be loaded
+        // Profile can be null. The default profile from the configuration will be loaded
         final String profile = host.getCredentials().getUsername();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Look for profile name %s in %s", profile, file));
