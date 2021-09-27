@@ -564,21 +564,21 @@ https://cyberduck.io/
 - [Bugfix] Updater ignores custom installation location (Windows) (#9782)
 
 6.0.4 [https://trac.cyberduck.io/milestone/6.0.4]
-- [Bugfix] Failure to upload to root of vault (Cryptomator)
-- [Bugfix] Disable x-amz-request-payer header for non AWS endpoints (S3)
+- [Bugfix] Failure to upload to root of vault (Cryptomator)
+- [Bugfix] Disable x-amz-request-payer header for non AWS endpoints (S3)
 
 6.0.2 [https://trac.cyberduck.io/milestone/6.0.2]
-- [Bugfix] Invalid version number format for Mac App Store (Mac)
+- [Bugfix] Invalid version number format for Mac App Store (Mac)
 
 6.0.1 [https://trac.cyberduck.io/milestone/6.0.1]
-- [Bugfix] New connections do not authenticate (Dropbox) (#9932)
-- [Bugfix] Large file uploads do not resume (Backblaze B2) (#9935)
-- [Bugfix] Failure listing folders with whitespace (OneDrive) (#9937)
-- [Bugfix] Failure duplicating files (FTP) (#9933)
-- [Bugfix] Failure uploading files with temporary filename option enabled (Backblaze B2)
-- [Bugfix] Failure connecting to local disk (Windows)
-- [Bugfix] Multipart uploads fail if the user lacks permission to list multipart uploads (S3) (#9948)
-- [Bugfix] Synchronize files in vault (Cryptomator)
+- [Bugfix] New connections do not authenticate (Dropbox) (#9932)
+- [Bugfix] Large file uploads do not resume (Backblaze B2) (#9935)
+- [Bugfix] Failure listing folders with whitespace (OneDrive) (#9937)
+- [Bugfix] Failure duplicating files (FTP) (#9933)
+- [Bugfix] Failure uploading files with temporary filename option enabled (Backblaze B2)
+- [Bugfix] Failure connecting to local disk (Windows)
+- [Bugfix] Multipart uploads fail if the user lacks permission to list multipart uploads (S3) (#9948)
+- [Bugfix] Synchronize files in vault (Cryptomator)
 - [Bugfix] Repeated login prompt (2-Factor Authentication SFTP)
 - [Bugfix] Enable copy of text from log drawer (Windows) (#9952)
 
@@ -594,11 +594,11 @@ https://cyberduck.io/
 - [Feature] Copy pre-authenticated URLs (Backblaze B2)
 
 5.4.4 [https://trac.cyberduck.io/milestone/5.4.4]
-- [Bugfix] Multipart uploads do not resume (S3)
-- [Bugfix] Field in login prompt disabled to enter authentication code (OAuth 2.0)
+- [Bugfix] Multipart uploads do not resume (S3)
+- [Bugfix] Field in login prompt disabled to enter authentication code (OAuth 2.0)
 
 5.4.3 [https://trac.cyberduck.io/milestone/5.4.3]
-- [Bugfix]  Interoperability with PROPFIND for listing folders (WebDAV)
+- [Bugfix]  Interoperability with PROPFIND for listing folders (WebDAV)
 - [Bugfix] Failed to generate HMAC (Spectra S3)
 - [Bugfix] Quick Look only works one time (#9889)
 - [Bugfix] Set MD5 checksum in ETag request header (OpenStack Swift)
@@ -694,19 +694,19 @@ https://cyberduck.io/
 - [Bugfix] Overwriting file creates duplicate (Google Drive)
 
 5.1.2 [https://trac.cyberduck.io/milestone/5.1.2]
-- [Bugfix] Crash importing bookmarks from ExpanDrive (Windows) (#9672)
+- [Bugfix] Crash importing bookmarks from ExpanDrive (Windows) (#9672)
 
 5.1.1 [https://trac.cyberduck.io/milestone/5.1.1]
 - [Feature] Allow connections with AWS2 signature version using connection profile (S3) (#9667)
-- [Bugfix] Cleanup temporary files on application exit
-- [Bugfix] Certificate trust error connecting to os.unil.cloud.switch.ch (S3) (#9668)
+- [Bugfix] Cleanup temporary files on application exit
+- [Bugfix] Certificate trust error connecting to os.unil.cloud.switch.ch (S3) (#9668)
 
 5.1 [https://trac.cyberduck.io/milestone/5.1]
 - [Feature] Prompt when recursively applying permissions (#9657)
 - [Feature] Default to signature version AWS4 when connecting to third party S3 providers
 - [Feature] Use batch operation to delete multiple files (Google Drive)
-- [Bugfix] Prompt to insert Smart Card when connecting to TLS secured site (Windows) (#8595)
-- [Bugfix] Copy transfer from other connection fails (Spectra S3)
+- [Bugfix] Prompt to insert Smart Card when connecting to TLS secured site (Windows) (#8595)
+- [Bugfix] Copy transfer from other connection fails (Spectra S3)
 - [Bugfix] Interoperability with Minio (S3)
 - [Bugfix] Repeated prompt to select private key for authentication (App Store) (SFTP)
 - [Bugfix] Repeated prompt for changed host key fingerprint (SFTP)
