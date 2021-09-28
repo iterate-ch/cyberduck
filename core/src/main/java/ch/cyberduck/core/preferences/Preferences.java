@@ -705,6 +705,9 @@ public abstract class Preferences implements Locales, PreferencesReader {
 
         this.setDefault("s3.listing.chunksize", String.valueOf(1000));
         this.setDefault("s3.listing.concurrency", String.valueOf(25));
+        /*
+         * Read metadata of every file in list service to display modification date stored in metadata
+         */
         this.setDefault("s3.listing.metadata.enable", String.valueOf(false));
 
         this.setDefault("s3.upload.multipart", String.valueOf(true));
