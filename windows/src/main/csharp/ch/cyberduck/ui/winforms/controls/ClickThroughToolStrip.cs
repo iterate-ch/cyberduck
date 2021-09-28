@@ -17,7 +17,7 @@
 // 
 using System;
 using System.Windows.Forms;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Constants;
+using static Windows.Win32.Constants;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {

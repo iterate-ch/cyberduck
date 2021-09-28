@@ -18,8 +18,8 @@
 
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.Controls;
+using Windows.Win32;
+using Windows.Win32.UI.Controls;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using System;

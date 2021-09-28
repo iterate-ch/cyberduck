@@ -19,7 +19,7 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.CredentialManager;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Security.Credentials;
+using Windows.Win32.Security.Credentials;
 using java.lang;
 using org.apache.log4j;
 using System;

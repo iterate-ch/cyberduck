@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace Ch.Cyberduck.Ui.Microsoft.Windows.Sdk
+namespace Windows.Win32
 {
     using Foundation;
     using UI.WindowsAndMessaging;

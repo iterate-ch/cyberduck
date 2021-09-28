@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Security.Credentials
+namespace Windows.Win32.Security.Credentials
 {
-    using static PInvoke;
+    using static CyberduckCorePInvoke;
 
     public unsafe class CredHandle : IDisposable
     {

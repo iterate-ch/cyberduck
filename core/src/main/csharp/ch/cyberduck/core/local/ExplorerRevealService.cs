@@ -19,8 +19,8 @@ using ch.cyberduck.core.local;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.Shell;
+using Windows.Win32;
+using Windows.Win32.UI.Shell;
 
 namespace Ch.Cyberduck.Core.Local
 {

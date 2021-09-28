@@ -15,9 +15,9 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 //
-using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk;
-using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Graphics.Gdi;
-using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.UI.WindowsAndMessaging;
+using Windows.Win32;
+using Windows.Win32.Graphics.Gdi;
+using Windows.Win32.UI.WindowsAndMessaging;
 using System;
 using System.Collections;
 using System.ComponentModel;

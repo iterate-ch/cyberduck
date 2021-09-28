@@ -1,6 +1,6 @@
-﻿using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Foundation;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.WindowsAndMessaging;
+﻿using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Ch.Cyberduck.Core.TaskDialog
 {

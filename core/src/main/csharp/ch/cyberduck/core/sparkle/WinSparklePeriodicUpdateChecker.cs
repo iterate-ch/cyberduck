@@ -19,8 +19,8 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Security;
+using Windows.Win32;
+using Windows.Win32.Security;
 using Microsoft.Win32.SafeHandles;
 using org.apache.log4j;
 using System;

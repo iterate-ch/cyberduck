@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace Ch.Cyberduck.Core.Microsoft.Windows.Sdk
+namespace Windows.Win32
 {
     using Security.Credentials;
 
-    partial class PInvoke
+    partial class CyberduckCorePInvoke
     {
         public static unsafe bool CredRead(string TargetName, CRED_TYPE type, CRED_FLAGS flags, out CREDENTIALW* credential)
         {

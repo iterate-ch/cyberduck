@@ -4,8 +4,8 @@
 // Compile with:
 // C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe VirtualDesktop.cs
 
-using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk;
-using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.UI.Shell;
+using Windows.Win32;
+using Windows.Win32.UI.Shell;
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;

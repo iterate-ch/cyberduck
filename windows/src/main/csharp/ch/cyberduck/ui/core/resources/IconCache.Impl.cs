@@ -10,7 +10,7 @@
 //
 // Bug fixes, suggestions and comments should be sent to: feedback@cyberduck.io
 
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.WindowsAndMessaging;
+using Windows.Win32.UI.WindowsAndMessaging;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;

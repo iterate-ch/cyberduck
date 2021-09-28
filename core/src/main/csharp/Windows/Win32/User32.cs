@@ -2,11 +2,11 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Ch.Cyberduck.Core.Microsoft.Windows.Sdk
+namespace Windows.Win32
 {
     using Foundation;
 
-    partial class PInvoke
+    partial class CyberduckCorePInvoke
     {
         public static LRESULT SendMessage(nint hWnd, uint Msg, nuint wParam, nint lParam)
             => SendMessage(hWnd, Msg, (WPARAM)wParam, (LPARAM)lParam);

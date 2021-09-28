@@ -1,7 +1,7 @@
-﻿using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk;
-using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Foundation;
-using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.System.Com;
-using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.UI.Shell;
+﻿using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.System.Com;
+using Windows.Win32.UI.Shell;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Forms = System.Windows.Forms;
 
-namespace Ch.Cyberduck.Ui.Microsoft.Windows.Sdk
+namespace Windows.Win32
 {
     using static CLSCTX;
     using static Constants;

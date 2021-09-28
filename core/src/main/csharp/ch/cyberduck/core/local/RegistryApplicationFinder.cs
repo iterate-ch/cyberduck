@@ -18,9 +18,9 @@
 
 using ch.cyberduck.core.cache;
 using ch.cyberduck.core.local;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Foundation;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.Shell;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
 using java.util;
 using Microsoft.Win32;
 using org.apache.commons.io;

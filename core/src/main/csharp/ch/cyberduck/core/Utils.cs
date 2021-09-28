@@ -34,8 +34,8 @@ using org.apache.commons.io;
 using org.apache.log4j;
 using Collection = java.util.Collection;
 using Path = ch.cyberduck.core.Path;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Constants;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
+using static Windows.Win32.Constants;
+using static Windows.Win32.PInvoke;
 
 namespace Ch.Cyberduck.Core
 {

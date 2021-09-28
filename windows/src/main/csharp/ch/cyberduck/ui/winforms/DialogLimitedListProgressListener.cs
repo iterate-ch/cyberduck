@@ -19,7 +19,7 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+using Windows.Win32;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 

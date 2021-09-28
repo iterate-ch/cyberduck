@@ -17,15 +17,15 @@
 // 
 
 using BrightIdeasSoftware;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Foundation;
+using Windows.Win32;
+using Windows.Win32.Foundation;
 using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Constants;
+using static Windows.Win32.Constants;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {

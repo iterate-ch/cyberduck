@@ -1,19 +1,20 @@
 ﻿using System;
 
-namespace Ch.Cyberduck.Core.Microsoft.Windows.Sdk
+namespace Windows.Win32
 {
+    using static UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS;
     using static Constants;
 
     [Flags]
     public enum TaskDialogCommonButtons
     {
         None = 0,
-        OK = 0x0001,
-        Yes = 0x0002,
-        No = 0x0004,
-        Cancel = 0x0008,
-        Retry = 0x0010,
-        Close = 0x0020,
+        OK = TDCBF_OK_BUTTON,
+        Yes = TDCBF_YES_BUTTON,
+        No = TDCBF_NO_BUTTON,
+        Cancel = TDCBF_CANCEL_BUTTON,
+        Retry = TDCBF_RETRY_BUTTON,
+        Close = TDCBF_CLOSE_BUTTON,
         YesNo = Yes | No,
         YesNoCancel = Yes | No | Cancel,
         OKCancel = OK | Cancel,

@@ -1,6 +1,4 @@
 ﻿{
     "$schema": "https://aka.ms/CsWin32.schema.json",
-    "public": true,
-    "namespace": "Ch.Cyberduck.Ui.Microsoft.Windows.Sdk",
-    "emitSingleFile": true
+    "public": true
 }

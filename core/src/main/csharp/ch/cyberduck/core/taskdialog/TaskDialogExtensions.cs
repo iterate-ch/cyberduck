@@ -1,7 +1,7 @@
-﻿using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Foundation;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.Controls;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.WindowsAndMessaging;
+﻿using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Controls;
+using Windows.Win32.UI.WindowsAndMessaging;
 using System;
 using System.Drawing;
 
@@ -29,12 +29,12 @@ namespace Ch.Cyberduck.Core.TaskDialog
             if (buttonId >= RadioButtonIDOffset && buttonId < CommandButtonIDOffset)
             {
                 // TDM_CLICK_RADIO_BUTTON = WM_USER+110, // wParam = Radio Button ID
-                return SendMessage(handle, TDM_CLICK_RADIO_BUTTON, buttonId, 0) != 0;
+                return SendMessage(handle, TDM_CLICK_RADIO_BUTTON, buttonId, 0).Value != 0;
             }
             else
             {
                 // TDM_CLICK_BUTTON = WM_USER+102, // wParam = Button ID
-                return SendMessage(handle, TDM_CLICK_BUTTON, buttonId, 0) != 0;
+                return SendMessage(handle, TDM_CLICK_BUTTON, buttonId, 0).Value != 0;
             }
         }
 
@@ -197,7 +197,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             // TDE_CONTENT,
             // TDM_SET_ELEMENT_TEXT                = WM_USER+108  // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
             return SendMessage(handle, TDM_SET_ELEMENT_TEXT,
-                TDE_CONTENT, content) != 0;
+                TDE_CONTENT, content).Value != 0;
         }
 
         /// <summary>
@@ -236,7 +236,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             // TDE_EXPANDED_INFORMATION,
             // TDM_SET_ELEMENT_TEXT                = WM_USER+108  // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
             return SendMessage(handle, TDM_SET_ELEMENT_TEXT,
-                TDE_EXPANDED_INFORMATION, expandedInformation) != 0;
+                TDE_EXPANDED_INFORMATION, expandedInformation).Value != 0;
         }
 
         /// <summary>
@@ -251,7 +251,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             // TDE_FOOTER,
             // TDM_SET_ELEMENT_TEXT                = WM_USER+108  // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
             return SendMessage(handle, TDM_SET_ELEMENT_TEXT,
-                TDE_FOOTER, footer) != 0;
+                TDE_FOOTER, footer).Value != 0;
         }
 
         /// <summary>
@@ -266,7 +266,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             // TDE_MAIN_INSTRUCTION
             // TDM_SET_ELEMENT_TEXT                = WM_USER+108  // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
             return SendMessage(handle, TDM_SET_ELEMENT_TEXT,
-                TDE_MAIN_INSTRUCTION, mainInstruction) != 0;
+                TDE_MAIN_INSTRUCTION, mainInstruction).Value != 0;
         }
 
         /// <summary>
@@ -281,7 +281,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
 
             // TDM_SET_MARQUEE_PROGRESS_BAR        = WM_USER+103, // wParam = 0 (nonMarque) wParam != 0 (Marquee)
             return SendMessage(handle, TDM_SET_MARQUEE_PROGRESS_BAR,
-                marquee ? 1u : 0, 0) != 0;
+                marquee ? 1u : 0, 0).Value != 0;
 
             // Future: get more detailed error from and throw.
         }
@@ -310,7 +310,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             var handle = args.GetHWND();
 
             // TDM_SET_PROGRESS_BAR_POS            = WM_USER+106, // wParam = new position
-            return SendMessage(handle, TDM_SET_PROGRESS_BAR_POS,
+            return (int)SendMessage(handle, TDM_SET_PROGRESS_BAR_POS,
                 newPosition, 0).Value;
         }
 
@@ -328,7 +328,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             // #define MAKELPARAM(l, h)      ((LPARAM)(DWORD)MAKELONG(l, h))
             // #define MAKELONG(a, b)      ((LONG)(((WORD)(((DWORD_PTR)(a)) & 0xffff)) | ((DWORD)((WORD)(((DWORD_PTR)(b)) & 0xffff))) << 16))
             return SendMessage(handle, TDM_SET_PROGRESS_BAR_RANGE,
-                default(nuint), (int)minRange | maxRange << 16) != 0;
+                default(nuint), (int)minRange | maxRange << 16).Value != 0;
 
             // Return value is actually prior range.
         }
@@ -343,7 +343,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             var handle = args.GetHWND();
 
             // TDM_SET_PROGRESS_BAR_STATE          = WM_USER+104, // wParam = new progress state
-            return SendMessage(handle, TDM_SET_PROGRESS_BAR_STATE, newState, default) != 0;
+            return SendMessage(handle, TDM_SET_PROGRESS_BAR_STATE, newState, default).Value != 0;
 
             // Future: get more detailed error from and throw.
         }

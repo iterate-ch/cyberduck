@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.UI.Shell
+namespace Windows.Win32.UI.Shell
 {
     using Foundation;
 

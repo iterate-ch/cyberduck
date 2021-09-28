@@ -49,13 +49,13 @@ using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
 using StructureMap;
 using Ch.Cyberduck.Ui.Core.Contracts;
-using Ch.Cyberduck.Ui.Microsoft.Windows.Sdk;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Constants;
+using Windows.Win32;
+using static Windows.Win32.PInvoke;
+using static Windows.Win32.Constants;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
-    using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
+    using Windows.Win32;
 
     /// <summary>
     /// Main browser form.

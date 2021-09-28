@@ -22,7 +22,7 @@ using Ch.Cyberduck.Ui.Winforms.Controls;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.PInvoke;
+using static Windows.Win32.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {

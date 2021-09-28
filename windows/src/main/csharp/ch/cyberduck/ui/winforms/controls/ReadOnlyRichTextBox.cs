@@ -17,9 +17,9 @@
 //
 using System.Drawing;
 using System.Windows.Forms;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Constants;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.PInvoke;
+using static Windows.Win32.PInvoke;
+using static Windows.Win32.Constants;
+using static Windows.Win32.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {

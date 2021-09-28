@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Foundation
+namespace Windows.Win32.Foundation
 {
     public partial struct PWSTR
     {

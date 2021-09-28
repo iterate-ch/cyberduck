@@ -1,11 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace Ch.Cyberduck.Core.Microsoft.Windows.Sdk
+namespace Windows.Win32
 {
     using Storage.FileSystem;
     using UI.Shell;
 
-    partial class PInvoke
+    partial class CyberduckCorePInvoke
     {
         public static unsafe nuint SHGetFileInfo(string pszPath, FILE_FLAGS_AND_ATTRIBUTES dwFileAttributes, in SHFILEINFOW sfi, SHGFI_FLAGS uFlags)
         {

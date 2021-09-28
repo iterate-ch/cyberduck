@@ -16,9 +16,9 @@
 // feedback@cyberduck.io
 //
 
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Security;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Security.Credentials;
+using Windows.Win32;
+using Windows.Win32.Security;
+using Windows.Win32.Security.Credentials;
 using org.apache.log4j;
 using System;
 using System.Buffers;

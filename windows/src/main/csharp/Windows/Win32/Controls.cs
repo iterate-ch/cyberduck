@@ -1,9 +1,9 @@
-﻿using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Foundation;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
+﻿using Windows.Win32.Foundation;
 
-namespace Ch.Cyberduck.Ui.Microsoft.Windows.Sdk
+namespace Windows.Win32
 {
     using static Constants;
+    using static CyberduckCorePInvoke;
 
     partial class PInvoke
     {

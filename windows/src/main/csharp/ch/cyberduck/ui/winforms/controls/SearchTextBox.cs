@@ -17,7 +17,7 @@
 // 
 
 using ch.cyberduck.core;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.WindowsAndMessaging;
+using Windows.Win32.UI.WindowsAndMessaging;
 using Ch.Cyberduck.Ui.Winforms.Controls.Design;
 using System;
 using System.ComponentModel;

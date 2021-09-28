@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.WindowsAndMessaging
+namespace Windows.Win32.UI.WindowsAndMessaging
 {
-    using static PInvoke;
+    using static CyberduckCorePInvoke;
 
     public class HIconHandle : IDisposable
     {

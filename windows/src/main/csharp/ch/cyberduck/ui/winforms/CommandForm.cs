@@ -20,9 +20,9 @@ using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core.Resources;
 using System;
 using System.Drawing;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Constants;
+using Windows.Win32;
+using static Windows.Win32.PInvoke;
+using static Windows.Win32.Constants;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {

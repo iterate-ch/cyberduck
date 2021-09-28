@@ -1,7 +1,7 @@
-﻿using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.Foundation;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.Controls;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.WindowsAndMessaging;
+﻿using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Controls;
+using Windows.Win32.UI.WindowsAndMessaging;
 using System;
 using System.Buffers;
 using System.Drawing;
@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace Ch.Cyberduck.Core.TaskDialog
 {
-    using static _TASKDIALOG_FLAGS;
+    using static TASKDIALOG_FLAGS;
     using static PInvoke;
     using static TASKDIALOG_NOTIFICATIONS;
 
@@ -874,7 +874,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
                 string[] customButtons,
                 int? defaultButtonIndex,
                 in int defaultButton,
-                in int commonButtons,
+                in TASKDIALOG_COMMON_BUTTON_FLAGS commonButtons,
                 out TASKDIALOG_BUTTON* pButtons, out uint cButtons)
             {
                 string[] strings;
@@ -926,7 +926,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             SetIfNotEmpty(tdc.pszExpandedControlText, "Hide details");
             SetIfNotEmpty(tdc.pszCollapsedControlText, "Show details");
 
-            _TASKDIALOG_FLAGS flags = default;
+            TASKDIALOG_FLAGS flags = default;
             using var buttonMemory = CreateButtons(
                 options.CommandLinks,
                 options.CustomButtons,
@@ -942,7 +942,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
 
             if (options.CommonButtons != TaskDialogCommonButtons.None)
             {
-                tdc.dwCommonButtons = (int)options.CommonButtons;
+                tdc.dwCommonButtons = (TASKDIALOG_COMMON_BUTTON_FLAGS)options.CommonButtons;
                 if (options.DefaultButtonIndex is int localButton && localButton >= 0)
                 {
                     tdc.nDefaultButton = GetButtonIdForCommonButton(options.CommonButtons, localButton);
@@ -995,7 +995,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             {
                 flags |= TDF_VERIFICATION_FLAG_CHECKED;
             }
-            tdc.dwFlags = (int)flags;
+            tdc.dwFlags = flags;
 
             PFTASKDIALOGCALLBACK callback;
             CallbackContext context;
@@ -1013,7 +1013,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
 
             int pnButton;
             int pnRadioButton;
-            bool pfVerificationFlagChecked;
+            BOOL pfVerificationFlagChecked;
             TaskDialogIndirect(tdc, &pnButton, &pnRadioButton, &pfVerificationFlagChecked).ThrowOnFailure();
 
             TaskDialogSimpleResult simpleResult = (TaskDialogSimpleResult)pnButton;

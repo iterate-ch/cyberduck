@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace Ch.Cyberduck.Core.Microsoft.Windows.Sdk.UI.Shell
+namespace Windows.Win32.UI.Shell
 {
-    using static PInvoke;
+    using static CyberduckCorePInvoke;
 
     public unsafe class PIDLIST_ABSOLUTEHandle : IDisposable
     {

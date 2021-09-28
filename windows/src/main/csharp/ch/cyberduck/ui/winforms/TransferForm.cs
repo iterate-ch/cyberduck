@@ -31,9 +31,9 @@ using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using Utils = Ch.Cyberduck.Core.Utils;
-using Ch.Cyberduck.Core.Microsoft.Windows.Sdk;
-using static Ch.Cyberduck.Ui.Microsoft.Windows.Sdk.Constants;
-using static Ch.Cyberduck.Core.Microsoft.Windows.Sdk.PInvoke;
+using Windows.Win32;
+using static Windows.Win32.Constants;
+using static Windows.Win32.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {

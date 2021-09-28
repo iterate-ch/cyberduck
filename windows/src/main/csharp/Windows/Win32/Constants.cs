@@ -1,4 +1,4 @@
-﻿namespace Ch.Cyberduck.Ui.Microsoft.Windows.Sdk
+﻿namespace Windows.Win32
 {
     partial class Constants
     {
