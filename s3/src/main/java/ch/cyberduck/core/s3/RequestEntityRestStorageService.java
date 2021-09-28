@@ -27,16 +27,10 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolException;
-import org.apache.http.client.RedirectException;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.conn.util.InetAddressUtils;
-import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
@@ -50,7 +44,6 @@ import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
-import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -125,33 +118,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
         configuration.disableContentCompression();
         final RequestEntityRestStorageService authorizer = this;
         configuration.setRetryHandler(new S3HttpRequestRetryHandler(authorizer, new HostPreferences(session.getHost()).getInteger("http.connections.retry")));
-        configuration.setRedirectStrategy(new DefaultRedirectStrategy() {
-            @Override
-            public HttpUriRequest getRedirect(final HttpRequest request, final HttpResponse response, final HttpContext context) throws ProtocolException {
-                if(response.containsHeader("x-amz-bucket-region")) {
-                    final Header header = response.getFirstHeader("x-amz-bucket-region");
-                    log.warn(String.format("Received redirect response %s with %s", response, header));
-                    String uri = request.getRequestLine().getUri();
-                    for(Location.Name region : session.getHost().getProtocol().getRegions()) {
-                        if(StringUtils.contains(uri, region.getIdentifier())) {
-                            final HttpUriRequest redirect = RequestBuilder.copy(request).setUri(StringUtils.replace(uri, region.getIdentifier(), header.getValue())).build();
-                            log.warn(String.format("Retry request with URI %s", redirect.getURI()));
-                            try {
-                                authorizer.authorizeHttpRequest(redirect, context, null);
-                            }
-                            catch(ServiceException e) {
-                                throw new RedirectException(e.getMessage(), e);
-                            }
-                            // Update cache with new region
-                            regionEndpointCache.putRegionForBucketName(ServiceUtils.findBucketNameInHostname(((HttpUriRequest) request).getURI().getHost(),
-                                    properties.getStringProperty("s3service.s3-endpoint", session.getHost().getHostname())), header.getValue());
-                            return redirect;
-                        }
-                    }
-                }
-                return super.getRedirect(request, response, context);
-            }
-        });
+        configuration.setRedirectStrategy(new S3BucketRegionRedirectStrategy(this, session, authorizer));
         this.setHttpClient(configuration.build());
     }
 
@@ -188,7 +155,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
             }
             else {
                 // Only for AWS set endpoint to region specific
-                if(requestParameters == null || !requestParameters.containsKey("location")) {
+                if(StringUtils.isNotBlank(bucketName) && (requestParameters == null || !requestParameters.containsKey("location"))) {
                     try {
                         // Determine region for bucket using cache
                         final Location.Name region = new S3LocationFeature(session, regionEndpointCache).getLocation(bucketName);
@@ -212,6 +179,22 @@ public class RequestEntityRestStorageService extends RestS3Service {
                     catch(BackgroundException e) {
                         // Ignore failure reading location for bucket
                         log.error(String.format("Failure %s determining bucket location for %s", e, bucketName));
+                    }
+                }
+                else {
+                    if(StringUtils.isNotBlank(session.getHost().getRegion())) {
+                        // Use default region
+                        final String endpoint;
+                        if(preferences.getBoolean("s3.endpoint.dualstack.enable")) {
+                            endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv6"), session.getHost().getRegion());
+                        }
+                        else {
+                            endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv4"), session.getHost().getRegion());
+                        }
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Set endpoint to %s", endpoint));
+                        }
+                        properties.setProperty("s3service.s3-endpoint", endpoint);
                     }
                 }
             }
@@ -357,4 +340,5 @@ public class RequestEntityRestStorageService extends RestS3Service {
         }
         return false;
     }
+
 }
