@@ -27,7 +27,7 @@ using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
 using java.util;
 using static Ch.Cyberduck.ImageHelper;
-using System.Drawing;
+using ch.cyberduck.core.io;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -36,14 +36,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly PathCache _cache;
         private readonly BrowserController _controller;
         private readonly FileDescriptor _descriptor = FileDescriptorFactory.get();
-        private readonly ListProgressListener _listener;
         private readonly string _unknown = LocaleFactory.localizedString("Unknown");
 
         public TreeBrowserModel(BrowserController controller, PathCache cache, ListProgressListener listener)
         {
             _controller = controller;
             _cache = cache;
-            _listener = listener;
         }
 
         public bool CanExpand(object path)
@@ -165,6 +163,12 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return Utils.IsNotBlank(path.attributes().getVersionId())
                 ? path.attributes().getVersionId()
+                : LocaleFactory.localizedString("None");
+        }
+        public object GetChecksum(Path path)
+        {
+            return !Checksum.NONE.equals(path.attributes().getChecksum())
+                ? path.attributes().getChecksum().hash
                 : LocaleFactory.localizedString("None");
         }
 
