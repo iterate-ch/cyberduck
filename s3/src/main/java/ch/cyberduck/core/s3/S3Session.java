@@ -387,7 +387,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(type == Restore.class) {
             return (T) new Glacier(this, trust, key);
         }
+        if(type == Timestamp.class) {
+            return (T) new S3TimestampFeature(this);
+        }
         return super._getFeature(type);
     }
-
 }
