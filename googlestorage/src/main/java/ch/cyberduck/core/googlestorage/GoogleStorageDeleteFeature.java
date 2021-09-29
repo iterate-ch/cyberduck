@@ -71,7 +71,7 @@ public class GoogleStorageDeleteFeature implements Delete {
                 if(file.isPlaceholder()) {
                     if(failure instanceof NotfoundException) {
                         // No placeholder file may exist but we just have a common prefix
-                        return;
+                        continue;
                     }
                 }
                 throw failure;
