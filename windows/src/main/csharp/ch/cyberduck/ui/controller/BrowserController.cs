@@ -276,6 +276,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ModelRegionGetter = _browserModel.GetRegion;
             View.ModelVersionGetter = _browserModel.GetVersion;
             View.ModelStorageClassGetter = _browserModel.GetStorageClass;
+            View.ModelChecksumGetter = _browserModel.GetChecksum;
 
             #endregion
 

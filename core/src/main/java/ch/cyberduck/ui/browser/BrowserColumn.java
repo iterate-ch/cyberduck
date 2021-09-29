@@ -93,5 +93,11 @@ public enum BrowserColumn {
         public String toString() {
             return LocaleFactory.localizedString("Storage Class", "Info");
         }
+    },
+    checksum {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Checksum", "Info");
+        }
     }
 }

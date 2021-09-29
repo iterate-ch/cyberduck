@@ -751,6 +751,10 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             set { new TypedColumn<Path>(treeColumnVersion) {AspectGetter = value}; }
         }
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelChecksumGetter
+        {
+            set { new TypedColumn<Path>(treeColumnChecksum) {AspectGetter = value}; }
+        }
 
         public MulticolorTreeListView.ActiveGetterPathDelegate ModelActiveGetter
         {
@@ -1118,6 +1122,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             treeColumnRegion.ComparatorGetter = (SortOrder order) => new RegionComparator(order == SortOrder.Ascending);
             treeColumnVersion.ComparatorGetter =
                 (SortOrder order) => new VersionComparator(order == SortOrder.Ascending);
+            treeColumnStorageClass.ComparatorGetter =
+                (SortOrder order) => new StorageClassComparator(order == SortOrder.Ascending);
+            treeColumnChecksum.ComparatorGetter =
+                (SortOrder order) => new ChecksumComparator(order == SortOrder.Ascending);
         }
 
         private void BeforeSorting(object sender, BeforeSortingEventArgs args)
