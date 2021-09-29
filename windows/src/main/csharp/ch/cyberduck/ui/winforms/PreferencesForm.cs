@@ -63,7 +63,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             browserButton.Image = Images.Browser.Size(32);
             transfersButton.Image = Images.Queue.Size(32);
             editStripButton.Image = Images.Pencil.Size(32);
-            sftpButton.Image = Images.FTP.Size(32);
+            ftpButton.Image = Images.FTP.Size(32);
             profilesButton.Image = Images.CyberduckDocument.Size(32);
             s3Button.Image = Images.S3.Size(32);
             googleCloudButton.Image = Images.GoogleStorage.Size(32);
@@ -1329,13 +1329,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             UploadSkipRegexDefaultEvent();
         }
 
-        private void sftpButton_Click(object sender, EventArgs e)
+        private void ftpButton_Click(object sender, EventArgs e)
         {
-            if (!sftpButton.Checked)
+            if (!ftpButton.Checked)
             {
                 DisableAll();
-                sftpButton.Checked = true;
-                panelManager.SelectedPanel = managedSftpPanel;
+                ftpButton.Checked = true;
+                panelManager.SelectedPanel = managedFtpPanel;
             }
         }
 
