@@ -221,67 +221,28 @@
             <point key="canvasLocation" x="7" y="147"/>
         </window>
         <customView id="30" userLabel="Panel General">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="312"/>
+            <rect key="frame" x="0.0" y="0.0" width="507" height="226"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <box fixedFrame="YES" title="브라우저" translatesAutoresizingMaskIntoConstraints="NO" id="31">
-                    <rect key="frame" x="17" y="117" width="473" height="175"/>
+                    <rect key="frame" x="17" y="117" width="473" height="89"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nXa-rF-OQT">
-                        <rect key="frame" x="3" y="3" width="467" height="157"/>
+                        <rect key="frame" x="3" y="3" width="467" height="71"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="32">
-                                <rect key="frame" x="263" y="42" width="195" height="26"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES"/>
-                                <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="35" id="33">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                    <menu key="menu" title="다른 보기" id="34">
-                                        <items>
-                                            <menuItem title=" " state="on" id="35"/>
-                                        </items>
-                                    </menu>
-                                </popUpButtonCell>
-                            </popUpButton>
-                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="36">
-                                <rect key="frame" x="10" y="72" width="449" height="18"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="시작 시 새 브라우저 창 열기" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="37">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                            </button>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="38">
-                                <rect key="frame" x="9" y="47" width="252" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="책갈피로 연결:" id="39">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="40">
-                                <rect key="frame" x="10" y="130" width="449" height="18"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <rect key="frame" x="10" y="44" width="449" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="종료시 작업공간 저장" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="41">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="42">
-                                <rect key="frame" x="9" y="96" width="449" height="27"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <rect key="frame" x="9" y="10" width="452" height="28"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="종료 시 브라우저 연결 모두 저장 후 재시작시 연결 복구." id="43">
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="44">
-                                <rect key="frame" x="9" y="12" width="449" height="27"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="응용 프로그램 시작시 빈 브라우저를 열기. 선택된 책갈피에 해당하는 연결을 새로운 브우저에서 엽니다." id="45">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -314,7 +275,7 @@
                             </popUpButton>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="69">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="작은 아이콘 사용시 책갈피의 별명만 표시됨." id="70">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -325,12 +286,61 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-581.5" y="609"/>
+            <point key="canvasLocation" x="-581.5" y="566"/>
         </customView>
         <customView id="61" userLabel="Panel Browser">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="321"/>
+            <rect key="frame" x="0.0" y="0.0" width="507" height="450"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
+                <box fixedFrame="YES" title="Browser" translatesAutoresizingMaskIntoConstraints="NO" id="mev-Su-J1f">
+                    <rect key="frame" x="17" y="305" width="473" height="125"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <view key="contentView" id="8q9-Nr-uTj">
+                        <rect key="frame" x="3" y="3" width="467" height="107"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="32">
+                                <rect key="frame" x="261" y="49" width="195" height="26"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="NnP-Br-fPH">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <menu key="menu" title="다른 보기" id="34">
+                                        <items>
+                                            <menuItem title=" " id="35"/>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                            </popUpButton>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="36">
+                                <rect key="frame" x="10" y="80" width="437" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="시작 시 새 브라우저 창 열기" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="37">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hyX-wz-Yx3">
+                                <rect key="frame" x="7" y="55" width="252" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="책갈피로 연결:" id="39">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="58A-j5-2qh">
+                                <rect key="frame" x="10" y="20" width="446" height="27"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="응용 프로그램 시작시 빈 브라우저를 열기. 선택된 책갈피에 해당하는 연결을 새로운 브우저에서 엽니다." id="45">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                </box>
                 <box fixedFrame="YES" title="외형" translatesAutoresizingMaskIntoConstraints="NO" id="71">
                     <rect key="frame" x="17" y="16" width="473" height="95"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
@@ -458,7 +468,7 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-6.5" y="650.5"/>
+            <point key="canvasLocation" x="-6.5" y="715"/>
         </customView>
         <customView id="99" userLabel="Panel Transfers">
             <rect key="frame" x="0.0" y="0.0" width="507" height="412"/>
@@ -1345,7 +1355,7 @@
                                 </textFieldCell>
                             </textField>
                             <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="49">
-                                <rect key="frame" x="253" y="111" width="195" height="26"/>
+                                <rect key="frame" x="253" y="110" width="195" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="bv6-7A-srz">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
