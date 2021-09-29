@@ -218,5 +218,6 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateDefaultDownloadThrottleList(IList<KeyValuePair<float, string>> throttles);
         void PopulateDefaultUploadThrottleList(IList<KeyValuePair<float, string>> throttles);
         void PopulateUpdateFeeds(IList<KeyValuePair<string, string>> feeds);
+        void SelectProfilesTab();
     }
 }
