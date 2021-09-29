@@ -26,10 +26,13 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.preferences.PreferencesReader;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -229,6 +232,11 @@ public class ProfilePlistReaderTest {
         assertEquals(new TestProtocol().getDefaultHostname(), profile.getDefaultHostname());
         assertEquals(profile.disk(), new TestProtocol().disk());
         assertNotNull(profile.getProvider());
-        assertEquals(Collections.singletonMap("s3service.disable-dns-buckets", "true"), profile.getProperties());
+        final Map<String, String> properties = profile.getProperties();
+        assertTrue(properties.containsKey("s3service.disable-dns-buckets"));
+        assertEquals("true", properties.get("s3service.disable-dns-buckets"));
+        assertTrue(properties.containsKey("s3.storage.class.options"));
+        assertEquals("STANDARD OTHER", properties.get("s3.storage.class.options"));
+        assertEquals(Arrays.asList("STANDARD", "OTHER"), PreferencesReader.toList(properties.get("s3.storage.class.options")));
     }
 }
