@@ -56,6 +56,8 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import com.dropbox.core.v2.files.FileMetadata;
+
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -74,7 +76,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final CryptoWriteFeature<String> writer = new CryptoWriteFeature<String>(session, new DropboxWriteFeature(session), cryptomator);
+        final CryptoWriteFeature<FileMetadata> writer = new CryptoWriteFeature<>(session, new DropboxWriteFeature(session), cryptomator);
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(content.length)));

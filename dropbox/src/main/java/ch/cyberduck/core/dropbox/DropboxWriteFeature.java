@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -40,7 +41,7 @@ import com.dropbox.core.v2.files.UploadSessionFinishUploader;
 import com.dropbox.core.v2.files.UploadSessionStartUploader;
 import com.dropbox.core.v2.files.WriteMode;
 
-public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
+public class DropboxWriteFeature extends AbstractHttpWriteFeature<FileMetadata> {
     private static final Logger log = Logger.getLogger(DropboxWriteFeature.class);
 
     private final DropboxSession session;
@@ -63,7 +64,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     @Override
-    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<FileMetadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final DbxUserFilesRequests files = new DbxUserFilesRequests(session.getClient(file));
             final UploadSessionStartUploader start = files.uploadSessionStart();
@@ -90,14 +91,14 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         return true;
     }
 
-    private final class SegmentingUploadProxyOutputStream extends HttpResponseOutputStream<String> {
+    private final class SegmentingUploadProxyOutputStream extends HttpResponseOutputStream<FileMetadata> {
 
         private final Path file;
         private final TransferStatus status;
         private final DbxUserFilesRequests client;
         private final String sessionId;
-        private String fileId;
 
+        private FileMetadata fileMetadata;
         private Long offset = 0L;
         private Long written = 0L;
         private UploadSessionAppendV2Uploader uploader;
@@ -147,8 +148,8 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         }
 
         @Override
-        public String getStatus() {
-            return fileId;
+        public FileMetadata getStatus() {
+            return fileMetadata;
         }
 
         @Override
@@ -156,14 +157,13 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
             try {
                 DropboxWriteFeature.this.close(uploader);
                 final UploadSessionFinishUploader finish = client.uploadSessionFinish(new UploadSessionCursor(sessionId, written),
-                    CommitInfo.newBuilder(containerService.getKey(file))
-                        .withClientModified(status.getTimestamp() != null ? new Date(status.getTimestamp()) : null)
-                        .withMode(WriteMode.OVERWRITE)
-                        .build()
+                        CommitInfo.newBuilder(containerService.getKey(file))
+                                .withClientModified(status.getTimestamp() != null ? new Date(status.getTimestamp()) : null)
+                                .withMode(WriteMode.OVERWRITE)
+                                .build()
                 );
                 finish.getOutputStream().close();
-                final FileMetadata metadata = finish.finish();
-                fileId = metadata.getId();
+                fileMetadata = finish.finish();
             }
             catch(IllegalStateException e) {
                 // Already closed
@@ -190,5 +190,10 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         }
         uploader.getOutputStream().close();
         uploader.finish();
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return new DropboxChecksumCompute();
     }
 }
