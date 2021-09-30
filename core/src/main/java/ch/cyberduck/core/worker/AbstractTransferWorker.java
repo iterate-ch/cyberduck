@@ -210,7 +210,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             transfer.reset();
 
             // Normalize Paths before preparing
-            progress.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0} ({1})", "Status"), transfer.getName(), action.getTitle()));
             transfer.normalize();
 
             // Calculate information about the files in advance to give progress information
@@ -260,6 +259,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     parent.validate();
+                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0} ({1})", "Status"),
+                            file.getName(), action.getTitle()));
                     final Session<?> source = borrow(Connection.source);
                     final Session<?> destination = borrow(Connection.destination);
                     try {
@@ -277,8 +278,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 log.info(String.format("Accepted file %s in transfer %s", file, this));
                             }
                             // Transfer
-                            progress.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0} ({1})", "Status"),
-                                file.getName(), action.getTitle()));
                             // Determine transfer status
                             final TransferStatus status = filter.prepare(file, local, parent, progress);
                             table.put(new TransferItem(file, local), status);
