@@ -169,7 +169,9 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return !Checksum.NONE.equals(path.attributes().getChecksum())
                 ? path.attributes().getChecksum().hash
-                : LocaleFactory.localizedString("None");
+                : Utils.IsNotBlank(path.attributes().getETag())
+                                  ? path.attributes().getETag()
+                                  : LocaleFactory.localizedString("None");
         }
 
         public bool GetActive(Path path)

@@ -1617,7 +1617,12 @@ public class InfoController extends ToolbarWindowController {
             final Path file = this.getSelected();
             final Checksum checksum = file.attributes().getChecksum();
             if(Checksum.NONE == checksum) {
-                checksumField.setStringValue(LocaleFactory.localizedString("Unknown"));
+                if(StringUtils.isNotBlank(file.attributes().getETag())) {
+                    this.updateField(checksumField, file.attributes().getETag(), TRUNCATE_MIDDLE_ATTRIBUTES);
+                }
+                else {
+                    checksumField.setStringValue(LocaleFactory.localizedString("Unknown"));
+                }
             }
             else {
                 this.updateField(checksumField, checksum.hash, TRUNCATE_MIDDLE_ATTRIBUTES);
