@@ -25,7 +25,7 @@ import com.dropbox.core.v2.files.FileMetadata;
 public class DropboxTouchFeature extends DefaultTouchFeature<FileMetadata> {
 
     public DropboxTouchFeature(final DropboxSession session) {
-        super(new DropboxUploadFeature(session, new DropboxWriteFeature(session)), new DropboxAttributesFinderFeature(session));
+        super(new DropboxWriteFeature(session), new DropboxAttributesFinderFeature(session));
     }
 
     /**
