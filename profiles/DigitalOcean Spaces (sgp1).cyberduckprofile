@@ -22,6 +22,10 @@
         <string>Secret Key</string>
         <key>Authorization</key>
         <string>AWS4HMACSHA256</string>
+        <key>Properties</key>
+        <array>
+            <string>s3.storage.class.options=STANDARD</string>
+        </array>
         <key>Help</key>
         <string>https://trac.cyberduck.io/wiki/help/en/howto/digitalocean</string>
         <key>Disk</key>

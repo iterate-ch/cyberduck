@@ -43,6 +43,10 @@
         <array>
             <string>us-central-1</string>
         </array>
+        <key>Properties</key>
+        <array>
+            <string>s3.storage.class.options=STANDARD</string>
+        </array>
         <key>Help</key>
         <string>https://help.cyberduck.io/wasabi</string>
         <key>Icon</key>

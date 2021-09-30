@@ -695,6 +695,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
           Default redundancy level
          */
         this.setDefault("s3.storage.class", "STANDARD");
+        this.setDefault("s3.storage.class.options", "STANDARD INTELLIGENT_TIERING STANDARD_IA ONEZONE_IA REDUCED_REDUNDANCY GLACIER DEEP_ARCHIVE");
         //this.setDefault("s3.encryption.algorithm", "AES256");
         this.setDefault("s3.encryption.algorithm", StringUtils.EMPTY);
 
@@ -755,6 +756,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("googlestorage.listing.chunksize", String.valueOf(1000));
         this.setDefault("googlestorage.metadata.default", StringUtils.EMPTY);
         this.setDefault("googlestorage.storage.class", "STANDARD");
+        this.setDefault("googlestorage.storage.class.options", "STANDARD MULTI_REGIONAL REGIONAL NEARLINE COLDLINE ARCHIVE");
         this.setDefault("googlestorage.acl.default", "private");
         this.setDefault("googlestorage.location", "us");
         /*

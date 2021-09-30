@@ -1210,7 +1210,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultS3StorageClasses()
         {
             IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
-            Iterator iter = S3StorageClassFeature.STORAGE_CLASS_LIST.iterator();
+            Iterator iter = PreferencesFactory.get().getList("s3.storage.class.options").iterator();
             while (iter.hasNext())
             {
                 string s = (string) iter.next();
@@ -1222,7 +1222,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultGoogleStorageClasses()
         {
             IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
-            Iterator iter = GoogleStorageStorageClassFeature.STORAGE_CLASS_LIST.iterator();
+            Iterator iter = PreferencesFactory.get().getList("googlestorage.storage.class.options").iterator();
             while (iter.hasNext())
             {
                 string s = (string) iter.next();

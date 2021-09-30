@@ -43,6 +43,7 @@
         <key>Properties</key>
         <array>
             <string>s3service.disable-dns-buckets=true</string>
+            <string>s3.storage.class.options=STANDARD</string>
         </array>
         <key>Help</key>
         <string>https://trac.cyberduck.io/wiki/help/en/howto/ibmcos</string>

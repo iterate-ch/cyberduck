@@ -31,7 +31,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
 
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -39,15 +38,6 @@ public class S3StorageClassFeature implements Redundancy {
 
     private final S3Session session;
     private final PathContainerService containerService;
-
-    public static final Set<String> STORAGE_CLASS_LIST = new LinkedHashSet<>(Arrays.asList(
-        S3Object.STORAGE_CLASS_STANDARD,
-        "INTELLIGENT_TIERING",
-        S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, // This storage class (IA, for infrequent access) is optimized for long-lived and less frequently accessed data
-        "ONEZONE_IA",
-        S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
-        S3Object.STORAGE_CLASS_GLACIER,
-        "DEEP_ARCHIVE"));
 
     public S3StorageClassFeature(final S3Session session) {
         this.session = session;
@@ -61,7 +51,7 @@ public class S3StorageClassFeature implements Redundancy {
 
     @Override
     public Set<String> getClasses() {
-        return STORAGE_CLASS_LIST;
+        return new LinkedHashSet<>(new HostPreferences(session.getHost()).getList("s3.storage.class.options"));
     }
 
     @Override

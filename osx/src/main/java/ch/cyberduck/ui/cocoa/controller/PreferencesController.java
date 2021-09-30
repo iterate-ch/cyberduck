@@ -2177,7 +2177,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultStorageClassPopup = b;
         this.defaultStorageClassPopup.setAutoenablesItems(false);
         this.defaultStorageClassPopup.removeAllItems();
-        for(String s : S3StorageClassFeature.STORAGE_CLASS_LIST) {
+        for(String s : preferences.getList("s3.storage.class.options")) {
             this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(s, "S3"));
             this.defaultStorageClassPopup.lastItem().setRepresentedObject(s);
         }
@@ -2275,7 +2275,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultStorageClassPopupGoogleStorage = b;
         this.defaultStorageClassPopupGoogleStorage.setAutoenablesItems(false);
         this.defaultStorageClassPopupGoogleStorage.removeAllItems();
-        for(String s : GoogleStorageStorageClassFeature.STORAGE_CLASS_LIST) {
+        for(String s : preferences.getList("googlestorage.storage.class.options")) {
             this.defaultStorageClassPopupGoogleStorage.addItemWithTitle(LocaleFactory.localizedString(s, "S3"));
             this.defaultStorageClassPopupGoogleStorage.lastItem().setRepresentedObject(s);
         }
