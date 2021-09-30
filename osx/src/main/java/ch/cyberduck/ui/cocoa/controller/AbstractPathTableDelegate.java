@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.browser.BrowserColumn;
 import ch.cyberduck.ui.browser.PathTooltipService;
 import ch.cyberduck.ui.browser.SizeTooltipService;
+import ch.cyberduck.ui.comparator.ChecksumComparator;
 import ch.cyberduck.ui.comparator.ExtensionComparator;
 import ch.cyberduck.ui.comparator.FileTypeComparator;
 import ch.cyberduck.ui.comparator.FilenameComparator;
@@ -86,6 +87,8 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
                 return new VersionComparator(ascending);
             case storageclass:
                 return new StorageClassComparator(ascending);
+            case checksum:
+                return new ChecksumComparator(ascending);
             default:
                 log.error(String.format("Unknown column identifier %s", identifier));
                 return new NullComparator<Path>();

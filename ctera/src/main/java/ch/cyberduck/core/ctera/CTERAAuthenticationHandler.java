@@ -55,9 +55,9 @@ public class CTERAAuthenticationHandler implements ServiceUnavailableRetryStrate
         final HttpPost login = new HttpPost("/ServicesPortal/api/login?format=jsonext");
         try {
             login.setEntity(
-                new StringEntity(String.format("j_username=device%%5c%s&j_password=%s", tokens.getDeviceId(), tokens.getSharedSecret()),
-                    ContentType.APPLICATION_FORM_URLENCODED
-                )
+                    new StringEntity(String.format("j_username=device%%5c%s&j_password=%s", tokens.getDeviceId(), tokens.getSharedSecret()),
+                            ContentType.APPLICATION_FORM_URLENCODED
+                    )
             );
             session.getClient().execute(login, new AbstractResponseHandler<Void>() {
                 @Override
@@ -82,11 +82,11 @@ public class CTERAAuthenticationHandler implements ServiceUnavailableRetryStrate
 
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
-        switch(response.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_MOVED_TEMPORARILY:
-                final Header l = response.getFirstHeader(HttpHeaders.LOCATION);
-                if(StringUtils.startsWith(l.getValue(), SAML_LOCATION)) {
-                    if(executionCount <= MAX_RETRIES) {
+        if(executionCount <= MAX_RETRIES) {
+            switch(response.getStatusLine().getStatusCode()) {
+                case HttpStatus.SC_MOVED_TEMPORARILY:
+                    final Header l = response.getFirstHeader(HttpHeaders.LOCATION);
+                    if(StringUtils.startsWith(l.getValue(), SAML_LOCATION)) {
                         try {
                             log.info(String.format("Attempt to refresh cookie for failure %s", response));
                             this.authenticate();
@@ -99,7 +99,7 @@ public class CTERAAuthenticationHandler implements ServiceUnavailableRetryStrate
                         return true;
                     }
                     break;
-                }
+            }
         }
         return false;
     }

@@ -1627,5 +1627,10 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             ShowDebugLogEvent();
         }
+
+        public void SelectProfilesTab()
+        {
+            profilesButton_Click(this, EventArgs.Empty);
+        }
     }
 }

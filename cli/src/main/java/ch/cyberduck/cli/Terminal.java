@@ -287,9 +287,6 @@ public class Terminal {
             try {
                 // Set remote file attributes of existing file on server
                 remote.withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source, new AttributesWorker(cache, remote))));
-                if(!remote.isRoot()) {
-                    cache.put(remote.getParent(), new AttributedList<>(Collections.singletonList(remote)));
-                }
             }
             catch(TerminalBackgroundException e) {
                 if(e.getCause() instanceof NotfoundException) {

@@ -415,6 +415,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
                     protocol.disk()));
             }
+            protocols.Add(new KeyValueIconTriple<Protocol, string>(null,
+                LocaleFactory.localizedString("More Options", "Bookmark") + '\u2026', null));
 
             View.PopulateProtocols(protocols);
         }
@@ -573,6 +575,15 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ChangedProtocolEvent()
         {
             Protocol selected = View.SelectedProtocol;
+            if (selected == null)
+            {
+                // More options entry
+                var view = PreferencesController.Instance.View;
+                view.SelectProfilesTab();
+                view.Show();
+                return;
+            }
+
             _host.setPort(selected.getDefaultPort());
             if (!_host.getProtocol().isHostnameConfigurable())
             {

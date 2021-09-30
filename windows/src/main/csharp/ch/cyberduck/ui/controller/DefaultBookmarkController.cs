@@ -19,10 +19,7 @@
 using System.Collections.Generic;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
-using ch.cyberduck.core.preferences;
-using ch.cyberduck.ui;
 using Ch.Cyberduck.Core;
-using java.lang;
 using org.apache.log4j;
 using org.apache.commons.lang3;
 

@@ -27,8 +27,10 @@ import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.Set;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@Category(IntegrationTest.class)
 public class RemoteProfilesFinderTest {
 
     @Test
@@ -52,12 +55,11 @@ public class RemoteProfilesFinderTest {
         final RemoteProfilesFinder finder = new RemoteProfilesFinder(session);
         final Set<ProfileDescription> stream = finder.find();
         assertFalse(stream.isEmpty());
-        // Check for versions
+        // Check for versions of S3 (HTTP).cyberduckprofile
         assertFalse(stream.stream().filter(ProfileDescription::isLatest).collect(Collectors.toSet()).isEmpty());
         assertFalse(stream.stream().filter(description -> !description.isLatest()).collect(Collectors.toSet()).isEmpty());
-        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("30298e0b4a1bd3ce954289281347c6ad"))));
-        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("ed214eca3b4521a6d567326b2e6e24e4"))));
-        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("283e922b59c8e716608763364dc63fb4"))));
+        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("b9afd8d6da91e7b520559fa9eaac54c1"))));
+        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("19ecbfe2d8f09644197c1ef53e207792"))));
         session.close();
     }
 }

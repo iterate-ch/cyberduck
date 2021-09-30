@@ -37,6 +37,7 @@ public class SDSExceptionMappingServiceTest {
 
     @Test
     public void testCode() {
-        assertEquals("For now, the file can't be decrypted. Please ask another authorized user to grant you access to this file.", new RegexLocale(LocalFactory.get("../i18n/src/main/resources")).localize("Error -40761", "SDS"));
+        assertEquals("For now, the file can't be decrypted. Please ask another authorized user to grant you access to this file.",
+                new RegexLocale(LocalFactory.get("../i18n/src/main/resources")).localize("Error -40761", "SDS"));
     }
 }

@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.io.Checksum;
 
 import org.apache.log4j.Logger;
 
@@ -72,6 +73,7 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
             if(file.getFileLockInfo() != null) {
                 attributes.setLockId(String.valueOf(file.getFileLockInfo().getIsLockholder()));
             }
+            attributes.setChecksum(Checksum.parse(file.getContentHash()));
         }
         if(metadata instanceof FolderMetadata) {
             final FolderMetadata folder = (FolderMetadata) metadata;
