@@ -22,15 +22,15 @@ fi
 echo "Finding profiles in $DIRECTORY"
 
 # Upload changed profiles by comparing checksum
-duck -qy --username $AWS_ACCESS_KEY_ID --password $AWS_SECRET_ACCESS_KEY --existing compare --upload "$TARGET/" $DIRECTORY/*.cyberduckprofile
+duck -y --username $AWS_ACCESS_KEY_ID --password $AWS_SECRET_ACCESS_KEY --existing compare --upload "$TARGET/" $DIRECTORY/*.cyberduckprofile
 
 # Delete profiles no longer maintained
-duck -qy --username $AWS_ACCESS_KEY_ID --password $AWS_SECRET_ACCESS_KEY --list $TARGET/ |
+duck -y --username $AWS_ACCESS_KEY_ID --password $AWS_SECRET_ACCESS_KEY --list $TARGET/ |
   while read name; do
     [ -z "$name" ] && continue
     
     if [ ! -f "$DIRECTORY/$name" ]; then
       echo "Deleting $name"
-      duck -qy --username $AWS_ACCESS_KEY_ID --password $AWS_SECRET_ACCESS_KEY --delete "$TARGET/$name"
+      duck -y --username $AWS_ACCESS_KEY_ID --password $AWS_SECRET_ACCESS_KEY --delete "$TARGET/$name"
     fi
   done
