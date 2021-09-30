@@ -110,6 +110,7 @@ namespace Ch.Cyberduck.Ui.Controller
         string UpdateFeed { set; get; }
         bool UpdateEnabled { set; }
         bool UseSystemProxy { set; get; }
+        bool DebugLog { set; get; }
         bool AutoDetectVault { get; set; }
         void PopulateBookmarkSize(IList<KeyValuePair<int, string>> sizes);
         void MarkDownloadSkipRegex(int position);
@@ -122,6 +123,8 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler BookmarkSizeChangedEvent;
         event VoidHandler UseSystemProxyChangedEvent;
         event VoidHandler ChangeSystemProxyEvent;
+        event VoidHandler DebugLogChangedEvent;
+        event VoidHandler ShowDebugLogEvent;
         event VoidHandler SaveWorkspaceChangedEvent;
         event VoidHandler NewBrowserOnStartupChangedEvent;
         event VoidHandler DefaultBookmarkChangedEvent;

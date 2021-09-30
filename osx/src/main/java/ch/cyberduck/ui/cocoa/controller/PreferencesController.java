@@ -41,6 +41,8 @@ import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
+import ch.cyberduck.core.local.RevealServiceFactory;
+import ch.cyberduck.core.preferences.LogDirectoryFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -48,12 +50,14 @@ import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3StorageClassFeature;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -69,6 +73,8 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -2383,6 +2389,63 @@ public class PreferencesController extends ToolbarWindowController {
             "end tell";
         NSAppleScript open = NSAppleScript.createWithSource(script);
         open.executeAndReturnError(null);
+    }
+
+    @Outlet
+    private NSButton logCheckbox;
+    @Outlet
+    private NSButton logShowButton;
+
+    public void setLogCheckbox(final NSButton b) {
+        this.logCheckbox = b;
+        this.logCheckbox.setTarget(this.id());
+        this.logCheckbox.setAction(Foundation.selector("logCheckboxClicked:"));
+        this.logCheckbox.setState(Level.DEBUG.equals(Logger.getRootLogger().getLevel()) ? NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    @Action
+    public void logCheckboxClicked(final NSButton sender) {
+        switch(sender.state()) {
+            case NSCell.NSOnState:
+                preferences.setLogging(Level.DEBUG.toString());
+                break;
+            default:
+                preferences.setLogging(Level.ERROR.toString());
+                break;
+        }
+    }
+
+    public void setLogShowButton(final NSButton b) {
+        this.logShowButton = b;
+        this.logShowButton.setTitle(LocaleFactory.localizedString("Show in Finder", "Localizable"));
+        this.logShowButton.setTarget(this.id());
+        this.logShowButton.setAction(Foundation.selector("logShowButtonClicked:"));
+    }
+
+    @Action
+    public void logShowButtonClicked(final NSButton sender) {
+        sender.setEnabled(false);
+        Executors.newSingleThreadExecutor().submit(new Callable<Void>() {
+            @Override
+            public Void call() {
+                try {
+                    final Local file = LocalFactory.get(LogDirectoryFinderFactory.get().find().getAbsolute(), String.format("%s.log", StringUtils.replaceChars(StringUtils.lowerCase(
+                            preferences.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY)));
+                    if(!RevealServiceFactory.get().reveal(file)) {
+                        log.warn(String.format("Failure reveal log file %s", file));
+                    }
+                }
+                finally {
+                    invoke(new DefaultMainAction() {
+                        @Override
+                        public void run() {
+                            sender.setEnabled(true);
+                        }
+                    });
+                }
+                return null;
+            }
+        });
     }
 
     @Outlet

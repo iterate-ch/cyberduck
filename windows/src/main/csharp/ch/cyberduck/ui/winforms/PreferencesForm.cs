@@ -63,7 +63,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             browserButton.Image = Images.Browser.Size(32);
             transfersButton.Image = Images.Queue.Size(32);
             editStripButton.Image = Images.Pencil.Size(32);
-            sftpButton.Image = Images.FTP.Size(32);
+            ftpButton.Image = Images.FTP.Size(32);
             profilesButton.Image = Images.CyberduckDocument.Size(32);
             s3Button.Image = Images.S3.Size(32);
             googleCloudButton.Image = Images.GoogleStorage.Size(32);
@@ -723,9 +723,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             get { return systemProxyCheckBox.Checked; }
             set { systemProxyCheckBox.Checked = value; }
         }
+        public bool DebugLog
+        {
+            get { return debugLogCheckBox.Checked; }
+            set { debugLogCheckBox.Checked = value; }
+        }
 
         public event VoidHandler UseSystemProxyChangedEvent = delegate { };
         public event VoidHandler ChangeSystemProxyEvent = delegate { };
+        public event VoidHandler DebugLogChangedEvent = delegate { };
+        public event VoidHandler ShowDebugLogEvent = delegate { };
         public event VoidHandler SaveWorkspaceChangedEvent = delegate { };
         public event VoidHandler NewBrowserOnStartupChangedEvent = delegate { };
         public event VoidHandler DefaultBookmarkChangedEvent = delegate { };
@@ -1322,13 +1329,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             UploadSkipRegexDefaultEvent();
         }
 
-        private void sftpButton_Click(object sender, EventArgs e)
+        private void ftpButton_Click(object sender, EventArgs e)
         {
-            if (!sftpButton.Checked)
+            if (!ftpButton.Checked)
             {
                 DisableAll();
-                sftpButton.Checked = true;
-                panelManager.SelectedPanel = managedSftpPanel;
+                ftpButton.Checked = true;
+                panelManager.SelectedPanel = managedFtpPanel;
             }
         }
 
@@ -1609,6 +1616,16 @@ namespace Ch.Cyberduck.Ui.Winforms
                 profilesButton.Checked = true;
                 panelManager.SelectedPanel = managedProfilesPanel;
             }
+        }
+
+        private void debugLogCheckBox_CheckStateChanged(object sender, EventArgs e)
+        {
+            DebugLogChangedEvent();
+        }
+
+        private void showDebugLogButton_Click(object sender, EventArgs e)
+        {
+            ShowDebugLogEvent();
         }
 
         public void SelectProfilesTab()

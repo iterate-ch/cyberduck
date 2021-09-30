@@ -138,6 +138,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UseSystemProxyChangedEvent += View_UseSystemProxyChangedEvent;
             View.ChangeSystemProxyEvent += View_ChangeSystemProxyEvent;
 
+            View.DebugLogChangedEvent += View_DebugLogChangedEvent;
+            View.ShowDebugLogEvent += View_ShowDebugLogEvent;
+
             View.CryptomatorAutoDetectVaultChangedEvent += View_CryptomatorAutoDetectVaultChangedEvent;
 
             #region S3
@@ -170,6 +173,22 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UpdateFeedChangedEvent += View_UpdateFeedChangedEvent;
 
             #endregion
+        }
+
+        private void View_ShowDebugLogEvent()
+        {
+            Local file = LocalFactory.get(
+                SupportDirectoryFinderFactory.get().find(),
+                $"{PreferencesFactory.get().getProperty("application.name").Replace(" ", "")}.log");
+            if (!RevealServiceFactory.get().reveal(file))
+            {
+                Log.warn($"Failure reveal log file {file}");
+            }
+        }
+
+        private void View_DebugLogChangedEvent()
+        {
+            PreferencesFactory.get().setLogging(View.DebugLog ? Level.DEBUG.toString() : Level.ERROR.toString());
         }
 
         private void View_SegmentedDownloadsChangedEvent()
@@ -1008,6 +1027,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.RetryDelay = PreferencesFactory.get().getInteger("connection.retry.delay");
             View.ConnectionTimeout = PreferencesFactory.get().getInteger("connection.timeout.seconds");
             View.UseSystemProxy = PreferencesFactory.get().getBoolean("connection.proxy.enable");
+            View.DebugLog = Level.DEBUG.equals(Logger.getRootLogger().getLevel()) ? true : false;
 
             #endregion
 

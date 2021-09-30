@@ -1744,6 +1744,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             r.NotesFont = f;
             r.UrlNotesSpace = 3;
 
+            if (previous != null)
+            {
+                r.HostnameAspectGetter = previous.HostnameAspectGetter;
+                r.NotesAspectGetter = previous.NotesAspectGetter;
+                r.UsernameAspectGetter = previous.UsernameAspectGetter;
+            }
+
             descColumn.Renderer = r;
             descColumn.FillsFreeSpace = true;
 
@@ -1754,14 +1761,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             activeColumn.CellVerticalAlignment = StringAlignment.Center;
             activeColumn.Renderer = new FixedImageRenderer();
-
-            if (previous != null)
-            {
-                r.HostnameAspectGetter = previous.HostnameAspectGetter;
-                r.NotesAspectGetter = previous.NotesAspectGetter;
-                r.UsernameAspectGetter = previous.UsernameAspectGetter;
-                l.RebuildColumns();
-            }
+            
+            l.RebuildColumns();
         }
 
         private void EnableViewToolStripButton(ToolStripButton cb)
