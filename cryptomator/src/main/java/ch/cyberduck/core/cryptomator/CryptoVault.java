@@ -149,10 +149,6 @@ public class CryptoVault implements Vault {
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(home));
         }
-        final Redundancy redundancy = session.getFeature(Redundancy.class);
-        if(redundancy != null) {
-            status.setStorageClass(redundancy.getDefault());
-        }
         final Path vault = directory.mkdir(home, status);
         new ContentWriter(session).write(masterkey, masterKeyFileContent.serialize());
         this.open(KeyFile.parse(masterKeyFileContent.serialize()), passphrase);
