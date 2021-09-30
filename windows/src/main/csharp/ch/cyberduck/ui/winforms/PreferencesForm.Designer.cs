@@ -45,10 +45,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.saveWorkspaceCheckbox = new System.Windows.Forms.CheckBox();
             this.labelOpenEmtpyBrowser = new System.Windows.Forms.Label();
-            this.connectBookmarkCombobox = new Ch.Cyberduck.Ui.Winforms.Controls.ImageComboBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.labelSaveWorkspace = new System.Windows.Forms.Label();
-            this.newBrowserOnStartupCheckbox = new System.Windows.Forms.CheckBox();
             this.managedFtpPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.tableLayoutPanel25 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -133,6 +129,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.alwaysUseDefaultEditorCheckBox = new System.Windows.Forms.CheckBox();
             this.managedBrowserPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.tableLayoutPanel21 = new System.Windows.Forms.TableLayoutPanel();
+            this.groupBox18 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel27 = new System.Windows.Forms.TableLayoutPanel();
+            this.label13 = new System.Windows.Forms.Label();
+            this.connectBookmarkCombobox = new Ch.Cyberduck.Ui.Winforms.Controls.ImageComboBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.newBrowserOnStartupCheckbox = new System.Windows.Forms.CheckBox();
             this.groupBox14 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel23 = new System.Windows.Forms.TableLayoutPanel();
             this.infoWindowCheckbox = new System.Windows.Forms.CheckBox();
@@ -323,6 +325,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel4.SuspendLayout();
             this.managedBrowserPanel.SuspendLayout();
             this.tableLayoutPanel21.SuspendLayout();
+            this.groupBox18.SuspendLayout();
+            this.tableLayoutPanel27.SuspendLayout();
             this.groupBox14.SuspendLayout();
             this.tableLayoutPanel23.SuspendLayout();
             this.managedTransfersPanel.SuspendLayout();
@@ -407,8 +411,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager.Controls.Add(this.managedProfilesPanel);
             this.panelManager.Location = new System.Drawing.Point(12, 76);
             this.panelManager.Name = "panelManager";
-            this.panelManager.SelectedIndex = 4;
-            this.panelManager.SelectedPanel = this.managedConnectionPanel;
+            this.panelManager.SelectedIndex = 8;
+            this.panelManager.SelectedPanel = this.managedBrowserPanel;
             this.panelManager.Size = new System.Drawing.Size(760, 501);
             this.panelManager.TabIndex = 1;
             // 
@@ -417,7 +421,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedGeneralPanel.Controls.Add(this.tableLayoutPanelGeneral);
             this.managedGeneralPanel.Location = new System.Drawing.Point(0, 0);
             this.managedGeneralPanel.Name = "managedGeneralPanel";
-            this.managedGeneralPanel.Size = new System.Drawing.Size(0, 0);
+            this.managedGeneralPanel.Size = new System.Drawing.Size(760, 501);
             this.managedGeneralPanel.Text = "managedPanel1";
             // 
             // tableLayoutPanelGeneral
@@ -435,7 +439,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanelGeneral.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanelGeneral.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanelGeneral.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelGeneral.Size = new System.Drawing.Size(0, 0);
+            this.tableLayoutPanelGeneral.Size = new System.Drawing.Size(760, 501);
             this.tableLayoutPanelGeneral.TabIndex = 7;
             // 
             // groupBox13
@@ -443,9 +447,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox13.AutoSize = true;
             this.groupBox13.Controls.Add(this.tableLayoutPanel22);
             this.groupBox13.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox13.Location = new System.Drawing.Point(3, 171);
+            this.groupBox13.Location = new System.Drawing.Point(3, 81);
             this.groupBox13.Name = "groupBox13";
-            this.groupBox13.Size = new System.Drawing.Size(1, 76);
+            this.groupBox13.Size = new System.Drawing.Size(754, 76);
             this.groupBox13.TabIndex = 2;
             this.groupBox13.TabStop = false;
             this.groupBox13.Text = "Bookmarks";
@@ -469,7 +473,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel22.Size = new System.Drawing.Size(0, 54);
+            this.tableLayoutPanel22.Size = new System.Drawing.Size(748, 54);
             this.tableLayoutPanel22.TabIndex = 10;
             // 
             // label15
@@ -502,7 +506,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browserGroupbox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.browserGroupbox.Location = new System.Drawing.Point(3, 3);
             this.browserGroupbox.Name = "browserGroupbox";
-            this.browserGroupbox.Size = new System.Drawing.Size(1, 162);
+            this.browserGroupbox.Size = new System.Drawing.Size(754, 72);
             this.browserGroupbox.TabIndex = 0;
             this.browserGroupbox.TabStop = false;
             this.browserGroupbox.Text = "Browser";
@@ -514,27 +518,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 199F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 433F));
             this.tableLayoutPanel1.Controls.Add(this.saveWorkspaceCheckbox, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.labelOpenEmtpyBrowser, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.connectBookmarkCombobox, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.labelSaveWorkspace, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.newBrowserOnStartupCheckbox, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.labelOpenEmtpyBrowser, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 19);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(5);
-            this.tableLayoutPanel1.RowCount = 9;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(0, 140);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(748, 50);
             this.tableLayoutPanel1.TabIndex = 6;
             // 
             // saveWorkspaceCheckbox
@@ -555,65 +550,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.labelOpenEmtpyBrowser.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.labelOpenEmtpyBrowser, 2);
             this.labelOpenEmtpyBrowser.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelOpenEmtpyBrowser.Location = new System.Drawing.Point(8, 105);
+            this.labelOpenEmtpyBrowser.Location = new System.Drawing.Point(8, 30);
             this.labelOpenEmtpyBrowser.Name = "labelOpenEmtpyBrowser";
-            this.labelOpenEmtpyBrowser.Size = new System.Drawing.Size(618, 30);
+            this.labelOpenEmtpyBrowser.Size = new System.Drawing.Size(458, 15);
             this.labelOpenEmtpyBrowser.TabIndex = 3;
-            this.labelOpenEmtpyBrowser.Text = "Open an empty browser when opening the application. A connection to the selected " +
-    "bookmark is opened for a new browser.";
-            // 
-            // connectBookmarkCombobox
-            // 
-            this.connectBookmarkCombobox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.connectBookmarkCombobox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-            this.connectBookmarkCombobox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.connectBookmarkCombobox.FormattingEnabled = true;
-            this.connectBookmarkCombobox.IconMember = null;
-            this.connectBookmarkCombobox.ItemHeight = 18;
-            this.connectBookmarkCombobox.Location = new System.Drawing.Point(207, 78);
-            this.connectBookmarkCombobox.Name = "connectBookmarkCombobox";
-            this.connectBookmarkCombobox.Size = new System.Drawing.Size(427, 24);
-            this.connectBookmarkCombobox.TabIndex = 4;
-            this.connectBookmarkCombobox.SelectionChangeCommitted += new System.EventHandler(this.connectBookmarkCombobox_SelectionChangeCommitted);
-            // 
-            // label4
-            // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label4.AutoEllipsis = true;
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 82);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(193, 15);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "Connect to bookmark:";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // labelSaveWorkspace
-            // 
-            this.labelSaveWorkspace.AutoEllipsis = true;
-            this.labelSaveWorkspace.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.labelSaveWorkspace, 2);
-            this.labelSaveWorkspace.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelSaveWorkspace.Location = new System.Drawing.Point(8, 30);
-            this.labelSaveWorkspace.Name = "labelSaveWorkspace";
-            this.labelSaveWorkspace.Size = new System.Drawing.Size(458, 15);
-            this.labelSaveWorkspace.TabIndex = 1;
-            this.labelSaveWorkspace.Text = "Will save all open browsers when quitting and restore the connections upon relaun" +
+            this.labelOpenEmtpyBrowser.Text = "Will save all open browsers when quitting and restore the connections upon relaun" +
     "ch.";
-            // 
-            // newBrowserOnStartupCheckbox
-            // 
-            this.newBrowserOnStartupCheckbox.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.newBrowserOnStartupCheckbox, 2);
-            this.newBrowserOnStartupCheckbox.Enabled = false;
-            this.newBrowserOnStartupCheckbox.Location = new System.Drawing.Point(8, 48);
-            this.newBrowserOnStartupCheckbox.Name = "newBrowserOnStartupCheckbox";
-            this.newBrowserOnStartupCheckbox.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.newBrowserOnStartupCheckbox.Size = new System.Drawing.Size(227, 24);
-            this.newBrowserOnStartupCheckbox.TabIndex = 2;
-            this.newBrowserOnStartupCheckbox.Text = "Open new browser window on startup";
-            this.newBrowserOnStartupCheckbox.UseVisualStyleBackColor = true;
-            this.newBrowserOnStartupCheckbox.CheckedChanged += new System.EventHandler(this.newBrowserOnStartupCheckbox_CheckedChanged);
             // 
             // managedFtpPanel
             // 
@@ -1055,7 +997,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedConnectionPanel.Controls.Add(this.tableLayoutPanel37);
             this.managedConnectionPanel.Location = new System.Drawing.Point(0, 0);
             this.managedConnectionPanel.Name = "managedConnectionPanel";
-            this.managedConnectionPanel.Size = new System.Drawing.Size(760, 501);
+            this.managedConnectionPanel.Size = new System.Drawing.Size(0, 0);
             this.managedConnectionPanel.Text = "managedPanel1";
             // 
             // tableLayoutPanel37
@@ -1077,7 +1019,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel37.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel37.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel37.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel37.Size = new System.Drawing.Size(760, 501);
+            this.tableLayoutPanel37.Size = new System.Drawing.Size(0, 0);
             this.tableLayoutPanel37.TabIndex = 0;
             // 
             // groupBox1
@@ -1087,7 +1029,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(754, 152);
+            this.groupBox1.Size = new System.Drawing.Size(1, 152);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Connection";
@@ -1115,7 +1057,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(748, 130);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(0, 130);
             this.tableLayoutPanel2.TabIndex = 10;
             // 
             // keychainCheckbox
@@ -1201,7 +1143,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox31.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox31.Location = new System.Drawing.Point(3, 405);
             this.groupBox31.Name = "groupBox31";
-            this.groupBox31.Size = new System.Drawing.Size(754, 93);
+            this.groupBox31.Size = new System.Drawing.Size(1, 88);
             this.groupBox31.TabIndex = 4;
             this.groupBox31.TabStop = false;
             this.groupBox31.Text = "Log";
@@ -1220,7 +1162,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel48.RowCount = 2;
             this.tableLayoutPanel48.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel48.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel48.Size = new System.Drawing.Size(748, 71);
+            this.tableLayoutPanel48.Size = new System.Drawing.Size(0, 66);
             this.tableLayoutPanel48.TabIndex = 0;
             // 
             // debugLogCheckBox
@@ -1228,7 +1170,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.debugLogCheckBox.AutoSize = true;
             this.debugLogCheckBox.Location = new System.Drawing.Point(8, 8);
             this.debugLogCheckBox.Name = "debugLogCheckBox";
-            this.debugLogCheckBox.Size = new System.Drawing.Size(118, 19);
+            this.debugLogCheckBox.Size = new System.Drawing.Size(1, 19);
             this.debugLogCheckBox.TabIndex = 0;
             this.debugLogCheckBox.Text = "Enable debug log";
             this.debugLogCheckBox.UseVisualStyleBackColor = true;
@@ -1238,9 +1180,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.showDebugLogButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.showDebugLogButton.AutoSize = true;
-            this.showDebugLogButton.Location = new System.Drawing.Point(351, 33);
+            this.showDebugLogButton.Location = new System.Drawing.Point(8, 33);
             this.showDebugLogButton.Name = "showDebugLogButton";
-            this.showDebugLogButton.Size = new System.Drawing.Size(46, 25);
+            this.showDebugLogButton.Size = new System.Drawing.Size(1, 25);
             this.showDebugLogButton.TabIndex = 1;
             this.showDebugLogButton.Text = "Show";
             this.showDebugLogButton.UseVisualStyleBackColor = true;
@@ -1253,7 +1195,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox21.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox21.Location = new System.Drawing.Point(3, 161);
             this.groupBox21.Name = "groupBox21";
-            this.groupBox21.Size = new System.Drawing.Size(754, 144);
+            this.groupBox21.Size = new System.Drawing.Size(1, 144);
             this.groupBox21.TabIndex = 0;
             this.groupBox21.TabStop = false;
             this.groupBox21.Text = "Timeouts";
@@ -1280,14 +1222,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel39.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel39.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel39.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel39.Size = new System.Drawing.Size(748, 122);
+            this.tableLayoutPanel39.Size = new System.Drawing.Size(0, 122);
             this.tableLayoutPanel39.TabIndex = 12;
             // 
             // connectionTimeoutUpDown
             // 
             this.connectionTimeoutUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.connectionTimeoutUpDown.AutoSize = true;
-            this.connectionTimeoutUpDown.Location = new System.Drawing.Point(377, 8);
+            this.connectionTimeoutUpDown.Location = new System.Drawing.Point(8, 8);
             this.connectionTimeoutUpDown.Maximum = new decimal(new int[] {
             60,
             0,
@@ -1299,7 +1241,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             0,
             0});
             this.connectionTimeoutUpDown.Name = "connectionTimeoutUpDown";
-            this.connectionTimeoutUpDown.Size = new System.Drawing.Size(35, 23);
+            this.connectionTimeoutUpDown.Size = new System.Drawing.Size(1, 23);
             this.connectionTimeoutUpDown.TabIndex = 6;
             this.connectionTimeoutUpDown.Value = new decimal(new int[] {
             10,
@@ -1312,14 +1254,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.retriesUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.retriesUpDown.AutoSize = true;
-            this.retriesUpDown.Location = new System.Drawing.Point(377, 91);
+            this.retriesUpDown.Location = new System.Drawing.Point(8, 91);
             this.retriesUpDown.Maximum = new decimal(new int[] {
             9,
             0,
             0,
             0});
             this.retriesUpDown.Name = "retriesUpDown";
-            this.retriesUpDown.Size = new System.Drawing.Size(29, 23);
+            this.retriesUpDown.Size = new System.Drawing.Size(1, 23);
             this.retriesUpDown.TabIndex = 11;
             this.retriesUpDown.Value = new decimal(new int[] {
             9,
@@ -1333,7 +1275,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.retryCheckbox.AutoSize = true;
             this.retryCheckbox.Location = new System.Drawing.Point(8, 37);
             this.retryCheckbox.Name = "retryCheckbox";
-            this.retryCheckbox.Size = new System.Drawing.Size(186, 19);
+            this.retryCheckbox.Size = new System.Drawing.Size(1, 19);
             this.retryCheckbox.TabIndex = 7;
             this.retryCheckbox.Text = "Repeat failed networking tasks";
             this.retryCheckbox.UseVisualStyleBackColor = true;
@@ -1343,9 +1285,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label34.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(268, 95);
+            this.label34.Location = new System.Drawing.Point(8, 95);
             this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(103, 15);
+            this.label34.Size = new System.Drawing.Size(1, 15);
             this.label34.TabIndex = 10;
             this.label34.Text = "Number of retries:";
             this.label34.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -1356,7 +1298,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label36.AutoSize = true;
             this.label36.Location = new System.Drawing.Point(8, 12);
             this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(363, 15);
+            this.label36.Size = new System.Drawing.Size(1, 15);
             this.label36.TabIndex = 2;
             this.label36.Text = "Timeout for opening connections (seconds):";
             this.label36.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -1365,14 +1307,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.retryDelayUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.retryDelayUpDown.AutoSize = true;
-            this.retryDelayUpDown.Location = new System.Drawing.Point(377, 62);
+            this.retryDelayUpDown.Location = new System.Drawing.Point(8, 62);
             this.retryDelayUpDown.Maximum = new decimal(new int[] {
             30,
             0,
             0,
             0});
             this.retryDelayUpDown.Name = "retryDelayUpDown";
-            this.retryDelayUpDown.Size = new System.Drawing.Size(35, 23);
+            this.retryDelayUpDown.Size = new System.Drawing.Size(1, 23);
             this.retryDelayUpDown.TabIndex = 9;
             this.retryDelayUpDown.Value = new decimal(new int[] {
             10,
@@ -1385,9 +1327,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label16.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(253, 66);
+            this.label16.Location = new System.Drawing.Point(8, 66);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(118, 15);
+            this.label16.Size = new System.Drawing.Size(1, 15);
             this.label16.TabIndex = 12;
             this.label16.Text = "with delay (seconds):";
             // 
@@ -1398,7 +1340,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox20.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox20.Location = new System.Drawing.Point(3, 311);
             this.groupBox20.Name = "groupBox20";
-            this.groupBox20.Size = new System.Drawing.Size(754, 88);
+            this.groupBox20.Size = new System.Drawing.Size(1, 88);
             this.groupBox20.TabIndex = 3;
             this.groupBox20.TabStop = false;
             this.groupBox20.Text = "Proxies";
@@ -1417,7 +1359,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel40.RowCount = 2;
             this.tableLayoutPanel40.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel40.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel40.Size = new System.Drawing.Size(748, 66);
+            this.tableLayoutPanel40.Size = new System.Drawing.Size(0, 66);
             this.tableLayoutPanel40.TabIndex = 0;
             // 
             // systemProxyCheckBox
@@ -1425,7 +1367,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.systemProxyCheckBox.AutoSize = true;
             this.systemProxyCheckBox.Location = new System.Drawing.Point(8, 8);
             this.systemProxyCheckBox.Name = "systemProxyCheckBox";
-            this.systemProxyCheckBox.Size = new System.Drawing.Size(162, 19);
+            this.systemProxyCheckBox.Size = new System.Drawing.Size(1, 19);
             this.systemProxyCheckBox.TabIndex = 0;
             this.systemProxyCheckBox.Text = "Use system proxy settings";
             this.systemProxyCheckBox.UseVisualStyleBackColor = true;
@@ -1435,9 +1377,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.changeSystemProxyButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.changeSystemProxyButton.AutoSize = true;
-            this.changeSystemProxyButton.Location = new System.Drawing.Point(318, 33);
+            this.changeSystemProxyButton.Location = new System.Drawing.Point(8, 33);
             this.changeSystemProxyButton.Name = "changeSystemProxyButton";
-            this.changeSystemProxyButton.Size = new System.Drawing.Size(112, 25);
+            this.changeSystemProxyButton.Size = new System.Drawing.Size(1, 25);
             this.changeSystemProxyButton.TabIndex = 1;
             this.changeSystemProxyButton.Text = "Change Settings…";
             this.changeSystemProxyButton.UseVisualStyleBackColor = true;
@@ -1714,7 +1656,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBrowserPanel.Controls.Add(this.tableLayoutPanel21);
             this.managedBrowserPanel.Location = new System.Drawing.Point(0, 0);
             this.managedBrowserPanel.Name = "managedBrowserPanel";
-            this.managedBrowserPanel.Size = new System.Drawing.Size(0, 0);
+            this.managedBrowserPanel.Size = new System.Drawing.Size(760, 501);
             this.managedBrowserPanel.Text = "managedBrowserPanel";
             // 
             // tableLayoutPanel21
@@ -1722,7 +1664,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel21.AutoSize = true;
             this.tableLayoutPanel21.ColumnCount = 1;
             this.tableLayoutPanel21.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel21.Controls.Add(this.groupBox14, 0, 0);
+            this.tableLayoutPanel21.Controls.Add(this.groupBox18, 0, 0);
+            this.tableLayoutPanel21.Controls.Add(this.groupBox14, 0, 1);
             this.tableLayoutPanel21.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel21.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel21.Name = "tableLayoutPanel21";
@@ -1730,17 +1673,109 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel21.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel21.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel21.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel21.Size = new System.Drawing.Size(0, 0);
+            this.tableLayoutPanel21.Size = new System.Drawing.Size(760, 501);
             this.tableLayoutPanel21.TabIndex = 8;
+            // 
+            // groupBox18
+            // 
+            this.groupBox18.AutoSize = true;
+            this.groupBox18.Controls.Add(this.tableLayoutPanel27);
+            this.groupBox18.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox18.Location = new System.Drawing.Point(3, 3);
+            this.groupBox18.Name = "groupBox18";
+            this.groupBox18.Size = new System.Drawing.Size(754, 107);
+            this.groupBox18.TabIndex = 0;
+            this.groupBox18.TabStop = false;
+            this.groupBox18.Text = "Browser";
+            // 
+            // tableLayoutPanel27
+            // 
+            this.tableLayoutPanel27.AutoSize = true;
+            this.tableLayoutPanel27.ColumnCount = 2;
+            this.tableLayoutPanel27.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 199F));
+            this.tableLayoutPanel27.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 539F));
+            this.tableLayoutPanel27.Controls.Add(this.label13, 0, 2);
+            this.tableLayoutPanel27.Controls.Add(this.connectBookmarkCombobox, 1, 1);
+            this.tableLayoutPanel27.Controls.Add(this.label19, 0, 1);
+            this.tableLayoutPanel27.Controls.Add(this.newBrowserOnStartupCheckbox, 0, 0);
+            this.tableLayoutPanel27.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel27.Location = new System.Drawing.Point(3, 19);
+            this.tableLayoutPanel27.Name = "tableLayoutPanel27";
+            this.tableLayoutPanel27.Padding = new System.Windows.Forms.Padding(5);
+            this.tableLayoutPanel27.RowCount = 7;
+            this.tableLayoutPanel27.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel27.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel27.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel27.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel27.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel27.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel27.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel27.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel27.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel27.Size = new System.Drawing.Size(748, 85);
+            this.tableLayoutPanel27.TabIndex = 6;
+            // 
+            // label13
+            // 
+            this.label13.AutoEllipsis = true;
+            this.label13.AutoSize = true;
+            this.tableLayoutPanel27.SetColumnSpan(this.label13, 2);
+            this.label13.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.label13.Location = new System.Drawing.Point(8, 65);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(663, 15);
+            this.label13.TabIndex = 3;
+            this.label13.Text = "Open an empty browser when opening the application. A connection to the selected " +
+    "bookmark is opened for a new browser.";
+            // 
+            // connectBookmarkCombobox
+            // 
+            this.connectBookmarkCombobox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.connectBookmarkCombobox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.connectBookmarkCombobox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.connectBookmarkCombobox.FormattingEnabled = true;
+            this.connectBookmarkCombobox.IconMember = null;
+            this.connectBookmarkCombobox.ItemHeight = 18;
+            this.connectBookmarkCombobox.Location = new System.Drawing.Point(207, 38);
+            this.connectBookmarkCombobox.Name = "connectBookmarkCombobox";
+            this.connectBookmarkCombobox.Size = new System.Drawing.Size(533, 24);
+            this.connectBookmarkCombobox.TabIndex = 1;
+            this.connectBookmarkCombobox.SelectionChangeCommitted += new System.EventHandler(this.connectBookmarkCombobox_SelectionChangeCommitted);
+            // 
+            // label19
+            // 
+            this.label19.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label19.AutoEllipsis = true;
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(8, 42);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(193, 15);
+            this.label19.TabIndex = 5;
+            this.label19.Text = "Connect to bookmark:";
+            this.label19.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // newBrowserOnStartupCheckbox
+            // 
+            this.newBrowserOnStartupCheckbox.AutoSize = true;
+            this.tableLayoutPanel27.SetColumnSpan(this.newBrowserOnStartupCheckbox, 2);
+            this.newBrowserOnStartupCheckbox.Enabled = true;
+            this.newBrowserOnStartupCheckbox.Location = new System.Drawing.Point(8, 8);
+            this.newBrowserOnStartupCheckbox.Name = "newBrowserOnStartupCheckbox";
+            this.newBrowserOnStartupCheckbox.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.newBrowserOnStartupCheckbox.Size = new System.Drawing.Size(227, 24);
+            this.newBrowserOnStartupCheckbox.TabIndex = 0;
+            this.newBrowserOnStartupCheckbox.Text = "Open new browser window on startup";
+            this.newBrowserOnStartupCheckbox.UseVisualStyleBackColor = true;
+            this.newBrowserOnStartupCheckbox.CheckedChanged += new System.EventHandler(this.newBrowserOnStartupCheckbox_CheckedChanged);
             // 
             // groupBox14
             // 
             this.groupBox14.AutoSize = true;
             this.groupBox14.Controls.Add(this.tableLayoutPanel23);
             this.groupBox14.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox14.Location = new System.Drawing.Point(3, 3);
+            this.groupBox14.Location = new System.Drawing.Point(3, 116);
             this.groupBox14.Name = "groupBox14";
-            this.groupBox14.Size = new System.Drawing.Size(1, 142);
+            this.groupBox14.Size = new System.Drawing.Size(754, 142);
             this.groupBox14.TabIndex = 0;
             this.groupBox14.TabStop = false;
             this.groupBox14.Text = "General";
@@ -1750,7 +1785,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel23.AutoSize = true;
             this.tableLayoutPanel23.ColumnCount = 2;
             this.tableLayoutPanel23.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 199F));
-            this.tableLayoutPanel23.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 433F));
+            this.tableLayoutPanel23.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 539F));
             this.tableLayoutPanel23.Controls.Add(this.infoWindowCheckbox, 0, 3);
             this.tableLayoutPanel23.Controls.Add(this.showHiddenFilesCheckbox, 0, 0);
             this.tableLayoutPanel23.Controls.Add(this.returnKeyCheckbox, 0, 2);
@@ -1765,7 +1800,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel23.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel23.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel23.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel23.Size = new System.Drawing.Size(0, 120);
+            this.tableLayoutPanel23.Size = new System.Drawing.Size(748, 120);
             this.tableLayoutPanel23.TabIndex = 6;
             // 
             // infoWindowCheckbox
@@ -3641,6 +3676,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBrowserPanel.PerformLayout();
             this.tableLayoutPanel21.ResumeLayout(false);
             this.tableLayoutPanel21.PerformLayout();
+            this.groupBox18.ResumeLayout(false);
+            this.groupBox18.PerformLayout();
+            this.tableLayoutPanel27.ResumeLayout(false);
+            this.tableLayoutPanel27.PerformLayout();
             this.groupBox14.ResumeLayout(false);
             this.groupBox14.PerformLayout();
             this.tableLayoutPanel23.ResumeLayout(false);
@@ -3751,10 +3790,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripButton generalButton;
         private System.Windows.Forms.GroupBox browserGroupbox;
         private System.Windows.Forms.CheckBox saveWorkspaceCheckbox;
-        private System.Windows.Forms.Label labelSaveWorkspace;
-        private System.Windows.Forms.CheckBox newBrowserOnStartupCheckbox;
-        private System.Windows.Forms.Label label4;
-        private ImageComboBox connectBookmarkCombobox;
         private System.Windows.Forms.Label labelOpenEmtpyBrowser;
         private System.Windows.Forms.ToolStripButton transfersButton;
         private System.Windows.Forms.ToolStripButton ftpButton;
@@ -3986,5 +4021,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label labelConfirmDisconnect;
         private ImageComboBox defaultProtocolCombobox;
+        private System.Windows.Forms.GroupBox groupBox18;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel27;
+        private System.Windows.Forms.Label label13;
+        private ImageComboBox connectBookmarkCombobox;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.CheckBox newBrowserOnStartupCheckbox;
     }
 }
