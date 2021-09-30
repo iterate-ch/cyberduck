@@ -16,7 +16,9 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.shared.ListFilteringFeature;
 
 import java.util.Collections;
 
@@ -32,11 +34,14 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(cache.isCached(file.getParent())) {
-            final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.find(new DefaultPathPredicate(file));
-            if(null != found) {
-                return found.attributes();
+        if(!file.isRoot()) {
+            if(cache.isCached(file.getParent())) {
+                final AttributedList<Path> list = cache.get(file.getParent());
+                final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.sensitive, file));
+                if(null != found) {
+                    return found.attributes();
+                }
+                throw new NotfoundException(file.getAbsolute());
             }
         }
         final PathAttributes attributes = delegate.find(file, new CachingListProgressListener(cache));
