@@ -1212,7 +1212,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 Path file = SelectedPath;
                 if (Checksum.NONE == file.attributes().getChecksum())
                 {
-                    View.Checksum = LocaleFactory.localizedString("Unknown");
+                    View.Checksum = Utils.IsBlank(file.attributes().getETag())
+                                            ? LocaleFactory.localizedString("Unknown")
+                                            : file.attributes().getETag();
                 }
                 else
                 {

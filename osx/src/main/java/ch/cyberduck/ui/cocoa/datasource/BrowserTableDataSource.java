@@ -303,7 +303,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         else if(identifier.equals(BrowserColumn.checksum.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
                 !Checksum.NONE.equals(item.attributes().getChecksum()) ? item.attributes().getChecksum().hash :
-                    LocaleFactory.localizedString("None"),
+                    StringUtils.isNotBlank(item.attributes().getETag()) ? item.attributes().getETag() : LocaleFactory.localizedString("None"),
                 TableCellAttributes.browserFontLeftAlignment());
         }
         else if(identifier.equals(BrowserColumn.storageclass.name())) {
