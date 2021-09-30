@@ -17,6 +17,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.shared.ListFilteringFeature;
 
 public class CachingFindFeature implements Find {
 
@@ -33,7 +34,7 @@ public class CachingFindFeature implements Find {
         if(!file.isRoot()) {
             if(cache.isCached(file.getParent())) {
                 final AttributedList<Path> list = cache.get(file.getParent());
-                final Path found = list.find(new DefaultPathPredicate(file));
+                final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.sensitive, file));
                 return null != found;
             }
         }
