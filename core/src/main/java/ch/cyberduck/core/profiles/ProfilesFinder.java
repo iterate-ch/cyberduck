@@ -40,7 +40,9 @@ public interface ProfilesFinder {
          * Download and parse profile
          */
         Visitor Prefetch = description -> {
-            description.getProfile();
+            if(description.isLatest()) {
+                description.getProfile();
+            }
             return description;
         };
     }
