@@ -1610,5 +1610,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                 panelManager.SelectedPanel = managedProfilesPanel;
             }
         }
+
+        public void SelectProfilesTab()
+        {
+            profilesButton_Click(this, EventArgs.Empty);
+        }
     }
 }

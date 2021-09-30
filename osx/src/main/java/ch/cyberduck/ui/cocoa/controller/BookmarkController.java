@@ -166,6 +166,8 @@ public class BookmarkController extends SheetController implements CollectionLis
                 protocolPopup.selectItemAtIndex(protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(bookmark.getProtocol().hashCode())));
             }
         });
+        this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
+        this.protocolPopup.addItemWithTitle(String.format("%s%s", LocaleFactory.localizedString("More Options", "Bookmark"), "…"));
     }
 
     private void addProtocol(final Protocol protocol) {
@@ -180,37 +182,44 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     @Action
     public void protocolSelectionChanged(final NSPopUpButton sender) {
-        final Protocol selected = ProtocolFactory.get().forName(sender.selectedItem().representedObject());
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Protocol selection changed to %s", selected));
+        if(null == sender.selectedItem().representedObject()) {
+            final PreferencesController controller = PreferencesControllerFactory.instance();
+            controller.window().makeKeyAndOrderFront(null);
+            controller.setSelectedPanel(PreferencesController.PreferencesToolbarItem.profiles.name());
         }
-        bookmark.setPort(selected.getDefaultPort());
-        if(!bookmark.getProtocol().isHostnameConfigurable()) {
-            // Previously selected protocol had a default hostname. Change to default
-            // of newly selected protocol.
-            bookmark.setHostname(selected.getDefaultHostname());
+        else {
+            final Protocol selected = ProtocolFactory.get().forName(sender.selectedItem().representedObject());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Protocol selection changed to %s", selected));
+            }
+            bookmark.setPort(selected.getDefaultPort());
+            if(!bookmark.getProtocol().isHostnameConfigurable()) {
+                // Previously selected protocol had a default hostname. Change to default
+                // of newly selected protocol.
+                bookmark.setHostname(selected.getDefaultHostname());
+            }
+            if(!selected.isHostnameConfigurable()) {
+                // Hostname of newly selected protocol is not configurable. Change to default.
+                bookmark.setHostname(selected.getDefaultHostname());
+            }
+            if(StringUtils.isNotBlank(selected.getDefaultHostname())) {
+                // Prefill with default hostname
+                bookmark.setHostname(selected.getDefaultHostname());
+            }
+            if(Objects.equals(bookmark.getDefaultPath(), bookmark.getProtocol().getDefaultPath()) ||
+                !selected.isPathConfigurable()) {
+                bookmark.setDefaultPath(selected.getDefaultPath());
+            }
+            bookmark.setProtocol(selected);
+            final int port = HostnameConfiguratorFactory.get(selected).getPort(bookmark.getHostname());
+            if(port != -1) {
+                // External configuration found
+                bookmark.setPort(port);
+            }
+            options.configure(selected);
+            validator.configure(selected);
+            this.update();
         }
-        if(!selected.isHostnameConfigurable()) {
-            // Hostname of newly selected protocol is not configurable. Change to default.
-            bookmark.setHostname(selected.getDefaultHostname());
-        }
-        if(StringUtils.isNotBlank(selected.getDefaultHostname())) {
-            // Prefill with default hostname
-            bookmark.setHostname(selected.getDefaultHostname());
-        }
-        if(Objects.equals(bookmark.getDefaultPath(), bookmark.getProtocol().getDefaultPath()) ||
-            !selected.isPathConfigurable()) {
-            bookmark.setDefaultPath(selected.getDefaultPath());
-        }
-        bookmark.setProtocol(selected);
-        final int port = HostnameConfiguratorFactory.get(selected).getPort(bookmark.getHostname());
-        if(port != -1) {
-            // External configuration found
-            bookmark.setPort(port);
-        }
-        options.configure(selected);
-        validator.configure(selected);
-        this.update();
     }
 
     public void setHostField(final NSTextField field) {
