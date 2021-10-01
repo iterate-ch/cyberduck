@@ -49,6 +49,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
@@ -123,6 +124,10 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
     }
 
     public Credentials pair(final Host bookmark, final ConnectionCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        return this.pair(bookmark, prompt, cancel, BrowserLauncherFactory.get());
+    }
+
+    public Credentials pair(final Host bookmark, final ConnectionCallback prompt, final CancelCallback cancel, final BrowserLauncher browser) throws BackgroundException {
         final String token = new BrickCredentialsConfigurator().configure(host).getToken();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt pairing with token %s", token));
@@ -152,8 +157,8 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
                     if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
                         url.append(String.format("&username=%s", URIEncoder.encode(bookmark.getCredentials().getUsername())));
                     }
-                    if(!BrowserLauncherFactory.get().open(url.toString())) {
-                        throw new LoginCanceledException();
+                    if(!browser.open(url.toString())) {
+                        throw new ConnectionCanceledException();
                     }
                 }
                 catch(UnknownHostException e) {
