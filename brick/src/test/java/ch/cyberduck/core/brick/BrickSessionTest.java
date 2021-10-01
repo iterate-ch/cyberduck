@@ -25,12 +25,15 @@ import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.HashSet;
 
+@Category(IntegrationTest.class)
 public class BrickSessionTest extends AbstractBrickTest {
 
     @Test(expected = ConnectionCanceledException.class)
