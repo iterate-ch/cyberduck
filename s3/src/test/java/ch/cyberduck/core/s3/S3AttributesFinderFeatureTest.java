@@ -49,6 +49,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", Checksum.parse(attributes.getETag()).hash);
         assertNotEquals(-1L, attributes.getModificationDate());
         // Test wrong type
         try {

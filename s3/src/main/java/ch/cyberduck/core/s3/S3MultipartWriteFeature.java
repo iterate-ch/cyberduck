@@ -179,14 +179,8 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
                                 concat.append(part.getEtag());
                             }
                             final String expected = String.format("%s-%d",
-                                ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
-                            final String reference;
-                            if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
-                                reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
-                            }
-                            else {
-                                reference = complete.getEtag();
-                            }
+                                    ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
+                            final String reference = StringUtils.removeEnd(StringUtils.removeStart(complete.getEtag(), "\""), "\"");
                             if(!StringUtils.equalsIgnoreCase(expected, reference)) {
                                 throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                                     MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",

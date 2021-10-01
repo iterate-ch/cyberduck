@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -32,6 +33,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -59,18 +61,14 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testList() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final AttributedList<Path> list = new S3VersionedObjectListService(session).list(
-                new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
-        for(Path p : list) {
-            assertEquals(container, p.getParent());
-            if(p.isFile()) {
-                assertNotEquals(-1L, p.attributes().getModificationDate());
-                assertNotEquals(-1L, p.attributes().getSize());
-                assertNotNull(p.attributes().getETag());
-                assertNotNull(p.attributes().getStorageClass());
-                assertNull(p.attributes().getVersionId());
-            }
-        }
+        final Path file = new S3TouchFeature(session).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final AttributedList<Path> list = new S3VersionedObjectListService(session).list(container, new DisabledListProgressListener());
+        final Path lookup = list.find(new DefaultPathPredicate(file));
+        assertNotNull(lookup);
+        assertEquals(file, lookup);
+        assertSame(container, lookup.getParent());
+        assertEquals(Checksum.NONE, lookup.attributes().getChecksum());
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", Checksum.parse(lookup.attributes().getETag()).hash);
     }
 
     @Test
