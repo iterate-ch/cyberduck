@@ -173,6 +173,10 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
                         throw new ConnectionCanceledException(String.format("Interrupt wait for pairing key after %d", timeout));
                     }
                 }
+                // Check if canceled with null input
+                if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
+                    throw new LoginCanceledException();
+                }
             }
         };
         // Poll for pairing key until canceled
