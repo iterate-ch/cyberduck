@@ -42,6 +42,8 @@ public class BrickSessionTest extends AbstractBrickTest {
             @Override
             public String getProperty(final String key) {
                 switch(key) {
+                    case "brick.pairing.interval.ms":
+                        return String.valueOf(100L);
                     case "brick.pairing.interrupt.ms":
                         return String.valueOf(1000L);
                 }
