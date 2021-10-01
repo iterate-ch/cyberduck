@@ -25,6 +25,7 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
@@ -49,6 +50,7 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -89,6 +91,11 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
         final Credentials credentials = host.getCredentials();
         if(credentials.isPasswordAuthentication()) {
             retryHandler.setApiKey(credentials.getPassword());
+            // Test credentials
+            final Path home = new DefaultHomeFinderService(this).find();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Retrieved %s", home));
+            }
         }
         else {
             // No prompt on explicit connect
