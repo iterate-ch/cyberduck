@@ -32,6 +32,7 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -92,9 +93,14 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
         if(credentials.isPasswordAuthentication()) {
             retryHandler.setApiKey(credentials.getPassword());
             // Test credentials
-            final Path home = new DefaultHomeFinderService(this).find();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Retrieved %s", home));
+            try {
+                final Path home = new DefaultHomeFinderService(this).find();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Retrieved %s", home));
+                }
+            }
+            catch(LoginFailureException e) {
+                throw new LoginCanceledException(e);
             }
         }
         else {
