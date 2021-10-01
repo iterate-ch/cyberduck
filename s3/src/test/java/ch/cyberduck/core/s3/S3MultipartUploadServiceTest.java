@@ -13,6 +13,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -55,12 +56,16 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-            count, status, new DisabledLoginCallback());
+                count, status, new DisabledLoginCallback());
         assertEquals(random.getBytes().length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
+        assertEquals(Checksum.NONE, attributes.getChecksum());
+        assertNotNull(attributes.getETag());
+        // d2b77e21aa68ebdcbfb589124b9f9192-1
+        assertEquals(Checksum.NONE, Checksum.parse(attributes.getETag()));
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session).getClass(test));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         assertFalse(metadata.isEmpty());
