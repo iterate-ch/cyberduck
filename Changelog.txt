@@ -10,6 +10,8 @@ https://cyberduck.io/
 - [Feature] Retain modification date in metadata for uploads (S3) (#11784)
 - [Feature] New default connection profile (ownCloud)
 - [Feature] Build package in AppImage format (CLI) (#11762)
+- [Feature] Support v3 PuTTY keys (SFTP)
+- [Feature] Column in browser window to display checksum (#11824)
 - [Bugfix] Change default path for NextCloud connections to include username (#11787)
 - [Bugfix] Failed to overwrite upload of object with custom metadata (Google Storage) (#11781)
 - [Bugfix] Skip duplicate file versions in output (Cyberduck CLI) (#11786)
@@ -19,6 +21,9 @@ https://cyberduck.io/
 - [Bugfix] Unable to remove delete marker (S3) (#11803)
 - [Bugfix] Taskbar shows incorrect number of transfers (Windows) (#11813)
 - [Bugfix] Allow to delete trashed files (Google Drive) (#11816)
+- [Bugfix] Create directory placeholders using default storage class (S3) (#11751)
+- [Bugfix] Create master key using default storage class (S3, Cryptomator) (#11751)
+- [Bugfix] Use specific region endpoint only with --region option (S3, CLI) (#11827)
 
 7.10.2
 - [Feature] Add --purge option to invalidate files in Amazon CloudFront distributions and OpenStack Swift (X-CDN-Enabled header) (#11767)
