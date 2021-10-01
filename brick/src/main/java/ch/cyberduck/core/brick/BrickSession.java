@@ -15,6 +15,7 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
@@ -61,6 +62,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.MessageFormat;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -130,10 +132,10 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
                 prompt.warn(bookmark, title, message, defaultButton, cancelButton, preference);
                 try {
                     final StringBuilder url = new StringBuilder(String.format("%s/login_from_desktop?pairing_key=%s&platform=%s&computer=%s",
-                        new HostUrlProvider().withUsername(false).withPath(false).get(host),
-                        token,
-                        URIEncoder.encode(new PreferencesUseragentProvider().get()),
-                        URIEncoder.encode(InetAddress.getLocalHost().getHostName())));
+                            new HostUrlProvider().withUsername(false).withPath(false).get(host),
+                            token,
+                            URIEncoder.encode(new PreferencesUseragentProvider().get()),
+                            URIEncoder.encode(InetAddress.getLocalHost().getHostName())));
                     if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
                         url.append(String.format("&username=%s", URIEncoder.encode(bookmark.getCredentials().getUsername())));
                     }
@@ -159,8 +161,9 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
         scheduler.repeat(lock);
         // Await reply
         lock.warn(bookmark, String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-            LocaleFactory.localizedString("The desktop application session has expired or been revoked.", "Brick"),
-            LocaleFactory.localizedString("Open in Web Browser"), LocaleFactory.localizedString("Cancel"), null);
+                MessageFormat.format(LocaleFactory.localizedString("The desktop application session for {0} has expired or been revoked. Open a web browser and grant access to your account again.", "Brick"),
+                        BookmarkNameProvider.toHostname(host)),
+                LocaleFactory.localizedString("Open in Web Browser"), LocaleFactory.localizedString("Cancel"), null);
         // Not canceled
         scheduler.shutdown();
         // When connect attempt is interrupted will throw connection cancel failure
