@@ -26,6 +26,7 @@ import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -37,6 +38,7 @@ import static org.junit.Assert.assertNotEquals;
 public class DefaultTouchFeatureTest extends AbstractS3Test {
 
     @Test
+    @Ignore
     public void testTouch() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

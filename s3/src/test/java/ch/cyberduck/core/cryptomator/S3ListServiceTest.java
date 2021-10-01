@@ -25,11 +25,10 @@ import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.s3.AbstractS3Test;
-import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3ObjectListService;
+import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -59,8 +58,7 @@ public class S3ListServiceTest extends AbstractS3Test {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new S3ObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
-        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new S3WriteFeature(session),
-                new S3AttributesFinderFeature(session)), new S3WriteFeature(session), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session), new S3WriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new S3ObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

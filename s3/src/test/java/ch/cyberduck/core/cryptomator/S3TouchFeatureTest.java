@@ -38,6 +38,7 @@ import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.text.RandomStringGenerator;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -83,6 +84,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @Ignore
     public void testTouchEncryptedDefaultFeature() throws Exception {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
