@@ -160,10 +160,10 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
         // Poll for pairing key until canceled
         scheduler.repeat(lock);
         // Await reply
-        lock.warn(bookmark, String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-                MessageFormat.format(LocaleFactory.localizedString("The desktop application session for {0} has expired or been revoked. Open a web browser and grant access to your account again.", "Brick"),
+        lock.warn(bookmark, LocaleFactory.localizedString("You've been logged out", "Brick"),
+                MessageFormat.format(LocaleFactory.localizedString("The desktop application session for {0} has expired or been revoked. Please login to grant access to your account again.", "Brick"),
                         BookmarkNameProvider.toHostname(host)),
-                LocaleFactory.localizedString("Open in Web Browser"), LocaleFactory.localizedString("Cancel"), null);
+                LocaleFactory.localizedString("Login via Web Browser", "Brick"), LocaleFactory.localizedString("Cancel"), null);
         // Not canceled
         scheduler.shutdown();
         // When connect attempt is interrupted will throw connection cancel failure
