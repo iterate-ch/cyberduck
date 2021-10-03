@@ -63,7 +63,7 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
     @Override
     public Set<ProfileDescription> initialize() {
         try {
-            return new LocalProfilesFinder(directory).find();
+            return new LocalProfilesFinder(registry, directory).find();
         }
         catch(BackgroundException e) {
             return Collections.emptySet();
@@ -74,7 +74,7 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
     public Set<ProfileDescription> run(final Session<?> session) throws BackgroundException {
         final Set<ProfileDescription> returned = new HashSet<>();
         // Find all locally installed profiles
-        final Set<ProfileDescription> installed = new LocalProfilesFinder(directory).find();
+        final Set<ProfileDescription> installed = new LocalProfilesFinder(registry, directory).find();
         // Find all profiles from repository
         final Set<ProfileDescription> remote = new RemoteProfilesFinder(session).find();
         final ProfileMatcher matcher = new ChecksumProfileMatcher(remote);
@@ -89,12 +89,15 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
                 local.getProfile().ifPresent(registry::unregister);
                 // Register updated profile by copying temporary file to application support
                 match.get().getFile().ifPresent(value -> {
-                    final LocalProfileDescription d = new LocalProfileDescription(registry.register(value));
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Add synched profile %s", d));
+                    final Local copy = registry.register(value);
+                    if(null != copy) {
+                        final LocalProfileDescription d = new LocalProfileDescription(copy);
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Add synched profile %s", d));
+                        }
+                        returned.add(d);
+                        visitor.visit(d);
                     }
-                    returned.add(d);
-                    visitor.visit(d);
                 });
             }
             else {

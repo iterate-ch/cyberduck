@@ -17,6 +17,7 @@ package ch.cyberduck.core.profiles;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
@@ -35,7 +36,7 @@ public class ChecksumProfileMatcherTest {
     public void testLocalOnly() throws Exception {
         // Local only profile
         final ProfileDescription local = new ProfileDescription(
-            new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null);
+                ProtocolFactory.get(), new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null);
         assertFalse(new ChecksumProfileMatcher(Stream.<ProfileDescription>empty().collect(Collectors.toSet())).compare(local).isPresent());
     }
 
@@ -43,22 +44,22 @@ public class ChecksumProfileMatcherTest {
     public void testEqual() throws Exception {
         // Managed profile
         final ProfileDescription remote = new ProfileDescription(
-            new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null) {
+                ProtocolFactory.get(), new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null) {
             @Override
             public boolean isLatest() {
                 return true;
             }
         };
         final ProfileDescription local = new ProfileDescription(
-            new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null);
+                ProtocolFactory.get(), new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null);
         assertFalse(new ChecksumProfileMatcher(Stream.of(remote).collect(Collectors.toSet())).compare(local).isPresent());
     }
 
     @Test
     public void testNewerVersionFound() throws Exception {
-        final ProfileDescription local = new ProfileDescription(new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null);
+        final ProfileDescription local = new ProfileDescription(ProtocolFactory.get(), new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null);
         final ProfileDescription remote = new ProfileDescription(
-            new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null) {
+                ProtocolFactory.get(), new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"), null) {
             @Override
             public boolean isLatest() {
                 return false;

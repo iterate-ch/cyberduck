@@ -17,6 +17,7 @@ package ch.cyberduck.core.profiles;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +27,11 @@ public final class RemoteProfileDescription extends ProfileDescription {
     private final Path file;
 
     public RemoteProfileDescription(final Path file, final LazyInitializer<Local> profile) {
-        super(new LazyInitializer<Checksum>() {
+        this(ProtocolFactory.get(), file, profile);
+    }
+
+    public RemoteProfileDescription(final ProtocolFactory protocols, final Path file, final LazyInitializer<Local> profile) {
+        super(protocols, new LazyInitializer<Checksum>() {
             @Override
             protected Checksum initialize() {
                 if(Checksum.NONE == file.attributes().getChecksum()) {

@@ -18,6 +18,7 @@ package ch.cyberduck.core.profiles;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.log4j.Logger;
@@ -30,9 +31,11 @@ import java.util.stream.Collectors;
 public class LocalProfilesFinder implements ProfilesFinder {
     private static final Logger log = Logger.getLogger(LocalProfilesFinder.class);
 
+    private final ProtocolFactory protocols;
     private final Local directory;
 
-    public LocalProfilesFinder(final Local directory) {
+    public LocalProfilesFinder(final ProtocolFactory protocols, final Local directory) {
+        this.protocols = protocols;
         this.directory = directory;
     }
 
@@ -43,7 +46,7 @@ public class LocalProfilesFinder implements ProfilesFinder {
                 log.debug(String.format("Load profiles from %s", directory));
             }
             return directory.list().filter(new ProfileFilter()).toList().stream()
-                .map(file -> visitor.visit(new LocalProfileDescription(file))).collect(Collectors.toSet());
+                .map(file -> visitor.visit(new LocalProfileDescription(protocols, file))).collect(Collectors.toSet());
         }
         return Collections.emptySet();
     }

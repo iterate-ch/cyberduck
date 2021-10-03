@@ -16,6 +16,7 @@ package ch.cyberduck.core.profiles;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.Checksum;
@@ -27,10 +28,15 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 
 public final class LocalProfileDescription extends ProfileDescription {
+
     private final Local file;
 
     public LocalProfileDescription(final Local file) {
-        super(
+        this(ProtocolFactory.get(), file);
+    }
+
+    public LocalProfileDescription(final ProtocolFactory protocols, final Local file) {
+        super(protocols,
             new LazyInitializer<Checksum>() {
                 @Override
                 protected Checksum initialize() throws ConcurrentException {
