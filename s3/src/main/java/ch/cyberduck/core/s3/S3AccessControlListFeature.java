@@ -38,6 +38,7 @@ import org.jets3t.service.acl.EmailAddressGrantee;
 import org.jets3t.service.acl.GrantAndPermission;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.acl.Permission;
+import org.jets3t.service.model.StorageOwner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -177,17 +178,15 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             return AccessControlList.REST_CANNED_PUBLIC_READ_WRITE;
         }
         final AccessControlList list = new AccessControlList();
-        try {
-            list.setOwner(session.getClient().getBucketAcl(containerService.getContainer(file).getName()).getOwner());
-        }
-        catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map(e);
-        }
         for(Acl.UserAndRole userAndRole : acl.asList()) {
             if(!userAndRole.isValid()) {
                 continue;
             }
-            if(userAndRole.getUser() instanceof Acl.EmailUser) {
+            if(userAndRole.getUser() instanceof Acl.Owner) {
+                list.setOwner(new StorageOwner(userAndRole.getUser().getIdentifier(),
+                    userAndRole.getUser().getDisplayName()));
+            }
+            else if(userAndRole.getUser() instanceof Acl.EmailUser) {
                 list.grantPermission(new EmailAddressGrantee(userAndRole.getUser().getIdentifier()),
                     Permission.parsePermission(userAndRole.getRole().getName()));
             }
@@ -235,7 +234,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
         if(AccessControlList.REST_CANNED_AUTHENTICATED_READ == list) {
             return Acl.CANNED_AUTHENTICATED_READ;
         }
-        final Acl acl = new Acl(new Acl.CanonicalUser(list.getOwner().getId(), list.getOwner().getDisplayName()),
+        final Acl acl = new Acl(new Acl.Owner(list.getOwner().getId(), list.getOwner().getDisplayName()),
             new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString()));
         for(GrantAndPermission grant : list.getGrantAndPermissions()) {
             Acl.Role role = new Acl.Role(grant.getPermission().toString());
