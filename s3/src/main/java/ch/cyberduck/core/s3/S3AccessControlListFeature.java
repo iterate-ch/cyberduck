@@ -145,7 +145,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
      * @param acl  Edited ACL
      * @return ACL to write to server
      */
-    protected AccessControlList toAcl(final Path file, final Acl acl) throws BackgroundException {
+    protected AccessControlList toAcl(final Path file, final Acl acl) {
         if(Acl.EMPTY.equals(acl)) {
             return null;
         }
