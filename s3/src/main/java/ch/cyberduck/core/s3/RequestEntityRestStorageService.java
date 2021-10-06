@@ -61,27 +61,19 @@ public class RequestEntityRestStorageService extends RestS3Service {
             log.debug(String.format("Configure for endpoint %s", bookmark));
         }
         // Use default endpoint for region lookup
-        if(bookmark.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-            // Only for AWS
-            properties.setProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default"));
-            properties.setProperty("s3service.disable-dns-buckets",
-                String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
+        properties.setProperty("s3service.s3-endpoint", bookmark.getHostname());
+        if(InetAddressUtils.isIPv4Address(bookmark.getHostname()) || InetAddressUtils.isIPv6Address(bookmark.getHostname())) {
+            properties.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         }
         else {
-            properties.setProperty("s3service.s3-endpoint", bookmark.getHostname());
-            if(InetAddressUtils.isIPv4Address(bookmark.getHostname()) || InetAddressUtils.isIPv6Address(bookmark.getHostname())) {
-                properties.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
-            }
-            else {
-                properties.setProperty("s3service.disable-dns-buckets",
+            properties.setProperty("s3service.disable-dns-buckets",
                     String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
-            }
         }
         properties.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         if(StringUtils.isNotBlank(bookmark.getProtocol().getContext())) {
             if(!Scheme.isURL(bookmark.getProtocol().getContext())) {
                 properties.setProperty("s3service.s3-endpoint-virtual-path",
-                    PathNormalizer.normalize(bookmark.getProtocol().getContext()));
+                        PathNormalizer.normalize(bookmark.getProtocol().getContext()));
             }
         }
         properties.setProperty("s3service.https-only", String.valueOf(bookmark.getProtocol().isSecure()));

@@ -127,21 +127,21 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
         final AttributedList<Path> list
-            = new S3ObjectListService(session).list(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory)),
-            new DisabledListProgressListener());
+                = new S3ObjectListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)),
+                new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-        assertTrue(list.contains(new Path("/dist.springframework.org/milestone", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-        assertTrue(list.contains(new Path("/dist.springframework.org/snapshot", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        assertTrue(list.contains(new Path("/release", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        assertTrue(list.contains(new Path("/milestone", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        assertTrue(list.contains(new Path("/snapshot", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
     }
 
     @Test
     public void testListDefaultPath() throws Exception {
-        final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
-            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+        final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/dist.springframework.org/release");
         final S3Session session = new S3Session(host);

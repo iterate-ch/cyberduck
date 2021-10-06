@@ -16,6 +16,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -28,8 +29,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Versioning;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.model.MultipartUpload;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.EnumSet;
 
@@ -47,14 +50,21 @@ public class S3ListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            // List all buckets
-            try {
-                return new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(directory, listener);
+            final String bucket = this.getBucket(session.getHost());
+            if(StringUtils.isEmpty(bucket)) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("No bucket name in host %s", session.getHost().getHostname()));
+                }
+                // List all buckets
+                try {
+                    return new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(directory, listener);
+                }
+                catch(InteroperabilityException e) {
+                    // Bucket set in hostname that leads to parser failure for XML reply
+                    log.warn(String.format("Ignore failure %s listing buckets.", e));
+                }
             }
-            catch(InteroperabilityException e) {
-                // Bucket set in hostname that leads to parser failure for XML reply
-                log.warn(String.format("Ignore failure %s listing buckets.", e));
-            }
+            // If bucket is specified in hostname, try to connect to this particular bucket only.
         }
         AttributedList<Path> objects;
         final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
@@ -85,5 +95,29 @@ public class S3ListService implements ListService {
             log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
         }
         return objects;
+    }
+
+
+    /**
+     * @return Null if no container component in hostname prepended
+     */
+    protected String getBucket(final Host host) {
+        if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("No default hostname set in %s", host.getProtocol()));
+            }
+            return null;
+        }
+        final String hostname = host.getHostname();
+        if(hostname.equals(host.getProtocol().getDefaultHostname())) {
+            return null;
+        }
+        if(hostname.endsWith(host.getProtocol().getDefaultHostname())) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Find bucket name in %s", hostname));
+            }
+            return ServiceUtils.findBucketNameInHostname(hostname, host.getProtocol().getDefaultHostname());
+        }
+        return null;
     }
 }
