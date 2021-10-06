@@ -144,7 +144,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         final S3Version object = (S3Version) marker;
                         attr.setSize(object.getSize());
                         if(StringUtils.isNotBlank(object.getEtag())) {
-                            attr.setETag(object.getEtag());
+                            attr.setETag(StringUtils.removeEnd(StringUtils.removeStart(object.getEtag(), "\""), "\""));
                         }
                         if(StringUtils.isNotBlank(object.getStorageClass())) {
                             attr.setStorageClass(object.getStorageClass());
