@@ -50,7 +50,7 @@ import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
-public class S3ListServiceTest extends AbstractS3Test {
+public class S3ObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListCryptomator() throws Exception {
