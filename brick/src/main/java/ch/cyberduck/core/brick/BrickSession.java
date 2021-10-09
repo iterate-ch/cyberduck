@@ -15,21 +15,7 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.URIEncoder;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -185,7 +171,7 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
         try {
             lock.warn(bookmark, LocaleFactory.localizedString("You've been logged out", "Brick"),
                     MessageFormat.format(LocaleFactory.localizedString("The desktop application session for {0} has expired or been revoked. Please login to grant access to your account again.", "Brick"),
-                        BookmarkNameProvider.toHostname(host)),
+                            BookmarkNameProvider.toString(host)),
                     LocaleFactory.localizedString("Login via Web Browser", "Brick"), LocaleFactory.localizedString("Cancel"), null);
         }
         finally {
