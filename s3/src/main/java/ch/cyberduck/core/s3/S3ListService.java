@@ -16,12 +16,10 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -32,7 +30,6 @@ import ch.cyberduck.core.features.Versioning;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.model.MultipartUpload;
-import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.EnumSet;
 
@@ -40,17 +37,15 @@ public class S3ListService implements ListService {
     private static final Logger log = Logger.getLogger(S3ListService.class);
 
     private final S3Session session;
-    private final PathContainerService containerService;
 
     public S3ListService(final S3Session session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            final String bucket = this.getBucket(session.getHost());
+            final String bucket = RequestEntityRestStorageService.findBucketInHostname(session.getHost());
             if(StringUtils.isEmpty(bucket)) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("No bucket name in host %s", session.getHost().getHostname()));
@@ -67,9 +62,8 @@ public class S3ListService implements ListService {
             // If bucket is specified in hostname, try to connect to this particular bucket only.
         }
         AttributedList<Path> objects;
-        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-            containerService.getContainer(directory)
-        ) : VersioningConfiguration.empty();
+        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class)
+                .getConfiguration(directory) : VersioningConfiguration.empty();
         if(versioning.isEnabled()) {
             try {
                 objects = new S3VersionedObjectListService(session).list(directory, listener);
@@ -95,29 +89,5 @@ public class S3ListService implements ListService {
             log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
         }
         return objects;
-    }
-
-
-    /**
-     * @return Null if no container component in hostname prepended
-     */
-    protected String getBucket(final Host host) {
-        if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("No default hostname set in %s", host.getProtocol()));
-            }
-            return null;
-        }
-        final String hostname = host.getHostname();
-        if(hostname.equals(host.getProtocol().getDefaultHostname())) {
-            return null;
-        }
-        if(hostname.endsWith(host.getProtocol().getDefaultHostname())) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Find bucket name in %s", hostname));
-            }
-            return ServiceUtils.findBucketNameInHostname(hostname, host.getProtocol().getDefaultHostname());
-        }
-        return null;
     }
 }

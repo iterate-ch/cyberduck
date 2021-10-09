@@ -44,6 +44,7 @@ import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -141,49 +142,61 @@ public class RequestEntityRestStorageService extends RestS3Service {
         // Apply default configuration
         final PreferencesReader preferences = new HostPreferences(session.getHost());
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
-            if(StringUtils.equals(host.getHostname(), session.getHost().getProtocol().getDefaultHostname())) {
-                // Check if not already set to accelerated endpoint
-                if(properties.getStringProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default")).matches("s3-accelerate(\\.dualstack)?\\.amazonaws\\.com")) {
-                    log.debug("Skip adjusting endpoint with transfer acceleration");
-                }
-                else {
-                    // Only for AWS set endpoint to region specific
-                    if(StringUtils.isNotBlank(bucketName) && (requestParameters == null || !requestParameters.containsKey("location"))) {
-                        try {
-                            // Determine region for bucket using cache
-                            final Location.Name region = new S3LocationFeature(session, regionEndpointCache).getLocation(bucketName);
-                            if(Location.unknown == region) {
-                                log.warn(String.format("Failure determining bucket location for %s", bucketName));
-                            }
-                            else {
-                                final String endpoint;
-                                if(preferences.getBoolean("s3.endpoint.dualstack.enable")) {
-                                    endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv6"), region.getIdentifier());
-                                }
-                                else {
-                                    endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv4"), region.getIdentifier());
-                                }
-                                if(log.isDebugEnabled()) {
-                                    log.debug(String.format("Set endpoint to %s", endpoint));
-                                }
-                                properties.setProperty("s3service.s3-endpoint", endpoint);
-                            }
+            // Check if not already set to accelerated endpoint
+            if(properties.getStringProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default")).matches("s3-accelerate(\\.dualstack)?\\.amazonaws\\.com")) {
+                log.debug("Skip adjusting endpoint with transfer acceleration");
+            }
+            else {
+                // Only for AWS set endpoint to region specific
+                if(StringUtils.isNotBlank(bucketName) && (requestParameters == null || !requestParameters.containsKey("location"))) {
+                    try {
+                        // Determine region for bucket using cache
+                        final Location.Name region = new S3LocationFeature(session, regionEndpointCache).getLocation(bucketName);
+                        if(Location.unknown == region) {
+                            log.warn(String.format("Failure determining bucket location for %s", bucketName));
                         }
-                        catch(BackgroundException e) {
-                            // Ignore failure reading location for bucket
-                            log.error(String.format("Failure %s determining bucket location for %s", e, bucketName));
-                        }
-                    }
-                    else {
-                        if(StringUtils.isNotBlank(session.getHost().getRegion())) {
-                            // Use default region
+                        else {
                             final String endpoint;
                             if(preferences.getBoolean("s3.endpoint.dualstack.enable")) {
-                                endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv6"), session.getHost().getRegion());
+                                endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv6"), region.getIdentifier());
                             }
                             else {
-                                endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv4"), session.getHost().getRegion());
+                                endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv4"), region.getIdentifier());
                             }
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Set endpoint to %s", endpoint));
+                            }
+                            properties.setProperty("s3service.s3-endpoint", endpoint);
+                        }
+                    }
+                    catch(BackgroundException e) {
+                        // Ignore failure reading location for bucket
+                        log.error(String.format("Failure %s determining bucket location for %s", e, bucketName));
+                    }
+                }
+                else {
+                    if(StringUtils.isNotBlank(host.getRegion())) {
+                        // Use default region
+                        final String endpoint;
+                        if(preferences.getBoolean("s3.endpoint.dualstack.enable")) {
+                            endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv6"), host.getRegion());
+                        }
+                        else {
+                            endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv4"), host.getRegion());
+                        }
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Set endpoint to %s", endpoint));
+                        }
+                        properties.setProperty("s3service.s3-endpoint", endpoint);
+                    }
+                    if(StringUtils.isBlank(bucketName)) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Determine bucket from hostname %s", host.getHostname()));
+                        }
+                        final String bucketNameInHostname = RequestEntityRestStorageService.findBucketInHostname(host);
+                        if(bucketNameInHostname != null) {
+                            final String endpoint = String.format("%s.%s", bucketNameInHostname, properties.getStringProperty("s3service.s3-endpoint",
+                                    host.getProtocol().getDefaultHostname()));
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Set endpoint to %s", endpoint));
                             }
@@ -335,4 +348,27 @@ public class RequestEntityRestStorageService extends RestS3Service {
         return false;
     }
 
+
+    /**
+     * @return Null if no container component in hostname prepended
+     */
+    protected static String findBucketInHostname(final Host host) {
+        if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("No default hostname set in %s", host.getProtocol()));
+            }
+            return null;
+        }
+        final String hostname = host.getHostname();
+        if(hostname.equals(host.getProtocol().getDefaultHostname())) {
+            return null;
+        }
+        if(hostname.endsWith(host.getProtocol().getDefaultHostname())) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Find bucket name in %s", hostname));
+            }
+            return ServiceUtils.findBucketNameInHostname(hostname, host.getProtocol().getDefaultHostname());
+        }
+        return null;
+    }
 }

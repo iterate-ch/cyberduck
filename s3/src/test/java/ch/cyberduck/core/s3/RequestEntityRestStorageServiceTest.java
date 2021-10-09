@@ -15,18 +15,20 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.TestProtocol;
 
 import org.junit.Test;
 
-import java.util.EnumSet;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-public class S3ListServiceTest extends AbstractS3Test {
+public class RequestEntityRestStorageServiceTest {
 
     @Test
-    public void testListBucketNameInHostname() throws Exception {
-        new S3ListService(virtualhost).list(
-                new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+    public void testGetBucket() {
+        assertEquals("bucketname", RequestEntityRestStorageService.findBucketInHostname(new Host(new S3Protocol(), "bucketname.s3.amazonaws.com")));
+        assertNull(RequestEntityRestStorageService.findBucketInHostname(new Host(new TestProtocol(), "bucketname.s3.amazonaws.com")));
     }
+
 }
