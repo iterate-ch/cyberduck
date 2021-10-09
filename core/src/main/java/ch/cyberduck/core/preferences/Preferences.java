@@ -315,7 +315,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
          */
         this.setDefault("profiles.folder.name", "Profiles");
         this.setDefault("profiles.discovery.updater.enable", String.valueOf(false));
-        this.setDefault("profiles.discovery.updater.url", "s3:/profiles.cyberduck.io");
+        this.setDefault("profiles.discovery.updater.url", "s3://djynunjb246r8.cloudfront.net");
 
         /*
           Maximum number of directory listings to cache using a most recently used implementation
