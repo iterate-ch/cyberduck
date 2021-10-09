@@ -109,10 +109,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             }
         }
         if(StringUtils.isNotBlank(status.getStorageClass())) {
-            if(!S3Object.STORAGE_CLASS_STANDARD.equals(status.getStorageClass())) {
-                // The default setting is STANDARD.
-                object.setStorageClass(status.getStorageClass());
-            }
+            object.setStorageClass(status.getStorageClass());
         }
         final Encryption.Algorithm encryption = status.getEncryption();
         object.setServerSideEncryptionAlgorithm(encryption.algorithm);
