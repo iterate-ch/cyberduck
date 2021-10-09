@@ -535,6 +535,11 @@ public class Host implements Serializable, Comparable<Host> {
         this.region = region;
     }
 
+    public Host withRegion(final String region) {
+        this.setRegion(region);
+        return this;
+    }
+
     /**
      * @return Notice
      */
