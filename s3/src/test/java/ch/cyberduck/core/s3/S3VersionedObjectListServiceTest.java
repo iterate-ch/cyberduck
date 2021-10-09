@@ -72,6 +72,22 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
     }
 
     @Test
+    public void testListVirtualHostStyle() throws Exception {
+        final AttributedList<Path> list = new S3VersionedObjectListService(virtualhost).list(
+                new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        for(Path p : list) {
+            assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), p.getParent());
+            if(p.isFile()) {
+                assertNotEquals(-1L, p.attributes().getModificationDate());
+                assertNotEquals(-1L, p.attributes().getSize());
+                assertNotNull(p.attributes().getETag());
+                assertNotNull(p.attributes().getStorageClass());
+                assertNull(p.attributes().getVersionId());
+            }
+        }
+    }
+
+    @Test
     public void testDirectory() throws Exception {
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());

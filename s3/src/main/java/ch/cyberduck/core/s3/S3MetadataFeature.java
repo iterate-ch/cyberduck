@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
@@ -91,7 +92,9 @@ public class S3MetadataFeature implements Headers {
                     // Set custom key id stored in KMS
                     target.setServerSideEncryptionKmsKeyId(encryption.key);
                 }
-                final Map<String, Object> metadata = session.getClient().updateObjectMetadata(containerService.getContainer(file).getName(), target);
+                final Path bucket = containerService.getContainer(file);
+                final Map<String, Object> metadata = session.getClient().updateObjectMetadata(
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), target);
                 if(metadata.containsKey("version-id")) {
                     file.attributes().setVersionId(metadata.get("version-id").toString());
                 }

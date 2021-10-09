@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
@@ -68,8 +69,10 @@ public class S3MoveFeature implements Move {
             delete.delete(Collections.singletonMap(copy, status), connectionCallback, callback);
             try {
                 // Find version id of moved delete marker
-                final VersionOrDeleteMarkersChunk marker = session.getClient().listVersionedObjectsChunked(containerService.getContainer(renamed).getName(), containerService.getKey(renamed),
-                    String.valueOf(Path.DELIMITER), 1, null, null, false);
+                final Path bucket = containerService.getContainer(renamed);
+                final VersionOrDeleteMarkersChunk marker = session.getClient().listVersionedObjectsChunked(
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(renamed),
+                        String.valueOf(Path.DELIMITER), 1, null, null, false);
                 if(marker.getItems().length == 1) {
                     final BaseVersionOrDeleteMarker markerObject = marker.getItems()[0];
                     copy.attributes().withVersionId(markerObject.getVersionId()).setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));

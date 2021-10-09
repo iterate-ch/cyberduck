@@ -21,6 +21,7 @@ import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,11 +62,25 @@ public class S3CopyFeatureTest extends AbstractS3Test {
         status.setMetadata(Collections.singletonMap("cyberduck", "m"));
         final Path test = new S3TouchFeature(session).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         final Path copy = new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test,
-            new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+                new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals("m", new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(copy).get("cyberduck"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session).find(copy));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testCopyFileVirtualHostBucket() throws Exception {
+        final TransferStatus status = new TransferStatus();
+        status.setMetadata(Collections.singletonMap("cyberduck", "m"));
+        final Path test = new S3TouchFeature(virtualhost).touch(new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        final Path copy = new S3CopyFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).copy(test,
+                new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertTrue(new S3FindFeature(virtualhost).find(test));
+        assertEquals("m", new S3MetadataFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).getMetadata(copy).get("cyberduck"));
+        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(virtualhost).find(copy));
+        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

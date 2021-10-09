@@ -67,8 +67,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final RequestEntityRestStorageService client = session.getClient();
+                    final Path bucket = containerService.getContainer(file);
                     client.putObjectWithRequestEntityImpl(
-                        containerService.getContainer(file).getName(), object, entity, status.getParameters());
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object, entity, status.getParameters());
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Saved object %s with checksum %s", file, object.getETag()));
                     }

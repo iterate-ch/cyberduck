@@ -50,11 +50,24 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testList() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("us-east-1");
         final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         for(Path p : list) {
             assertEquals(container, p.getParent());
-            assertEquals("us-east-1", p.attributes().getRegion());
+            if(p.isFile()) {
+                assertNotEquals(-1L, p.attributes().getModificationDate());
+                assertNotEquals(-1L, p.attributes().getSize());
+                assertNotNull(p.attributes().getETag());
+                assertNotNull(p.attributes().getStorageClass());
+            }
+        }
+    }
+
+    @Test
+    public void testListVirtualHostStyle() throws Exception {
+        final AttributedList<Path> list = new S3ObjectListService(virtualhost).list(
+                new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        for(Path p : list) {
+            assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), p.getParent());
             if(p.isFile()) {
                 assertNotEquals(-1L, p.attributes().getModificationDate());
                 assertNotEquals(-1L, p.attributes().getSize());
@@ -166,7 +179,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testListEncodedCharacter() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("us-east-1");
         final Path placeholder = new S3TouchFeature(session).touch(
             new Path(container, String.format("^<%%%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3ObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
@@ -176,7 +188,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testListInvisibleCharacter() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("us-east-1");
         final Path placeholder = new S3TouchFeature(session).touch(
             new Path(container, String.format("test-\u001F-%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3ObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
@@ -186,7 +197,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testListPlaceholder() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("us-east-1");
         final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
             new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
@@ -197,7 +207,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testListPlaceholderTilde() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("us-east-1");
         final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
             new Path(container, String.format("%s~", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
@@ -208,7 +217,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testListPlaceholderAtSignSignatureAWS4() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("us-east-1");
         final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
             new Path(container, String.format("%s@", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());

@@ -200,7 +200,7 @@ public class S3UrlProvider implements UrlProvider {
         if(!ServiceUtils.isBucketNameValidDNSName(containerService.getContainer(bucket).getName())) {
             return session.getHost().getHostname();
         }
-        if(session.getHost().getHostname().equals(session.getHost().getProtocol().getDefaultHostname())) {
+        if(StringUtils.equals(session.getHost().getHostname(), session.getHost().getProtocol().getDefaultHostname())) {
             return String.format("%s.%s", bucket.getName(), session.getHost().getHostname());
         }
         return session.getHost().getHostname();

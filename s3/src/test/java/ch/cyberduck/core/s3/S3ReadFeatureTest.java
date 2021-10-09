@@ -3,19 +3,13 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -140,16 +134,28 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new S3WriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        // CloudFront distribution for bucket test-eu-central-1-cyberduck
-        final S3Session cloudfront = new S3Session(
-                new Host(session.getHost().getProtocol(), "d4fobtprygi46.cloudfront.net", session.getHost().getCredentials()),
-                new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        cloudfront.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final CountingInputStream in = new CountingInputStream(new S3ReadFeature(cloudfront).read(
                 new Path(file.getName(), EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback()));
         final BytecountStreamListener count = new BytecountStreamListener();
         new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
         assertEquals(content.length, count.getRecv());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testVirtualHostStyle() throws Exception {
+        final String name = new AlphanumericRandomStringService().random();
+        final Path file = new Path(name, EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(2018);
+        final TransferStatus status = new TransferStatus().withLength(content.length);
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        final OutputStream out = new S3WriteFeature(virtualhost).write(file, status, new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        final CountingInputStream in = new CountingInputStream(new S3ReadFeature(virtualhost).read(
+                new Path(file.getName(), EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback()));
+        final BytecountStreamListener count = new BytecountStreamListener();
+        new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
+        assertEquals(content.length, count.getRecv());
+        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

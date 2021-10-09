@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
@@ -83,16 +84,17 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             if(file.getType().contains(Path.Type.upload)) {
                 return Acl.EMPTY;
             }
+            final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
                 // This method can be performed by anonymous services, but can only succeed if the
                 // bucket's existing ACL already allows write access by the anonymous user.
                 // In general, you can only access the ACL of a bucket if the ACL already in place
                 // for that bucket (in S3) allows you to do so.
-                return this.toAcl(session.getClient().getBucketAcl(containerService.getContainer(file).getName()));
+                return this.toAcl(session.getClient().getBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()));
             }
             else if(file.isFile() || file.isPlaceholder()) {
                 return this.toAcl(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
-                    containerService.getContainer(file).getName(), containerService.getKey(file)));
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
             }
             return Acl.EMPTY;
         }
@@ -117,12 +119,13 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
         try {
             // Read owner from bucket
             final AccessControlList list = this.toAcl(file, acl);
+            final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
-                session.getClient().putBucketAcl(containerService.getContainer(file).getName(), list);
+                session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), list);
             }
             else {
                 if(file.isFile() || file.isPlaceholder()) {
-                    session.getClient().putObjectAcl(containerService.getContainer(file).getName(), containerService.getKey(file), list);
+                    session.getClient().putObjectAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file), list);
                 }
             }
         }
@@ -222,6 +225,9 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
      * @return Editable ACL
      */
     protected Acl toAcl(final AccessControlList list) {
+        if(null == list) {
+            return Acl.EMPTY;
+        }
         if(AccessControlList.REST_CANNED_PRIVATE == list) {
             return Acl.CANNED_PRIVATE;
         }

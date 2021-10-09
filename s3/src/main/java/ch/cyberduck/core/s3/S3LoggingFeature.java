@@ -50,21 +50,21 @@ public class S3LoggingFeature implements Logging {
     @Override
     public LoggingConfiguration getConfiguration(final Path file) throws BackgroundException {
         final Path bucket = containerService.getContainer(file);
-        if(bucket.isRoot()) {
-            return LoggingConfiguration.empty();
-        }
         if(file.getType().contains(Path.Type.upload)) {
             return LoggingConfiguration.empty();
         }
         try {
             final StorageBucketLoggingStatus status
-                = session.getClient().getBucketLoggingStatusImpl(bucket.getName());
+                    = session.getClient().getBucketLoggingStatusImpl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
+            if(null == status) {
+                return LoggingConfiguration.empty();
+            }
             final LoggingConfiguration configuration = new LoggingConfiguration(status.isLoggingEnabled(),
-                status.getTargetBucketName());
+                    status.getTargetBucketName());
             try {
                 configuration.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(
-                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                    new DisabledListProgressListener()).toList());
+                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                        new DisabledListProgressListener()).toList());
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
@@ -90,7 +90,8 @@ public class S3LoggingFeature implements Logging {
         final Path bucket = containerService.getContainer(file);
         try {
             final S3BucketLoggingStatus status = new S3BucketLoggingStatus(
-                StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : bucket.getName(), null);
+                    StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() :
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), null);
             if(configuration.isEnabled()) {
                 status.setLogfilePrefix(new HostPreferences(session.getHost()).getProperty("s3.logging.prefix"));
             }

@@ -95,9 +95,9 @@ public abstract class AbstractS3Test {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
-        final Host host = new Host(profile, "test-eu-central-1-cyberduck.s3.amazonaws.com", new Credentials(
+        final Host host = new Host(profile, "test-eu-west-3-cyberduck.s3.amazonaws.com", new Credentials(
                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-        )).withRegion("eu-central-1");
+        )).withRegion("eu-west-3");
         virtualhost = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -116,9 +116,7 @@ public abstract class AbstractS3Test {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
-        final Host host = new Host(profile, "d4fobtprygi46.cloudfront.net", new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-        )).withRegion("eu-central-1");
+        final Host host = new Host(profile, "d4fobtprygi46.cloudfront.net", new Credentials("anonymous")).withRegion("eu-central-1");
         cloudfront = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override

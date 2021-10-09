@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
 import org.jets3t.service.ServiceException;
@@ -75,7 +76,8 @@ public class S3CopyFeature implements Copy {
         }
         final S3Object destination = new S3WriteFeature(session).getDetails(target, status);
         destination.setAcl(accessControlListFeature.toAcl(source, status.getAcl()));
-        destination.setBucketName(containerService.getContainer(target).getName());
+        final Path bucket = containerService.getContainer(target);
+        destination.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, accessControlListFeature).getMetadata(source)));
         final String version = this.copy(source, destination, status, listener);
         target.attributes().setVersionId(version);
@@ -87,10 +89,11 @@ public class S3CopyFeature implements Copy {
     protected String copy(final Path source, final S3Object destination, final TransferStatus status, final StreamListener listener) throws BackgroundException {
         try {
             // Copying object applying the metadata of the original
+            final Path bucket = containerService.getContainer(source);
             final Map<String, Object> stringObjectMap = session.getClient().copyVersionedObject(source.attributes().getVersionId(),
-                containerService.getContainer(source).getName(),
-                containerService.getKey(source),
-                destination.getBucketName(), destination, false);
+                    bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
+                    containerService.getKey(source),
+                    destination.getBucketName(), destination, false);
             listener.sent(status.getLength());
             final Map complete = (Map) stringObjectMap.get(Constants.KEY_FOR_COMPLETE_METADATA);
             return (String) complete.get(Constants.AMZ_VERSION_ID);

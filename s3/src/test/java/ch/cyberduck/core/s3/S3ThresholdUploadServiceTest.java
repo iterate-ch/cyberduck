@@ -88,7 +88,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
     @Test
     public void testUploadSinglePartUsEast() throws Exception {
         final S3ThresholdUploadService service = new S3ThresholdUploadService(session, 5 * 1024L);
-        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString();
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);

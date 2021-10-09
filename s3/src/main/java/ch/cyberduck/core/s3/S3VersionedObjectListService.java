@@ -112,9 +112,9 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             do {
                 final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
-                    bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
-                    new HostPreferences(session.getHost()).getInteger("s3.listing.chunksize"),
-                    priorLastKey, priorLastVersionId, false);
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
+                        new HostPreferences(session.getHost()).getInteger("s3.listing.chunksize"),
+                        priorLastKey, priorLastVersionId, false);
                 // Amazon S3 returns object versions in the order in which they were stored, with the most recently stored returned first.
                 for(BaseVersionOrDeleteMarker marker : chunk.getItems()) {
                     final String key = PathNormalizer.normalize(URIEncoder.decode(marker.getKey()));
@@ -215,7 +215,9 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 }
                 // Handle missing prefix for directory placeholders in Minio
                 final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
-                    PathNormalizer.name(URIEncoder.encode(bucket.getName())), String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()), String.valueOf(Path.DELIMITER), 1, null, null, false);
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
+                        String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()),
+                        String.valueOf(Path.DELIMITER), 1, null, null, false);
                 if(Arrays.stream(chunk.getCommonPrefixes()).map(URIEncoder::decode).noneMatch(common -> common.equals(prefix))) {
                     throw new NotfoundException(directory.getAbsolute());
                 }
@@ -241,7 +243,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         EnumSet.of(Path.Type.directory, Path.Type.placeholder), attr);
                 try {
                     final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
-                            bucket.getName(), common, null, 1,
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), common, null, 1,
                             null, null, false);
                     if(versions.getItems().length == 1) {
                         final BaseVersionOrDeleteMarker version = versions.getItems()[0];
@@ -252,8 +254,9 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                             }
                         }
                         // no placeholder but objects inside - need to check if all of them are deleted
-                        final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
-                            null, 1, null, false);
+                        final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(
+                                bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), common,
+                                null, 1, null, false);
                         if(unversioned.getObjects().length == 0) {
                             attr.setDuplicate(true);
                         }
