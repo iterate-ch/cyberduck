@@ -54,14 +54,14 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         final Acl acl = new S3AccessControlListFeature(session).getPermission(container);
         assertTrue(acl.containsKey(new Acl.GroupUser("http://acs.amazonaws.com/groups/s3/LogDelivery")));
         assertTrue(acl.get(new Acl.GroupUser("http://acs.amazonaws.com/groups/s3/LogDelivery")).contains(
-            new Acl.Role(Acl.Role.WRITE)
+                new Acl.Role(Acl.Role.WRITE)
         ));
         assertTrue(acl.get(new Acl.GroupUser("http://acs.amazonaws.com/groups/s3/LogDelivery")).contains(
-            new Acl.Role("READ_ACP")
+                new Acl.Role("READ_ACP")
         ));
-        assertTrue(acl.containsKey(new Acl.CanonicalUser("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6")));
-        assertTrue(acl.get(new Acl.CanonicalUser("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6")).contains(
-            new Acl.Role(Acl.Role.FULL)
+        assertTrue(acl.containsKey(new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6")));
+        assertTrue(acl.get(new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6")).contains(
+                new Acl.Role(Acl.Role.FULL)
         ));
     }
 
@@ -71,8 +71,8 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         final Acl acl = new S3AccessControlListFeature(session).getPermission(new Path(container, "test", EnumSet.of(Path.Type.file)));
         assertTrue(acl.containsKey(new Acl.GroupUser(Acl.GroupUser.EVERYONE)));
         assertTrue(acl.get(new Acl.GroupUser(Acl.GroupUser.EVERYONE)).contains(new Acl.Role(Acl.Role.READ)));
-        assertTrue(acl.containsKey(new Acl.CanonicalUser("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6")));
-        assertTrue(acl.get(new Acl.CanonicalUser("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6")).contains(new Acl.Role(Acl.Role.FULL)));
+        assertTrue(acl.containsKey(new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6")));
+        assertTrue(acl.get(new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6")).contains(new Acl.Role(Acl.Role.FULL)));
     }
 
     @Test
@@ -84,9 +84,9 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         final Acl acl = new Acl();
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
-        f.setPermission(test, acl);
         // Check for owner added with full control
-        acl.addAll(new Acl.CanonicalUser("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL));
+        acl.addAll(new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL));
+        f.setPermission(test, acl);
         assertEquals(acl, f.getPermission(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -161,6 +161,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         final Acl acl = new Acl();
+        acl.addAll(new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL));
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
         f.setPermission(test, acl);
     }
