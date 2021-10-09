@@ -141,52 +141,54 @@ public class RequestEntityRestStorageService extends RestS3Service {
         // Apply default configuration
         final PreferencesReader preferences = new HostPreferences(session.getHost());
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
-            // Check if not already set to accelerated endpoint
-            if(properties.getStringProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default")).matches("s3-accelerate(\\.dualstack)?\\.amazonaws\\.com")) {
-                log.debug("Skip adjusting endpoint with transfer acceleration");
-            }
-            else {
-                // Only for AWS set endpoint to region specific
-                if(StringUtils.isNotBlank(bucketName) && (requestParameters == null || !requestParameters.containsKey("location"))) {
-                    try {
-                        // Determine region for bucket using cache
-                        final Location.Name region = new S3LocationFeature(session, regionEndpointCache).getLocation(bucketName);
-                        if(Location.unknown == region) {
-                            log.warn(String.format("Failure determining bucket location for %s", bucketName));
-                        }
-                        else {
-                            final String endpoint;
-                            if(preferences.getBoolean("s3.endpoint.dualstack.enable")) {
-                                endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv6"), region.getIdentifier());
+            if(StringUtils.equals(host.getHostname(), session.getHost().getProtocol().getDefaultHostname())) {
+                // Check if not already set to accelerated endpoint
+                if(properties.getStringProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default")).matches("s3-accelerate(\\.dualstack)?\\.amazonaws\\.com")) {
+                    log.debug("Skip adjusting endpoint with transfer acceleration");
+                }
+                else {
+                    // Only for AWS set endpoint to region specific
+                    if(StringUtils.isNotBlank(bucketName) && (requestParameters == null || !requestParameters.containsKey("location"))) {
+                        try {
+                            // Determine region for bucket using cache
+                            final Location.Name region = new S3LocationFeature(session, regionEndpointCache).getLocation(bucketName);
+                            if(Location.unknown == region) {
+                                log.warn(String.format("Failure determining bucket location for %s", bucketName));
                             }
                             else {
-                                endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv4"), region.getIdentifier());
+                                final String endpoint;
+                                if(preferences.getBoolean("s3.endpoint.dualstack.enable")) {
+                                    endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv6"), region.getIdentifier());
+                                }
+                                else {
+                                    endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv4"), region.getIdentifier());
+                                }
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("Set endpoint to %s", endpoint));
+                                }
+                                properties.setProperty("s3service.s3-endpoint", endpoint);
+                            }
+                        }
+                        catch(BackgroundException e) {
+                            // Ignore failure reading location for bucket
+                            log.error(String.format("Failure %s determining bucket location for %s", e, bucketName));
+                        }
+                    }
+                    else {
+                        if(StringUtils.isNotBlank(session.getHost().getRegion())) {
+                            // Use default region
+                            final String endpoint;
+                            if(preferences.getBoolean("s3.endpoint.dualstack.enable")) {
+                                endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv6"), session.getHost().getRegion());
+                            }
+                            else {
+                                endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv4"), session.getHost().getRegion());
                             }
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Set endpoint to %s", endpoint));
                             }
                             properties.setProperty("s3service.s3-endpoint", endpoint);
                         }
-                    }
-                    catch(BackgroundException e) {
-                        // Ignore failure reading location for bucket
-                        log.error(String.format("Failure %s determining bucket location for %s", e, bucketName));
-                    }
-                }
-                else {
-                    if(StringUtils.isNotBlank(session.getHost().getRegion())) {
-                        // Use default region
-                        final String endpoint;
-                        if(preferences.getBoolean("s3.endpoint.dualstack.enable")) {
-                            endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv6"), session.getHost().getRegion());
-                        }
-                        else {
-                            endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv4"), session.getHost().getRegion());
-                        }
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Set endpoint to %s", endpoint));
-                        }
-                        properties.setProperty("s3service.s3-endpoint", endpoint);
                     }
                 }
             }
@@ -234,7 +236,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                                        Map<String, Object> requestHeaders,
                                        Map<String, String> requestParameters) throws ServiceException {
         return super.getObjectImpl(headOnly, bucketName, objectKey, ifModifiedSince, ifUnmodifiedSince, ifMatchTags, ifNoneMatchTags, byteRangeStart, byteRangeEnd,
-            versionId, requestHeaders, requestParameters);
+                versionId, requestHeaders, requestParameters);
     }
 
     @Override
@@ -305,7 +307,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                                      final String forceRequestSignatureVersion) throws ServiceException {
         if(forceRequestSignatureVersion != null) {
             final S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
-                = S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(StringUtils.remove(forceRequestSignatureVersion, "-"));
+                    = S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(StringUtils.remove(forceRequestSignatureVersion, "-"));
             log.warn(String.format("Switched authentication signature version to %s", forceRequestSignatureVersion));
             session.setSignatureVersion(authenticationHeaderSignatureVersion);
         }
