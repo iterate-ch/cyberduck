@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.http.DelayedHttpEntity;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.threading.DefaultThreadPool;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.http.Header;
@@ -93,7 +94,7 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
                     }
                 }
                 // Content-Encoding: chunked
-                return -1L;
+                return TransferStatus.UNKNOWN_LENGTH;
             }
         };
         request.setEntity(entity);

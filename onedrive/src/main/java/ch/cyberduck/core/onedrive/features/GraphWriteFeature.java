@@ -114,7 +114,7 @@ public class GraphWriteFeature implements Write<Void> {
             final byte[] content = Arrays.copyOfRange(b, off, len);
             final HttpRange range = HttpRange.byLength(offset, content.length);
             final String header;
-            if(overall.getLength() == -1L) {
+            if(overall.getLength() == TransferStatus.UNKNOWN_LENGTH) {
                 header = String.format("%d-%d/*", range.getStart(), range.getEnd());
             }
             else {

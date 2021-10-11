@@ -83,20 +83,18 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
     protected List<Header> getHeaders(final Path file, final TransferStatus status) throws UnsupportedException {
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
-            final HttpRange range = HttpRange.withStatus(status);
-            if(-1L == range.getEnd()) {
+            if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
                 throw new UnsupportedException("Content-Range with unknown file size is not supported");
             }
-            else {
-                // Content-Range entity-header is sent with a partial entity-body to specify where
-                // in the full entity-body the partial body should be applied.
-                final String header = String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
+            final HttpRange range = HttpRange.withStatus(status);
+            // Content-Range entity-header is sent with a partial entity-body to specify where
+            // in the full entity-body the partial body should be applied.
+            final String header = String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
                     status.getOffset() + status.getLength());
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Add range header %s for file %s", header, file));
-                }
-                headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, header));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Add range header %s for file %s", header, file));
             }
+            headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, header));
         }
         if(expect) {
             if(status.getLength() > 0L) {

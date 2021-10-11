@@ -50,11 +50,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     public static final long MEGA = 1048576; // 2^20
     public static final long GIGA = 1073741824; // 2^30
 
+    public static final long UNKNOWN_LENGTH = -1L;
+
     /**
      * Change target filename
      */
     private Rename rename
-        = new Rename();
+            = new Rename();
 
     /**
      * Temporary filename only used for transfer. Rename when file transfer is complete
