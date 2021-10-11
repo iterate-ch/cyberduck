@@ -432,6 +432,10 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
     }
 
     public static class Owner extends CanonicalUser {
+        public Owner(final String identifier) {
+            super(identifier);
+        }
+
         public Owner(final String identifier, final String displayName) {
             super(identifier, displayName, false);
         }
