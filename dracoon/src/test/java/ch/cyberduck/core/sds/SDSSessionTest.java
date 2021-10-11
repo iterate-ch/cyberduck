@@ -110,7 +110,7 @@ public class SDSSessionTest extends AbstractSDSTest {
     public void testLoginRadius() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/DRACOON (Radius).cyberduckprofile"));
+            this.getClass().getResourceAsStream("/DRACOON (Radius).cyberduckprofile"));
         final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
             "rsa.user1", "1234"
         ));
@@ -134,7 +134,7 @@ public class SDSSessionTest extends AbstractSDSTest {
     public void testLoginOAuthExpiredRefreshToken() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/DRACOON (OAuth).cyberduckprofile"));
+            this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
         final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));

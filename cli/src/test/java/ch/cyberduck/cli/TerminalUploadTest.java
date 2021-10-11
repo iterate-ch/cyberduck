@@ -62,7 +62,7 @@ public class TerminalUploadTest {
         preferences.setFactories();
         preferences.setDefaults();
         final ProtocolFactory protocols = new ProtocolFactory(new HashSet<>(Collections.singletonList(new SDSProtocol())));
-        protocols.register(new ProfilePlistReader(protocols).read(new Local("../profiles/DRACOON (Email Address).cyberduckprofile")));
+        protocols.register(new ProfilePlistReader(protocols).read(this.getClass().getResourceAsStream("/DRACOON (Email Address).cyberduckprofile")));
         ProtocolFactory.get().register(new ProfilePlistReader(protocols).read(this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile")));
         final Terminal terminal = new Terminal(protocols, preferences, options, input);
         assertEquals(Terminal.Exit.success, terminal.execute(new DisabledLoginCallback() {
