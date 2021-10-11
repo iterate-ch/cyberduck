@@ -17,11 +17,14 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
+@Category(IntegrationTest.class)
 public class S3ListServiceTest extends AbstractS3Test {
 
     @Test
