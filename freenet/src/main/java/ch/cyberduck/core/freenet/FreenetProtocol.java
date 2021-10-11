@@ -42,6 +42,7 @@ public class FreenetProtocol extends AbstractProtocol {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == WebUrlProvider.class) {
             return (T) new FreenetAuthenticatedUrlProvider();
