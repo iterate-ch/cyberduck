@@ -539,7 +539,7 @@
                                             <menu key="menu" title="OtherViews" id="143">
                                                 <items>
                                                     <menuItem title="Otevřít nové spojení" state="on" id="144"/>
-                                                    <menuItem title="Použít aktuální prohlížeč" id="145"/>
+                                                    <menuItem title="Použít spojení aktuálního prohlížeče" id="145"/>
                                                 </items>
                                             </menu>
                                         </popUpButtonCell>
