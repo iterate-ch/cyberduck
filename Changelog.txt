@@ -19,11 +19,15 @@ https://cyberduck.io/
 - [Bugfix] Unable to delete folders (Google Storage) (#11808)
 - [Bugfix] Allow to set Glacier storage class (Google Storage) (#11521)
 - [Bugfix] Unable to remove delete marker (S3) (#11803)
+- [Bugfix] Unable to download previous version of file (S3, Backblaze B2) (#11797, #11835)
+- [Bugfix] Copying files requires permission to read bucket ACL (S3) (#11701)
+- [Bugfix] Unable to set storage class to STANDARD (S3) (#11849)
 - [Bugfix] Taskbar shows incorrect number of transfers (Windows) (#11813)
 - [Bugfix] Allow to delete trashed files (Google Drive) (#11816)
 - [Bugfix] Create directory placeholders using default storage class (S3) (#11751)
 - [Bugfix] Create master key using default storage class (S3, Cryptomator) (#11751)
 - [Bugfix] Use specific region endpoint only with --region option (S3, CLI) (#11827)
+- [Bugfix] Empty list output when listing root directory (CLI) (#11814)
 
 7.10.2
 - [Feature] Add --purge option to invalidate files in Amazon CloudFront distributions and OpenStack Swift (X-CDN-Enabled header) (#11767)
