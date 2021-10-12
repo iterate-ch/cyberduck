@@ -38,6 +38,10 @@ public interface Cache<T extends Referenceable> {
      */
     boolean isEmpty();
 
+    /**
+     * @param item Directory
+     * @return True if directory is cached and cache is not invalidated
+     */
     boolean isValid(T item);
 
     /**
