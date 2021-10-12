@@ -192,6 +192,11 @@ public class SFTPSession extends Session<SSHClient> {
                     return false;
                 }
             }
+
+            @Override
+            public List<String> findExistingAlgorithms(final String hostname, final int port) {
+                return Collections.emptyList();
+            }
         });
         connection.addAlgorithmsVerifier(new AlgorithmsVerifier() {
             @Override
