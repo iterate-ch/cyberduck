@@ -28,6 +28,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.io.IOException;
 import java.util.Collections;
 
+import net.schmizz.sshj.sftp.RenameFlags;
+
 public class SFTPMoveFeature implements Move {
 
     private final SFTPSession session;
@@ -44,7 +46,7 @@ public class SFTPMoveFeature implements Move {
             if(status.isExists()) {
                 delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
-            session.sftp().rename(file.getAbsolute(), renamed.getAbsolute());
+            session.sftp().rename(file.getAbsolute(), renamed.getAbsolute(), Collections.singleton(RenameFlags.OVERWRITE));
             // Copy original file attributes
             return renamed.withAttributes(file.attributes());
         }
