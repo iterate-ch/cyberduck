@@ -19,7 +19,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.ListFilteringFeature;
 
+import org.apache.log4j.Logger;
+
 public class CachingFindFeature implements Find {
+    private static final Logger log = Logger.getLogger(CachingAttributesFinderFeature.class);
 
     private final Cache<Path> cache;
     private final Find delegate;
@@ -32,10 +35,16 @@ public class CachingFindFeature implements Find {
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(!file.isRoot()) {
-            if(cache.isCached(file.getParent())) {
+            if(cache.isValid(file.getParent())) {
                 final AttributedList<Path> list = cache.get(file.getParent());
                 final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.sensitive, file));
-                return null != found;
+                if(found != null) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Found %s in cache", file));
+                    }
+                    return true;
+                }
+                return false;
             }
         }
         return delegate.find(file, new CachingListProgressListener(cache));

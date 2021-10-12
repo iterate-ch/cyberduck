@@ -52,8 +52,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractSFTPTest {
         final PathCache cache = new PathCache(1);
         final AttributesFinder f = new CachingAttributesFinderFeature(cache, new DefaultAttributesFinderFeature(session));
         final Path workdir = new SFTPHomeDirectoryService(session).find();
-        final Path file = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(file, new TransferStatus());
+        final Path file = new SFTPTouchFeature(session).touch(new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new SFTPUnixPermissionFeature(session).setUnixPermission(file, new Permission("-rw-rw-rw-"));
         final Attributes lookup = f.find(file);
         assertEquals(0L, lookup.getSize());
@@ -76,6 +75,14 @@ public class CachingAttributesFinderFeatureTest extends AbstractSFTPTest {
         catch(NotfoundException e) {
             // Expected
         }
+        cache.invalidate(workdir);
+        final PathAttributes newAttr = new PathAttributes();
+        assertSame(newAttr, new CachingAttributesFinderFeature(cache, new AttributesFinder() {
+            @Override
+            public PathAttributes find(final Path file, final ListProgressListener listener) {
+                return newAttr;
+            }
+        }).find(file));
         new SFTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
