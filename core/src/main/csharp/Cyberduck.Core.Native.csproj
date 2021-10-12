@@ -18,6 +18,7 @@
     <PropertyGroup>
         <TargetFramework>net47</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Platforms>x86;x64</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
