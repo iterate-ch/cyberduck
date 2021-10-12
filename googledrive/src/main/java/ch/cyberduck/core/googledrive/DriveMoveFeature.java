@@ -35,8 +35,7 @@ public class DriveMoveFeature implements Move {
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
-
-    private Delete delete;
+    private final Delete delete;
 
     public DriveMoveFeature(final DriveSession session, final DriveFileIdProvider fileid) {
         this.session = session;
