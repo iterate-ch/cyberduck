@@ -13,39 +13,27 @@ package ch.cyberduck.core.gmxcloud;/*
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.After;
 import org.junit.Before;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.HashSet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class AbstractGmxcloudTest {
-
-
     protected GmxcloudSession session;
-
-    @After
-    public void disconnect() throws Exception {
-        session.close();
-    }
 
     @Before
     public void setup() throws Exception {
@@ -64,6 +52,11 @@ public class AbstractGmxcloudTest {
             }
         }, new DisabledHostKeyCallback(), new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
+    }
+
+    @After
+    public void disconnect() throws Exception {
+        session.close();
     }
 
     public static class TestPasswordStore extends DisabledPasswordStore {
@@ -87,5 +80,22 @@ public class AbstractGmxcloudTest {
                 System.getProperties().setProperty("gmxcloud.refreshtoken", password);
             }
         }
+    }
+
+
+    protected void createFile(Path file, final byte[] content) throws Exception {
+        GmxcloudIdProvider fileid = new GmxcloudIdProvider(session);
+        final GmxcloudWriteFeature feature = new GmxcloudWriteFeature(session, fileid);
+        final TransferStatus status = new TransferStatus().withLength(content.length);
+        final Checksum expectedChecksum = new GmxcloudCdash64Compute().compute(new ByteArrayInputStream(content), status);
+        status.withChecksum(expectedChecksum);
+        final HttpResponseOutputStream<GmxcloudUploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
+        final ByteArrayInputStream in = new ByteArrayInputStream(content);
+        final TransferStatus progress = new TransferStatus();
+        final BytecountStreamListener count = new BytecountStreamListener();
+        new StreamCopier(new TransferStatus(), progress).withListener(count).transfer(in, out);
+        assertEquals(content.length, count.getSent());
+        in.close();
+        out.close();
     }
 }

@@ -71,6 +71,8 @@
         <array>
             <string>apikey.windows=0-MAMCLOUDSYNCPC-18835-0-8a944ad765ea19a1</string>
             <string>apikey.mac=0-MAMCLOUDSYNCMAC-18835-0-0e2145c0c94e5679</string>
+            <string>app.mac=gmx.macos.cloudsynctool/{0}</string>
+            <string>app.windows=gmx.windows.cloudsynctool/{0}</string>
         </array>
         <key>Schemes</key>
         <array>

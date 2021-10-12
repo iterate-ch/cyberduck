@@ -1137,6 +1137,10 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("cryptomator.vault.pepper", "");
         this.setDefault("cryptomator.cache.size", String.valueOf(1000));
 
+        this.setDefault("gmxcloud.upload.multipart.size", String.valueOf(4L * 1024L * 1024L)); // 4MB
+        this.setDefault("gmxcloud.upload.multipart.threshold", String.valueOf(4L * 1024L * 1024L)); // 4MB
+        this.setDefault("gmxcloud.upload.multipart.concurrency", String.valueOf(10));
+
         this.setDefault("preferences.general.enable", String.valueOf(true));
         this.setDefault("preferences.browser.enable", String.valueOf(true));
         this.setDefault("preferences.queue.enable", String.valueOf(true));

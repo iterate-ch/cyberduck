@@ -70,15 +70,7 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
                         final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
         try {
             final Digest digest = this.digest();
-            // Wrap with digest stream if available
-            final InputStream in = this.decorate(local.getInputStream(), digest);
-            final StatusOutputStream<Reply> out = writer.write(file, status, callback);
-            new StreamCopier(cancel, progress)
-                .withOffset(status.getOffset())
-                .withLimit(status.getLength())
-                .withListener(listener)
-                .transfer(in, new ThrottledOutputStream(out, throttle));
-            final Reply response = out.getStatus();
+            final Reply response = transfer(file, local, throttle, listener, status, cancel, progress, callback, digest);
             this.post(file, digest, response);
             return response;
         }
@@ -88,6 +80,20 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
         }
+    }
+
+    public Reply transfer(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                          final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress,
+                          final ConnectionCallback callback, final Digest digest) throws IOException, BackgroundException {
+        // Wrap with digest stream if available
+        final InputStream in = this.decorate(local.getInputStream(), digest);
+        final StatusOutputStream<Reply> out = writer.write(file, status, callback);
+        new StreamCopier(cancel, progress)
+            .withOffset(status.getOffset())
+            .withLimit(status.getLength())
+            .withListener(listener)
+            .transfer(in, new ThrottledOutputStream(out, throttle));
+        return out.getStatus();
     }
 
     protected InputStream decorate(final InputStream in, final Digest digest) throws IOException {

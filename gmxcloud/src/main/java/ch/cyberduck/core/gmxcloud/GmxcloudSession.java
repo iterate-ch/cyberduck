@@ -17,16 +17,28 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.FileIdProvider;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -49,6 +61,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -59,6 +72,10 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
     private static final Logger log = Logger.getLogger(GmxcloudSession.class);
 
     private OAuth2RequestInterceptor authorizationService;
+
+    private String basePath;
+
+    private final GmxcloudIdProvider fileid = new GmxcloudIdProvider(this);
 
     public GmxcloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -81,8 +98,18 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) {
-                request.addHeader(new BasicHeader("x-ui-api-key", new HostPreferences(host)
+                request.addHeader(new BasicHeader("X-UI-API-KEY", new HostPreferences(host)
                         .getProperty(String.format("apikey.%s", Factory.Platform.getDefault().name()))));
+            }
+        });
+        configuration.addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) {
+                request.addHeader(new BasicHeader("X-UI-APP", MessageFormat.format(new HostPreferences(host)
+                        .getProperty(String.format("app.%s", Factory.Platform.getDefault().name())), String.format("%s.%s",
+                        PreferencesFactory.get().getProperty("application.version"),
+                        PreferencesFactory.get().getProperty("application.revision"))))
+                );
             }
         });
         return configuration.build();
@@ -114,7 +141,7 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Set base path to %s", url));
                         }
-                        //client.setBasePath(StringUtils.removeEnd(url.toString(), String.valueOf(Path.DELIMITER)));
+                        this.setBasePath(uri.toString());
                     }
                     break;
                 default:
@@ -141,8 +168,55 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         return super.getFeature(type);
+    }
+
+    public String getBasePath() {
+        return basePath;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
+    }
+
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T _getFeature(final Class<T> type) {
+        if(type == FileIdProvider.class) {
+            return (T) fileid;
+        }
+        if(type == ListService.class) {
+            return (T) new GmxcloudListService(this, fileid);
+        }
+        if(type == Read.class) {
+            return (T) new GmxcloudReadFeature(this, fileid);
+        }
+        if(type == Write.class) {
+            return (T) new GmxcloudWriteFeature(this, fileid);
+        }
+        if(type == Move.class) {
+            return (T) new GmxcloudMoveFeature(this, fileid);
+        }
+        if(type == Copy.class) {
+            return (T) new GmxcloudCopyFeature(this, fileid);
+        }
+        if(type == Directory.class) {
+            return (T) new GmxcloudDirectoryFeature(this, fileid);
+        }
+        if(type == Delete.class) {
+            return (T) new GmxcloudDeleteFeature(this, fileid);
+        }
+        if(type == Find.class) {
+            return (T) new GmxcloudFindFeature(this, fileid);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new GmxcloudAttributesFinderFeature(this, fileid);
+        }
+        if(type == Upload.class) {
+            return (T) new GmxcloudThresholdUploadService(this, fileid);
+        }
+        return super._getFeature(type);
     }
 }
