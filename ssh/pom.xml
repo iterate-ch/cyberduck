@@ -23,7 +23,7 @@
     <artifactId>ssh</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <sshj-version>0.32.0</sshj-version>
+        <sshj-version>0.32.1</sshj-version>
     </properties>
     <dependencies>
         <dependency>

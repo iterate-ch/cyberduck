@@ -3,14 +3,15 @@ https://cyberduck.io/
 
 8.0.0
 - [Feature] Allow to manage additional connection profiles in Preferences (#10823)
-- [Feature] Support for PEM ASN.1 encoded private keys (SFTP)
-- [Feature] Support for host certificate keys handling @cert-authority in known_hosts (SFTP)
 - [Feature] New default connection profile for ownCloud
 - [Feature] Retain modification date in metadata for uploads (Google Storage) (#11784)
 - [Feature] Retain modification date in metadata for uploads (S3) (#11784)
 - [Feature] New default connection profile (ownCloud)
 - [Feature] Build package in AppImage format (CLI) (#11762)
-- [Feature] Support v3 PuTTY keys (SFTP)
+- [Feature] Support for PuTTY v3 key files (SFTP)
+- [Feature] Support public key authentication using certificates (SFTP)
+- [Feature] Support for PEM ASN.1 encoded private keys (SFTP)
+- [Feature] Support for host certificate keys handling @cert-authority in known_hosts (SFTP)
 - [Feature] Column in browser window to display checksum (#11824)
 - [Bugfix] Change default path for NextCloud connections to include username (#11787)
 - [Bugfix] Failed to overwrite upload of object with custom metadata (Google Storage) (#11781)
