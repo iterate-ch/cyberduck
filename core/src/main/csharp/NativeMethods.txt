@@ -19,6 +19,7 @@ GetTokenInformation
 GetWindowLong
 GetWindowLongPtr
 HWND_TOPMOST
+ILCreateFromPath
 IQueryAssociations
 PFTASKDIALOGCALLBACK
 SendMessage

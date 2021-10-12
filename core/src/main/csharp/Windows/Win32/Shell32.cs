@@ -8,6 +8,16 @@ namespace Windows.Win32
 {
     partial class CorePInvoke
     {
+        /// <inheritdoc cref="ILCreateFromPath(PCWSTR)"/>
+        public static unsafe ref ITEMIDLIST ILCreateFromPath2(string pszPath)
+        {
+            fixed (char* pszPathLocal = pszPath)
+            {
+                ITEMIDLIST* __result = ILCreateFromPath(pszPathLocal);
+                return ref *__result;
+            }
+        }
+
         /// <inheritdoc cref="SHGetFileInfo(PCWSTR, FILE_FLAGS_AND_ATTRIBUTES, SHFILEINFOW*, uint, SHGFI_FLAGS)"/>
         public static unsafe nuint SHGetFileInfo(string pszPath, FILE_FLAGS_AND_ATTRIBUTES dwFileAttributes, in SHFILEINFOW sfi, SHGFI_FLAGS uFlags)
         {
