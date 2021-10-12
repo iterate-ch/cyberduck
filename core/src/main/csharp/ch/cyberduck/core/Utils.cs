@@ -16,6 +16,11 @@
 // yves@cyberduck.ch
 // 
 
+using ch.cyberduck.core;
+using ch.cyberduck.core.local;
+using java.util;
+using Microsoft.Win32;
+using org.apache.logging.log4j;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,14 +29,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using ch.cyberduck.core;
-using ch.cyberduck.core.local;
-using java.util;
-using Microsoft.Win32;
-using org.apache.commons.io;
-using org.apache.logging.log4j;
+using static Windows.Win32.CorePInvoke;
 using Collection = java.util.Collection;
 using Path = ch.cyberduck.core.Path;
 
@@ -42,9 +40,6 @@ namespace Ch.Cyberduck.Core
         public delegate object ApplyPerItemForwardDelegate<T>(T item);
 
         public delegate T ApplyPerItemReverseDelegate<T>(object item);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        static extern int GetCurrentPackageFullName(ref int packageFullNameLength, ref StringBuilder packageFullName);
 
         private static readonly List<String> ExtendedCharsets = new List<string>
         {
@@ -91,9 +86,8 @@ namespace Ch.Cyberduck.Core
                     return false;
                 try
                 {
-                    StringBuilder sb = new StringBuilder(1024);
-                    int length = 0;
-                    int result = GetCurrentPackageFullName(ref length, ref sb);
+                    uint length = 0;
+                    int result = GetCurrentPackageFullName(ref length, default);
                     return result != 15700;
                 }
                 catch (EntryPointNotFoundException entryPointNotFoundException) // Fix for MD-3274
