@@ -72,7 +72,10 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
     private void configure(final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback, final boolean enabled) throws BackgroundException {
         final Set<Path> buckets = new HashSet<>();
         for(TransferItem file : files.keySet()) {
-            buckets.add(containerService.getContainer(file.remote));
+            final Path bucket = containerService.getContainer(file.remote);
+            if(!bucket.isRoot()) {
+                buckets.add(bucket);
+            }
         }
         for(Path bucket : buckets) {
             if(enabled) {

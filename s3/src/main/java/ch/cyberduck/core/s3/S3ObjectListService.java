@@ -87,8 +87,8 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 // Read directory listing in chunks. List results are always returned
                 // in lexicographic (alphabetical) order.
                 final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
-                    bucket.isRoot() ? StringUtils.EMPTY : PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, delimiter,
-                    chunksize, priorLastKey, false);
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), prefix, delimiter,
+                        chunksize, priorLastKey, false);
 
                 final StorageObject[] objects = chunk.getObjects();
                 for(StorageObject object : objects) {
@@ -103,7 +103,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                         continue;
                     }
                     final EnumSet<Path.Type> types = object.getKey().endsWith(String.valueOf(Path.DELIMITER))
-                        ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
+                            ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     final Path f;
                     final PathAttributes attr = attributes.toAttributes(object);
                     // Copy bucket location
@@ -153,7 +153,8 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 }
                 // Handle missing prefix for directory placeholders in Minio
                 final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
-                    PathNormalizer.name(URIEncoder.encode(bucket.getName())), String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()), delimiter, 1, null);
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
+                        String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()), delimiter, 1, null);
                 if(Arrays.stream(chunk.getCommonPrefixes()).map(URIEncoder::decode).noneMatch(common -> common.equals(prefix))) {
                     throw new NotfoundException(directory.getAbsolute());
                 }

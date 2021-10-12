@@ -22,13 +22,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.TransferAcceleration;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.model.AccelerateConfig;
-import org.jets3t.service.utils.ServiceUtils;
 
 public class S3TransferAccelerationService implements TransferAcceleration {
 
@@ -54,7 +53,7 @@ public class S3TransferAccelerationService implements TransferAcceleration {
     public boolean getStatus(final Path file) throws BackgroundException {
         final Path bucket = containerService.getContainer(file);
         try {
-            return session.getClient().getAccelerateConfig(bucket.getName()).isEnabled();
+            return session.getClient().getAccelerateConfig(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()).isEnabled();
         }
         catch(S3ServiceException failure) {
             throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", failure, bucket);
@@ -65,10 +64,7 @@ public class S3TransferAccelerationService implements TransferAcceleration {
     public void setStatus(final Path file, final boolean enabled) throws BackgroundException {
         final Path bucket = containerService.getContainer(file);
         try {
-            if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
-                throw new InteroperabilityException("The name of the bucket used for Transfer Acceleration must be DNS-compliant and must not contain periods.");
-            }
-            session.getClient().setAccelerateConfig(bucket.getName(), new AccelerateConfig(enabled));
+            session.getClient().setAccelerateConfig(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), new AccelerateConfig(enabled));
         }
         catch(S3ServiceException failure) {
             throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", failure, bucket);

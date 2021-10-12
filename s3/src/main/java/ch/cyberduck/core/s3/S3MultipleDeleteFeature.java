@@ -70,26 +70,26 @@ public class S3MultipleDeleteFeature implements Delete {
                 continue;
             }
             callback.delete(file);
+            final Path bucket = containerService.getContainer(file);
             if(file.getType().contains(Path.Type.upload)) {
                 // In-progress multipart upload
                 try {
                     multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
-                        containerService.getContainer(file).getName(), containerService.getKey(file)));
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
                 }
                 catch(NotfoundException ignored) {
                     log.warn(String.format("Ignore failure deleting multipart upload %s", file));
                 }
             }
             else {
-                final Path container = containerService.getContainer(file);
                 final List<ObjectKeyAndVersion> keys = new ArrayList<>();
                 // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
                 keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
-                if(map.containsKey(container)) {
-                    map.get(container).addAll(keys);
+                if(map.containsKey(bucket)) {
+                    map.get(bucket).addAll(keys);
                 }
                 else {
-                    map.put(container, keys);
+                    map.put(bucket, keys);
                 }
             }
         }

@@ -29,6 +29,7 @@ import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -77,8 +78,9 @@ public class S3ReadFeature implements Read {
                 }
                 requestHeaders.put(HttpHeaders.RANGE, header);
             }
-            final HttpResponse response = client.performRestGet(containerService.getContainer(file).getName(),
-                containerService.getKey(file), requestParameters, requestHeaders, new int[]{HttpStatus.SC_PARTIAL_CONTENT, HttpStatus.SC_OK});
+            final Path bucket = containerService.getContainer(file);
+            final HttpResponse response = client.performRestGet(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
+                    containerService.getKey(file), requestParameters, requestHeaders, new int[]{HttpStatus.SC_PARTIAL_CONTENT, HttpStatus.SC_OK});
             return new HttpMethodReleaseInputStream(response);
         }
         catch(ServiceException e) {

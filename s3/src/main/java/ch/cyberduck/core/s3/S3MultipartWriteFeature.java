@@ -54,8 +54,9 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
         // ID for the initiated multipart upload.
         final MultipartUpload multipart;
         try {
+            final Path bucket = containerService.getContainer(file);
             multipart = session.getClient().multipartStartUpload(
-                containerService.getContainer(file).getName(), object);
+                    bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Multipart upload started for %s with ID %s",
                     multipart.getObjectKey(), multipart.getUploadId()));
@@ -128,9 +129,10 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
                         status.setSegment(true);
                         final S3Object part = new S3WriteFeature(session).getDetails(file, status);
                         try {
+                            final Path bucket = containerService.getContainer(file);
                             session.getClient().putObjectWithRequestEntityImpl(
-                                containerService.getContainer(file).getName(), part,
-                                new ByteArrayEntity(content, off, len), parameters);
+                                    bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), part,
+                                    new ByteArrayEntity(content, off, len), parameters);
                         }
                         catch(ServiceException e) {
                             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);

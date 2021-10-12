@@ -59,8 +59,8 @@ public class S3LocationFeatureTest extends AbstractS3Test {
         assertEquals(new S3LocationFeature.S3Region("us-east-1"), feature.getLocation(
             new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory))
         ));
-        assertEquals(unknown, feature.getLocation(
-            new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory))
+        assertEquals(new S3LocationFeature.S3Region("us-east-1"), feature.getLocation(
+                new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory))
         ));
     }
 
@@ -80,7 +80,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
             new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
         assertEquals(unknown,
-            new S3LocationFeature(session).getLocation(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
+                new S3LocationFeature(session).getLocation(new Path("/", EnumSet.of(Path.Type.directory))));
         session.close();
     }
 
@@ -113,9 +113,16 @@ public class S3LocationFeatureTest extends AbstractS3Test {
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session).getLocation(
-            new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))
+                new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))
         ));
         session.close();
+    }
+
+    @Test
+    public void testAccessBucketNameInHostname() throws Exception {
+        assertEquals(new S3LocationFeature.S3Region("eu-west-3"), new S3LocationFeature(virtualhost).getLocation(
+                new Path("/", EnumSet.of(Path.Type.directory))
+        ));
     }
 
     @Test

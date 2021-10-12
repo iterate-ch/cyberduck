@@ -94,9 +94,9 @@ public final class ProtocolFactory {
      * Load profiles embedded in bundles and installed in the application support directory.
      */
     public void load() {
-        this.load(new LocalProfilesFinder(bundle));
+        this.load(new LocalProfilesFinder(this, bundle));
         // Load thirdparty protocols
-        this.load(new LocalProfilesFinder(profiles));
+        this.load(new LocalProfilesFinder(this, profiles));
     }
 
     /**

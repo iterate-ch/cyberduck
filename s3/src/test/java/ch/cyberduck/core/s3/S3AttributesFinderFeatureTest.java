@@ -1,5 +1,6 @@
 package ch.cyberduck.core.s3;
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
@@ -42,7 +43,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindFileUsEast() throws Exception {
-        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session);
@@ -64,8 +65,9 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
     public void testFindFileEuCentral() throws Exception {
-        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(
+                new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session);
         f.find(test);
     }
@@ -199,8 +201,8 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(container));
         final String prefix = new AlphanumericRandomStringService().random();
         final Path test = new S3TouchFeature(session).touch(
-            new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
-                new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
+                        new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(new S3AttributesFinderFeature(session).find(test));
         assertNotNull(new S3AttributesFinderFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -264,5 +266,37 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         assertTrue(marker.attributes().getCustom().containsKey(KEY_DELETE_MARKER));
         assertTrue(new S3AttributesFinderFeature(session).find(marker).getCustom().containsKey(KEY_DELETE_MARKER));
         assertTrue(new S3FindFeature(session).find(marker));
+    }
+
+    @Test
+    public void testCloudFront() throws Exception {
+        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(cloudfront);
+        assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+        final String name = new AlphanumericRandomStringService().random();
+        final TransferStatus status = new TransferStatus();
+        status.setAcl(Acl.CANNED_PUBLIC_READ);
+        final Path file = new Path(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+                name, EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session).touch(file, status);
+        final PathAttributes attributes = f.find(new Path(file.getName(), EnumSet.of(Path.Type.file)));
+        assertEquals(0L, attributes.getSize());
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
+        assertNotEquals(-1L, attributes.getModificationDate());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testVirtualHostStyle() throws Exception {
+        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(virtualhost);
+        assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+        final String name = new AlphanumericRandomStringService().random();
+        final TransferStatus status = new TransferStatus();
+        final Path file = new Path(name, EnumSet.of(Path.Type.file));
+        new S3TouchFeature(virtualhost).touch(file, status);
+        final PathAttributes attributes = f.find(new Path(file.getName(), EnumSet.of(Path.Type.file)));
+        assertEquals(0L, attributes.getSize());
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
+        assertNotEquals(-1L, attributes.getModificationDate());
+        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

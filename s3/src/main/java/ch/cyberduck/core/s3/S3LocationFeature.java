@@ -73,10 +73,7 @@ public class S3LocationFeature implements Location {
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
         final Path bucket = containerService.getContainer(file);
-        if(bucket.isRoot()) {
-            return unknown;
-        }
-        return this.getLocation(bucket.getName());
+        return this.getLocation(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
     }
 
     protected Name getLocation(final String bucketname) throws BackgroundException {

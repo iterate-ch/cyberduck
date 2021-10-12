@@ -19,13 +19,16 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
@@ -36,6 +39,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -46,12 +50,12 @@ public class ProfilesSynchronizeWorkerTest {
     public void testRun() throws Exception {
         // Registry in temparary folder
         final ProtocolFactory protocols = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        final Host host = new Host(new S3Protocol());
-        host.setDefaultPath("/profiles.cyberduck.io");
+        final Host host = new HostParser(protocols, new S3Protocol()).get(PreferencesFactory.get().getProperty("profiles.discovery.updater.url"));
         final Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         // Local directory with oudated profile
         final Local profile = LocalFactory.get(this.getClass().getResource("/test.cyberduckprofile").getPath());
+        assertNotNull(new ProfilePlistReader(protocols).read(profile));
         assertTrue(profile.exists());
         final LocalProfileDescription description = new LocalProfileDescription(profile);
         final Local directory = profile.getParent();
@@ -59,8 +63,11 @@ public class ProfilesSynchronizeWorkerTest {
         final Set<ProfileDescription> profiles = worker.run(session);
         assertFalse(profiles.isEmpty());
         profiles.forEach(d -> assertTrue(d.isLatest()));
+        final AtomicBoolean found = new AtomicBoolean();
         profiles.forEach(d -> {
             if(d.isInstalled()) {
+                found.set(true);
+                assertEquals(profile, description.getFile().get());
                 assertNotNull(description.getChecksum());
                 assertNotNull(d.getChecksum());
                 // Assert profile updated from remote
@@ -68,6 +75,7 @@ public class ProfilesSynchronizeWorkerTest {
                 assertNotEquals(description.getChecksum(), d.getChecksum());
             }
         });
+        assertTrue(found.get());
         assertFalse(profiles.contains(description));
     }
 }

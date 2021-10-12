@@ -68,12 +68,13 @@ public class S3DefaultMultipartService implements S3MultipartService {
         String nextKeyMarker = null;
         boolean isTruncated;
         do {
-            final String prefix = containerService.isContainer(file) ? StringUtils.EMPTY : containerService.getKey(file);
+            final Path bucket = containerService.getContainer(file);
+            final String prefix = containerService.isContainer(file) ? StringUtils.EMPTY : bucket.isRoot() ? StringUtils.EMPTY : containerService.getKey(file);
             final MultipartUploadChunk chunk;
             try {
                 chunk = session.getClient().multipartListUploadsChunked(
-                    containerService.getContainer(file).getName(), prefix,
-                    String.valueOf(Path.DELIMITER), nextKeyMarker, nextUploadIdMarker, null, false);
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), prefix,
+                        String.valueOf(Path.DELIMITER), nextKeyMarker, nextUploadIdMarker, null, false);
             }
             catch(S3ServiceException e) {
                 final BackgroundException failure = new S3ExceptionMappingService().map("Upload {0} failed", e, file);
