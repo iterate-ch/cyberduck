@@ -27,10 +27,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.impl.io.ChunkedInputStream;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -40,20 +37,12 @@ public class GmxcloudCdash64Compute extends AbstractChecksumCompute {
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
         try {
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-            final int length = Long.valueOf(status.getLength()).intValue();
-            final InputStream offsetSkippedInputStream = StreamCopier.skip(in, status.getOffset());
-            final byte[] readbytes = new byte[length];
-            IOUtils.read(offsetSkippedInputStream, readbytes);
-            messageDigest.update(readbytes);
-            final byte[] digestedBytes = messageDigest.digest();
-            messageDigest.reset();
-            messageDigest.update(digestedBytes);
-            messageDigest.update(Util.intToBytes(readbytes.length, 4));
-            final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
-            return new Checksum(HashAlgorithm.sha256, cdash64);
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.update(super.digest("SHA-256", StreamCopier.skip(in, status.getOffset())));
+            digest.update(Util.intToBytes(Long.valueOf(status.getLength()).intValue(), 4));
+            return new Checksum(HashAlgorithm.sha256, Base64.encodeBase64URLSafeString(digest.digest()));
         }
-        catch(NoSuchAlgorithmException | IOException | BackgroundException e) {
+        catch(NoSuchAlgorithmException | BackgroundException e) {
             throw new ChecksumException(e.getMessage(), e);
         }
     }
