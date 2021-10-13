@@ -14,7 +14,6 @@ package ch.cyberduck.core.gmxcloud;/*
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
@@ -113,14 +112,14 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
             @Override
             public void process(final HttpRequest request, final HttpContext context) {
                 request.addHeader(new BasicHeader("X-UI-API-KEY", new HostPreferences(host)
-                        .getProperty(String.format("apikey.%s", Factory.Platform.getDefault().name()))));
+                        .getProperty("apikey")));
             }
         });
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) {
                 request.addHeader(new BasicHeader("X-UI-APP", MessageFormat.format(new HostPreferences(host)
-                        .getProperty(String.format("app.%s", Factory.Platform.getDefault().name())), String.format("%s.%s",
+                        .getProperty("app"), String.format("%s.%s",
                         PreferencesFactory.get().getProperty("application.version"),
                         PreferencesFactory.get().getProperty("application.revision"))))
                 );
