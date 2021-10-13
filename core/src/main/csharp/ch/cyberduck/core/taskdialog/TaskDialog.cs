@@ -1,73 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Controls;
+using Windows.Win32.UI.WindowsAndMessaging;
 using static System.Runtime.CompilerServices.Unsafe;
 using static Windows.Win32.Constants;
-using Windows.Win32.UI.WindowsAndMessaging;
-using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
+using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS;
-using static Windows.Win32.UI.Controls.TASKDIALOG_NOTIFICATIONS;
 using static Windows.Win32.UI.Controls.TASKDIALOG_FLAGS;
+using static Windows.Win32.UI.Controls.TASKDIALOG_NOTIFICATIONS;
 
 namespace Ch.Cyberduck.Core.TaskDialog
 {
-    public class TaskDialogCreatedEventArgs : EventArgs { }
-    public class TaskDialogNavigatedEventArgs : EventArgs { }
-    public class TaskDialogButtonClickedEventArgs : EventArgs
+    public readonly ref struct TaskDialogResult
     {
-        public int ButtonId { get; }
+        public readonly MESSAGEBOX_RESULT Button;
+        public readonly int? RadioButton;
+        public readonly bool? VerificationChecked;
 
-        public TaskDialogButtonClickedEventArgs(int buttonId)
+        public TaskDialogResult(MESSAGEBOX_RESULT button, int? radioButton, bool? verificationChecked)
         {
-            ButtonId = buttonId;
-        }
-    }
-    public class TaskDialogHyperlinkClickedEventArgs : EventArgs
-    {
-        public string Url { get; }
-
-        public TaskDialogHyperlinkClickedEventArgs(string url)
-        {
-            Url = url;
-        }
-    }
-    public class TaskDialogTimerEventArgs : EventArgs
-    {
-        public TimeSpan Time { get; }
-        public TaskDialogTimerEventArgs(TimeSpan time)
-        {
-            Time = time;
-        }
-    }
-    public class TaskDialogDestroyedEventArgs : EventArgs { }
-    public class TaskDialogRadioButtonClickedEventArgs : EventArgs
-    {
-        public int RadioButtonId { get; }
-
-        public TaskDialogRadioButtonClickedEventArgs(int radioButtonId)
-        {
-            RadioButtonId = radioButtonId;
-        }
-    }
-    public class TaskDialogConstructedEventArgs : EventArgs { }
-    public class TaskDialogVerificationClickedEventArgs : EventArgs
-    {
-        public bool Checked { get; }
-
-        public TaskDialogVerificationClickedEventArgs(bool @checked)
-        {
-            Checked = @checked;
-        }
-    }
-    public class TaskDialogHelpEventArgs : EventArgs { }
-    public class TaskDialogExpandoButtonClickedEventArgs : EventArgs
-    {
-        public bool Expanded { get; }
-
-        public TaskDialogExpandoButtonClickedEventArgs(bool expanded)
-        {
-            Expanded = expanded;
+            Button = button;
+            RadioButton = radioButton;
+            VerificationChecked = verificationChecked;
         }
     }
 
@@ -76,67 +32,22 @@ namespace Ch.Cyberduck.Core.TaskDialog
         private readonly List<TASKDIALOG_BUTTON> buttons = new();
         private readonly List<TASKDIALOG_BUTTON> radioButtons = new();
         private bool buttonsConfigured = false;
+        private TaskDialogHandler callback;
         private TASKDIALOGCONFIG config;
         private bool radioButtonsConfigured = false;
-        private Func<EventArgs, bool> callback;
 
         public TaskDialog()
         {
             config.cbSize = (uint)SizeOf<TASKDIALOGCONFIG>();
         }
 
-        private unsafe HRESULT Handler(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam, nint lpRefData)
-        {
-            var notification = (TASKDIALOG_NOTIFICATIONS)msg;
+        public delegate void AddButtonCallback(MESSAGEBOX_RESULT id, in string title, bool @default);
 
-            EventArgs args = (TASKDIALOG_NOTIFICATIONS)msg switch
-            {
-                TDN_CREATED => new TaskDialogCreatedEventArgs(),
-                TDN_NAVIGATED => new TaskDialogNavigatedEventArgs(),
-                TDN_BUTTON_CLICKED => new TaskDialogButtonClickedEventArgs(wParam.Value < 10 ? (config.dwCommonButtons switch
-                {
-                    TDCBF_CLOSE_BUTTON => 0,
-                    (TDCBF_OK_BUTTON | TDCBF_CANCEL_BUTTON) => (MESSAGEBOX_RESULT)wParam.Value switch
-                    {
-                        IDOK => 0,
-                        IDCANCEL => 1,
-                        _ => -1
-                    },
-                    (TDCBF_RETRY_BUTTON | TDCBF_CANCEL_BUTTON) => (MESSAGEBOX_RESULT)wParam.Value switch
-                    {
-                        IDRETRY => 0,
-                        IDCANCEL => 1,
-                        _ => -1,
-                    },
-                    (TDCBF_YES_BUTTON | TDCBF_NO_BUTTON) => (MESSAGEBOX_RESULT)wParam.Value switch
-                    {
-                        IDYES => 0,
-                        IDNO => 1,
-                        _ => -1
-                    },
-                    (TDCBF_YES_BUTTON | TDCBF_NO_BUTTON | TDCBF_CANCEL_BUTTON) => (MESSAGEBOX_RESULT)wParam.Value switch
-                    {
-                        IDYES => 0,
-                        IDNO => 1,
-                        IDCANCEL => 2,
-                        _ => -1
-                    },
-                    _ => -1
-                }) : ((int)wParam.Value - 10)),
-                TDN_HYPERLINK_CLICKED => new TaskDialogHyperlinkClickedEventArgs(((PWSTR)(char*)lParam.Value).ToString()),
-                TDN_TIMER => new TaskDialogTimerEventArgs(TimeSpan.FromMilliseconds(wParam.Value)),
-                TDN_DESTROYED => new TaskDialogDestroyedEventArgs(),
-                TDN_RADIO_BUTTON_CLICKED => new TaskDialogRadioButtonClickedEventArgs((int)wParam.Value),
-                TDN_DIALOG_CONSTRUCTED => new TaskDialogConstructedEventArgs(),
-                TDN_VERIFICATION_CLICKED => new TaskDialogVerificationClickedEventArgs(wParam.Value != 0),
-                TDN_HELP => new TaskDialogHelpEventArgs(),
-                TDN_EXPANDO_BUTTON_CLICKED => new TaskDialogExpandoButtonClickedEventArgs(wParam.Value != 0),
-                _ => default
-            };
-            return callback(args) ? S_FALSE : S_OK;
-        }
+        public delegate bool TaskDialogHandler(object sender, EventArgs e);
 
-        public delegate void AddButtonCallback(in string title, bool @default);
+        public static event EventHandler Closed;
+
+        public static event EventHandler Showing;
 
         public TaskDialog AllowCancellation()
         {
@@ -144,8 +55,9 @@ namespace Ch.Cyberduck.Core.TaskDialog
             return this;
         }
 
-        public TaskDialog Callback()
+        public TaskDialog Callback(TaskDialogHandler handler)
         {
+            callback = handler;
             config.pfCallback = Handler;
             return this;
         }
@@ -160,45 +72,16 @@ namespace Ch.Cyberduck.Core.TaskDialog
             return this;
         }
 
-        public TaskDialog CommonButtons(TASKDIALOG_COMMON_BUTTON_FLAGS commonButtons, int? optionalDefaultButton = default)
+        public TaskDialog CommonButtons(TASKDIALOG_COMMON_BUTTON_FLAGS commonButtons, MESSAGEBOX_RESULT? optionalDefaultButton = default)
         {
             config.dwCommonButtons = commonButtons;
             if ((commonButtons & (TDCBF_CLOSE_BUTTON | TDCBF_CANCEL_BUTTON)) > 0)
             {
                 config.dwFlags |= TDF_ALLOW_DIALOG_CANCELLATION;
             }
-            if (optionalDefaultButton is int defaultButton)
+            if (optionalDefaultButton is MESSAGEBOX_RESULT defaultButton)
             {
-                config.nDefaultButton = (int)(commonButtons switch
-                {
-                    TDCBF_CLOSE_BUTTON => default,
-                    (TDCBF_OK_BUTTON | TDCBF_CANCEL_BUTTON) => defaultButton switch
-                    {
-                        0 => IDOK,
-                        1 => IDCANCEL,
-                        _ => default
-                    },
-                    (TDCBF_RETRY_BUTTON | TDCBF_CANCEL_BUTTON) => defaultButton switch
-                    {
-                        0 => IDRETRY,
-                        1 => IDCANCEL,
-                        _ => default
-                    },
-                    (TDCBF_YES_BUTTON | TDCBF_NO_BUTTON) => defaultButton switch
-                    {
-                        0 => IDYES,
-                        1 => IDNO,
-                        _ => default
-                    },
-                    (TDCBF_YES_BUTTON | TDCBF_NO_BUTTON | TDCBF_CANCEL_BUTTON) => defaultButton switch
-                    {
-                        0 => IDYES,
-                        1 => IDNO,
-                        2 => IDCANCEL,
-                        _ => default
-                    },
-                    _ => default,
-                });
+                config.nDefaultButton = (int)defaultButton;
             }
             return this;
         }
@@ -282,12 +165,32 @@ namespace Ch.Cyberduck.Core.TaskDialog
                 throw new InvalidOperationException();
             radioButtonsConfigured = true;
 
-            DoButtons(0, radioButtons, configure, config.nDefaultRadioButton, out config.cRadioButtons);
+            DoButtons(radioButtons, configure, config.nDefaultRadioButton, out config.cRadioButtons);
             return this;
         }
 
-        public void Show()
+        public unsafe TaskDialogResult Show()
         {
+            int button = default;
+            int radioButton = default;
+            BOOL verificationChecked = default;
+            HRESULT result;
+            try
+            {
+                Showing?.Invoke(this, EventArgs.Empty);
+                result = TaskDialogIndirect(config, &button, &radioButton, &verificationChecked);
+            }
+            finally
+            {
+                Closed?.Invoke(this, EventArgs.Empty);
+            }
+            if (button == 0)
+                Marshal.ThrowExceptionForHR(result);
+
+            return new(
+                (MESSAGEBOX_RESULT)button,
+                radioButtonsConfigured ? radioButton : default,
+                config.pszVerificationText.Length > 0 ? verificationChecked : default);
         }
 
         public TaskDialog ShowProgressbar(bool marquee)
@@ -318,39 +221,120 @@ namespace Ch.Cyberduck.Core.TaskDialog
             return this;
         }
 
-        private void DoButtons(Action<AddButtonCallback> configure, in int defaultButton, out uint count) => DoButtons(10, buttons, configure, defaultButton, out count);
+        private void DoButtons(Action<AddButtonCallback> configure, in int defaultButton, out uint count) => DoButtons(buttons, configure, defaultButton, out count);
 
-        private void DoButtons(int offset, List<TASKDIALOG_BUTTON> target, Action<AddButtonCallback> configure, in int defaultButton, out uint count)
+        private void DoButtons(List<TASKDIALOG_BUTTON> target, Action<AddButtonCallback> configure, in int defaultButton, out uint count)
         {
-            bool configured = false;
-            int? value = default;
-            configure((in string title, bool @default) =>
+            MESSAGEBOX_RESULT? value = default;
+            configure((MESSAGEBOX_RESULT id, in string title, bool @default) =>
             {
-                var id = offset + target.Count;
-                target.Add(new() { nButtonID = id, pszButtonText = title });
-                if (@default)
+                target.Add(new() { nButtonID = (int)id, pszButtonText = title });
+                if (value.HasValue)
                 {
-                    value = !configured ? id : default;
-                    configured = true;
+                    value = id;
+                }
+                else
+                {
+                    value = 0;
                 }
             });
             count = (uint)target.Count;
-            if (value is int button)
+            if (value is MESSAGEBOX_RESULT button && button != 0)
             {
-                AsRef(defaultButton) = button;
+                AsRef(defaultButton) = (int)button;
             }
         }
 
-        private readonly struct ButtonConfig
+        private unsafe HRESULT Handler(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam, nint lpRefData)
         {
-            public readonly TASKDIALOG_BUTTON Button;
-            public readonly bool Default;
+            var notification = (TASKDIALOG_NOTIFICATIONS)msg;
 
-            public ButtonConfig(TASKDIALOG_BUTTON button, bool @default)
+            EventArgs args = (TASKDIALOG_NOTIFICATIONS)msg switch
             {
-                Button = button;
-                Default = @default;
-            }
+                TDN_CREATED => new TaskDialogCreatedEventArgs(),
+                TDN_NAVIGATED => new TaskDialogNavigatedEventArgs(),
+                TDN_BUTTON_CLICKED => new TaskDialogButtonClickedEventArgs((int)wParam.Value),
+                TDN_HYPERLINK_CLICKED => new TaskDialogHyperlinkClickedEventArgs(((PWSTR)(char*)lParam.Value).ToString()),
+                TDN_TIMER => new TaskDialogTimerEventArgs(TimeSpan.FromMilliseconds(wParam.Value)),
+                TDN_DESTROYED => new TaskDialogDestroyedEventArgs(),
+                TDN_RADIO_BUTTON_CLICKED => new TaskDialogRadioButtonClickedEventArgs((int)wParam.Value),
+                TDN_DIALOG_CONSTRUCTED => new TaskDialogConstructedEventArgs(),
+                TDN_VERIFICATION_CLICKED => new TaskDialogVerificationClickedEventArgs(wParam.Value != 0),
+                TDN_HELP => new TaskDialogHelpEventArgs(),
+                TDN_EXPANDO_BUTTON_CLICKED => new TaskDialogExpandoButtonClickedEventArgs(wParam.Value != 0),
+                _ => default
+            };
+            return callback(this, args) ? S_FALSE : S_OK;
         }
+    }
+
+    public class TaskDialogButtonClickedEventArgs : EventArgs
+    {
+        public TaskDialogButtonClickedEventArgs(int buttonId)
+        {
+            ButtonId = buttonId;
+        }
+
+        public int ButtonId { get; }
+    }
+
+    public class TaskDialogConstructedEventArgs : EventArgs { }
+
+    public class TaskDialogCreatedEventArgs : EventArgs { }
+
+    public class TaskDialogDestroyedEventArgs : EventArgs { }
+
+    public class TaskDialogExpandoButtonClickedEventArgs : EventArgs
+    {
+        public TaskDialogExpandoButtonClickedEventArgs(bool expanded)
+        {
+            Expanded = expanded;
+        }
+
+        public bool Expanded { get; }
+    }
+
+    public class TaskDialogHelpEventArgs : EventArgs { }
+
+    public class TaskDialogHyperlinkClickedEventArgs : EventArgs
+    {
+        public TaskDialogHyperlinkClickedEventArgs(string url)
+        {
+            Url = url;
+        }
+
+        public string Url { get; }
+    }
+
+    public class TaskDialogNavigatedEventArgs : EventArgs { }
+
+    public class TaskDialogRadioButtonClickedEventArgs : EventArgs
+    {
+        public TaskDialogRadioButtonClickedEventArgs(int radioButtonId)
+        {
+            RadioButtonId = radioButtonId;
+        }
+
+        public int RadioButtonId { get; }
+    }
+
+    public class TaskDialogTimerEventArgs : EventArgs
+    {
+        public TaskDialogTimerEventArgs(TimeSpan time)
+        {
+            Time = time;
+        }
+
+        public TimeSpan Time { get; }
+    }
+
+    public class TaskDialogVerificationClickedEventArgs : EventArgs
+    {
+        public TaskDialogVerificationClickedEventArgs(bool @checked)
+        {
+            Checked = @checked;
+        }
+
+        public bool Checked { get; }
     }
 }

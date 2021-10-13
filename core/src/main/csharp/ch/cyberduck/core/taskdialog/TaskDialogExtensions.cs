@@ -12,8 +12,6 @@ using static Windows.Win32.UI.Controls.TASKDIALOG_ICON_ELEMENTS;
 using static Windows.Win32.UI.Controls.TASKDIALOG_MESSAGES;
 namespace Ch.Cyberduck.Core.TaskDialog
 {
-    
-
     partial class TaskDialog
     {
         /// <summary>
