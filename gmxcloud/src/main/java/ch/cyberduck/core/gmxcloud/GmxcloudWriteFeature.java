@@ -88,9 +88,8 @@ public class GmxcloudWriteFeature extends AbstractHttpWriteFeature<GmxcloudUploa
             public GmxcloudUploadHelper.GmxcloudUploadResponse call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final HttpResponse response;
-                    final String cdash64 = status.getChecksum().hash;
-                    final long size = status.getLength();
-                    String cdash64SizeIncludedUri = uploadUri + "&x_cdash64=" + cdash64 + "&x_size=" + size;
+                    final String cdash64SizeIncludedUri = String.format("%s&x_cdash64=%s&x_size=%d", uploadUri,
+                            status.getChecksum().hash, status.getLength());
                     if(status.isSegment()) {
                         final HttpPut request = new HttpPut(cdash64SizeIncludedUri);
                         request.setEntity(entity);

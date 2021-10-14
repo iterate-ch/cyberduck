@@ -149,9 +149,8 @@ public class GmxcloudMultipartWriteFeature implements MultipartWrite<GmxcloudUpl
                                     .compute(new ByteArrayInputStream(content, off, len), new TransferStatus()).hash;
                             messageDigest.update(Hex.decodeHex(hash));
                             messageDigest.update(GmxcloudCdash64Compute.intToBytes(content.length));
-                            final String offsetHashAndSizeIncludedUri = String.format("%s&x_offset=%d&x_sha256=%s&x_size=%d",
-                                    uploadUri, offset, hash, content.length);
-                            final HttpPut request = new HttpPut(offsetHashAndSizeIncludedUri);
+                            final HttpPut request = new HttpPut(String.format("%s&x_offset=%d&x_sha256=%s&x_size=%d",
+                                    uploadUri, offset, hash, content.length));
                             request.setEntity(entity);
                             final HttpResponse response = client.execute(request);
                             try {
