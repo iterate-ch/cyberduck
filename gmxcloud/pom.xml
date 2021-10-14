@@ -32,11 +32,6 @@
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
-            <artifactId>webdav</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
             <artifactId>jersey</artifactId>
             <version>${project.version}</version>
         </dependency>
