@@ -1,17 +1,4 @@
-package ch.cyberduck.core.gmxcloud;/*
- * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+package ch.cyberduck.core.gmxcloud;
 
 /*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
@@ -31,22 +18,25 @@ package ch.cyberduck.core.gmxcloud;/*
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultSocketExceptionMappingService;
-import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LockedException;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import javax.ws.rs.ProcessingException;
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.Collections;
 
 public class GmxcloudExceptionMappingService extends AbstractExceptionMappingService<ApiException> {
     private static final Logger log = Logger.getLogger(GmxcloudExceptionMappingService.class);
@@ -75,6 +65,25 @@ public class GmxcloudExceptionMappingService extends AbstractExceptionMappingSer
                 return new ConnectionCanceledException(cause);
             }
         }
-        return new DefaultHttpResponseExceptionMappingService().map(failure, new StringBuilder(), failure.getCode());
+        final StringBuilder buffer = new StringBuilder();
+        buffer.append(failure.getMessage());
+        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
+    }
+
+    public BackgroundException map(final HttpResponse response) {
+        try {
+            if(response.containsHeader("X-UI-Enhanced-Status")) {
+                return new GmxcloudExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(),
+                        response.getFirstHeader("X-UI-Enhanced-Status").getValue(), Collections.emptyMap(),
+                        EntityUtils.toString(response.getEntity())));
+            }
+            return new GmxcloudExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(),
+                    response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                    EntityUtils.toString(response.getEntity())));
+        }
+        catch(IOException e) {
+            return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(response.getStatusLine().getStatusCode(),
+                    response.getStatusLine().getReasonPhrase()));
+        }
     }
 }
