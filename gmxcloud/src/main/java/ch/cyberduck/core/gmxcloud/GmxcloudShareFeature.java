@@ -39,16 +39,14 @@ import ch.cyberduck.core.gmxcloud.io.swagger.client.model.Shares;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UserInfoResponseModel;
 import ch.cyberduck.core.preferences.HostPreferences;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.net.URI;
 import java.text.MessageFormat;
-import java.util.Map;
-import java.util.Objects;
 
 public class GmxcloudShareFeature implements PromptUrlProvider<ShareCreationRequestModel, ShareCreationRequestModel> {
 
-    public static final String GUEST_E_MAIL = "!ano";
-    private static final String HTTPS = "https://";
-    private static final String FORWARD_SLASH = "/";
+    private static final String GUEST_E_MAIL = "!ano";
 
     private final GmxcloudSession session;
     private final GmxcloudResourceIdProvider fileid;
@@ -72,7 +70,7 @@ public class GmxcloudShareFeature implements PromptUrlProvider<ShareCreationRequ
         if(null == guestUri) {
             return DescriptiveUrl.EMPTY;
         }
-        return new DescriptiveUrl(URI.create(this.toBrandedUri(guestUri)));
+        return new DescriptiveUrl(URI.create(toBrandedUri(guestUri, session.getHost().getProperty("branding"))));
     }
 
     @Override
@@ -81,7 +79,7 @@ public class GmxcloudShareFeature implements PromptUrlProvider<ShareCreationRequ
         if(null == guestUri) {
             return DescriptiveUrl.EMPTY;
         }
-        return new DescriptiveUrl(URI.create(this.toBrandedUri(guestUri)));
+        return new DescriptiveUrl(URI.create(toBrandedUri(guestUri, session.getHost().getProperty("branding"))));
     }
 
     private String createGuestUri(final Path file, final PasswordCallback callback, final ShareCreationRequestModel shareCreationRequestModel) throws BackgroundException {
@@ -105,7 +103,7 @@ public class GmxcloudShareFeature implements PromptUrlProvider<ShareCreationRequ
     }
 
     protected ShareCreationRequestModel createShareCreationRequestModel(final Path file, final PasswordCallback callback) throws ApiException, LoginCanceledException {
-       final Host bookmark = session.getHost();
+        final Host bookmark = session.getHost();
         final ShareCreationRequestEntry shareCreationRequestEntry = new ShareCreationRequestEntry()
                 .name(new AlphanumericRandomStringService().random())
                 .hasPin(false);
@@ -139,9 +137,9 @@ public class GmxcloudShareFeature implements PromptUrlProvider<ShareCreationRequ
         return userInfoResponseModel.getSettings().getShares().getWritableSharesMinimumProtection();
     }
 
-    private String toBrandedUri(final String guestUri) throws BackgroundException {
-        final String branding = session.getHost().getProtocol().getProperties().entrySet().stream().filter((entry) -> entry.getKey().equals("branding")).map(Map.Entry::getValue).findFirst().orElseThrow(() -> new BackgroundException("Branding not defined", "Branding is missing"));
-        final String[] slashSplittedString = guestUri.split(FORWARD_SLASH);
-        return HTTPS + branding + FORWARD_SLASH + slashSplittedString[slashSplittedString.length - 5] + FORWARD_SLASH + slashSplittedString[slashSplittedString.length - 3];
+    protected static String toBrandedUri(final String guestUri, final Object hostname) {
+        final String user = StringUtils.substringBefore(StringUtils.substringAfter(StringUtils.substringAfter(guestUri, "guest"), Path.DELIMITER), Path.DELIMITER);
+        final String share = StringUtils.substringBefore(StringUtils.substringAfter(StringUtils.substringAfter(guestUri, "share"), Path.DELIMITER), Path.DELIMITER);
+        return String.format("https://%s/%s/%s", hostname, user, share);
     }
 }

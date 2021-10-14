@@ -115,4 +115,10 @@ public class GmxcloudShareFeatureTest extends AbstractGmxcloudTest {
         final GmxcloudShareFeature f = new GmxcloudShareFeature(session, fileid);
         assertFalse(f.isSupported(file, PromptUrlProvider.Type.upload));
     }
+
+    @Test
+    public void testUrlFormatting() {
+        assertEquals("https://c.gmx.net/%401015156902205593160/YK8VCl2GSGmR_UwjZALpEA", GmxcloudShareFeature.toBrandedUri(
+                "../../../../guest/%401015156902205593160/share/YK8VCl2GSGmR_UwjZALpEA/resourceAlias/ROOT", "c.gmx.net"));
+    }
 }
