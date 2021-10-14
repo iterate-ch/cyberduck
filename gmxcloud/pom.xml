@@ -72,7 +72,7 @@
                                     <goal>generate</goal>
                                 </goals>
                                 <configuration>
-                                    <inputSpec>${project.basedir}/src/main/resources/api.json</inputSpec>
+                                    <inputSpec>${project.basedir}/src/main/resources/api.yaml</inputSpec>
                                     <language>java</language>
                                     <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.gmxcloud.io.swagger.client.model</modelPackage>
