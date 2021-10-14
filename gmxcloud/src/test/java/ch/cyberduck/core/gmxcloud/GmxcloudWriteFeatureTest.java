@@ -22,9 +22,12 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -53,7 +56,39 @@ public class GmxcloudWriteFeatureTest extends AbstractGmxcloudTest {
         final byte[] content = RandomUtils.nextBytes(8235);
         final TransferStatus status = new TransferStatus().withLength(content.length);
         status.withChecksum(Checksum.NONE);
-        feature.write(file, status, new DisabledConnectionCallback()).close();
+        final HttpResponseOutputStream<GmxcloudUploadHelper.GmxcloudUploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
+        final ByteArrayInputStream in = new ByteArrayInputStream(content);
+        final TransferStatus progress = new TransferStatus();
+        final BytecountStreamListener count = new BytecountStreamListener();
+        new StreamCopier(new TransferStatus(), progress).withListener(count).transfer(in, out);
+        assertEquals(content.length, count.getSent());
+        in.close();
+        out.close();
+        new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = TransferCanceledException.class)
+    public void testWriteCancel() throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final byte[] content = RandomUtils.nextBytes(32769);
+        final Path test = new Path(String.format("{%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        final BytecountStreamListener count = new BytecountStreamListener();
+        final TransferStatus status = new TransferStatus() {
+            @Override
+            public void validate() throws ConnectionCanceledException {
+                if(count.getSent() >= 32768) {
+                    throw new TransferCanceledException();
+                }
+                super.validate();
+            }
+        };
+        status.setLength(content.length);
+        final GmxcloudWriteFeature writer = new GmxcloudWriteFeature(session, fileid);
+        final StatusOutputStream<GmxcloudUploadHelper.GmxcloudUploadResponse> out = writer.write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).withListener(count).transfer(new ByteArrayInputStream(content), out);
+        assertFalse(new DefaultFindFeature(session).find(test));
+        out.getStatus();
     }
 
     @Test
