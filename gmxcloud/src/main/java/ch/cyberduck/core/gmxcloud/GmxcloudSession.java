@@ -35,8 +35,10 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.DefaultHttpRateLimiter;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
@@ -124,7 +126,7 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
         });
         configuration.addInterceptorLast(new HttpResponseInterceptor() {
             @Override
-            public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
+            public void process(final HttpResponse response, final HttpContext context) {
                 final Optional<Header> hint = Arrays.asList(response.getAllHeaders()).stream()
                         .filter(header -> "X-UI-Traffic-Hint".equals(header.getName())).findFirst();
                 if(hint.isPresent()) {
@@ -144,6 +146,9 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
                 }
             }
         });
+        configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
+                new HostPreferences(host).getInteger("gmxcloud.limit.requests.second")
+        )));
         return configuration.build();
     }
 

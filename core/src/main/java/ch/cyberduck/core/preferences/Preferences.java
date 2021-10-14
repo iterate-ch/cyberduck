@@ -1144,6 +1144,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("gmxcloud.delete.trash", String.valueOf(true));
         this.setDefault("gmxcloud.share.expiration.millis", String.valueOf(86400000));
         this.setDefault("gmxcloud.limit.hint.second", String.valueOf(2));
+        this.setDefault("gmxcloud.limit.requests.second", String.valueOf(10));
 
         this.setDefault("preferences.general.enable", String.valueOf(true));
         this.setDefault("preferences.browser.enable", String.valueOf(true));
