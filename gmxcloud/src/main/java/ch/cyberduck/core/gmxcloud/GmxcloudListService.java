@@ -56,7 +56,7 @@ public class GmxcloudListService implements ListService {
             do {
                 if(directory.isRoot()) {
                     fsModel = new ListResourceAliasApi(client).resourceAliasAliasGet(resourceId,
-                            null, null, null, null, chunksize, offset, null, null);
+                            null, null, null, null, chunksize, offset, "win32props", null);
                 }
                 else {
                     fsModel = new ListResourceApi(client).resourceResourceIdGet(resourceId,
