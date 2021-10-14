@@ -37,4 +37,9 @@ public class GmxcloudProtocol extends AbstractProtocol {
     public Scheme getScheme() {
         return Scheme.https;
     }
+
+    @Override
+    public String disk() {
+        return String.format("%s.tiff", "ftp");
+    }
 }
