@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -75,7 +76,7 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
 
     private String basePath;
 
-    private final GmxcloudIdProvider fileid = new GmxcloudIdProvider(this);
+    private final GmxcloudResourceIdProvider resourceid = new GmxcloudResourceIdProvider(this);
 
     public GmxcloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -88,11 +89,11 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
             @Override
             public void process(final HttpRequest request, final HttpContext context) {
                 request.addHeader(HttpHeaders.AUTHORIZATION,
-                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
+                        String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
             }
         }).build(), host)
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()
-            );
+                .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()
+                );
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         configuration.addInterceptorLast(authorizationService);
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
@@ -146,7 +147,7 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
                     break;
                 default:
                     throw new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(
-                        response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                            response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
             }
         }
         catch(HttpResponseException e) {
@@ -185,37 +186,40 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == FileIdProvider.class) {
-            return (T) fileid;
+            return (T) resourceid;
         }
         if(type == ListService.class) {
-            return (T) new GmxcloudListService(this, fileid);
+            return (T) new GmxcloudListService(this, resourceid);
         }
         if(type == Read.class) {
-            return (T) new GmxcloudReadFeature(this, fileid);
+            return (T) new GmxcloudReadFeature(this, resourceid);
         }
         if(type == Write.class) {
-            return (T) new GmxcloudWriteFeature(this, fileid);
+            return (T) new GmxcloudWriteFeature(this, resourceid);
         }
         if(type == Move.class) {
-            return (T) new GmxcloudMoveFeature(this, fileid);
+            return (T) new GmxcloudMoveFeature(this, resourceid);
         }
         if(type == Copy.class) {
-            return (T) new GmxcloudCopyFeature(this, fileid);
+            return (T) new GmxcloudCopyFeature(this, resourceid);
         }
         if(type == Directory.class) {
-            return (T) new GmxcloudDirectoryFeature(this, fileid);
+            return (T) new GmxcloudDirectoryFeature(this, resourceid);
         }
         if(type == Delete.class) {
-            return (T) new GmxcloudDeleteFeature(this, fileid);
+            return (T) new GmxcloudDeleteFeature(this, resourceid);
         }
         if(type == Find.class) {
-            return (T) new GmxcloudFindFeature(this, fileid);
+            return (T) new GmxcloudFindFeature(this, resourceid);
         }
         if(type == AttributesFinder.class) {
-            return (T) new GmxcloudAttributesFinderFeature(this, fileid);
+            return (T) new GmxcloudAttributesFinderFeature(this, resourceid);
         }
         if(type == Upload.class) {
-            return (T) new GmxcloudThresholdUploadService(this, fileid);
+            return (T) new GmxcloudThresholdUploadService(this, resourceid);
+        }
+        if(type == PromptUrlProvider.class) {
+            return (T) new GmxcloudShareFeature(this, resourceid);
         }
         return super._getFeature(type);
     }
