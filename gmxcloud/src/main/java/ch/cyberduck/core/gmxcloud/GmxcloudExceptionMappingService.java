@@ -34,6 +34,7 @@ import ch.cyberduck.core.DefaultSocketExceptionMappingService;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
@@ -43,6 +44,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
 
+import javax.ws.rs.ProcessingException;
 import java.io.IOException;
 import java.net.SocketException;
 
@@ -55,6 +57,9 @@ public class GmxcloudExceptionMappingService extends AbstractExceptionMappingSer
             return new LockedException(StringUtils.EMPTY, failure);
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
+            if(cause instanceof ProcessingException) {
+                return new InteroperabilityException(cause.getMessage(), cause);
+            }
             if(cause instanceof SocketException) {
                 // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
                 return new DefaultSocketExceptionMappingService().map((SocketException) cause);
