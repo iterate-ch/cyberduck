@@ -73,7 +73,7 @@
             <string>apikey.mac=0-MAMCLOUDSYNCMAC-18835-0-0e2145c0c94e5679</string>
             <string>app.mac=gmx.macos.cloudsynctool/{0}</string>
             <string>app.windows=gmx.windows.cloudsynctool/{0}</string>
-            <string>branding=c.gmx.net</string>
+            <string>share.hostname=c.gmx.net</string>
             <string>cryptomator.vault.masterkey.filename=systemdaten.gmxtresor</string>
             <string>cryptomator.vault.pepper=gmx</string>>
         </array>

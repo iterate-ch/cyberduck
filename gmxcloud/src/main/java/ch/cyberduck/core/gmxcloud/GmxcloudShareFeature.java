@@ -70,7 +70,7 @@ public class GmxcloudShareFeature implements PromptUrlProvider<ShareCreationRequ
         if(null == guestUri) {
             return DescriptiveUrl.EMPTY;
         }
-        return new DescriptiveUrl(URI.create(toBrandedUri(guestUri, session.getHost().getProperty("branding"))));
+        return new DescriptiveUrl(URI.create(toBrandedUri(guestUri, session.getHost().getProperty("share.hostname"))));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class GmxcloudShareFeature implements PromptUrlProvider<ShareCreationRequ
         if(null == guestUri) {
             return DescriptiveUrl.EMPTY;
         }
-        return new DescriptiveUrl(URI.create(toBrandedUri(guestUri, session.getHost().getProperty("branding"))));
+        return new DescriptiveUrl(URI.create(toBrandedUri(guestUri, session.getHost().getProperty("share.hostname"))));
     }
 
     private String createGuestUri(final Path file, final PasswordCallback callback, final ShareCreationRequestModel shareCreationRequestModel) throws BackgroundException {
