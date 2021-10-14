@@ -22,11 +22,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LockedException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
@@ -36,7 +38,11 @@ import org.apache.log4j.Logger;
 import javax.ws.rs.ProcessingException;
 import java.io.IOException;
 import java.net.SocketException;
+import java.time.Duration;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class GmxcloudExceptionMappingService extends AbstractExceptionMappingService<ApiException> {
     private static final Logger log = Logger.getLogger(GmxcloudExceptionMappingService.class);
@@ -67,6 +73,15 @@ public class GmxcloudExceptionMappingService extends AbstractExceptionMappingSer
         }
         final StringBuilder buffer = new StringBuilder();
         buffer.append(failure.getMessage());
+        switch(failure.getCode()) {
+            case 429:
+                final Optional<Map.Entry<String, List<String>>> header = failure.getResponseHeaders().entrySet().stream().filter(e -> HttpHeaders.RETRY_AFTER.equals(e.getKey())).findAny();
+                if(header.isPresent()) {
+                    final Optional<String> value = header.get().getValue().stream().findAny();
+                    return value.map(s -> new RetriableAccessDeniedException(buffer.toString(),
+                            Duration.ofSeconds(Long.parseLong(s)), failure)).orElseGet(() -> new RetriableAccessDeniedException(buffer.toString(), failure));
+                }
+        }
         return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
     }
 
