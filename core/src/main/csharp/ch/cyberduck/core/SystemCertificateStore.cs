@@ -30,6 +30,7 @@ using java.security.cert;
 using java.util;
 using org.apache.logging.log4j;
 using X509Certificate = java.security.cert.X509Certificate;
+using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
 
 namespace Ch.Cyberduck.Core
 {
@@ -131,55 +132,46 @@ namespace Ch.Cyberduck.Core
                 // Main Icon: Warning
                 // Footer Icon: Information
 
-                TaskDialogResult result =
-                    TaskDialog.TaskDialog.Show(
-                        title: LocaleFactory.localizedString("Certificate Error", "Keychain"),
-                        mainInstruction: LocaleFactory.localizedString("Certificate Error", "Keychain"),
-                        verificationText: LocaleFactory.localizedString("Always Trust", "Keychain"),
-                        content: errorFromChainStatus,
-                        commandLinks:
-                        new string[]
-                        {
-                            LocaleFactory.localizedString("Continue", "Credentials"),
-                            LocaleFactory.localizedString("Disconnect"),
-                            LocaleFactory.localizedString("Show Certificate", "Keychain")
-                        },
-                        mainIcon: TaskDialogIcon.Warning, footerIcon: TaskDialogIcon.Information,
-                        callback: (dialog, args, data) =>
-                        {
-                            switch (args.Notification)
-                            {
-                                case TaskDialogNotification.ButtonClicked:
-                                    if (args.ButtonIndex == 2)
-                                    {
-                                        X509Certificate2UI.DisplayCertificate(serverCert);
-                                        return true;
-                                    }
-                                    break;
-                            }
-                            return false;
-                        });
-
-                if (result.Result == TaskDialogSimpleResult.Command)
-                {
-                    if (result.CommandButtonResult == 0)
+                var result = TaskDialog.TaskDialog.Create()
+                    .Title(LocaleFactory.localizedString("Certificate Error", "Keychain"))
+                    .Instruction(LocaleFactory.localizedString("Certificate Error", "Keychain"))
+                    .VerificationText(LocaleFactory.localizedString("Always Trust", "Keychain"), false)
+                    .Content(errorFromChainStatus)
+                    .CommandLinks(c =>
                     {
-                        if (result.VerificationChecked == true)
+                        c(IDCONTINUE, LocaleFactory.localizedString("Continue", "Credentials"), false);
+                        c(IDABORT, LocaleFactory.localizedString("Disconnect"), true);
+                        c(IDHELP, LocaleFactory.localizedString("Show Certificate", "Keychain"), false);
+                    })
+                    .Callback((sender, e) =>
+                    {
+                        if (e is TaskDialogButtonClickedEventArgs buttonClicked)
                         {
-                            if (certError)
+                            if (buttonClicked.ButtonId == (int)IDHELP)
                             {
-                                //todo can we use the Trusted People and Third Party Certificate Authority Store? Currently X509Chain is the problem.
-                                AddCertificate(serverCert, StoreName.Root);
+                                X509Certificate2UI.DisplayCertificate(serverCert);
                             }
-                            PreferencesFactory.get()
-                                .setProperty(hostName + ".certificate.accept", serverCert.Thumbprint);
                         }
                         return true;
-                    }
-                    if (result.CommandButtonResult == 1)
+                    })
+                    .Show();
+                if (result.Button == IDCONTINUE)
+                {
+                    if (result.VerificationChecked == true)
                     {
-                        return false;
+                        if (certError)
+                        {
+                            //todo can we use the Trusted People and Third Party Certificate Authority Store? Currently X509Chain is the problem.
+                            AddCertificate(serverCert, StoreName.Root);
+                        }
+                        PreferencesFactory.get()
+                            .setProperty(hostName + ".certificate.accept", serverCert.Thumbprint);
                     }
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             return true;
@@ -212,7 +204,7 @@ namespace Ch.Cyberduck.Core
         public static X509Certificate ConvertCertificate(X509Certificate2 certificate)
         {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(certificate.RawData));
+            return (X509Certificate)cf.generateCertificate(new ByteArrayInputStream(certificate.RawData));
         }
 
         private void AddCertificate(X509Certificate2 cert, StoreName storeName)
