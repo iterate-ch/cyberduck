@@ -23,17 +23,23 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.api.MoveChildrenApi;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.api.UpdateResourceApi;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceMoveResponseEntries;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceUpdateModel;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceUpdateModelUpdate;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.Uifs;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Collections;
 
 public class GmxcloudMoveFeature implements Move {
 
     private final GmxcloudSession session;
-    private final GmxcloudIdProvider fileid;
+    private final GmxcloudResourceIdProvider fileid;
 
-    public GmxcloudMoveFeature(final GmxcloudSession session, final GmxcloudIdProvider fileid) {
+    public GmxcloudMoveFeature(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -42,15 +48,26 @@ public class GmxcloudMoveFeature implements Move {
     public Path move(final Path file, final Path target, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         try {
             final GmxcloudApiClient client = new GmxcloudApiClient(session);
-            final ArrayList<String> fileList = new ArrayList<>();
-            final String fileTobeMoved = session.getBasePath() + Constant.RESOURCE + fileid.getFileId(file, new DisabledListProgressListener());
-            fileList.add(fileTobeMoved);
-            new MoveChildrenApi(client)
-                .resourceResourceIdChildrenMovePost(fileid.getFileId(target, new DisabledListProgressListener()),
-                    fileList, null, null, null, null, null);
-            final Path movedFilePath = new Path(target, file.getName(), EnumSet.of(Path.Type.file));
+            final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
+            if(!file.getParent().equals(target.getParent())) {
+                final ResourceMoveResponseEntries resourceMoveResponseEntries = new MoveChildrenApi(client)
+                        .resourceResourceIdChildrenMovePost(fileid.getFileId(target.getParent(), new DisabledListProgressListener()),
+                                Collections.singletonList(String.format("%s/resource/%s",
+                                        session.getBasePath(), resourceId)), null, null, null,
+                                status.isExists() ? "overwrite" : null, null);
+            }
+            if(!StringUtils.equals(file.getName(), target.getName())) {
+                final ResourceUpdateModel resourceUpdateModel = new ResourceUpdateModel();
+                ResourceUpdateModelUpdate resourceUpdateModelUpdate = new ResourceUpdateModelUpdate();
+                final Uifs uifs = new Uifs();
+                uifs.setName(target.getName());
+                resourceUpdateModelUpdate.setUifs(uifs);
+                resourceUpdateModel.setUpdate(resourceUpdateModelUpdate);
+                new UpdateResourceApi(client).resourceResourceIdPatch(resourceId,
+                        resourceUpdateModel, null, null, null);
+            }
             fileid.cache(file, null);
-            return target.withAttributes(new GmxcloudAttributesFinderFeature(session, fileid).find(movedFilePath, new DisabledListProgressListener()));
+            return target.withAttributes(new GmxcloudAttributesFinderFeature(session, fileid).find(target, new DisabledListProgressListener()));
         }
         catch(ApiException e) {
             throw new GmxcloudExceptionMappingService().map("Cannot rename {0}", e, file);

@@ -22,18 +22,23 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.api.CopyChildrenApi;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.api.UpdateResourceApi;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceUpdateModel;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceUpdateModelUpdate;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.Uifs;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Collections;
 
 public class GmxcloudCopyFeature implements Copy {
 
     private final GmxcloudSession session;
-    private final GmxcloudIdProvider fileid;
+    private final GmxcloudResourceIdProvider fileid;
 
-    public GmxcloudCopyFeature(final GmxcloudSession session, final GmxcloudIdProvider fileid) {
+    public GmxcloudCopyFeature(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -41,23 +46,27 @@ public class GmxcloudCopyFeature implements Copy {
     @Override
     public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
-            final ArrayList<String> fileList = new ArrayList<>();
-            final String fileToBeCopied = session.getBasePath() + Constant.RESOURCE + fileid.getFileId(file, new DisabledListProgressListener());
-            fileList.add(fileToBeCopied);
-            final CopyChildrenApi childrenApi = new CopyChildrenApi(new GmxcloudApiClient(session));
-            childrenApi.resourceResourceIdChildrenCopyPost(fileid.getFileId(target, new DisabledListProgressListener()),
-                fileList, null, null, null, null, null);
+            final GmxcloudApiClient client = new GmxcloudApiClient(session);
+            new CopyChildrenApi(client).resourceResourceIdChildrenCopyPost(fileid.getFileId(target.getParent(), new DisabledListProgressListener()),
+                    Collections.singletonList(String.format("%s/resource/%s", session.getBasePath(), fileid.getFileId(file,
+                            new DisabledListProgressListener()))), null, null, null,
+                    status.isExists() ? "overwrite" : null, null);
             listener.sent(status.getLength());
-            final Path copiedFilePath = new Path(target, file.getName(), EnumSet.of(Path.Type.file));
-            return target.withAttributes(new GmxcloudAttributesFinderFeature(session, fileid).find(copiedFilePath, new DisabledListProgressListener()));
+            if(!StringUtils.equals(file.getName(), target.getName())) {
+                final ResourceUpdateModel resourceUpdateModel = new ResourceUpdateModel();
+                ResourceUpdateModelUpdate resourceUpdateModelUpdate = new ResourceUpdateModelUpdate();
+                final Uifs uifs = new Uifs();
+                uifs.setName(target.getName());
+                resourceUpdateModelUpdate.setUifs(uifs);
+                resourceUpdateModel.setUpdate(resourceUpdateModelUpdate);
+                new UpdateResourceApi(client).resourceResourceIdPatch(fileid.getFileId(new Path(target.getParent(), file.getName(), file.getType()),
+                        new DisabledListProgressListener()),
+                        resourceUpdateModel, null, null, null);
+            }
+            return target.withAttributes(new GmxcloudAttributesFinderFeature(session, fileid).find(target, new DisabledListProgressListener()));
         }
         catch(ApiException e) {
             throw new GmxcloudExceptionMappingService().map("Cannot copy {0}", e, file);
         }
-    }
-
-    @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return true;
     }
 }
