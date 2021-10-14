@@ -26,7 +26,8 @@ import ch.cyberduck.core.gmxcloud.io.swagger.client.api.MoveToTrashApi;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class GmxcloudDeleteFeature implements Delete {
@@ -48,18 +49,27 @@ public class GmxcloudDeleteFeature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        for(Path f : files.keySet()) {
-            try {
+        try {
+            final List<String> resources = new ArrayList<>();
+            for(Path f : files.keySet()) {
                 final String resourceId = fileid.getFileId(f, new DisabledListProgressListener());
-                new MoveToTrashApi(new GmxcloudApiClient(session)).resourceAliasTRASHChildrenMovePost(
-                        Collections.singletonList(String.format("%s/resource/%s", session.getBasePath(), resourceId)),
-                        null, null, null, "overwrite", null);
-                if(!trashing) {
-                    new DeleteResourceApi(new GmxcloudApiClient(session)).resourceResourceIdDelete(resourceId, null, null);
+                resources.add(String.format("%s/resource/%s", session.getBasePath(), resourceId));
+                callback.delete(f);
+            }
+            new MoveToTrashApi(new GmxcloudApiClient(session)).resourceAliasTRASHChildrenMovePost(resources,
+                    null, null, null, "overwrite", null);
+            if(!trashing) {
+                for(Path f : files.keySet()) {
+                    new DeleteResourceApi(new GmxcloudApiClient(session)).resourceResourceIdDelete(
+                            fileid.getFileId(f, new DisabledListProgressListener()), null, null);
                 }
+            }
+            for(Path f : files.keySet()) {
                 fileid.cache(f, null);
             }
-            catch(ApiException e) {
+        }
+        catch(ApiException e) {
+            for(Path f : files.keySet()) {
                 throw new GmxcloudExceptionMappingService().map("Cannot delete {0}", e, f);
             }
         }

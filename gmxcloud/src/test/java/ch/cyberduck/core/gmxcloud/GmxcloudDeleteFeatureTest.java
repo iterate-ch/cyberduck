@@ -28,6 +28,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -51,12 +52,16 @@ public class GmxcloudDeleteFeatureTest extends AbstractGmxcloudTest {
     public void testDeleteFile() throws Exception {
         final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
         final Path folder = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
-        final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path file1 = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path file2 = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GmxcloudDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
-        createFile(file, RandomUtils.nextBytes(511));
-        assertTrue(new GmxcloudFindFeature(session, fileid).find(file));
-        new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse((new GmxcloudFindFeature(session, fileid).find(file, new DisabledListProgressListener())));
+        createFile(file1, RandomUtils.nextBytes(511));
+        createFile(file2, RandomUtils.nextBytes(214));
+        assertTrue(new GmxcloudFindFeature(session, fileid).find(file1));
+        assertTrue(new GmxcloudFindFeature(session, fileid).find(file2));
+        new GmxcloudDeleteFeature(session, fileid).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse((new GmxcloudFindFeature(session, fileid).find(file1, new DisabledListProgressListener())));
+        assertFalse((new GmxcloudFindFeature(session, fileid).find(file2, new DisabledListProgressListener())));
         assertTrue(new GmxcloudFindFeature(session, fileid).find(folder, new DisabledListProgressListener()));
         new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse((new GmxcloudFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
