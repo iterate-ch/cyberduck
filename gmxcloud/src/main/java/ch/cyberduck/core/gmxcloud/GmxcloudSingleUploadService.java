@@ -21,8 +21,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceCreationRepresentationArrayInner;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceCreationResponseEntry;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UploadType;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -30,13 +30,13 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.security.MessageDigest;
 
-public class GmxcloudSingleUploadService extends HttpUploadFeature<GmxcloudUploadResponse, MessageDigest> {
+public class GmxcloudSingleUploadService extends HttpUploadFeature<GmxcloudUploadHelper.GmxcloudUploadResponse, MessageDigest> {
+
     private final GmxcloudSession session;
-    private final GmxcloudIdProvider fileid;
-    private final Write<GmxcloudUploadResponse> writer;
+    private final GmxcloudResourceIdProvider fileid;
+    private final Write<GmxcloudUploadHelper.GmxcloudUploadResponse> writer;
 
-
-    public GmxcloudSingleUploadService(final GmxcloudSession session, final GmxcloudIdProvider fileid, final Write<GmxcloudUploadResponse> writer) {
+    public GmxcloudSingleUploadService(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid, final Write<GmxcloudUploadHelper.GmxcloudUploadResponse> writer) {
         super(writer);
         this.session = session;
         this.fileid = fileid;
@@ -44,16 +44,21 @@ public class GmxcloudSingleUploadService extends HttpUploadFeature<GmxcloudUploa
     }
 
     @Override
-    public GmxcloudUploadResponse upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = GmxcloudUploadHelper.
-            getUploadResourceCreationResponseEntry(session, file, ResourceCreationRepresentationArrayInner.UploadTypeEnum.SIMPLE,
-                fileid.getFileId(file.getParent(), new DisabledListProgressListener()));
-        final String uploadUri = uploadResourceCreationResponseEntry.getEntity().getUploadURI();
+    public GmxcloudUploadHelper.GmxcloudUploadResponse upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                                                              final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final String uploadUri;
+        if(status.isExists()) {
+            uploadUri = GmxcloudUploadHelper.updateResource(session, fileid.getFileId(file, new DisabledListProgressListener()),
+                    UploadType.SIMPLE).getUploadURI();
+        }
+        else {
+            final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = GmxcloudUploadHelper.
+                    createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(),
+                            UploadType.SIMPLE);
+            uploadUri = uploadResourceCreationResponseEntry.getEntity().getUploadURI();
+        }
         status.setUrl(uploadUri);
         status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
         return super.upload(file, local, throttle, listener, status, callback);
     }
-
-
 }

@@ -18,13 +18,11 @@ package ch.cyberduck.core.gmxcloud;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceCreationRepresentationArrayInner;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceCreationResponseEntry;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UploadType;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -44,39 +42,39 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Collections;
 
-public class GmxcloudWriteFeature extends AbstractHttpWriteFeature<GmxcloudUploadResponse> {
+public class GmxcloudWriteFeature extends AbstractHttpWriteFeature<GmxcloudUploadHelper.GmxcloudUploadResponse> {
     private static final Logger log = Logger.getLogger(GmxcloudWriteFeature.class);
 
     private final GmxcloudSession session;
-    private final GmxcloudIdProvider fileid;
+    private final GmxcloudResourceIdProvider fileid;
 
-
-    public GmxcloudWriteFeature(final GmxcloudSession session, final GmxcloudIdProvider fileid) {
+    public GmxcloudWriteFeature(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
 
     @Override
-    public HttpResponseOutputStream<GmxcloudUploadResponse> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final String resourceId = fileid.getFileId(file.getParent(), new DisabledListProgressListener());
-        String uploadURI = status.getUrl();
-        String uploadedFileId = status.getParameters().get(Constant.RESOURCE_ID);
-        if(uploadURI == null) {
-            final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = GmxcloudUploadHelper.getUploadResourceCreationResponseEntry(session, file, ResourceCreationRepresentationArrayInner.UploadTypeEnum.SIMPLE, resourceId);
-            uploadURI = uploadResourceCreationResponseEntry.getEntity().getUploadURI();
-            uploadedFileId = Util.getResourceIdFromResourceUri(uploadResourceCreationResponseEntry.getHeaders().getLocation());
+    public HttpResponseOutputStream<GmxcloudUploadHelper.GmxcloudUploadResponse> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        String uploadUri = status.getUrl();
+        String resourceId = status.getParameters().get(GmxcloudLargeUploadService.RESOURCE_ID);
+        if(null == uploadUri) {
+            if(status.isExists()) {
+                resourceId = fileid.getFileId(file, new DisabledListProgressListener());
+                uploadUri = GmxcloudUploadHelper.updateResource(session, resourceId, UploadType.SIMPLE).getUploadURI();
+            }
+            else {
+                final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = GmxcloudUploadHelper
+                        .createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(),
+                                UploadType.SIMPLE);
+                resourceId = GmxcloudResourceIdProvider.getResourceIdFromResourceUri(uploadResourceCreationResponseEntry.getHeaders().getLocation());
+                uploadUri = uploadResourceCreationResponseEntry.getEntity().getUploadURI();
+            }
         }
-        try {
-            final HttpResponseOutputStream<GmxcloudUploadResponse> httpResponseOutputStream = this.write(file, status, getDelayedHttpEntityCallable(status, uploadURI));
-            fileid.cache(file, uploadedFileId);
-            return httpResponseOutputStream;
-        }
-        catch(BackgroundException exception) {
-            cancel(file, uploadedFileId);
-            throw exception;
-        }
+        final HttpResponseOutputStream<GmxcloudUploadHelper.GmxcloudUploadResponse> stream = this.write(
+                file, status, getDelayedHttpEntityCallable(status, uploadUri));
+        fileid.cache(file, resourceId);
+        return stream;
     }
 
     @Override
@@ -84,15 +82,15 @@ public class GmxcloudWriteFeature extends AbstractHttpWriteFeature<GmxcloudUploa
         return new GmxcloudCdash64Compute();
     }
 
-    private DelayedHttpEntityCallable<GmxcloudUploadResponse> getDelayedHttpEntityCallable(final TransferStatus status, final String uploadUri) {
-        return new DelayedHttpEntityCallable<GmxcloudUploadResponse>() {
+    private DelayedHttpEntityCallable<GmxcloudUploadHelper.GmxcloudUploadResponse> getDelayedHttpEntityCallable(final TransferStatus status, final String uploadUri) {
+        return new DelayedHttpEntityCallable<GmxcloudUploadHelper.GmxcloudUploadResponse>() {
             @Override
-            public GmxcloudUploadResponse call(final AbstractHttpEntity entity) throws BackgroundException {
+            public GmxcloudUploadHelper.GmxcloudUploadResponse call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final HttpResponse response;
                     final String cdash64 = status.getChecksum().hash;
                     final long size = status.getLength();
-                    String cdash64SizeIncludedUri = uploadUri + Constant.X_CDASH64 + cdash64 + Constant.X_SIZE + size;
+                    String cdash64SizeIncludedUri = uploadUri + "&x_cdash64=" + cdash64 + "&x_size=" + size;
                     if(status.isSegment()) {
                         final HttpPut request = new HttpPut(cdash64SizeIncludedUri);
                         request.setEntity(entity);
@@ -106,11 +104,10 @@ public class GmxcloudWriteFeature extends AbstractHttpWriteFeature<GmxcloudUploa
                     }
                     try {
                         if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                            return GmxcloudUploadHelper.getGmxcloudUploadResponse(response);
+                            return GmxcloudUploadHelper.parseUploadResponse(response);
                         }
                         EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-                        throw new DefaultHttpResponseExceptionMappingService().map(
-                            new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                        throw new GmxcloudExceptionMappingService().map(response);
                     }
                     finally {
                         EntityUtils.consume(response.getEntity());
@@ -128,12 +125,6 @@ public class GmxcloudWriteFeature extends AbstractHttpWriteFeature<GmxcloudUploa
             public long getContentLength() {
                 return status.getLength();
             }
-
         };
-    }
-
-    protected void cancel(final Path file, final String resourceId) throws BackgroundException {
-        log.warn(String.format("Cancel failed upload %s for %s", resourceId, file));
-        new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

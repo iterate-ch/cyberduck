@@ -1,4 +1,6 @@
-package ch.cyberduck.core.gmxcloud;/*
+package ch.cyberduck.core.gmxcloud;
+
+/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -13,70 +15,163 @@ package ch.cyberduck.core.gmxcloud;/*
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.JSON;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.api.PostChildrenApi;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.api.PostChildrenForAliasApi;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.api.PostResourceApi;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.FileUpdateResponseRepresentation;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceCreationRepresentationArrayInner;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceCreationResponseEntries;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceCreationResponseEntry;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceResourceIdBody;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UiFsModel;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.Uifs;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UploadType;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
-public class GmxcloudUploadHelper {
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    private GmxcloudUploadHelper() {
-    }
+public final class GmxcloudUploadHelper {
 
-    public static GmxcloudUploadResponse getGmxcloudUploadResponse(final HttpResponse response) throws IOException, NotfoundException {
-        GmxcloudUploadResponse gmxcloudUploadResponse = new GmxcloudUploadResponse();
-        if(response.getEntity().getContent().available() == 0) {
-            final String refId = "X-UI-CDOS-RefId";
-            final String storeId = "X-UI-CDOS-StoreId";
-            if(!response.containsHeader(refId) && !response.containsHeader(storeId)) {
-                throw new NotfoundException(String.format("Header: %s and %s are not available in the response", refId, storeId));
-            }
-            gmxcloudUploadResponse.setReferenceId(response.getFirstHeader(refId).getValue());
-            gmxcloudUploadResponse.setStoreId(response.getFirstHeader(storeId).getValue());
-            return gmxcloudUploadResponse;
+    private static final String refId = "X-UI-CDOS-RefId";
+    private static final String storeId = "X-UI-CDOS-StoreId";
+
+    /**
+     * Read response headers from segment upload
+     */
+    public static GmxcloudUploadResponse parseUploadResponse(final HttpResponse response) throws IOException, NotfoundException {
+        final GmxcloudUploadResponse uploadResponse = new GmxcloudUploadResponse();
+        if(response.containsHeader(storeId)) {
+            uploadResponse.setStoreId(response.getFirstHeader(storeId).getValue());
         }
-        final UiFsModel uiFsModel = new JSON().getContext(UiFsModel.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
-            UiFsModel.class);
-        final Uifs uifs = uiFsModel.getUifs();
-        gmxcloudUploadResponse.setTotalSze(uifs.getSize().longValue());
-        gmxcloudUploadResponse.setCdash64(uifs.getCdash64());
-        gmxcloudUploadResponse.setReferenceId(uifs.getReferenceId());
-        gmxcloudUploadResponse.setStoreId(uifs.getStoreId());
-        return gmxcloudUploadResponse;
+        if(response.containsHeader(refId)) {
+            uploadResponse.setReferenceId(response.getFirstHeader(refId).getValue());
+        }
+        else {
+            return parseUploadCompletedResponse(response);
+        }
+        return uploadResponse;
     }
 
-    public static ResourceCreationResponseEntry getUploadResourceCreationResponseEntry(final GmxcloudSession gmxcloudSession, final Path file, final ResourceCreationRepresentationArrayInner.UploadTypeEnum uploadType, final String resourceId) throws BackgroundException {
-        final GmxcloudApiClient client = new GmxcloudApiClient(gmxcloudSession);
-        final PostChildrenApi postChildrenApi = new PostChildrenApi(client);
-        List<ResourceCreationRepresentationArrayInner> resourceCreationRepresentationArrayInners = new ArrayList<>();
-        ResourceCreationRepresentationArrayInner resourceCreationRepresentationArrayInner = new ResourceCreationRepresentationArrayInner();
-        final String fileName = file.getName();
-        resourceCreationRepresentationArrayInner.setPath(fileName);
-        resourceCreationRepresentationArrayInner.setUploadType(uploadType);
-        resourceCreationRepresentationArrayInner.setResourceType(ResourceCreationRepresentationArrayInner.ResourceTypeEnum.FILE);
-        resourceCreationRepresentationArrayInners.add(resourceCreationRepresentationArrayInner);
+    /**
+     * Read response body from completed multipart upload
+     */
+    public static GmxcloudUploadResponse parseUploadCompletedResponse(final HttpResponse response) throws IOException {
+        final GmxcloudUploadResponse uploadResponse = new GmxcloudUploadResponse();
+        final UiFsModel uiFsModel = new JSON().getContext(UiFsModel.class).readValue(
+                new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8), UiFsModel.class);
+        final Uifs uifs = uiFsModel.getUifs();
+        uploadResponse.setTotalSze(uifs.getSize().longValue());
+        uploadResponse.setCdash64(uifs.getCdash64());
+        uploadResponse.setReferenceId(uifs.getReferenceId());
+        uploadResponse.setStoreId(uifs.getStoreId());
+        return uploadResponse;
+    }
+
+    public static FileUpdateResponseRepresentation updateResource(final GmxcloudSession session, final String resourceId,
+                                                                  final UploadType uploadType) throws BackgroundException {
         try {
-            final ResourceCreationResponseEntries resourceCreationResponseEntries = postChildrenApi.resourceResourceIdChildrenPost(resourceId, resourceCreationRepresentationArrayInners, null, null, null, null, null);
-            return resourceCreationResponseEntries.get(fileName);
+            return new PostResourceApi(new GmxcloudApiClient(session)).resourceResourceIdPost(
+                    resourceId, new ResourceResourceIdBody().uploadType(uploadType), null, null, null, null);
         }
         catch(ApiException e) {
             throw new GmxcloudExceptionMappingService().map(e);
         }
     }
 
+    public static ResourceCreationResponseEntry createResource(final GmxcloudSession session, final String resourceId, final String filename,
+                                                               final UploadType uploadType) throws BackgroundException {
+        final ResourceCreationRepresentationArrayInner resourceCreationRepresentation = new ResourceCreationRepresentationArrayInner();
+        resourceCreationRepresentation.setPath(filename);
+        resourceCreationRepresentation.setUploadType(uploadType);
+        resourceCreationRepresentation.setResourceType(ResourceCreationRepresentationArrayInner.ResourceTypeEnum.FILE);
+        try {
+            final ResourceCreationResponseEntries resourceCreationResponseEntries;
+            switch(resourceId) {
+                case GmxcloudResourceIdProvider.ROOT:
+                    resourceCreationResponseEntries = new PostChildrenForAliasApi(new GmxcloudApiClient(session))
+                            .resourceAliasAliasChildrenPost(resourceId, Collections.singletonList(resourceCreationRepresentation),
+                                    null, null, null, null, null);
+                    break;
+                default:
+                    resourceCreationResponseEntries = new PostChildrenApi(new GmxcloudApiClient(session))
+                            .resourceResourceIdChildrenPost(resourceId, Collections.singletonList(resourceCreationRepresentation),
+                                    null, null, null, null, null);
+                    break;
+            }
+            if(!resourceCreationResponseEntries.containsKey(filename)) {
+                throw new NotfoundException(filename);
+            }
+            final ResourceCreationResponseEntry resourceCreationResponseEntry = resourceCreationResponseEntries.get(filename);
+            switch(resourceCreationResponseEntry.getStatusCode()) {
+                case HttpStatus.SC_CREATED:
+                    break;
+                default:
+                    throw new DefaultHttpResponseExceptionMappingService().map(
+                            new HttpResponseException(resourceCreationResponseEntry.getStatusCode(), resourceCreationResponseEntry.getReason()));
+            }
+            return resourceCreationResponseEntry;
+        }
+        catch(ApiException e) {
+            throw new GmxcloudExceptionMappingService().map(e);
+        }
+    }
+
+    public static class GmxcloudUploadResponse {
+        @JsonProperty("cdash64")
+        private String cdash64 = null;
+
+        @JsonProperty("referenceId")
+        private String referenceId = null;
+
+        @JsonProperty("storeId")
+        private String storeId = null;
+
+        @JsonProperty("totalSize")
+        private Long totalSze = null;
+
+        public String getCdash64() {
+            return cdash64;
+        }
+
+        public void setCdash64(final String cdash64) {
+            this.cdash64 = cdash64;
+        }
+
+        public String getReferenceId() {
+            return referenceId;
+        }
+
+        public void setReferenceId(final String referenceId) {
+            this.referenceId = referenceId;
+        }
+
+        public String getStoreId() {
+            return storeId;
+        }
+
+        public void setStoreId(final String storeId) {
+            this.storeId = storeId;
+        }
+
+        public Long getTotalSze() {
+            return totalSze;
+        }
+
+        public void setTotalSze(final Long totalSze) {
+            this.totalSze = totalSze;
+        }
+    }
 }

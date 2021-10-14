@@ -17,14 +17,15 @@ package ch.cyberduck.core.gmxcloud;
 
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceCreationRepresentationArrayInner;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceCreationResponseEntry;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UploadType;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -56,22 +57,27 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public class GmxcloudLargeUploadService extends HttpUploadFeature<GmxcloudUploadResponse, MessageDigest> {
+public class GmxcloudLargeUploadService extends HttpUploadFeature<GmxcloudUploadHelper.GmxcloudUploadResponse, MessageDigest> {
     private static final Logger log = Logger.getLogger(GmxcloudLargeUploadService.class);
-    private final GmxcloudSession session;
 
-    private final Write<GmxcloudUploadResponse> writer;
+    public static final String RESOURCE_ID = "resourceId";
+
+    private final GmxcloudSession session;
+    private final Write<GmxcloudUploadHelper.GmxcloudUploadResponse> writer;
     private final Long chunkSize;
     private final Integer concurrency;
-    private final GmxcloudIdProvider fileid;
-    private final List<MessageDigestHolder> messageDigestHolders = new ArrayList<>();
+    private final GmxcloudResourceIdProvider fileid;
 
+    /**
+     * Checksums for uploaded segments
+     */
+    private final List<MessageDigestHolder> checksums = new ArrayList<>();
 
-    public GmxcloudLargeUploadService(final GmxcloudSession session, final Write<GmxcloudUploadResponse> writer, final GmxcloudIdProvider fileid) {
+    public GmxcloudLargeUploadService(final GmxcloudSession session, final Write<GmxcloudUploadHelper.GmxcloudUploadResponse> writer, final GmxcloudResourceIdProvider fileid) {
         this(session, fileid, writer, PreferencesFactory.get().getLong("gmxcloud.upload.multipart.size"), PreferencesFactory.get().getInteger("gmxcloud.upload.multipart.concurrency"));
     }
 
-    public GmxcloudLargeUploadService(final GmxcloudSession session, final GmxcloudIdProvider fileid, final Write<GmxcloudUploadResponse> writer, final Long chunkSize, final Integer concurrency) {
+    public GmxcloudLargeUploadService(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid, final Write<GmxcloudUploadHelper.GmxcloudUploadResponse> writer, final Long chunkSize, final Integer concurrency) {
         super(writer);
         this.session = session;
         this.writer = writer;
@@ -81,31 +87,39 @@ public class GmxcloudLargeUploadService extends HttpUploadFeature<GmxcloudUpload
     }
 
     @Override
-    public GmxcloudUploadResponse upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public GmxcloudUploadHelper.GmxcloudUploadResponse upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                                                              final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
             // Full size of file
             final long size = status.getLength() + status.getOffset();
-            final List<Future<GmxcloudUploadResponse>> parts = new ArrayList<>();
+            final List<Future<GmxcloudUploadHelper.GmxcloudUploadResponse>> parts = new ArrayList<>();
             long offset = 0;
             long remaining = status.getLength();
-            final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = GmxcloudUploadHelper.
-                getUploadResourceCreationResponseEntry(session, file, ResourceCreationRepresentationArrayInner.UploadTypeEnum.CHUNKED,
-                    fileid.getFileId(file.getParent(), new DisabledListProgressListener()));
-            final String resourceIdFromResourceUri = Util.getResourceIdFromResourceUri(uploadResourceCreationResponseEntry.getHeaders().getLocation());
-            final String uploadUri = uploadResourceCreationResponseEntry.getEntity().getUploadURI();
+            final String resourceId;
+            final String uploadUri;
+            if(status.isExists()) {
+                resourceId = fileid.getFileId(file, new DisabledListProgressListener());
+                uploadUri = GmxcloudUploadHelper.updateResource(session, resourceId, UploadType.CHUNKED).getUploadURI();
+            }
+            else {
+                final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = GmxcloudUploadHelper.
+                        createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(),
+                                UploadType.CHUNKED);
+                  resourceId = GmxcloudResourceIdProvider.getResourceIdFromResourceUri(uploadResourceCreationResponseEntry.getHeaders().getLocation());
+                  uploadUri = uploadResourceCreationResponseEntry.getEntity().getUploadURI();
+            }
             while(remaining > 0) {
-                String offsetIncludedUploadUri = uploadUri + Constant.X_OFFSET + offset;
+                String offsetIncludedUploadUri = String.format("%s&x_offset=%d", uploadUri, offset);
                 final long length = Math.min(chunkSize, remaining);
                 parts.add(this.submit(pool, file, local, throttle, listener, status,
-                    offsetIncludedUploadUri, resourceIdFromResourceUri, offset, length, callback));
+                        offsetIncludedUploadUri, resourceId, offset, length, callback));
                 remaining -= length;
                 offset += length;
             }
-            for(Future<GmxcloudUploadResponse> gmxcloudUploadResponse : parts) {
+            for(Future<GmxcloudUploadHelper.GmxcloudUploadResponse> uploadResponseFuture : parts) {
                 try {
-                    gmxcloudUploadResponse.get();
+                    uploadResponseFuture.get();
                 }
                 catch(InterruptedException e) {
                     log.error("Part upload failed with interrupt failure");
@@ -121,16 +135,17 @@ public class GmxcloudLargeUploadService extends HttpUploadFeature<GmxcloudUpload
                 }
             }
             MessageDigest messageDigest = this.digest();
-            messageDigestHolders.stream().sorted(Comparator.comparing(MessageDigestHolder::getOffset)).forEach(holder -> {
+            checksums.stream().sorted(Comparator.comparing(MessageDigestHolder::getOffset)).forEach(holder -> {
                 messageDigest.update(holder.digest.digest());
-                messageDigest.update(Util.intToBytes(Long.valueOf(holder.length).intValue(), 4));
+                messageDigest.update(GmxcloudCdash64Compute.intToBytes(Long.valueOf(holder.length).intValue()));
             });
-            final GmxcloudUploadResponse gmxcloudUploadResponse = this.completeUpload(uploadUri, size, Base64.encodeBase64URLSafeString(messageDigest.digest()));
+            final GmxcloudUploadHelper.GmxcloudUploadResponse completedUploadResponse = new GmxcloudMultipartUploadCompleter(session)
+                    .getCompletedUploadResponse(uploadUri, size, Base64.encodeBase64URLSafeString(messageDigest.digest()));
             status.setComplete();
-            return gmxcloudUploadResponse;
+            return completedUploadResponse;
         }
         catch(IOException e) {
-            throw new BackgroundException(e);
+            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
         }
         finally {
             // Cancel future tasks
@@ -153,15 +168,15 @@ public class GmxcloudLargeUploadService extends HttpUploadFeature<GmxcloudUpload
         return new DigestInputStream(super.decorate(in, digest), digest);
     }
 
-    public GmxcloudUploadResponse upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                                         final StreamListener listener, final TransferStatus status,
-                                         final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
+    public GmxcloudUploadHelper.GmxcloudUploadResponse upload(final Path file, final Local local, final BandwidthThrottle throttle,
+                                                              final StreamListener listener, final TransferStatus status,
+                                                              final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
         try {
             final MessageDigest digest = this.digest();
-            final GmxcloudUploadResponse gmxcloudUploadResponse = this.transfer(file, local, throttle, listener, status, cancel, progress, callback, digest);
+            final GmxcloudUploadHelper.GmxcloudUploadResponse uploadResponse = this.transfer(file, local, throttle, listener, status, cancel, progress, callback, digest);
             MessageDigestHolder messageDigestHolder = new MessageDigestHolder(status.getOffset(), status.getLength(), digest);
-            messageDigestHolders.add(messageDigestHolder);
-            return gmxcloudUploadResponse;
+            checksums.add(messageDigestHolder);
+            return uploadResponse;
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
@@ -171,43 +186,34 @@ public class GmxcloudLargeUploadService extends HttpUploadFeature<GmxcloudUpload
         }
     }
 
-    protected GmxcloudUploadResponse completeUpload(String uploadUri, long totalSize, String cdash64) throws BackgroundException {
-        try {
-            return new GmxcloudMultipartUploadCompleter(session).getCompletedUploadResponse(uploadUri, totalSize, cdash64);
-        }
-        catch(IOException e) {
-            throw new BackgroundException(e);
-        }
-    }
-
-    private Future<GmxcloudUploadResponse> submit(final ThreadPool pool, final Path file, final Local local,
-                                                  final BandwidthThrottle throttle, final StreamListener listener,
-                                                  final TransferStatus overall, final String url, final String resourceId,
-                                                  final long offset, final long length, final ConnectionCallback callback) {
+    private Future<GmxcloudUploadHelper.GmxcloudUploadResponse> submit(final ThreadPool pool, final Path file, final Local local,
+                                                                       final BandwidthThrottle throttle, final StreamListener listener,
+                                                                       final TransferStatus overall, final String url, final String resourceId,
+                                                                       final long offset, final long length, final ConnectionCallback callback) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit %s to queue with offset %d and length %d", file, offset, length));
         }
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
-        return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<GmxcloudUploadResponse>() {
+        return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<GmxcloudUploadHelper.GmxcloudUploadResponse>() {
             @Override
-            public GmxcloudUploadResponse call() throws BackgroundException {
+            public GmxcloudUploadHelper.GmxcloudUploadResponse call() throws BackgroundException {
                 overall.validate();
-                Map<String, String> parameters = new HashMap<>();
-                parameters.put(Constant.RESOURCE_ID, resourceId);
+                final Map<String, String> parameters = new HashMap<>();
+                parameters.put(RESOURCE_ID, resourceId);
                 final TransferStatus status = new TransferStatus()
-                    .segment(true)
-                    .withLength(length)
-                    .withParameters(parameters)
-                    .withOffset(offset);
+                        .segment(true)
+                        .withLength(length)
+                        .withParameters(parameters)
+                        .withOffset(offset);
                 status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
                 status.setUrl(url);
                 status.setHeader(overall.getHeader());
-                final GmxcloudUploadResponse gmxcloudUploadResponse = GmxcloudLargeUploadService.this.upload(
-                    file, local, throttle, listener, status, overall, status, callback);
+                final GmxcloudUploadHelper.GmxcloudUploadResponse uploadResponse = GmxcloudLargeUploadService.this.upload(
+                        file, local, throttle, listener, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Received response for offset number %d", offset));
                 }
-                return gmxcloudUploadResponse;
+                return uploadResponse;
             }
         }, overall, counter));
     }
@@ -226,7 +232,5 @@ public class GmxcloudLargeUploadService extends HttpUploadFeature<GmxcloudUpload
         long getOffset() {
             return offset;
         }
-
-
     }
 }
