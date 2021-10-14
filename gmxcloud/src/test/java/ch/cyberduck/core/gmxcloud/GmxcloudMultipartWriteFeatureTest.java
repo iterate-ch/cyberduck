@@ -45,6 +45,32 @@ import static org.junit.Assert.*;
 public class GmxcloudMultipartWriteFeatureTest extends AbstractGmxcloudTest {
 
     @Test
+    public void testSmallChunk() throws Exception {
+        // Uploading a file via the Upload Resource, using the chunked upload method, is only allowed for documents bigger than the chunksize (4MiB)
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final GmxcloudMultipartWriteFeature feature = new GmxcloudMultipartWriteFeature(session, fileid);
+        final Path container = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(512000);
+        final Checksum checksum = new GmxcloudCdash64Compute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
+        final TransferStatus status = new TransferStatus().withLength(512000L);
+        final HttpResponseOutputStream<GmxcloudUploadHelper.GmxcloudUploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        assertNotNull(out.getStatus());
+        final String cdash64 = out.getStatus().getCdash64();
+        assertNotNull(cdash64);
+        assertEquals(checksum.hash, cdash64);
+        assertTrue(new DefaultFindFeature(session).find(file));
+        final byte[] compare = new byte[content.length];
+        final InputStream stream = new GmxcloudReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        IOUtils.readFully(stream, compare);
+        stream.close();
+        assertArrayEquals(content, compare);
+        new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testMultipartWrite() throws Exception {
         final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
         final GmxcloudMultipartWriteFeature feature = new GmxcloudMultipartWriteFeature(session, fileid);

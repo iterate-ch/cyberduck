@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
@@ -37,7 +36,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -47,7 +45,7 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class GmxcloudWriteFeatureTest extends AbstractGmxcloudTest {
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testMissingChecksum() throws Exception {
         final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
         final GmxcloudWriteFeature feature = new GmxcloudWriteFeature(session, fileid);
@@ -55,15 +53,7 @@ public class GmxcloudWriteFeatureTest extends AbstractGmxcloudTest {
         final byte[] content = RandomUtils.nextBytes(8235);
         final TransferStatus status = new TransferStatus().withLength(content.length);
         status.withChecksum(Checksum.NONE);
-        try {
-            feature.write(file, status, new DisabledConnectionCallback()).close();
-            fail();
-        }
-        catch(IOException e) {
-            assertTrue(e.getCause() instanceof InteroperabilityException);
-            assertEquals("ILLEGAL_HASH. Please contact your web hosting service provider for assistance.", ((InteroperabilityException) e.getCause()).getDetail());
-            throw (InteroperabilityException) e.getCause();
-        }
+        feature.write(file, status, new DisabledConnectionCallback()).close();
     }
 
     @Test

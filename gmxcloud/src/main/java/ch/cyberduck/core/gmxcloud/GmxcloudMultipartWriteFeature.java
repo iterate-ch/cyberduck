@@ -88,7 +88,7 @@ public class GmxcloudMultipartWriteFeature implements MultipartWrite<GmxcloudUpl
         }
         final MultipartOutputStream proxy;
         try {
-            proxy = new MultipartOutputStream(uploadUri, resourceId, status);
+            proxy = new MultipartOutputStream(file, uploadUri, resourceId, status, callback);
         }
         catch(NoSuchAlgorithmException e) {
             throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e);
@@ -103,9 +103,11 @@ public class GmxcloudMultipartWriteFeature implements MultipartWrite<GmxcloudUpl
     }
 
     private final class MultipartOutputStream extends OutputStream {
+        private final Path file;
         private final String uploadUri;
         private final String resourceId;
         private final TransferStatus overall;
+        private final ConnectionCallback callback;
         private final AtomicBoolean close = new AtomicBoolean();
         private final AtomicReference<BackgroundException> canceled = new AtomicReference<>();
         private final AtomicReference<GmxcloudUploadHelper.GmxcloudUploadResponse> result = new AtomicReference<>();
@@ -114,10 +116,12 @@ public class GmxcloudMultipartWriteFeature implements MultipartWrite<GmxcloudUpl
         private Long offset = 0L;
         private Long cumulativeLength = 0L;
 
-        public MultipartOutputStream(final String uploadUri, final String resourceId, final TransferStatus status) throws NoSuchAlgorithmException {
+        public MultipartOutputStream(final Path file, final String uploadUri, final String resourceId, final TransferStatus status, final ConnectionCallback callback) throws NoSuchAlgorithmException {
+            this.file = file;
             this.uploadUri = uploadUri;
             this.resourceId = resourceId;
             this.overall = status;
+            this.callback = callback;
             this.messageDigest = MessageDigest.getInstance("SHA-256");
         }
 
@@ -133,49 +137,58 @@ public class GmxcloudMultipartWriteFeature implements MultipartWrite<GmxcloudUpl
                     throw canceled.get();
                 }
                 final byte[] content = Arrays.copyOfRange(b, off, len);
-                new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<GmxcloudUploadHelper.GmxcloudUploadResponse>() {
-
-                    @Override
-                    public GmxcloudUploadHelper.GmxcloudUploadResponse call() throws BackgroundException {
-                        final CloseableHttpClient client = session.getClient();
-                        try {
-                            final HttpEntity entity = EntityBuilder.create().setBinary(content).build();
-                            final String hash = new SHA256ChecksumCompute()
-                                    .compute(new ByteArrayInputStream(content, off, len), new TransferStatus()).hash;
-                            messageDigest.update(Hex.decodeHex(hash));
-                            messageDigest.update(GmxcloudCdash64Compute.intToBytes(content.length));
-                            final HttpPut request = new HttpPut(String.format("%s&x_offset=%d&x_sha256=%s&x_size=%d",
-                                    uploadUri, offset, hash, content.length));
-                            request.setEntity(entity);
-                            final HttpResponse response = client.execute(request);
+                if(0L == offset && content.length < new HostPreferences(session.getHost()).getLong("gmxcloud.upload.multipart.threshold")) {
+                    final GmxcloudWriteFeature writer = new GmxcloudWriteFeature(session, fileid);
+                    writer.cancel(uploadUri);
+                    final HttpResponseOutputStream<GmxcloudUploadHelper.GmxcloudUploadResponse> stream = writer.write(file,
+                            overall.withChecksum(writer.checksum(file, overall).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length))), callback);
+                    stream.write(content);
+                    stream.close();
+                    result.set(stream.getStatus());
+                }
+                else {
+                    new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<GmxcloudUploadHelper.GmxcloudUploadResponse>() {
+                        @Override
+                        public GmxcloudUploadHelper.GmxcloudUploadResponse call() throws BackgroundException {
+                            final CloseableHttpClient client = session.getClient();
                             try {
-                                switch(response.getStatusLine().getStatusCode()) {
-                                    case HttpStatus.SC_OK:
-                                    case HttpStatus.SC_CREATED:
-                                        result.set(GmxcloudUploadHelper.parseUploadResponse(response));
-                                    case HttpStatus.SC_NO_CONTENT:
-                                        offset += content.length;
-                                        cumulativeLength += content.length;
-                                        break;
-                                    default:
-                                        throw new GmxcloudExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                                                EntityUtils.toString(response.getEntity())));
+                                final HttpEntity entity = EntityBuilder.create().setBinary(content).build();
+                                final String hash = new SHA256ChecksumCompute()
+                                        .compute(new ByteArrayInputStream(content, off, len), new TransferStatus()).hash;
+                                messageDigest.update(Hex.decodeHex(hash));
+                                messageDigest.update(GmxcloudCdash64Compute.intToBytes(content.length));
+                                final HttpPut request = new HttpPut(String.format("%s&x_offset=%d&x_sha256=%s&x_size=%d",
+                                        uploadUri, offset, hash, content.length));
+                                request.setEntity(entity);
+                                final HttpResponse response = client.execute(request);
+                                try {
+                                    switch(response.getStatusLine().getStatusCode()) {
+                                        case HttpStatus.SC_OK:
+                                        case HttpStatus.SC_CREATED:
+                                        case HttpStatus.SC_NO_CONTENT:
+                                            offset += content.length;
+                                            cumulativeLength += content.length;
+                                            break;
+                                        default:
+                                            throw new GmxcloudExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                                    EntityUtils.toString(response.getEntity())));
+                                    }
+                                }
+                                catch(BackgroundException e) {
+                                    canceled.set(e);
+                                    throw e;
+                                }
+                                finally {
+                                    EntityUtils.consume(response.getEntity());
                                 }
                             }
-                            catch(BackgroundException e) {
-                                canceled.set(e);
-                                throw e;
+                            catch(IOException | DecoderException e) {
+                                throw new BackgroundException(e);
                             }
-                            finally {
-                                EntityUtils.consume(response.getEntity());
-                            }
+                            return null;
                         }
-                        catch(IOException | DecoderException e) {
-                            throw new BackgroundException(e);
-                        }
-                        return null;
-                    }
-                }, overall).call();
+                    }, overall).call();
+                }
             }
             catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);
@@ -192,13 +205,15 @@ public class GmxcloudMultipartWriteFeature implements MultipartWrite<GmxcloudUpl
                 if(null != canceled.get()) {
                     return;
                 }
-                try {
-                    final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
-                    result.set(new GmxcloudMultipartUploadCompleter(session)
-                            .getCompletedUploadResponse(uploadUri, cumulativeLength, cdash64));
-                }
-                catch(BackgroundException e) {
-                    throw new IOException(e);
+                if(result.get() == null) {
+                    try {
+                        final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
+                        result.set(new GmxcloudMultipartUploadCompleter(session)
+                                .getCompletedUploadResponse(uploadUri, cumulativeLength, cdash64));
+                    }
+                    catch(BackgroundException e) {
+                        throw new IOException(e);
+                    }
                 }
             }
             finally {
