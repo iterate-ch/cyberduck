@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -196,6 +197,9 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
         }
         if(type == Write.class) {
             return (T) new GmxcloudWriteFeature(this, resourceid);
+        }
+        if(type == Touch.class) {
+            return (T) new GmxcloudTouchFeature(this, resourceid);
         }
         if(type == Move.class) {
             return (T) new GmxcloudMoveFeature(this, resourceid);
