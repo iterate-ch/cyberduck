@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Controls;
 using Windows.Win32.UI.WindowsAndMessaging;
 using static System.Runtime.CompilerServices.Unsafe;
+using static System.Runtime.InteropServices.MemoryMarshal;
 using static Windows.Win32.Constants;
 using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS;
@@ -36,10 +38,12 @@ namespace Ch.Cyberduck.Core.TaskDialog
         private TASKDIALOGCONFIG config;
         private bool radioButtonsConfigured = false;
 
-        public TaskDialog()
+        private TaskDialog()
         {
             config.cbSize = (uint)SizeOf<TASKDIALOGCONFIG>();
         }
+
+        public static TaskDialog Create() => new();
 
         public delegate void AddButtonCallback(MESSAGEBOX_RESULT id, in string title, bool @default);
 
@@ -175,6 +179,20 @@ namespace Ch.Cyberduck.Core.TaskDialog
             int radioButton = default;
             BOOL verificationChecked = default;
             HRESULT result;
+
+            Span<TASKDIALOG_BUTTON> buttons = stackalloc TASKDIALOG_BUTTON[(int)config.cButtons];
+            Span<TASKDIALOG_BUTTON> radioButtons = stackalloc TASKDIALOG_BUTTON[(int)config.cRadioButtons];
+            for (int i = 0; i < this.buttons.Count; i++)
+            {
+                buttons[i] = this.buttons[i];
+            }
+            for (int i = 0; i < this.radioButtons.Count; i++)
+            {
+                radioButtons[i] = this.radioButtons[i];
+            }
+            config.pButtons = (TASKDIALOG_BUTTON*)AsPointer(ref GetReference(buttons));
+            config.pRadioButtons = (TASKDIALOG_BUTTON*)AsPointer(ref GetReference(radioButtons));
+
             try
             {
                 Showing?.Invoke(this, EventArgs.Empty);
