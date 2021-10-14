@@ -72,11 +72,6 @@ public class GmxcloudMultipartWriteFeature implements MultipartWrite<GmxcloudUpl
     }
 
     @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
     public HttpResponseOutputStream<GmxcloudUploadHelper.GmxcloudUploadResponse> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         String uploadUri;
         String resourceId;
