@@ -15,20 +15,17 @@ package ch.cyberduck.core.gmxcloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath.Type;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.api.ListResourceAliasApi;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.api.ListResourceApi;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.Children;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UiFsModel;
-import ch.cyberduck.core.gmxcloud.io.swagger.client.model.Uifs;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.util.EnumSet;
 
@@ -36,43 +33,44 @@ public class GmxcloudListService implements ListService {
 
     private final GmxcloudSession session;
     private final GmxcloudAttributesFinderFeature attributes;
-    private final GmxcloudIdProvider fileId;
+    private final GmxcloudResourceIdProvider fileId;
 
-    public GmxcloudListService(final GmxcloudSession session, final GmxcloudIdProvider fileid) {
+    public GmxcloudListService(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid) {
         this.session = session;
         this.attributes = new GmxcloudAttributesFinderFeature(session, fileid);
         this.fileId = fileid;
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener)
-        throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        return this.list(directory, listener, new HostPreferences(session.getHost()).getInteger("gmxcloud.listing.chunksize"));
+    }
+
+    protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         final AttributedList<Path> children = new AttributedList<>();
         final GmxcloudApiClient client = new GmxcloudApiClient(session);
-        UiFsModel response;
         try {
-            if(directory.isRoot()) {
-                response = new ListResourceAliasApi(client).resourceAliasAliasGet("ROOT",
-                    null, null, null, null, null, null, null, null);
-            }
-            else {
-                final String fileId = this.fileId.getFileId(directory, listener);
-                if(fileId == null) {
-                    throw new NotfoundException(directory.getAbsolute());
+            final String resourceId = fileId.getFileId(directory, listener);
+            int offset = 0;
+            UiFsModel fsModel;
+            do {
+                if(directory.isRoot()) {
+                    fsModel = new ListResourceAliasApi(client).resourceAliasAliasGet(resourceId,
+                            null, null, null, null, chunksize, offset, null, null);
                 }
-                response = new ListResourceApi(client).resourceResourceIdGet(fileId,
-                    null, null, null, null, null, null, "win32props", null);
-            }
-            for(Children child : response.getUifs().getChildren()) {
-                Uifs uifs = child.getUifs();
-                EnumSet<Type> type = EnumSet.of("container".equals(uifs.getResourceType()) ? Path.Type.directory : Path.Type.file);
-                final PathAttributes attributes = this.attributes.toAttributes(uifs);
-                if(child.getUiwin32() != null) {
-                    this.attributes.addUi32Properties(attributes, child.getUiwin32());
+                else {
+                    fsModel = new ListResourceApi(client).resourceResourceIdGet(resourceId,
+                            null, null, null, null, chunksize, offset, "win32props", null);
                 }
-                children.add(new Path(directory, uifs.getName(), type, attributes));
-                listener.chunk(directory, children);
+                for(Children child : fsModel.getUifs().getChildren()) {
+                    children.add(new Path(directory, child.getUifs().getName(),
+                            EnumSet.of("container".equalsIgnoreCase(child.getUifs().getResourceType()) ? Path.Type.directory : Path.Type.file),
+                            attributes.toAttributes(child.getUifs(), child.getUiwin32())));
+                    listener.chunk(directory, children);
+                }
+                offset += chunksize;
             }
+            while(fsModel.getUifs().getChildren().size() == chunksize);
             return children;
         }
         catch(ApiException e) {
@@ -80,5 +78,4 @@ public class GmxcloudListService implements ListService {
         }
 
     }
-
 }
