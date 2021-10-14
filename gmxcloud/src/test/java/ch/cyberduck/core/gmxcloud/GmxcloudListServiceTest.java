@@ -15,12 +15,13 @@ package ch.cyberduck.core.gmxcloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -31,33 +32,43 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 import static ch.cyberduck.core.AbstractPath.Type.directory;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GmxcloudListServiceTest extends AbstractGmxcloudTest {
 
     @Test
-    public void existing_resource_returns_non_empty_list() throws Exception {
-        GmxcloudIdProvider fileid = new GmxcloudIdProvider(session);
-        final Path folder = new Path("/TestFolderToDelete", EnumSet.of(directory));
-        new GmxcloudDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
-        final Path folder2 = new Path("/TestFolderToDelete/Tester2", EnumSet.of(directory));
-        new GmxcloudDirectoryFeature(session, fileid).mkdir(folder2, new TransferStatus());
-        final AttributedList<Path> list = new GmxcloudListService(session, fileid).list(folder, new DisabledListProgressListener());
-        assertNotNull(list);
-        assertFalse(list.isEmpty());
-        new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse((new GmxcloudFindFeature(session, fileid).find(folder2, new DisabledListProgressListener())));
+    public void testListContainingFolder() throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final Path folder = new GmxcloudDirectoryFeature(session, fileid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
+        assertTrue(new GmxcloudListService(session, fileid).list(folder, new DisabledListProgressListener()).isEmpty());
+        final Path subfolder = new GmxcloudDirectoryFeature(session, fileid).mkdir(
+                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
+        assertTrue(new GmxcloudListService(session, fileid).list(subfolder, new DisabledListProgressListener()).isEmpty());
+        assertFalse(new GmxcloudListService(session, fileid).list(folder, new DisabledListProgressListener()).isEmpty());
+        new GmxcloudDeleteFeature(session, fileid, false).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse((new GmxcloudFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
+        assertFalse((new GmxcloudFindFeature(session, fileid).find(subfolder, new DisabledListProgressListener())));
+    }
+
+    @Test
+    public void testListContainingFile() throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final Path folder = new GmxcloudDirectoryFeature(session, fileid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
+        assertTrue(new GmxcloudListService(session, fileid).list(folder, new DisabledListProgressListener()).isEmpty());
+        final Path file = new DefaultTouchFeature<>(new GmxcloudSingleUploadService(session, fileid, new GmxcloudWriteFeature(session, fileid)), new GmxcloudAttributesFinderFeature(session, fileid))
+                .touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+        assertFalse(new GmxcloudListService(session, fileid).list(folder, new DisabledListProgressListener()).isEmpty());
+        new GmxcloudDeleteFeature(session, fileid, false).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse((new GmxcloudFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
+        assertFalse((new GmxcloudFindFeature(session, fileid).find(file, new DisabledListProgressListener())));
     }
 
     @Test(expected = NotfoundException.class)
-    public void nonexisting_resource_returns_empty_list() throws Exception {
-        GmxcloudIdProvider fileid = new GmxcloudIdProvider(session);
-        final AttributedList<Path> list = new GmxcloudListService(session, fileid).list(new Path("NON_EXISTING_CONTAINER", EnumSet.of(directory)), new DisabledListProgressListener());
-        assertNotNull(list);
-        assertFalse(list.isEmpty());
+    public void testNotFound() throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        new GmxcloudListService(session, fileid).list(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new DisabledListProgressListener());
     }
-
-
 }

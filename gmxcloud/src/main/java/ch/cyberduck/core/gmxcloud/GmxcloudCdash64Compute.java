@@ -29,17 +29,24 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class GmxcloudCdash64Compute extends AbstractChecksumCompute {
+
+    public static byte[] intToBytes(final int i) {
+        final ByteBuffer bb = ByteBuffer.allocate(4);
+        bb.putInt(i);
+        return bb.array();
+    }
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             digest.update(super.digest("SHA-256", StreamCopier.skip(in, status.getOffset())));
-            digest.update(Util.intToBytes(Long.valueOf(status.getLength()).intValue(), 4));
+            digest.update(intToBytes(Long.valueOf(status.getLength()).intValue()));
             return new Checksum(HashAlgorithm.sha256, Base64.encodeBase64URLSafeString(digest.digest()));
         }
         catch(NoSuchAlgorithmException | BackgroundException e) {

@@ -29,17 +29,19 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class GmxcloudThresholdUploadService implements Upload<GmxcloudUploadResponse> {
+public class GmxcloudThresholdUploadService implements Upload<GmxcloudUploadHelper.GmxcloudUploadResponse> {
+
     private final GmxcloudSession session;
     private final Long threshold;
-    private final GmxcloudIdProvider fileid;
-    private Write<GmxcloudUploadResponse> writer;
+    private final GmxcloudResourceIdProvider fileid;
 
-    public GmxcloudThresholdUploadService(final GmxcloudSession session, final GmxcloudIdProvider fileid) {
+    private Write<GmxcloudUploadHelper.GmxcloudUploadResponse> writer;
+
+    public GmxcloudThresholdUploadService(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid) {
         this(session, fileid, new HostPreferences(session.getHost()).getLong("gmxcloud.upload.multipart.threshold"));
     }
 
-    public GmxcloudThresholdUploadService(final GmxcloudSession session, final GmxcloudIdProvider fileid, final Long threshold) {
+    public GmxcloudThresholdUploadService(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid, final Long threshold) {
         this.session = session;
         this.threshold = threshold;
         this.fileid = fileid;
@@ -52,17 +54,16 @@ public class GmxcloudThresholdUploadService implements Upload<GmxcloudUploadResp
     }
 
     @Override
-    public GmxcloudUploadResponse upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                                         final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
+    public GmxcloudUploadHelper.GmxcloudUploadResponse upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                                                              final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         if(status.getLength() >= threshold) {
             return new GmxcloudLargeUploadService(session, writer, fileid).upload(file, local, throttle, listener, status, prompt);
         }
-
         return new GmxcloudSingleUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, prompt);
     }
 
     @Override
-    public Upload<GmxcloudUploadResponse> withWriter(final Write<GmxcloudUploadResponse> writer) {
+    public Upload<GmxcloudUploadHelper.GmxcloudUploadResponse> withWriter(final Write<GmxcloudUploadHelper.GmxcloudUploadResponse> writer) {
         this.writer = writer;
         return this;
     }

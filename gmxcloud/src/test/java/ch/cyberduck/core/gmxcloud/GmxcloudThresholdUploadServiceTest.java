@@ -19,7 +19,6 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -41,13 +40,11 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class GmxcloudThresholdUploadServiceTest extends AbstractGmxcloudTest {
 
-
     @Test
     public void testUploadSimpleFile() throws Exception {
-        GmxcloudIdProvider fileid = new GmxcloudIdProvider(session);
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
         final GmxcloudThresholdUploadService gmxcloudThresholdUploadService = new GmxcloudThresholdUploadService(session, fileid);
-        final Path container = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path("/TestFolderToDelete", EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
-        assertTrue(new GmxcloudFindFeature(session, fileid).find(container, new DisabledListProgressListener()));
+        final Path container = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
@@ -71,10 +68,9 @@ public class GmxcloudThresholdUploadServiceTest extends AbstractGmxcloudTest {
 
     @Test
     public void testUploadLargeFileInChunks() throws Exception {
-        GmxcloudIdProvider fileid = new GmxcloudIdProvider(session);
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
         final GmxcloudThresholdUploadService gmxcloudThresholdUploadService = new GmxcloudThresholdUploadService(session, fileid);
-        final Path container = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path("/TestFolderToDelete", EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
-        assertTrue(new GmxcloudFindFeature(session, fileid).find(container, new DisabledListProgressListener()));
+        final Path container = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
@@ -95,5 +91,4 @@ public class GmxcloudThresholdUploadServiceTest extends AbstractGmxcloudTest {
         new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
-
 }

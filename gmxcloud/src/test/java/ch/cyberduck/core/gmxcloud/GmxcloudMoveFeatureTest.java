@@ -1,7 +1,7 @@
 package ch.cyberduck.core.gmxcloud;
 
 /*
- * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,39 +16,61 @@ package ch.cyberduck.core.gmxcloud;
  */
 
 import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GmxcloudMoveFeatureTest extends AbstractGmxcloudTest {
 
     @Test
     public void testMoveFile() throws Exception {
-        GmxcloudIdProvider fileid = new GmxcloudIdProvider(session);
-        final Path sourceFolder = new Path("/sourceFolder", EnumSet.of(AbstractPath.Type.directory));
-        final Path file = new Path(sourceFolder, "testfile.txt", EnumSet.of(Path.Type.file));
-        new GmxcloudDirectoryFeature(session, fileid).mkdir(sourceFolder, new TransferStatus());
-        createFile(file, "This is simple test data".getBytes(StandardCharsets.UTF_8));
-        assertTrue(new GmxcloudFindFeature(session, fileid).find(file));
-        final Path targetFolder = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path("/targetFolder", EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
-        new GmxcloudMoveFeature(session, fileid).move(file, targetFolder, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new GmxcloudFindFeature(session, fileid).find(file));
-        assertTrue(new GmxcloudFindFeature(session, fileid).find(new Path(targetFolder, file.getName(), EnumSet.of(AbstractPath.Type.file))));
-        new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final Path sourceFolder = new GmxcloudDirectoryFeature(session, fileid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        createFile(sourceFile, RandomUtils.nextBytes(541));
+        final PathAttributes sourceAttr = new GmxcloudAttributesFinderFeature(session, fileid).find(sourceFile);
+        assertTrue(new GmxcloudFindFeature(session, fileid).find(sourceFile));
+        final Path targetFolder = new GmxcloudDirectoryFeature(session, fileid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final Path targetFile = new GmxcloudMoveFeature(session, fileid).move(sourceFile,
+                new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new GmxcloudFindFeature(session, fileid).find(sourceFile));
+        assertTrue(new GmxcloudFindFeature(session, fileid).find(targetFile));
+        assertFalse(new DefaultFindFeature(session).find(sourceFile));
+        assertTrue(new DefaultFindFeature(session).find(targetFile));
+        assertEquals(targetFile.attributes(), new GmxcloudAttributesFinderFeature(session, fileid).find(targetFile));
+        assertEquals(sourceAttr.getSize(),
+                new GmxcloudAttributesFinderFeature(session, fileid).find(targetFile).getSize());
+        assertEquals(sourceAttr.getETag(),
+                new GmxcloudAttributesFinderFeature(session, fileid).find(targetFile).getETag());
+        assertEquals(sourceAttr.getFileId(),
+                new GmxcloudAttributesFinderFeature(session, fileid).find(targetFile).getFileId());
+        new GmxcloudDeleteFeature(session, fileid).delete(Arrays.asList(sourceFolder, targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+
+    @Test(expected = NotfoundException.class)
+    public void testMoveNotFound() throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new GmxcloudMoveFeature(session, fileid).move(test, new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
     }
 }

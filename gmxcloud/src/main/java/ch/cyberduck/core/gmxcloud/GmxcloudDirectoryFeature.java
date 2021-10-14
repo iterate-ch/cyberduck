@@ -18,6 +18,7 @@ package ch.cyberduck.core.gmxcloud;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
@@ -29,16 +30,15 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
 
 public class GmxcloudDirectoryFeature implements Directory<Void> {
-    private static final String ROOT = "ROOT";
-    private final GmxcloudSession session;
-    private final GmxcloudIdProvider fileid;
 
-    public GmxcloudDirectoryFeature(final GmxcloudSession session, final GmxcloudIdProvider fileid) {
+    private final GmxcloudSession session;
+    private final GmxcloudResourceIdProvider fileid;
+
+    public GmxcloudDirectoryFeature(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -46,17 +46,17 @@ public class GmxcloudDirectoryFeature implements Directory<Void> {
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
-            final GmxcloudApiClient gmxcloudApiClient = new GmxcloudApiClient(session);
-            List<ResourceCreationRepresentationArrayInner> resourceCreationRepresentationArrayInners = new ArrayList<>();
-            ResourceCreationRepresentationArrayInner resourceCreationRepresentationArrayInner = new ResourceCreationRepresentationArrayInner();
-            final String folderPath = StringUtils.removeStart(folder.getAbsolute(), String.valueOf(Path.DELIMITER));
-            resourceCreationRepresentationArrayInner.setPath(folderPath);
-            resourceCreationRepresentationArrayInner.setResourceType(ResourceCreationRepresentationArrayInner.ResourceTypeEnum.CONTAINER);
-            resourceCreationRepresentationArrayInners.add(resourceCreationRepresentationArrayInner);
-            final PostChildrenForAliasApi postResourceAliasApi = new PostChildrenForAliasApi(gmxcloudApiClient);
-            ResourceCreationResponseEntries resourceCreationResponseEntries = postResourceAliasApi.resourceAliasAliasChildrenPost(ROOT, resourceCreationRepresentationArrayInners, null, null, null, null, null);
-            ResourceCreationResponseEntry resourceCreationResponseEntry = resourceCreationResponseEntries.get(folderPath);
-            fileid.cache(folder, Util.getResourceIdFromResourceUri(resourceCreationResponseEntry.getHeaders().getLocation()));
+            final ResourceCreationRepresentationArrayInner resourceCreationRepresentation = new ResourceCreationRepresentationArrayInner();
+            final String path = StringUtils.removeStart(folder.getAbsolute(), String.valueOf(Path.DELIMITER));
+            resourceCreationRepresentation.setPath(path);
+            resourceCreationRepresentation.setResourceType(ResourceCreationRepresentationArrayInner.ResourceTypeEnum.CONTAINER);
+            final ResourceCreationResponseEntries resourceCreationResponseEntries = new PostChildrenForAliasApi(new GmxcloudApiClient(session)).resourceAliasAliasChildrenPost(
+                    GmxcloudResourceIdProvider.ROOT, Collections.singletonList(resourceCreationRepresentation), null, null, null, null, null);
+            if(!resourceCreationResponseEntries.containsKey(path)) {
+                throw new NotfoundException(folder.getAbsolute());
+            }
+            final ResourceCreationResponseEntry resourceCreationResponseEntry = resourceCreationResponseEntries.get(path);
+            fileid.cache(folder, GmxcloudResourceIdProvider.getResourceIdFromResourceUri(resourceCreationResponseEntry.getHeaders().getLocation()));
             return new Path(folder.getAbsolute(), EnumSet.of(Path.Type.directory),
                 new GmxcloudAttributesFinderFeature(session, fileid).find(folder, new DisabledListProgressListener()));
         }

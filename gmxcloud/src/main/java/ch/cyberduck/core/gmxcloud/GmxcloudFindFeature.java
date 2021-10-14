@@ -22,10 +22,11 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
 public class GmxcloudFindFeature implements Find {
-    private final GmxcloudSession session;
-    private final GmxcloudIdProvider fileid;
 
-    public GmxcloudFindFeature(final GmxcloudSession session, final GmxcloudIdProvider fileid) {
+    private final GmxcloudSession session;
+    private final GmxcloudResourceIdProvider fileid;
+
+    public GmxcloudFindFeature(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }

@@ -1,4 +1,6 @@
-package ch.cyberduck.core.gmxcloud;/*
+package ch.cyberduck.core.gmxcloud;
+
+/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -25,51 +27,55 @@ import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UiFsModel;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UiWin32;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.Uifs;
 
+import org.apache.log4j.Logger;
+
 public class GmxcloudAttributesFinderFeature implements AttributesFinder {
+    private static final Logger log = Logger.getLogger(GmxcloudAttributesFinderFeature.class);
 
     private final GmxcloudSession session;
-    private final GmxcloudIdProvider fileid;
+    private final GmxcloudResourceIdProvider fileid;
 
-    public GmxcloudAttributesFinderFeature(final GmxcloudSession session, final GmxcloudIdProvider fileid) {
+    public GmxcloudAttributesFinderFeature(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        final GmxcloudApiClient client = new GmxcloudApiClient(session);
+        if(file.isRoot()) {
+            return PathAttributes.EMPTY;
+        }
         try {
-            final String fileId = this.fileid.getFileId(file, listener);
-            if(fileId == null) {
+            final String resourceId = fileid.getFileId(file, listener);
+            if(resourceId == null) {
                 throw new NotfoundException(file.getAbsolute());
             }
-            UiFsModel response = new ListResourceApi(client).resourceResourceIdGet(fileId,
+            final GmxcloudApiClient client = new GmxcloudApiClient(session);
+            final UiFsModel response = new ListResourceApi(client).resourceResourceIdGet(resourceId,
                 null, null, null, null, null, null, "win32props", null);
-            final PathAttributes pathAttributes = this.toAttributes(response.getUifs());
-            if(response.getUiwin32() != null) {
-                this.addUi32Properties(pathAttributes, response.getUiwin32());
-            }
-            return pathAttributes;
+            return this.toAttributes(response.getUifs(), response.getUiwin32());
         }
         catch(ApiException e) {
-            throw new GmxcloudExceptionMappingService().map(e);
+            throw new GmxcloudExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 
-    protected PathAttributes toAttributes(final Uifs entity) {
+    protected PathAttributes toAttributes(final Uifs entity, final UiWin32 uiwin32) {
         final PathAttributes attr = new PathAttributes();
         attr.setDisplayname(entity.getName());
-        attr.setETag(entity.getMetaETag());
+        attr.setETag(entity.getContentETag());
         attr.setSize(entity.getSize());
-        attr.setVersionId("" + entity.getVersion());
-        attr.setFileId(Util.getResourceIdFromResourceUri(entity.getResourceURI()));
+        attr.setFileId(GmxcloudResourceIdProvider.getResourceIdFromResourceUri(entity.getResourceURI()));
+        if(null == uiwin32) {
+            log.warn("Missing extended properties");
+            return attr;
+        }
+        else {
+            attr.setCreationDate(uiwin32.getCreationMillis());
+            attr.setModificationDate(uiwin32.getLastModificationMillis());
+            attr.setAccessedDate(uiwin32.getLastAccessMillis());
+            attr.setHidden(uiwin32.isHidden());
+        }
         return attr;
-    }
-
-    protected void addUi32Properties(PathAttributes pathAttributes, final UiWin32 uiWin32) {
-        pathAttributes.setCreationDate(uiWin32.getCreationMillis());
-        pathAttributes.setModificationDate(uiWin32.getLastModificationMillis());
-        pathAttributes.setHidden(uiWin32.isHidden());
-        pathAttributes.setAccessedDate(uiWin32.getLastAccessMillis());
     }
 }

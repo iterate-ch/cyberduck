@@ -19,7 +19,6 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -41,33 +40,44 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class GmxcloudSingleUploadServiceTest extends AbstractGmxcloudTest {
 
-
     @Test
     public void testUploadSimpleFile() throws Exception {
-        GmxcloudIdProvider fileid = new GmxcloudIdProvider(session);
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
         final GmxcloudSingleUploadService gmxcloudSingleUploadService = new GmxcloudSingleUploadService(session, fileid, new GmxcloudWriteFeature(session, fileid));
-        final Path container = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path("/TestFolderToDelete", EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
-        assertTrue(new GmxcloudFindFeature(session, fileid).find(container, new DisabledListProgressListener()));
+        final Path container = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus().withLength(0L));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final int length = 2881;
-        final byte[] content = RandomUtils.nextBytes(length);
-        IOUtils.write(content, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus();
-        status.setLength(content.length);
-        final BytecountStreamListener count = new BytecountStreamListener();
-        gmxcloudSingleUploadService.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
-        assertEquals(content.length, count.getSent());
-        assertTrue(status.isComplete());
-        assertTrue(new GmxcloudFindFeature(session, fileid).find(file));
-        assertEquals(content.length, new GmxcloudAttributesFinderFeature(session, fileid).find(file).getSize());
-        final byte[] compare = new byte[length];
-        IOUtils.readFully(new GmxcloudReadFeature(session, fileid).read(file, new TransferStatus().withLength(length), new DisabledConnectionCallback()), compare);
-        assertArrayEquals(content, compare);
+        {
+            final byte[] content = RandomUtils.nextBytes(2881);
+            IOUtils.write(content, local.getOutputStream(false));
+            final TransferStatus status = new TransferStatus().withLength(content.length);
+            final BytecountStreamListener count = new BytecountStreamListener();
+            gmxcloudSingleUploadService.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
+            assertEquals(content.length, count.getSent());
+            assertTrue(status.isComplete());
+            assertTrue(new GmxcloudFindFeature(session, fileid).find(file));
+            assertEquals(content.length, new GmxcloudAttributesFinderFeature(session, fileid).find(file).getSize());
+            final byte[] compare = new byte[content.length];
+            IOUtils.readFully(new GmxcloudReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), compare);
+            assertArrayEquals(content, compare);
+        }
+        {
+            final byte[] content = RandomUtils.nextBytes(526);
+            IOUtils.write(content, local.getOutputStream(false));
+            final TransferStatus status = new TransferStatus().withLength(content.length).exists(true);
+            final BytecountStreamListener count = new BytecountStreamListener();
+            gmxcloudSingleUploadService.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
+            assertEquals(content.length, count.getSent());
+            assertTrue(status.isComplete());
+            assertTrue(new GmxcloudFindFeature(session, fileid).find(file));
+            assertEquals(content.length, new GmxcloudAttributesFinderFeature(session, fileid).find(file).getSize());
+            final byte[] compare = new byte[content.length];
+            IOUtils.readFully(new GmxcloudReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), compare);
+            assertArrayEquals(content, compare);
+        }
+        // Override
         new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
-
-
 }

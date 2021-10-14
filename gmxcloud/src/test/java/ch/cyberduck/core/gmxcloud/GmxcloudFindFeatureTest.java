@@ -16,49 +16,72 @@ package ch.cyberduck.core.gmxcloud;
  */
 
 import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GmxcloudFindFeatureTest extends AbstractGmxcloudTest {
 
     @Test
-    public void findFeaturesWithDepthMoreThan2() throws Exception {
-        GmxcloudIdProvider fileid = new GmxcloudIdProvider(session);
-        final Path folder1 = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path("/Folder1", EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
-        final Path folder1Folder2 = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path("/Folder1/Folder2", EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
-        final Path folder1Folder2Folder3 = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path("/Folder1/Folder2/Folder3", EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
-
-        final Path folder2TestFile = new Path(folder1Folder2, "testfile1.txt", EnumSet.of(Path.Type.file));
-        createFile(folder2TestFile, "This is simple test data under folder2's file".getBytes(StandardCharsets.UTF_8));
-
-        final Path folder3TestFile = new Path(folder1Folder2Folder3, "testfile1.txt", EnumSet.of(Path.Type.file));
-        createFile(folder3TestFile, "This is simple test data under folder3's file".getBytes(StandardCharsets.UTF_8));
-
-        assertTrue(new GmxcloudFindFeature(session, fileid).find(folder3TestFile, new DisabledListProgressListener()));
-        assertTrue(new DefaultFindFeature(session).find(folder3TestFile, new DisabledListProgressListener()));
-
-        assertTrue(new GmxcloudFindFeature(session, fileid).find(folder2TestFile, new DisabledListProgressListener()));
-        assertTrue(new DefaultFindFeature(session).find(folder2TestFile, new DisabledListProgressListener()));
-
-        new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(folder1), new DisabledLoginCallback(), new Delete.DisabledCallback());
-
-        assertFalse((new GmxcloudFindFeature(session, fileid).find(folder1, new DisabledListProgressListener())));
+    public void testFindRoot() throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final GmxcloudAttributesFinderFeature f = new GmxcloudAttributesFinderFeature(session, fileid);
+        final PathAttributes attributes = f.find(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)));
+        assertSame(PathAttributes.EMPTY, attributes);
     }
 
+    @Test(expected = NotfoundException.class)
+    public void testFindNotFound() throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final GmxcloudAttributesFinderFeature f = new GmxcloudAttributesFinderFeature(session, fileid);
+        f.find(test);
+    }
+
+    @Test
+    public void testFind() throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final Path folder1 = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(
+                new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        assertEquals(folder1.attributes().getFileId(), new GmxcloudResourceIdProvider(session).getFileId(folder1, new DisabledListProgressListener()));
+        assertTrue(new GmxcloudFindFeature(session, fileid).find(folder1, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(folder1, new DisabledListProgressListener()));
+        final Path folder1Folder2 = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(folder1,
+                new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        assertEquals(folder1Folder2.attributes().getFileId(), new GmxcloudResourceIdProvider(session).getFileId(folder1Folder2, new DisabledListProgressListener()));
+        assertTrue(new GmxcloudFindFeature(session, fileid).find(folder1Folder2, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(folder1Folder2, new DisabledListProgressListener()));
+        final Path folder1Folder2Folder3 = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(folder1Folder2,
+                new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        assertEquals(folder1Folder2Folder3.attributes().getFileId(), new GmxcloudResourceIdProvider(session).getFileId(folder1Folder2Folder3, new DisabledListProgressListener()));
+        assertTrue(new GmxcloudFindFeature(session, fileid).find(folder1Folder2Folder3, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(folder1Folder2Folder3, new DisabledListProgressListener()));
+        final Path folder2TestFile = createFile(new Path(folder1Folder2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), RandomUtils.nextBytes(124));
+        assertEquals(folder2TestFile.attributes().getFileId(), new GmxcloudResourceIdProvider(session).getFileId(folder2TestFile, new DisabledListProgressListener()));
+        assertTrue(new GmxcloudFindFeature(session, fileid).find(folder2TestFile, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(folder2TestFile, new DisabledListProgressListener()));
+        final Path folder3TestFile = createFile(new Path(folder1Folder2Folder3, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), RandomUtils.nextBytes(1024));
+        assertEquals(folder3TestFile.attributes().getFileId(), new GmxcloudResourceIdProvider(session).getFileId(folder3TestFile, new DisabledListProgressListener()));
+        assertTrue(new GmxcloudFindFeature(session, fileid).find(folder3TestFile, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(folder3TestFile, new DisabledListProgressListener()));
+        new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(folder1), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse((new GmxcloudFindFeature(session, fileid).find(folder1, new DisabledListProgressListener())));
+    }
 }

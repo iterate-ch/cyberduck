@@ -19,11 +19,9 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -31,7 +29,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -43,13 +40,12 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class GmxcloudLargeUploadServiceTest extends AbstractGmxcloudTest {
 
-
     @Test
     public void testUploadLargeFileInChunks() throws Exception {
-        GmxcloudIdProvider fileid = new GmxcloudIdProvider(session);
-        final GmxcloudLargeUploadService gmxcloudLargeUploadService = new GmxcloudLargeUploadService(session, fileid, new GmxcloudWriteFeature(session, fileid), 4 * 1024L * 1024L, 5);
-        final Path container = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path("/TestFolderToDelete", EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
-        assertTrue(new GmxcloudFindFeature(session, fileid).find(container, new DisabledListProgressListener()));
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final GmxcloudLargeUploadService s = new GmxcloudLargeUploadService(session, fileid, new GmxcloudWriteFeature(session, fileid), 4 * 1024L * 1024L, 5);
+        final Path container = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(
+                new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
@@ -59,7 +55,7 @@ public class GmxcloudLargeUploadServiceTest extends AbstractGmxcloudTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        final GmxcloudUploadResponse gmxcloudUploadResponse = gmxcloudLargeUploadService.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
+        final GmxcloudUploadHelper.GmxcloudUploadResponse gmxcloudUploadResponse = s.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
         assertNotNull(gmxcloudUploadResponse.getCdash64());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
@@ -71,15 +67,4 @@ public class GmxcloudLargeUploadServiceTest extends AbstractGmxcloudTest {
         new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
-
-    @After
-    public void deleteContainer() throws BackgroundException {
-        GmxcloudIdProvider fileid = new GmxcloudIdProvider(session);
-        final Path container = new Path("/TestFolderToDelete", EnumSet.of(AbstractPath.Type.directory));
-        if(new GmxcloudFindFeature(session, fileid).find(container, new DisabledListProgressListener())) {
-            new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        }
-    }
-
-
 }

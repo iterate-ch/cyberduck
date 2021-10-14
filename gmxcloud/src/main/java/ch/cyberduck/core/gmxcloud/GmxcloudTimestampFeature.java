@@ -31,9 +31,9 @@ import org.joda.time.DateTime;
 public class GmxcloudTimestampFeature extends DefaultTimestampFeature {
 
     private final GmxcloudSession session;
-    private final GmxcloudIdProvider fileid;
+    private final GmxcloudResourceIdProvider fileid;
 
-    public GmxcloudTimestampFeature(final GmxcloudSession session, final GmxcloudIdProvider fileid) {
+    public GmxcloudTimestampFeature(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -42,13 +42,14 @@ public class GmxcloudTimestampFeature extends DefaultTimestampFeature {
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
-            ResourceUpdateModel resourceUpdateModel = new ResourceUpdateModel();
+            final ResourceUpdateModel resourceUpdateModel = new ResourceUpdateModel();
             ResourceUpdateModelUpdate resourceUpdateModelUpdate = new ResourceUpdateModelUpdate();
             UiWin32 uiWin32 = new UiWin32();
             uiWin32.setLastModificationMillis(new DateTime(status.getTimestamp()).getMillis());
             resourceUpdateModelUpdate.setUiwin32(uiWin32);
             resourceUpdateModel.setUpdate(resourceUpdateModelUpdate);
-            new UpdateResourceApi(new GmxcloudApiClient(session)).resourceResourceIdPatch(resourceId, resourceUpdateModel, null, null, null);
+            new UpdateResourceApi(new GmxcloudApiClient(session)).resourceResourceIdPatch(resourceId,
+                    resourceUpdateModel, null, null, null);
         }
         catch(ApiException e) {
             throw new GmxcloudExceptionMappingService().map("Failure to write attributes of {0}", e, file);

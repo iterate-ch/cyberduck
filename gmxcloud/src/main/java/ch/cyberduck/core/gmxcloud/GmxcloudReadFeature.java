@@ -46,9 +46,9 @@ public class GmxcloudReadFeature implements Read {
     private static final Logger log = Logger.getLogger(GmxcloudReadFeature.class);
 
     private final GmxcloudSession session;
-    private final GmxcloudIdProvider fileid;
+    private final GmxcloudResourceIdProvider fileid;
 
-    public GmxcloudReadFeature(final GmxcloudSession session, final GmxcloudIdProvider fileid) {
+    public GmxcloudReadFeature(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -56,11 +56,8 @@ public class GmxcloudReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final String fileId = fileid.getFileId(file, new DisabledListProgressListener());
-            if(fileId == null) {
-                throw new NotfoundException(file.getAbsolute());
-            }
-            final UiFsModel uiFsModel = new ListResourceApi(new GmxcloudApiClient(session)).resourceResourceIdGet(fileId,
+            final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
+            final UiFsModel uiFsModel = new ListResourceApi(new GmxcloudApiClient(session)).resourceResourceIdGet(resourceId,
                 null, null, null, null, null, null, "download", null);
             final HttpUriRequest request = new HttpGet(uiFsModel.getUilink().getDownloadURI());
             if(status.isAppend()) {

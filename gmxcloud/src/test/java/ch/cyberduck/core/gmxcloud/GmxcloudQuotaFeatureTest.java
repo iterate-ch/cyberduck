@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 public class GmxcloudQuotaFeatureTest extends AbstractGmxcloudTest {
 
     @Test
-    public void get() throws Exception {
+    public void testGetQuota() throws Exception {
         final Quota.Space quota = new GmxcloudQuotaFeature(session).get();
         assertNotNull(quota.available);
         assertNotNull(quota.used);

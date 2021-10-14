@@ -1,4 +1,6 @@
-package ch.cyberduck.core.gmxcloud;/*
+package ch.cyberduck.core.gmxcloud;
+
+/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -15,7 +17,6 @@ package ch.cyberduck.core.gmxcloud;/*
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -39,9 +40,9 @@ public class AbstractGmxcloudTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new GmxcloudProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/GMX Cloud.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/GMX Cloud.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-            System.getProperties().getProperty("gmxcloud.user"), System.getProperties().getProperty("gmxcloud.password")
+                System.getProperties().getProperty("gmxcloud.user"), System.getProperties().getProperty("gmxcloud.password")
         ));
         session = new GmxcloudSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -83,13 +84,13 @@ public class AbstractGmxcloudTest {
     }
 
 
-    protected void createFile(Path file, final byte[] content) throws Exception {
-        GmxcloudIdProvider fileid = new GmxcloudIdProvider(session);
+    protected Path createFile(Path file, final byte[] content) throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
         final GmxcloudWriteFeature feature = new GmxcloudWriteFeature(session, fileid);
-        final TransferStatus status = new TransferStatus().withLength(content.length);
-        final Checksum expectedChecksum = new GmxcloudCdash64Compute().compute(new ByteArrayInputStream(content), status);
-        status.withChecksum(expectedChecksum);
-        final HttpResponseOutputStream<GmxcloudUploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
+        final TransferStatus status = new TransferStatus()
+                .withChecksum(new GmxcloudCdash64Compute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length)))
+                .withLength(content.length);
+        final HttpResponseOutputStream<GmxcloudUploadHelper.GmxcloudUploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();
@@ -97,5 +98,6 @@ public class AbstractGmxcloudTest {
         assertEquals(content.length, count.getSent());
         in.close();
         out.close();
+        return file;
     }
 }
