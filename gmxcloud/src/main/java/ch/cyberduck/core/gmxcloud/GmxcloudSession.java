@@ -50,6 +50,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.BackgroundActionPauser;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
@@ -61,6 +62,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
@@ -184,6 +186,14 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
                 default:
                     throw new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(
                             response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+            }
+            if(StringUtils.isNotBlank(host.getProperty("pacs.url"))) {
+                try {
+                    client.execute(new HttpPost(host.getProperty("pacs.url")));
+                }
+                catch(IOException e){
+                    log.warn(String.format("Ignore failure %s running Personal Agent Context Service (PACS) request", e));
+                }
             }
         }
         catch(HttpResponseException e) {

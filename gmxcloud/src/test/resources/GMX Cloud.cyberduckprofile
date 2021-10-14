@@ -74,6 +74,7 @@
             <string>app.mac=gmx.macos.cloudsynctool/{0}</string>
             <string>app.windows=gmx.windows.cloudsynctool/{0}</string>
             <string>share.hostname=c.gmx.net</string>
+            <string>pacs.url=https://hsp.gmx.net/http-service-proxy1/service/pacs/MobileCloudStorageContext2</string>
             <string>cryptomator.vault.masterkey.filename=systemdaten.gmxtresor</string>
             <string>cryptomator.vault.pepper=gmx</string>>
         </array>
