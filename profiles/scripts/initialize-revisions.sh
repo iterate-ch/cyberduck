@@ -30,7 +30,7 @@ for path in $DIRECTORY/*.cyberduckprofile; do
   git log --reverse --format=%H "$filename" |
     while read hash; do
       git show "$hash:profiles/$filename" > "$TMPDIR/$filename"
-      duck -y --username $AWS_ACCESS_KEY_ID --password $AWS_SECRET_ACCESS_KEY --existing compare --upload "$TARGET/$filename" "$TMPDIR/$filename"
+      env "s3.metadata.default=Content-Type=application/xml" duck -y --username $AWS_ACCESS_KEY_ID --password $AWS_SECRET_ACCESS_KEY --existing compare --upload "$TARGET/$filename" "$TMPDIR/$filename"
       rm "$TMPDIR/$filename"
     done
 done
