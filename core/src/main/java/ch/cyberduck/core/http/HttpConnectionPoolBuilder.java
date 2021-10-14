@@ -23,8 +23,7 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.ProxyCredentialsStoreFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
@@ -65,7 +64,6 @@ import java.nio.charset.Charset;
 public class HttpConnectionPoolBuilder {
     private static final Logger log = Logger.getLogger(HttpConnectionPoolBuilder.class);
 
-    private final Preferences preferences = PreferencesFactory.get();
     private final ConnectionSocketFactory socketFactory;
     private final ConnectionSocketFactory sslSocketFactory;
     private final Host host;
@@ -143,25 +141,25 @@ public class HttpConnectionPoolBuilder {
                 break;
         }
         configuration.setUserAgent(new PreferencesUseragentProvider().get());
-        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = new HostPreferences(host).getInteger("connection.timeout.seconds") * 1000;
         configuration.setDefaultSocketConfig(SocketConfig.custom()
             .setTcpNoDelay(true)
             .setSoTimeout(timeout)
             .build());
         configuration.setDefaultRequestConfig(this.createRequestConfig(timeout));
         configuration.setDefaultConnectionConfig(ConnectionConfig.custom()
-            .setBufferSize(preferences.getInteger("http.socket.buffer"))
+            .setBufferSize(new HostPreferences(host).getInteger("http.socket.buffer"))
             .setCharset(Charset.forName(host.getEncoding()))
             .build());
-        if(preferences.getBoolean("http.connections.reuse")) {
+        if(new HostPreferences(host).getBoolean("http.connections.reuse")) {
             configuration.setConnectionReuseStrategy(new DefaultClientConnectionReuseStrategy());
         }
         else {
             configuration.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
         }
-        configuration.setRetryHandler(new ExtendedHttpRequestRetryHandler(preferences.getInteger("http.connections.retry")));
+        configuration.setRetryHandler(new ExtendedHttpRequestRetryHandler(new HostPreferences(host).getInteger("http.connections.retry")));
         configuration.setServiceUnavailableRetryStrategy(new DisabledServiceUnavailableRetryStrategy());
-        if(!preferences.getBoolean("http.compression.enable")) {
+        if(!new HostPreferences(host).getBoolean("http.compression.enable")) {
             configuration.disableContentCompression();
         }
         configuration.setRequestExecutor(new LoggingHttpRequestExecutor(listener));
@@ -170,13 +168,13 @@ public class HttpConnectionPoolBuilder {
         configuration.setConnectionManager(this.createConnectionManager(this.createRegistry()));
         configuration.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
             .register(AuthSchemes.BASIC, new BasicSchemeFactory(
-                Charset.forName(preferences.getProperty("http.credentials.charset"))))
+                Charset.forName(new HostPreferences(host).getProperty("http.credentials.charset"))))
             .register(AuthSchemes.DIGEST, new DigestSchemeFactory(
-                Charset.forName(preferences.getProperty("http.credentials.charset"))))
-            .register(AuthSchemes.NTLM, preferences.getBoolean("webdav.ntlm.windows.authentication.enable") && WinHttpClients.isWinAuthAvailable() ?
+                Charset.forName(new HostPreferences(host).getProperty("http.credentials.charset"))))
+            .register(AuthSchemes.NTLM, new HostPreferences(host).getBoolean("webdav.ntlm.windows.authentication.enable") && WinHttpClients.isWinAuthAvailable() ?
                 new BackportWindowsNTLMSchemeFactory(null) :
                 new NTLMSchemeFactory())
-            .register(AuthSchemes.SPNEGO, preferences.getBoolean("webdav.ntlm.windows.authentication.enable") && WinHttpClients.isWinAuthAvailable() ?
+            .register(AuthSchemes.SPNEGO, new HostPreferences(host).getBoolean("webdav.ntlm.windows.authentication.enable") && WinHttpClients.isWinAuthAvailable() ?
                 new BackportWindowsNegotiateSchemeFactory(null) :
                 new SPNegoSchemeFactory())
             .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory()).build());
@@ -191,9 +189,9 @@ public class HttpConnectionPoolBuilder {
             .setAuthenticationEnabled(true)
             .setConnectTimeout(timeout)
             // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
-            .setConnectionRequestTimeout(preferences.getInteger("http.manager.timeout"))
+            .setConnectionRequestTimeout(new HostPreferences(host).getInteger("http.manager.timeout"))
             .setSocketTimeout(timeout)
-            .setNormalizeUri(preferences.getBoolean("http.request.uri.normalize"))
+            .setNormalizeUri(new HostPreferences(host).getBoolean("http.request.uri.normalize"))
             .build();
     }
 
@@ -208,10 +206,10 @@ public class HttpConnectionPoolBuilder {
             log.debug(String.format("Setup connection pool with registry %s", registry));
         }
         final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(registry);
-        manager.setMaxTotal(preferences.getInteger("http.connections.total"));
-        manager.setDefaultMaxPerRoute(preferences.getInteger("http.connections.route"));
+        manager.setMaxTotal(new HostPreferences(host).getInteger("http.connections.total"));
+        manager.setDefaultMaxPerRoute(new HostPreferences(host).getInteger("http.connections.route"));
         // Detect connections that have become stale (half-closed) while kept inactive in the pool
-        manager.setValidateAfterInactivity(preferences.getInteger("http.connections.stale.check.ms"));
+        manager.setValidateAfterInactivity(new HostPreferences(host).getInteger("http.connections.stale.check.ms"));
         return manager;
     }
 }
