@@ -1140,6 +1140,9 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("gmxcloud.upload.multipart.size", String.valueOf(4L * 1024L * 1024L)); // 4MB
         this.setDefault("gmxcloud.upload.multipart.threshold", String.valueOf(4L * 1024L * 1024L)); // 4MB
         this.setDefault("gmxcloud.upload.multipart.concurrency", String.valueOf(10));
+        this.setDefault("gmxcloud.listing.chunksize", String.valueOf(100));
+        this.setDefault("gmxcloud.delete.trash", String.valueOf(true));
+        this.setDefault("gmxcloud.share.expiration.millis", String.valueOf(86400000));
 
         this.setDefault("preferences.general.enable", String.valueOf(true));
         this.setDefault("preferences.browser.enable", String.valueOf(true));
