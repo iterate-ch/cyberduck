@@ -212,6 +212,9 @@
     <LayoutFile Include="$(OutputPath)\System.Reactive.dll">
       <PackagePath>$(PackageLayout)\System.Reactive.dll</PackagePath>
     </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\System.Runtime.CompilerServices.Unsafe.dll">
+        <PackagePath>$(PackageLayout)\System.Runtime.CompilerServices.Unsafe.dll</PackagePath>
+    </LayoutFile>
 
     <LayoutFile Include="$(OutputPath)Acknowledgments.rtf">
       <PackagePath>$(PackageLayout)\Acknowledgments.rtf</PackagePath>
