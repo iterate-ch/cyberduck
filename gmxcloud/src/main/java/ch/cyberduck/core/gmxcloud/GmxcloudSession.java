@@ -45,11 +45,16 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.BackgroundActionPauser;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.http.Header;
+import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -65,6 +70,8 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.Optional;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -113,6 +120,28 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
                         PreferencesFactory.get().getProperty("application.version"),
                         PreferencesFactory.get().getProperty("application.revision"))))
                 );
+            }
+        });
+        configuration.addInterceptorLast(new HttpResponseInterceptor() {
+            @Override
+            public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
+                final Optional<Header> hint = Arrays.asList(response.getAllHeaders()).stream()
+                        .filter(header -> "X-UI-Traffic-Hint".equals(header.getName())).findFirst();
+                if(hint.isPresent()) {
+                    // Any response can contain this header. If this happens, a client should take measures to
+                    // reduce its request rate. We advise to wait two seconds before sending the next request.
+                    log.warn(String.format("Retrieved throttle warning %s", hint.get()));
+                    final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
+                        @Override
+                        public void validate() { }
+
+                        @Override
+                        public void progress(final Integer seconds) {
+                            log.warn(String.format("Pause for %d because of traffic hint", seconds));
+                        }
+                    }, new HostPreferences(host).getInteger("gmxcloud.limit.hint.second"));
+                    pause.await();
+                }
             }
         });
         return configuration.build();
