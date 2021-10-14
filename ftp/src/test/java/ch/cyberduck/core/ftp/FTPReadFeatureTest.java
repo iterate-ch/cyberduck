@@ -27,7 +27,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -113,7 +112,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         status.setLength(5L);
         final Path workdir = new FTPWorkdirService(session).find();
         final Path file = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)), new DefaultAttributesFinderFeature(session)).touch(file, new TransferStatus());
+        new DefaultTouchFeature<>(new FTPWriteFeature(session), new DefaultAttributesFinderFeature(session)).touch(file, new TransferStatus());
         final InputStream in = new FTPReadFeature(session).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
         // Send ABOR because stream was not read completly
@@ -148,7 +147,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
     @Test
     public void testDoubleCloseStream() throws Exception {
         final Path file = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)), new DefaultAttributesFinderFeature(session)).touch(file, new TransferStatus());
+        new DefaultTouchFeature<>(new FTPWriteFeature(session), new DefaultAttributesFinderFeature(session)).touch(file, new TransferStatus());
         final TransferStatus status = new TransferStatus();
         status.setLength(5L);
         final Path workdir = new FTPWorkdirService(session).find();

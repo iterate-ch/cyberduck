@@ -45,8 +45,8 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
     @Test
     public void testCopyFile() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)),
-            new DAVAttributesFinderFeature(session)).touch(test, new TransferStatus());
+        new DefaultTouchFeature<>(new DAVWriteFeature(session),
+                new DAVAttributesFinderFeature(session)).touch(test, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new DAVFindFeature(session).find(test));
@@ -60,9 +60,9 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)), new DAVAttributesFinderFeature(session)).touch(test, new TransferStatus());
+        new DefaultTouchFeature<>(new DAVWriteFeature(session), new DAVAttributesFinderFeature(session)).touch(test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)), new DAVAttributesFinderFeature(session)).touch(copy, new TransferStatus());
+        new DefaultTouchFeature<>(new DAVWriteFeature(session), new DAVAttributesFinderFeature(session)).touch(copy, new TransferStatus());
         new DAVCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
@@ -76,7 +76,7 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(directory, name, EnumSet.of(Path.Type.file));
         new DAVDirectoryFeature(session).mkdir(directory, new TransferStatus());
-        new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)), new DAVAttributesFinderFeature(session)).touch(file, new TransferStatus());
+        new DefaultTouchFeature<>(new DAVWriteFeature(session), new DAVAttributesFinderFeature(session)).touch(file, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVCopyFeature(session).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new DAVFindFeature(session).find(file));
