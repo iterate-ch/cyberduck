@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
@@ -197,6 +198,9 @@ public class GmxcloudSession extends HttpSession<CloseableHttpClient> {
         }
         if(type == Write.class) {
             return (T) new GmxcloudWriteFeature(this, resourceid);
+        }
+        if(type == MultipartWrite.class) {
+            return (T) new GmxcloudMultipartWriteFeature(this, resourceid);
         }
         if(type == Touch.class) {
             return (T) new GmxcloudTouchFeature(this, resourceid);
