@@ -16,6 +16,7 @@ package ch.cyberduck.core.gmxcloud;
  */
 
 import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -23,10 +24,10 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -37,21 +38,22 @@ import static org.junit.Assert.assertTrue;
 public class GmxcloudDeleteFeatureTest extends AbstractGmxcloudTest {
 
     @Test
-    public void deleteFolder() throws Exception {
-        GmxcloudIdProvider fileid = new GmxcloudIdProvider(session);
-        final Path directory = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path("/TestFolderToDelete", EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+    public void testDeleteFolder() throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final Path directory = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(
+                new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         assertTrue(new GmxcloudFindFeature(session, fileid).find(directory, new DisabledListProgressListener()));
         new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse((new GmxcloudFindFeature(session, fileid).find(directory, new DisabledListProgressListener())));
     }
 
     @Test
-    public void deleteFile() throws Exception {
-        GmxcloudIdProvider fileid = new GmxcloudIdProvider(session);
-        final Path folder = new Path("/TestFolderToDelete", EnumSet.of(AbstractPath.Type.directory));
-        final Path file = new Path(folder, "testfile.txt", EnumSet.of(Path.Type.file));
+    public void testDeleteFile() throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final Path folder = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
+        final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GmxcloudDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
-        createFile(file, "This is simple test data".getBytes(StandardCharsets.UTF_8));
+        createFile(file, RandomUtils.nextBytes(511));
         assertTrue(new GmxcloudFindFeature(session, fileid).find(file));
         new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse((new GmxcloudFindFeature(session, fileid).find(file, new DisabledListProgressListener())));
@@ -59,6 +61,4 @@ public class GmxcloudDeleteFeatureTest extends AbstractGmxcloudTest {
         new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse((new GmxcloudFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
     }
-
-
 }
