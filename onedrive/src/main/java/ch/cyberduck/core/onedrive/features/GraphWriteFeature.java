@@ -20,6 +20,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -57,6 +58,9 @@ public class GraphWriteFeature implements Write<Void> {
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
+            if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
+                throw new UnsupportedException("Content-Range with unknown file size is not supported");
+            }
             final DriveItem folder = session.getItem(file.getParent());
             final DriveItem oneDriveFile = new DriveItem(folder, URIEncoder.encode(file.getName()));
             final UploadSession upload = Files.createUploadSession(oneDriveFile);
@@ -113,13 +117,7 @@ public class GraphWriteFeature implements Write<Void> {
         public void write(final byte[] b, final int off, final int len) throws IOException {
             final byte[] content = Arrays.copyOfRange(b, off, len);
             final HttpRange range = HttpRange.byLength(offset, content.length);
-            final String header;
-            if(overall.getLength() == TransferStatus.UNKNOWN_LENGTH) {
-                header = String.format("%d-%d/*", range.getStart(), range.getEnd());
-            }
-            else {
-                header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), length);
-            }
+            final String header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), length);
             try {
                 new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                     @Override
