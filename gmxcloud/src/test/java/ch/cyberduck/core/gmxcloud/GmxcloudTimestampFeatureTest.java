@@ -42,7 +42,7 @@ public class GmxcloudTimestampFeatureTest extends AbstractGmxcloudTest {
         final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
         final Path container = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path file = new DefaultTouchFeature<>(new GmxcloudSingleUploadService(session, fileid, new GmxcloudWriteFeature(session, fileid)), new GmxcloudAttributesFinderFeature(session, fileid))
+        final Path file = new GmxcloudTouchFeature(session, fileid)
                 .touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         assertNotEquals(PathAttributes.EMPTY, new GmxcloudAttributesFinderFeature(session, fileid).find(file));
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;

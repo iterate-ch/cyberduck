@@ -73,7 +73,7 @@ public class GmxcloudListServiceTest extends AbstractGmxcloudTest {
         final Path folder = new GmxcloudDirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
         assertTrue(new GmxcloudListService(session, fileid).list(folder, new DisabledListProgressListener()).isEmpty());
-        final Path file = new DefaultTouchFeature<>(new GmxcloudSingleUploadService(session, fileid, new GmxcloudWriteFeature(session, fileid)), new GmxcloudAttributesFinderFeature(session, fileid))
+        final Path file = new GmxcloudTouchFeature(session, fileid)
                 .touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         final AttributedList<Path> list = new GmxcloudListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertFalse(list.isEmpty());

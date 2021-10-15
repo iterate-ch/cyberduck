@@ -111,7 +111,7 @@ public class GmxcloudCopyFeatureTest extends AbstractGmxcloudTest {
         local.delete();
         assertTrue(new GmxcloudFindFeature(session, fileid).find(test));
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<>(new GmxcloudSingleUploadService(session, fileid, new GmxcloudWriteFeature(session, fileid)), new GmxcloudAttributesFinderFeature(session, fileid))
+        new GmxcloudTouchFeature(session, fileid)
                 .touch(copy, new TransferStatus().withLength(0L));
         new GmxcloudCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         final Find find = new DefaultFindFeature(session);

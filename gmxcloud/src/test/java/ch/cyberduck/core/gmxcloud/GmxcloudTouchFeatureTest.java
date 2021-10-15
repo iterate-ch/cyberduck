@@ -1,4 +1,6 @@
-package ch.cyberduck.core.shared;/*
+package ch.cyberduck.core.gmxcloud;
+
+/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -25,6 +27,7 @@ import ch.cyberduck.core.gmxcloud.GmxcloudDirectoryFeature;
 import ch.cyberduck.core.gmxcloud.GmxcloudResourceIdProvider;
 import ch.cyberduck.core.gmxcloud.GmxcloudSingleUploadService;
 import ch.cyberduck.core.gmxcloud.GmxcloudWriteFeature;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -38,18 +41,17 @@ import java.util.EnumSet;
 import static org.junit.Assert.fail;
 
 @Category(IntegrationTest.class)
-public class DefaultTouchFeatureTest extends AbstractGmxcloudTest {
+public class GmxcloudTouchFeatureTest extends AbstractGmxcloudTest {
 
     @Test(expected = ConflictException.class)
     public void testConflict() throws Exception {
         final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
         final Path container = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path file = new DefaultTouchFeature<>(new GmxcloudSingleUploadService(session, fileid, new GmxcloudWriteFeature(session, fileid)), new GmxcloudAttributesFinderFeature(session, fileid))
-                .touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+        final Path file = new GmxcloudTouchFeature(session, fileid).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         // Create conflict
         try {
-            new DefaultTouchFeature<>(new GmxcloudSingleUploadService(session, fileid, new GmxcloudWriteFeature(session, fileid)), new GmxcloudAttributesFinderFeature(session, fileid))
+            new GmxcloudTouchFeature(session, fileid)
                     .touch(file, new TransferStatus().withLength(0L));
             fail();
         }
@@ -64,11 +66,11 @@ public class DefaultTouchFeatureTest extends AbstractGmxcloudTest {
         final Path container = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String filename = StringUtils.lowerCase(new AlphanumericRandomStringService().random());
-        final Path file = new DefaultTouchFeature<>(new GmxcloudSingleUploadService(session, fileid, new GmxcloudWriteFeature(session, fileid)), new GmxcloudAttributesFinderFeature(session, fileid))
+        final Path file = new GmxcloudTouchFeature(session, fileid)
                 .touch(new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         try {
             // Create conflict
-            new DefaultTouchFeature<>(new GmxcloudSingleUploadService(session, fileid, new GmxcloudWriteFeature(session, fileid)), new GmxcloudAttributesFinderFeature(session, fileid))
+            new GmxcloudTouchFeature(session, fileid)
                     .touch(new Path(container, StringUtils.capitalize(filename), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
             fail();
         }

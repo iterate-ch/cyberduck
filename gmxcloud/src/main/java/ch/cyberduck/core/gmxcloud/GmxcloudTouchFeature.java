@@ -20,6 +20,6 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 public class GmxcloudTouchFeature extends DefaultTouchFeature<GmxcloudUploadHelper.GmxcloudUploadResponse> {
 
     public GmxcloudTouchFeature(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid) {
-        super(new GmxcloudSingleUploadService(session, fileid, new GmxcloudWriteFeature(session, fileid)), new GmxcloudAttributesFinderFeature(session, fileid));
+        super(new GmxcloudWriteFeature(session, fileid), new GmxcloudAttributesFinderFeature(session, fileid));
     }
 }
