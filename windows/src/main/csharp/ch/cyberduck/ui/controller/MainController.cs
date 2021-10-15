@@ -23,7 +23,6 @@ using ch.cyberduck.core.b2;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.brick;
 using ch.cyberduck.core.ctera;
-using ch.cyberduck.core.gmxcloud;
 using ch.cyberduck.core.nextcloud;
 using ch.cyberduck.core.owncloud;
 using ch.cyberduck.core.dav;
@@ -150,8 +149,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
                 new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(), new SharepointSiteProtocol(),
-                new MantaProtocol(), new SDSProtocol(), new StoregateProtocol(), new BrickProtocol(), new NextcloudProtocol(), new OwncloudProtocol(), new CTERAProtocol(),
-                new GmxcloudProtocol());
+                new MantaProtocol(), new SDSProtocol(), new StoregateProtocol(), new BrickProtocol(), new NextcloudProtocol(), new OwncloudProtocol(), new CTERAProtocol());
             protocolFactory.load();
 
             Locator.SetLocator(new StructureMapBootstrapper.SplatDependencyResolver());
