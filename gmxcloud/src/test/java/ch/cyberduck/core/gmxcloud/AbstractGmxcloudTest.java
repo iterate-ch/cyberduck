@@ -40,7 +40,7 @@ public class AbstractGmxcloudTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new GmxcloudProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/GMX Cloud.cyberduckprofile"));
+                this.getClass().getResourceAsStream(String.format("/%s/GMX Cloud.cyberduckprofile", this.getSupportedPlatform().name())));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("gmxcloud.user"), System.getProperties().getProperty("gmxcloud.password")
         ));
@@ -53,6 +53,15 @@ public class AbstractGmxcloudTest {
             }
         }, new DisabledHostKeyCallback(), new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
+    }
+
+    private Factory.Platform.Name getSupportedPlatform() {
+        switch(Factory.Platform.getDefault()) {
+            case windows:
+                return Factory.Platform.Name.windows;
+            default:
+                return Factory.Platform.Name.mac;
+        }
     }
 
     @After
