@@ -21,15 +21,16 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import org.apache.log4j.Logger;
 
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
 public class VaultRegistryFindFeature implements Find {
@@ -58,7 +59,8 @@ public class VaultRegistryFindFeature implements Find {
         if(vault.equals(Vault.DISABLED)) {
             if(autodetect) {
                 final Path directory = file.getParent();
-                final Path key = new Path(directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+                final Path key = new Path(directory,
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file));
                 if(proxy.find(key, listener)) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Found master key %s", key));
@@ -67,7 +69,10 @@ public class VaultRegistryFindFeature implements Find {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Found vault %s", directory));
                         }
-                        return lookup.load(session, directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER).getFeature(session, Find.class, proxy)
+                        return lookup.load(session, directory,
+                                new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                                new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))
+                                .getFeature(session, Find.class, proxy)
                             .find(file, listener);
                     }
                     catch(VaultUnlockCancelException e) {

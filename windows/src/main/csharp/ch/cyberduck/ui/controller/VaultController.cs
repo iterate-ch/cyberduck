@@ -21,12 +21,14 @@ using ch.cyberduck.core.features;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.vault;
 using ch.cyberduck.core.worker;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
 using java.util;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 using static Ch.Cyberduck.ImageHelper;
 
@@ -93,7 +95,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerCreateVaultWorker(BrowserController controller, Path folder, String filename,
                     String region, String passphrase)
-                    : base(region, new VaultCredentials(passphrase), PasswordStoreFactory.get(), VaultFactory.get(folder, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER))
+                    : base(region, new VaultCredentials(passphrase), PasswordStoreFactory.get(), VaultFactory.get(folder,
+                        new HostPreferences(controller.Session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                        Encoding.UTF8.GetBytes(new HostPreferences(controller.Session.getHost()).getProperty("cryptomator.vault.pepper"))))
                 {
                     _controller = controller;
                     _folder = folder;
