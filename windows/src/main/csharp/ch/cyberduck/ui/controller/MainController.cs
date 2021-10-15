@@ -415,7 +415,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 h.setCredentials(CredentialsConfiguratorFactory.get(h.getProtocol()).configure(h));
                 if (AbstractPath.Type.file == _detector.detect(h.getDefaultPath()))
                 {
-                    Path file = new Path(h.getDefaultPath(), EnumSet.of(AbstractPath.Type.file));
+                    Path file = new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(AbstractPath.Type.file));
                     // wait until transferCollection is loaded
                     transfersSemaphore.Wait();
                     TransferController.Instance.StartTransfer(new DownloadTransfer(h, file,
@@ -433,6 +433,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                     .Equals(new HostUrlProvider().get(h)))
                             {
                                 b.View.BringToFront();
+                                if(Path.Type.directory == _detector.detect(h.getDefaultPath())) {
+                                    b.SetWorkdir(new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(AbstractPath.Type.directory)));
+                                }
                                 return;
                             }
                         }

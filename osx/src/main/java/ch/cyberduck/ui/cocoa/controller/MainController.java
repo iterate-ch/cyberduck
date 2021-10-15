@@ -1308,10 +1308,12 @@ public class MainController extends BundleController implements NSApplication.De
                         else {
                             for(BrowserController browser : MainController.getBrowsers()) {
                                 if(browser.isMounted()) {
-                                    if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
-                                        new HostUrlProvider().get(h))) {
+                                    if(new HostUrlProvider().get(browser.getSession().getHost()).equals(new HostUrlProvider().get(h))) {
                                         // Handle browser window already connected to the same host. #4215
                                         browser.window().makeKeyAndOrderFront(null);
+                                        if(Path.Type.directory == detector.detect(h.getDefaultPath())) {
+                                            browser.setWorkdir(new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.directory)));
+                                        }
                                         return;
                                     }
                                 }
