@@ -28,9 +28,9 @@ using java.util;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 using static Ch.Cyberduck.ImageHelper;
-using StandardCharsets = java.nio.charset.StandardCharsets;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -97,7 +97,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     String region, String passphrase)
                     : base(region, new VaultCredentials(passphrase), PasswordStoreFactory.get(), VaultFactory.get(folder,
                         new HostPreferences(controller.Session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                        new HostPreferences(controller.Session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8)))
+                        Encoding.UTF8.GetBytes(new HostPreferences(controller.Session.getHost()).getProperty("cryptomator.vault.pepper"))))
                 {
                     _controller = controller;
                     _folder = folder;
