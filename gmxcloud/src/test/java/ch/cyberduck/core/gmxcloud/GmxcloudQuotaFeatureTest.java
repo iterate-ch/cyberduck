@@ -15,21 +15,24 @@ package ch.cyberduck.core.gmxcloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
-public class SessionFactoryTest {
+@Category(IntegrationTest.class)
+public class GmxcloudQuotaFeatureTest extends AbstractGmxcloudTest {
 
     @Test
-    public void testCreateSession() {
-        assertNotNull(SessionFactory.create(new Host(new GmxcloudProtocol()),
-            new DefaultX509TrustManager(), new DefaultX509KeyManager()
-        ));
+    public void testGetQuota() throws Exception {
+        final Quota.Space quota = new GmxcloudQuotaFeature(session).get();
+        assertNotNull(quota.available);
+        assertNotNull(quota.used);
+        assertNotEquals(0L, quota.available, 0L);
+        assertNotEquals(0L, quota.used, 0L);
+        assertTrue(quota.used < quota.available);
     }
 }

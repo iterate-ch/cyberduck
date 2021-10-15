@@ -1,4 +1,6 @@
-package ch.cyberduck.core.gmxcloud;/*
+package ch.cyberduck.core.gmxcloud;
+
+/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -13,24 +15,32 @@ package ch.cyberduck.core.gmxcloud;/*
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.dav.DAVQuotaFeature;
-import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.formatter.DecimalSizeFormatter;
+import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.api.UserInfoApi;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UserInfoResponseModel;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
-public class GmxcloudQuotaFeature extends DAVQuotaFeature {
+public class GmxcloudQuotaFeature implements Quota {
 
-    public GmxcloudQuotaFeature(final DAVSession session) {
-        super(session);
+    private final GmxcloudSession session;
+
+    public GmxcloudQuotaFeature(final GmxcloudSession session) {
+        this.session = session;
     }
 
     @Override
     public Space get() throws BackgroundException {
-        final Space space = super.get();
-        if(unknown.equals(space)) {
-            // Assume 2 GB free plan
-            return new Space(0L, 2 * DecimalSizeFormatter.GIGA.multiple());
+        try {
+            final GmxcloudApiClient gmxcloudApiClient = new GmxcloudApiClient(session);
+            final UserInfoApi userInfoApi = new UserInfoApi(gmxcloudApiClient);
+            final UserInfoResponseModel userInfoResponseModel = userInfoApi.userinfoGet(null, null);
+            return new Space(userInfoResponseModel.getQuotas().getContentSize().getCurrent().longValue(), userInfoResponseModel.getQuotas().getContentSize().getMax());
         }
-        return space;
+        catch(ApiException e) {
+            throw new GmxcloudExceptionMappingService().map("Failure to read attributes of {0}", e,
+                new DefaultHomeFinderService(session).find());
+        }
     }
 }

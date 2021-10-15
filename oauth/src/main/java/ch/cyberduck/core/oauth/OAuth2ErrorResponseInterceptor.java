@@ -59,7 +59,7 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
                             log.warn(String.format("Failure refreshing OAuth tokens. %s", e));
                             // Reset OAuth Tokens
                             bookmark.getCredentials().setOauth(OAuthTokens.EMPTY);
-                            service.setTokens(service.authorize(bookmark, prompt, new DisabledCancelCallback()));
+                            service.setTokens(service.authorize(bookmark, prompt, new DisabledCancelCallback(), OAuth2AuthorizationService.FlowType.AuthorizationCode));
                         }
                         // Try again
                         return true;

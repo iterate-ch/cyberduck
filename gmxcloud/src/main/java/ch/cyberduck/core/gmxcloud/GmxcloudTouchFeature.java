@@ -15,21 +15,11 @@ package ch.cyberduck.core.gmxcloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 
-import org.junit.Test;
+public class GmxcloudTouchFeature extends DefaultTouchFeature<GmxcloudUploadHelper.GmxcloudUploadResponse> {
 
-import static org.junit.Assert.assertNotNull;
-
-public class SessionFactoryTest {
-
-    @Test
-    public void testCreateSession() {
-        assertNotNull(SessionFactory.create(new Host(new GmxcloudProtocol()),
-            new DefaultX509TrustManager(), new DefaultX509KeyManager()
-        ));
+    public GmxcloudTouchFeature(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid) {
+        super(new GmxcloudWriteFeature(session, fileid), new GmxcloudAttributesFinderFeature(session, fileid));
     }
 }

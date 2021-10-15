@@ -152,5 +152,10 @@
             <artifactId>freenet</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>gmxcloud</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

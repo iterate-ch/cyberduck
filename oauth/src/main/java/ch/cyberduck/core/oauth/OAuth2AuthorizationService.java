@@ -53,9 +53,11 @@ import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.PasswordTokenRequest;
 import com.google.api.client.auth.oauth2.RefreshTokenRequest;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
+import com.google.api.client.http.BasicAuthentication;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -113,7 +115,7 @@ public class OAuth2AuthorizationService {
         this.scopes = scopes;
     }
 
-    public OAuthTokens authorize(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public OAuthTokens authorize(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel, final FlowType type) throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
         final OAuthTokens saved = credentials.getOauth();
         if(saved.validate()) {
@@ -140,6 +142,27 @@ public class OAuth2AuthorizationService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Start new OAuth flow for %s with missing access token", bookmark));
         }
+        final TokenResponse response;
+        switch(type) {
+            case AuthorizationCode:
+                response = this.authorizeWithCode(bookmark, prompt, cancel, credentials);
+                break;
+            case PasswordGrant:
+                response = this.authorizeWithPassword(credentials);
+                break;
+            default:
+                throw new LoginCanceledException();
+        }
+        // Save access key and refresh key
+        final OAuthTokens tokens = new OAuthTokens(
+            response.getAccessToken(), response.getRefreshToken(),
+            null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
+                System.currentTimeMillis() + response.getExpiresInSeconds() * 1000);
+        credentials.setOauth(tokens);
+        return tokens;
+    }
+
+    private TokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel, final Credentials credentials) throws BackgroundException {
         if(PreferencesFactory.get().getBoolean("oauth.browser.open.warn")) {
             prompt.warn(bookmark,
                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
@@ -215,16 +238,37 @@ public class OAuth2AuthorizationService {
                 log.debug(String.format("Request tokens for authentication code %s", authenticationCode.get()));
             }
             // Swap the given authorization token for access/refresh tokens
-            final TokenResponse response = flow.newTokenRequest(authenticationCode.get())
+            return flow.newTokenRequest(authenticationCode.get())
                 .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes)
                 .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
-            // Save access key and refresh key
-            final OAuthTokens tokens = new OAuthTokens(
-                response.getAccessToken(), response.getRefreshToken(),
-                null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
-                    System.currentTimeMillis() + response.getExpiresInSeconds() * 1000);
-            credentials.setOauth(tokens);
-            return tokens;
+        }
+        catch(TokenResponseException e) {
+            throw new OAuthExceptionMappingService().map(e);
+        }
+        catch(HttpResponseException e) {
+            throw new DefaultHttpResponseExceptionMappingService().map(new org.apache.http.client
+                .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+    }
+
+    private TokenResponse authorizeWithPassword(final Credentials credentials) throws BackgroundException {
+        try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Request tokens for user %s", credentials.getUsername()));
+            }
+            final PasswordTokenRequest request = new PasswordTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
+                credentials.getUsername(), credentials.getPassword()
+            )
+                .setClientAuthentication(new BasicAuthentication(clientid, clientsecret))
+                .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
+                .setScopes(scopes);
+            for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
+                request.set(values.getKey(), values.getValue());
+            }
+            return request.executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
         }
         catch(TokenResponseException e) {
             throw new OAuthExceptionMappingService().map(e);
@@ -283,6 +327,11 @@ public class OAuth2AuthorizationService {
     public OAuth2AuthorizationService withParameter(final String key, final String value) {
         additionalParameters.put(key, value);
         return this;
+    }
+
+    public enum FlowType {
+        AuthorizationCode,
+        PasswordGrant
     }
 
     public static final class PermissiveTokenResponse extends GenericJson {

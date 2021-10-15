@@ -15,21 +15,15 @@ package ch.cyberduck.core.gmxcloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.assertNotNull;
-
-public class SessionFactoryTest {
+@Category(IntegrationTest.class)
+public class GmxcloudSessionTest extends AbstractGmxcloudTest {
 
     @Test
-    public void testCreateSession() {
-        assertNotNull(SessionFactory.create(new Host(new GmxcloudProtocol()),
-            new DefaultX509TrustManager(), new DefaultX509KeyManager()
-        ));
+    public void testLogin() throws Exception {
     }
 }
