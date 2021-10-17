@@ -35,9 +35,16 @@ public class ResourceCreationResponseEntriesTest {
     }
 
     @Test
-    public void testDeserializeError() throws Exception {
+    public void testInsufficientStorage() throws Exception {
         final ResourceCreationResponseEntries entries = new JSON().getContext(ResourceCreationResponseEntries.class).readValue(
                 new StringReader("{\"qJoMj8qv\":{\"statusCode\":507,\"reason\":\"INSUFFICIENT_STORAGE\",\"entity\":\"LIMIT_MAX_CONTENT_SIZE\"}}"), ResourceCreationResponseEntries.class);
         assertTrue(entries.containsKey("qJoMj8qv"));
+    }
+
+    @Test
+    public void testInvalidName() throws Exception {
+        final ResourceCreationResponseEntries entries = new JSON().getContext(ResourceCreationResponseEntries.class).readValue(
+                new StringReader("{\"Go5YUk43.\":{\"statusCode\":400,\"reason\":\"paths may not end with a .\"}}"), ResourceCreationResponseEntries.class);
+        assertTrue(entries.containsKey("Go5YUk43."));
     }
 }
