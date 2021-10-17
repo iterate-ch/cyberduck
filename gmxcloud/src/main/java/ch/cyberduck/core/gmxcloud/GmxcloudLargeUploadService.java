@@ -105,7 +105,7 @@ public class GmxcloudLargeUploadService extends HttpUploadFeature<GmxcloudUpload
             else {
                 final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = GmxcloudUploadHelper.
                         createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(),
-                                UploadType.CHUNKED);
+                                status, UploadType.CHUNKED);
                   resourceId = GmxcloudResourceIdProvider.getResourceIdFromResourceUri(uploadResourceCreationResponseEntry.getHeaders().getLocation());
                   uploadUri = uploadResourceCreationResponseEntry.getEntity().getUploadURI();
             }

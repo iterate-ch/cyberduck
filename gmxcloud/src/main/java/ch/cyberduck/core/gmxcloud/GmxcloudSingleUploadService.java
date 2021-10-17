@@ -54,7 +54,7 @@ public class GmxcloudSingleUploadService extends HttpUploadFeature<GmxcloudUploa
         else {
             final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = GmxcloudUploadHelper.
                     createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(),
-                            UploadType.SIMPLE);
+                            status, UploadType.SIMPLE);
             uploadUri = uploadResourceCreationResponseEntry.getEntity().getUploadURI();
         }
         status.setUrl(uploadUri);

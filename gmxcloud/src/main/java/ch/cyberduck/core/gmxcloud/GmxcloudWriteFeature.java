@@ -68,7 +68,7 @@ public class GmxcloudWriteFeature extends AbstractHttpWriteFeature<GmxcloudUploa
             else {
                 final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = GmxcloudUploadHelper
                         .createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(),
-                                UploadType.SIMPLE);
+                                status, UploadType.SIMPLE);
                 resourceId = GmxcloudResourceIdProvider.getResourceIdFromResourceUri(uploadResourceCreationResponseEntry.getHeaders().getLocation());
                 uploadUri = uploadResourceCreationResponseEntry.getEntity().getUploadURI();
             }

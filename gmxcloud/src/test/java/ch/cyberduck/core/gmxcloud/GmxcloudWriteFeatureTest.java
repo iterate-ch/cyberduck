@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -186,5 +187,21 @@ public class GmxcloudWriteFeatureTest extends AbstractGmxcloudTest {
         stream.close();
         assertArrayEquals(content, compare);
         new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = QuotaException.class)
+    public void testMaxResourceSizeFailure() throws Exception {
+        // If the file is already created, but not completely uploaded yet, the entry can be overwritten by setting "forceOverwrite" to true.
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final GmxcloudWriteFeature feature = new GmxcloudWriteFeature(session, fileid);
+        final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus().withLength(Long.MAX_VALUE);
+        try {
+            feature.write(file, status, new DisabledConnectionCallback());
+        }
+        catch(QuotaException e) {
+            assertEquals("LIMIT_MAX_RESOURCE_SIZE. Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
     }
 }
