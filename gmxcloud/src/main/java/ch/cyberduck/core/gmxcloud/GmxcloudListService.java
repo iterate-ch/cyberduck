@@ -63,8 +63,18 @@ public class GmxcloudListService implements ListService {
                             null, null, null, null, chunksize, offset, "win32props", null);
                 }
                 for(Children child : fsModel.getUifs().getChildren()) {
-                    children.add(new Path(directory, child.getUifs().getName(),
-                            EnumSet.of("container".equalsIgnoreCase(child.getUifs().getResourceType()) ? Path.Type.directory : Path.Type.file),
+                    final EnumSet<Path.Type> type;
+                    switch(child.getUifs().getResourceType()) {
+                        case "aliascontainer":
+                            type = EnumSet.of(Path.Type.directory, Path.Type.placeholder);
+                            break;
+                        case "container":
+                            type = EnumSet.of(Path.Type.directory);
+                            break;
+                        default:
+                            type = EnumSet.of(Path.Type.file);
+                    }
+                    children.add(new Path(directory, child.getUifs().getName(), type,
                             attributes.toAttributes(child.getUifs(), child.getUiwin32())));
                     listener.chunk(directory, children);
                 }
