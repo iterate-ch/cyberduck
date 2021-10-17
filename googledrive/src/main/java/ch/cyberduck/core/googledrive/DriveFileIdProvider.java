@@ -48,9 +48,9 @@ public class DriveFileIdProvider implements FileIdProvider {
             return file.attributes().getFileId();
         }
         if(file.isRoot()
-            || file.equals(DriveHomeFinderService.MYDRIVE_FOLDER)
-            || file.equals(DriveHomeFinderService.SHARED_FOLDER_NAME)
-            || file.equals(DriveHomeFinderService.SHARED_DRIVES_NAME)) {
+                || new SimplePathPredicate(file).test(DriveHomeFinderService.MYDRIVE_FOLDER)
+                || new SimplePathPredicate(file).test(DriveHomeFinderService.SHARED_FOLDER_NAME)
+                || new SimplePathPredicate(file).test(DriveHomeFinderService.SHARED_DRIVES_NAME)) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
         if(cache.contains(new SimplePathPredicate(file))) {
@@ -62,7 +62,7 @@ public class DriveFileIdProvider implements FileIdProvider {
         }
         if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
             final Path found = new DriveTeamDrivesListService(session, this).list(file.getParent(), listener).find(
-                new SimplePathPredicate(file)
+                    new SimplePathPredicate(file)
             );
             if(null == found) {
                 throw new NotfoundException(file.getAbsolute());
