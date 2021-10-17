@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -26,6 +27,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UploadType;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -186,6 +188,27 @@ public class GmxcloudWriteFeatureTest extends AbstractGmxcloudTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
+        new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testOverwriteShadowFile() throws Exception {
+        // If the file is already created, but not completely uploaded yet, the entry can be overwritten by setting "forceOverwrite" to true.
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final GmxcloudWriteFeature feature = new GmxcloudWriteFeature(session, fileid);
+        final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(423);
+        final TransferStatus status = new TransferStatus().withLength(content.length);
+        GmxcloudUploadHelper.createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(),
+                status, UploadType.SIMPLE);
+        final Checksum checksum = new GmxcloudCdash64Compute().compute(new ByteArrayInputStream(content), status);
+        status.withChecksum(checksum);
+        final HttpResponseOutputStream<GmxcloudUploadHelper.GmxcloudUploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
+        final ByteArrayInputStream in = new ByteArrayInputStream(content);
+        assertEquals(content.length, IOUtils.copyLarge(in, out));
+        in.close();
+        out.close();
+        assertTrue(new DefaultFindFeature(session).find(file));
         new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

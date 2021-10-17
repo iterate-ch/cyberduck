@@ -95,6 +95,7 @@ public final class GmxcloudUploadHelper {
     public static ResourceCreationResponseEntry createResource(final GmxcloudSession session, final String resourceId, final String filename,
                                                                final TransferStatus status, final UploadType uploadType) throws BackgroundException {
         final ResourceCreationRepresentationArrayInner resourceCreationRepresentation = new ResourceCreationRepresentationArrayInner();
+        resourceCreationRepresentation.setForceOverwrite(true);
         resourceCreationRepresentation.setPath(filename);
         if(TransferStatus.UNKNOWN_LENGTH != status.getLength()) {
             resourceCreationRepresentation.setSize(status.getLength());
