@@ -112,7 +112,7 @@ public class SFTPWriteFeature extends AppendWriteFeature<Void> {
     }
 
     protected int getMaxUnconfirmedWrites(final TransferStatus status) {
-        if(-1 == status.getLength()) {
+        if(TransferStatus.UNKNOWN_LENGTH == status.getLength()) {
             return preferences.getInteger("sftp.write.maxunconfirmed");
         }
         return Integer.min((int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1,

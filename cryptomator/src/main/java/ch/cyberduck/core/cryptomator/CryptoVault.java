@@ -485,16 +485,16 @@ public class CryptoVault implements Vault {
 
     @Override
     public long toCiphertextSize(final long cleartextFileSize) {
-        if(-1L == cleartextFileSize) {
-            return -1L;
+        if(TransferStatus.UNKNOWN_LENGTH == cleartextFileSize) {
+            return TransferStatus.UNKNOWN_LENGTH;
         }
         return cryptor.fileHeaderCryptor().headerSize() + Cryptors.ciphertextSize(cleartextFileSize, cryptor);
     }
 
     @Override
     public long toCleartextSize(final long ciphertextFileSize) throws CryptoInvalidFilesizeException {
-        if(-1L == ciphertextFileSize) {
-            return -1L;
+        if(TransferStatus.UNKNOWN_LENGTH == ciphertextFileSize) {
+            return TransferStatus.UNKNOWN_LENGTH;
         }
         final int headerSize = cryptor.fileHeaderCryptor().headerSize();
         try {

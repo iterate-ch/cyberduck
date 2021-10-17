@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -41,12 +42,12 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * The file length
      */
-    private long size = -1;
+    private long size = TransferStatus.UNKNOWN_LENGTH;
 
     /**
      * Quota of folder
      */
-    private long quota = -1;
+    private long quota = TransferStatus.UNKNOWN_LENGTH;
 
     /**
      * The file modification date in milliseconds

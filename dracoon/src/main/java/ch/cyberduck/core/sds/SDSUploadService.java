@@ -73,7 +73,7 @@ public class SDSUploadService {
     public CreateFileUploadResponse start(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final CreateFileUploadRequest body = new CreateFileUploadRequest()
-                .size(-1 == status.getLength() ? null : status.getLength())
+                .size(TransferStatus.UNKNOWN_LENGTH == status.getLength() ? null : status.getLength())
                 .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName())
                 .directS3Upload(null);

@@ -61,7 +61,7 @@ public class SwiftReadFeature implements Read {
             final Response response;
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
-                if(-1 == range.getEnd()) {
+                if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
                     response = session.getClient().getObject(regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
                             range.getStart());

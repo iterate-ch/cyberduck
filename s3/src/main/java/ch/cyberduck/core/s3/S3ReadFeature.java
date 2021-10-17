@@ -67,7 +67,7 @@ public class S3ReadFeature implements Read {
             }
             if(status.isAppend()) {
                 final String header;
-                if(-1 == range.getEnd()) {
+                if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
                     header = String.format("bytes=%d-", range.getStart());
                 }
                 else {

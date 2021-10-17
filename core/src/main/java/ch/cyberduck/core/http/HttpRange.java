@@ -39,11 +39,11 @@ public class HttpRange {
     }
 
     public static HttpRange byLength(final long offset, final long length) {
-        return new HttpRange(offset, -1 == length ? -1 : offset + length - 1);
+        return new HttpRange(offset, TransferStatus.UNKNOWN_LENGTH == length ? TransferStatus.UNKNOWN_LENGTH : offset + length - 1);
     }
 
     public HttpRange(final long start, final long end) {
-        this(start, end, -1 == end ? -1 : end - start + 1);
+        this(start, end, TransferStatus.UNKNOWN_LENGTH == end ? TransferStatus.UNKNOWN_LENGTH : end - start + 1);
     }
 
     public HttpRange(final Long start, final Long end, final Long length) {
@@ -56,14 +56,14 @@ public class HttpRange {
      * @return First byte position
      */
     public long getStart() {
-        return this.start;
+        return start;
     }
 
     /**
      * @return Last byte position
      */
     public long getEnd() {
-        return this.end;
+        return end;
     }
 
     /**

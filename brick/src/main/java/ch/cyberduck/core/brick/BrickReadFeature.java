@@ -60,7 +60,7 @@ public class BrickReadFeature implements Read {
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 final String header;
-                if(-1 == range.getEnd()) {
+                if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
                     header = String.format("bytes=%d-", range.getStart());
                 }
                 else {
