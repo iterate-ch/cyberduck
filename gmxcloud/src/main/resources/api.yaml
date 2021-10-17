@@ -692,7 +692,7 @@ components:
                     format: int64
                 childrenSize:
                     type: integer
-                    format: int32
+                    format: int64
                 metaETag:
                     type: string
                 lastResourceOperation:

@@ -33,7 +33,7 @@ public class Uifs {
   private Long creationMillis = null;
 
   @JsonProperty("childrenSize")
-  private Integer childrenSize = null;
+  private Long childrenSize = null;
 
   @JsonProperty("metaETag")
   private String metaETag = null;
@@ -110,7 +110,7 @@ public class Uifs {
     this.creationMillis = creationMillis;
   }
 
-  public Uifs childrenSize(Integer childrenSize) {
+  public Uifs childrenSize(Long childrenSize) {
     this.childrenSize = childrenSize;
     return this;
   }
@@ -120,11 +120,11 @@ public class Uifs {
    * @return childrenSize
   **/
   @Schema(description = "")
-  public Integer getChildrenSize() {
+  public Long getChildrenSize() {
     return childrenSize;
   }
 
-  public void setChildrenSize(Integer childrenSize) {
+  public void setChildrenSize(Long childrenSize) {
     this.childrenSize = childrenSize;
   }
 
