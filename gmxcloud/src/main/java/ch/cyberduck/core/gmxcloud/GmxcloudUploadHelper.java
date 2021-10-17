@@ -30,11 +30,11 @@ import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceResourceIdBody
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UiFsModel;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.Uifs;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UploadType;
-import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpResponseException;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -44,6 +44,7 @@ import java.util.Collections;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public final class GmxcloudUploadHelper {
+    private static final Logger log = Logger.getLogger(GmxcloudUploadHelper.class);
 
     private static final String refId = "X-UI-CDOS-RefId";
     private static final String storeId = "X-UI-CDOS-StoreId";
@@ -99,14 +100,15 @@ public final class GmxcloudUploadHelper {
         resourceCreationRepresentation.setResourceType(ResourceCreationRepresentationArrayInner.ResourceTypeEnum.FILE);
         try {
             final ResourceCreationResponseEntries resourceCreationResponseEntries;
+            final GmxcloudApiClient client = new GmxcloudApiClient(session);
             switch(resourceId) {
                 case GmxcloudResourceIdProvider.ROOT:
-                    resourceCreationResponseEntries = new PostChildrenForAliasApi(new GmxcloudApiClient(session))
+                    resourceCreationResponseEntries = new PostChildrenForAliasApi(client)
                             .resourceAliasAliasChildrenPost(resourceId, Collections.singletonList(resourceCreationRepresentation),
                                     null, null, null, null, null);
                     break;
                 default:
-                    resourceCreationResponseEntries = new PostChildrenApi(new GmxcloudApiClient(session))
+                    resourceCreationResponseEntries = new PostChildrenApi(client)
                             .resourceResourceIdChildrenPost(resourceId, Collections.singletonList(resourceCreationRepresentation),
                                     null, null, null, null, null);
                     break;
@@ -119,8 +121,13 @@ public final class GmxcloudUploadHelper {
                 case HttpStatus.SC_CREATED:
                     break;
                 default:
-                    throw new DefaultHttpResponseExceptionMappingService().map(
-                            new HttpResponseException(resourceCreationResponseEntry.getStatusCode(), resourceCreationResponseEntry.getReason()));
+                    log.warn(String.format("Failure %s creating file %s", resourceCreationResponseEntry, filename));
+                    if(null == resourceCreationResponseEntry.getEntity()) {
+                        throw new GmxcloudExceptionMappingService().map(new ApiException(resourceCreationResponseEntry.getReason(),
+                                null, resourceCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                    }
+                    throw new GmxcloudExceptionMappingService().map(new ApiException(resourceCreationResponseEntry.getEntity().getError(),
+                            null, resourceCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));
             }
             return resourceCreationResponseEntry;
         }

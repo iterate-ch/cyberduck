@@ -26,14 +26,18 @@ import ch.cyberduck.core.gmxcloud.io.swagger.client.api.PostChildrenForAliasApi;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceCreationRepresentationArrayInner;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceCreationResponseEntries;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceCreationResponseEntry;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceCreationResponseEntryEntity;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
+import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.EnumSet;
 
 public class GmxcloudDirectoryFeature implements Directory<Void> {
+    private static final Logger log = Logger.getLogger(GmxcloudDirectoryFeature.class);
 
     private final GmxcloudSession session;
     private final GmxcloudResourceIdProvider fileid;
@@ -50,19 +54,40 @@ public class GmxcloudDirectoryFeature implements Directory<Void> {
             final String path = StringUtils.removeStart(folder.getAbsolute(), String.valueOf(Path.DELIMITER));
             resourceCreationRepresentation.setPath(path);
             resourceCreationRepresentation.setResourceType(ResourceCreationRepresentationArrayInner.ResourceTypeEnum.CONTAINER);
-            final ResourceCreationResponseEntries resourceCreationResponseEntries = new PostChildrenForAliasApi(new GmxcloudApiClient(session)).resourceAliasAliasChildrenPost(
+            final GmxcloudApiClient client = new GmxcloudApiClient(session);
+            final ResourceCreationResponseEntries resourceCreationResponseEntries = new PostChildrenForAliasApi(client).resourceAliasAliasChildrenPost(
                     GmxcloudResourceIdProvider.ROOT, Collections.singletonList(resourceCreationRepresentation), null, null, null, null, null);
             if(!resourceCreationResponseEntries.containsKey(path)) {
                 throw new NotfoundException(folder.getAbsolute());
             }
             final ResourceCreationResponseEntry resourceCreationResponseEntry = resourceCreationResponseEntries.get(path);
-            fileid.cache(folder, GmxcloudResourceIdProvider.getResourceIdFromResourceUri(resourceCreationResponseEntry.getHeaders().getLocation()));
-            return new Path(folder.getAbsolute(), EnumSet.of(Path.Type.directory),
-                new GmxcloudAttributesFinderFeature(session, fileid).find(folder, new DisabledListProgressListener()));
+            switch(resourceCreationResponseEntry.getStatusCode()) {
+                case HttpStatus.SC_OK:
+                    // Already exists
+                    log.warn(String.format("Folder %s already exists", folder));
+                case HttpStatus.SC_CREATED:
+                    fileid.cache(folder, GmxcloudResourceIdProvider.getResourceIdFromResourceUri(resourceCreationResponseEntry.getHeaders().getLocation()));
+                    return new Path(folder.getAbsolute(), EnumSet.of(Path.Type.directory),
+                            new GmxcloudAttributesFinderFeature(session, fileid).find(folder, new DisabledListProgressListener()));
+                default:
+                    log.warn(String.format("Failure %s creating folder %s", resourceCreationResponseEntry, folder));
+                    final ResourceCreationResponseEntryEntity entity = resourceCreationResponseEntry.getEntity();
+                    if(null == entity) {
+                        throw new GmxcloudExceptionMappingService().map(new ApiException(resourceCreationResponseEntry.getReason(),
+                                null, resourceCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                    }
+                    throw new GmxcloudExceptionMappingService().map(new ApiException(resourceCreationResponseEntry.getEntity().getError(),
+                            null, resourceCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));
+            }
         }
         catch(ApiException e) {
             throw new GmxcloudExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir, final String name) {
+        return new GmxcloudTouchFeature(session, fileid).isSupported(workdir, name);
     }
 
     @Override

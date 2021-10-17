@@ -40,12 +40,10 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class GmxcloudShareFeatureTest extends AbstractGmxcloudTest {
 
-    public static final String TEST_FOLDER_FORSHARE = "/TestFolderForshare";
-
     @Test(expected = InteroperabilityException.class)
     public void testInvalidPin() throws Exception {
         final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
-        final Path sourceFolder = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(TEST_FOLDER_FORSHARE, EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFolder = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final GmxcloudShareFeature feature = new GmxcloudShareFeature(session, fileid);
         try {
             feature.toDownloadUrl(sourceFolder, null, new DisabledPasswordCallback() {
@@ -55,6 +53,10 @@ public class GmxcloudShareFeatureTest extends AbstractGmxcloudTest {
                 }
             });
         }
+        catch(InteroperabilityException e) {
+            assertEquals("Pin does not match pin policy. Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
         finally {
             new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         }
@@ -63,7 +65,7 @@ public class GmxcloudShareFeatureTest extends AbstractGmxcloudTest {
     @Test
     public void testDownloadUrlForContainer() throws Exception {
         final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
-        final Path sourceFolder = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(TEST_FOLDER_FORSHARE, EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFolder = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final GmxcloudShareFeature feature = new GmxcloudShareFeature(session, fileid);
         final DescriptiveUrl url = feature.toDownloadUrl(sourceFolder, null, new DisabledPasswordCallback() {
             @Override
@@ -78,7 +80,7 @@ public class GmxcloudShareFeatureTest extends AbstractGmxcloudTest {
     @Test
     public void testDownloadUrlForFile() throws Exception {
         final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
-        final Path sourceFolder = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(TEST_FOLDER_FORSHARE, EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFolder = new GmxcloudDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         createFile(file, RandomUtils.nextBytes(0));
         assertTrue(new GmxcloudFindFeature(session, fileid).find(file));
