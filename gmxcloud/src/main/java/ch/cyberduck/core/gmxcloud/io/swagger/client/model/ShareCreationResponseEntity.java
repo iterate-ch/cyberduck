@@ -62,6 +62,14 @@ public class ShareCreationResponseEntity {
   @JsonProperty("hasPin")
   private Boolean hasPin = null;
 
+  private String error;
+
+  public ShareCreationResponseEntity() {
+  }
+
+  public ShareCreationResponseEntity(String error) {
+    this.error = error;
+  }
   public ShareCreationResponseEntity resourceURI(String resourceURI) {
     this.resourceURI = resourceURI;
     return this;
@@ -278,6 +286,9 @@ public class ShareCreationResponseEntity {
     this.hasPin = hasPin;
   }
 
+  public String getError() {
+    return error;
+  }
 
   @Override
   public boolean equals(java.lang.Object o) {
