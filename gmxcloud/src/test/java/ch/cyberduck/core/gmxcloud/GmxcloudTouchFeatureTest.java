@@ -20,14 +20,6 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.gmxcloud.AbstractGmxcloudTest;
-import ch.cyberduck.core.gmxcloud.GmxcloudAttributesFinderFeature;
-import ch.cyberduck.core.gmxcloud.GmxcloudDeleteFeature;
-import ch.cyberduck.core.gmxcloud.GmxcloudDirectoryFeature;
-import ch.cyberduck.core.gmxcloud.GmxcloudResourceIdProvider;
-import ch.cyberduck.core.gmxcloud.GmxcloudSingleUploadService;
-import ch.cyberduck.core.gmxcloud.GmxcloudWriteFeature;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -38,10 +30,20 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 @Category(IntegrationTest.class)
 public class GmxcloudTouchFeatureTest extends AbstractGmxcloudTest {
+
+    @Test
+    public void testSupported() {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        assertFalse(new GmxcloudTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), "f >f"));
+        assertFalse(new GmxcloudTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), "f "));
+        assertFalse(new GmxcloudTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), "f."));
+    }
+
 
     @Test(expected = ConflictException.class)
     public void testConflict() throws Exception {
@@ -51,8 +53,7 @@ public class GmxcloudTouchFeatureTest extends AbstractGmxcloudTest {
         final Path file = new GmxcloudTouchFeature(session, fileid).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         // Create conflict
         try {
-            new GmxcloudTouchFeature(session, fileid)
-                    .touch(file, new TransferStatus().withLength(0L));
+            new GmxcloudTouchFeature(session, fileid).touch(file, new TransferStatus().withLength(0L));
             fail();
         }
         finally {
