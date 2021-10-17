@@ -73,7 +73,7 @@ public final class GmxcloudUploadHelper {
         final UiFsModel uiFsModel = new JSON().getContext(UiFsModel.class).readValue(
                 new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8), UiFsModel.class);
         final Uifs uifs = uiFsModel.getUifs();
-        uploadResponse.setTotalSze(uifs.getSize().longValue());
+        uploadResponse.setTotalSze(uifs.getSize());
         uploadResponse.setCdash64(uifs.getCdash64());
         uploadResponse.setReferenceId(uifs.getReferenceId());
         uploadResponse.setStoreId(uifs.getStoreId());
