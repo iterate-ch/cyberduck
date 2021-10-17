@@ -91,7 +91,7 @@ public class MultipartUploadTokenOutputStream extends OutputStream {
                         if(0L != overall.getLength() && 0 != content.length) {
                             final HttpRange range = HttpRange.byLength(offset, content.length);
                             final String header;
-                            if(overall.getLength() == -1L) {
+                            if(overall.getLength() == TransferStatus.UNKNOWN_LENGTH) {
                                 header = String.format("%d-%d/*", range.getStart(), range.getEnd());
                             }
                             else {
