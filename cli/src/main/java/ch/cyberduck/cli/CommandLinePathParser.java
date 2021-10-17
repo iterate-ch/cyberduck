@@ -52,8 +52,8 @@ public class CommandLinePathParser {
         }
         switch(new ContainerPathKindDetector(host.getProtocol().getFeature(PathContainerService.class)).detect(host.getDefaultPath())) {
             case directory:
-            return new Path(PathNormalizer.normalize(host.getDefaultPath()), EnumSet.of(Path.Type.directory,
-                    Path.Type.volume));
+                return new Path(PathNormalizer.normalize(host.getDefaultPath()), EnumSet.of(Path.Type.directory,
+                        Path.Type.volume));
         }
         return new Path(PathNormalizer.normalize(host.getDefaultPath()), EnumSet.of(
                 new DelimiterPathKindDetector().detect(host.getDefaultPath())));
