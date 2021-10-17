@@ -18,6 +18,7 @@ package ch.cyberduck.core.gmxcloud;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultSocketExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -50,9 +51,9 @@ public class GmxcloudExceptionMappingService extends AbstractExceptionMappingSer
     @Override
     public BackgroundException map(final ApiException failure) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, failure.getMessage());
+        this.append(buffer, LocaleFactory.localizedString(failure.getMessage(), "EUE"));
         if(failure.getResponseHeaders().containsKey("X-UI-Enhanced-Status")) {
-            failure.getResponseHeaders().get("X-UI-Enhanced-Status").forEach(buffer::append);
+            failure.getResponseHeaders().get("X-UI-Enhanced-Status").forEach(s -> this.append(buffer, s));
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof ProcessingException) {
