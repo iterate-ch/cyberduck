@@ -52,7 +52,7 @@ public final class GmxcloudUploadHelper {
     /**
      * Read response headers from segment upload
      */
-    public static GmxcloudUploadResponse parseUploadResponse(final HttpResponse response) throws IOException, NotfoundException {
+    public static GmxcloudUploadResponse parseUploadResponse(final HttpResponse response) throws IOException {
         final GmxcloudUploadResponse uploadResponse = new GmxcloudUploadResponse();
         if(response.containsHeader(storeId)) {
             uploadResponse.setStoreId(response.getFirstHeader(storeId).getValue());
