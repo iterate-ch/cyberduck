@@ -37,16 +37,16 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class CTERASessionTest {
+public class CteraSessionTest {
 
     @Test
     public void testLoginRefreshCookie() throws Exception {
-        final Host host = new Host(new CTERAProtocol(), "mountainduck.na.ctera.me", new Credentials(
+        final Host host = new Host(new CteraProtocol(), "mountainduck.na.ctera.me", new Credentials(
             StringUtils.EMPTY, StringUtils.EMPTY,
             System.getProperties().getProperty("ctera.token")
         ));
         host.setDefaultPath("/ServicesPortal/webdav");
-        final CTERASession session = new CTERASession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final CteraSession session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
@@ -59,12 +59,12 @@ public class CTERASessionTest {
 
     @Test
     public void testLoginNonSAML() throws Exception {
-        final Host host = new Host(new CTERAProtocol(), "team.ctera.com", new Credentials(
+        final Host host = new Host(new CteraProtocol(), "team.ctera.com", new Credentials(
             System.getProperty("ctera.user"), System.getProperty("ctera.password"),
             StringUtils.EMPTY
         ));
         host.setDefaultPath("/ServicesPortal/webdav");
-        final CTERASession session = new CTERASession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final CteraSession session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
