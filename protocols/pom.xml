@@ -154,7 +154,7 @@
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
-            <artifactId>gmxcloud</artifactId>
+            <artifactId>eue</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

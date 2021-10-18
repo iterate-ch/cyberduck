@@ -52,6 +52,8 @@
         <module>owncloud</module>
         <module>manta</module>
         <module>ctera</module>
+        <module>eue</module>
+        <module>freenet</module>
         <module>protocols</module>
         <module>protocols/dll</module>
         <!-- Test -->
@@ -64,8 +66,6 @@
         <module>cli/linux</module>
         <module>cli/windows</module>
         <module>cli/osx</module>
-        <module>gmxcloud</module>
-        <module>freenet</module>
     </modules>
 
     <scm>

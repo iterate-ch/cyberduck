@@ -1137,14 +1137,14 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("cryptomator.vault.pepper", "");
         this.setDefault("cryptomator.cache.size", String.valueOf(1000));
 
-        this.setDefault("gmxcloud.upload.multipart.size", String.valueOf(4L * 1024L * 1024L)); // 4MB
-        this.setDefault("gmxcloud.upload.multipart.threshold", String.valueOf(4L * 1024L * 1024L)); // 4MB
-        this.setDefault("gmxcloud.upload.multipart.concurrency", String.valueOf(10));
-        this.setDefault("gmxcloud.listing.chunksize", String.valueOf(100));
-        this.setDefault("gmxcloud.delete.trash", String.valueOf(true));
-        this.setDefault("gmxcloud.share.expiration.millis", String.valueOf(86400000));
-        this.setDefault("gmxcloud.limit.hint.second", String.valueOf(2));
-        this.setDefault("gmxcloud.limit.requests.second", String.valueOf(10));
+        this.setDefault("eue.upload.multipart.size", String.valueOf(4L * 1024L * 1024L)); // 4MB
+        this.setDefault("eue.upload.multipart.threshold", String.valueOf(4L * 1024L * 1024L)); // 4MB
+        this.setDefault("eue.upload.multipart.concurrency", String.valueOf(10));
+        this.setDefault("eue.listing.chunksize", String.valueOf(100));
+        this.setDefault("eue.delete.trash", String.valueOf(true));
+        this.setDefault("eue.share.expiration.millis", String.valueOf(86400000));
+        this.setDefault("eue.limit.hint.second", String.valueOf(2));
+        this.setDefault("eue.limit.requests.second", String.valueOf(10));
 
         this.setDefault("preferences.general.enable", String.valueOf(true));
         this.setDefault("preferences.browser.enable", String.valueOf(true));

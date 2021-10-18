@@ -300,7 +300,7 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
         nextcloud,
         owncloud,
         manta,
-        gmxcloud,
+        eue,
         freenet,
         ctera
     }
