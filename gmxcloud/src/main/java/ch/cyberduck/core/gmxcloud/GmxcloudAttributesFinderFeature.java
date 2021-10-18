@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.api.ListResourceAliasApi;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.api.ListResourceApi;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UiFsModel;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UiWin32;
@@ -51,8 +52,15 @@ public class GmxcloudAttributesFinderFeature implements AttributesFinder {
                 throw new NotfoundException(file.getAbsolute());
             }
             final GmxcloudApiClient client = new GmxcloudApiClient(session);
-            final UiFsModel response = new ListResourceApi(client).resourceResourceIdGet(resourceId,
-                null, null, null, null, null, null, "win32props", null);
+            final UiFsModel response;
+            if(file.isPlaceholder()) {
+                response = new ListResourceAliasApi(client).resourceAliasAliasGet(resourceId,
+                        null, null, null, null, null, null, "win32props", null);
+            }
+            else {
+                response = new ListResourceApi(client).resourceResourceIdGet(resourceId,
+                        null, null, null, null, null, null, "win32props", null);
+            }
             return this.toAttributes(response.getUifs(), response.getUiwin32());
         }
         catch(ApiException e) {
