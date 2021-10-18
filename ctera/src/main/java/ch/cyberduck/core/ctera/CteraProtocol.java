@@ -24,7 +24,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class CTERAProtocol extends AbstractProtocol {
+public class CteraProtocol extends AbstractProtocol {
 
     public static final String CTERA_REDIRECT_URI = String.format("%s:websso",
         PreferencesFactory.get().getProperty("oauth.handler.scheme"));
@@ -52,11 +52,6 @@ public class CTERAProtocol extends AbstractProtocol {
     @Override
     public Scheme getScheme() {
         return Scheme.https;
-    }
-
-    @Override
-    public String getPrefix() {
-        return String.format("%s.%s", CTERAProtocol.class.getPackage().getName(), StringUtils.upperCase("CTERA"));
     }
 
     @Override

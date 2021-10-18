@@ -20,15 +20,15 @@ import ch.cyberduck.core.exception.BackgroundException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-public class CTERATokens {
-    private static final Logger log = Logger.getLogger(CTERATokens.class);
+public class CteraTokens {
+    private static final Logger log = Logger.getLogger(CteraTokens.class);
 
-    public static CTERATokens EMPTY = new CTERATokens(StringUtils.EMPTY, StringUtils.EMPTY);
+    public static CteraTokens EMPTY = new CteraTokens(StringUtils.EMPTY, StringUtils.EMPTY);
 
     private final String deviceId;
     private final String sharedSecret;
 
-    public CTERATokens(final String deviceId, final String sharedSecret) {
+    public CteraTokens(final String deviceId, final String sharedSecret) {
         this.deviceId = deviceId;
         this.sharedSecret = sharedSecret;
     }
@@ -41,8 +41,8 @@ public class CTERATokens {
         return sharedSecret;
     }
 
-    public static CTERATokens parse(final String token) throws BackgroundException {
-        return new CTERATokens(StringUtils.substringBefore(token, ':'), StringUtils.substringAfter(token, ':'));
+    public static CteraTokens parse(final String token) throws BackgroundException {
+        return new CteraTokens(StringUtils.substringBefore(token, ':'), StringUtils.substringAfter(token, ':'));
     }
 
     @Override

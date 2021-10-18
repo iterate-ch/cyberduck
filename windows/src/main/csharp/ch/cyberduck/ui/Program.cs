@@ -71,7 +71,7 @@ namespace Ch.Cyberduck.Ui
                                         var code = query.Get("code");
                                         proxy.OAuth(state, code);
                                     }
-                                    else if (item.StartsWith(CTERAProtocol.CTERA_REDIRECT_URI))
+                                    else if (item.StartsWith(CteraProtocol.CTERA_REDIRECT_URI))
                                     {
                                         var query = HttpUtility.ParseQueryString(result.Query);
                                         var code = query.Get("ActivationCode");

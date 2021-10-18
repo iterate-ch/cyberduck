@@ -13,7 +13,7 @@ package ch.cyberduck.core.ctera;/*
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ctera.auth.CTERATokens;
+import ch.cyberduck.core.ctera.auth.CteraTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 
@@ -33,21 +33,21 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-public class CTERAAuthenticationHandler implements ServiceUnavailableRetryStrategy {
-    private static final Logger log = Logger.getLogger(CTERAAuthenticationHandler.class);
+public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrategy {
+    private static final Logger log = Logger.getLogger(CteraAuthenticationHandler.class);
 
     private static final String SAML_LOCATION = "https://myapps.microsoft.com/signin/CTERA/e8e5145e-4fac-412e-b87b-fbfc26123827";
     private static final int MAX_RETRIES = 1;
 
-    private final CTERASession session;
+    private final CteraSession session;
 
-    private CTERATokens tokens = CTERATokens.EMPTY;
+    private CteraTokens tokens = CteraTokens.EMPTY;
 
-    public CTERAAuthenticationHandler(final CTERASession session) {
+    public CteraAuthenticationHandler(final CteraSession session) {
         this.session = session;
     }
 
-    public void setTokens(final CTERATokens tokens) {
+    public void setTokens(final CteraTokens tokens) {
         this.tokens = tokens;
     }
 

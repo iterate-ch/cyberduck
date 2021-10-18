@@ -25,7 +25,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.MacUniqueIdService;
 import ch.cyberduck.core.URIEncoder;
-import ch.cyberduck.core.ctera.auth.CTERATokens;
+import ch.cyberduck.core.ctera.auth.CteraTokens;
 import ch.cyberduck.core.ctera.model.AttachDeviceResponse;
 import ch.cyberduck.core.ctera.model.Attachment;
 import ch.cyberduck.core.ctera.model.PortalSession;
@@ -73,12 +73,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.util.concurrent.Uninterruptibles;
 
-public class CTERASession extends DAVSession {
-    private static final Logger log = Logger.getLogger(CTERASession.class);
+public class CteraSession extends DAVSession {
+    private static final Logger log = Logger.getLogger(CteraSession.class);
 
-    private final CTERAAuthenticationHandler authentication = new CTERAAuthenticationHandler(this);
+    private final CteraAuthenticationHandler authentication = new CteraAuthenticationHandler(this);
 
-    public CTERASession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+    public CteraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
 
@@ -101,14 +101,14 @@ public class CTERASession extends DAVSession {
             else {
                 response = this.startDesktopFlow(prompt, credentials);
             }
-            final CTERATokens tokens = new CTERATokens(response.deviceUID, response.sharedSecret);
+            final CteraTokens tokens = new CteraTokens(response.deviceUID, response.sharedSecret);
             authentication.setTokens(tokens);
             authentication.authenticate();
             credentials.setToken(tokens.toString());
             credentials.setSaved(true);
         }
         else {
-            authentication.setTokens(CTERATokens.parse(credentials.getToken()));
+            authentication.setTokens(CteraTokens.parse(credentials.getToken()));
             authentication.authenticate();
         }
         if(StringUtils.isBlank(credentials.getUsername())) {
@@ -129,7 +129,7 @@ public class CTERASession extends DAVSession {
 
     private AttachDeviceResponse startWebSSOFlow(final CancelCallback cancel, final Credentials credentials) throws BackgroundException {
         final String url = String.format("%s/ServicesPortal/activate?scheme=%s",
-            new HostUrlProvider().withUsername(false).withPath(false).get(host), CTERAProtocol.CTERA_REDIRECT_URI
+            new HostUrlProvider().withUsername(false).withPath(false).get(host), CteraProtocol.CTERA_REDIRECT_URI
         );
         if(log.isDebugEnabled()) {
             log.debug(String.format("Open browser with URL %s", url));
