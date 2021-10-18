@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
@@ -51,10 +52,12 @@ public class GmxcloudExceptionMappingService extends AbstractExceptionMappingSer
     @Override
     public BackgroundException map(final ApiException failure) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, LocaleFactory.localizedString(failure.getMessage(), "EUE"));
+        for(String s : StringUtils.split(failure.getMessage(), ",")) {
+            this.append(buffer, LocaleFactory.localizedString(s, "EUE"));
+        }
         if(null != failure.getResponseHeaders()) {
             if(failure.getResponseHeaders().containsKey("X-UI-Enhanced-Status")) {
-                failure.getResponseHeaders().get("X-UI-Enhanced-Status").forEach(s -> this.append(buffer, s));
+                failure.getResponseHeaders().get("X-UI-Enhanced-Status").forEach(s -> this.append(buffer, LocaleFactory.localizedString(s, "EUE")));
             }
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {

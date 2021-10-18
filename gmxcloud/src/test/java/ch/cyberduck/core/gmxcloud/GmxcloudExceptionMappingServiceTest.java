@@ -35,4 +35,10 @@ public class GmxcloudExceptionMappingServiceTest {
         assertTrue(failure instanceof RetriableAccessDeniedException);
         assertEquals(5, ((RetriableAccessDeniedException) failure).getDelay().getSeconds());
     }
+
+    @Test
+    public void testParseError() {
+        assertEquals("LIMIT_MAX_FOLDER_COUNT. LIMIT_MAX_RESOURCE_COUNT. Please contact your web hosting service provider for assistance.",
+                new GmxcloudExceptionMappingService().map(new ApiException("LIMIT_MAX_FOLDER_COUNT,LIMIT_MAX_RESOURCE_COUNT", null, 500, null)).getDetail());
+    }
 }
