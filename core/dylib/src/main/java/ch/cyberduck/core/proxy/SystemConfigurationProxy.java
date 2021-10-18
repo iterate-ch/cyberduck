@@ -40,9 +40,6 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
 
     @Override
     public Proxy find(final String target) {
-        if(!preferences.getBoolean("connection.proxy.enable")) {
-            return Proxy.DIRECT;
-        }
         final String route = this.findNative(target);
         if(null == route) {
             if(log.isInfoEnabled()) {

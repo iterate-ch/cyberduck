@@ -20,6 +20,7 @@ package ch.cyberduck.core.proxy;
  */
 
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class ProxyFactory extends Factory<ProxyFinder> {
 
@@ -28,6 +29,9 @@ public class ProxyFactory extends Factory<ProxyFinder> {
     }
 
     public static ProxyFinder get() {
-        return new ProxyFactory().create();
+        if(PreferencesFactory.get().getBoolean("connection.proxy.enable")) {
+            return new ProxyFactory().create();
+        }
+        return new DisabledProxyFinder();
     }
 }

@@ -18,9 +18,6 @@ public class EnvironmentVariableProxyFinder implements ProxyFinder {
 
     @Override
     public Proxy find(final String target) {
-        if(!preferences.getBoolean("connection.proxy.enable")) {
-            return Proxy.DIRECT;
-        }
         switch(Scheme.valueOf(URI.create(target).getScheme())) {
             case ftp:
             case ftps:
