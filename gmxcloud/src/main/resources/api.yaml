@@ -731,15 +731,15 @@ components:
                     type: integer
                     format: int64
                 originalParents:
-                    properties:
-                        ui:fs:
-                            $ref: '#/components/schemas/Uifs'
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Uifs'
                 contentETag:
                     type: string
-                Parents:
-                    properties:
-                        ui:fs:
-                            $ref: '#/components/schemas/Uifs'
+                parents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Uifs'
                 UiMetaResource:
                     properties:
                         ui:meta:resource:

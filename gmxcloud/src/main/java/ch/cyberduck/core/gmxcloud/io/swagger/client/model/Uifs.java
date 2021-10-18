@@ -12,22 +12,17 @@
 
 package ch.cyberduck.core.gmxcloud.io.swagger.client.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import ch.cyberduck.core.gmxcloud.io.swagger.client.model.Children;
-import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UifsOriginalParents;
-import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UifsUiMetaResource;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * Uifs
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-14T22:10:10.297090+02:00[Europe/Zurich]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-18T09:46:17.948750+02:00[Europe/Zurich]")
 public class Uifs {
   @JsonProperty("creationMillis")
   private Long creationMillis = null;
@@ -81,13 +76,13 @@ public class Uifs {
   private Long guestModificationMillis = null;
 
   @JsonProperty("originalParents")
-  private UifsOriginalParents originalParents = null;
+  private List<Uifs> originalParents = null;
 
   @JsonProperty("contentETag")
   private String contentETag = null;
 
-  @JsonProperty("Parents")
-  private UifsOriginalParents parents = null;
+  @JsonProperty("parents")
+  private List<Uifs> parents = null;
 
   @JsonProperty("UiMetaResource")
   private UifsUiMetaResource uiMetaResource = null;
@@ -406,8 +401,16 @@ public class Uifs {
     this.guestModificationMillis = guestModificationMillis;
   }
 
-  public Uifs originalParents(UifsOriginalParents originalParents) {
+  public Uifs originalParents(List<Uifs> originalParents) {
     this.originalParents = originalParents;
+    return this;
+  }
+
+  public Uifs addOriginalParentsItem(Uifs originalParentsItem) {
+    if (this.originalParents == null) {
+      this.originalParents = new ArrayList<>();
+    }
+    this.originalParents.add(originalParentsItem);
     return this;
   }
 
@@ -416,11 +419,11 @@ public class Uifs {
    * @return originalParents
   **/
   @Schema(description = "")
-  public UifsOriginalParents getOriginalParents() {
+  public List<Uifs> getOriginalParents() {
     return originalParents;
   }
 
-  public void setOriginalParents(UifsOriginalParents originalParents) {
+  public void setOriginalParents(List<Uifs> originalParents) {
     this.originalParents = originalParents;
   }
 
@@ -442,8 +445,16 @@ public class Uifs {
     this.contentETag = contentETag;
   }
 
-  public Uifs parents(UifsOriginalParents parents) {
+  public Uifs parents(List<Uifs> parents) {
     this.parents = parents;
+    return this;
+  }
+
+  public Uifs addParentsItem(Uifs parentsItem) {
+    if (this.parents == null) {
+      this.parents = new ArrayList<>();
+    }
+    this.parents.add(parentsItem);
     return this;
   }
 
@@ -452,11 +463,11 @@ public class Uifs {
    * @return parents
   **/
   @Schema(description = "")
-  public UifsOriginalParents getParents() {
+  public List<Uifs> getParents() {
     return parents;
   }
 
-  public void setParents(UifsOriginalParents parents) {
+  public void setParents(List<Uifs> parents) {
     this.parents = parents;
   }
 
