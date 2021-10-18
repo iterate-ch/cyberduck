@@ -52,8 +52,10 @@ public class GmxcloudExceptionMappingService extends AbstractExceptionMappingSer
     public BackgroundException map(final ApiException failure) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, LocaleFactory.localizedString(failure.getMessage(), "EUE"));
-        if(failure.getResponseHeaders().containsKey("X-UI-Enhanced-Status")) {
-            failure.getResponseHeaders().get("X-UI-Enhanced-Status").forEach(s -> this.append(buffer, s));
+        if(null != failure.getResponseHeaders()) {
+            if(failure.getResponseHeaders().containsKey("X-UI-Enhanced-Status")) {
+                failure.getResponseHeaders().get("X-UI-Enhanced-Status").forEach(s -> this.append(buffer, s));
+            }
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof ProcessingException) {
