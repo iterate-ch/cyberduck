@@ -13,6 +13,7 @@ package ch.cyberduck.core.eue;/*
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -20,6 +21,8 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.eue.io.swagger.client.ApiException;
+import ch.cyberduck.core.eue.io.swagger.client.api.UserInfoApi;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
@@ -186,14 +189,23 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                     throw new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(
                             response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
             }
+            final Credentials credentials = host.getCredentials();
+            if(StringUtils.isBlank(credentials.getUsername())) {
+                credentials.setUsername(new UserInfoApi(new EueApiClient(this))
+                        .userinfoGet(null, null).getAccount().getOsServiceId());
+                credentials.setSaved(true);
+            }
             if(StringUtils.isNotBlank(host.getProperty("pacs.url"))) {
                 try {
                     client.execute(new HttpPost(host.getProperty("pacs.url")));
                 }
-                catch(IOException e){
+                catch(IOException e) {
                     log.warn(String.format("Ignore failure %s running Personal Agent Context Service (PACS) request", e));
                 }
             }
+        }
+        catch(ApiException e) {
+            throw new EueExceptionMappingService().map(e);
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);
