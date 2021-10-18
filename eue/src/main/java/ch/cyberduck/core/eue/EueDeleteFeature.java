@@ -18,11 +18,11 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.DeleteResourceApi;
-import ch.cyberduck.core.eue.io.swagger.client.api.MoveToTrashApi;
+import ch.cyberduck.core.eue.io.swagger.client.api.MoveChildrenForAliasApiApi;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -56,8 +56,8 @@ public class EueDeleteFeature implements Delete {
                 resources.add(String.format("%s/resource/%s", session.getBasePath(), resourceId));
                 callback.delete(f);
             }
-            new MoveToTrashApi(new EueApiClient(session)).resourceAliasTRASHChildrenMovePost(resources,
-                    null, null, null, "overwrite", null);
+            new MoveChildrenForAliasApiApi(new EueApiClient(session)).resourceAliasAliasChildrenMovePost(
+                    EueResourceIdProvider.TRASH, resources, null, null, null, "overwrite", null);
             if(!trashing) {
                 for(Path f : files.keySet()) {
                     new DeleteResourceApi(new EueApiClient(session)).resourceResourceIdDelete(

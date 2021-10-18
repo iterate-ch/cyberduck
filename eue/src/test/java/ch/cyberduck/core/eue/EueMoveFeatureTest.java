@@ -15,7 +15,6 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -44,15 +43,41 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
     public void testMoveFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         createFile(sourceFile, RandomUtils.nextBytes(541));
         final PathAttributes sourceAttr = new EueAttributesFinderFeature(session, fileid).find(sourceFile);
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
         final Path targetFolder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path targetFile = new EueMoveFeature(session, fileid).move(sourceFile,
-                new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new EueFindFeature(session, fileid).find(sourceFile));
+        assertTrue(new EueFindFeature(session, fileid).find(targetFile));
+        assertFalse(new DefaultFindFeature(session).find(sourceFile));
+        assertTrue(new DefaultFindFeature(session).find(targetFile));
+        assertEquals(targetFile.attributes(), new EueAttributesFinderFeature(session, fileid).find(targetFile));
+        assertEquals(sourceAttr.getSize(),
+                new EueAttributesFinderFeature(session, fileid).find(targetFile).getSize());
+        assertEquals(sourceAttr.getETag(),
+                new EueAttributesFinderFeature(session, fileid).find(targetFile).getETag());
+        assertEquals(sourceAttr.getFileId(),
+                new EueAttributesFinderFeature(session, fileid).find(targetFile).getFileId());
+        new EueDeleteFeature(session, fileid).delete(Arrays.asList(sourceFolder, targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMoveFileToRoot() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        createFile(sourceFile, RandomUtils.nextBytes(541));
+        final PathAttributes sourceAttr = new EueAttributesFinderFeature(session, fileid).find(sourceFile);
+        assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
+        final Path targetFolder = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path targetFile = new EueMoveFeature(session, fileid).move(sourceFile,
+                new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new EueFindFeature(session, fileid).find(sourceFile));
         assertTrue(new EueFindFeature(session, fileid).find(targetFile));
         assertFalse(new DefaultFindFeature(session).find(sourceFile));
@@ -71,6 +96,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
     public void testMoveNotFound() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        test.attributes().setFileId(new AlphanumericRandomStringService().random());
         new EueMoveFeature(session, fileid).move(test, new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
     }
 
@@ -78,7 +104,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
     public void testMoveInvalidResourceId() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path folder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new EueTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String resourceId = file.attributes().getFileId();
         new EueDeleteFeature(session, fileid, false).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
