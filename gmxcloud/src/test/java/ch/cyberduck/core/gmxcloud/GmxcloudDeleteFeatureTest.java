@@ -20,6 +20,8 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -32,8 +34,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GmxcloudDeleteFeatureTest extends AbstractGmxcloudTest {
@@ -65,5 +66,44 @@ public class GmxcloudDeleteFeatureTest extends AbstractGmxcloudTest {
         assertTrue(new GmxcloudFindFeature(session, fileid).find(folder, new DisabledListProgressListener()));
         new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse((new GmxcloudFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testNotfound() throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        fail();
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testDoubleDelete() throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final Path file = new GmxcloudTouchFeature(session, fileid).touch(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String resourceId = file.attributes().getFileId();
+        new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        try {
+            new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(
+                    file.withAttributes(new PathAttributes().withFileId(resourceId))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
+        catch(NotfoundException e) {
+            fail();
+        }
+        try {
+            new GmxcloudDeleteFeature(session, fileid, false).delete(Collections.singletonList(
+                    file.withAttributes(new PathAttributes().withFileId(resourceId))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
+        catch(NotfoundException e) {
+            fail();
+        }
+        try {
+            new GmxcloudDeleteFeature(session, fileid, false).delete(Collections.singletonList(
+                    file.withAttributes(new PathAttributes().withFileId(resourceId))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            fail();
+        }
+        catch(NotfoundException e) {
+            assertEquals("Error. NOT_FOUND. Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
     }
 }
