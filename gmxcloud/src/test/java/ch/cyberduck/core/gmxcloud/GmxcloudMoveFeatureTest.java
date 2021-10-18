@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -66,11 +67,38 @@ public class GmxcloudMoveFeatureTest extends AbstractGmxcloudTest {
         new GmxcloudDeleteFeature(session, fileid).delete(Arrays.asList(sourceFolder, targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-
     @Test(expected = NotfoundException.class)
     public void testMoveNotFound() throws Exception {
         final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GmxcloudMoveFeature(session, fileid).move(test, new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testMoveInvalidResourceId() throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final Path folder = new GmxcloudDirectoryFeature(session, fileid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final Path file = new GmxcloudTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String resourceId = file.attributes().getFileId();
+        new GmxcloudDeleteFeature(session, fileid, false).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        try {
+            new GmxcloudMoveFeature(session, fileid).move(file.withAttributes(new PathAttributes().withFileId(resourceId)),
+                    new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+            fail();
+        }
+        finally {
+            new GmxcloudDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testRenameInvalidResourceId() throws Exception {
+        final GmxcloudResourceIdProvider fileid = new GmxcloudResourceIdProvider(session);
+        final Path file = new GmxcloudTouchFeature(session, fileid).touch(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String resourceId = file.attributes().getFileId();
+        new GmxcloudDeleteFeature(session, fileid, false).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GmxcloudMoveFeature(session, fileid).move(file.withAttributes(new PathAttributes().withFileId(resourceId)),
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
     }
 }

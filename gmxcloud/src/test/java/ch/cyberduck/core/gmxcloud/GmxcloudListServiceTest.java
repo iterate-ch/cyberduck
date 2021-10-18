@@ -20,9 +20,9 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -45,6 +45,7 @@ public class GmxcloudListServiceTest extends AbstractGmxcloudTest {
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
         final AttributedList<Path> list = new GmxcloudListService(session, fileid).list(folder.getParent(), new DisabledListProgressListener());
         assertTrue(list.contains(folder));
+        assertTrue(list.contains(new Path("Gelöschte Dateien", EnumSet.of(directory)).withAttributes(new PathAttributes().withFileId("TRASH"))));
         assertEquals(folder.attributes(), list.get(folder).attributes());
         new GmxcloudDeleteFeature(session, fileid, false).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

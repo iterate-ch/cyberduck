@@ -82,7 +82,7 @@ public class GmxcloudMultipartWriteFeature implements MultipartWrite<GmxcloudUpl
         else {
             final ResourceCreationResponseEntry resourceCreationResponseEntry =
                     GmxcloudUploadHelper.createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(),
-                            UploadType.CHUNKED);
+                            status, UploadType.CHUNKED);
             uploadUri = resourceCreationResponseEntry.getEntity().getUploadURI();
             resourceId = GmxcloudResourceIdProvider.getResourceIdFromResourceUri(resourceCreationResponseEntry.getHeaders().getLocation());
         }

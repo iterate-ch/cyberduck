@@ -31,6 +31,15 @@ public class ResourceCreationResponseEntryEntity {
   @JsonProperty("uploadURI")
   private String uploadURI = null;
 
+  private String error;
+
+  public ResourceCreationResponseEntryEntity() {
+  }
+
+  public ResourceCreationResponseEntryEntity(String error) {
+    this.error = error;
+  }
+
   public ResourceCreationResponseEntryEntity conflicting(UifsOriginalParents conflicting) {
     this.conflicting = conflicting;
     return this;
@@ -67,6 +76,9 @@ public class ResourceCreationResponseEntryEntity {
     this.uploadURI = uploadURI;
   }
 
+  public String getError() {
+    return error;
+  }
 
   @Override
   public boolean equals(java.lang.Object o) {

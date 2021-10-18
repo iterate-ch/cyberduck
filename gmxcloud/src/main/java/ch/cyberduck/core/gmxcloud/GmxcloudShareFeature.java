@@ -24,8 +24,8 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.api.CreateShareApi;
@@ -40,11 +40,14 @@ import ch.cyberduck.core.gmxcloud.io.swagger.client.model.UserInfoResponseModel;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
+import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.text.MessageFormat;
 
 public class GmxcloudShareFeature implements PromptUrlProvider<ShareCreationRequestModel, ShareCreationRequestModel> {
+    private static final Logger log = Logger.getLogger(GmxcloudShareFeature.class);
 
     private static final String GUEST_E_MAIL = "!ano";
 
@@ -83,17 +86,31 @@ public class GmxcloudShareFeature implements PromptUrlProvider<ShareCreationRequ
     }
 
     private String createGuestUri(final Path file, final PasswordCallback callback, final ShareCreationRequestModel shareCreationRequestModel) throws BackgroundException {
-        final CreateShareApi createShareApi = new CreateShareApi(new GmxcloudApiClient(session));
+        final GmxcloudApiClient client = new GmxcloudApiClient(session);
+        final CreateShareApi createShareApi = new CreateShareApi(client);
         final String fileId = fileid.getFileId(file, new DisabledListProgressListener());
         try {
             final ShareCreationRequestModel shareCreationRequestEntries = null != shareCreationRequestModel ? shareCreationRequestModel : this.createShareCreationRequestModel(file, callback);
             for(ShareCreationRequestEntry shareCreationRequestEntry : shareCreationRequestEntries) {
                 final String shareName = shareCreationRequestEntry.getName();
                 final ShareCreationResponseModel shareCreationResponseModel = createShareApi.resourceResourceIdSharePost(fileId, shareCreationRequestEntries, null, null);
-                final ShareCreationResponseEntry shareCreationResponseEntry = shareCreationResponseModel.values().stream()
-                        .filter(entry -> entry.getEntity().getName().equalsIgnoreCase(shareName)).findFirst()
-                        .orElseThrow(InteroperabilityException::new);
-                return shareCreationResponseEntry.getEntity().getGuestURI();
+                if(!shareCreationResponseModel.containsKey(GUEST_E_MAIL)) {
+                    throw new NotfoundException(GUEST_E_MAIL);
+                }
+                final ShareCreationResponseEntry shareCreationResponseEntry = shareCreationResponseModel.get(GUEST_E_MAIL);
+                switch(shareCreationResponseEntry.getStatusCode()) {
+                    case HttpStatus.SC_OK:
+                    case HttpStatus.SC_CREATED:
+                        return shareCreationResponseEntry.getEntity().getGuestURI();
+                    default:
+                        log.warn(String.format("Failure %s creating share for %s", shareCreationResponseEntry, file));
+                        if(null == shareCreationResponseEntry.getEntity()) {
+                            throw new GmxcloudExceptionMappingService().map(new ApiException(shareCreationResponseEntry.getReason(),
+                                    null, shareCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                        }
+                        throw new GmxcloudExceptionMappingService().map(new ApiException(shareCreationResponseEntry.getEntity().getError(),
+                                null, shareCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                }
             }
             return null;
         }

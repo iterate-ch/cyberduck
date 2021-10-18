@@ -15,11 +15,30 @@ package ch.cyberduck.core.gmxcloud;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class GmxcloudTouchFeature extends DefaultTouchFeature<GmxcloudUploadHelper.GmxcloudUploadResponse> {
 
     public GmxcloudTouchFeature(final GmxcloudSession session, final GmxcloudResourceIdProvider fileid) {
         super(new GmxcloudWriteFeature(session, fileid), new GmxcloudAttributesFinderFeature(session, fileid));
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir, final String filename) {
+        // The path may contain all characters except the following: /, ", >, <, ?, *, :, \, |.
+        // Also prohibited is a trailing space or a trailing dot (" ", ".").
+        if(StringUtils.containsAny(filename, '\\', '<', '>', ':', '"', '|', '?', '*', '/')) {
+            return false;
+        }
+        if(StringUtils.endsWith(filename, StringUtils.SPACE)) {
+            return false;
+        }
+        if(StringUtils.endsWith(filename, ".")) {
+            return false;
+        }
+        return super.isSupported(workdir, filename);
     }
 }
