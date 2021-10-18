@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -60,6 +61,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
@@ -180,7 +182,11 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated as user %s", account));
             }
-            host.getCredentials().setUsername(account);
+            final Credentials credentials = host.getCredentials();
+            if(StringUtils.isBlank(credentials.getUsername())) {
+                credentials.setUsername(account);
+                credentials.setSaved(true);
+            }
         }
         catch(OneDriveAPIException e) {
             log.warn(String.format("Failure reading current user properties probably missing user.read scope. %s.", e.getMessage()));
