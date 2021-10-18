@@ -17,13 +17,16 @@ package ch.cyberduck.core.gmxcloud;
 
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
 
+@Category(IntegrationTest.class)
 public class GmxcloudAttributesFinderFeatureTest extends AbstractGmxcloudTest {
 
     @Test

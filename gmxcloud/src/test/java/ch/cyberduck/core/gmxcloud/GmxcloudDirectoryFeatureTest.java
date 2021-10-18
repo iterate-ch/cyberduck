@@ -19,13 +19,16 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
+@Category(IntegrationTest.class)
 public class GmxcloudDirectoryFeatureTest extends AbstractGmxcloudTest {
 
     @Test(expected = InteroperabilityException.class)
