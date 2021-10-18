@@ -24,17 +24,22 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.api.MoveChildrenApi;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.api.UpdateResourceApi;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceCreationResponseEntryEntity;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceMoveResponseEntries;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceMoveResponseEntry;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceUpdateModel;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.ResourceUpdateModelUpdate;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.model.Uifs;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
+import org.apache.log4j.Logger;
 
 import java.util.Collections;
 
 public class GmxcloudMoveFeature implements Move {
+    private static final Logger log = Logger.getLogger(GmxcloudMoveFeature.class);
 
     private final GmxcloudSession session;
     private final GmxcloudResourceIdProvider fileid;
@@ -55,10 +60,30 @@ public class GmxcloudMoveFeature implements Move {
                                 Collections.singletonList(String.format("%s/resource/%s",
                                         session.getBasePath(), resourceId)), null, null, null,
                                 status.isExists() ? "overwrite" : null, null);
+                if(null == resourceMoveResponseEntries) {
+                    // Unexpected empty response
+                }
+                else {
+                    for(ResourceMoveResponseEntry resourceMoveResponseEntry : resourceMoveResponseEntries.values()) {
+                        switch(resourceMoveResponseEntry.getStatusCode()) {
+                            case HttpStatus.SC_OK:
+                                break;
+                            default:
+                                log.warn(String.format("Failure %s moving file %s", resourceMoveResponseEntries, file));
+                                final ResourceCreationResponseEntryEntity entity = resourceMoveResponseEntry.getEntity();
+                                if(null == entity) {
+                                    throw new GmxcloudExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getReason(),
+                                            null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                                }
+                                throw new GmxcloudExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getEntity().getError(),
+                                        null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                        }
+                    }
+                }
             }
             if(!StringUtils.equals(file.getName(), target.getName())) {
                 final ResourceUpdateModel resourceUpdateModel = new ResourceUpdateModel();
-                ResourceUpdateModelUpdate resourceUpdateModelUpdate = new ResourceUpdateModelUpdate();
+                final ResourceUpdateModelUpdate resourceUpdateModelUpdate = new ResourceUpdateModelUpdate();
                 final Uifs uifs = new Uifs();
                 uifs.setName(target.getName());
                 resourceUpdateModelUpdate.setUifs(uifs);
