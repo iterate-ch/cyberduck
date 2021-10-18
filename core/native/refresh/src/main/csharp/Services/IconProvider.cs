@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using ch.cyberduck.core;
+using static Windows.Win32.Constants;
+using static Windows.Win32.UI.Shell.SHGFI_FLAGS;
+using static Windows.Win32.CorePInvoke;
+using Windows.Win32.Storage.FileSystem;
+using static Windows.Win32.Storage.FileSystem.FILE_FLAGS_AND_ATTRIBUTES;
+using Windows.Win32.UI.Shell;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
 {
@@ -63,16 +69,15 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 return image;
             }
 
-            uint flags = Shell32.SHGFI_ICON | Shell32.SHGFI_USEFILEATTRIBUTES;
-            flags |= large ? Shell32.SHGFI_LARGEICON : Shell32.SHGFI_SMALLICON;
+            SHGFI_FLAGS flags = SHGFI_ICON | SHGFI_USEFILEATTRIBUTES;
+            flags |= large ? SHGFI_LARGEICON : SHGFI_SMALLICON;
 
-            uint fileAttributes = isFolder ? Shell32.FILE_ATTRIBUTE_DIRECTORY : Shell32.FILE_ATTRIBUTE_NORMAL;
+            FILE_FLAGS_AND_ATTRIBUTES fileAttributes = isFolder ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_NORMAL;
 
-            Shell32.SHFILEINFO shfi = new();
+            SHFILEINFOW shfi = new();
             try
             {
-                IntPtr hSuccess = Shell32.SHGetFileInfo(isFolder ? "_unknown" : filename, fileAttributes, ref shfi, (uint)Marshal.SizeOf<Shell32.SHFILEINFO>(), flags);
-                if (hSuccess == IntPtr.Zero)
+                if (SHGetFileInfo(isFolder ? "_unknown" : filename, fileAttributes, shfi, flags) == 0)
                 {
                     return default;
                 }
@@ -80,7 +85,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             }
             finally
             {
-                User32.DestroyIcon(shfi.hIcon);
+                DestroyIcon(shfi.hIcon);
             }
         }
 

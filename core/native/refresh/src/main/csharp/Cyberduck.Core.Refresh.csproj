@@ -13,7 +13,7 @@
   ~ GNU General Public License for more details.
   -->
 
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <PropertyGroup>
         <TargetFramework>net47</TargetFramework>
@@ -21,6 +21,7 @@
         <UseWPF>true</UseWPF>
         <UseWindowsForms>true</UseWindowsForms>
         <RootNamespace>Ch.Cyberduck.Core.Refresh</RootNamespace>
+        <Platforms>x86;x64</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
