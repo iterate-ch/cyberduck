@@ -15,6 +15,8 @@ package ch.cyberduck.core.gmxcloud.io.swagger.client.model;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.gmxcloud.GmxcloudExceptionMappingService;
+import ch.cyberduck.core.gmxcloud.io.swagger.client.ApiException;
 import ch.cyberduck.core.gmxcloud.io.swagger.client.JSON;
 
 import org.junit.Test;
@@ -46,5 +48,22 @@ public class ResourceCreationResponseEntriesTest {
         final ResourceCreationResponseEntries entries = new JSON().getContext(ResourceCreationResponseEntries.class).readValue(
                 new StringReader("{\"Go5YUk43.\":{\"statusCode\":400,\"reason\":\"paths may not end with a .\"}}"), ResourceCreationResponseEntries.class);
         assertTrue(entries.containsKey("Go5YUk43."));
+    }
+
+    @Test
+    public void testLimitMaxFolderCount() throws Exception {
+        final ResourceCreationResponseEntries entries = new JSON().getContext(ResourceCreationResponseEntries.class).readValue(
+                new StringReader("{\n" +
+                        "  \"folder_1\": {\n" +
+                        "    \"statusCode\": 507,\n" +
+                        "    \"reason\": \"INSUFFICIENT_STORAGE\",\n" +
+                        "    \"entity\": \"LIMIT_MAX_FOLDER_COUNT,LIMIT_MAX_RESOURCE_COUNT\"\n" +
+                        "  }\n" +
+                        "}"
+                ), ResourceCreationResponseEntries.class);
+        assertTrue(entries.containsKey("folder_1"));
+        assertEquals("LIMIT_MAX_FOLDER_COUNT,LIMIT_MAX_RESOURCE_COUNT", entries.get("folder_1").getEntity().getError());
+        assertEquals("LIMIT_MAX_FOLDER_COUNT. LIMIT_MAX_RESOURCE_COUNT. Please contact your web hosting service provider for assistance.",
+                new GmxcloudExceptionMappingService().map(new ApiException(entries.get("folder_1").getEntity().getError(), null, entries.get("folder_1").getStatusCode(), null)).getDetail());
     }
 }
