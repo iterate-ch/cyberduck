@@ -228,7 +228,7 @@ public final class ProtocolFactory {
             if(enabled.isEmpty()) {
                 log.error(String.format("List of registered protocols in %s is empty", this));
             }
-            log.error(String.format("Missing registered protocol for identifier %s", identifier));
+            log.warn(String.format("Missing registered protocol for identifier %s", identifier));
         }
         return match;
     }
