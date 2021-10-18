@@ -5,6 +5,7 @@
         <LangVersion>9.0</LangVersion>
         <RootNamespace>i18n_gen</RootNamespace>
         <UseWindowsForms>True</UseWindowsForms>
+        <PlatformTarget>AnyCPU</PlatformTarget>
     </PropertyGroup>
 
     <ItemGroup>

@@ -54,6 +54,7 @@
             <property name="Version" value="${version}.${revision}" />
             <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="Platform" value="x64" />
         </msbuild>
     </target>
 </project>
