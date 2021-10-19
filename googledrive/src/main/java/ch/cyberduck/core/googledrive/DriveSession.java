@@ -41,6 +41,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
@@ -103,6 +104,7 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
+        final Credentials credentials = host.getCredentials();
         final About about;
         try {
             about = client.about().get().setFields("user").execute();
@@ -113,8 +115,8 @@ public class DriveSession extends HttpSession<Drive> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Authenticated as user %s", about.getUser()));
         }
-        final Credentials credentials = host.getCredentials();
         credentials.setUsername(about.getUser().getEmailAddress());
+        credentials.setSaved(true);
     }
 
     @Override

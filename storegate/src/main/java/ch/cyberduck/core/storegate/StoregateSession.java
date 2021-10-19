@@ -171,13 +171,14 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             finally {
                 EntityUtils.consume(response.getEntity());
             }
+            final Credentials credentials = host.getCredentials();
             // Get username
             final ExtendedUser me = new UsersApi(client).usersGetMe();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated for user %s", me));
             }
-            final Credentials credentials = host.getCredentials();
             credentials.setUsername(me.getUsername());
+            credentials.setSaved(true);
             // Get root folders
             roots = new SettingsApi(client).settingsGetRootfolders();
         }

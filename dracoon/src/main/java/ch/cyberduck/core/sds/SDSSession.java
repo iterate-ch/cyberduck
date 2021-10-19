@@ -322,6 +322,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
                 case oauth:
                     credentials.setUsername(account.getLogin());
+                    credentials.setSaved(true);
             }
             userAccount.set(new UserAccountWrapper(account));
             requiredKeyPairVersion = this.getRequiredKeyPairVersion();
