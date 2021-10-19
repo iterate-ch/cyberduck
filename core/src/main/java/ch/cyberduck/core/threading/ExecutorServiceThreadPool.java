@@ -38,20 +38,20 @@ public abstract class ExecutorServiceThreadPool implements ThreadPool {
                 log.info(String.format("Shutdown pool %s gracefully", pool));
             }
             pool.shutdown();
-            try {
-                while(!pool.awaitTermination(1L, TimeUnit.SECONDS)) {
-                    log.warn(String.format("Await termination for pool %s", pool));
-                }
-            }
-            catch(InterruptedException e) {
-                log.error(String.format("Failure awaiting pool termination. %s", e.getMessage()));
-            }
         }
         else {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Shutdown pool %s now", pool));
             }
             pool.shutdownNow();
+        }
+        try {
+            while(!pool.awaitTermination(1L, TimeUnit.SECONDS)) {
+                log.warn(String.format("Await termination for pool %s", pool));
+            }
+        }
+        catch(InterruptedException e) {
+            log.error(String.format("Failure awaiting pool termination. %s", e.getMessage()));
         }
     }
 
