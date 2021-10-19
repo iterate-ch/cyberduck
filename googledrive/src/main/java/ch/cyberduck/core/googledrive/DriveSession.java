@@ -105,20 +105,18 @@ public class DriveSession extends HttpSession<Drive> {
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
         final Credentials credentials = host.getCredentials();
-        if(StringUtils.isBlank(credentials.getUsername())) {
-            final About about;
-            try {
-                about = client.about().get().setFields("user").execute();
-            }
-            catch(IOException e) {
-                throw new DriveExceptionMappingService(fileid).map(e);
-            }
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Authenticated as user %s", about.getUser()));
-            }
-            credentials.setUsername(about.getUser().getEmailAddress());
-            credentials.setSaved(true);
+        final About about;
+        try {
+            about = client.about().get().setFields("user").execute();
         }
+        catch(IOException e) {
+            throw new DriveExceptionMappingService(fileid).map(e);
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Authenticated as user %s", about.getUser()));
+        }
+        credentials.setUsername(about.getUser().getEmailAddress());
+        credentials.setSaved(true);
     }
 
     @Override
