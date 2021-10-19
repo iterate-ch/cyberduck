@@ -590,10 +590,10 @@ paths:
                     description: LOCKED, Resource or parent resource is locked (inside of the multistatus)
                 '507':
                     description: INSUFFICIENT STORAGE, insufficient storage or quotas exceeded (inside of the multistatus)
-    /resourceAlias/TRASH/children/move:
+    /resourceAlias/{alias}/children/move:
         post:
             description: Move resources to a container
-            tags: [MoveToTrash]
+            tags: [MoveChildrenForAliasApi]
             parameters:
                 - in: header
                   name: cookie
@@ -605,6 +605,12 @@ paths:
                   description: ifMatchHeader
                   schema:
                       type: string
+                - in: path
+                  name: alias
+                  schema:
+                    type: string
+                  required: true
+                  description: id of the resource (resourceURI)
                 - name: autoRename
                   in: query
                   description: (deprecated) flag for enforcing automatic rename on conflict
@@ -636,8 +642,26 @@ paths:
             responses:
                 '200':
                     description: success
-                '404':
-                    description: NOT FOUND
+                    content:
+                        appplication/json:charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/ResourceMoveResponseEntries'
+                '207':
+                    description: MULTI STATUS
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                type: string
+                '403':
+                    description: FORBIDDEN, Not allowed
+                '409':
+                   description: CONFLICT, file resource already exists (inside of the multistatus)
+                '412':
+                   description: PRECONDITION, FAILED non-matching Etag of 'If-Match' Header
+                '423':
+                    description: LOCKED, Resource or parent resource is locked (inside of the multistatus)
+                '507':
+                    description: INSUFFICIENT STORAGE, insufficient storage or quotas exceeded (inside of the multistatus)
     /resource/{resourceId}/share:
         post:
             description: Create a share for a file or container

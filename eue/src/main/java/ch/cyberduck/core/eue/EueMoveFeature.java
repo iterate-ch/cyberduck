@@ -18,6 +18,7 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.eue.io.swagger.client.api.MoveChildrenForAliasApiApi;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -55,11 +56,21 @@ public class EueMoveFeature implements Move {
             final EueApiClient client = new EueApiClient(session);
             final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
             if(!file.getParent().equals(target.getParent())) {
-                final ResourceMoveResponseEntries resourceMoveResponseEntries = new MoveChildrenApi(client)
-                        .resourceResourceIdChildrenMovePost(fileid.getFileId(target.getParent(), new DisabledListProgressListener()),
-                                Collections.singletonList(String.format("%s/resource/%s",
-                                        session.getBasePath(), resourceId)), null, null, null,
-                                status.isExists() ? "overwrite" : null, null);
+                final ResourceMoveResponseEntries resourceMoveResponseEntries;
+                if((target.getParent().isRoot() || target.getParent().isPlaceholder())) {
+                    resourceMoveResponseEntries = new MoveChildrenForAliasApiApi(client)
+                            .resourceAliasAliasChildrenMovePost(fileid.getFileId(target.getParent(), new DisabledListProgressListener()),
+                                    Collections.singletonList(String.format("%s/resource/%s",
+                                            session.getBasePath(), resourceId)), null, null, null,
+                                    status.isExists() ? "overwrite" : null, null);
+                }
+                else {
+                    resourceMoveResponseEntries = new MoveChildrenApi(client)
+                            .resourceResourceIdChildrenMovePost(fileid.getFileId(target.getParent(), new DisabledListProgressListener()),
+                                    Collections.singletonList(String.format("%s/resource/%s",
+                                            session.getBasePath(), resourceId)), null, null, null,
+                                    status.isExists() ? "overwrite" : null, null);
+                }
                 if(null == resourceMoveResponseEntries) {
                     // Unexpected empty response
                 }

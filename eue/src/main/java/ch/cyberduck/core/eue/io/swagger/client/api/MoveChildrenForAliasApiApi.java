@@ -5,20 +5,23 @@ import ch.cyberduck.core.eue.io.swagger.client.ApiClient;
 import ch.cyberduck.core.eue.io.swagger.client.Configuration;
 import ch.cyberduck.core.eue.io.swagger.client.Pair;
 
+import javax.ws.rs.core.GenericType;
+
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceMoveResponseEntries;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-14T22:10:10.297090+02:00[Europe/Zurich]")public class MoveToTrashApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-18T21:52:24.333972+02:00[Europe/Zurich]")public class MoveChildrenForAliasApiApi {
   private ApiClient apiClient;
 
-  public MoveToTrashApi() {
+  public MoveChildrenForAliasApiApi() {
     this(Configuration.getDefaultApiClient());
   }
 
-  public MoveToTrashApi(ApiClient apiClient) {
+  public MoveChildrenForAliasApiApi(ApiClient apiClient) {
     this.apiClient = apiClient;
   }
 
@@ -33,18 +36,25 @@ import java.util.Map;
   /**
    * 
    * Move resources to a container
+   * @param alias id of the resource (resourceURI) (required)
    * @param body  (optional)
    * @param cookie cookie (optional)
    * @param ifMatch ifMatchHeader (optional)
    * @param autoRename (deprecated) flag for enforcing automatic rename on conflict (optional)
    * @param conflictResolution conflictResolution - overwrite or rename (optional)
    * @param lockToken the lock token used to access a locked resource (optional)
+   * @return ResourceMoveResponseEntries
    * @throws ApiException if fails to make API call
    */
-  public void resourceAliasTRASHChildrenMovePost(List<String> body, String cookie, String ifMatch, Boolean autoRename, String conflictResolution, String lockToken) throws ApiException {
+  public ResourceMoveResponseEntries resourceAliasAliasChildrenMovePost(String alias, List<String> body, String cookie, String ifMatch, Boolean autoRename, String conflictResolution, String lockToken) throws ApiException {
     Object localVarPostBody = body;
+    // verify the required parameter 'alias' is set
+    if (alias == null) {
+      throw new ApiException(400, "Missing the required parameter 'alias' when calling resourceAliasAliasChildrenMovePost");
+    }
     // create path and map variables
-    String localVarPath = "/resourceAlias/TRASH/children/move";
+    String localVarPath = "/resourceAlias/{alias}/children/move"
+      .replaceAll("\\{" + "alias" + "\\}", apiClient.escapeString(alias.toString()));
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -61,7 +71,7 @@ import java.util.Map;
       localVarHeaderParams.put("If-Match", apiClient.parameterToString(ifMatch));
 
     final String[] localVarAccepts = {
-      
+      "appplication/json:charset=utf-8", "application/json;charset=utf-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -72,6 +82,7 @@ import java.util.Map;
 
     String[] localVarAuthNames = new String[] { "bearerAuth" };
 
-    apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+    GenericType<ResourceMoveResponseEntries> localVarReturnType = new GenericType<ResourceMoveResponseEntries>() {};
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
 }
