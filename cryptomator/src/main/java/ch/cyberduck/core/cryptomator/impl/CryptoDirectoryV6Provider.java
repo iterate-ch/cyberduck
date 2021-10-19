@@ -111,6 +111,9 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
                 return cache.get(new SimplePathPredicate(directory));
             }
             try {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Acquire lock for %s", directory));
+                }
                 lock.lock();
                 final String id = this.load(session, directory);
                 cache.put(new SimplePathPredicate(directory), id);
