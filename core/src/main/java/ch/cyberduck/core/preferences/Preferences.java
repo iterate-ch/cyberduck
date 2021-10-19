@@ -1143,6 +1143,10 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("eue.listing.chunksize", String.valueOf(100));
         this.setDefault("eue.delete.trash", String.valueOf(true));
         this.setDefault("eue.share.expiration.millis", String.valueOf(86400000));
+        this.setDefault("eue.share.deletable", String.valueOf(false));
+        this.setDefault("eue.share.writable", String.valueOf(false));
+        this.setDefault("eue.share.readable", String.valueOf(true));
+        this.setDefault("eue.share.notification.enable", String.valueOf(false));
         this.setDefault("eue.limit.hint.second", String.valueOf(2));
         this.setDefault("eue.limit.requests.second", String.valueOf(10));
 

@@ -23,10 +23,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.CreateShareApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.UserInfoApi;
@@ -37,6 +33,10 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.SharePermission;
 import ch.cyberduck.core.eue.io.swagger.client.model.Shares;
 import ch.cyberduck.core.eue.io.swagger.client.model.UserInfoResponseModel;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
@@ -140,8 +140,11 @@ public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestMo
         }
         shareCreationRequestEntry.setGuestEMail(GUEST_E_MAIL);
         final SharePermission sharePermission = new SharePermission();
-        sharePermission.deletable(false).readable(true).writable(false);
-        sharePermission.setNotificationEnabled(false);
+        sharePermission
+                .readable(new HostPreferences(session.getHost()).getBoolean("eue.share.readable"))
+                .writable(new HostPreferences(session.getHost()).getBoolean("eue.share.writable"))
+                .deletable(new HostPreferences(session.getHost()).getBoolean("eue.share.deletable"));
+        sharePermission.setNotificationEnabled(new HostPreferences(session.getHost()).getBoolean("eue.share.notification.enable"));
         shareCreationRequestEntry.setPermission(sharePermission);
         shareCreationRequestEntry.setUnmountable(false);
         final ShareCreationRequestModel shareCreationRequestModel = new ShareCreationRequestModel();
