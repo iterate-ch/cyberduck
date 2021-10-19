@@ -57,7 +57,7 @@ public class EueDeleteFeature implements Delete {
                 callback.delete(f);
             }
             new MoveChildrenForAliasApiApi(new EueApiClient(session)).resourceAliasAliasChildrenMovePost(
-                    EueResourceIdProvider.TRASH, resources, null, null, null, "overwrite", null);
+                    EueResourceIdProvider.TRASH, resources, null, null, null, "rename", null);
             if(!trashing) {
                 for(Path f : files.keySet()) {
                     new DeleteResourceApi(new EueApiClient(session)).resourceResourceIdDelete(

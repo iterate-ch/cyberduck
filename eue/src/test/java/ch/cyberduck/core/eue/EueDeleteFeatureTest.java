@@ -68,6 +68,30 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
         assertFalse((new EueFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
     }
 
+    @Test
+    public void testDeleteLockOwnerFile() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path folder = new EueDirectoryFeature(session, fileid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final String filename = String.format("~$%s.docx", new AlphanumericRandomStringService().random());
+        {
+            final Path file1 = new Path(folder, filename, EnumSet.of(Path.Type.file));
+            createFile(file1, RandomUtils.nextBytes(511));
+            assertTrue(new EueFindFeature(session, fileid).find(file1));
+            new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file1), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            assertFalse((new EueFindFeature(session, fileid).find(file1, new DisabledListProgressListener())));
+        }
+        {
+            final Path file1 = new Path(folder, filename, EnumSet.of(Path.Type.file));
+            createFile(file1, RandomUtils.nextBytes(511));
+            assertTrue(new EueFindFeature(session, fileid).find(file1));
+            new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file1), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            assertFalse((new EueFindFeature(session, fileid).find(file1, new DisabledListProgressListener())));
+        }
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse((new EueFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
+    }
+
     @Test(expected = NotfoundException.class)
     public void testNotfound() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
