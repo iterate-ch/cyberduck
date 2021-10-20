@@ -24,15 +24,22 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.AbstractPath.Type.directory;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class EueResourceIdProviderTest extends AbstractEueSessionTest {
 
     @Test
-    public void getFileId() throws Exception {
-        assertEquals("ROOT", new EueResourceIdProvider(session).getFileId(
+    public void getFileIdRoot() throws Exception {
+        assertEquals(EueResourceIdProvider.ROOT, new EueResourceIdProvider(session).getFileId(
                 new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
+    }
+
+    @Test
+    public void getFileIdTrash() throws Exception {
+        assertEquals(EueResourceIdProvider.TRASH, new EueResourceIdProvider(session).getFileId(
+                new Path("Gelöschte Dateien", EnumSet.of(directory)), new DisabledListProgressListener()));
     }
 
     @Test
