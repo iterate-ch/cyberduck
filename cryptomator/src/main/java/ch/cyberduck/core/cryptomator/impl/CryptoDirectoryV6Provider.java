@@ -123,8 +123,16 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
                 lock.unlock();
             }
         }
-        cache.put(new SimplePathPredicate(directory), directoryId);
-        return directoryId;
+        if(!cache.contains(new SimplePathPredicate(directory))) {
+            cache.put(new SimplePathPredicate(directory), directoryId);
+        }
+        else {
+            final String existing = cache.get(new SimplePathPredicate(directory));
+            if(!existing.equals(directoryId)) {
+                log.warn("Do not override already cached id " + existing + " with " + directoryId);
+            }
+        }
+        return cache.get(new SimplePathPredicate(directory));
     }
 
     protected String load(final Session<?> session, final Path directory) throws BackgroundException {
