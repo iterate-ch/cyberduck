@@ -4,7 +4,7 @@ https://cyberduck.io/
 8.0.0
 - [Feature] Allow to manage additional connection profiles in Preferences (#10823)
 - [Feature] New default connection profile for ownCloud
-- [Feature] Retain modification date in metadata for uploads (Google Storage) (#11784)
+- [Feature] Retain modification date in metadata for uploads (Google Cloud Storage) (#11784)
 - [Feature] Retain modification date in metadata for uploads (S3) (#11784)
 - [Feature] New default connection profile (ownCloud)
 - [Feature] Build package in AppImage format (CLI) (#11762)
@@ -14,11 +14,11 @@ https://cyberduck.io/
 - [Feature] Support for host certificate keys handling @cert-authority in known_hosts (SFTP)
 - [Feature] Column in browser window to display checksum (#11824)
 - [Bugfix] Change default path for NextCloud connections to include username (#11787)
-- [Bugfix] Failed to overwrite upload of object with custom metadata (Google Storage) (#11781)
+- [Bugfix] Failed to overwrite upload of object with custom metadata (Google Cloud Storage) (#11781)
 - [Bugfix] Skip duplicate file versions in output (Cyberduck CLI) (#11786)
 - [Bugfix] Fails to use selected private key file outside of ~/.ssh folder (SFTP, Mac App Store) (#11782)
-- [Bugfix] Unable to delete folders (Google Storage) (#11808)
-- [Bugfix] Allow to set Glacier storage class (Google Storage) (#11521)
+- [Bugfix] Unable to delete folders (Google Cloud Storage) (#11808)
+- [Bugfix] Allow to set Glacier storage class (Google Cloud Storage) (#11521)
 - [Bugfix] Unable to remove delete marker (S3) (#11803)
 - [Bugfix] Unable to download previous version of file (S3, Backblaze B2) (#11797, #11835)
 - [Bugfix] Copying files requires permission to read bucket ACL (S3) (#11701)
@@ -36,7 +36,7 @@ https://cyberduck.io/
 - [Bugfix] Failure downloading files (Files.com)
 - [Bugfix] Return existing share URL when found (Dropbox) (#11209)
 - [Bugfix] Select origin bucket for logging target with missing permission to list all buckets (S3) (#17755)
-- [Bugfix] Unable to upload to buckets with uniform bucket-level access enabled (Google Storage) (#11766)
+- [Bugfix] Unable to upload to buckets with uniform bucket-level access enabled (Google Cloud Storage) (#11766)
 - [Bugfix] Missing progress information when copying file (#11019)
 
 7.10.1
@@ -48,10 +48,10 @@ https://cyberduck.io/
 - [Bugfix] Downloads from HTTP server with no WebDAV extension support (CLI) (#11727)
 
 7.10.0
-- [Feature] Preference to set default storage class (Google Storage) (#11521)
-- [Feature] Preference to set default bucket region (Google Storage)
-- [Feature] Preference to set predefined set of grantees and permissions for new files (S3, Google Storage)
-- [Feature] Support to set predefined ACL bucket-owner-full-control (S3, Google Storage) (#11697)
+- [Feature] Preference to set default storage class (Google Cloud Storage) (#11521)
+- [Feature] Preference to set default bucket region (Google Cloud Storage)
+- [Feature] Preference to set predefined set of grantees and permissions for new files (S3, Google Cloud Storage)
+- [Feature] Support to set predefined ACL bucket-owner-full-control (S3, Google Cloud Storage) (#11697)
 - [Feature] Context menu in browser table header to select columns (macOS) (#11718)
 - [Feature] Allow selection of region when creating new bucket for third party S3 providers
 - [Bugfix] Recursive search yields no results (#11424)
@@ -70,10 +70,10 @@ https://cyberduck.io/
 - [Feature] New Big Sur style application icon (macOS)
 - [Feature] New "Auto" default option for number of connections for transfers
 - [Feature] Increased default to 5 concurrent connections for transfers for protocols other than FTP
-- [Feature] Allow toggling versioning configuration for bucket (Google Storage)
-- [Feature] Display and restore of previous file versions in bucket (Google Storage)
+- [Feature] Allow toggling versioning configuration for bucket (Google Cloud Storage)
+- [Feature] Display and restore of previous file versions in bucket (Google Cloud Storage)
 - [Feature] Support chacha20-poly1305@openssh.com cipher (SFTP) (#8554)
-- [Feature] Share file option to set public-read ACL on file and copy URL (S3, Google Storage)
+- [Feature] Share file option to set public-read ACL on file and copy URL (S3, Google Cloud Storage)
 - [Feature] Tremendously faster uploading folders with many files to vault (Cryptomator, OneDrive, Google Drive, Backblaze B2) (#10849)
 - [Feature] Substantially faster uploading folders with many files (OneDrive, Google Drive, Backblaze B2)
 - [Bugfix] Maximum number of simultaneous transfers not handled properly (#11001)
@@ -110,7 +110,7 @@ https://cyberduck.io/
 - [Bugfix] Interoperability with Oracle Object Storage using path style requests (#10956, #11548)
 - [Bugfix] Failure listing files with shortcut pointing to deleted file (Google Drive)
 - [Bugfix] Allow configuration of path for Nextcloud & ownCloud connections (#11540)
-- [Bugfix] Failure unlocking vaults on Google Storage (Cryptomator) (#11528)
+- [Bugfix] Failure unlocking vaults on Google Cloud Storage (Cryptomator) (#11528)
 - [Bugfix] Fix SSL session reuse on data channel (FTP, Windows)
 - [Bugfix] Failure running application (CLI, Linux)
 - [Bugfix] Recursive search yields no results (Google Drive) (#11424)
@@ -180,7 +180,7 @@ https://cyberduck.io/
 7.5.0
 - [Feature] Interoperability with macOS 11
 - [Feature] Column for storage class in browser (S3)
-- [Bugfix] Use STANDARD for default storage class (Google Storage) (#11062)
+- [Bugfix] Use STANDARD for default storage class (Google Cloud Storage) (#11062)
 - [Bugfix] Switch to UTF-8 for encoding HTTP authentication header (WebDAV)
 - [Bugfix] SNI support for TLS connections (FTP) (#9257)
 - [Bugfix] Handle formatting errors in ~/.aws/credentials (S3)
@@ -204,8 +204,8 @@ https://cyberduck.io/
 - [Bugfix] Slow updating files after saving changes in external editor (#11004)
 
 7.3.1
-- [Feature] Edit ACLs for files (Google Storage) (#11008)
-- [Feature] Support to set storage class (Google Storage)
+- [Feature] Edit ACLs for files (Google Cloud Storage) (#11008)
+- [Feature] Support to set storage class (Google Cloud Storage)
 - [Feature] Support for Intelligent-Tiering storage class (S3) (#11031)
 - [Feature] Support for Glacier Deep Archive storage class (S3) (#10681)
 - [Feature] Allow selection of Glacier storage class as default for uploads (S3) (#10681)
@@ -221,7 +221,7 @@ https://cyberduck.io/
 - [Feature] Labels for bookmarks (macOS) (#9719)
 - [Feature] Group bookmarks by labels in menu (macOS)
 - [Feature] Support TLS 1.3 (#10962)
-- [Bugfix] Download fails for files with whitespace in name (Google Storage) (#10931)
+- [Bugfix] Download fails for files with whitespace in name (Google Cloud Storage) (#10931)
 - [Bugfix] Unable to access documents in Shared with me (Google Drive)
 - [Bugfix] Read timeout after copying large file (OpenStack Swift)
 - [Bugfix] Repeated prompt for authorization code (hubiC)
@@ -270,16 +270,16 @@ https://cyberduck.io/
 
 7.1.1
 - [Bugfix] Failure authenticating using SSH agent (SFTP) (#10800)
-- [Bugfix] Failure overwriting existing file (Google Storage)
+- [Bugfix] Failure overwriting existing file (Google Cloud Storage)
 - [Bugfix] Missing hostname verification in TLS handshake when connecting through HTTP proxy
 
 7.1.0
 - [Feature] Application running as 64-bit (Windows)
 - [Feature] Application package is notarized (macOS)
-- [Feature] Support for storage classes (Google Storage)
-- [Feature] Support to select region (eu, us, asia) for new buckets (Google Storage)
-- [Feature] Support to set lifecycle configuration on bucket (Google Storage)
-- [Bugfix] Number of buckets displayed in browser limited to 1000 (Google Storage)
+- [Feature] Support for storage classes (Google Cloud Storage)
+- [Feature] Support to select region (eu, us, asia) for new buckets (Google Cloud Storage)
+- [Feature] Support to set lifecycle configuration on bucket (Google Cloud Storage)
+- [Bugfix] Number of buckets displayed in browser limited to 1000 (Google Cloud Storage)
 - [Bugfix] Fails to authenticate where keyboard-interactive mechanism is not supported (SFTP) (#10714)
 - [Bugfix] Errors accessing Cryptomator vault (Google Drive, OneDrive)
 - [Bugfix] No route to host error with IPv6 only server (macOS)
@@ -844,7 +844,7 @@ https://cyberduck.io/
 - [Bugfix] Certificate chain displayed not complete (#8885)
 - [Bugfix] Permission failure deleting files looking for interrupted multipart uploads (S3) (#9000)
 - [Bugfix] Support for Infrequent Access (Standard IA) storage class (S3)
-- [Bugfix] XML validation failure with AccessControlPolicy element (Google Storage) (#9002)
+- [Bugfix] XML validation failure with AccessControlPolicy element (Google Cloud Storage) (#9002)
 - [Bugfix] Do not try list containers if default path is provided (OpenStack Swift) (#9038)
 - [Bugfix] Faster connection setup with many containers (OpenStack Swift)
 - [Bugfix] Failure uploading multiple files (iRODS) (#8911)
@@ -924,7 +924,7 @@ https://cyberduck.io/
 
 4.6.1 [https://trac.cyberduck.io/milestone/4.6.1]
 - [Bugfix] Uploads to buckets in eu-central-1 (S3) (#8375)
-- [Bugfix] Supporting both Project ID and Project Number for login username (Google Storage) (#8352)
+- [Bugfix] Supporting both Project ID and Project Number for login username (Google Cloud Storage) (#8352)
 - [Bugfix] Changes not uploaded when editing multiple files (Windows) (#8359, #8369)
 - [Bugfix] Failure to read attributes downloading bucket (S3) (#8388)
 - [Bugfix] Wrong timestamp in temporary URL (OpenStack Swift) (#8384)
@@ -1081,13 +1081,13 @@ https://cyberduck.io/
 - [Feature] Retina resolution support (10.8) (#6760)
 - [Feature] Notification center support (10.8) (#6792)
 - [Feature] Gatekeeper support (10.8) (#6888)
-- [Feature] One click setup for analytics with Qloudstat (S3, CloudFront, Cloudfiles, Google Storage)
+- [Feature] One click setup for analytics with Qloudstat (S3, CloudFront, Cloudfiles, Google Cloud Storage)
 - [Feature] Bucket location in South America (São Paulo) Region (S3)
 - [Feature] Bucket location in Asia Pacific (Sydney) Region (S3)
 - [Feature] Multi-Object Delete (S3)
 - [Feature] Interoperability with HP Cloud (Openstack)
 - [Feature] Interoperability with Lunacloud Storage (S3)
-- [Feature] Website Configuration (Google Storage)
+- [Feature] Website Configuration (Google Cloud Storage)
 - [Feature] Website Configuration (Cloudfiles)
 - [Feature] Edit container metadata (Cloudfiles)
 - [Feature] Reuse Session key on data connection (FTP/TLS) (#5087)
@@ -1130,8 +1130,8 @@ https://cyberduck.io/
 - [Bugfix] Freeze after file transfer is complete (#6183)
 - [Bugfix] Connection failure to Eucalyptus Cloud installation (S3) (#6206)
 - [Feature] Copy streaming URLs (Cloudfiles)
-- [Feature] Option to set ACLs for Google Apps Domain (Google Storage)
-- [Feature] Option to set ACLs for Google Group Email Address (Google Storage)
+- [Feature] Option to set ACLs for Google Apps Domain (Google Cloud Storage)
+- [Feature] Option to set ACLs for Google Group Email Address (Google Cloud Storage)
 - [Feature] Allow setting non-metadata headers (Cloudfiles, Openstack Swift) (#6191, #6239)
 
 4.1.2 [https://trac.cyberduck.io/milestone/4.1.2]
@@ -1238,7 +1238,7 @@ https://cyberduck.io/
 - [Bugfix] Slow SFTP transfers (#185)
 - [Bugfix] Reduced upload preparation time for thousands of files
 - [Bugfix] Support for S3Fox directory placeholders (S3)
-- [Bugfix] Support for Google Storage Console directory placeholders (S3)
+- [Bugfix] Support for Google Cloud Storage Console directory placeholders (S3)
 - [Bugfix] Support for s3sync.rb directory placeholders (#5374) (S3)
 - [Bugfix] Connect through HTTP/HTTPS proxy (#5379) (Google Docs)
 - [Bugfix] Changing storage class fails (S3)
@@ -1276,8 +1276,8 @@ https://cyberduck.io/
 - [Bugfix] Failure reading symbolic link target for directories (SFTP) (#5141)
 
 3.6 (Sep-06-2010) [https://trac.cyberduck.io/milestone/3.6]
-- [Feature] Connecting to Google Storage (Google Storage)
-- [Feature] Edit Access Control List (ACL) (#3191) (S3, Google Storage, Google Docs)
+- [Feature] Connecting to Google Cloud Storage (Google Cloud Storage)
+- [Feature] Edit Access Control List (ACL) (#3191) (S3, Google Cloud Storage, Google Docs)
 - [Feature] Enable Bucket Versioning (#4511) (S3)
 - [Feature] Enable Bucket Multi-Factor Authentication Delete (#4510) (S3)
 - [Feature] Display previous file versions in browser (S3)
@@ -1292,13 +1292,13 @@ https://cyberduck.io/
 - [Feature] Change SSH options for open in Terminal.app (#4232)
 - [Feature] Unsecure connection warning when password is transmitted in plaintext
 - [Feature] Alert to change connection to TLS if server supports AUTH TLS (FTP)
-- [Feature] Edit metadata for multiple files (S3, Google Storage)
+- [Feature] Edit metadata for multiple files (S3, Google Cloud Storage)
 - [Feature] Menu items to copy HTTP, CDN, signed & authenticated URLs to clipboard (#4207)
 - [Feature] Menu items to open HTTP, CDN, signed & authenticated URLs in Web Browser
 - [Feature] Move and rename files and folders (Google Docs)
 - [Feature] Update size display incrementally while calculating recursively (#3213)
 - [Feature] Hidden preference to change SSH options for 'Open in Terminal.app' (#4232)
-- [Feature] Batch editing of S3 metadata (Google Storage, S3) (#5105)
+- [Feature] Batch editing of S3 metadata (Google Cloud Storage, S3) (#5105)
 - [Feature] Show number of active transfers in Dock (#3808)
 - [Feature] Copy directory listing to clipboard (#2372)
 - [Bugfix] Improved interoperability with Eucalyptus Walrus (S3)
