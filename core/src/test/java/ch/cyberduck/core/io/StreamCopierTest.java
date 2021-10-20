@@ -5,14 +5,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.io.output.NullOutputStream;
-import org.apache.commons.text.RandomStringGenerator;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.nio.charset.Charset;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,12 +22,11 @@ public class StreamCopierTest {
 
     @Test
     public void testIntegrity() throws Exception {
-        final String random = new RandomStringGenerator.Builder().build().generate(39865);
-        final byte[] bytes = random.getBytes();
+        final byte[] bytes = RandomUtils.nextBytes(39865);
         final TransferStatus status = new TransferStatus();
         final ByteArrayOutputStream out = new ByteArrayOutputStream(bytes.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        new StreamCopier(status, status).withLimit((long) bytes.length).withListener(count).transfer(IOUtils.toInputStream(random, Charset.defaultCharset()), out);
+        new StreamCopier(status, status).withLimit((long) bytes.length).withListener(count).transfer(new ByteArrayInputStream(bytes), out);
         assertEquals(bytes.length, count.getRecv());
         assertEquals(bytes.length, count.getSent());
         assertEquals(0L, status.getOffset());

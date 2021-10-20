@@ -41,7 +41,6 @@ import ch.cyberduck.core.vault.VaultCredentials;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.text.RandomStringGenerator;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
@@ -101,7 +100,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         final java.nio.file.Path targetFolder = cryptoFileSystem.getPath("/", new AlphanumericRandomStringService().random());
         Files.createDirectory(targetFolder);
         // create file and write some random content
-        java.nio.file.Path targetFile = targetFolder.resolve(new RandomStringGenerator.Builder().build().generate(100));
+        java.nio.file.Path targetFile = targetFolder.resolve(new AlphanumericRandomStringService(100).random());
         final byte[] content = RandomUtils.nextBytes(48768);
         Files.write(targetFile, content);
 

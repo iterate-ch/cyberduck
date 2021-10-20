@@ -40,13 +40,12 @@ import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.text.RandomStringGenerator;
+import org.apache.commons.lang3.RandomUtils;
 import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
@@ -119,7 +118,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         final Path file = new S3TouchFeature(session).touch(new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3WriteFeature feature = new S3WriteFeature(session);
         {
-            final byte[] content = new RandomStringGenerator.Builder().build().generate(1024).getBytes(StandardCharsets.UTF_8);
+            final byte[] content = RandomUtils.nextBytes(1024);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
@@ -135,7 +134,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
                 new VersioningConfiguration(true));
         assertNull(new DefaultAttributesFinderFeature(session).find(file).getVersionId());
         {
-            final byte[] content = new RandomStringGenerator.Builder().build().generate(1024).getBytes(StandardCharsets.UTF_8);
+            final byte[] content = RandomUtils.nextBytes(1024);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
