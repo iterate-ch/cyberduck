@@ -114,18 +114,23 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) {
-                request.addHeader(new BasicHeader("X-UI-API-KEY", new HostPreferences(host)
-                        .getProperty("apikey")));
+                final String identifier = new HostPreferences(host).getProperty("apikey");
+                if(StringUtils.isNotBlank(identifier)) {
+                    request.addHeader(new BasicHeader("X-UI-API-KEY", identifier));
+                }
             }
         });
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) {
-                request.addHeader(new BasicHeader("X-UI-APP", MessageFormat.format(new HostPreferences(host)
-                        .getProperty("app"), String.format("%s.%s",
-                        PreferencesFactory.get().getProperty("application.version"),
-                        PreferencesFactory.get().getProperty("application.revision"))))
-                );
+                final String identifier = new HostPreferences(host).getProperty("app");
+                if(StringUtils.isNotBlank(identifier)) {
+                    request.addHeader(new BasicHeader("X-UI-APP", MessageFormat.format(
+                            identifier, String.format("%s.%s",
+                                    PreferencesFactory.get().getProperty("application.version"),
+                                    PreferencesFactory.get().getProperty("application.revision"))))
+                    );
+                }
             }
         });
         configuration.addInterceptorLast(new HttpResponseInterceptor() {
