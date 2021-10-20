@@ -59,9 +59,12 @@ public class EueExceptionMappingService extends AbstractExceptionMappingService<
             }
         }
         if(null != failure.getResponseHeaders()) {
-            final List<String> status = failure.getResponseHeaders().keySet().stream().filter("X-UI-ENHANCED-STATUS"::equalsIgnoreCase).collect(Collectors.toList());
-            for(String s : status) {
-                this.append(buffer, LocaleFactory.localizedString(s, "EUE"));
+            final List<List<String>> headers = failure.getResponseHeaders().entrySet().stream()
+                    .filter(e -> "X-UI-ENHANCED-STATUS".equalsIgnoreCase(e.getKey())).map(Map.Entry::getValue).collect(Collectors.toList());
+            for(List<String> header : headers) {
+                for(String s : header) {
+                    this.append(buffer, LocaleFactory.localizedString(s, "EUE"));
+                }
             }
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {

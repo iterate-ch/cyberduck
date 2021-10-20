@@ -15,9 +15,10 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
 import org.junit.Test;
 
@@ -34,6 +35,14 @@ public class EueExceptionMappingServiceTest {
                 Collections.singletonMap("Retry-After", Collections.singletonList("5")), ""));
         assertTrue(failure instanceof RetriableAccessDeniedException);
         assertEquals(5, ((RetriableAccessDeniedException) failure).getDelay().getSeconds());
+    }
+
+    @Test
+    public void testEnhancedStatus() {
+        final BackgroundException failure = new EueExceptionMappingService().map(new ApiException(404, "",
+                Collections.singletonMap("X-UI-ENHANCED-STATUS", Collections.singletonList("NOT_FOUND")), ""));
+        assertTrue(failure instanceof NotfoundException);
+        assertEquals("NOT_FOUND. Please contact your web hosting service provider for assistance.", failure.getDetail());
     }
 
     @Test
