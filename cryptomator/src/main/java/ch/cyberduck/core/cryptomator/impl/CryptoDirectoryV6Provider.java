@@ -123,6 +123,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
                 lock.unlock();
             }
         }
+        cache.put(new SimplePathPredicate(directory), directoryId);
         return directoryId;
     }
 
