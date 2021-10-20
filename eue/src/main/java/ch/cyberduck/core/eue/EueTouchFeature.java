@@ -39,6 +39,6 @@ public class EueTouchFeature extends DefaultTouchFeature<EueUploadHelper.UploadR
         if(StringUtils.endsWith(filename, ".")) {
             return false;
         }
-        return super.isSupported(workdir, filename);
+        return true;
     }
 }
