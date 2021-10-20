@@ -129,7 +129,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
         else {
             final String existing = cache.get(new SimplePathPredicate(directory));
             if(!existing.equals(directoryId)) {
-                log.warn("Do not override already cached id " + existing + " with " + directoryId);
+                log.warn(String.format("Do not override already cached id %s with %s", existing, directoryId));
             }
         }
         return cache.get(new SimplePathPredicate(directory));
