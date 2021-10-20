@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class EueExceptionMappingService extends AbstractExceptionMappingService<ApiException> {
     private static final Logger log = Logger.getLogger(EueExceptionMappingService.class);
@@ -58,8 +59,9 @@ public class EueExceptionMappingService extends AbstractExceptionMappingService<
             }
         }
         if(null != failure.getResponseHeaders()) {
-            if(failure.getResponseHeaders().containsKey("X-UI-Enhanced-Status")) {
-                failure.getResponseHeaders().get("X-UI-Enhanced-Status").forEach(s -> this.append(buffer, LocaleFactory.localizedString(s, "EUE")));
+            final List<String> status = failure.getResponseHeaders().keySet().stream().filter("X-UI-ENHANCED-STATUS"::equalsIgnoreCase).collect(Collectors.toList());
+            for(String s : status) {
+                this.append(buffer, LocaleFactory.localizedString(s, "EUE"));
             }
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {

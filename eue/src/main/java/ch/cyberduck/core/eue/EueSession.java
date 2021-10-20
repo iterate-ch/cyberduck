@@ -132,7 +132,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
             @Override
             public void process(final HttpResponse response, final HttpContext context) {
                 final Optional<Header> hint = Arrays.asList(response.getAllHeaders()).stream()
-                        .filter(header -> "X-UI-Traffic-Hint".equals(header.getName())).findFirst();
+                        .filter(header -> "X-UI-TRAFFIC-HINT".equalsIgnoreCase(header.getName())).findFirst();
                 if(hint.isPresent()) {
                     // Any response can contain this header. If this happens, a client should take measures to
                     // reduce its request rate. We advise to wait two seconds before sending the next request.
