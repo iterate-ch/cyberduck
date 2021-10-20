@@ -9,7 +9,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.text.RandomStringGenerator;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -51,7 +51,7 @@ public class AzureReadFeatureTest extends AbstractAzureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
-        final byte[] content = new RandomStringGenerator.Builder().build().generate((1000)).getBytes();
+        final byte[] content = RandomUtils.nextBytes(1023);
         final OutputStream out = new AzureWriteFeature(session, null).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);

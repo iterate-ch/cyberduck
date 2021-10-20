@@ -101,7 +101,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         final java.nio.file.Path targetFolder = cryptoFileSystem.getPath("/", new AlphanumericRandomStringService().random());
         Files.createDirectory(targetFolder);
         // create file and write some random content
-        java.nio.file.Path targetFile = targetFolder.resolve(new RandomStringGenerator.Builder().build().generate(100));
+        java.nio.file.Path targetFile = targetFolder.resolve(new RandomStringGenerator.Builder().build().generate(220));
         final byte[] content = RandomUtils.nextBytes(48768);
         Files.write(targetFile, content);
 

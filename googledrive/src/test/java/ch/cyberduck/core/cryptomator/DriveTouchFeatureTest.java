@@ -40,7 +40,6 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -84,7 +83,7 @@ public class DriveTouchFeatureTest extends AbstractDriveTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider idProvider = new DriveFileIdProvider(session);
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DriveWriteFeature(session, idProvider), new DriveAttributesFinderFeature(session, idProvider)), new DriveWriteFeature(session, idProvider), cryptomator).touch(
-                new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         final Path found = new CryptoListService(session, new DriveListService(session, idProvider), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
         final String fileId = found.attributes().getFileId();
@@ -102,7 +101,7 @@ public class DriveTouchFeatureTest extends AbstractDriveTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider idProvider = new DriveFileIdProvider(session);
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DriveWriteFeature(session, idProvider), new DriveAttributesFinderFeature(session, idProvider)), new DriveWriteFeature(session, idProvider), cryptomator).touch(
-                new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         final Path found = new CryptoListService(session, new DriveListService(session, idProvider), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
         final String fileId = found.attributes().getFileId();
