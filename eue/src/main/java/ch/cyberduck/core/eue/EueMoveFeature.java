@@ -72,7 +72,7 @@ public class EueMoveFeature implements Move {
                                     status.isExists() ? "overwrite" : null, null);
                 }
                 if(null == resourceMoveResponseEntries) {
-                    // Unexpected empty response
+                    // Move of single file will return 200 status code with empty response body
                 }
                 else {
                     for(ResourceMoveResponseEntry resourceMoveResponseEntry : resourceMoveResponseEntries.values()) {
