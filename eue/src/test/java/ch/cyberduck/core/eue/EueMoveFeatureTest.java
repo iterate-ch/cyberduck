@@ -75,9 +75,8 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         createFile(sourceFile, RandomUtils.nextBytes(541));
         final PathAttributes sourceAttr = new EueAttributesFinderFeature(session, fileid).find(sourceFile);
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
-        final Path targetFolder = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final Path targetFile = new EueMoveFeature(session, fileid).move(sourceFile,
-                new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new EueFindFeature(session, fileid).find(sourceFile));
         assertTrue(new EueFindFeature(session, fileid).find(targetFile));
         assertFalse(new DefaultFindFeature(session).find(sourceFile));
@@ -89,7 +88,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
                 new EueAttributesFinderFeature(session, fileid).find(targetFile).getETag());
         assertEquals(sourceAttr.getFileId(),
                 new EueAttributesFinderFeature(session, fileid).find(targetFile).getFileId());
-        new EueDeleteFeature(session, fileid).delete(Arrays.asList(sourceFolder, targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)

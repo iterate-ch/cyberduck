@@ -18,15 +18,14 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceAliasApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiFsModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiWin32;
 import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 
 import org.apache.log4j.Logger;
 
@@ -47,19 +46,19 @@ public class EueAttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         try {
-            final String resourceId = fileid.getFileId(file, listener);
-            if(resourceId == null) {
-                throw new NotfoundException(file.getAbsolute());
-            }
             final EueApiClient client = new EueApiClient(session);
             final UiFsModel response;
-            if(file.isPlaceholder()) {
-                response = new ListResourceAliasApi(client).resourceAliasAliasGet(resourceId,
-                        null, null, null, null, null, null, "win32props", null);
-            }
-            else {
-                response = new ListResourceApi(client).resourceResourceIdGet(resourceId,
-                        null, null, null, null, null, null, "win32props", null);
+            final String resourceId = fileid.getFileId(file, listener);
+            switch(resourceId) {
+                case EueResourceIdProvider.ROOT:
+                case EueResourceIdProvider.TRASH:
+                    response = new ListResourceAliasApi(client).resourceAliasAliasGet(resourceId,
+                            null, null, null, null, null, null, "win32props", null);
+                    break;
+                default:
+                    response = new ListResourceApi(client).resourceResourceIdGet(resourceId,
+                            null, null, null, null, null, null, "win32props", null);
+                    break;
             }
             return this.toAttributes(response.getUifs(), response.getUiwin32());
         }

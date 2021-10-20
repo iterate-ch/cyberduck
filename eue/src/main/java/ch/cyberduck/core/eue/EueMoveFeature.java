@@ -18,12 +18,9 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.eue.io.swagger.client.api.MoveChildrenForAliasApiApi;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.MoveChildrenApi;
+import ch.cyberduck.core.eue.io.swagger.client.api.MoveChildrenForAliasApiApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.UpdateResourceApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntryEntity;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceMoveResponseEntries;
@@ -31,6 +28,9 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ResourceMoveResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceUpdateModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceUpdateModelUpdate;
 import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -57,19 +57,22 @@ public class EueMoveFeature implements Move {
             final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
             if(!file.getParent().equals(target.getParent())) {
                 final ResourceMoveResponseEntries resourceMoveResponseEntries;
-                if((target.getParent().isRoot() || target.getParent().isPlaceholder())) {
-                    resourceMoveResponseEntries = new MoveChildrenForAliasApiApi(client)
-                            .resourceAliasAliasChildrenMovePost(fileid.getFileId(target.getParent(), new DisabledListProgressListener()),
-                                    Collections.singletonList(String.format("%s/resource/%s",
-                                            session.getBasePath(), resourceId)), null, null, null,
-                                    status.isExists() ? "overwrite" : null, null);
-                }
-                else {
-                    resourceMoveResponseEntries = new MoveChildrenApi(client)
-                            .resourceResourceIdChildrenMovePost(fileid.getFileId(target.getParent(), new DisabledListProgressListener()),
-                                    Collections.singletonList(String.format("%s/resource/%s",
-                                            session.getBasePath(), resourceId)), null, null, null,
-                                    status.isExists() ? "overwrite" : null, null);
+                final String parentResourceId = fileid.getFileId(target.getParent(), new DisabledListProgressListener());
+                switch(parentResourceId) {
+                    case EueResourceIdProvider.ROOT:
+                    case EueResourceIdProvider.TRASH:
+                        resourceMoveResponseEntries = new MoveChildrenForAliasApiApi(client)
+                                .resourceAliasAliasChildrenMovePost(parentResourceId,
+                                        Collections.singletonList(String.format("%s/resource/%s",
+                                                session.getBasePath(), resourceId)), null, null, null,
+                                        status.isExists() ? "overwrite" : null, null);
+                        break;
+                    default:
+                        resourceMoveResponseEntries = new MoveChildrenApi(client)
+                                .resourceResourceIdChildrenMovePost(parentResourceId,
+                                        Collections.singletonList(String.format("%s/resource/%s",
+                                                session.getBasePath(), resourceId)), null, null, null,
+                                        status.isExists() ? "overwrite" : null, null);
                 }
                 if(null == resourceMoveResponseEntries) {
                     // Move of single file will return 200 status code with empty response body
