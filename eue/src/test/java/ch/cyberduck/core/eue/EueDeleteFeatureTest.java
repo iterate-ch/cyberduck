@@ -34,6 +34,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.AbstractPath.Type.directory;
+import static ch.cyberduck.core.AbstractPath.Type.placeholder;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -50,7 +52,7 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
     }
 
     @Test
-    public void testDeleteFile() throws Exception {
+    public void testDeleteMultipleFiles() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path folder = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
         final Path file1 = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -95,8 +97,18 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
     @Test(expected = NotfoundException.class)
     public void testNotfound() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))
+        ), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        fail();
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testNotfoundMultipleFiles() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        new EueDeleteFeature(session, fileid).delete(Arrays.asList(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))
+        ), new DisabledLoginCallback(), new Delete.DisabledCallback());
         fail();
     }
 
@@ -126,8 +138,20 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
             fail();
         }
         catch(NotfoundException e) {
-            assertEquals("Error. NOT_FOUND. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals(String.format("Https://mc.gmx.net/restfs-1/fs/@1015156902205593160/resource/%s does not exist. Please contact your web hosting service provider for assistance.", resourceId), e.getDetail());
             throw e;
         }
+    }
+
+    @Test
+    public void testDeleteFileInTrash() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path file = new EueTouchFeature(session, fileid).touch(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String resourceId = file.attributes().getFileId();
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path trashed = new Path(new Path("Gelöschte Dateien", EnumSet.of(directory, placeholder)), file.getName(), EnumSet.of(Path.Type.file));
+        assertTrue(new EueFindFeature(session, fileid).find(trashed));
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(trashed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new EueFindFeature(session, fileid).find(trashed));
     }
 }

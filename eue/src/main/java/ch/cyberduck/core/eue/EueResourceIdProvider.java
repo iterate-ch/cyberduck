@@ -74,13 +74,16 @@ public class EueResourceIdProvider implements FileIdProvider {
             UiFsModel fsModel;
             final int chunksize = new HostPreferences(session.getHost()).getInteger("eue.listing.chunksize");
             do {
-                if(file.getParent().isRoot()) {
-                    fsModel = new ListResourceAliasApi(new EueApiClient(session)).resourceAliasAliasGet("ROOT",
-                            null, null, null, null, chunksize, offset, null, null);
-                }
-                else {
-                    fsModel = new ListResourceApi(new EueApiClient(session)).resourceResourceIdGet(this.getFileId(file.getParent(), listener),
-                            null, null, null, null, chunksize, offset, null, null);
+                final String parentResourceId = this.getFileId(file.getParent(), listener);
+                switch(parentResourceId) {
+                    case EueResourceIdProvider.ROOT:
+                    case EueResourceIdProvider.TRASH:
+                        fsModel = new ListResourceAliasApi(new EueApiClient(session)).resourceAliasAliasGet(parentResourceId,
+                                null, null, null, null, chunksize, offset, null, null);
+                        break;
+                    default:
+                        fsModel = new ListResourceApi(new EueApiClient(session)).resourceResourceIdGet(parentResourceId,
+                                null, null, null, null, chunksize, offset, null, null);
                 }
                 for(Children child : fsModel.getUifs().getChildren()) {
                     if(child.getUifs().getName().equalsIgnoreCase(file.getName())) {

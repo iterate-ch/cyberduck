@@ -21,16 +21,23 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.DeleteResourceApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.MoveChildrenForAliasApiApi;
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntryEntity;
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceMoveResponseEntries;
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceMoveResponseEntry;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.http.HttpStatus;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class EueDeleteFeature implements Delete {
+    private static final Logger log = Logger.getLogger(EueDeleteFeature.class);
 
     private final EueSession session;
     private final EueResourceIdProvider fileid;
@@ -50,18 +57,54 @@ public class EueDeleteFeature implements Delete {
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         try {
+            final EueApiClient client = new EueApiClient(session);
             final List<String> resources = new ArrayList<>();
             for(Path f : files.keySet()) {
-                final String resourceId = fileid.getFileId(f, new DisabledListProgressListener());
-                resources.add(String.format("%s/resource/%s", session.getBasePath(), resourceId));
+                switch(fileid.getFileId(f.getParent(), new DisabledListProgressListener())) {
+                    case EueResourceIdProvider.TRASH:
+                        new DeleteResourceApi(client).resourceResourceIdDelete(
+                                fileid.getFileId(f, new DisabledListProgressListener()), null, null);
+                        break;
+                    default:
+                        final String resourceId = fileid.getFileId(f, new DisabledListProgressListener());
+                        resources.add(String.format("%s/resource/%s", session.getBasePath(), resourceId));
+                }
                 callback.delete(f);
             }
-            new MoveChildrenForAliasApiApi(new EueApiClient(session)).resourceAliasAliasChildrenMovePost(
-                    EueResourceIdProvider.TRASH, resources, null, null, null, "rename", null);
+            if(!resources.isEmpty()) {
+                final ResourceMoveResponseEntries resourceMoveResponseEntries = new MoveChildrenForAliasApiApi(client).resourceAliasAliasChildrenMovePost(
+                        EueResourceIdProvider.TRASH, resources, null, null, null, "rename", null);
+                if(null == resourceMoveResponseEntries) {
+                    // Move of single file will return 200 status code with empty response body
+                }
+                else {
+                    for(ResourceMoveResponseEntry resourceMoveResponseEntry : resourceMoveResponseEntries.values()) {
+                        switch(resourceMoveResponseEntry.getStatusCode()) {
+                            case HttpStatus.SC_OK:
+                                break;
+                            default:
+                                log.warn(String.format("Failure %s trashing resource %s", resourceMoveResponseEntries, resourceMoveResponseEntry));
+                                final ResourceCreationResponseEntryEntity entity = resourceMoveResponseEntry.getEntity();
+                                if(null == entity) {
+                                    throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getReason(),
+                                            null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                                }
+                                throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getEntity().getError(),
+                                        null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                        }
+                    }
+                }
+            }
             if(!trashing) {
                 for(Path f : files.keySet()) {
-                    new DeleteResourceApi(new EueApiClient(session)).resourceResourceIdDelete(
-                            fileid.getFileId(f, new DisabledListProgressListener()), null, null);
+                    switch(fileid.getFileId(f.getParent(), new DisabledListProgressListener())) {
+                        case EueResourceIdProvider.TRASH:
+                            break;
+                        default:
+                            new DeleteResourceApi(new EueApiClient(session)).resourceResourceIdDelete(
+                                    fileid.getFileId(f, new DisabledListProgressListener()), null, null);
+                            break;
+                    }
                 }
             }
             for(Path f : files.keySet()) {
