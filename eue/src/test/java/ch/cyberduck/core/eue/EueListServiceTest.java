@@ -51,6 +51,13 @@ public class EueListServiceTest extends AbstractEueSessionTest {
     }
 
     @Test
+    public void testListTrash() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path folder = new Path("Gelöschte Dateien", EnumSet.of(directory));
+        final AttributedList<Path> list = new EueListService(session, fileid).list(folder, new DisabledListProgressListener());
+    }
+
+    @Test
     public void testListContainingFolder() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path folder = new EueDirectoryFeature(session, fileid).mkdir(

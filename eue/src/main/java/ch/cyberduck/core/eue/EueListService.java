@@ -19,8 +19,8 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceAliasApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.Children;
@@ -33,12 +33,12 @@ public class EueListService implements ListService {
 
     private final EueSession session;
     private final EueAttributesFinderFeature attributes;
-    private final EueResourceIdProvider fileId;
+    private final EueResourceIdProvider fileid;
 
     public EueListService(final EueSession session, final EueResourceIdProvider fileid) {
         this.session = session;
         this.attributes = new EueAttributesFinderFeature(session, fileid);
-        this.fileId = fileid;
+        this.fileid = fileid;
     }
 
     @Override
@@ -50,17 +50,20 @@ public class EueListService implements ListService {
         final AttributedList<Path> children = new AttributedList<>();
         final EueApiClient client = new EueApiClient(session);
         try {
-            final String resourceId = fileId.getFileId(directory, listener);
             int offset = 0;
             UiFsModel fsModel;
             do {
-                if(directory.isRoot()) {
-                    fsModel = new ListResourceAliasApi(client).resourceAliasAliasGet(resourceId,
-                            null, null, null, null, chunksize, offset, "win32props", null);
-                }
-                else {
-                    fsModel = new ListResourceApi(client).resourceResourceIdGet(resourceId,
-                            null, null, null, null, chunksize, offset, "win32props", null);
+                final String resourceId = fileid.getFileId(directory, listener);
+                switch(resourceId) {
+                    case EueResourceIdProvider.ROOT:
+                    case EueResourceIdProvider.TRASH:
+                        fsModel = new ListResourceAliasApi(client).resourceAliasAliasGet(resourceId,
+                                null, null, null, null, chunksize, offset, "win32props", null);
+                        break;
+                    default:
+                        fsModel = new ListResourceApi(client).resourceResourceIdGet(resourceId,
+                                null, null, null, null, chunksize, offset, "win32props", null);
+                        break;
                 }
                 for(Children child : fsModel.getUifs().getChildren()) {
                     final EnumSet<Path.Type> type;
