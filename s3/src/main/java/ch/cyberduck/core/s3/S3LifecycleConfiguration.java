@@ -80,6 +80,7 @@ public class S3LifecycleConfiguration implements Lifecycle {
         try {
             final LifecycleConfig status = session.getClient().getLifecycleConfig(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             if(null == status) {
+                log.warn(String.format("Failure parsing lifecycle config for %s", bucket));
                 return LifecycleConfiguration.empty();
             }
             Integer transition = null;

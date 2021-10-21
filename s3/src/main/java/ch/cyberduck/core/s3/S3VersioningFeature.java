@@ -126,6 +126,7 @@ public class S3VersioningFeature implements Versioning {
             final S3BucketVersioningStatus status
                     = session.getClient().getBucketVersioningStatus(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             if(null == status) {
+                log.warn(String.format("Failure parsing versioning status for %s", bucket));
                 return VersioningConfiguration.empty();
             }
             final VersioningConfiguration configuration = new VersioningConfiguration(status.isVersioningEnabled(),
