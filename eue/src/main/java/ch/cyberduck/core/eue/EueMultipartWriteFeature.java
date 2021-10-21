@@ -19,12 +19,12 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
@@ -156,7 +156,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueUploadHelper.
                                 final String hash = new SHA256ChecksumCompute()
                                         .compute(new ByteArrayInputStream(content, off, len), new TransferStatus()).hash;
                                 messageDigest.update(Hex.decodeHex(hash));
-                                messageDigest.update(EueCdash64Compute.intToBytes(content.length));
+                                messageDigest.update(ChunkListSHA256ChecksumCompute.intToBytes(content.length));
                                 final HttpPut request = new HttpPut(String.format("%s&x_offset=%d&x_sha256=%s&x_size=%d",
                                         uploadUri, offset, hash, content.length));
                                 request.setEntity(entity);

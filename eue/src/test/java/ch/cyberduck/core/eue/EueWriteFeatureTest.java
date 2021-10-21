@@ -23,11 +23,11 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -119,7 +119,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         {
             final byte[] content = RandomUtils.nextBytes(8235);
             final TransferStatus status = new TransferStatus().withLength(content.length);
-            final Checksum checksum = new EueCdash64Compute().compute(new ByteArrayInputStream(content), status);
+            final Checksum checksum = new ChunkListSHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status);
             status.withChecksum(checksum);
             final HttpResponseOutputStream<EueUploadHelper.UploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
@@ -143,7 +143,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         {
             final byte[] content = RandomUtils.nextBytes(6231);
             final TransferStatus status = new TransferStatus().withLength(content.length);
-            final Checksum checksum = new EueCdash64Compute().compute(new ByteArrayInputStream(content), status);
+            final Checksum checksum = new ChunkListSHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status);
             status.withChecksum(checksum).exists(true);
             final HttpResponseOutputStream<EueUploadHelper.UploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
@@ -173,7 +173,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         final byte[] content = RandomUtils.nextBytes(0);
         final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().withLength(content.length);
-        final Checksum checksum = new EueCdash64Compute().compute(new ByteArrayInputStream(content), status);
+        final Checksum checksum = new ChunkListSHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status);
         status.withChecksum(checksum);
         final HttpResponseOutputStream<EueUploadHelper.UploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
@@ -201,7 +201,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         final TransferStatus status = new TransferStatus().withLength(content.length);
         EueUploadHelper.createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(),
                 status, UploadType.SIMPLE);
-        final Checksum checksum = new EueCdash64Compute().compute(new ByteArrayInputStream(content), status);
+        final Checksum checksum = new ChunkListSHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status);
         status.withChecksum(checksum);
         final HttpResponseOutputStream<EueUploadHelper.UploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);

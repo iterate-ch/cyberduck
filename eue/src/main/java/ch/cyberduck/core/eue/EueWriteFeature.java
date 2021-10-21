@@ -20,9 +20,9 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -132,7 +132,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueUploadHelper.Up
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new EueCdash64Compute();
+        return new ChunkListSHA256ChecksumCompute();
     }
 
     public void cancel(final String uploadUri) throws BackgroundException {

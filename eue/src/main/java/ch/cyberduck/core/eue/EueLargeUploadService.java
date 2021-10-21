@@ -139,7 +139,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueUploadHelper.Upl
             MessageDigest messageDigest = this.digest();
             checksums.stream().sorted(Comparator.comparing(MessageDigestHolder::getOffset)).forEach(holder -> {
                 messageDigest.update(holder.digest.digest());
-                messageDigest.update(EueCdash64Compute.intToBytes(Long.valueOf(holder.length).intValue()));
+                messageDigest.update(ChunkListSHA256ChecksumCompute.intToBytes(Long.valueOf(holder.length).intValue()));
             });
             final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)
                     .getCompletedUploadResponse(uploadUri, size, Base64.encodeBase64URLSafeString(messageDigest.digest()));

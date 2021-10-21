@@ -25,20 +25,20 @@ import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
 
-public class EueCdash64ComputeTest {
+public class ChunkListSHA256ChecksumComputeTest {
 
     @Test
     public void testCompute() throws Exception {
         assertEquals("07_pjo8c6JFhSFRWmiD19FCNarQCW4crezqCgu91sSo",
-                new EueCdash64Compute().compute(new NullInputStream(0), new TransferStatus()).hash);
+                new ChunkListSHA256ChecksumCompute().compute(new NullInputStream(0), new TransferStatus()).hash);
     }
 
     @Test
     public void testDigest() throws Exception {
         final byte[] bytes = "1".getBytes(StandardCharsets.UTF_8);
-        assertEquals("HbkcOE7OuVb-kpfNRqNanXMu9LKEVu2cIVIB0Me6Q_Y", new EueCdash64Compute()
+        assertEquals("HbkcOE7OuVb-kpfNRqNanXMu9LKEVu2cIVIB0Me6Q_Y", new ChunkListSHA256ChecksumCompute()
                 .compute(new ByteArrayInputStream(bytes), new TransferStatus().withLength(bytes.length)).hash);
-        assertEquals("07_pjo8c6JFhSFRWmiD19FCNarQCW4crezqCgu91sSo", new EueCdash64Compute()
+        assertEquals("07_pjo8c6JFhSFRWmiD19FCNarQCW4crezqCgu91sSo", new ChunkListSHA256ChecksumCompute()
                 .compute(new ByteArrayInputStream(new byte[0]), new TransferStatus().withLength(0L)).hash);
     }
 }

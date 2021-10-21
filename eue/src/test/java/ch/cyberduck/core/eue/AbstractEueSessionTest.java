@@ -97,7 +97,7 @@ public class AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueWriteFeature feature = new EueWriteFeature(session, fileid);
         final TransferStatus status = new TransferStatus()
-                .withChecksum(new EueCdash64Compute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length)))
+                .withChecksum(new ChunkListSHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length)))
                 .withLength(content.length);
         final HttpResponseOutputStream<EueUploadHelper.UploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);

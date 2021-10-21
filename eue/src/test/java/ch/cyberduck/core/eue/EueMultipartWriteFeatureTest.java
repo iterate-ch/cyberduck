@@ -51,7 +51,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(512000);
-        final Checksum checksum = new EueCdash64Compute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
+        final Checksum checksum = new ChunkListSHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
         final TransferStatus status = new TransferStatus().withLength(512000L);
         final HttpResponseOutputStream<EueUploadHelper.UploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
         assertNotNull(out);
@@ -77,7 +77,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         {
             final byte[] content = RandomUtils.nextBytes(8943045);
-            final Checksum checksum = new EueCdash64Compute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
+            final Checksum checksum = new ChunkListSHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
             final TransferStatus status = new TransferStatus().withLength(-1L);
             final HttpResponseOutputStream<EueUploadHelper.UploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
             assertNotNull(out);
@@ -97,7 +97,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         // Override
         {
             final byte[] content = RandomUtils.nextBytes(4943045);
-            final Checksum checksum = new EueCdash64Compute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
+            final Checksum checksum = new ChunkListSHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
             final TransferStatus status = new TransferStatus().withLength(-1L).exists(true);
             final HttpResponseOutputStream<EueUploadHelper.UploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
             assertNotNull(out);

@@ -33,7 +33,7 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class EueCdash64Compute extends AbstractChecksumCompute {
+public class ChunkListSHA256ChecksumCompute extends AbstractChecksumCompute {
 
     public static byte[] intToBytes(final int i) {
         final ByteBuffer bb = ByteBuffer.allocate(4);
