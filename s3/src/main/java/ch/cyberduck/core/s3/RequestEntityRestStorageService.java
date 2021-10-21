@@ -194,12 +194,18 @@ public class RequestEntityRestStorageService extends RestS3Service {
                         }
                         final String bucketNameInHostname = RequestEntityRestStorageService.findBucketInHostname(host);
                         if(bucketNameInHostname != null) {
-                            final String endpoint = String.format("%s.%s", bucketNameInHostname, properties.getStringProperty("s3service.s3-endpoint",
-                                    host.getProtocol().getDefaultHostname()));
                             if(log.isDebugEnabled()) {
-                                log.debug(String.format("Set endpoint to %s", endpoint));
+                                log.debug(String.format("Determined bucket %s from hostname %s", bucketNameInHostname, host.getHostname()));
                             }
-                            properties.setProperty("s3service.s3-endpoint", endpoint);
+                            if(!StringUtils.startsWith(properties.getStringProperty("s3service.s3-endpoint", host.getProtocol().getDefaultHostname()),
+                                    bucketNameInHostname)) {
+                                final String endpoint = String.format("%s.%s", bucketNameInHostname, properties.getStringProperty("s3service.s3-endpoint",
+                                        host.getProtocol().getDefaultHostname()));
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("Set endpoint to %s", endpoint));
+                                }
+                                properties.setProperty("s3service.s3-endpoint", endpoint);
+                            }
                         }
                     }
                 }

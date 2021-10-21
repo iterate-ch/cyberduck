@@ -227,10 +227,14 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
-    public void testBucketVirtualHostStyleAmazon() {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        assertFalse(new S3Session(host).connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
-            .getConfiguration().getBoolProperty("s3service.disable-dns-buckets", true));
+    public void testBucketVirtualHostStyleAmazon() throws Exception {
+        final Host host = new Host(new S3Protocol(), "test-eu-central-1-cyberduck.s3.amazonaws.com", new Credentials(
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        assertFalse(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
+                .getConfiguration().getBoolProperty("s3service.disable-dns-buckets", true));
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginFailureException.class)
