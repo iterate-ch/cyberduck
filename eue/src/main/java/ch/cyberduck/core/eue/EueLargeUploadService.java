@@ -21,11 +21,12 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -63,7 +64,6 @@ public class EueLargeUploadService extends HttpUploadFeature<EueUploadHelper.Upl
     public static final String RESOURCE_ID = "resourceId";
 
     private final EueSession session;
-    private final Write<EueUploadHelper.UploadResponse> writer;
     private final Long chunkSize;
     private final Integer concurrency;
     private final EueResourceIdProvider fileid;
@@ -73,7 +73,9 @@ public class EueLargeUploadService extends HttpUploadFeature<EueUploadHelper.Upl
      */
     private final List<MessageDigestHolder> checksums = new ArrayList<>();
 
-    public EueLargeUploadService(final EueSession session, final Write<EueUploadHelper.UploadResponse> writer, final EueResourceIdProvider fileid) {
+    private Write<EueUploadHelper.UploadResponse> writer;
+
+    public EueLargeUploadService(final EueSession session, final EueResourceIdProvider fileid, final Write<EueUploadHelper.UploadResponse> writer) {
         this(session, fileid, writer, PreferencesFactory.get().getLong("eue.upload.multipart.size"), PreferencesFactory.get().getInteger("eue.upload.multipart.concurrency"));
     }
 
@@ -208,6 +210,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueUploadHelper.Upl
                 status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
                 status.setUrl(url);
                 status.setHeader(overall.getHeader());
+                status.setNonces(overall.getNonces());
                 final EueUploadHelper.UploadResponse uploadResponse = EueLargeUploadService.this.upload(
                         file, local, throttle, listener, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
@@ -216,6 +219,12 @@ public class EueLargeUploadService extends HttpUploadFeature<EueUploadHelper.Upl
                 return uploadResponse;
             }
         }, overall, counter));
+    }
+
+    @Override
+    public Upload<EueUploadHelper.UploadResponse> withWriter(final Write<EueUploadHelper.UploadResponse> writer) {
+        this.writer = writer;
+        return super.withWriter(writer);
     }
 
     private static class MessageDigestHolder {

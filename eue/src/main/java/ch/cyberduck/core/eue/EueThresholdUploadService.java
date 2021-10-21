@@ -57,7 +57,7 @@ public class EueThresholdUploadService implements Upload<EueUploadHelper.UploadR
     public EueUploadHelper.UploadResponse upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                                  final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         if(status.getLength() >= threshold) {
-            return new EueLargeUploadService(session, writer, fileid).upload(file, local, throttle, listener, status, prompt);
+            return new EueLargeUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, prompt);
         }
         return new EueSingleUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, prompt);
     }

@@ -19,10 +19,11 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -34,7 +35,8 @@ public class EueSingleUploadService extends HttpUploadFeature<EueUploadHelper.Up
 
     private final EueSession session;
     private final EueResourceIdProvider fileid;
-    private final Write<EueUploadHelper.UploadResponse> writer;
+
+    private Write<EueUploadHelper.UploadResponse> writer;
 
     public EueSingleUploadService(final EueSession session, final EueResourceIdProvider fileid, final Write<EueUploadHelper.UploadResponse> writer) {
         super(writer);
@@ -60,5 +62,11 @@ public class EueSingleUploadService extends HttpUploadFeature<EueUploadHelper.Up
         status.setUrl(uploadUri);
         status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
         return super.upload(file, local, throttle, listener, status, callback);
+    }
+
+    @Override
+    public Upload<EueUploadHelper.UploadResponse> withWriter(final Write<EueUploadHelper.UploadResponse> writer) {
+        this.writer = writer;
+        return super.withWriter(writer);
     }
 }
