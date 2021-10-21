@@ -15,6 +15,7 @@ package ch.cyberduck.core.azure;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -26,7 +27,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 @Category(IntegrationTest.class)
 public class AzureTouchFeatureTest extends AbstractAzureTest {
@@ -34,7 +34,7 @@ public class AzureTouchFeatureTest extends AbstractAzureTest {
     @Test
     public void testTouchFileStartWithDot() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, String.format(".%s.", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, String.format(".%s.", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

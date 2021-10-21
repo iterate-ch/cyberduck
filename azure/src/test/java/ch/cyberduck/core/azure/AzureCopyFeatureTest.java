@@ -24,7 +24,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
 
@@ -34,9 +33,9 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
     @Test
     public void testCopy() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
-        final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path copy = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureCopyFeature(session, null).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new AzureFindFeature(session, null).find(test));
         assertTrue(new AzureFindFeature(session, null).find(copy));
@@ -68,9 +67,9 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
-        final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path copy = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureCopyFeature(session, null).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new AzureFindFeature(session, null).find(test));
         assertTrue(new AzureFindFeature(session, null).find(copy));
