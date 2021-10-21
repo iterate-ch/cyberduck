@@ -56,8 +56,8 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
 
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
-        final String directoryId = random.random();
-        final Path encrypt = vault.encrypt(session, folder, directoryId, false);
+        final Path encrypt = vault.encrypt(session, folder, random.random(), false);
+        final String directoryId = encrypt.attributes().getDirectoryId();;
         // Create metadata file for directory
         final Path directoryMetadataFolder = vault.encrypt(session, folder, true);
         final Path directoryMetadataFile = new Path(session._getFeature(Directory.class).mkdir(directoryMetadataFolder,
