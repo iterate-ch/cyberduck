@@ -139,13 +139,15 @@ public final class StreamCopier {
 
     public static InputStream skip(final InputStream in, final long offset) throws BackgroundException {
         try {
-            long skipped = in.skip(offset);
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Skipping %d bytes", skipped));
-            }
-            if(skipped < offset) {
-                throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
-                    skipped, offset));
+            if(offset > 0) {
+                long skipped = in.skip(offset);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Skipping %d bytes", skipped));
+                }
+                if(skipped < offset) {
+                    throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
+                            skipped, offset));
+                }
             }
             return in;
         }

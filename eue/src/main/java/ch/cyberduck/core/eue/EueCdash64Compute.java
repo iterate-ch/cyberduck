@@ -44,7 +44,7 @@ public class EueCdash64Compute extends AbstractChecksumCompute {
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
             digest.update(super.digest("SHA-256", StreamCopier.skip(in, status.getOffset())));
             digest.update(intToBytes(Long.valueOf(status.getLength()).intValue()));
             return new Checksum(HashAlgorithm.sha256, Base64.encodeBase64URLSafeString(digest.digest()));

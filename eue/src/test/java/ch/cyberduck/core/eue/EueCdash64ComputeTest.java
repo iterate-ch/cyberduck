@@ -17,6 +17,7 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -25,6 +26,12 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.Assert.assertEquals;
 
 public class EueCdash64ComputeTest {
+
+    @Test
+    public void testCompute() throws Exception {
+        assertEquals("07_pjo8c6JFhSFRWmiD19FCNarQCW4crezqCgu91sSo",
+                new EueCdash64Compute().compute(new NullInputStream(0), new TransferStatus()).hash);
+    }
 
     @Test
     public void testDigest() throws Exception {
