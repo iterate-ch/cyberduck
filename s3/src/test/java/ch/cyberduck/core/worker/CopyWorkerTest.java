@@ -54,7 +54,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         new S3TouchFeature(session).touch(source, new TransferStatus().withMime("application/cyberduck"));
         new S3AccessControlListFeature(session).setPermission(source, new Acl(
             new Acl.UserAndRole(
-                new Acl.CanonicalUser("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL)
+                new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL)
             ),
             new Acl.UserAndRole(
                 new Acl.GroupUser("http://acs.amazonaws.com/groups/global/AllUsers"), new Acl.Role(Acl.Role.READ)
@@ -68,7 +68,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         assertEquals("application/cyberduck",
             new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(target).get("Content-Type"));
         assertTrue(new S3AccessControlListFeature(session).getPermission(target).asList().contains(
-            new Acl.UserAndRole(new Acl.CanonicalUser("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL))
+            new Acl.UserAndRole(new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL))
         ));
         assertTrue(new S3AccessControlListFeature(session).getPermission(target).asList().contains(
             new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))
