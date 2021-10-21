@@ -62,8 +62,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
@@ -122,14 +121,14 @@ public class CryptoLocalSingleTransferWorkerTest {
 
         }.run(session));
         assertTrue(new CryptoFindFeature(session, new LocalFindFeature(session), cryptomator).find(dir1));
-        Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new LocalAttributesFinderFeature(session), cryptomator).find(file1).getSize());
+        assertEquals(content.length, new CryptoAttributesFeature(session, new LocalAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new CryptoReadFeature(session, new LocalReadFeature(session), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new LocalAttributesFinderFeature(session), cryptomator).find(file2).getSize());
+        assertEquals(content.length, new CryptoAttributesFeature(session, new LocalAttributesFinderFeature(session), cryptomator).find(file2).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new CryptoReadFeature(session, new LocalReadFeature(session), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
