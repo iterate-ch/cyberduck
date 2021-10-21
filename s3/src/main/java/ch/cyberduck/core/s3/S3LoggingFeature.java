@@ -57,6 +57,7 @@ public class S3LoggingFeature implements Logging {
             final StorageBucketLoggingStatus status
                     = session.getClient().getBucketLoggingStatusImpl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             if(null == status) {
+                log.warn(String.format("Failure parsing logging status for %s", bucket));
                 return LoggingConfiguration.empty();
             }
             final LoggingConfiguration configuration = new LoggingConfiguration(status.isLoggingEnabled(),
