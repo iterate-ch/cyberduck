@@ -6,7 +6,6 @@ https://cyberduck.io/
 - [Feature] New default connection profile for ownCloud
 - [Feature] Retain modification date in metadata for uploads (Google Cloud Storage) (#11784)
 - [Feature] Retain modification date in metadata for uploads (S3) (#11784)
-- [Feature] New default connection profile (ownCloud)
 - [Feature] Build package in AppImage format (CLI) (#11762)
 - [Feature] Support for PuTTY v3 key files (SFTP)
 - [Feature] Support public key authentication using certificates (SFTP)
