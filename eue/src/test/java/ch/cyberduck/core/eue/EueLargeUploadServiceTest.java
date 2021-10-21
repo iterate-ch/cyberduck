@@ -26,12 +26,16 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.shared.DisabledBulkFeature;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -48,6 +52,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -99,6 +104,42 @@ public class EueLargeUploadServiceTest extends AbstractEueSessionTest {
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         writeStatus.setLength(content.length);
+        final BytecountStreamListener count = new BytecountStreamListener();
+        final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
+                new EueLargeUploadService(session, fileid, new EueWriteFeature(session, fileid)),
+                new EueWriteFeature(session, fileid), cryptomator);
+        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, null);
+        assertEquals(content.length, count.getSent());
+        assertTrue(writeStatus.isComplete());
+        assertTrue(new CryptoFindFeature(session, new EueFindFeature(session, fileid), cryptomator).find(test));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new EueAttributesFinderFeature(session, fileid), cryptomator).find(test).getSize());
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+        final TransferStatus readStatus = new TransferStatus().withLength(content.length);
+        final InputStream in = new CryptoReadFeature(session, new EueReadFeature(session, fileid), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
+        new StreamCopier(readStatus, readStatus).transfer(in, buffer);
+        assertArrayEquals(content, buffer.toByteArray());
+        cryptomator.getFeature(session, Delete.class, new EueDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        local.delete();
+    }
+
+    @Test
+    public void testUploadVaultWithBulkFeature() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus().withLength(0L));
+        final Path vault = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final CryptoVault cryptomator = new CryptoVault(vault);
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), CryptoVault.VAULT_VERSION_DEPRECATED);
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] content = RandomUtils.nextBytes(50240000);
+        IOUtils.write(content, local.getOutputStream(false));
+        final TransferStatus writeStatus = new TransferStatus();
+        final FileHeader header = cryptomator.getFileHeaderCryptor().create();
+        writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
+        writeStatus.setLength(content.length);
+        final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new EueDeleteFeature(session, fileid), cryptomator);
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
         final BytecountStreamListener count = new BytecountStreamListener();
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
                 new EueLargeUploadService(session, fileid, new EueWriteFeature(session, fileid)),
