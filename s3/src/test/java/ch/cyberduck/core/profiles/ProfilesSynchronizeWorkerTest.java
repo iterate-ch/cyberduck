@@ -25,7 +25,7 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -39,7 +39,6 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -52,30 +51,34 @@ public class ProfilesSynchronizeWorkerTest {
         final ProtocolFactory protocols = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Host host = new HostParser(protocols, new S3Protocol()).get(PreferencesFactory.get().getProperty("profiles.discovery.updater.url"));
         final Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         // Local directory with oudated profile
-        final Local profile = LocalFactory.get(this.getClass().getResource("/test.cyberduckprofile").getPath());
-        assertNotNull(new ProfilePlistReader(protocols).read(profile));
-        assertTrue(profile.exists());
-        final LocalProfileDescription description = new LocalProfileDescription(profile);
-        final Local directory = profile.getParent();
+        final Local localonlyprofile = LocalFactory.get(this.getClass().getResource("/test-localonly.cyberduckprofile").getPath());
+        final Local outdatedprofile = LocalFactory.get(this.getClass().getResource("/test-outdated.cyberduckprofile").getPath());
+        assertNotNull(new ProfilePlistReader(protocols).read(outdatedprofile));
+        assertTrue(outdatedprofile.exists());
+        final LocalProfileDescription localonlyProfileDescription = new LocalProfileDescription(protocols, localonlyprofile);
+        assertTrue(localonlyProfileDescription.getProfile().isPresent());
+        final LocalProfileDescription outdatedProfileDescription = new LocalProfileDescription(protocols, outdatedprofile);
+        assertTrue(outdatedProfileDescription.getProfile().isPresent());
+        final Local directory = outdatedprofile.getParent();
         final ProfilesSynchronizeWorker worker = new ProfilesSynchronizeWorker(protocols, directory, ProfilesFinder.Visitor.Noop);
         final Set<ProfileDescription> profiles = worker.run(session);
         assertFalse(profiles.isEmpty());
         profiles.forEach(d -> assertTrue(d.isLatest()));
-        final AtomicBoolean found = new AtomicBoolean();
-        profiles.forEach(d -> {
-            if(d.isInstalled()) {
-                found.set(true);
-                assertEquals(profile, description.getFile().get());
-                assertNotNull(description.getChecksum());
-                assertNotNull(d.getChecksum());
-                // Assert profile updated from remote
-                assertNotEquals(description, d);
-                assertNotEquals(description.getChecksum(), d.getChecksum());
-            }
-        });
-        assertTrue(found.get());
-        assertFalse(profiles.contains(description));
+
+        assertFalse(profiles.contains(outdatedProfileDescription));
+        assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.getProfile().get().getProvider().equals(outdatedProfileDescription.getProfile().get().getProvider())).findFirst().isPresent());
+        assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.getProfile().get().getProvider().equals(outdatedProfileDescription.getProfile().get().getProvider())).findFirst().get().isInstalled());
+        assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.getProfile().get().getProvider().equals(outdatedProfileDescription.getProfile().get().getProvider())).findFirst().get().isLatest());
+        // Assert profile updated from remote
+        assertNotEquals(outdatedProfileDescription, profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.getProfile().get().getProvider().equals(outdatedProfileDescription.getProfile().get().getProvider())).findFirst().get());
+        assertNotEquals(outdatedProfileDescription.getChecksum(), profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.getProfile().get().getProvider().equals(outdatedProfileDescription.getProfile().get().getProvider())).findFirst().get().getChecksum());
+
+        assertTrue(profiles.contains(localonlyProfileDescription));
+        assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.equals(localonlyProfileDescription)).findFirst().isPresent());
+        assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.equals(localonlyProfileDescription)).findFirst().get().isInstalled());
+        assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.equals(localonlyProfileDescription)).findFirst().get().isLatest());
+        assertEquals(localonlyProfileDescription, profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.equals(localonlyProfileDescription)).findFirst().get());
     }
 }

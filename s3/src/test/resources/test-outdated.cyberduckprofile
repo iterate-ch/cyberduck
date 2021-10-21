@@ -5,12 +5,16 @@
         <key>Protocol</key>
         <string>s3</string>
         <key>Vendor</key>
-        <string>Custom S3</string>
+        <string>s3-http</string>
         <key>Scheme</key>
-        <string>https</string>
+        <string>http</string>
         <key>Description</key>
-        <string>S3 (HTTPS)</string>
+        <string>S3 (HTTP)</string>
         <key>Default Port</key>
-        <string>443</string>
+        <string>80</string>
+        <key>Hostname Configurable</key>
+        <true/>
+        <key>Port Configurable</key>
+        <true/>
     </dict>
 </plist>

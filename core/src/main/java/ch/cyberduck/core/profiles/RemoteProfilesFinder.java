@@ -23,6 +23,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -47,9 +48,15 @@ import java.util.stream.Collectors;
 public class RemoteProfilesFinder implements ProfilesFinder {
     private static final Logger log = Logger.getLogger(RemoteProfilesFinder.class);
 
+    private final ProtocolFactory protocols;
     private final Session<?> session;
 
     public RemoteProfilesFinder(final Session<?> session) {
+        this(ProtocolFactory.get(), session);
+    }
+
+    public RemoteProfilesFinder(final ProtocolFactory protocols, final Session<?> session) {
+        this.protocols = protocols;
         this.session = session;
     }
 
@@ -61,17 +68,17 @@ public class RemoteProfilesFinder implements ProfilesFinder {
         final ProfileFilter filter = new ProfileFilter();
         final AttributedList<Path> list = session.getFeature(ListService.class).list(new DelegatingHomeFeature(
             new DefaultPathHomeFeature(session.getHost())).find(), new DisabledListProgressListener());
-        return list.filter(filter).toStream().map(file -> visitor.visit(new RemoteProfileDescription(file,
-            new LazyInitializer<Local>() {
-                @Override
-                protected Local initialize() throws ConcurrentException {
-                    try {
-                        final Read read = session.getFeature(Read.class);
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Download profile %s", file));
-                        }
-                        final InputStream in = read.read(file.withAttributes(new PathAttributes(file.attributes())
-                            // Read latest version
+        return list.filter(filter).toStream().map(file -> visitor.visit(new RemoteProfileDescription(protocols, file,
+                new LazyInitializer<Local>() {
+                    @Override
+                    protected Local initialize() throws ConcurrentException {
+                        try {
+                            final Read read = session.getFeature(Read.class);
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Download profile %s", file));
+                            }
+                            final InputStream in = read.read(file.withAttributes(new PathAttributes(file.attributes())
+                                    // Read latest version
                             .withVersionId(null)), new TransferStatus(), new DisabledConnectionCallback());
                         final Local temp = TemporaryFileServiceFactory.get().create(file.getName());
                         new DefaultLocalTouchFeature().touch(temp);

@@ -76,7 +76,7 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
         // Find all locally installed profiles
         final Set<ProfileDescription> installed = new LocalProfilesFinder(registry, directory).find();
         // Find all profiles from repository
-        final Set<ProfileDescription> remote = new RemoteProfilesFinder(session).find();
+        final Set<ProfileDescription> remote = new RemoteProfilesFinder(registry, session).find();
         final ProfileMatcher matcher = new ChecksumProfileMatcher(remote);
         // Iterate over every installed profile and find match in repository
         installed.forEach(local -> {
@@ -91,7 +91,7 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
                 match.get().getFile().ifPresent(value -> {
                     final Local copy = registry.register(value);
                     if(null != copy) {
-                        final LocalProfileDescription d = new LocalProfileDescription(copy);
+                        final LocalProfileDescription d = new LocalProfileDescription(registry, copy);
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Add synched profile %s", d));
                         }
