@@ -207,10 +207,10 @@ public class EueLargeUploadService extends HttpUploadFeature<EueUploadHelper.Upl
                         .withLength(length)
                         .withParameters(parameters)
                         .withOffset(offset);
-                status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
-                status.setUrl(url);
                 status.setHeader(overall.getHeader());
                 status.setNonces(overall.getNonces());
+                status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
+                status.setUrl(url);
                 final EueUploadHelper.UploadResponse uploadResponse = EueLargeUploadService.this.upload(
                         file, local, throttle, listener, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
