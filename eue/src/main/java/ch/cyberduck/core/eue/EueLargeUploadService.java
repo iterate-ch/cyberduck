@@ -34,7 +34,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
@@ -76,7 +76,8 @@ public class EueLargeUploadService extends HttpUploadFeature<EueUploadHelper.Upl
     private Write<EueUploadHelper.UploadResponse> writer;
 
     public EueLargeUploadService(final EueSession session, final EueResourceIdProvider fileid, final Write<EueUploadHelper.UploadResponse> writer) {
-        this(session, fileid, writer, PreferencesFactory.get().getLong("eue.upload.multipart.size"), PreferencesFactory.get().getInteger("eue.upload.multipart.concurrency"));
+        this(session, fileid, writer, new HostPreferences(session.getHost()).getLong("eue.upload.multipart.size"),
+                new HostPreferences(session.getHost()).getInteger("eue.upload.multipart.concurrency"));
     }
 
     public EueLargeUploadService(final EueSession session, final EueResourceIdProvider fileid, final Write<EueUploadHelper.UploadResponse> writer, final Long chunkSize, final Integer concurrency) {

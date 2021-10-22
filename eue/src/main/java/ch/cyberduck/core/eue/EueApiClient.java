@@ -1,40 +1,24 @@
 package ch.cyberduck.core.eue;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.GenericType;
-
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
-import org.glassfish.jersey.message.internal.InputStreamProvider;
-
-/*
- * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
-
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.eue.io.swagger.client.ApiClient;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.JSON;
 import ch.cyberduck.core.eue.io.swagger.client.Pair;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
+
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.message.internal.InputStreamProvider;
+
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.GenericType;
+import java.util.List;
+import java.util.Map;
 
 public class EueApiClient extends ApiClient {
 
@@ -42,7 +26,7 @@ public class EueApiClient extends ApiClient {
 		this.setHttpClient(ClientBuilder.newClient(new ClientConfig().register(new InputStreamProvider())
 				.register(MultiPartFeature.class).register(new JSON()).register(JacksonFeature.class)
 				.connectorProvider(new HttpComponentsProvider(session.getClient()))));
-		final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
+		final int timeout = new HostPreferences(session.getHost()).getInteger("connection.timeout.seconds") * 1000;
 		this.setConnectTimeout(timeout);
 		this.setReadTimeout(timeout);
 		this.setUserAgent(new PreferencesUseragentProvider().get());
