@@ -60,17 +60,17 @@ public class DriveBatchDeleteFeature implements Delete {
                         .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
                 }
                 else {
-                    if(new HostPreferences(session.getHost()).getBoolean("googledrive.delete.trash")) {
+                    if(!file.attributes().isDuplicate() && new HostPreferences(session.getHost()).getBoolean("googledrive.delete.trash")) {
                         final File properties = new File();
                         properties.setTrashed(true);
                         session.getClient().files().update(fileid.getFileId(file, new DisabledListProgressListener()), properties)
-                            .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
-                            .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
+                                .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                                .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
                     }
                     else {
                         session.getClient().files().delete(fileid.getFileId(file, new DisabledListProgressListener()))
-                            .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
-                            .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
+                                .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                                .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
                     }
                 }
                 fileid.cache(file, null);
