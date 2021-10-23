@@ -47,7 +47,7 @@ public class ChunkListSHA256ChecksumCompute extends AbstractChecksumCompute {
             final MessageDigest digest = MessageDigest.getInstance("SHA-256");
             digest.update(super.digest("SHA-256", StreamCopier.skip(in, status.getOffset())));
             digest.update(intToBytes(Long.valueOf(status.getLength()).intValue()));
-            return new Checksum(HashAlgorithm.sha256, Base64.encodeBase64URLSafeString(digest.digest()));
+            return new Checksum(HashAlgorithm.cdash64, Base64.encodeBase64URLSafeString(digest.digest()));
         }
         catch(NoSuchAlgorithmException | BackgroundException e) {
             throw new ChecksumException(e.getMessage(), e);
