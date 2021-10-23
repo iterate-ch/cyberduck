@@ -113,8 +113,9 @@ public class EueLargeUploadService extends HttpUploadFeature<EueUploadHelper.Upl
                   uploadUri = uploadResourceCreationResponseEntry.getEntity().getUploadURI();
             }
             while(remaining > 0) {
-                String offsetIncludedUploadUri = String.format("%s&x_offset=%d", uploadUri, offset);
-                final long length = Math.min(chunkSize, remaining);
+                // Convert to smaller chunk size when uploading to vault to make sure chunks on
+                // server always match requirement of 4194304 bytes
+                final long length = Math.min(writer.chunksize(offset, chunksize), remaining);
                 parts.add(this.submit(pool, file, local, throttle, listener, status,
                         offsetIncludedUploadUri, resourceId, offset, length, callback));
                 remaining -= length;

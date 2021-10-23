@@ -87,6 +87,11 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     }
 
     @Override
+    public long chunksize(final long offset, final long chunksize) throws BackgroundException {
+        return vault.toCleartextSize(offset, chunksize);
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CryptoWriteFeature{");
         sb.append("proxy=").append(proxy);
