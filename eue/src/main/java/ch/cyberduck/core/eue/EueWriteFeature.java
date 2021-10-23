@@ -91,6 +91,9 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueUploadHelper.Up
                                 uploadUriWithParameters.append(String.format("&x_size=%d", status.getLength()));
                             }
                             if(status.isSegment()) {
+                                // Chunked upload from large upload service
+                                uploadUriWithParameters.append(String.format("&x_offset=%d",
+                                        new HostPreferences(session.getHost()).getLong("eue.upload.multipart.size") * (status.getPart() - 1)));
                                 final HttpPut request = new HttpPut(uploadUriWithParameters.toString());
                                 request.setEntity(entity);
                                 response = session.getClient().execute(request);

@@ -117,7 +117,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueUploadHelper.Upl
                 // server always match requirement of 4194304 bytes
                 final long length = Math.min(writer.chunksize(offset, chunksize), remaining);
                 parts.add(this.submit(pool, file, local, throttle, listener, status,
-                        offsetIncludedUploadUri, resourceId, offset, length, callback));
+                        uploadUri, resourceId, partNumber, offset, length, callback));
                 remaining -= length;
                 offset += length;
             }
