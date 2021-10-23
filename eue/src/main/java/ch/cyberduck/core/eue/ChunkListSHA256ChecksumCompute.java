@@ -23,7 +23,6 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Base64;
@@ -45,7 +44,7 @@ public class ChunkListSHA256ChecksumCompute extends AbstractChecksumCompute {
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
         try {
             final MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update(super.digest("SHA-256", StreamCopier.skip(in, status.getOffset())));
+            digest.update(super.digest("SHA-256", this.normalize(in, status)));
             digest.update(intToBytes(Long.valueOf(status.getLength()).intValue()));
             return new Checksum(HashAlgorithm.cdash64, Base64.encodeBase64URLSafeString(digest.digest()));
         }
