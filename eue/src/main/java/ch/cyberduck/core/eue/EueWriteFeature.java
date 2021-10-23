@@ -18,19 +18,26 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.SHA256ChecksumCompute;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -45,7 +52,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-public class EueWriteFeature extends AbstractHttpWriteFeature<EueUploadHelper.UploadResponse> {
+public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Chunk> {
     private static final Logger log = Logger.getLogger(EueWriteFeature.class);
 
     private final EueSession session;
@@ -57,7 +64,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueUploadHelper.Up
     }
 
     @Override
-    public HttpResponseOutputStream<EueUploadHelper.UploadResponse> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<Chunk> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String uploadUri;
         final String resourceId;
         if(null == status.getUrl()) {
@@ -77,15 +84,16 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueUploadHelper.Up
             uploadUri = status.getUrl();
             resourceId = status.getParameters().get(EueLargeUploadService.RESOURCE_ID);
         }
-        final HttpResponseOutputStream<EueUploadHelper.UploadResponse> stream = this.write(file, status,
-                new DelayedHttpEntityCallable<EueUploadHelper.UploadResponse>() {
+        final HttpResponseOutputStream<Chunk> stream = this.write(file, status,
+                new DelayedHttpEntityCallable<Chunk>() {
                     @Override
-                    public EueUploadHelper.UploadResponse call(final AbstractHttpEntity entity) throws BackgroundException {
+                    public Chunk call(final AbstractHttpEntity entity) throws BackgroundException {
                         try {
                             final HttpResponse response;
                             final StringBuilder uploadUriWithParameters = new StringBuilder(uploadUri);
                             if(!Checksum.NONE.equals(status.getChecksum())) {
-                                uploadUriWithParameters.append(String.format("&x_cdash64=%s", status.getChecksum().hash));
+                                uploadUriWithParameters.append(String.format("&x_cdash64=%s",
+                                        new ChunkListSHA256ChecksumCompute().compute(status.getLength(), Hex.decodeHex(status.getChecksum().hash))));
                             }
                             if(status.getLength() != -1) {
                                 uploadUriWithParameters.append(String.format("&x_size=%d", status.getLength()));
@@ -106,7 +114,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueUploadHelper.Up
                             }
                             try {
                                 if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                                    return EueUploadHelper.parseUploadResponse(response);
+                                    return new Chunk(status.getPart(), status.getLength(), status.getChecksum());
                                 }
                                 EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                                 throw new EueExceptionMappingService().map(response);
@@ -120,6 +128,9 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueUploadHelper.Up
                         }
                         catch(IOException e) {
                             throw new DefaultIOExceptionMappingService().map(e);
+                        }
+                        catch(DecoderException e) {
+                            throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e);
                         }
                     }
 
@@ -135,7 +146,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueUploadHelper.Up
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new ChunkListSHA256ChecksumCompute();
+        return new SHA256ChecksumCompute();
     }
 
     public void cancel(final String uploadUri) throws BackgroundException {
@@ -148,6 +159,43 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueUploadHelper.Up
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
+        }
+    }
+
+    public static final class Chunk {
+        private final Integer partnumber;
+        private final Long length;
+        private final String cdash64;
+        private final Checksum checksum;
+
+        public Chunk(final Long length, final String cdash64) {
+            this.partnumber = -1;
+            this.length = length;
+            this.cdash64 = cdash64;
+            this.checksum = Checksum.NONE;
+        }
+
+        public Chunk(final Integer partnumber, final Long length, final Checksum checksum) {
+            this.partnumber = partnumber;
+            this.length = length;
+            this.cdash64 = StringUtils.EMPTY;
+            this.checksum = checksum;
+        }
+
+        public Integer getPartnumber() {
+            return partnumber;
+        }
+
+        public Long getLength() {
+            return length;
+        }
+
+        public String getCdash64() {
+            return cdash64;
+        }
+
+        public Checksum getChecksum() {
+            return checksum;
         }
     }
 }

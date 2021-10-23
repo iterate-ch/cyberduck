@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -36,7 +37,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.entity.EntityBuilder;
@@ -55,7 +55,7 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class EueMultipartWriteFeature implements MultipartWrite<EueUploadHelper.UploadResponse> {
+public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.Chunk> {
     private static final Logger log = Logger.getLogger(EueMultipartWriteFeature.class);
 
     private final EueSession session;
@@ -72,7 +72,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueUploadHelper.
     }
 
     @Override
-    public HttpResponseOutputStream<EueUploadHelper.UploadResponse> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<EueWriteFeature.Chunk> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         String uploadUri;
         String resourceId;
         if(status.isExists()) {
@@ -88,38 +88,40 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueUploadHelper.
         }
         final MultipartOutputStream proxy;
         try {
-            proxy = new MultipartOutputStream(file, uploadUri, resourceId, status, callback);
+            proxy = new MultipartOutputStream(file, uploadUri, status, callback);
         }
         catch(NoSuchAlgorithmException e) {
             throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e);
         }
-        return new HttpResponseOutputStream<EueUploadHelper.UploadResponse>(new MemorySegementingOutputStream(proxy,
+        return new HttpResponseOutputStream<EueWriteFeature.Chunk>(new MemorySegementingOutputStream(proxy,
                 new HostPreferences(session.getHost()).getInteger("eue.upload.multipart.size"))) {
             @Override
-            public EueUploadHelper.UploadResponse getStatus() {
+            public EueWriteFeature.Chunk getStatus() {
                 return proxy.getResult();
             }
         };
     }
 
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return new SHA256ChecksumCompute();
+    }
+
     private final class MultipartOutputStream extends OutputStream {
         private final Path file;
         private final String uploadUri;
-        private final String resourceId;
         private final TransferStatus overall;
         private final ConnectionCallback callback;
         private final AtomicBoolean close = new AtomicBoolean();
         private final AtomicReference<BackgroundException> canceled = new AtomicReference<>();
-        private final AtomicReference<EueUploadHelper.UploadResponse> result = new AtomicReference<>();
+        private final AtomicReference<EueWriteFeature.Chunk> result = new AtomicReference<>();
         private final MessageDigest messageDigest;
 
         private Long offset = 0L;
-        private Long cumulativeLength = 0L;
 
-        public MultipartOutputStream(final Path file, final String uploadUri, final String resourceId, final TransferStatus status, final ConnectionCallback callback) throws NoSuchAlgorithmException {
+        public MultipartOutputStream(final Path file, final String uploadUri, final TransferStatus status, final ConnectionCallback callback) throws NoSuchAlgorithmException {
             this.file = file;
             this.uploadUri = uploadUri;
-            this.resourceId = resourceId;
             this.overall = status;
             this.callback = callback;
             this.messageDigest = MessageDigest.getInstance("SHA-256");
@@ -140,7 +142,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueUploadHelper.
                 if(0L == offset && content.length < new HostPreferences(session.getHost()).getLong("eue.upload.multipart.threshold")) {
                     final EueWriteFeature writer = new EueWriteFeature(session, fileid);
                     writer.cancel(uploadUri);
-                    final HttpResponseOutputStream<EueUploadHelper.UploadResponse> stream = writer.write(file,
+                    final HttpResponseOutputStream<EueWriteFeature.Chunk> stream = writer.write(file,
                             overall.withChecksum(writer.checksum(file, overall).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length))), callback);
                     stream.write(content);
                     stream.close();
@@ -152,14 +154,13 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueUploadHelper.
                         public EueUploadHelper.UploadResponse call() throws BackgroundException {
                             final CloseableHttpClient client = session.getClient();
                             try {
-                                final HttpEntity entity = EntityBuilder.create().setBinary(content).build();
                                 final String hash = new SHA256ChecksumCompute()
                                         .compute(new ByteArrayInputStream(content, off, len), new TransferStatus()).hash;
                                 messageDigest.update(Hex.decodeHex(hash));
                                 messageDigest.update(ChunkListSHA256ChecksumCompute.intToBytes(content.length));
                                 final HttpPut request = new HttpPut(String.format("%s&x_offset=%d&x_sha256=%s&x_size=%d",
                                         uploadUri, offset, hash, content.length));
-                                request.setEntity(entity);
+                                request.setEntity(EntityBuilder.create().setBinary(content).build());
                                 final HttpResponse response = client.execute(request);
                                 try {
                                     switch(response.getStatusLine().getStatusCode()) {
@@ -167,10 +168,10 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueUploadHelper.
                                         case HttpStatus.SC_CREATED:
                                         case HttpStatus.SC_NO_CONTENT:
                                             offset += content.length;
-                                            cumulativeLength += content.length;
                                             break;
                                         default:
-                                            throw new EueExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                            throw new EueExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(),
+                                                    response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                                     EntityUtils.toString(response.getEntity())));
                                     }
                                 }
@@ -208,8 +209,9 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueUploadHelper.
                 if(result.get() == null) {
                     try {
                         final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
-                        result.set(new EueMultipartUploadCompleter(session)
-                                .getCompletedUploadResponse(uploadUri, cumulativeLength, cdash64));
+                        new EueMultipartUploadCompleter(session)
+                                .getCompletedUploadResponse(uploadUri, offset, cdash64);
+                        result.set(new EueWriteFeature.Chunk(overall.getLength(), cdash64));
                     }
                     catch(BackgroundException e) {
                         throw new IOException(e);
@@ -224,14 +226,15 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueUploadHelper.
         @Override
         public String toString() {
             final StringBuilder sb = new StringBuilder("MultipartOutputStream{");
-            sb.append("uploadUri='").append(uploadUri).append('\'');
-            sb.append(", resourceId='").append(resourceId).append('\'');
+            sb.append("file=").append(file);
+            sb.append(", uploadUri='").append(uploadUri).append('\'');
+            sb.append(", result=").append(result);
             sb.append(", offset=").append(offset);
             sb.append('}');
             return sb.toString();
         }
 
-        public EueUploadHelper.UploadResponse getResult() {
+        public EueWriteFeature.Chunk getResult() {
             return result.get();
         }
     }

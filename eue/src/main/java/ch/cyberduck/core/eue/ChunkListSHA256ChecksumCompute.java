@@ -18,7 +18,6 @@ package ch.cyberduck.core.eue;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
@@ -42,14 +41,23 @@ public class ChunkListSHA256ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+        return this.compute(status.getLength(), super.digest("SHA-256", this.normalize(in, status)));
+    }
+
+    /**
+     * @param length        File length
+     * @param contentDigest SHA-256
+     */
+    public Checksum compute(final Number length, final byte[] contentDigest) throws ChecksumException {
+        final MessageDigest digest;
         try {
-            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update(super.digest("SHA-256", this.normalize(in, status)));
-            digest.update(intToBytes(Long.valueOf(status.getLength()).intValue()));
-            return new Checksum(HashAlgorithm.cdash64, Base64.encodeBase64URLSafeString(digest.digest()));
+            digest = MessageDigest.getInstance("SHA-256");
         }
-        catch(NoSuchAlgorithmException | BackgroundException e) {
+        catch(NoSuchAlgorithmException e) {
             throw new ChecksumException(e.getMessage(), e);
         }
+        digest.update(contentDigest);
+        digest.update(intToBytes(length.intValue()));
+        return new Checksum(HashAlgorithm.cdash64, Base64.encodeBase64URLSafeString(digest.digest()));
     }
 }

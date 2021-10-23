@@ -29,13 +29,13 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class EueThresholdUploadService implements Upload<EueUploadHelper.UploadResponse> {
+public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> {
 
     private final EueSession session;
     private final Long threshold;
     private final EueResourceIdProvider fileid;
 
-    private Write<EueUploadHelper.UploadResponse> writer;
+    private Write<EueWriteFeature.Chunk> writer;
 
     public EueThresholdUploadService(final EueSession session, final EueResourceIdProvider fileid) {
         this(session, fileid, new HostPreferences(session.getHost()).getLong("eue.upload.multipart.threshold"));
@@ -54,8 +54,8 @@ public class EueThresholdUploadService implements Upload<EueUploadHelper.UploadR
     }
 
     @Override
-    public EueUploadHelper.UploadResponse upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
+    public EueWriteFeature.Chunk upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                                        final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         if(status.getLength() >= threshold) {
             return new EueLargeUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, prompt);
         }
@@ -63,7 +63,7 @@ public class EueThresholdUploadService implements Upload<EueUploadHelper.UploadR
     }
 
     @Override
-    public Upload<EueUploadHelper.UploadResponse> withWriter(final Write<EueUploadHelper.UploadResponse> writer) {
+    public Upload<EueWriteFeature.Chunk> withWriter(final Write<EueWriteFeature.Chunk> writer) {
         this.writer = writer;
         return this;
     }

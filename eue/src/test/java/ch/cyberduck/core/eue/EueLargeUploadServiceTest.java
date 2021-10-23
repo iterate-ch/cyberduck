@@ -69,20 +69,19 @@ public class EueLargeUploadServiceTest extends AbstractEueSessionTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final int length = 5242881;
-        final byte[] content = RandomUtils.nextBytes(length);
+        final byte[] content = RandomUtils.nextBytes(5242881);
         IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        final EueUploadHelper.UploadResponse uploadResponse = s.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
+        final EueWriteFeature.Chunk uploadResponse = s.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
         assertNotNull(uploadResponse.getCdash64());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new EueFindFeature(session, fileid).find(file));
         assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
-        final byte[] compare = new byte[length];
-        IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(length), new DisabledConnectionCallback()), compare);
+        final byte[] compare = new byte[content.length];
+        IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), compare);
         assertArrayEquals(content, compare);
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
@@ -108,7 +107,7 @@ public class EueLargeUploadServiceTest extends AbstractEueSessionTest {
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
                 new EueLargeUploadService(session, fileid, new EueWriteFeature(session, fileid)),
                 new EueWriteFeature(session, fileid), cryptomator);
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, null);
+        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(new CryptoFindFeature(session, new EueFindFeature(session, fileid), cryptomator).find(test));
@@ -144,7 +143,7 @@ public class EueLargeUploadServiceTest extends AbstractEueSessionTest {
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
                 new EueLargeUploadService(session, fileid, new EueWriteFeature(session, fileid)),
                 new EueWriteFeature(session, fileid), cryptomator);
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, null);
+        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(new CryptoFindFeature(session, new EueFindFeature(session, fileid), cryptomator).find(test));
