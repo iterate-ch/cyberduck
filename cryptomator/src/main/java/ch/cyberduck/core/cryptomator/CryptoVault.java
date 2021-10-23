@@ -386,7 +386,7 @@ public class CryptoVault implements Vault {
                 attributes.setFileId(null);
             }
             // Translate file size
-            attributes.setSize(this.toCiphertextSize(file.attributes().getSize()));
+            attributes.setSize(this.toCiphertextSize(0L, file.attributes().getSize()));
             final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
             if(metadata && vaultVersion == VAULT_VERSION_DEPRECATED) {
                 type.remove(Path.Type.directory);
@@ -448,7 +448,7 @@ public class CryptoVault implements Vault {
                 }
                 else {
                     // Translate file size
-                    attributes.setSize(this.toCleartextSize(file.attributes().getSize()));
+                    attributes.setSize(this.toCleartextSize(0L, file.attributes().getSize()));
                 }
                 // Add reference to encrypted file
                 attributes.setEncrypted(file);
@@ -484,19 +484,32 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public long toCiphertextSize(final long cleartextFileSize) {
+    public long toCiphertextSize(final long cleartextFileOffset, final long cleartextFileSize) {
         if(TransferStatus.UNKNOWN_LENGTH == cleartextFileSize) {
             return TransferStatus.UNKNOWN_LENGTH;
         }
-        return cryptor.fileHeaderCryptor().headerSize() + Cryptors.ciphertextSize(cleartextFileSize, cryptor);
+        final int headerSize;
+        if(0L == cleartextFileOffset) {
+            headerSize = cryptor.fileHeaderCryptor().headerSize();
+        }
+        else {
+            headerSize = 0;
+        }
+        return headerSize + Cryptors.ciphertextSize(cleartextFileSize, cryptor);
     }
 
     @Override
-    public long toCleartextSize(final long ciphertextFileSize) throws CryptoInvalidFilesizeException {
+    public long toCleartextSize(final long cleartextFileOffset, final long ciphertextFileSize) throws CryptoInvalidFilesizeException {
         if(TransferStatus.UNKNOWN_LENGTH == ciphertextFileSize) {
             return TransferStatus.UNKNOWN_LENGTH;
         }
-        final int headerSize = cryptor.fileHeaderCryptor().headerSize();
+        final int headerSize;
+        if(0L == cleartextFileOffset) {
+            headerSize = cryptor.fileHeaderCryptor().headerSize();
+        }
+        else {
+            headerSize = 0;
+        }
         try {
             return Cryptors.cleartextSize(ciphertextFileSize - headerSize, cryptor);
         }

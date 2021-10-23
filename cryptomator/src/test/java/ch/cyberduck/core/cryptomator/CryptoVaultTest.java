@@ -427,24 +427,24 @@ public class CryptoVaultTest {
         vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         // zero ciphertextFileSize
         try {
-            vault.toCleartextSize(0);
+            vault.toCleartextSize(0L, 0);
             fail();
         }
         catch(CryptoInvalidFilesizeException e) {
         }
         // ciphertextFileSize == headerSize
-        assertEquals(0L, vault.toCleartextSize(vault.getFileHeaderCryptor().headerSize()));
+        assertEquals(0L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize()));
         // ciphertextFileSize == headerSize + 1
         try {
-            vault.toCleartextSize(vault.toCleartextSize(vault.getFileHeaderCryptor().headerSize()) + 1);
+            vault.toCleartextSize(0L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize()) + 1);
             fail();
         }
         catch(CryptoInvalidFilesizeException e) {
         }
         // ciphertextFileSize == headerSize + chunkHeaderSize + 1
-        assertEquals(1L, vault.toCleartextSize(vault.getFileHeaderCryptor().headerSize() + 48 + 1));
+        assertEquals(1L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize() + 48 + 1));
         // ciphertextFileSize == headerSize + (32768 + chunkHeaderSize) + (1 + chunkHeaderSize) + 1
-        assertEquals(32769L, vault.toCleartextSize(vault.getFileHeaderCryptor().headerSize() + (32768 + 48) + (1 + 48)));
+        assertEquals(32769L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize() + (32768 + 48) + (1 + 48)));
     }
 
     @Test
@@ -481,8 +481,7 @@ public class CryptoVaultTest {
             home);
         vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         for(int i = 0; i < 26000000; i++) {
-            // i = cleartextSize(ciphertextSize(i))
-            assertEquals(i, vault.toCleartextSize(vault.toCiphertextSize(i)));
+            assertEquals(i, vault.toCleartextSize(0L, vault.toCiphertextSize(0L, i)));
         }
     }
 }

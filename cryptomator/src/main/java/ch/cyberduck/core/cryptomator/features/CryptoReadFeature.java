@@ -56,7 +56,7 @@ public class CryptoReadFeature implements Read {
             headerStatus.setOffset(0);
             final InputStream in = proxy.read(encrypted, headerStatus.withLength(status.isAppend() ?
                 vault.getFileHeaderCryptor().headerSize() :
-                vault.toCiphertextSize(status.getLength())), callback);
+                vault.toCiphertextSize(0L, status.getLength())), callback);
             final ByteBuffer headerBuffer = ByteBuffer.allocate(vault.getFileHeaderCryptor().headerSize());
             final int read = IOUtils.read(in, headerBuffer.array());
             final FileHeader header = vault.getFileHeaderCryptor().decryptHeader(headerBuffer);

@@ -95,7 +95,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
                     }
                 });
                 try {
-                    return delegate.compute(sink, new TransferStatus().withLength(cryptomator.toCiphertextSize(length)));
+                    return delegate.compute(sink, new TransferStatus().withLength(cryptomator.toCiphertextSize(offset, length)));
                 }
                 finally {
                     try {

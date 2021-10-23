@@ -77,9 +77,9 @@ public interface Vault {
      */
     Path decrypt(Session<?> session, Path file) throws BackgroundException;
 
-    long toCiphertextSize(long cleartextFileSize);
+    long toCiphertextSize(final long cleartextFileOffset, long cleartextFileSize);
 
-    long toCleartextSize(long ciphertextFileSize) throws BackgroundException;
+    long toCleartextSize(final long cleartextFileOffset, long ciphertextFileSize) throws BackgroundException;
 
     @SuppressWarnings("unchecked")
     <T> T getFeature(Session<?> session, Class<T> type, T delegate);
