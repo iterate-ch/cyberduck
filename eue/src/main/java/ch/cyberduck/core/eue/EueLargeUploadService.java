@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chunk, MessageDigest> {
     private static final Logger log = Logger.getLogger(EueLargeUploadService.class);
@@ -132,6 +133,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                 }
             }
             final MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            final AtomicLong totalSize = new AtomicLong();
             chunks.stream().sorted(Comparator.comparing(EueWriteFeature.Chunk::getPartnumber)).forEach(chunk -> {
                 try {
                     messageDigest.update(Hex.decodeHex(chunk.getChecksum().hash));
@@ -140,12 +142,13 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                     log.error(String.format("Failure %s decoding hash %s", e, chunk.getChecksum()));
                 }
                 messageDigest.update(ChunkListSHA256ChecksumCompute.intToBytes(chunk.getLength().intValue()));
+                totalSize.set(totalSize.get() + chunk.getLength());
             });
             final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
             final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)
-                    .getCompletedUploadResponse(uploadUri, status.getLength(), cdash64);
+                .getCompletedUploadResponse(uploadUri, totalSize.get(), cdash64);
             status.setComplete();
-            return new EueWriteFeature.Chunk(status.getLength(), cdash64);
+            return new EueWriteFeature.Chunk(totalSize.get(), cdash64);
         }
         catch(NoSuchAlgorithmException e) {
             throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e);
