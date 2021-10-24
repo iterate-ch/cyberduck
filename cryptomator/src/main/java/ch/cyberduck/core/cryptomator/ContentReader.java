@@ -27,6 +27,8 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
 public class ContentReader {
@@ -45,5 +47,10 @@ public class ContentReader {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+    }
+
+    public Reader getReader(final Path file) throws BackgroundException {
+        final Read read = session._getFeature(Read.class);
+        return new InputStreamReader(read.read(file, new TransferStatus().withLength(file.attributes().getSize()), new DisabledConnectionCallback()), StandardCharsets.UTF_8);
     }
 }

@@ -86,7 +86,9 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
                     final ByteBuffer encryptedChunk = cryptor.encryptChunk(
                         ByteBuffer.wrap(Arrays.copyOfRange(b, chunkOffset, chunkOffset + chunkLen)),
                         chunkIndexOffset++, header, nonces.next());
-                    super.write(encryptedChunk.array());
+                    final byte[] encrypted = new byte[encryptedChunk.remaining()];
+                    encryptedChunk.get(encrypted);
+                    super.write(encrypted);
                 }
             }
             catch(CryptoException e) {

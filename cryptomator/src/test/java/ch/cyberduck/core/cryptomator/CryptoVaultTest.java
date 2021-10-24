@@ -59,13 +59,13 @@ public class CryptoVaultTest {
                         public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             if("masterkey.cryptomator".equals(file.getName())) {
                                 final String masterKey = "{\n" +
-                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                    "  \"scryptCostParam\": 16384,\n" +
+                                    "  \"version\": 999,\n" +
+                                    "  \"scryptSalt\": \"RVAAirkArDU=\",\n" +
+                                    "  \"scryptCostParam\": 32768,\n" +
                                     "  \"scryptBlockSize\": 8,\n" +
-                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                    "  \"version\": 5\n" +
+                                    "  \"primaryMasterKey\": \"+03NkJNWVsJ9Tb1CTpKhXyfINzjDirFFI+iJLOWIOySyxB+abpx34Q==\",\n" +
+                                    "  \"hmacMasterKey\": \"aMoDtn7Y6kIXxyHo2zl47p5jCYTlRnfx3l3AMgULmIDSYAxVAraSgg==\",\n" +
+                                    "  \"versionMac\": \"FzirA8UhwCmS5RsC4JvxbO+ZBxaCbIkzqD2Ocagd+A8=\"\n" +
                                     "}";
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                             }
@@ -86,7 +86,7 @@ public class CryptoVaultTest {
         vault.load(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("vault");
+                return new VaultCredentials("vault123");
             }
         }, new DisabledPasswordStore());
         assertEquals(Vault.State.open, vault.getState());
@@ -135,13 +135,13 @@ public class CryptoVaultTest {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             final String masterKey = "{\n" +
-                                "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                "  \"scryptCostParam\": 16384,\n" +
+                                "  \"version\": 999,\n" +
+                                "  \"scryptSalt\": \"RVAAirkArDU=\",\n" +
+                                "  \"scryptCostParam\": 32768,\n" +
                                 "  \"scryptBlockSize\": 8,\n" +
-                                "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                "  \"version\": 5\n" +
+                                "  \"primaryMasterKey\": \"+03NkJNWVsJ9Tb1CTpKhXyfINzjDirFFI+iJLOWIOySyxB+abpx34Q==\",\n" +
+                                "  \"hmacMasterKey\": \"aMoDtn7Y6kIXxyHo2zl47p5jCYTlRnfx3l3AMgULmIDSYAxVAraSgg==\",\n" +
+                                "  \"versionMac\": \"FzirA8UhwCmS5RsC4JvxbO+ZBxaCbIkzqD2Ocagd+A8=\"\n" +
                                 "}";
                             return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                         }
@@ -160,7 +160,7 @@ public class CryptoVaultTest {
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("vault");
+                return new VaultCredentials("vault123");
             }
         }, new DisabledPasswordStore()).getHome());
         assertEquals(Vault.State.open, vault.getState());
@@ -178,13 +178,13 @@ public class CryptoVaultTest {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             final String masterKey = "{\n" +
-                                "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                "  \"scryptCostParam\": 16384,\n" +
+                                "  \"version\": 999,\n" +
+                                "  \"scryptSalt\": \"RVAAirkArDU=\",\n" +
+                                "  \"scryptCostParam\": 32768,\n" +
                                 "  \"scryptBlockSize\": 8,\n" +
-                                "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                "  \"version\": 5\n" +
+                                "  \"primaryMasterKey\": \"+03NkJNWVsJ9Tb1CTpKhXyfINzjDirFFI+iJLOWIOySyxB+abpx34Q==\",\n" +
+                                "  \"hmacMasterKey\": \"aMoDtn7Y6kIXxyHo2zl47p5jCYTlRnfx3l3AMgULmIDSYAxVAraSgg==\",\n" +
+                                "  \"versionMac\": \"FzirA8UhwCmS5RsC4JvxbO+ZBxaCbIkzqD2Ocagd+A8=\"\n" +
                                 "}";
                             return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                         }
@@ -203,7 +203,7 @@ public class CryptoVaultTest {
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("vault");
+                return new VaultCredentials("vault123");
             }
         }, new DisabledPasswordStore()).getHome());
         assertEquals(Vault.State.open, vault.getState());
@@ -222,13 +222,13 @@ public class CryptoVaultTest {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             final String masterKey = "{\n" +
-                                "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                "  \"scryptCostParam\": 16384,\n" +
+                                "  \"version\": 999,\n" +
+                                "  \"scryptSalt\": \"RVAAirkArDU=\",\n" +
+                                "  \"scryptCostParam\": 32768,\n" +
                                 "  \"scryptBlockSize\": 8,\n" +
-                                "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                "  \"version\": 5\n" +
+                                "  \"primaryMasterKey\": \"+03NkJNWVsJ9Tb1CTpKhXyfINzjDirFFI+iJLOWIOySyxB+abpx34Q==\",\n" +
+                                "  \"hmacMasterKey\": \"aMoDtn7Y6kIXxyHo2zl47p5jCYTlRnfx3l3AMgULmIDSYAxVAraSgg==\",\n" +
+                                "  \"versionMac\": \"FzirA8UhwCmS5RsC4JvxbO+ZBxaCbIkzqD2Ocagd+A8=\"\n" +
                                 "}";
                             return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                         }

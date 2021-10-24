@@ -27,6 +27,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
+import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
@@ -49,16 +50,24 @@ import org.apache.sshd.server.subsystem.sftp.SftpSubsystemFactory;
 import org.cryptomator.cryptofs.CryptoFileSystem;
 import org.cryptomator.cryptofs.CryptoFileSystemProperties;
 import org.cryptomator.cryptofs.CryptoFileSystemProvider;
+import org.cryptomator.cryptolib.api.CryptorProvider;
+import org.cryptomator.cryptolib.api.Masterkey;
+import org.cryptomator.cryptolib.api.MasterkeyLoader;
+import org.cryptomator.cryptolib.api.MasterkeyLoadingFailedException;
+import org.cryptomator.cryptolib.common.MasterkeyFileAccess;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.cryptomator.cryptofs.CryptoFileSystemProperties.cryptoFileSystemProperties;
 import static org.junit.Assert.assertArrayEquals;
 
 public class SFTPCryptomatorInteroperabilityTest {
@@ -80,7 +89,20 @@ public class SFTPCryptomatorInteroperabilityTest {
         final java.nio.file.Path vault = tempDir.resolve("vault");
         Files.createDirectory(vault);
         passphrase = new AlphanumericRandomStringService().random();
-        cryptoFileSystem = CryptoFileSystemProvider.newFileSystem(vault, CryptoFileSystemProperties.cryptoFileSystemProperties().withPassphrase(passphrase).build());
+        final Masterkey mk = Masterkey.generate(FastSecureRandomProvider.get().provide());
+        final MasterkeyFileAccess mkAccess = new MasterkeyFileAccess(CryptoVault.VAULT_PEPPER, FastSecureRandomProvider.get().provide());
+        final java.nio.file.Path mkPath = Paths.get(vault.toString(), DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME);
+        mkAccess.persist(mk, mkPath, passphrase);
+        CryptoFileSystemProperties properties = cryptoFileSystemProperties().withKeyLoader(new MasterkeyLoader() {
+                @Override
+                public Masterkey loadKey(final URI keyId) throws MasterkeyLoadingFailedException {
+                    return mkAccess.load(mkPath, passphrase);
+                }
+            })
+            .withCipherCombo(CryptorProvider.Scheme.SIV_CTRMAC)
+            .build();
+        CryptoFileSystemProvider.initialize(vault, properties, URI.create("test:key"));
+        cryptoFileSystem = CryptoFileSystemProvider.newFileSystem(vault, properties);
         server.setFileSystemFactory(new VirtualFileSystemFactory(cryptoFileSystem.getPathToVault().getParent().toAbsolutePath()));
         server.start();
     }
