@@ -43,9 +43,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -157,24 +154,6 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             // Cancel future tasks
             pool.shutdown(false);
         }
-    }
-
-    /**
-     * @return SHA-256 checksum for single part
-     */
-    @Override
-    protected MessageDigest digest() throws IOException {
-        try {
-            return MessageDigest.getInstance("SHA-256");
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
-        return new DigestInputStream(super.decorate(in, digest), digest);
     }
 
     private Future<EueWriteFeature.Chunk> submit(final ThreadPool pool, final Path file, final Local local,
