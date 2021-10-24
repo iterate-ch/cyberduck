@@ -156,6 +156,19 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
         }
     }
 
+    /**
+     * @return SHA-256 checksum for single part
+     */
+    @Override
+    protected MessageDigest digest() throws IOException {
+        try {
+            return MessageDigest.getInstance("SHA-256");
+        }
+        catch(NoSuchAlgorithmException e) {
+            throw new IOException(e.getMessage(), e);
+        }
+    }
+
     @Override
     protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
         return new DigestInputStream(super.decorate(in, digest), digest);
