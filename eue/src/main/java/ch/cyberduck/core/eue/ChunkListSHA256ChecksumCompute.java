@@ -18,12 +18,10 @@ package ch.cyberduck.core.eue;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Base64;
@@ -33,7 +31,7 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class EueCdash64Compute extends AbstractChecksumCompute {
+public class ChunkListSHA256ChecksumCompute extends AbstractChecksumCompute {
 
     public static byte[] intToBytes(final int i) {
         final ByteBuffer bb = ByteBuffer.allocate(4);
@@ -43,14 +41,23 @@ public class EueCdash64Compute extends AbstractChecksumCompute {
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+        return this.compute(status.getLength(), super.digest("SHA-256", this.normalize(in, status)));
+    }
+
+    /**
+     * @param length        File length
+     * @param contentDigest SHA-256
+     */
+    public Checksum compute(final Number length, final byte[] contentDigest) throws ChecksumException {
+        final MessageDigest digest;
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update(super.digest("SHA-256", StreamCopier.skip(in, status.getOffset())));
-            digest.update(intToBytes(Long.valueOf(status.getLength()).intValue()));
-            return new Checksum(HashAlgorithm.sha256, Base64.encodeBase64URLSafeString(digest.digest()));
+            digest = MessageDigest.getInstance("SHA-256");
         }
-        catch(NoSuchAlgorithmException | BackgroundException e) {
+        catch(NoSuchAlgorithmException e) {
             throw new ChecksumException(e.getMessage(), e);
         }
+        digest.update(contentDigest);
+        digest.update(intToBytes(length.intValue()));
+        return new Checksum(HashAlgorithm.cdash64, Base64.encodeBase64URLSafeString(digest.digest()));
     }
 }

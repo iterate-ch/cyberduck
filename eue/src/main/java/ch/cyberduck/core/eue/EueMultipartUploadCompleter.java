@@ -16,8 +16,8 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.eue.io.swagger.client.JSON;
+import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -39,11 +39,11 @@ public class EueMultipartUploadCompleter {
         this.session = session;
     }
 
-    public EueUploadHelper.UploadResponse getCompletedUploadResponse(String uploadUri, long cumulativeLength, final String cdash64) throws BackgroundException {
+    public EueUploadHelper.UploadResponse getCompletedUploadResponse(String uploadUri, long length, final String cdash64) throws BackgroundException {
         try {
             final HttpPost request = new HttpPost(uploadUri);
             final UploadCompletionRequest uploadCompletionRequest = new UploadCompletionRequest();
-            uploadCompletionRequest.setTotalSze(cumulativeLength);
+            uploadCompletionRequest.setTotalSze(length);
             uploadCompletionRequest.setCdash64(cdash64);
             final String requestString = new JSON().getContext(EueUploadHelper.UploadResponse.class).writeValueAsString(uploadCompletionRequest);
             final HttpEntity entity = EntityBuilder.create().setContentType(ContentType.APPLICATION_JSON).setText(requestString).build();
