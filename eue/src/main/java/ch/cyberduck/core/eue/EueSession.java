@@ -282,7 +282,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
             return (T) new EueAttributesFinderFeature(this, resourceid);
         }
         if(type == Upload.class) {
-            return (T) new EueThresholdUploadService(this, resourceid);
+            return (T) new EueThresholdUploadService(this, resourceid, registry);
         }
         if(type == PromptUrlProvider.class) {
             return (T) new EueShareFeature(this, resourceid);

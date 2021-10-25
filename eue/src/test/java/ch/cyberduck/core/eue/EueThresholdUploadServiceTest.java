@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -43,7 +44,7 @@ public class EueThresholdUploadServiceTest extends AbstractEueSessionTest {
     @Test
     public void testUploadSimpleFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final EueThresholdUploadService service = new EueThresholdUploadService(session, fileid);
+        final EueThresholdUploadService service = new EueThresholdUploadService(session, fileid, VaultRegistry.DISABLED);
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -69,7 +70,7 @@ public class EueThresholdUploadServiceTest extends AbstractEueSessionTest {
     @Test
     public void testUploadLargeFileInChunks() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final EueThresholdUploadService service = new EueThresholdUploadService(session, fileid);
+        final EueThresholdUploadService service = new EueThresholdUploadService(session, fileid, VaultRegistry.DISABLED);
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));

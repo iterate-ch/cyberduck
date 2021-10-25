@@ -23,26 +23,30 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> {
 
     private final EueSession session;
+    private final VaultRegistry registry;
     private final Long threshold;
     private final EueResourceIdProvider fileid;
 
     private Write<EueWriteFeature.Chunk> writer;
 
-    public EueThresholdUploadService(final EueSession session, final EueResourceIdProvider fileid) {
-        this(session, fileid, new HostPreferences(session.getHost()).getLong("eue.upload.multipart.threshold"));
+    public EueThresholdUploadService(final EueSession session, final EueResourceIdProvider fileid, final VaultRegistry registry) {
+        this(session, fileid, registry, new HostPreferences(session.getHost()).getLong("eue.upload.multipart.threshold"));
     }
 
-    public EueThresholdUploadService(final EueSession session, final EueResourceIdProvider fileid, final Long threshold) {
+    public EueThresholdUploadService(final EueSession session, final EueResourceIdProvider fileid, final VaultRegistry registry, final Long threshold) {
         this.session = session;
+        this.registry = registry;
         this.threshold = threshold;
         this.fileid = fileid;
         this.writer = new EueWriteFeature(session, fileid);
@@ -57,6 +61,9 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
     public EueWriteFeature.Chunk upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                         final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         if(status.getLength() >= threshold) {
+            if(Vault.DISABLED == registry.find(session, file)) {
+                return new EueLargeUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, prompt);
+            }
             return new EueSequentialLargeUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid)).upload(file, local, throttle, listener, status, prompt);
         }
         return new EueSingleUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, prompt);
