@@ -13,31 +13,34 @@
 package ch.cyberduck.core.eue.io.swagger.client.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntryEntityConflicting;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * ResourceCreationResponseEntryEntity
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-14T22:10:10.297090+02:00[Europe/Zurich]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-25T16:09:11.296078900+02:00[Europe/Berlin]")
 public class ResourceCreationResponseEntryEntity {
   @JsonProperty("conflicting")
-  private UifsOriginalParents conflicting = null;
+  private ResourceCreationResponseEntryEntityConflicting conflicting = null;
 
   @JsonProperty("uploadURI")
   private String uploadURI = null;
 
-  private String error;
+    private String error;
 
-  public ResourceCreationResponseEntryEntity() {
-  }
+    public ResourceCreationResponseEntryEntity() {
+    }
 
-  public ResourceCreationResponseEntryEntity(String error) {
-    this.error = error;
-  }
+    public ResourceCreationResponseEntryEntity(String error) {
+        this.error = error;
+    }
 
-  public ResourceCreationResponseEntryEntity conflicting(UifsOriginalParents conflicting) {
+  public ResourceCreationResponseEntryEntity conflicting(ResourceCreationResponseEntryEntityConflicting conflicting) {
     this.conflicting = conflicting;
     return this;
   }
@@ -47,11 +50,11 @@ public class ResourceCreationResponseEntryEntity {
    * @return conflicting
   **/
   @Schema(description = "")
-  public UifsOriginalParents getConflicting() {
+  public ResourceCreationResponseEntryEntityConflicting getConflicting() {
     return conflicting;
   }
 
-  public void setConflicting(UifsOriginalParents conflicting) {
+  public void setConflicting(ResourceCreationResponseEntryEntityConflicting conflicting) {
     this.conflicting = conflicting;
   }
 

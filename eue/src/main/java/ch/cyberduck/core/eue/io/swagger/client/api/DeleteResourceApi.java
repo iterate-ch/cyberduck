@@ -5,13 +5,15 @@ import ch.cyberduck.core.eue.io.swagger.client.ApiClient;
 import ch.cyberduck.core.eue.io.swagger.client.Configuration;
 import ch.cyberduck.core.eue.io.swagger.client.Pair;
 
+import javax.ws.rs.core.GenericType;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-14T22:10:10.297090+02:00[Europe/Zurich]")public class DeleteResourceApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-25T16:12:42.747787400+02:00[Europe/Berlin]")public class DeleteResourceApi {
   private ApiClient apiClient;
 
   public DeleteResourceApi() {

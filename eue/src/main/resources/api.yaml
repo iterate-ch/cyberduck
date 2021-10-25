@@ -287,20 +287,12 @@ paths:
                             '0':
                                 value: "[\r\n     {\r\n         \"path\": \"test1/test2/test3\",\r\n         \"resourceType\": \"container\"\r\n     }\r\n ]"
             responses:
-                '200':
-                    description: success
-                    content:
-                        appplication/json:charset=utf-8:
-                            schema:
-                                $ref: '#/components/schemas/ResourceCreationResponseEntries'
                 '207':
                     description: MULTI STATUS
                     content:
                         application/json;charset=utf-8:
                             schema:
-                                type: string
-                '201':
-                    description: CREATED, resource created successful (inside of the multistatus)
+                                $ref: '#/components/schemas/ResourceCreationResponseEntries'
                 '400':
                     description: BAD REQUEST, No path provided, path too long or path contains illegal characters
                 '409':
@@ -361,18 +353,12 @@ paths:
                             '0':
                                 value: "[\r\n     \"https://mc.gmx.net/resource/1017873547923559875\",\r\n     \"https://mc.gmx.net/resource/1017873547923559876\"\r\n ]"
             responses:
-                '200':
-                    description: success
-                    content:
-                        appplication/json:charset=utf-8:
-                            schema:
-                                $ref: '#/components/schemas/ResourceCopyResponseEntries'
                 '207':
                     description: MULTI STATUS
                     content:
                         application/json;charset=utf-8:
                             schema:
-                                type: string
+                                $ref: '#/components/schemas/ResourceCopyResponseEntries'
                 '403':
                     description: FORBIDDEN, Not allowed
                 '409':
@@ -433,18 +419,12 @@ paths:
                             '0':
                                 value: "[\r\n     \"https://mc.gmx.net/resource/1017873844142086120\"\r\n ]"
             responses:
-                '200':
-                    description: success
-                    content:
-                        appplication/json:charset=utf-8:
-                            schema:
-                                $ref: '#/components/schemas/ResourceMoveResponseEntries'
                 '207':
                     description: MULTI STATUS
                     content:
                         application/json;charset=utf-8:
                             schema:
-                                type: string
+                                $ref: '#/components/schemas/ResourceMoveResponseEntries'
                 '403':
                     description: FORBIDDEN, Not allowed
                 '409':
@@ -566,20 +546,12 @@ paths:
                             '0':
                                 value: "[\r\n     {\r\n         \"path\": \"test1/test2/test3\",\r\n         \"resourceType\": \"container\"\r\n     }\r\n ]"
             responses:
-                '200':
-                    description: success
-                    content:
-                        appplication/json:charset=utf-8:
-                            schema:
-                                $ref: '#/components/schemas/ResourceCreationResponseEntries'
                 '207':
                     description: MULTI STATUS
                     content:
                         application/json;charset=utf-8:
                             schema:
-                                type: string
-                '201':
-                    description: CREATED, resource created successful (inside of the multistatus)
+                                $ref: '#/components/schemas/ResourceCreationResponseEntries'
                 '400':
                     description: BAD REQUEST, No path provided, path too long or path contains illegal characters
                 '409':
@@ -608,7 +580,7 @@ paths:
                 - in: path
                   name: alias
                   schema:
-                    type: string
+                      type: string
                   required: true
                   description: id of the resource (resourceURI)
                 - name: autoRename
@@ -640,24 +612,18 @@ paths:
                             '0':
                                 value: "[\r\n     \"https://mc.gmx.net/resource/1017873844142086120\"\r\n ]"
             responses:
-                '200':
-                    description: success
-                    content:
-                        appplication/json:charset=utf-8:
-                            schema:
-                                $ref: '#/components/schemas/ResourceMoveResponseEntries'
                 '207':
                     description: MULTI STATUS
                     content:
                         application/json;charset=utf-8:
                             schema:
-                                type: string
+                                $ref: '#/components/schemas/ResourceMoveResponseEntries'
                 '403':
                     description: FORBIDDEN, Not allowed
                 '409':
-                   description: CONFLICT, file resource already exists (inside of the multistatus)
+                    description: CONFLICT, file resource already exists (inside of the multistatus)
                 '412':
-                   description: PRECONDITION, FAILED non-matching Etag of 'If-Match' Header
+                    description: PRECONDITION, FAILED non-matching Etag of 'If-Match' Header
                 '423':
                     description: LOCKED, Resource or parent resource is locked (inside of the multistatus)
                 '507':
@@ -688,12 +654,6 @@ paths:
                         schema:
                             $ref: '#/components/schemas/ShareCreationRequestModel'
             responses:
-                '200':
-                    description: success
-                    content:
-                        application/json:charset=utf-8:
-                            schema:
-                                $ref: '#/components/schemas/ShareCreationResponseModel'
                 '207':
                     description: MULTI STATUS, One entry per guest
                     content:
@@ -757,13 +717,13 @@ components:
                 originalParents:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Uifs'
+                        $ref: '#/components/schemas/Uifs'
                 contentETag:
                     type: string
                 parents:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Uifs'
+                        $ref: '#/components/schemas/Uifs'
                 UiMetaResource:
                     properties:
                         ui:meta:resource:

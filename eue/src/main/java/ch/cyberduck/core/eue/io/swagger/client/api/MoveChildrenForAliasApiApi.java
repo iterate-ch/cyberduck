@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-18T21:52:24.333972+02:00[Europe/Zurich]")public class MoveChildrenForAliasApiApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-25T16:12:42.747787400+02:00[Europe/Berlin]")public class MoveChildrenForAliasApiApi {
   private ApiClient apiClient;
 
   public MoveChildrenForAliasApiApi() {
@@ -71,7 +71,7 @@ import java.util.Map;
       localVarHeaderParams.put("If-Match", apiClient.parameterToString(ifMatch));
 
     final String[] localVarAccepts = {
-      "appplication/json:charset=utf-8", "application/json;charset=utf-8"
+      "application/json;charset=utf-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
