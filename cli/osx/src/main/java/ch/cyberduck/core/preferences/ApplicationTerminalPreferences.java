@@ -54,7 +54,6 @@ public class ApplicationTerminalPreferences extends TerminalPreferences {
         this.setDefault("factory.local.class", FinderLocal.class.getName());
         this.setDefault("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
         this.setDefault("factory.passwordstore.class", KeychainPasswordStore.class.getName());
-        this.setDefault("factory.proxycredentialsstore.class", KeychainPasswordStore.class.getName());
         this.setDefault("factory.proxy.class", SystemConfigurationProxy.class.getName());
         this.setDefault("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
         this.setDefault("factory.reachability.class", SystemConfigurationReachability.class.getName());
