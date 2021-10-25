@@ -74,17 +74,15 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
     @Override
     public HttpResponseOutputStream<EueWriteFeature.Chunk> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         String uploadUri;
-        String resourceId;
         if(status.isExists()) {
-            resourceId = fileid.getFileId(file, new DisabledListProgressListener());
-            uploadUri = EueUploadHelper.updateResource(session, resourceId, UploadType.CHUNKED).getUploadURI();
+            uploadUri = EueUploadHelper.updateResource(session,
+                    fileid.getFileId(file, new DisabledListProgressListener()), UploadType.CHUNKED).getUploadURI();
         }
         else {
             final ResourceCreationResponseEntry resourceCreationResponseEntry =
                     EueUploadHelper.createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(),
                             status, UploadType.CHUNKED);
             uploadUri = resourceCreationResponseEntry.getEntity().getUploadURI();
-            resourceId = EueResourceIdProvider.getResourceIdFromResourceUri(resourceCreationResponseEntry.getHeaders().getLocation());
         }
         final MultipartOutputStream proxy;
         try {
