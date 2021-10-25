@@ -29,6 +29,7 @@ import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -60,17 +61,16 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     public static final int MAXIMUM_UPLOAD_PARTS = 10000;
 
     private final BrickSession session;
-
-    private final BrickWriteFeature writer;
+    private final Write<Void> writer;
     private final Long partsize;
     private final Integer concurrency;
 
-    public BrickUploadFeature(final BrickSession session, final BrickWriteFeature writer) {
+    public BrickUploadFeature(final BrickSession session, final Write<Void> writer) {
         this(session, writer, PreferencesFactory.get().getLong("brick.upload.multipart.size"),
             PreferencesFactory.get().getInteger("brick.upload.multipart.concurrency"));
     }
 
-    public BrickUploadFeature(final BrickSession session, final BrickWriteFeature writer, final Long partsize, final Integer concurrency) {
+    public BrickUploadFeature(final BrickSession session, final Write<Void> writer, final Long partsize, final Integer concurrency) {
         super(writer);
         this.session = session;
         this.writer = writer;
