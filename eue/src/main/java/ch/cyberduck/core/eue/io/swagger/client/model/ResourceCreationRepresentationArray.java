@@ -13,13 +13,15 @@
 package ch.cyberduck.core.eue.io.swagger.client.model;
 
 import java.util.Objects;
+import java.util.Arrays;
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationRepresentationArrayInner;
 import java.util.ArrayList;
-
+import java.util.List;
 /**
  * ResourceCreationRepresentationArray
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-14T22:10:10.297090+02:00[Europe/Zurich]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-25T16:09:11.296078900+02:00[Europe/Berlin]")
 public class ResourceCreationRepresentationArray extends ArrayList<ResourceCreationRepresentationArrayInner> {
 
   @Override

@@ -12,6 +12,8 @@
 
 package ch.cyberduck.core.eue.io.swagger.client.model;
 
+import java.util.Objects;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 

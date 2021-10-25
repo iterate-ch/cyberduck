@@ -14,56 +14,36 @@ package ch.cyberduck.core.eue.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
+import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 /**
- * Aliases
+ * ResourceCreationResponseEntryEntityConflicting
  */
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-25T16:09:11.296078900+02:00[Europe/Berlin]")
-public class Aliases {
-  @JsonProperty("TRASH")
-  private String TRASH = null;
+public class ResourceCreationResponseEntryEntityConflicting {
+  @JsonProperty("ui:fs")
+  private Uifs uifs = null;
 
-  @JsonProperty("ROOT")
-  private String ROOT = null;
-
-  public Aliases TRASH(String TRASH) {
-    this.TRASH = TRASH;
+  public ResourceCreationResponseEntryEntityConflicting uifs(Uifs uifs) {
+    this.uifs = uifs;
     return this;
   }
 
    /**
-   * Get TRASH
-   * @return TRASH
+   * Get uifs
+   * @return uifs
   **/
   @Schema(description = "")
-  public String getTRASH() {
-    return TRASH;
+  public Uifs getUifs() {
+    return uifs;
   }
 
-  public void setTRASH(String TRASH) {
-    this.TRASH = TRASH;
-  }
-
-  public Aliases ROOT(String ROOT) {
-    this.ROOT = ROOT;
-    return this;
-  }
-
-   /**
-   * Get ROOT
-   * @return ROOT
-  **/
-  @Schema(description = "")
-  public String getROOT() {
-    return ROOT;
-  }
-
-  public void setROOT(String ROOT) {
-    this.ROOT = ROOT;
+  public void setUifs(Uifs uifs) {
+    this.uifs = uifs;
   }
 
 
@@ -75,24 +55,22 @@ public class Aliases {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Aliases aliases = (Aliases) o;
-    return Objects.equals(this.TRASH, aliases.TRASH) &&
-        Objects.equals(this.ROOT, aliases.ROOT);
+    ResourceCreationResponseEntryEntityConflicting resourceCreationResponseEntryEntityConflicting = (ResourceCreationResponseEntryEntityConflicting) o;
+    return Objects.equals(this.uifs, resourceCreationResponseEntryEntityConflicting.uifs);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(TRASH, ROOT);
+    return Objects.hash(uifs);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Aliases {\n");
+    sb.append("class ResourceCreationResponseEntryEntityConflicting {\n");
     
-    sb.append("    TRASH: ").append(toIndentedString(TRASH)).append("\n");
-    sb.append("    ROOT: ").append(toIndentedString(ROOT)).append("\n");
+    sb.append("    uifs: ").append(toIndentedString(uifs)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -17,7 +17,7 @@ import ch.cyberduck.core.eue.io.swagger.client.Pair;
 import java.util.Map;
 import java.util.List;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-14T22:10:10.297090+02:00[Europe/Zurich]")public class ApiKeyAuth implements Authentication {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-25T16:12:42.747787400+02:00[Europe/Berlin]")public class ApiKeyAuth implements Authentication {
   private final String location;
   private final String paramName;
 

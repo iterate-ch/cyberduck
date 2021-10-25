@@ -13,14 +13,18 @@
 package ch.cyberduck.core.eue.io.swagger.client.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntryEntityConflicting;
+import ch.cyberduck.core.eue.io.swagger.client.model.SharePermission;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * ShareCreationResponseEntity
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-14T22:10:10.297090+02:00[Europe/Zurich]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-25T16:09:11.296078900+02:00[Europe/Berlin]")
 public class ShareCreationResponseEntity {
   @JsonProperty("resourceURI")
   private String resourceURI = null;
@@ -47,7 +51,7 @@ public class ShareCreationResponseEntity {
   private String name = null;
 
   @JsonProperty("resource")
-  private UifsOriginalParents resource = null;
+  private ResourceCreationResponseEntryEntityConflicting resource = null;
 
   @JsonProperty("permission")
   private SharePermission permission = null;
@@ -210,7 +214,7 @@ public class ShareCreationResponseEntity {
     this.name = name;
   }
 
-  public ShareCreationResponseEntity resource(UifsOriginalParents resource) {
+  public ShareCreationResponseEntity resource(ResourceCreationResponseEntryEntityConflicting resource) {
     this.resource = resource;
     return this;
   }
@@ -220,11 +224,11 @@ public class ShareCreationResponseEntity {
    * @return resource
   **/
   @Schema(description = "")
-  public UifsOriginalParents getResource() {
+  public ResourceCreationResponseEntryEntityConflicting getResource() {
     return resource;
   }
 
-  public void setResource(UifsOriginalParents resource) {
+  public void setResource(ResourceCreationResponseEntryEntityConflicting resource) {
     this.resource = resource;
   }
 

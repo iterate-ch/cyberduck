@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.TimeZone;
 
 import java.net.URLEncoder;
 
@@ -50,7 +51,7 @@ import ch.cyberduck.core.eue.io.swagger.client.auth.HttpBasicAuth;
 import ch.cyberduck.core.eue.io.swagger.client.auth.ApiKeyAuth;
 import ch.cyberduck.core.eue.io.swagger.client.auth.OAuth;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-14T22:10:10.297090+02:00[Europe/Zurich]")public class ApiClient {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-25T16:12:42.747787400+02:00[Europe/Berlin]")public class ApiClient {
   protected Map<String, String> defaultHeaderMap = new HashMap<String, String>();
   protected String basePath = "https://{gmxcloud}/{service}/fs/{username}";
   protected boolean debugging = false;
