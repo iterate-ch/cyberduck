@@ -49,7 +49,7 @@ public class DropboxUploadFeature extends HttpUploadFeature<FileMetadata, Messag
             return super.decorate(in, null);
         }
         else {
-            return new DigestInputStream(super.decorate(in, digest), digest);
+            return new DigestInputStream(in, digest);
         }
     }
 

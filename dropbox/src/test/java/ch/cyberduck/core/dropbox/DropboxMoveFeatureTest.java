@@ -43,10 +43,10 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
     @Test
     public void testMoveFile() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path file = new DropboxTouchFeature(session).touch(new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new DropboxTouchFeature(session).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(file));
-        final Path target = new DropboxMoveFeature(session).move(file, new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path target = new DropboxMoveFeature(session).move(file, new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DropboxFindFeature(session).find(file));
         assertTrue(new DropboxFindFeature(session).find(target));
         assertTrue(new DefaultFindFeature(session).find(target));
@@ -58,10 +58,10 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
     @Test
     public void testMoveDirectory() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path directory = new DropboxDirectoryFeature(session).mkdir(new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new DropboxDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(directory));
         assertTrue(new DefaultFindFeature(session).find(directory));
-        final Path target = new DropboxMoveFeature(session).move(directory, new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path target = new DropboxMoveFeature(session).move(directory, new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DropboxFindFeature(session).find(directory));
         assertTrue(new DropboxFindFeature(session).find(target));
         assertTrue(new DefaultFindFeature(session).find(target));
