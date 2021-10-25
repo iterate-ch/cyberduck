@@ -604,6 +604,20 @@
                     <groupId>io.swagger.codegen.v3</groupId>
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
                     <version>3.0.29</version>
+                    <configuration>
+                        <configOptions>
+                            <sourceFolder>src/main/java</sourceFolder>
+                            <library>jersey2</library>
+                            <dateLibrary>joda</dateLibrary>
+                            <java8>true</java8>
+                            <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                        </configOptions>
+                        <generateApiTests>false</generateApiTests>
+                        <generateModelTests>false</generateModelTests>
+                        <generateApiDocumentation>false</generateApiDocumentation>
+                        <generateSupportingFiles>false</generateSupportingFiles>
+                        <generateModelDocumentation>false</generateModelDocumentation>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

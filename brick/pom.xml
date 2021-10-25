@@ -82,18 +82,6 @@
                                     <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.brick.io.swagger.client.model</modelPackage>
                                     <apiPackage>ch.cyberduck.core.brick.io.swagger.client.api</apiPackage>
-                                    <configOptions>
-                                        <sourceFolder>src/main/java</sourceFolder>
-                                        <library>jersey2</library>
-                                        <dateLibrary>joda</dateLibrary>
-                                        <java8>true</java8>
-                                    </configOptions>
-                                    <environmentVariables>
-                                        <generateApiTests>false</generateApiTests>
-                                        <generateModelTests>false</generateModelTests>
-                                        <generateApiDocumentation>false</generateApiDocumentation>
-                                        <generateSupportingFiles>false</generateSupportingFiles>
-                                    </environmentVariables>
                                 </configuration>
                             </execution>
                         </executions>

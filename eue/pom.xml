@@ -14,7 +14,8 @@
   ~ GNU General Public License for more details.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>parent</artifactId>
@@ -78,18 +79,6 @@
                                     <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.eue.io.swagger.client.model</modelPackage>
                                     <apiPackage>ch.cyberduck.core.eue.io.swagger.client.api</apiPackage>
-                                    <configOptions>
-                                        <sourceFolder>src/main/java</sourceFolder>
-                                        <library>jersey2</library>
-                                        <dateLibrary>joda</dateLibrary>
-                                        <java8>true</java8>
-                                    </configOptions>
-                                    <environmentVariables>
-                                        <generateApiTests>false</generateApiTests>
-                                        <generateModelTests>false</generateModelTests>
-                                        <generateApiDocumentation>false</generateApiDocumentation>
-                                        <generateSupportingFiles>false</generateSupportingFiles>
-                                    </environmentVariables>
                                 </configuration>
                             </execution>
                         </executions>
