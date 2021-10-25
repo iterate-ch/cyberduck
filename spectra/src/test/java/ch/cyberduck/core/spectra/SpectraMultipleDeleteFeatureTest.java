@@ -64,7 +64,7 @@ public class SpectraMultipleDeleteFeatureTest {
             new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1024);
         final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -90,7 +90,7 @@ public class SpectraMultipleDeleteFeatureTest {
             new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
             new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SpectraFindFeature(session).find(test));
@@ -113,7 +113,7 @@ public class SpectraMultipleDeleteFeatureTest {
             new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume));
+        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3MultipleDeleteFeature(session).delete(Arrays.asList(container, container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
