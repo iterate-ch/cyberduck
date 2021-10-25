@@ -85,7 +85,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
             return super.decorate(in, null);
         }
         else {
-            return new DigestInputStream(super.decorate(in, digest), digest);
+            return new DigestInputStream(in, digest);
         }
     }
 
