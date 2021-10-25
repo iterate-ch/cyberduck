@@ -63,7 +63,7 @@ public class EueSequentialLargeUploadServiceTest extends AbstractEueSessionTest 
     @Test
     public void testUploadLargeFileInChunks() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final EueLargeUploadService s = new EueLargeUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid));
+        final EueSequentialLargeUploadService s = new EueSequentialLargeUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid));
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
@@ -105,7 +105,7 @@ public class EueSequentialLargeUploadServiceTest extends AbstractEueSessionTest 
         writeStatus.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
-                new EueLargeUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid)),
+                new EueSequentialLargeUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid)),
                 new EueMultipartWriteFeature(session, fileid), cryptomator);
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
@@ -141,7 +141,7 @@ public class EueSequentialLargeUploadServiceTest extends AbstractEueSessionTest 
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
         final BytecountStreamListener count = new BytecountStreamListener();
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
-                new EueLargeUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid)),
+                new EueSequentialLargeUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid)),
                 new EueMultipartWriteFeature(session, fileid), cryptomator);
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
