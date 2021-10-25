@@ -15,6 +15,8 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.JSON;
 import ch.cyberduck.core.eue.io.swagger.client.api.PostChildrenApi;
@@ -28,8 +30,6 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ResourceResourceIdBody;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiFsModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpResponse;
@@ -97,6 +97,9 @@ public final class EueUploadHelper {
         final ResourceCreationRepresentationArrayInner resourceCreationRepresentation = new ResourceCreationRepresentationArrayInner();
         resourceCreationRepresentation.setForceOverwrite(true);
         resourceCreationRepresentation.setPath(filename);
+        if(TransferStatus.UNKNOWN_LENGTH != status.getLength()) {
+            resourceCreationRepresentation.setSize(status.getLength());
+        }
         resourceCreationRepresentation.setUploadType(uploadType);
         resourceCreationRepresentation.setResourceType(ResourceCreationRepresentationArrayInner.ResourceTypeEnum.FILE);
         try {
