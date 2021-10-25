@@ -102,9 +102,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                 uploadUri = uploadResourceCreationResponseEntry.getEntity().getUploadURI();
             }
             for(int partNumber = 1; remaining > 0; partNumber++) {
-                // Convert to smaller chunk size when uploading to vault to make sure chunks on
-                // server always match requirement of 4194304 bytes
-                final long length = Math.min(writer.chunksize(offset, chunksize), remaining);
+                final long length = Math.min(chunksize, remaining);
                 parts.add(this.submit(pool, file, local, throttle, listener, status,
                         uploadUri, resourceId, partNumber, offset, length, callback));
                 remaining -= length;

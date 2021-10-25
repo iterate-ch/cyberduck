@@ -69,20 +69,6 @@ public interface Write<Reply> {
         return new DisabledChecksumCompute();
     }
 
-    /**
-     * Determine actual transfer size for given chunk size
-     *
-     *
-     * @param offset Offset in file
-     * @param chunksize The chunk size required by the server
-     * @return Usually same as input unless cryptographic function is applied. Then the chunk size is returned to be
-     * used when splitting the upload into chunks required to achieve the desired final chuk size sent in requests by
-     * the feature.
-     */
-    default long chunksize(final long offset, final long chunksize) throws BackgroundException {
-        return chunksize;
-    }
-
     final class Append {
         /**
          * Append to existing file is supported
