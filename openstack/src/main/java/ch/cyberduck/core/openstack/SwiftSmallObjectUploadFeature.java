@@ -36,6 +36,7 @@ import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(SwiftSmallObjectUploadFeature.class);
+
     private final SwiftSession session;
 
     public SwiftSmallObjectUploadFeature(final SwiftSession session, final Write<StorageObject> writer) {
@@ -50,7 +51,7 @@ public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObje
             return super.decorate(in, null);
         }
         else {
-            return new DigestInputStream(super.decorate(in, digest), digest);
+            return new DigestInputStream(in, digest);
         }
     }
 

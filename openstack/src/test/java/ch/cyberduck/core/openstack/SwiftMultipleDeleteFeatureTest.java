@@ -20,7 +20,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractSwiftTest {
     @Test(expected = NotfoundException.class)
     @Ignore
     public void testDeleteNotFoundKey() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(
             new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
             new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
