@@ -317,7 +317,6 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
                 status.setUrl(url);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                status.setNonces(overall.getNonces());
                 status.setFilekey(overall.getFilekey());
                 SDSDirectS3UploadFeature.super.upload(
                     file, local, throttle, listener, status, overall, status, callback);
