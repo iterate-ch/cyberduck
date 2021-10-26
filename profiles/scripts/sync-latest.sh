@@ -25,7 +25,7 @@ echo "Finding profiles in $DIRECTORY"
 env "s3.metadata.default=Content-Type=application/xml" duck -y --username $AWS_ACCESS_KEY_ID --password $AWS_SECRET_ACCESS_KEY --existing compare --upload "$TARGET/" $DIRECTORY/*.cyberduckprofile
 
 # Delete profiles no longer maintained
-duck -y --username $AWS_ACCESS_KEY_ID --password $AWS_SECRET_ACCESS_KEY --list $TARGET/ |
+duck -qy --username $AWS_ACCESS_KEY_ID --password $AWS_SECRET_ACCESS_KEY --list $TARGET/ |
   while read name; do
     [ -z "$name" ] && continue
     
