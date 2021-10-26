@@ -81,6 +81,11 @@ public class S3LocationFeature implements Location {
             if(cache.containsRegionForBucketName(bucketname)) {
                 return new S3Region(cache.getRegionForBucketName(bucketname));
             }
+            if(session.getHost().getCredentials().isAnonymousLogin()) {
+                // To use this implementation of the operation, you must be the bucket owner
+                log.warn("Skip attempt to read bucket location with missing credentials");
+                return Location.unknown;
+            }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Query location for bucket %s", bucketname));
             }

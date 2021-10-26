@@ -13,6 +13,6 @@
         <key>Default Port</key>
         <string>443</string>
         <key>Help</key>
-        <string>No profile with this checksum ever found on server</string>
+        <string>No profile with this checksum ever found on server and no vendor match</string>
     </dict>
 </plist>
