@@ -87,12 +87,14 @@ public class S3LifecycleConfiguration implements Lifecycle {
             Integer expiration = null;
             String storageClass = null;
             for(LifecycleConfig.Rule rule : status.getRules()) {
-                if(rule.getTransition() != null) {
-                    storageClass = rule.getTransition().getStorageClass();
-                    transition = rule.getTransition().getDays();
-                }
-                if(rule.getExpiration() != null) {
-                    expiration = rule.getExpiration().getDays();
+                if(StringUtils.isBlank(rule.getPrefix())) {
+                    if(rule.getTransition() != null) {
+                        storageClass = rule.getTransition().getStorageClass();
+                        transition = rule.getTransition().getDays();
+                    }
+                    if(rule.getExpiration() != null) {
+                        expiration = rule.getExpiration().getDays();
+                    }
                 }
             }
             return new LifecycleConfiguration(transition, storageClass, expiration);
