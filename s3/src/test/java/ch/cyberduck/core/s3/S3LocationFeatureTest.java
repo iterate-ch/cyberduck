@@ -79,8 +79,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
         }, new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
-        assertEquals(unknown,
-                new S3LocationFeature(session).getLocation(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertEquals(unknown, new S3LocationFeature(session).getLocation(new Path("/", EnumSet.of(Path.Type.directory))));
         session.close();
     }
 
