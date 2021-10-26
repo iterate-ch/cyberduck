@@ -175,7 +175,6 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                         .withParameters(parameters);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                status.setNonces(overall.getNonces());
                 status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
                 status.setUrl(url);
                 final EueWriteFeature.Chunk chunk = EueLargeUploadService.this.upload(

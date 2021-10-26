@@ -245,7 +245,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 status.setParameters(requestParameters);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                status.setNonces(overall.getNonces());
                 switch(session.getSignatureVersion()) {
                     case AWS4HMACSHA256:
                         status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
