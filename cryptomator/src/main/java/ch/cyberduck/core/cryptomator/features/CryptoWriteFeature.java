@@ -53,7 +53,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                     new TransferStatus(status)
                             .withLength(vault.toCiphertextSize(status.getOffset(), status.getLength()))
                             // Assume single chunk upload
-                            .withOffset(vault.toCiphertextSize(0L, status.getOffset()))
+                            .withOffset(0L == status.getOffset() ? 0L : vault.toCiphertextSize(0L, status.getOffset()))
                             .withMime(null), callback);
             if(status.getOffset() == 0L) {
                 out.write(status.getHeader().array());
