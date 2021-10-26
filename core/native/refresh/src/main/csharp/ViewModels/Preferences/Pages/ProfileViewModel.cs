@@ -3,6 +3,7 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.profiles;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using System.Linq;
 using System.Reactive;
 
 namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
@@ -14,6 +15,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
             ProfileDescription = profile;
             Profile = (Profile)profile.getProfile().get();
             Installed = profile.isInstalled() && Profile.isEnabled();
+            IsEnabled = !(Profile.isBundled() || Utils.ConvertFromJavaList<Host>(BookmarkCollection.defaultCollection()).Any(x => x.getProtocol().Equals(Profile)));
 
             OpenHelp = ReactiveCommand.Create(() =>
             {
@@ -21,14 +23,14 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
             });
         }
 
+        public bool IsEnabled { get; }
+
         public string DefaultHostName => Profile.getDefaultHostname();
 
         public string Description => Profile.getDescription();
 
         [Reactive]
         public bool Installed { get; set; }
-
-        public bool IsBundled => Profile.isBundled();
 
         public string Name => Profile.getName();
 

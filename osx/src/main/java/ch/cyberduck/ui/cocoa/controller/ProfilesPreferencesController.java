@@ -30,6 +30,7 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
+import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
@@ -424,6 +425,9 @@ public class ProfilesPreferencesController extends BundleController {
             this.checkbox.setTarget(this.id());
             this.checkbox.setAction(Foundation.selector("profileCheckboxClicked:"));
             this.checkbox.setEnabled(!profile.isBundled());
+            if(BookmarkCollection.defaultCollection().stream().filter(host -> host.getProtocol().equals(profile)).findAny().isPresent()) {
+                this.checkbox.setEnabled(false);
+            }
             this.checkbox.setState(description.isInstalled() && profile.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
         }
 

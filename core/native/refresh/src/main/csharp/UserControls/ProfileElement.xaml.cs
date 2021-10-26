@@ -21,7 +21,7 @@ namespace Ch.Cyberduck.Core.Refresh.UserControls
                 d(this.OneWayBind(ViewModel, vm => vm.Profile, v => v.ProfileIcon.Source, p => wpfIconProvider.GetDisk(p, 32)));
                 d(this.OneWayBind(ViewModel, vm => vm.DefaultHostName, v => v.ToolTipEnabled, v => !string.IsNullOrWhiteSpace(v)));
                 d(this.OneWayBind(ViewModel, vm => vm.DefaultHostName, v => v.ToolTip));
-                d(this.OneWayBind(ViewModel, vm => vm.IsBundled, v => v.Checked.IsEnabled, v => !v));
+                d(this.OneWayBind(ViewModel, vm => vm.IsEnabled, v => v.Checked.IsEnabled));
                 d(this.BindCommand(ViewModel, vm => vm.OpenHelp, v => v.HelpButton));
                 d(this.Bind(ViewModel, vm => vm.Installed, v => v.Checked.IsChecked));
             });
