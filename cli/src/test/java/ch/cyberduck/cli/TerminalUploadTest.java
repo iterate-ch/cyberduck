@@ -55,7 +55,7 @@ public class TerminalUploadTest {
             "--assumeyes",
             "--username", System.getProperties().getProperty("sds.user"),
             "--password", System.getProperties().getProperty("sds.key"),
-            "--upload", String.format("https://duck.dracoon.com/test/%s", new AlphanumericRandomStringService().random()),
+            "--upload", String.format("dracoon://duck.dracoon.com/test/%s", new AlphanumericRandomStringService().random()),
             local.getAbsolute()});
         final LinuxTerminalPreferences preferences = new LinuxTerminalPreferences();
         preferences.load();
@@ -63,7 +63,6 @@ public class TerminalUploadTest {
         preferences.setDefaults();
         final ProtocolFactory protocols = new ProtocolFactory(new HashSet<>(Collections.singletonList(new SDSProtocol())));
         protocols.register(new ProfilePlistReader(protocols).read(this.getClass().getResourceAsStream("/DRACOON (Email Address).cyberduckprofile")));
-        ProtocolFactory.get().register(new ProfilePlistReader(protocols).read(this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile")));
         final Terminal terminal = new Terminal(protocols, preferences, options, input);
         assertEquals(Terminal.Exit.success, terminal.execute(new DisabledLoginCallback() {
             @Override
