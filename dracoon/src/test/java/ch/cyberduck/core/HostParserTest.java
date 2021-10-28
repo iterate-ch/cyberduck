@@ -52,4 +52,14 @@ public class HostParserTest {
         assertEquals("/home/ä-test", new HostParser(new ProtocolFactory(new HashSet<>(Arrays.asList(new SDSProtocol(), profile)))).get(
             "dracoon://duck.dracoon.com/home%2F%C3%A4-test").getDefaultPath());
     }
+
+    @Test
+    public void testParseDeprecatedPriorization() throws Exception {
+        final Profile profileEmail = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
+                this.getClass().getResourceAsStream("/DRACOON (Email Address).cyberduckprofile"));
+        final Profile profileOAuth = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
+                this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
+        assertEquals(profileOAuth, new HostParser(new ProtocolFactory(new HashSet<>(Arrays.asList(new SDSProtocol(), profileEmail, profileOAuth)))).get(
+                "dracoon://duck.dracoon.com/home%2F%C3%A4-test").getProtocol());
+    }
 }

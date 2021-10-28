@@ -51,7 +51,7 @@ public class ProtocolFactoryTest {
             }
         };
         final ProtocolFactory f = new ProtocolFactory(new HashSet<>(
-            Arrays.asList(defaultProtocol, providerProtocol, disabledProtocol)));
+                Arrays.asList(defaultProtocol, providerProtocol, disabledProtocol)));
         final List<Protocol> protocols = f.find();
         assertTrue(protocols.contains(defaultProtocol));
         assertTrue(protocols.contains(providerProtocol));
@@ -150,7 +150,7 @@ public class ProtocolFactoryTest {
                 return Type.dav;
             }
         }))).read(
-            new Local("src/test/resources/Unknown.cyberduckprofile")
+                new Local("src/test/resources/Unknown.cyberduckprofile")
         );
     }
 
@@ -200,6 +200,51 @@ public class ProtocolFactoryTest {
         final ProtocolFactory f = new ProtocolFactory(Stream.of(baseProtocol, overrideProtocol).collect(Collectors.toSet()));
         assertEquals(overrideProtocol, f.forName("test", "test-provider2"));
         assertEquals(baseProtocol, f.forName("test", "test-provider1"));
+    }
+
+    @Test
+    public void testPrioritizeNonDeprecatedWithTypeLookup() {
+        final TestProtocol first = new TestProtocol(Scheme.http) {
+            @Override
+            public Type getType() {
+                return Type.dracoon;
+            }
+
+            @Override
+            public String getProvider() {
+                return "test-provider1";
+            }
+
+            @Override
+            public boolean isBundled() {
+                return false;
+            }
+
+            @Override
+            public boolean isDeprecated() {
+                return true;
+            }
+        };
+        final TestProtocol second = new TestProtocol(Scheme.http) {
+            @Override
+            public Type getType() {
+                return Type.dracoon;
+            }
+
+            @Override
+            public String getProvider() {
+                return "test-provider2";
+            }
+
+            @Override
+            public boolean isBundled() {
+                return false;
+            }
+        };
+        final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(first, second)));
+        assertEquals(second, f.forName("test", "test-provider2"));
+        assertEquals(first, f.forName("test", "test-provider1"));
+        assertEquals(second, f.forName("dracoon"));
     }
 
     @Test
