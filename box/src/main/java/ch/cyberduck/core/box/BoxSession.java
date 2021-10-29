@@ -86,6 +86,9 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == Upload.class) {
+            return (T) new BoxThresholdUploadService(this, fileid);
+        }
         if(type == Write.class) {
             return (T) new BoxWriteFeature(this, fileid);
         }
