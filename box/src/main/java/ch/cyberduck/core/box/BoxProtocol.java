@@ -54,4 +54,9 @@ public class BoxProtocol extends AbstractProtocol {
     public String disk() {
         return String.format("%s.tiff", "ftp");
     }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.implicit;
+    }
 }

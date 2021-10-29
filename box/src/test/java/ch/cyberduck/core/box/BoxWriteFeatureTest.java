@@ -50,9 +50,11 @@ public class BoxWriteFeatureTest extends AbtractBoxTest {
     public void testWrite() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final BoxWriteFeature feature = new BoxWriteFeature(session, fileid);
+        final Path folder = new BoxDirectoryFeature(session, fileid).mkdir(
+                new Path(Home.ROOT, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         // Makes sure to test overwrite
         final Path file = new BoxTouchFeature(session, fileid).touch(
-                new Path(Home.ROOT, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(2047);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -78,6 +80,11 @@ public class BoxWriteFeatureTest extends AbtractBoxTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        // Check folder attributes after write
+        final PathAttributes folderAttr = new BoxAttributesFinderFeature(session, fileid).find(folder);
+        assertNotEquals(folder.attributes(), folderAttr);
+        assertEquals(folder.attributes().getCreationDate(), folderAttr.getCreationDate());
+        assertNotEquals(folder.attributes().getModificationDate(), folderAttr.getModificationDate());
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
