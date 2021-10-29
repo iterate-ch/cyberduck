@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -208,17 +209,17 @@ public final class ProtocolFactory {
     public Protocol forName(final List<Protocol> enabled, final String identifier, final String provider) {
         final Protocol match =
             // Exact match with hash code
-            enabled.stream().filter(protocol -> String.valueOf(protocol.hashCode()).equals(identifier)).findFirst().orElse(
+            enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> String.valueOf(protocol.hashCode()).equals(identifier)).findFirst().orElse(
                 // Matching vendor string for third party profiles
-                enabled.stream().filter(protocol -> StringUtils.equals(protocol.getIdentifier(), identifier) && StringUtils.equals(protocol.getProvider(), provider)).findFirst().orElse(
+                enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> StringUtils.equals(protocol.getIdentifier(), identifier) && StringUtils.equals(protocol.getProvider(), provider)).findFirst().orElse(
                     // Matching vendor string usage in CLI
-                    enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
+                    enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
                         // Fallback for bug in 6.1
-                        enabled.stream().filter(protocol -> StringUtils.equals(String.format("%s-%s", protocol.getIdentifier(), protocol.getProvider()), identifier)).findFirst().orElse(
+                        enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> StringUtils.equals(String.format("%s-%s", protocol.getIdentifier(), protocol.getProvider()), identifier)).findFirst().orElse(
                                 // Matching bundled first with identifier match
-                                enabled.stream().filter(protocol -> protocol.isBundled() && StringUtils.equals(protocol.getIdentifier(), identifier)).findFirst().orElse(
+                                enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> protocol.isBundled() && StringUtils.equals(protocol.getIdentifier(), identifier)).findFirst().orElse(
                                         // Matching scheme with fallback to generic protocol type
-                                        this.forScheme(enabled, identifier, enabled.stream().filter(protocol -> StringUtils.equals(protocol.getType().name(), identifier)).findFirst().orElse(null))
+                                        this.forScheme(enabled, identifier, enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> StringUtils.equals(protocol.getType().name(), identifier)).findFirst().orElse(null))
                                 )
                         )
                     )
@@ -239,7 +240,7 @@ public final class ProtocolFactory {
     }
 
     private Protocol forType(final List<Protocol> enabled, final Protocol.Type type) {
-        return enabled.stream().filter(protocol -> protocol.getType().equals(type)).findFirst().orElse(null);
+        return enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> protocol.getType().equals(type)).findFirst().orElse(null);
     }
 
     public Protocol forScheme(final Scheme scheme) {
@@ -263,10 +264,18 @@ public final class ProtocolFactory {
                 filter = scheme;
                 break;
         }
-        return enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(
-            enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(fallback)
+        return enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(
+            enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(fallback)
         );
     }
+
+    private static final class DeprecatedProtocolComparator implements Comparator<Protocol> {
+        @Override
+        public int compare(final Protocol o1, final Protocol o2) {
+            return Boolean.compare(o1.isDeprecated(), o2.isDeprecated());
+        }
+    }
+
 
     @Override
     public String toString() {
