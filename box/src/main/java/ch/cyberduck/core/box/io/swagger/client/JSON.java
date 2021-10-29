@@ -11,7 +11,7 @@ import java.text.DateFormat;
 
 import javax.ws.rs.ext.ContextResolver;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")public class JSON implements ContextResolver<ObjectMapper> {
+public class JSON implements ContextResolver<ObjectMapper> {
   private ObjectMapper mapper;
 
   public JSON() {

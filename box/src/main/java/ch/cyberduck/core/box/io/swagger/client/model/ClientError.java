@@ -14,6 +14,7 @@ package ch.cyberduck.core.box.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
+import ch.cyberduck.core.box.io.swagger.client.model.ClientErrorContextInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -22,7 +23,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * A generic error
  */
 @Schema(description = "A generic error")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+
 public class ClientError {
   /**
    * &#x60;error&#x60;
@@ -79,7 +80,8 @@ public class ClientError {
     TOO_MANY_REQUESTS("too_many_requests"),
     INTERNAL_SERVER_ERROR("internal_server_error"),
     UNAVAILABLE("unavailable"),
-    ITEM_NAME_INVALID("item_name_invalid");
+    ITEM_NAME_INVALID("item_name_invalid"),
+    INSUFFICIENT_SCOPE("insufficient_scope");
 
     private String value;
 
@@ -108,11 +110,14 @@ public class ClientError {
   }  @JsonProperty("code")
   private CodeEnum code = null;
 
-  @JsonProperty("help_url")
-  private String helpUrl = null;
-
   @JsonProperty("message")
   private String message = null;
+
+  @JsonProperty("context_info")
+  private ClientErrorContextInfo contextInfo = null;
+
+  @JsonProperty("help_url")
+  private String helpUrl = null;
 
   @JsonProperty("request_id")
   private String requestId = null;
@@ -171,24 +176,6 @@ public class ClientError {
     this.code = code;
   }
 
-  public ClientError helpUrl(String helpUrl) {
-    this.helpUrl = helpUrl;
-    return this;
-  }
-
-   /**
-   * A URL that links to more information about why this error occurred.
-   * @return helpUrl
-  **/
-  @Schema(example = "http://developers.box.com/docs/#errors", description = "A URL that links to more information about why this error occurred.")
-  public String getHelpUrl() {
-    return helpUrl;
-  }
-
-  public void setHelpUrl(String helpUrl) {
-    this.helpUrl = helpUrl;
-  }
-
   public ClientError message(String message) {
     this.message = message;
     return this;
@@ -205,6 +192,42 @@ public class ClientError {
 
   public void setMessage(String message) {
     this.message = message;
+  }
+
+  public ClientError contextInfo(ClientErrorContextInfo contextInfo) {
+    this.contextInfo = contextInfo;
+    return this;
+  }
+
+   /**
+   * Get contextInfo
+   * @return contextInfo
+  **/
+  @Schema(description = "")
+  public ClientErrorContextInfo getContextInfo() {
+    return contextInfo;
+  }
+
+  public void setContextInfo(ClientErrorContextInfo contextInfo) {
+    this.contextInfo = contextInfo;
+  }
+
+  public ClientError helpUrl(String helpUrl) {
+    this.helpUrl = helpUrl;
+    return this;
+  }
+
+   /**
+   * A URL that links to more information about why this error occurred.
+   * @return helpUrl
+  **/
+  @Schema(example = "http://developers.box.com/docs/#errors", description = "A URL that links to more information about why this error occurred.")
+  public String getHelpUrl() {
+    return helpUrl;
+  }
+
+  public void setHelpUrl(String helpUrl) {
+    this.helpUrl = helpUrl;
   }
 
   public ClientError requestId(String requestId) {
@@ -238,14 +261,15 @@ public class ClientError {
     return Objects.equals(this.type, clientError.type) &&
         Objects.equals(this.status, clientError.status) &&
         Objects.equals(this.code, clientError.code) &&
-        Objects.equals(this.helpUrl, clientError.helpUrl) &&
         Objects.equals(this.message, clientError.message) &&
+        Objects.equals(this.contextInfo, clientError.contextInfo) &&
+        Objects.equals(this.helpUrl, clientError.helpUrl) &&
         Objects.equals(this.requestId, clientError.requestId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, status, code, helpUrl, message, requestId);
+    return Objects.hash(type, status, code, message, contextInfo, helpUrl, requestId);
   }
 
 
@@ -257,8 +281,9 @@ public class ClientError {
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
-    sb.append("    helpUrl: ").append(toIndentedString(helpUrl)).append("\n");
     sb.append("    message: ").append(toIndentedString(message)).append("\n");
+    sb.append("    contextInfo: ").append(toIndentedString(contextInfo)).append("\n");
+    sb.append("    helpUrl: ").append(toIndentedString(helpUrl)).append("\n");
     sb.append("    requestId: ").append(toIndentedString(requestId)).append("\n");
     sb.append("}");
     return sb.toString();

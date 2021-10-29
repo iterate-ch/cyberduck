@@ -7,13 +7,13 @@ import ch.cyberduck.core.box.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
-import ch.cyberduck.core.box.io.swagger.client.model.Body5;
-import ch.cyberduck.core.box.io.swagger.client.model.Body6;
-import ch.cyberduck.core.box.io.swagger.client.model.Body7;
 import ch.cyberduck.core.box.io.swagger.client.model.ClientError;
+import ch.cyberduck.core.box.io.swagger.client.model.FileIdUploadSessionsBody;
 import ch.cyberduck.core.box.io.swagger.client.model.Files;
+import ch.cyberduck.core.box.io.swagger.client.model.FilesUploadSessionsBody;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadParts;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadSession;
+import ch.cyberduck.core.box.io.swagger.client.model.UploadSessionIdCommitBody;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadedPart;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")public class UploadsChunkedApi {
+public class UploadsChunkedApi {
   private ApiClient apiClient;
 
   public UploadsChunkedApi() {
@@ -63,7 +63,6 @@ import java.util.Map;
 
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -74,7 +73,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
@@ -102,7 +101,6 @@ import java.util.Map;
 
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -113,7 +111,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<UploadSession> localVarReturnType = new GenericType<UploadSession>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
@@ -146,7 +144,6 @@ import java.util.Map;
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -157,7 +154,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<UploadParts> localVarReturnType = new GenericType<UploadParts>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
@@ -167,10 +164,11 @@ import java.util.Map;
    * Creates an upload session for an existing file.
    * @param fileId The unique identifier that represent a file.  The ID for any file can be determined by visiting a file in the web application and copying the ID from the URL. For example, for the URL &#x60;https://_*.app.box.com/files/123&#x60; the &#x60;file_id&#x60; is &#x60;123&#x60;. (required)
    * @param body  (optional)
+   * @param ifMatch Ensures this item hasn&#x27;t recently changed before making changes.  Pass in the item&#x27;s last observed &#x60;etag&#x60; value into this header and the endpoint will fail with a &#x60;412 Precondition Failed&#x60; if it has changed since. (optional)
    * @return UploadSession
    * @throws ApiException if fails to make API call
    */
-  public UploadSession postFilesIdUploadSessions(String fileId, Body6 body) throws ApiException {
+  public UploadSession postFilesIdUploadSessions(String fileId, FileIdUploadSessionsBody body, String ifMatch) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'fileId' is set
     if (fileId == null) {
@@ -186,7 +184,8 @@ import java.util.Map;
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-
+    if (ifMatch != null)
+      localVarHeaderParams.put("if-match", apiClient.parameterToString(ifMatch));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -198,7 +197,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<UploadSession> localVarReturnType = new GenericType<UploadSession>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
@@ -210,7 +209,7 @@ import java.util.Map;
    * @return UploadSession
    * @throws ApiException if fails to make API call
    */
-  public UploadSession postFilesUploadSessions(Body5 body) throws ApiException {
+  public UploadSession postFilesUploadSessions(FilesUploadSessionsBody body) throws ApiException {
     Object localVarPostBody = body;
     // create path and map variables
     String localVarPath = "/files/upload_sessions";
@@ -219,7 +218,6 @@ import java.util.Map;
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
 
 
 
@@ -233,7 +231,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<UploadSession> localVarReturnType = new GenericType<UploadSession>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
@@ -249,7 +247,7 @@ import java.util.Map;
    * @return Files
    * @throws ApiException if fails to make API call
    */
-  public Files postFilesUploadSessionsIdCommit(String digest, String uploadSessionId, Body7 body, String ifMatch, String ifNoneMatch) throws ApiException {
+  public Files postFilesUploadSessionsIdCommit(String digest, String uploadSessionId, UploadSessionIdCommitBody body, String ifMatch, String ifNoneMatch) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'digest' is set
     if (digest == null) {
@@ -276,7 +274,6 @@ import java.util.Map;
     if (ifNoneMatch != null)
       localVarHeaderParams.put("if-none-match", apiClient.parameterToString(ifNoneMatch));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -287,7 +284,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<Files> localVarReturnType = new GenericType<Files>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
@@ -331,7 +328,6 @@ import java.util.Map;
     if (contentRange != null)
       localVarHeaderParams.put("content-range", apiClient.parameterToString(contentRange));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -342,7 +338,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<UploadedPart> localVarReturnType = new GenericType<UploadedPart>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);

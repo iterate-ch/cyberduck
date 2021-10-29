@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * The details for the upload session for the file.
  */
 @Schema(description = "The details for the upload session for the file.")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+
 public class UploadUrl {
   @JsonProperty("upload_url")
   private String uploadUrl = null;

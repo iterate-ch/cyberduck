@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
  * An upload session for chunk uploading a file.
  */
 @Schema(description = "An upload session for chunk uploading a file.")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+
 public class UploadSession {
   @JsonProperty("id")
   private String id = null;
@@ -32,7 +32,7 @@ public class UploadSession {
    * &#x60;upload_session&#x60;
    */
   public enum TypeEnum {
-    SESSION("upload_session");
+    UPLOAD_SESSION("upload_session");
 
     private String value;
 

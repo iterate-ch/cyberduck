@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")public class DownloadsApi {
+public class DownloadsApi {
   private ApiClient apiClient;
 
   public DownloadsApi() {
@@ -66,7 +66,6 @@ import java.util.Map;
     if (boxapi != null)
       localVarHeaderParams.put("boxapi", apiClient.parameterToString(boxapi));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -77,7 +76,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }

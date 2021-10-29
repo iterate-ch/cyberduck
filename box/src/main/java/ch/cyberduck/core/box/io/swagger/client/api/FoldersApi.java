@@ -7,11 +7,11 @@ import ch.cyberduck.core.box.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
-import ch.cyberduck.core.box.io.swagger.client.model.Body15;
-import ch.cyberduck.core.box.io.swagger.client.model.Body17;
-import ch.cyberduck.core.box.io.swagger.client.model.Body18;
 import ch.cyberduck.core.box.io.swagger.client.model.ClientError;
 import ch.cyberduck.core.box.io.swagger.client.model.Folder;
+import ch.cyberduck.core.box.io.swagger.client.model.FolderIdCopyBody;
+import ch.cyberduck.core.box.io.swagger.client.model.FoldersBody;
+import ch.cyberduck.core.box.io.swagger.client.model.FoldersFolderIdBody;
 import ch.cyberduck.core.box.io.swagger.client.model.Items;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")public class FoldersApi {
+public class FoldersApi {
   private ApiClient apiClient;
 
   public FoldersApi() {
@@ -66,7 +66,6 @@ import java.util.Map;
     if (ifMatch != null)
       localVarHeaderParams.put("if-match", apiClient.parameterToString(ifMatch));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -77,7 +76,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
@@ -113,7 +112,6 @@ import java.util.Map;
     if (boxapi != null)
       localVarHeaderParams.put("boxapi", apiClient.parameterToString(boxapi));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -124,7 +122,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<Folder> localVarReturnType = new GenericType<Folder>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
@@ -170,7 +168,6 @@ import java.util.Map;
     if (boxapi != null)
       localVarHeaderParams.put("boxapi", apiClient.parameterToString(boxapi));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -181,7 +178,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<Items> localVarReturnType = new GenericType<Items>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
@@ -194,7 +191,7 @@ import java.util.Map;
    * @return Folder
    * @throws ApiException if fails to make API call
    */
-  public Folder postFolders(Body17 body, List<String> fields) throws ApiException {
+  public Folder postFolders(FoldersBody body, List<String> fields) throws ApiException {
     Object localVarPostBody = body;
     // create path and map variables
     String localVarPath = "/folders";
@@ -207,7 +204,6 @@ import java.util.Map;
     localVarQueryParams.addAll(apiClient.parameterToPairs("csv", "fields", fields));
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -218,7 +214,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<Folder> localVarReturnType = new GenericType<Folder>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
@@ -232,7 +228,7 @@ import java.util.Map;
    * @return Folder
    * @throws ApiException if fails to make API call
    */
-  public Folder postFoldersIdCopy(String folderId, Body18 body, List<String> fields) throws ApiException {
+  public Folder postFoldersIdCopy(String folderId, FolderIdCopyBody body, List<String> fields) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'folderId' is set
     if (folderId == null) {
@@ -250,7 +246,6 @@ import java.util.Map;
     localVarQueryParams.addAll(apiClient.parameterToPairs("csv", "fields", fields));
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -261,7 +256,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<Folder> localVarReturnType = new GenericType<Folder>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
@@ -276,7 +271,7 @@ import java.util.Map;
    * @return Folder
    * @throws ApiException if fails to make API call
    */
-  public Folder putFoldersId(String folderId, Body15 body, String ifMatch, List<String> fields) throws ApiException {
+  public Folder putFoldersId(String folderId, FoldersFolderIdBody body, String ifMatch, List<String> fields) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'folderId' is set
     if (folderId == null) {
@@ -296,7 +291,6 @@ import java.util.Map;
     if (ifMatch != null)
       localVarHeaderParams.put("if-match", apiClient.parameterToString(ifMatch));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -307,7 +301,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<Folder> localVarReturnType = new GenericType<Folder>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);

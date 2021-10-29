@@ -24,7 +24,7 @@ import org.joda.time.DateTime;
  * The settings for the shared link to create on the folder.  Use an empty object (&#x60;{}&#x60;) to use the default settings for shared links.
  */
 @Schema(description = "The settings for the shared link to create on the folder.  Use an empty object (`{}`) to use the default settings for shared links.")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+
 public class FoldersfolderIdaddSharedLinkSharedLink {
   /**
    * The level of access for the shared link. This can be restricted to anyone with the link (&#x60;open&#x60;), only people within the company (&#x60;company&#x60;) and only those who have been invited to the folder (&#x60;collaborators&#x60;).  If not set, this field defaults to the access level specified by the enterprise admin. To create a shared link with this default setting pass the &#x60;shared_link&#x60; object with no &#x60;access&#x60; field, for example &#x60;{ \&quot;shared_link\&quot;: {} }&#x60;.  The &#x60;company&#x60; access level is only available to paid accounts.
@@ -63,6 +63,9 @@ public class FoldersfolderIdaddSharedLinkSharedLink {
 
   @JsonProperty("password")
   private String password = null;
+
+  @JsonProperty("vanity_name")
+  private String vanityName = null;
 
   @JsonProperty("unshared_at")
   private DateTime unsharedAt = null;
@@ -106,16 +109,34 @@ public class FoldersfolderIdaddSharedLinkSharedLink {
     this.password = password;
   }
 
+  public FoldersfolderIdaddSharedLinkSharedLink vanityName(String vanityName) {
+    this.vanityName = vanityName;
+    return this;
+  }
+
+   /**
+   * Defines a custom vanity name to use in the shared link URL, for example &#x60;https://app.box.com/v/my-shared-link&#x60;.  Custom URLs should not be used when sharing sensitive content as vanity URLs are a lot easier to guess than regular shared links.
+   * @return vanityName
+  **/
+  @Schema(example = "my-shared-link", description = "Defines a custom vanity name to use in the shared link URL, for example `https://app.box.com/v/my-shared-link`.  Custom URLs should not be used when sharing sensitive content as vanity URLs are a lot easier to guess than regular shared links.")
+  public String getVanityName() {
+    return vanityName;
+  }
+
+  public void setVanityName(String vanityName) {
+    this.vanityName = vanityName;
+  }
+
   public FoldersfolderIdaddSharedLinkSharedLink unsharedAt(DateTime unsharedAt) {
     this.unsharedAt = unsharedAt;
     return this;
   }
 
    /**
-   * The timestamp at which this shared link will expire. This field can only be set by users with paid accounts.
+   * The timestamp at which this shared link will expire. This field can only be set by users with paid accounts. The value must be greater than the current date and time.
    * @return unsharedAt
   **/
-  @Schema(example = "2012-12-12T10:53:43-08:00", description = "The timestamp at which this shared link will expire. This field can only be set by users with paid accounts.")
+  @Schema(example = "2012-12-12T10:53:43-08:00", description = "The timestamp at which this shared link will expire. This field can only be set by users with paid accounts. The value must be greater than the current date and time.")
   public DateTime getUnsharedAt() {
     return unsharedAt;
   }
@@ -154,13 +175,14 @@ public class FoldersfolderIdaddSharedLinkSharedLink {
     FoldersfolderIdaddSharedLinkSharedLink foldersfolderIdaddSharedLinkSharedLink = (FoldersfolderIdaddSharedLinkSharedLink) o;
     return Objects.equals(this.access, foldersfolderIdaddSharedLinkSharedLink.access) &&
         Objects.equals(this.password, foldersfolderIdaddSharedLinkSharedLink.password) &&
+        Objects.equals(this.vanityName, foldersfolderIdaddSharedLinkSharedLink.vanityName) &&
         Objects.equals(this.unsharedAt, foldersfolderIdaddSharedLinkSharedLink.unsharedAt) &&
         Objects.equals(this.permissions, foldersfolderIdaddSharedLinkSharedLink.permissions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(access, password, unsharedAt, permissions);
+    return Objects.hash(access, password, vanityName, unsharedAt, permissions);
   }
 
 
@@ -171,6 +193,7 @@ public class FoldersfolderIdaddSharedLinkSharedLink {
     
     sb.append("    access: ").append(toIndentedString(access)).append("\n");
     sb.append("    password: ").append(toIndentedString(password)).append("\n");
+    sb.append("    vanityName: ").append(toIndentedString(vanityName)).append("\n");
     sb.append("    unsharedAt: ").append(toIndentedString(unsharedAt)).append("\n");
     sb.append("    permissions: ").append(toIndentedString(permissions)).append("\n");
     sb.append("}");

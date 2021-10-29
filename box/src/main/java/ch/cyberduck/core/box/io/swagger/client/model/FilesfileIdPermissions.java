@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * Defines who can download a file.
  */
 @Schema(description = "Defines who can download a file.")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+
 public class FilesfileIdPermissions {
   /**
    * Defines who is allowed to download this file. The possible values are either &#x60;open&#x60; for everyone or &#x60;company&#x60; for the other members of the user&#x27;s enterprise.  This setting overrides the download permissions that are normally part of the &#x60;role&#x60; of a collaboration. When set to &#x60;company&#x60;, this essentially removes the download option for external users with &#x60;viewer&#x60; or &#x60;editor&#x60; a roles.

@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * FilesfileIdaddSharedLinkSharedLinkPermissions
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-29T14:11:07.475731+02:00[Europe/Zurich]")
 public class FilesfileIdaddSharedLinkSharedLinkPermissions {
   @JsonProperty("can_download")
   private Boolean canDownload = null;

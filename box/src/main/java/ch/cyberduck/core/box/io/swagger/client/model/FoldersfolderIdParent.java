@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * The parent folder for this folder. Use this to move the folder or to restore it out of the trash.
  */
 @Schema(description = "The parent folder for this folder. Use this to move the folder or to restore it out of the trash.")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+
 public class FoldersfolderIdParent {
   @JsonProperty("id")
   private String id = null;

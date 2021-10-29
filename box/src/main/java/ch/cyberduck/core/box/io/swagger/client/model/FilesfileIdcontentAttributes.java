@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
  * The additional attributes of the file being uploaded. Mainly the name and the parent folder. These attributes are part of the multi part request body and are in JSON format.  &lt;Message warning&gt;    The &#x60;attributes&#x60; part of the body must come **before** the   &#x60;file&#x60; part. Requests that do not follow this format when   uploading the file will receive a HTTP &#x60;400&#x60; error with a   &#x60;metadata_after_file_contents&#x60; error code.  &lt;/Message&gt;
  */
 @Schema(description = "The additional attributes of the file being uploaded. Mainly the name and the parent folder. These attributes are part of the multi part request body and are in JSON format.  <Message warning>    The `attributes` part of the body must come **before** the   `file` part. Requests that do not follow this format when   uploading the file will receive a HTTP `400` error with a   `metadata_after_file_contents` error code.  </Message>")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+
 public class FilesfileIdcontentAttributes {
   @JsonProperty("name")
   private String name = null;

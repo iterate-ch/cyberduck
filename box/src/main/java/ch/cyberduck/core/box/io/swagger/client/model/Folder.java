@@ -12,40 +12,74 @@
 
 package ch.cyberduck.core.box.io.swagger.client.model;
 
-import org.joda.time.DateTime;
-
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
+import java.util.Arrays;
+import ch.cyberduck.core.box.io.swagger.client.model.FileSharedLink;
+import ch.cyberduck.core.box.io.swagger.client.model.Folder;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.joda.time.DateTime;
 /**
  * A standard representation of a folder, as returned from any folder API endpoints by default
  */
 @Schema(description = "A standard representation of a folder, as returned from any folder API endpoints by default")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
-public class Folder extends FolderMini implements OneOfMetadataQueryResultsEntriesItems {
+
+public class Folder {
+  @JsonProperty("id")
+  private String id = null;
+
+  @JsonProperty("etag")
+  private String etag = null;
+
+  /**
+   * &#x60;folder&#x60;
+   */
+  public enum TypeEnum {
+    FOLDER("folder");
+
+    private String value;
+
+    TypeEnum(String value) {
+      this.value = value;
+    }
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+    @JsonCreator
+    public static TypeEnum fromValue(String text) {
+      for (TypeEnum b : TypeEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+
+  }  @JsonProperty("type")
+  private TypeEnum type = null;
+
+  @JsonProperty("folder_id")
+  private String folderId = null;
+
+  @JsonProperty("name")
+  private String name = null;
+
   @JsonProperty("created_at")
   private DateTime createdAt = null;
 
   @JsonProperty("modified_at")
   private DateTime modifiedAt = null;
 
-  @JsonProperty("description")
-  private Object description = null;
-
   @JsonProperty("size")
   private Long size = null;
-
-  @JsonProperty("path_collection")
-  private Object pathCollection = null;
-
-  @JsonProperty("created_by")
-  private Object createdBy = null;
-
-  @JsonProperty("modified_by")
-  private Object modifiedBy = null;
 
   @JsonProperty("trashed_at")
   private DateTime trashedAt = null;
@@ -62,55 +96,101 @@ public class Folder extends FolderMini implements OneOfMetadataQueryResultsEntri
   @JsonProperty("expires_at")
   private DateTime expiresAt = null;
 
-  @JsonProperty("owned_by")
-  private Object ownedBy = null;
-
   @JsonProperty("shared_link")
-  private String sharedLink = null;
-
-  @JsonProperty("folder_upload_email")
-  private FolderFolderUploadEmail folderUploadEmail = null;
+  private FileSharedLink sharedLink = null;
 
   @JsonProperty("parent")
-  private Object parent = null;
+  private Folder parent = null;
 
-  /**
-   * Defines if this item has been deleted or not.  * &#x60;active&#x60; when the item has is not in the trash * &#x60;trashed&#x60; when the item has been moved to the trash but not deleted * &#x60;deleted&#x60; when the item has been permanently deleted.
-   */
-  public enum ItemStatusEnum {
-    ACTIVE("active"),
-    TRASHED("trashed"),
-    DELETED("deleted");
+  public Folder id(String id) {
+    this.id = id;
+    return this;
+  }
 
-    private String value;
+   /**
+   * The unique identifier that represent a folder.  The ID for any folder can be determined by visiting a folder in the web application and copying the ID from the URL. For example, for the URL &#x60;https://_*.app.box.com/folders/123&#x60; the &#x60;folder_id&#x60; is &#x60;123&#x60;.
+   * @return id
+  **/
+  @Schema(example = "12345", description = "The unique identifier that represent a folder.  The ID for any folder can be determined by visiting a folder in the web application and copying the ID from the URL. For example, for the URL `https://_*.app.box.com/folders/123` the `folder_id` is `123`.")
+  public String getId() {
+    return id;
+  }
 
-    ItemStatusEnum(String value) {
-      this.value = value;
-    }
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-    @JsonCreator
-    public static ItemStatusEnum fromValue(String text) {
-      for (ItemStatusEnum b : ItemStatusEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
+  public Folder etag(String etag) {
+    this.etag = etag;
+    return this;
+  }
 
-  }  @JsonProperty("item_status")
-  private ItemStatusEnum itemStatus = null;
+   /**
+   * The HTTP &#x60;etag&#x60; of this folder. This can be used within some API endpoints in the &#x60;If-Match&#x60; and &#x60;If-None-Match&#x60; headers to only perform changes on the folder if (no) changes have happened.
+   * @return etag
+  **/
+  @Schema(example = "1", description = "The HTTP `etag` of this folder. This can be used within some API endpoints in the `If-Match` and `If-None-Match` headers to only perform changes on the folder if (no) changes have happened.")
+  public String getEtag() {
+    return etag;
+  }
 
-  @JsonProperty("item_collection")
-  private Object itemCollection = null;
+  public void setEtag(String etag) {
+    this.etag = etag;
+  }
+
+  public Folder type(TypeEnum type) {
+    this.type = type;
+    return this;
+  }
+
+   /**
+   * &#x60;folder&#x60;
+   * @return type
+  **/
+  @Schema(example = "folder", description = "`folder`")
+  public TypeEnum getType() {
+    return type;
+  }
+
+  public void setType(TypeEnum type) {
+    this.type = type;
+  }
+
+  public Folder folderId(String folderId) {
+    this.folderId = folderId;
+    return this;
+  }
+
+   /**
+   * A numeric identifier that represents the most recent user event that has been applied to this item.  This can be used in combination with the &#x60;GET /events&#x60;-endpoint to filter out user events that would have occurred before this identifier was read.  An example would be where a Box Drive-like application would fetch an item via the API, and then listen to incoming user events for changes to the item. The application would ignore any user events where the &#x60;sequence_id&#x60; in the event is smaller than or equal to the &#x60;sequence_id&#x60; in the originally fetched resource.
+   * @return folderId
+  **/
+  @Schema(example = "3", description = "A numeric identifier that represents the most recent user event that has been applied to this item.  This can be used in combination with the `GET /events`-endpoint to filter out user events that would have occurred before this identifier was read.  An example would be where a Box Drive-like application would fetch an item via the API, and then listen to incoming user events for changes to the item. The application would ignore any user events where the `sequence_id` in the event is smaller than or equal to the `sequence_id` in the originally fetched resource.")
+  public String getFolderId() {
+    return folderId;
+  }
+
+  public void setFolderId(String folderId) {
+    this.folderId = folderId;
+  }
+
+  public Folder name(String name) {
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * The name of the folder.
+   * @return name
+  **/
+  @Schema(example = "Contracts", description = "The name of the folder.")
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 
   public Folder createdAt(DateTime createdAt) {
     this.createdAt = createdAt;
@@ -148,24 +228,6 @@ public class Folder extends FolderMini implements OneOfMetadataQueryResultsEntri
     this.modifiedAt = modifiedAt;
   }
 
-  public Folder description(Object description) {
-    this.description = description;
-    return this;
-  }
-
-   /**
-   * Get description
-   * @return description
-  **/
-  @Schema(description = "")
-  public Object getDescription() {
-    return description;
-  }
-
-  public void setDescription(Object description) {
-    this.description = description;
-  }
-
   public Folder size(Long size) {
     this.size = size;
     return this;
@@ -182,60 +244,6 @@ public class Folder extends FolderMini implements OneOfMetadataQueryResultsEntri
 
   public void setSize(Long size) {
     this.size = size;
-  }
-
-  public Folder pathCollection(Object pathCollection) {
-    this.pathCollection = pathCollection;
-    return this;
-  }
-
-   /**
-   * Get pathCollection
-   * @return pathCollection
-  **/
-  @Schema(description = "")
-  public Object getPathCollection() {
-    return pathCollection;
-  }
-
-  public void setPathCollection(Object pathCollection) {
-    this.pathCollection = pathCollection;
-  }
-
-  public Folder createdBy(Object createdBy) {
-    this.createdBy = createdBy;
-    return this;
-  }
-
-   /**
-   * Get createdBy
-   * @return createdBy
-  **/
-  @Schema(description = "")
-  public Object getCreatedBy() {
-    return createdBy;
-  }
-
-  public void setCreatedBy(Object createdBy) {
-    this.createdBy = createdBy;
-  }
-
-  public Folder modifiedBy(Object modifiedBy) {
-    this.modifiedBy = modifiedBy;
-    return this;
-  }
-
-   /**
-   * Get modifiedBy
-   * @return modifiedBy
-  **/
-  @Schema(description = "")
-  public Object getModifiedBy() {
-    return modifiedBy;
-  }
-
-  public void setModifiedBy(Object modifiedBy) {
-    this.modifiedBy = modifiedBy;
   }
 
   public Folder trashedAt(DateTime trashedAt) {
@@ -328,25 +336,7 @@ public class Folder extends FolderMini implements OneOfMetadataQueryResultsEntri
     this.expiresAt = expiresAt;
   }
 
-  public Folder ownedBy(Object ownedBy) {
-    this.ownedBy = ownedBy;
-    return this;
-  }
-
-   /**
-   * Get ownedBy
-   * @return ownedBy
-  **/
-  @Schema(description = "")
-  public Object getOwnedBy() {
-    return ownedBy;
-  }
-
-  public void setOwnedBy(Object ownedBy) {
-    this.ownedBy = ownedBy;
-  }
-
-  public Folder sharedLink(String sharedLink) {
+  public Folder sharedLink(FileSharedLink sharedLink) {
     this.sharedLink = sharedLink;
     return this;
   }
@@ -356,33 +346,15 @@ public class Folder extends FolderMini implements OneOfMetadataQueryResultsEntri
    * @return sharedLink
   **/
   @Schema(description = "")
-  public String getSharedLink() {
+  public FileSharedLink getSharedLink() {
     return sharedLink;
   }
 
-  public void setSharedLink(String sharedLink) {
+  public void setSharedLink(FileSharedLink sharedLink) {
     this.sharedLink = sharedLink;
   }
 
-  public Folder folderUploadEmail(FolderFolderUploadEmail folderUploadEmail) {
-    this.folderUploadEmail = folderUploadEmail;
-    return this;
-  }
-
-   /**
-   * Get folderUploadEmail
-   * @return folderUploadEmail
-  **/
-  @Schema(description = "")
-  public FolderFolderUploadEmail getFolderUploadEmail() {
-    return folderUploadEmail;
-  }
-
-  public void setFolderUploadEmail(FolderFolderUploadEmail folderUploadEmail) {
-    this.folderUploadEmail = folderUploadEmail;
-  }
-
-  public Folder parent(Object parent) {
+  public Folder parent(Folder parent) {
     this.parent = parent;
     return this;
   }
@@ -392,48 +364,12 @@ public class Folder extends FolderMini implements OneOfMetadataQueryResultsEntri
    * @return parent
   **/
   @Schema(description = "")
-  public Object getParent() {
+  public Folder getParent() {
     return parent;
   }
 
-  public void setParent(Object parent) {
+  public void setParent(Folder parent) {
     this.parent = parent;
-  }
-
-  public Folder itemStatus(ItemStatusEnum itemStatus) {
-    this.itemStatus = itemStatus;
-    return this;
-  }
-
-   /**
-   * Defines if this item has been deleted or not.  * &#x60;active&#x60; when the item has is not in the trash * &#x60;trashed&#x60; when the item has been moved to the trash but not deleted * &#x60;deleted&#x60; when the item has been permanently deleted.
-   * @return itemStatus
-  **/
-  @Schema(example = "active", description = "Defines if this item has been deleted or not.  * `active` when the item has is not in the trash * `trashed` when the item has been moved to the trash but not deleted * `deleted` when the item has been permanently deleted.")
-  public ItemStatusEnum getItemStatus() {
-    return itemStatus;
-  }
-
-  public void setItemStatus(ItemStatusEnum itemStatus) {
-    this.itemStatus = itemStatus;
-  }
-
-  public Folder itemCollection(Object itemCollection) {
-    this.itemCollection = itemCollection;
-    return this;
-  }
-
-   /**
-   * Get itemCollection
-   * @return itemCollection
-  **/
-  @Schema(description = "")
-  public Object getItemCollection() {
-    return itemCollection;
-  }
-
-  public void setItemCollection(Object itemCollection) {
-    this.itemCollection = itemCollection;
   }
 
 
@@ -446,30 +382,26 @@ public class Folder extends FolderMini implements OneOfMetadataQueryResultsEntri
       return false;
     }
     Folder folder = (Folder) o;
-    return Objects.equals(this.createdAt, folder.createdAt) &&
+    return Objects.equals(this.id, folder.id) &&
+        Objects.equals(this.etag, folder.etag) &&
+        Objects.equals(this.type, folder.type) &&
+        Objects.equals(this.folderId, folder.folderId) &&
+        Objects.equals(this.name, folder.name) &&
+        Objects.equals(this.createdAt, folder.createdAt) &&
         Objects.equals(this.modifiedAt, folder.modifiedAt) &&
-        Objects.equals(this.description, folder.description) &&
         Objects.equals(this.size, folder.size) &&
-        Objects.equals(this.pathCollection, folder.pathCollection) &&
-        Objects.equals(this.createdBy, folder.createdBy) &&
-        Objects.equals(this.modifiedBy, folder.modifiedBy) &&
         Objects.equals(this.trashedAt, folder.trashedAt) &&
         Objects.equals(this.purgedAt, folder.purgedAt) &&
         Objects.equals(this.contentCreatedAt, folder.contentCreatedAt) &&
         Objects.equals(this.contentModifiedAt, folder.contentModifiedAt) &&
         Objects.equals(this.expiresAt, folder.expiresAt) &&
-        Objects.equals(this.ownedBy, folder.ownedBy) &&
         Objects.equals(this.sharedLink, folder.sharedLink) &&
-        Objects.equals(this.folderUploadEmail, folder.folderUploadEmail) &&
-        Objects.equals(this.parent, folder.parent) &&
-        Objects.equals(this.itemStatus, folder.itemStatus) &&
-        Objects.equals(this.itemCollection, folder.itemCollection) &&
-        super.equals(o);
+        Objects.equals(this.parent, folder.parent);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(createdAt, modifiedAt, description, size, pathCollection, createdBy, modifiedBy, trashedAt, purgedAt, contentCreatedAt, contentModifiedAt, expiresAt, ownedBy, sharedLink, folderUploadEmail, parent, itemStatus, itemCollection, super.hashCode());
+    return Objects.hash(id, etag, type, folderId, name, createdAt, modifiedAt, size, trashedAt, purgedAt, contentCreatedAt, contentModifiedAt, expiresAt, sharedLink, parent);
   }
 
 
@@ -477,25 +409,22 @@ public class Folder extends FolderMini implements OneOfMetadataQueryResultsEntri
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class Folder {\n");
-    sb.append("    ").append(toIndentedString(super.toString())).append("\n");
+    
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    etag: ").append(toIndentedString(etag)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    folderId: ").append(toIndentedString(folderId)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    modifiedAt: ").append(toIndentedString(modifiedAt)).append("\n");
-    sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    size: ").append(toIndentedString(size)).append("\n");
-    sb.append("    pathCollection: ").append(toIndentedString(pathCollection)).append("\n");
-    sb.append("    createdBy: ").append(toIndentedString(createdBy)).append("\n");
-    sb.append("    modifiedBy: ").append(toIndentedString(modifiedBy)).append("\n");
     sb.append("    trashedAt: ").append(toIndentedString(trashedAt)).append("\n");
     sb.append("    purgedAt: ").append(toIndentedString(purgedAt)).append("\n");
     sb.append("    contentCreatedAt: ").append(toIndentedString(contentCreatedAt)).append("\n");
     sb.append("    contentModifiedAt: ").append(toIndentedString(contentModifiedAt)).append("\n");
     sb.append("    expiresAt: ").append(toIndentedString(expiresAt)).append("\n");
-    sb.append("    ownedBy: ").append(toIndentedString(ownedBy)).append("\n");
     sb.append("    sharedLink: ").append(toIndentedString(sharedLink)).append("\n");
-    sb.append("    folderUploadEmail: ").append(toIndentedString(folderUploadEmail)).append("\n");
     sb.append("    parent: ").append(toIndentedString(parent)).append("\n");
-    sb.append("    itemStatus: ").append(toIndentedString(itemStatus)).append("\n");
-    sb.append("    itemCollection: ").append(toIndentedString(itemCollection)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -14,7 +14,6 @@ package ch.cyberduck.core.box.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.cyberduck.core.box.io.swagger.client.model.FileVersionMini;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -24,8 +23,44 @@ import org.joda.time.DateTime;
  * A standard representation of a file version
  */
 @Schema(description = "A standard representation of a file version")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
-public class FileVersion extends FileVersionMini {
+
+public class FileVersion {
+  @JsonProperty("id")
+  private String id = null;
+
+  /**
+   * &#x60;file_version&#x60;
+   */
+  public enum TypeEnum {
+    FILE_VERSION("file_version");
+
+    private String value;
+
+    TypeEnum(String value) {
+      this.value = value;
+    }
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+    @JsonCreator
+    public static TypeEnum fromValue(String text) {
+      for (TypeEnum b : TypeEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+
+  }  @JsonProperty("type")
+  private TypeEnum type = null;
+
   @JsonProperty("name")
   private String name = null;
 
@@ -38,26 +73,56 @@ public class FileVersion extends FileVersionMini {
   @JsonProperty("modified_at")
   private DateTime modifiedAt = null;
 
-  @JsonProperty("modified_by")
-  private Object modifiedBy = null;
-
   @JsonProperty("trashed_at")
   private DateTime trashedAt = null;
 
-  @JsonProperty("trashed_by")
-  private Object trashedBy = null;
-
   @JsonProperty("restored_at")
   private DateTime restoredAt = null;
-
-  @JsonProperty("restored_by")
-  private Object restoredBy = null;
 
   @JsonProperty("purged_at")
   private DateTime purgedAt = null;
 
   @JsonProperty("uploader_display_name")
-  private Object uploaderDisplayName = null;
+  private String uploaderDisplayName = null;
+
+  @JsonProperty("sha1")
+  private String sha1 = null;
+
+  public FileVersion id(String id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * The unique identifier that represent a file version.
+   * @return id
+  **/
+  @Schema(example = "12345", description = "The unique identifier that represent a file version.")
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public FileVersion type(TypeEnum type) {
+    this.type = type;
+    return this;
+  }
+
+   /**
+   * &#x60;file_version&#x60;
+   * @return type
+  **/
+  @Schema(example = "file_version", description = "`file_version`")
+  public TypeEnum getType() {
+    return type;
+  }
+
+  public void setType(TypeEnum type) {
+    this.type = type;
+  }
 
   public FileVersion name(String name) {
     this.name = name;
@@ -131,24 +196,6 @@ public class FileVersion extends FileVersionMini {
     this.modifiedAt = modifiedAt;
   }
 
-  public FileVersion modifiedBy(Object modifiedBy) {
-    this.modifiedBy = modifiedBy;
-    return this;
-  }
-
-   /**
-   * Get modifiedBy
-   * @return modifiedBy
-  **/
-  @Schema(description = "")
-  public Object getModifiedBy() {
-    return modifiedBy;
-  }
-
-  public void setModifiedBy(Object modifiedBy) {
-    this.modifiedBy = modifiedBy;
-  }
-
   public FileVersion trashedAt(DateTime trashedAt) {
     this.trashedAt = trashedAt;
     return this;
@@ -165,24 +212,6 @@ public class FileVersion extends FileVersionMini {
 
   public void setTrashedAt(DateTime trashedAt) {
     this.trashedAt = trashedAt;
-  }
-
-  public FileVersion trashedBy(Object trashedBy) {
-    this.trashedBy = trashedBy;
-    return this;
-  }
-
-   /**
-   * Get trashedBy
-   * @return trashedBy
-  **/
-  @Schema(description = "")
-  public Object getTrashedBy() {
-    return trashedBy;
-  }
-
-  public void setTrashedBy(Object trashedBy) {
-    this.trashedBy = trashedBy;
   }
 
   public FileVersion restoredAt(DateTime restoredAt) {
@@ -203,24 +232,6 @@ public class FileVersion extends FileVersionMini {
     this.restoredAt = restoredAt;
   }
 
-  public FileVersion restoredBy(Object restoredBy) {
-    this.restoredBy = restoredBy;
-    return this;
-  }
-
-   /**
-   * Get restoredBy
-   * @return restoredBy
-  **/
-  @Schema(description = "")
-  public Object getRestoredBy() {
-    return restoredBy;
-  }
-
-  public void setRestoredBy(Object restoredBy) {
-    this.restoredBy = restoredBy;
-  }
-
   public FileVersion purgedAt(DateTime purgedAt) {
     this.purgedAt = purgedAt;
     return this;
@@ -239,22 +250,40 @@ public class FileVersion extends FileVersionMini {
     this.purgedAt = purgedAt;
   }
 
-  public FileVersion uploaderDisplayName(Object uploaderDisplayName) {
+  public FileVersion uploaderDisplayName(String uploaderDisplayName) {
     this.uploaderDisplayName = uploaderDisplayName;
     return this;
   }
 
    /**
-   * Get uploaderDisplayName
+   * The display name of the user that uploaded the file. In most cases this is the name of the user logged in at the time of the upload.  If the file was uploaded using a File Request form that requires the user to provide an email address, this field is populated with that email address. If an email address was not required in the File Request form, this field is set to return a value of &#x60;File Request&#x60;.  In all other anonymous cases where no email was provided this field will default to a value of &#x60;Someone&#x60;.
    * @return uploaderDisplayName
   **/
-  @Schema(description = "")
-  public Object getUploaderDisplayName() {
+  @Schema(example = "Ellis Wiggins", description = "The display name of the user that uploaded the file. In most cases this is the name of the user logged in at the time of the upload.  If the file was uploaded using a File Request form that requires the user to provide an email address, this field is populated with that email address. If an email address was not required in the File Request form, this field is set to return a value of `File Request`.  In all other anonymous cases where no email was provided this field will default to a value of `Someone`.")
+  public String getUploaderDisplayName() {
     return uploaderDisplayName;
   }
 
-  public void setUploaderDisplayName(Object uploaderDisplayName) {
+  public void setUploaderDisplayName(String uploaderDisplayName) {
     this.uploaderDisplayName = uploaderDisplayName;
+  }
+
+  public FileVersion sha1(String sha1) {
+    this.sha1 = sha1;
+    return this;
+  }
+
+   /**
+   * The SHA1 hash of this version of the file.
+   * @return sha1
+  **/
+  @Schema(example = "134b65991ed521fcfe4724b7d814ab8ded5185dc", description = "The SHA1 hash of this version of the file.")
+  public String getSha1() {
+    return sha1;
+  }
+
+  public void setSha1(String sha1) {
+    this.sha1 = sha1;
   }
 
 
@@ -267,23 +296,22 @@ public class FileVersion extends FileVersionMini {
       return false;
     }
     FileVersion fileVersion = (FileVersion) o;
-    return Objects.equals(this.name, fileVersion.name) &&
+    return Objects.equals(this.id, fileVersion.id) &&
+        Objects.equals(this.type, fileVersion.type) &&
+        Objects.equals(this.name, fileVersion.name) &&
         Objects.equals(this.size, fileVersion.size) &&
         Objects.equals(this.createdAt, fileVersion.createdAt) &&
         Objects.equals(this.modifiedAt, fileVersion.modifiedAt) &&
-        Objects.equals(this.modifiedBy, fileVersion.modifiedBy) &&
         Objects.equals(this.trashedAt, fileVersion.trashedAt) &&
-        Objects.equals(this.trashedBy, fileVersion.trashedBy) &&
         Objects.equals(this.restoredAt, fileVersion.restoredAt) &&
-        Objects.equals(this.restoredBy, fileVersion.restoredBy) &&
         Objects.equals(this.purgedAt, fileVersion.purgedAt) &&
         Objects.equals(this.uploaderDisplayName, fileVersion.uploaderDisplayName) &&
-        super.equals(o);
+        Objects.equals(this.sha1, fileVersion.sha1);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, size, createdAt, modifiedAt, modifiedBy, trashedAt, trashedBy, restoredAt, restoredBy, purgedAt, uploaderDisplayName, super.hashCode());
+    return Objects.hash(id, type, name, size, createdAt, modifiedAt, trashedAt, restoredAt, purgedAt, uploaderDisplayName, sha1);
   }
 
 
@@ -291,18 +319,18 @@ public class FileVersion extends FileVersionMini {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FileVersion {\n");
-    sb.append("    ").append(toIndentedString(super.toString())).append("\n");
+    
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    size: ").append(toIndentedString(size)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    modifiedAt: ").append(toIndentedString(modifiedAt)).append("\n");
-    sb.append("    modifiedBy: ").append(toIndentedString(modifiedBy)).append("\n");
     sb.append("    trashedAt: ").append(toIndentedString(trashedAt)).append("\n");
-    sb.append("    trashedBy: ").append(toIndentedString(trashedBy)).append("\n");
     sb.append("    restoredAt: ").append(toIndentedString(restoredAt)).append("\n");
-    sb.append("    restoredBy: ").append(toIndentedString(restoredBy)).append("\n");
     sb.append("    purgedAt: ").append(toIndentedString(purgedAt)).append("\n");
     sb.append("    uploaderDisplayName: ").append(toIndentedString(uploaderDisplayName)).append("\n");
+    sb.append("    sha1: ").append(toIndentedString(sha1)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -14,7 +14,7 @@ package ch.cyberduck.core.box.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.cyberduck.core.box.io.swagger.client.model.FilesfileIdaddSharedLinkSharedLinkPermissions;
+import ch.cyberduck.core.box.io.swagger.client.model.FilesfileIdSharedLinkPermissions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -24,7 +24,7 @@ import org.joda.time.DateTime;
  * The settings for the shared link to update.
  */
 @Schema(description = "The settings for the shared link to update.")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+
 public class FilesfileIdupdateSharedLinkSharedLink {
   /**
    * The level of access for the shared link. This can be restricted to anyone with the link (&#x60;open&#x60;), only people within the company (&#x60;company&#x60;) and only those who have been invited to the folder (&#x60;collaborators&#x60;).  If not set, this field defaults to the access level specified by the enterprise admin. To create a shared link with this default setting pass the &#x60;shared_link&#x60; object with no &#x60;access&#x60; field, for example &#x60;{ \&quot;shared_link\&quot;: {} }&#x60;.  The &#x60;company&#x60; access level is only available to paid accounts.
@@ -71,7 +71,7 @@ public class FilesfileIdupdateSharedLinkSharedLink {
   private DateTime unsharedAt = null;
 
   @JsonProperty("permissions")
-  private FilesfileIdaddSharedLinkSharedLinkPermissions permissions = null;
+  private FilesfileIdSharedLinkPermissions permissions = null;
 
   public FilesfileIdupdateSharedLinkSharedLink access(AccessEnum access) {
     this.access = access;
@@ -133,10 +133,10 @@ public class FilesfileIdupdateSharedLinkSharedLink {
   }
 
    /**
-   * The timestamp at which this shared link will expire. This field can only be set by users with paid accounts.
+   * The timestamp at which this shared link will expire. This field can only be set by users with paid accounts. The value must be greater than the current date and time.
    * @return unsharedAt
   **/
-  @Schema(example = "2012-12-12T10:53:43-08:00", description = "The timestamp at which this shared link will expire. This field can only be set by users with paid accounts.")
+  @Schema(example = "2012-12-12T10:53:43-08:00", description = "The timestamp at which this shared link will expire. This field can only be set by users with paid accounts. The value must be greater than the current date and time.")
   public DateTime getUnsharedAt() {
     return unsharedAt;
   }
@@ -145,7 +145,7 @@ public class FilesfileIdupdateSharedLinkSharedLink {
     this.unsharedAt = unsharedAt;
   }
 
-  public FilesfileIdupdateSharedLinkSharedLink permissions(FilesfileIdaddSharedLinkSharedLinkPermissions permissions) {
+  public FilesfileIdupdateSharedLinkSharedLink permissions(FilesfileIdSharedLinkPermissions permissions) {
     this.permissions = permissions;
     return this;
   }
@@ -155,11 +155,11 @@ public class FilesfileIdupdateSharedLinkSharedLink {
    * @return permissions
   **/
   @Schema(description = "")
-  public FilesfileIdaddSharedLinkSharedLinkPermissions getPermissions() {
+  public FilesfileIdSharedLinkPermissions getPermissions() {
     return permissions;
   }
 
-  public void setPermissions(FilesfileIdaddSharedLinkSharedLinkPermissions permissions) {
+  public void setPermissions(FilesfileIdSharedLinkPermissions permissions) {
     this.permissions = permissions;
   }
 

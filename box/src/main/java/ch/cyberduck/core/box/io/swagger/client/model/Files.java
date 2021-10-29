@@ -25,7 +25,7 @@ import java.util.List;
  * A list of files
  */
 @Schema(description = "A list of files")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+
 public class Files {
   @JsonProperty("total_count")
   private Long totalCount = null;

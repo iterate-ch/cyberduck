@@ -72,7 +72,8 @@
                                     <goal>generate</goal>
                                 </goals>
                                 <configuration>
-                                    <inputSpec>https://raw.githubusercontent.com/box/box-openapi/en/openapi.json</inputSpec>
+<!--                                    <inputSpec>https://raw.githubusercontent.com/box/box-openapi/en/openapi.json</inputSpec>-->
+                                    <inputSpec>${project.basedir}/src/main/resources/openapi.json</inputSpec>
                                     <language>java</language>
                                     <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.box.io.swagger.client.model</modelPackage>
@@ -82,6 +83,7 @@
                                         <library>jersey2</library>
                                         <dateLibrary>joda</dateLibrary>
                                         <java8>true</java8>
+                                        <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                     </configOptions>
                                     <environmentVariables>
                                         <apiTests>false</apiTests>

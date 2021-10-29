@@ -24,7 +24,7 @@ import java.util.List;
  * A list of files, folders, and web links in their mini representation.
  */
 @Schema(description = "A list of files, folders, and web links in their mini representation.")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+
 public class Items {
   @JsonProperty("entries")
   private List<Object> entries = null;

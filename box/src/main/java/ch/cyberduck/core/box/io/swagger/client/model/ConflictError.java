@@ -24,27 +24,27 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * The error that occurs when a file can not be created due to a conflict.
  */
 @Schema(description = "The error that occurs when a file can not be created due to a conflict.")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+
 public class ConflictError extends ClientError {
   @JsonProperty("context_info")
-  private ConflictErrorContextInfo contextInfo = null;
+  private ConflictErrorContextInfo conflictErrorContextInfo = null;
 
-  public ConflictError contextInfo(ConflictErrorContextInfo contextInfo) {
-    this.contextInfo = contextInfo;
+  public ConflictError conflictErrorContextInfo(ConflictErrorContextInfo conflictErrorContextInfo) {
+    this.conflictErrorContextInfo = conflictErrorContextInfo;
     return this;
   }
 
    /**
-   * Get contextInfo
-   * @return contextInfo
+   * Get conflictErrorContextInfo
+   * @return conflictErrorContextInfo
   **/
   @Schema(description = "")
-  public ConflictErrorContextInfo getContextInfo() {
-    return contextInfo;
+  public ConflictErrorContextInfo getConflictErrorContextInfo() {
+    return conflictErrorContextInfo;
   }
 
-  public void setContextInfo(ConflictErrorContextInfo contextInfo) {
-    this.contextInfo = contextInfo;
+  public void setConflictErrorContextInfo(ConflictErrorContextInfo conflictErrorContextInfo) {
+    this.conflictErrorContextInfo = conflictErrorContextInfo;
   }
 
 
@@ -57,13 +57,13 @@ public class ConflictError extends ClientError {
       return false;
     }
     ConflictError conflictError = (ConflictError) o;
-    return Objects.equals(this.contextInfo, conflictError.contextInfo) &&
+    return Objects.equals(this.conflictErrorContextInfo, conflictError.conflictErrorContextInfo) &&
         super.equals(o);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(contextInfo, super.hashCode());
+    return Objects.hash(conflictErrorContextInfo, super.hashCode());
   }
 
 
@@ -72,7 +72,7 @@ public class ConflictError extends ClientError {
     StringBuilder sb = new StringBuilder();
     sb.append("class ConflictError {\n");
     sb.append("    ").append(toIndentedString(super.toString())).append("\n");
-    sb.append("    contextInfo: ").append(toIndentedString(contextInfo)).append("\n");
+    sb.append("    conflictErrorContextInfo: ").append(toIndentedString(conflictErrorContextInfo)).append("\n");
     sb.append("}");
     return sb.toString();
   }

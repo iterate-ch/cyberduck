@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")public class UploadsApi {
+public class UploadsApi {
   private ApiClient apiClient;
 
   public UploadsApi() {
@@ -61,7 +61,6 @@ import java.util.Map;
 
     if (contentMd5 != null)
       localVarHeaderParams.put("content-md5", apiClient.parameterToString(contentMd5));
-
     if (attributes != null)
       localVarFormParams.put("attributes", attributes);
     if (file != null)
@@ -77,7 +76,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<Files> localVarReturnType = new GenericType<Files>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
@@ -115,7 +114,6 @@ import java.util.Map;
       localVarHeaderParams.put("if-match", apiClient.parameterToString(ifMatch));
     if (contentMd5 != null)
       localVarHeaderParams.put("content-md5", apiClient.parameterToString(contentMd5));
-
     if (attributes != null)
       localVarFormParams.put("attributes", attributes);
     if (file != null)
@@ -131,7 +129,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<Files> localVarReturnType = new GenericType<Files>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);

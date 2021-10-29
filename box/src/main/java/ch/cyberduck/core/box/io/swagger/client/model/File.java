@@ -14,7 +14,9 @@ package ch.cyberduck.core.box.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.cyberduck.core.box.io.swagger.client.model.FileMini;
+import ch.cyberduck.core.box.io.swagger.client.model.FileSharedLink;
+import ch.cyberduck.core.box.io.swagger.client.model.FileVersion;
+import ch.cyberduck.core.box.io.swagger.client.model.Folder;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -24,16 +26,52 @@ import org.joda.time.DateTime;
  * A standard representation of a file, as returned from any file API endpoints by default
  */
 @Schema(description = "A standard representation of a file, as returned from any file API endpoints by default")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
-public class File extends FileMini implements OneOfMetadataQueryResultsEntriesItems {
+
+public class File {
+  @JsonProperty("id")
+  private String id = null;
+
+  @JsonProperty("etag")
+  private String etag = null;
+
+  /**
+   * &#x60;file&#x60;
+   */
+  public enum TypeEnum {
+    FILE("file");
+
+    private String value;
+
+    TypeEnum(String value) {
+      this.value = value;
+    }
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+    @JsonCreator
+    public static TypeEnum fromValue(String text) {
+      for (TypeEnum b : TypeEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+
+  }  @JsonProperty("type")
+  private TypeEnum type = null;
+
   @JsonProperty("description")
   private String description = null;
 
   @JsonProperty("size")
   private Long size = null;
-
-  @JsonProperty("path_collection")
-  private Object pathCollection = null;
 
   @JsonProperty("created_at")
   private DateTime createdAt = null;
@@ -53,20 +91,11 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
   @JsonProperty("content_modified_at")
   private DateTime contentModifiedAt = null;
 
-  @JsonProperty("created_by")
-  private Object createdBy = null;
-
-  @JsonProperty("modified_by")
-  private Object modifiedBy = null;
-
-  @JsonProperty("owned_by")
-  private Object ownedBy = null;
-
   @JsonProperty("shared_link")
-  private String sharedLink = null;
+  private FileSharedLink sharedLink = null;
 
   @JsonProperty("parent")
-  private Object parent = null;
+  private Folder parent = null;
 
   /**
    * Defines if this item has been deleted or not.  * &#x60;active&#x60; when the item has is not in the trash * &#x60;trashed&#x60; when the item has been moved to the trash but not deleted * &#x60;deleted&#x60; when the item has been permanently deleted.
@@ -103,6 +132,87 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
   }  @JsonProperty("item_status")
   private ItemStatusEnum itemStatus = null;
 
+  @JsonProperty("sequence_id")
+  private String sequenceId = null;
+
+  @JsonProperty("name")
+  private String name = null;
+
+  @JsonProperty("sha1")
+  private String sha1 = null;
+
+  @JsonProperty("file_version")
+  private FileVersion fileVersion = null;
+
+  @JsonProperty("version_number")
+  private String versionNumber = null;
+
+  @JsonProperty("comment_count")
+  private Integer commentCount = null;
+
+  @JsonProperty("extension")
+  private String extension = null;
+
+  @JsonProperty("is_package")
+  private Boolean isPackage = null;
+
+  @JsonProperty("expires_at")
+  private DateTime expiresAt = null;
+
+  public File id(String id) {
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * The unique identifier that represent a file.  The ID for any file can be determined by visiting a file in the web application and copying the ID from the URL. For example, for the URL &#x60;https://_*.app.box.com/files/123&#x60; the &#x60;file_id&#x60; is &#x60;123&#x60;.
+   * @return id
+  **/
+  @Schema(example = "12345", description = "The unique identifier that represent a file.  The ID for any file can be determined by visiting a file in the web application and copying the ID from the URL. For example, for the URL `https://_*.app.box.com/files/123` the `file_id` is `123`.")
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public File etag(String etag) {
+    this.etag = etag;
+    return this;
+  }
+
+   /**
+   * The HTTP &#x60;etag&#x60; of this file. This can be used within some API endpoints in the &#x60;If-Match&#x60; and &#x60;If-None-Match&#x60; headers to only perform changes on the file if (no) changes have happened.
+   * @return etag
+  **/
+  @Schema(example = "1", description = "The HTTP `etag` of this file. This can be used within some API endpoints in the `If-Match` and `If-None-Match` headers to only perform changes on the file if (no) changes have happened.")
+  public String getEtag() {
+    return etag;
+  }
+
+  public void setEtag(String etag) {
+    this.etag = etag;
+  }
+
+  public File type(TypeEnum type) {
+    this.type = type;
+    return this;
+  }
+
+   /**
+   * &#x60;file&#x60;
+   * @return type
+  **/
+  @Schema(example = "file", description = "`file`")
+  public TypeEnum getType() {
+    return type;
+  }
+
+  public void setType(TypeEnum type) {
+    this.type = type;
+  }
+
   public File description(String description) {
     this.description = description;
     return this;
@@ -137,24 +247,6 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
 
   public void setSize(Long size) {
     this.size = size;
-  }
-
-  public File pathCollection(Object pathCollection) {
-    this.pathCollection = pathCollection;
-    return this;
-  }
-
-   /**
-   * Get pathCollection
-   * @return pathCollection
-  **/
-  @Schema(description = "")
-  public Object getPathCollection() {
-    return pathCollection;
-  }
-
-  public void setPathCollection(Object pathCollection) {
-    this.pathCollection = pathCollection;
   }
 
   public File createdAt(DateTime createdAt) {
@@ -265,61 +357,7 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
     this.contentModifiedAt = contentModifiedAt;
   }
 
-  public File createdBy(Object createdBy) {
-    this.createdBy = createdBy;
-    return this;
-  }
-
-   /**
-   * Get createdBy
-   * @return createdBy
-  **/
-  @Schema(description = "")
-  public Object getCreatedBy() {
-    return createdBy;
-  }
-
-  public void setCreatedBy(Object createdBy) {
-    this.createdBy = createdBy;
-  }
-
-  public File modifiedBy(Object modifiedBy) {
-    this.modifiedBy = modifiedBy;
-    return this;
-  }
-
-   /**
-   * Get modifiedBy
-   * @return modifiedBy
-  **/
-  @Schema(description = "")
-  public Object getModifiedBy() {
-    return modifiedBy;
-  }
-
-  public void setModifiedBy(Object modifiedBy) {
-    this.modifiedBy = modifiedBy;
-  }
-
-  public File ownedBy(Object ownedBy) {
-    this.ownedBy = ownedBy;
-    return this;
-  }
-
-   /**
-   * Get ownedBy
-   * @return ownedBy
-  **/
-  @Schema(description = "")
-  public Object getOwnedBy() {
-    return ownedBy;
-  }
-
-  public void setOwnedBy(Object ownedBy) {
-    this.ownedBy = ownedBy;
-  }
-
-  public File sharedLink(String sharedLink) {
+  public File sharedLink(FileSharedLink sharedLink) {
     this.sharedLink = sharedLink;
     return this;
   }
@@ -329,15 +367,15 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
    * @return sharedLink
   **/
   @Schema(description = "")
-  public String getSharedLink() {
+  public FileSharedLink getSharedLink() {
     return sharedLink;
   }
 
-  public void setSharedLink(String sharedLink) {
+  public void setSharedLink(FileSharedLink sharedLink) {
     this.sharedLink = sharedLink;
   }
 
-  public File parent(Object parent) {
+  public File parent(Folder parent) {
     this.parent = parent;
     return this;
   }
@@ -347,11 +385,11 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
    * @return parent
   **/
   @Schema(description = "")
-  public Object getParent() {
+  public Folder getParent() {
     return parent;
   }
 
-  public void setParent(Object parent) {
+  public void setParent(Folder parent) {
     this.parent = parent;
   }
 
@@ -373,6 +411,168 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
     this.itemStatus = itemStatus;
   }
 
+  public File sequenceId(String sequenceId) {
+    this.sequenceId = sequenceId;
+    return this;
+  }
+
+   /**
+   * A numeric identifier that represents the most recent user event that has been applied to this item.  This can be used in combination with the &#x60;GET /events&#x60;-endpoint to filter out user events that would have occurred before this identifier was read.  An example would be where a Box Drive-like application would fetch an item via the API, and then listen to incoming user events for changes to the item. The application would ignore any user events where the &#x60;sequence_id&#x60; in the event is smaller than or equal to the &#x60;sequence_id&#x60; in the originally fetched resource.
+   * @return sequenceId
+  **/
+  @Schema(example = "3", description = "A numeric identifier that represents the most recent user event that has been applied to this item.  This can be used in combination with the `GET /events`-endpoint to filter out user events that would have occurred before this identifier was read.  An example would be where a Box Drive-like application would fetch an item via the API, and then listen to incoming user events for changes to the item. The application would ignore any user events where the `sequence_id` in the event is smaller than or equal to the `sequence_id` in the originally fetched resource.")
+  public String getSequenceId() {
+    return sequenceId;
+  }
+
+  public void setSequenceId(String sequenceId) {
+    this.sequenceId = sequenceId;
+  }
+
+  public File name(String name) {
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * The name of the file
+   * @return name
+  **/
+  @Schema(example = "Contract.pdf", description = "The name of the file")
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public File sha1(String sha1) {
+    this.sha1 = sha1;
+    return this;
+  }
+
+   /**
+   * The SHA1 hash of the file. This can be used to compare the contents of a file on Box with a local file.
+   * @return sha1
+  **/
+  @Schema(example = "85136C79CBF9FE36BB9D05D0639C70C265C18D37", description = "The SHA1 hash of the file. This can be used to compare the contents of a file on Box with a local file.")
+  public String getSha1() {
+    return sha1;
+  }
+
+  public void setSha1(String sha1) {
+    this.sha1 = sha1;
+  }
+
+  public File fileVersion(FileVersion fileVersion) {
+    this.fileVersion = fileVersion;
+    return this;
+  }
+
+   /**
+   * Get fileVersion
+   * @return fileVersion
+  **/
+  @Schema(description = "")
+  public FileVersion getFileVersion() {
+    return fileVersion;
+  }
+
+  public void setFileVersion(FileVersion fileVersion) {
+    this.fileVersion = fileVersion;
+  }
+
+  public File versionNumber(String versionNumber) {
+    this.versionNumber = versionNumber;
+    return this;
+  }
+
+   /**
+   * The version number of this file
+   * @return versionNumber
+  **/
+  @Schema(example = "1", description = "The version number of this file")
+  public String getVersionNumber() {
+    return versionNumber;
+  }
+
+  public void setVersionNumber(String versionNumber) {
+    this.versionNumber = versionNumber;
+  }
+
+  public File commentCount(Integer commentCount) {
+    this.commentCount = commentCount;
+    return this;
+  }
+
+   /**
+   * The number of comments on this file
+   * @return commentCount
+  **/
+  @Schema(example = "10", description = "The number of comments on this file")
+  public Integer getCommentCount() {
+    return commentCount;
+  }
+
+  public void setCommentCount(Integer commentCount) {
+    this.commentCount = commentCount;
+  }
+
+  public File extension(String extension) {
+    this.extension = extension;
+    return this;
+  }
+
+   /**
+   * Indicates the (optional) file extension for this file. By default, this is set to an empty string.
+   * @return extension
+  **/
+  @Schema(example = "pdf", description = "Indicates the (optional) file extension for this file. By default, this is set to an empty string.")
+  public String getExtension() {
+    return extension;
+  }
+
+  public void setExtension(String extension) {
+    this.extension = extension;
+  }
+
+  public File isPackage(Boolean isPackage) {
+    this.isPackage = isPackage;
+    return this;
+  }
+
+   /**
+   * Indicates if the file is a package. Packages are commonly used by Mac Applications and can include iWork files.
+   * @return isPackage
+  **/
+  @Schema(example = "true", description = "Indicates if the file is a package. Packages are commonly used by Mac Applications and can include iWork files.")
+  public Boolean isIsPackage() {
+    return isPackage;
+  }
+
+  public void setIsPackage(Boolean isPackage) {
+    this.isPackage = isPackage;
+  }
+
+  public File expiresAt(DateTime expiresAt) {
+    this.expiresAt = expiresAt;
+    return this;
+  }
+
+   /**
+   * When the file will automatically be deleted
+   * @return expiresAt
+  **/
+  @Schema(example = "2012-12-12T10:53:43-08:00", description = "When the file will automatically be deleted")
+  public DateTime getExpiresAt() {
+    return expiresAt;
+  }
+
+  public void setExpiresAt(DateTime expiresAt) {
+    this.expiresAt = expiresAt;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -383,27 +583,34 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
       return false;
     }
     File file = (File) o;
-    return Objects.equals(this.description, file.description) &&
+    return Objects.equals(this.id, file.id) &&
+        Objects.equals(this.etag, file.etag) &&
+        Objects.equals(this.type, file.type) &&
+        Objects.equals(this.description, file.description) &&
         Objects.equals(this.size, file.size) &&
-        Objects.equals(this.pathCollection, file.pathCollection) &&
         Objects.equals(this.createdAt, file.createdAt) &&
         Objects.equals(this.modifiedAt, file.modifiedAt) &&
         Objects.equals(this.trashedAt, file.trashedAt) &&
         Objects.equals(this.purgedAt, file.purgedAt) &&
         Objects.equals(this.contentCreatedAt, file.contentCreatedAt) &&
         Objects.equals(this.contentModifiedAt, file.contentModifiedAt) &&
-        Objects.equals(this.createdBy, file.createdBy) &&
-        Objects.equals(this.modifiedBy, file.modifiedBy) &&
-        Objects.equals(this.ownedBy, file.ownedBy) &&
         Objects.equals(this.sharedLink, file.sharedLink) &&
         Objects.equals(this.parent, file.parent) &&
         Objects.equals(this.itemStatus, file.itemStatus) &&
-        super.equals(o);
+        Objects.equals(this.sequenceId, file.sequenceId) &&
+        Objects.equals(this.name, file.name) &&
+        Objects.equals(this.sha1, file.sha1) &&
+        Objects.equals(this.fileVersion, file.fileVersion) &&
+        Objects.equals(this.versionNumber, file.versionNumber) &&
+        Objects.equals(this.commentCount, file.commentCount) &&
+        Objects.equals(this.extension, file.extension) &&
+        Objects.equals(this.isPackage, file.isPackage) &&
+        Objects.equals(this.expiresAt, file.expiresAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(description, size, pathCollection, createdAt, modifiedAt, trashedAt, purgedAt, contentCreatedAt, contentModifiedAt, createdBy, modifiedBy, ownedBy, sharedLink, parent, itemStatus, super.hashCode());
+    return Objects.hash(id, etag, type, description, size, createdAt, modifiedAt, trashedAt, purgedAt, contentCreatedAt, contentModifiedAt, sharedLink, parent, itemStatus, sequenceId, name, sha1, fileVersion, versionNumber, commentCount, extension, isPackage, expiresAt);
   }
 
 
@@ -411,22 +618,30 @@ public class File extends FileMini implements OneOfMetadataQueryResultsEntriesIt
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class File {\n");
-    sb.append("    ").append(toIndentedString(super.toString())).append("\n");
+    
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    etag: ").append(toIndentedString(etag)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    size: ").append(toIndentedString(size)).append("\n");
-    sb.append("    pathCollection: ").append(toIndentedString(pathCollection)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    modifiedAt: ").append(toIndentedString(modifiedAt)).append("\n");
     sb.append("    trashedAt: ").append(toIndentedString(trashedAt)).append("\n");
     sb.append("    purgedAt: ").append(toIndentedString(purgedAt)).append("\n");
     sb.append("    contentCreatedAt: ").append(toIndentedString(contentCreatedAt)).append("\n");
     sb.append("    contentModifiedAt: ").append(toIndentedString(contentModifiedAt)).append("\n");
-    sb.append("    createdBy: ").append(toIndentedString(createdBy)).append("\n");
-    sb.append("    modifiedBy: ").append(toIndentedString(modifiedBy)).append("\n");
-    sb.append("    ownedBy: ").append(toIndentedString(ownedBy)).append("\n");
     sb.append("    sharedLink: ").append(toIndentedString(sharedLink)).append("\n");
     sb.append("    parent: ").append(toIndentedString(parent)).append("\n");
     sb.append("    itemStatus: ").append(toIndentedString(itemStatus)).append("\n");
+    sb.append("    sequenceId: ").append(toIndentedString(sequenceId)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    sha1: ").append(toIndentedString(sha1)).append("\n");
+    sb.append("    fileVersion: ").append(toIndentedString(fileVersion)).append("\n");
+    sb.append("    versionNumber: ").append(toIndentedString(versionNumber)).append("\n");
+    sb.append("    commentCount: ").append(toIndentedString(commentCount)).append("\n");
+    sb.append("    extension: ").append(toIndentedString(extension)).append("\n");
+    sb.append("    isPackage: ").append(toIndentedString(isPackage)).append("\n");
+    sb.append("    expiresAt: ").append(toIndentedString(expiresAt)).append("\n");
     sb.append("}");
     return sb.toString();
   }

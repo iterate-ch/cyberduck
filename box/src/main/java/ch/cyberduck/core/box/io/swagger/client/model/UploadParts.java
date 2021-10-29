@@ -25,7 +25,7 @@ import java.util.List;
  * A list of uploaded chunks for an upload session.
  */
 @Schema(description = "A list of uploaded chunks for an upload session.")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+
 public class UploadParts {
   @JsonProperty("entries")
   private List<UploadPart> entries = null;

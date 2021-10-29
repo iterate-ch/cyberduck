@@ -7,18 +7,18 @@ import ch.cyberduck.core.box.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
-import ch.cyberduck.core.box.io.swagger.client.model.Body38;
-import ch.cyberduck.core.box.io.swagger.client.model.Body39;
-import ch.cyberduck.core.box.io.swagger.client.model.Body40;
 import ch.cyberduck.core.box.io.swagger.client.model.ClientError;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
+import ch.cyberduck.core.box.io.swagger.client.model.FilesFileIdaddSharedLinkBody;
+import ch.cyberduck.core.box.io.swagger.client.model.FilesFileIdremoveSharedLinkBody;
+import ch.cyberduck.core.box.io.swagger.client.model.FilesFileIdupdateSharedLinkBody;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")public class SharedLinksFilesApi {
+public class SharedLinksFilesApi {
   private ApiClient apiClient;
 
   public SharedLinksFilesApi() {
@@ -67,7 +67,6 @@ import java.util.Map;
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "fields", fields));
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -78,53 +77,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
-
-    GenericType<File> localVarReturnType = new GenericType<File>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-  }
-  /**
-   * Find file for shared link
-   * Return the file represented by a shared link.  A shared file can be represented by a shared link, which can originate within the current enterprise or within another.  This endpoint allows an application to retrieve information about a shared file when only given a shared link.
-   * @param boxapi A header containing the shared link and optional password for the shared link.  The format for this header is as follows.  &#x60;shared_link&#x3D;[link]&amp;shared_link_password&#x3D;[password]&#x60; (required)
-   * @param ifNoneMatch Ensures an item is only returned if it has changed.  Pass in the item&#x27;s last observed &#x60;etag&#x60; value into this header and the endpoint will fail with a &#x60;304 Not Modified&#x60; if the item has not changed since. (optional)
-   * @param fields A comma-separated list of attributes to include in the response. This can be used to request fields that are not normally returned in a standard response.  Be aware that specifying this parameter will have the effect that none of the standard fields are returned in the response unless explicitly specified, instead only fields for the mini representation are returned, additional to the fields requested. (optional)
-   * @return File
-   * @throws ApiException if fails to make API call
-   */
-  public File getSharedItems(String boxapi, String ifNoneMatch, List<String> fields) throws ApiException {
-    Object localVarPostBody = null;
-    // verify the required parameter 'boxapi' is set
-    if (boxapi == null) {
-      throw new ApiException(400, "Missing the required parameter 'boxapi' when calling getSharedItems");
-    }
-    // create path and map variables
-    String localVarPath = "/shared_items";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-    localVarQueryParams.addAll(apiClient.parameterToPairs("csv", "fields", fields));
-
-    if (ifNoneMatch != null)
-      localVarHeaderParams.put("if-none-match", apiClient.parameterToString(ifNoneMatch));
-    if (boxapi != null)
-      localVarHeaderParams.put("boxapi", apiClient.parameterToString(boxapi));
-
-
-    final String[] localVarAccepts = {
-      "application/json"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
@@ -138,7 +91,7 @@ import java.util.Map;
    * @return File
    * @throws ApiException if fails to make API call
    */
-  public File putFilesIdAddSharedLink(String fields, String fileId, Body38 body) throws ApiException {
+  public File putFilesIdAddSharedLink(String fields, String fileId, FilesFileIdaddSharedLinkBody body) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'fields' is set
     if (fields == null) {
@@ -160,7 +113,6 @@ import java.util.Map;
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "fields", fields));
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -171,7 +123,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
@@ -185,7 +137,7 @@ import java.util.Map;
    * @return File
    * @throws ApiException if fails to make API call
    */
-  public File putFilesIdRemoveSharedLink(String fields, String fileId, Body40 body) throws ApiException {
+  public File putFilesIdRemoveSharedLink(String fields, String fileId, FilesFileIdremoveSharedLinkBody body) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'fields' is set
     if (fields == null) {
@@ -207,7 +159,6 @@ import java.util.Map;
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "fields", fields));
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -218,7 +169,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
@@ -232,7 +183,7 @@ import java.util.Map;
    * @return File
    * @throws ApiException if fails to make API call
    */
-  public File putFilesIdUpdateSharedLink(String fields, String fileId, Body39 body) throws ApiException {
+  public File putFilesIdUpdateSharedLink(String fields, String fileId, FilesFileIdupdateSharedLinkBody body) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'fields' is set
     if (fields == null) {
@@ -254,7 +205,6 @@ import java.util.Map;
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "fields", fields));
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -265,7 +215,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);

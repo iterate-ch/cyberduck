@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
  * Defines a lock on an item. This prevents the item from being moved, renamed, or otherwise changed by anyone other than the user who created the lock.  Set this to &#x60;null&#x60; to remove the lock.
  */
 @Schema(description = "Defines a lock on an item. This prevents the item from being moved, renamed, or otherwise changed by anyone other than the user who created the lock.  Set this to `null` to remove the lock.")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+
 public class FilesfileIdLock {
   /**
    * The type of this object.

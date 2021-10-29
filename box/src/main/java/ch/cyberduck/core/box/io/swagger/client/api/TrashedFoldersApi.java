@@ -7,16 +7,16 @@ import ch.cyberduck.core.box.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
-import ch.cyberduck.core.box.io.swagger.client.model.Body16;
 import ch.cyberduck.core.box.io.swagger.client.model.ClientError;
 import ch.cyberduck.core.box.io.swagger.client.model.Folder;
+import ch.cyberduck.core.box.io.swagger.client.model.FoldersFolderIdBody1;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")public class TrashedFoldersApi {
+public class TrashedFoldersApi {
   private ApiClient apiClient;
 
   public TrashedFoldersApi() {
@@ -58,7 +58,6 @@ import java.util.Map;
 
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -69,7 +68,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
@@ -99,7 +98,6 @@ import java.util.Map;
     localVarQueryParams.addAll(apiClient.parameterToPairs("csv", "fields", fields));
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -110,7 +108,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<Folder> localVarReturnType = new GenericType<Folder>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
@@ -124,7 +122,7 @@ import java.util.Map;
    * @return Folder
    * @throws ApiException if fails to make API call
    */
-  public Folder postFoldersId(String folderId, Body16 body, List<String> fields) throws ApiException {
+  public Folder postFoldersId(String folderId, FoldersFolderIdBody1 body, List<String> fields) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'folderId' is set
     if (folderId == null) {
@@ -142,7 +140,6 @@ import java.util.Map;
     localVarQueryParams.addAll(apiClient.parameterToPairs("csv", "fields", fields));
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -153,7 +150,7 @@ import java.util.Map;
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "OAuth2Security" };
+    String[] localVarAuthNames = new String[] {  };
 
     GenericType<Folder> localVarReturnType = new GenericType<Folder>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);

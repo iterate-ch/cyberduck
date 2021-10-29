@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,7 +51,7 @@ import ch.cyberduck.core.box.io.swagger.client.auth.HttpBasicAuth;
 import ch.cyberduck.core.box.io.swagger.client.auth.ApiKeyAuth;
 import ch.cyberduck.core.box.io.swagger.client.auth.OAuth;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")public class ApiClient {
+public class ApiClient {
   protected Map<String, String> defaultHeaderMap = new HashMap<String, String>();
   protected String basePath = "https://api.box.com/2.0";
   protected boolean debugging = false;
@@ -79,7 +80,6 @@ import ch.cyberduck.core.box.io.swagger.client.auth.OAuth;
 
     // Setup authentications (key: authentication name, value: authentication).
     authentications = new HashMap<String, Authentication>();
-    authentications.put("OAuth2Security", new OAuth());
     // Prevent the authentications from being modified.
     authentications = Collections.unmodifiableMap(authentications);
   }
@@ -634,9 +634,9 @@ import ch.cyberduck.core.box.io.swagger.client.auth.OAuth;
     }
 
     if (tempFolderPath == null)
-      return File.createTempFile(prefix, suffix);
+      return Files.createTempFile(prefix, suffix).toFile();
     else
-      return File.createTempFile(prefix, suffix, new File(tempFolderPath));
+      return Files.createTempFile(Paths.get(tempFolderPath), prefix, suffix).toFile();
   }
 
   /**
@@ -672,7 +672,7 @@ import ch.cyberduck.core.box.io.swagger.client.auth.OAuth;
     }
 
     Invocation.Builder invocationBuilder = target.request();
-    
+
     if (accept != null) {
     	invocationBuilder = invocationBuilder.accept(accept);
     }

@@ -14,58 +14,40 @@ package ch.cyberduck.core.box.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.cyberduck.core.box.io.swagger.client.model.FileMini;
-import ch.cyberduck.core.box.io.swagger.client.model.FileVersionMini;
+import ch.cyberduck.core.box.io.swagger.client.model.File;
+import ch.cyberduck.core.box.io.swagger.client.model.FileSharedLink;
+import ch.cyberduck.core.box.io.swagger.client.model.FileVersion;
+import ch.cyberduck.core.box.io.swagger.client.model.Folder;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.joda.time.DateTime;
 /**
  * A representation of a file that is used to show
  */
 @Schema(description = "A representation of a file that is used to show")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
-public class FileConflict extends FileMini {
+
+public class FileConflict extends File {
   @JsonProperty("sha1")
-  private String sha1 = null;
+  private String fileConflictSha1 = null;
 
-  @JsonProperty("file_version")
-  private FileVersionMini fileVersion = null;
-
-  public FileConflict sha1(String sha1) {
-    this.sha1 = sha1;
+  public FileConflict fileConflictSha1(String fileConflictSha1) {
+    this.fileConflictSha1 = fileConflictSha1;
     return this;
   }
 
    /**
    * The SHA1 hash of the file.
-   * @return sha1
+   * @return fileConflictSha1
   **/
   @Schema(example = "85136C79CBF9FE36BB9D05D0639C70C265C18D37", description = "The SHA1 hash of the file.")
-  public String getSha1() {
-    return sha1;
+  public String getFileConflictSha1() {
+    return fileConflictSha1;
   }
 
-  public void setSha1(String sha1) {
-    this.sha1 = sha1;
-  }
-
-  public FileConflict fileVersion(FileVersionMini fileVersion) {
-    this.fileVersion = fileVersion;
-    return this;
-  }
-
-   /**
-   * Get fileVersion
-   * @return fileVersion
-  **/
-  @Schema(description = "")
-  public FileVersionMini getFileVersion() {
-    return fileVersion;
-  }
-
-  public void setFileVersion(FileVersionMini fileVersion) {
-    this.fileVersion = fileVersion;
+  public void setFileConflictSha1(String fileConflictSha1) {
+    this.fileConflictSha1 = fileConflictSha1;
   }
 
 
@@ -78,14 +60,13 @@ public class FileConflict extends FileMini {
       return false;
     }
     FileConflict fileConflict = (FileConflict) o;
-    return Objects.equals(this.sha1, fileConflict.sha1) &&
-        Objects.equals(this.fileVersion, fileConflict.fileVersion) &&
+    return Objects.equals(this.fileConflictSha1, fileConflict.fileConflictSha1) &&
         super.equals(o);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sha1, fileVersion, super.hashCode());
+    return Objects.hash(fileConflictSha1, super.hashCode());
   }
 
 
@@ -94,8 +75,7 @@ public class FileConflict extends FileMini {
     StringBuilder sb = new StringBuilder();
     sb.append("class FileConflict {\n");
     sb.append("    ").append(toIndentedString(super.toString())).append("\n");
-    sb.append("    sha1: ").append(toIndentedString(sha1)).append("\n");
-    sb.append("    fileVersion: ").append(toIndentedString(fileVersion)).append("\n");
+    sb.append("    fileConflictSha1: ").append(toIndentedString(fileConflictSha1)).append("\n");
     sb.append("}");
     return sb.toString();
   }

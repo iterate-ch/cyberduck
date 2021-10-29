@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * The parent folder to create the new folder within.
  */
 @Schema(description = "The parent folder to create the new folder within.")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-01-25T11:35:18.602705+01:00[Europe/Zurich]")
+
 public class FoldersParent {
   @JsonProperty("id")
   private String id = null;
