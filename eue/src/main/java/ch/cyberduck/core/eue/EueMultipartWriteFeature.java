@@ -140,8 +140,9 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                 if(0L == offset && content.length < new HostPreferences(session.getHost()).getLong("eue.upload.multipart.threshold")) {
                     final EueWriteFeature writer = new EueWriteFeature(session, fileid);
                     writer.cancel(uploadUri);
+                    final TransferStatus status = new TransferStatus(overall).withLength(content.length);
                     final HttpResponseOutputStream<EueWriteFeature.Chunk> stream = writer.write(file,
-                            overall.withChecksum(writer.checksum(file, overall).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length))), callback);
+                            status.withChecksum(writer.checksum(file, overall).compute(new ByteArrayInputStream(content), status)), callback);
                     stream.write(content);
                     stream.close();
                     result.set(stream.getStatus());
