@@ -29,6 +29,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public abstract class AbstractHostCollection extends Collection<Host> implements EditableCollection {
@@ -58,7 +61,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
             @Override
             public int compare(final Host o1, final Host o2) {
                 return new DefaultLexicographicOrderComparator().compare(BookmarkNameProvider.toString(o1),
-                    BookmarkNameProvider.toString(o2));
+                        BookmarkNameProvider.toString(o2));
             }
         });
     }
@@ -117,13 +120,69 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         return true;
     }
 
-    /**
-     * Search using comparator
-     *
-     * @param bookmark Bookmark to find that matches comparison
-     */
-    public boolean find(final Host bookmark) {
-        return this.stream().anyMatch(h -> h.compareTo(bookmark) == 0);
+    public Optional<Host> find(final Host input) {
+        // Iterate over all bookmarks trying exact match
+        return Optional.ofNullable(this.find(new HostComparePredicate(input))
+                .orElse(this.find(new ProfilePredicate(input))
+                        .orElse(this.find(new ProtocolIdentifierPredicate(input)).orElse(null))));
+    }
+
+    public Optional<Host> find(final Predicate<Host> predicate) {
+        return this.stream().filter(predicate).findAny();
+    }
+
+    public static final class HostComparePredicate implements Predicate<Host> {
+        private final Host input;
+
+        public HostComparePredicate(final Host input) {
+            this.input = input;
+        }
+
+        @Override
+        public boolean test(final Host h) {
+            return h.compareTo(input) == 0;
+        }
+    }
+
+    public static class HostnamePredicate implements Predicate<Host> {
+        private final Host input;
+
+        private HostnamePredicate(final Host input) {
+            this.input = input;
+        }
+
+        @Override
+        public boolean test(final Host h) {
+            return Objects.equals(h.getHostname(), input.getHostname());
+        }
+    }
+
+    public static final class ProfilePredicate extends HostnamePredicate {
+        private final Host input;
+
+        private ProfilePredicate(final Host input) {
+            super(input);
+            this.input = input;
+        }
+
+        @Override
+        public boolean test(final Host h) {
+            return super.test(h) && Objects.equals(h.getProtocol(), input.getProtocol());
+        }
+    }
+
+    public static final class ProtocolIdentifierPredicate extends HostnamePredicate {
+        private final Host input;
+
+        private ProtocolIdentifierPredicate(final Host input) {
+            super(input);
+            this.input = input;
+        }
+
+        @Override
+        public boolean test(final Host h) {
+            return super.test(h) &&  Objects.equals(h.getProtocol().getIdentifier(), input.getProtocol().getIdentifier());
+        }
     }
 
     /**
