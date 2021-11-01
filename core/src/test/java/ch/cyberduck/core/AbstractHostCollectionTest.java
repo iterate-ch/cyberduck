@@ -26,10 +26,10 @@ public class AbstractHostCollectionTest {
         final AbstractHostCollection c = new AbstractHostCollection() {
         };
         final Host bookmark = new Host(new TestProtocol());
-        assertFalse(c.find(bookmark));
+        assertFalse(c.find(new AbstractHostCollection.HostComparePredicate(bookmark)).isPresent());
         assertNull(c.lookup(bookmark.getUuid()));
         c.add(bookmark);
-        assertTrue(c.find(bookmark));
+        assertTrue(c.find(new AbstractHostCollection.HostComparePredicate(bookmark)).isPresent());
         assertNotNull(c.lookup(bookmark.getUuid()));
     }
 }
