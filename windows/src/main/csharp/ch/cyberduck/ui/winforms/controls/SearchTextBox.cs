@@ -16,15 +16,16 @@
 // yves@cyberduck.ch
 // 
 
+using ch.cyberduck.core;
+using Ch.Cyberduck.Ui.Winforms.Controls.Design;
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Security.Permissions;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Winforms.Controls.Design;
-using ch.cyberduck.core;
 using static Ch.Cyberduck.ImageHelper;
+using static Windows.Win32.UI.WindowsAndMessaging.WINDOW_EX_STYLE;
+using static Windows.Win32.UI.WindowsAndMessaging.WINDOW_STYLE;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -104,11 +105,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             get
             {
                 CreateParams createParams = base.CreateParams;
-                createParams.ExStyle |= NativeConstants.WS_EX_CONTROLPARENT;
-                createParams.ExStyle &= ~NativeConstants.WS_EX_CLIENTEDGE;
+                createParams.ExStyle |= (int)WS_EX_CONTROLPARENT;
+                createParams.ExStyle &= ~(int)WS_EX_CLIENTEDGE;
 
                 // make sure WS_BORDER is present in the style
-                createParams.Style |= NativeConstants.WS_BORDER;
+                createParams.Style |= (int)WS_BORDER;
 
                 return createParams;
             }

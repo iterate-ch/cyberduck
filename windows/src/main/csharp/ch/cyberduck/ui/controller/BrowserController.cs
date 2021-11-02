@@ -16,16 +16,9 @@
 // feedback@cyberduck.io
 // 
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Drawing;
-using System.IO;
-using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using ch.cyberduck.core.bonjour;
-using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.features;
@@ -51,7 +44,13 @@ using java.text;
 using java.util;
 using org.apache.logging.log4j;
 using StructureMap;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.IO;
+using System.Windows.Forms;
 using static Ch.Cyberduck.ImageHelper;
+using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
 using Application = ch.cyberduck.core.local.Application;
 using Directory = ch.cyberduck.core.features.Directory;
 using Exception = System.Exception;
@@ -516,7 +515,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             String.Format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"),
                                 Workdir.getName()), null, String.Format("{0}", LocaleFactory.localizedString("Search")),
                             true);
-                    if (result.Button == Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT.IDYES)
+                    if (result.Button == IDYES)
                     {
                         background(new SearchAction(this));
                     }
@@ -1407,7 +1406,7 @@ namespace Ch.Cyberduck.Ui.Controller
             TaskDialogResult result = QuestionBox(LocaleFactory.localizedString("Delete Bookmark"),
                 LocaleFactory.localizedString("Do you want to delete the selected bookmark?"), alertText.ToString(),
                 String.Format("{0}", LocaleFactory.localizedString("Delete")), true);
-            if (result.Button == Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT.IDYES)
+            if (result.Button == IDYES)
             {
                 _bookmarkModel.Source.removeAll(Utils.ConvertToJavaList(selected));
             }

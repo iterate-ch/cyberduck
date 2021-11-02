@@ -24,8 +24,6 @@ using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.box;
 using ch.cyberduck.core.brick;
 using ch.cyberduck.core.ctera;
-using ch.cyberduck.core.nextcloud;
-using ch.cyberduck.core.owncloud;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.dropbox;
 using ch.cyberduck.core.exception;
@@ -43,6 +41,7 @@ using ch.cyberduck.core.notification;
 using ch.cyberduck.core.oauth;
 using ch.cyberduck.core.onedrive;
 using ch.cyberduck.core.openstack;
+using ch.cyberduck.core.owncloud;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.profiles;
@@ -60,7 +59,6 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Core.Contracts;
-using Ch.Cyberduck.Ui.Core.UWP;
 using java.util;
 using Microsoft.WindowsAPICodePack.Shell;
 using Microsoft.WindowsAPICodePack.Taskbar;
@@ -78,6 +76,8 @@ using System.ServiceModel.Description;
 using System.Threading;
 using System.Windows.Forms;
 using Windows.Services.Store;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
 using Application = ch.cyberduck.core.local.Application;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 
@@ -856,7 +856,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             var storeContext = StoreContext.GetDefault();
             var initWindow = (IInitializeWithWindow)(object)storeContext;
-            initWindow.Initialize(MainForm.Handle);
+            initWindow.Initialize((HWND)MainForm.Handle);
         }
 
         private void OnStartup(object state)
