@@ -3,6 +3,7 @@ EM_SETTYPOGRAPHYOPTIONS
 GetForegroundWindow
 GetWindowThreadProcessId
 HideCaret
+IInitializeWithWindow
 IObjectArray
 IVirtualDesktopManager
 LVM_FIRST
