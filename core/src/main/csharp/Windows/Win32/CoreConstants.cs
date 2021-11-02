@@ -2,7 +2,7 @@
 
 namespace Windows.Win32
 {
-    public unsafe partial class Constants
+    public unsafe partial class CoreConstants
     {
         public static readonly PCWSTR TD_ERROR_ICON = (char*)-2;
         public static readonly PCWSTR TD_INFORMATION_ICON = (char*)-3;
