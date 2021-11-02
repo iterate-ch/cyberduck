@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using ch.cyberduck.core;
-using static Windows.Win32.Constants;
+using static Windows.Win32.CoreConstants;
 using static Windows.Win32.UI.Shell.SHGFI_FLAGS;
 using static Windows.Win32.CorePInvoke;
 using Windows.Win32.Storage.FileSystem;
