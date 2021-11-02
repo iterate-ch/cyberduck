@@ -20,7 +20,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.model.Files;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -46,7 +45,8 @@ public class BoxThresholdUploadService implements Upload<Files> {
     public Files upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(this.threshold(status.getLength())) {
-            throw new UnsupportedException();
+            final BoxLargeUploadService.BoxUploadResponse boxUploadResponse = new BoxLargeUploadService(session, fileid, new BoxChunkedWriteFeature(session)).upload(file, local, throttle, listener, status, callback);
+            return boxUploadResponse.getFiles();
         }
         else {
             return new DefaultUploadFeature<>(writer).upload(file, local, throttle, listener, status, callback);
@@ -65,9 +65,6 @@ public class BoxThresholdUploadService implements Upload<Files> {
     }
 
     protected boolean threshold(final Long length) {
-        if(length < new HostPreferences(session.getHost()).getLong("box.upload.multipart.threshold")) {
-            return false;
-        }
-        return true;
+        return length >= new HostPreferences(session.getHost()).getLong("box.upload.multipart.threshold");
     }
 }

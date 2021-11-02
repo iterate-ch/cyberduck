@@ -25,7 +25,7 @@ import org.apache.http.impl.client.AbstractResponseHandler;
 
 import java.io.IOException;
 
-public abstract class BrickClientErrorResponseHandler<T> extends AbstractResponseHandler<T> {
+public abstract class BoxClientErrorResponseHandler<T> extends AbstractResponseHandler<T> {
 
     @Override
     public T handleResponse(final HttpResponse response) throws IOException {

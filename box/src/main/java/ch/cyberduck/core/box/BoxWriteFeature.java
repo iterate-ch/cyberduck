@@ -43,7 +43,6 @@ import org.joda.time.DateTime;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 public class BoxWriteFeature extends AbstractHttpWriteFeature<Files> {
     private static final Logger log = Logger.getLogger(BoxWriteFeature.class);
@@ -69,11 +68,11 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<Files> {
                     if(status.isExists()) {
                         request = new HttpPost(String.format("%s/files/%s/content?fields=%s", client.getBasePath(),
                                 fileid.getFileId(file, new DisabledListProgressListener()),
-                                BoxAttributesFinderFeature.DEFAULT_FIELDS.stream().collect(Collectors.joining(","))));
+                            String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
                     }
                     else {
                         request = new HttpPost(String.format("%s/files/content?fields=%s", client.getBasePath(),
-                                BoxAttributesFinderFeature.DEFAULT_FIELDS.stream().collect(Collectors.joining(","))));
+                            String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
                     }
                     final ByteArrayOutputStream content = new ByteArrayOutputStream();
                     new JSON().getContext(null).writeValue(content, new FilescontentAttributes()
@@ -96,7 +95,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<Files> {
                             log.warn(String.format("Missing remote attributes in transfer status to read current ETag for %s", file));
                         }
                     }
-                    final Files files = session.getClient().execute(request, new BrickClientErrorResponseHandler<Files>() {
+                    final Files files = session.getClient().execute(request, new BoxClientErrorResponseHandler<Files>() {
                         @Override
                         public Files handleEntity(final HttpEntity entity) throws IOException {
                             return new JSON().getContext(null).readValue(entity.getContent(), Files.class);
