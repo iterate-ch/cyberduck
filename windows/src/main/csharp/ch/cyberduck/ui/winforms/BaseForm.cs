@@ -16,18 +16,19 @@
 // feedback@cyberduck.io
 // 
 
-using System;
-using System.Collections;
-using System.ComponentModel;
-using System.Drawing;
-using System.Reflection;
-using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Core.VirtualDesktop;
+using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Drawing;
+using System.Reflection;
+using System.Windows.Forms;
+using Windows.Win32.UI.Controls;
 using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -85,7 +86,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 }
             };
 
-            FormClosing += delegate(object sender, FormClosingEventArgs args)
+            FormClosing += delegate (object sender, FormClosingEventArgs args)
             {
                 if (!_releaseWhenClose && args.CloseReason == CloseReason.UserClosing)
                 {
@@ -142,7 +143,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         /// </summary>
         public virtual string[] BundleNames
         {
-            get { return new string[] {}; }
+            get { return new string[] { }; }
         }
 
         /// <summary>
@@ -191,7 +192,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public new bool Visible
         {
-            get { return ((Control) this).Visible; }
+            get { return ((Control)this).Visible; }
             set
             {
                 if (value)
@@ -293,10 +294,15 @@ namespace Ch.Cyberduck.Ui.Winforms
         }
 
         public virtual TaskDialogResult MessageBox(string title, string message, string content,
-            TaskDialogCommonButtons buttons, TaskDialogIcon icon)
+            TASKDIALOG_COMMON_BUTTON_FLAGS buttons, TaskDialogIcon icon)
         {
-            return TaskDialog.Show(title: title, mainInstruction: message, content: content, commonButtons: buttons,
-                mainIcon: icon);
+            var dialog = TaskDialog.Create()
+                .Title(title)
+                .Instruction(message)
+                .Content(content)
+                .CommonButtons(buttons)
+                .MainIcon(icon);
+            return dialog.Show();
         }
 
         private void OnApplicationIdle(object sender, EventArgs e)
@@ -312,7 +318,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void persistentFormLoad(object sender, EventArgs e)
         {
             // Create PersistenceHandler and load values from it
-            PersistenceHandler = new PersistentFormHandler(GetType(), (int) FormWindowState.Normal, GetDefaultBounds());
+            PersistenceHandler = new PersistentFormHandler(GetType(), (int)FormWindowState.Normal, GetDefaultBounds());
             // Set size and location
             if (EnableAutoSizePosition)
             {
@@ -325,7 +331,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             // Set state
             WindowState = Enum.IsDefined(typeof(FormWindowState), PersistenceHandler.WindowState)
-                ? (FormWindowState) PersistenceHandler.WindowState
+                ? (FormWindowState)PersistenceHandler.WindowState
                 : FormWindowState.Normal;
 
             // Notify that values are loaded and ready for getting.
@@ -358,7 +364,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
 
             // Set common things
-            PersistenceHandler.WindowState = (int) WindowState;
+            PersistenceHandler.WindowState = (int)WindowState;
             PersistenceHandler.WindowBounds = WindowState == FormWindowState.Normal ? Bounds : RestoreBounds;
 
             // Notify that values will be stored now, so time to store values.
@@ -435,21 +441,21 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (o is Label || o is CheckBox || o is GroupBox || o is Button || o is TabPage || o is RadioButton ||
                     o is Form)
                 {
-                    Control c = (Control) o;
+                    Control c = (Control)o;
                     c.Text = LookupInMultipleBundles(c.Text, BundleNames);
                     continue;
                 }
 
                 if (o is ToolStripItem)
                 {
-                    ToolStripItem i = (ToolStripItem) o;
+                    ToolStripItem i = (ToolStripItem)o;
                     i.Text = LookupInMultipleBundles(i.Text.Replace("&", String.Empty), BundleNames);
                     continue;
                 }
 
                 if (o is ListView)
                 {
-                    ObjectListView lv = (ObjectListView) o;
+                    ObjectListView lv = (ObjectListView)o;
                     foreach (OLVColumn column in lv.AllColumns)
                     {
                         column.Text = LookupInMultipleBundles(column.Text, BundleNames);
@@ -462,14 +468,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             FieldInfo fieldInfo = GetType().GetField("components", BindingFlags.Instance | BindingFlags.NonPublic);
             if (null != fieldInfo)
             {
-                IContainer comp = (IContainer) fieldInfo.GetValue(this);
+                IContainer comp = (IContainer)fieldInfo.GetValue(this);
                 if (null != comp)
                 {
                     foreach (var o in RecurseObjects(comp.Components))
                     {
                         if (o is MenuItem)
                         {
-                            MenuItem m = (MenuItem) o;
+                            MenuItem m = (MenuItem)o;
                             m.Text = LookupInMultipleBundles(m.Text.Replace("&", String.Empty), BundleNames);
                         }
                     }
@@ -481,7 +487,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 {
                     if (o is MenuItem)
                     {
-                        MenuItem m = (MenuItem) o;
+                        MenuItem m = (MenuItem)o;
                         m.Text = LookupInMultipleBundles(m.Text.Replace("&", String.Empty), BundleNames);
                     }
                 }

@@ -60,7 +60,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                                 _option = c.Value;
                             }
                         });
-                    if (result.Result == TaskDialogSimpleResult.Cancel)
+                    if (result.Button == Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT.IDCANCEL)
                     {
                         c.SetValue(false);
                     }

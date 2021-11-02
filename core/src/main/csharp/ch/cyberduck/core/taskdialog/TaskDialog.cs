@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Controls;
@@ -15,7 +15,16 @@ using static Windows.Win32.UI.Controls.TASKDIALOG_NOTIFICATIONS;
 
 namespace Ch.Cyberduck.Core.TaskDialog
 {
-    public readonly ref struct TaskDialogResult
+    public enum TaskDialogIcon
+    {
+        Warning,
+        Error,
+        Information,
+        Shield,
+        Question
+    }
+
+    public readonly struct TaskDialogResult
     {
         public readonly MESSAGEBOX_RESULT Button;
         public readonly int? RadioButton;
@@ -36,14 +45,14 @@ namespace Ch.Cyberduck.Core.TaskDialog
         private bool buttonsConfigured = false;
         private TaskDialogHandler callback;
         private TASKDIALOGCONFIG config;
+        private bool footerIconConfigured = false;
+        private bool mainIconConfigured = false;
         private bool radioButtonsConfigured = false;
 
         private TaskDialog()
         {
             config.cbSize = (uint)SizeOf<TASKDIALOGCONFIG>();
         }
-
-        public static TaskDialog Create() => new();
 
         public delegate void AddButtonCallback(MESSAGEBOX_RESULT id, in string title, bool @default);
 
@@ -52,6 +61,13 @@ namespace Ch.Cyberduck.Core.TaskDialog
         public static event EventHandler Closed;
 
         public static event EventHandler Showing;
+
+        internal interface ITaskDialog
+        {
+            HWND HWND { get; }
+        }
+
+        public static TaskDialog Create() => new();
 
         public TaskDialog AllowCancellation()
         {
@@ -139,6 +155,36 @@ namespace Ch.Cyberduck.Core.TaskDialog
             return this;
         }
 
+        public TaskDialog FooterIcon(Icon icon)
+        {
+            if (footerIconConfigured)
+                throw new InvalidOperationException();
+            footerIconConfigured = true;
+
+            config.Anonymous2.hFooterIcon = (HICON)icon.Handle;
+            return this;
+        }
+
+        public TaskDialog FooterIcon(PCWSTR icon)
+        {
+            if (footerIconConfigured)
+                throw new InvalidOperationException();
+            footerIconConfigured = true;
+
+            config.Anonymous2.pszFooterIcon = icon;
+            return this;
+        }
+
+        public TaskDialog FooterIcon(TaskDialogIcon icon)
+        {
+            if (footerIconConfigured)
+                throw new InvalidOperationException();
+            footerIconConfigured = true;
+
+            config.Anonymous2.pszFooterIcon = ToIcon(icon);
+            return this;
+        }
+
         public TaskDialog FooterText(string text)
         {
             config.pszFooter = text;
@@ -154,6 +200,36 @@ namespace Ch.Cyberduck.Core.TaskDialog
         public TaskDialog Instruction(in string instruction)
         {
             config.pszMainInstruction = instruction;
+            return this;
+        }
+
+        public TaskDialog MainIcon(PCWSTR icon)
+        {
+            if (mainIconConfigured)
+                throw new InvalidOperationException();
+            mainIconConfigured = true;
+
+            config.Anonymous1.pszMainIcon = icon;
+            return this;
+        }
+
+        public TaskDialog MainIcon(TaskDialogIcon icon)
+        {
+            if (mainIconConfigured)
+                throw new InvalidOperationException();
+            mainIconConfigured = true;
+
+            config.Anonymous1.pszMainIcon = ToIcon(icon);
+            return this;
+        }
+
+        public TaskDialog MainIcon(Icon icon)
+        {
+            if (mainIconConfigured)
+                throw new InvalidOperationException();
+            mainIconConfigured = true;
+
+            config.Anonymous1.hMainIcon = (HICON)icon.Handle;
             return this;
         }
 
@@ -239,6 +315,16 @@ namespace Ch.Cyberduck.Core.TaskDialog
             return this;
         }
 
+        private static PCWSTR ToIcon(TaskDialogIcon icon) => icon switch
+        {
+            TaskDialogIcon.Warning => TD_WARNING_ICON,
+            TaskDialogIcon.Error => TD_ERROR_ICON,
+            TaskDialogIcon.Information => TD_INFORMATION_ICON,
+            TaskDialogIcon.Shield => TD_SHIELD_ICON,
+            TaskDialogIcon.Question => TD_QUESTION_ICON,
+            _ => throw new ArgumentOutOfRangeException(nameof(icon))
+        };
+
         private void DoButtons(Action<AddButtonCallback> configure, in int defaultButton, out uint count) => DoButtons(buttons, configure, defaultButton, out count);
 
         private void DoButtons(List<TASKDIALOG_BUTTON> target, Action<AddButtonCallback> configure, in int defaultButton, out uint count)
@@ -269,26 +355,26 @@ namespace Ch.Cyberduck.Core.TaskDialog
 
             EventArgs args = (TASKDIALOG_NOTIFICATIONS)msg switch
             {
-                TDN_CREATED => new TaskDialogCreatedEventArgs(),
-                TDN_NAVIGATED => new TaskDialogNavigatedEventArgs(),
-                TDN_BUTTON_CLICKED => new TaskDialogButtonClickedEventArgs((int)wParam.Value),
-                TDN_HYPERLINK_CLICKED => new TaskDialogHyperlinkClickedEventArgs(((PWSTR)(char*)lParam.Value).ToString()),
-                TDN_TIMER => new TaskDialogTimerEventArgs(TimeSpan.FromMilliseconds(wParam.Value)),
-                TDN_DESTROYED => new TaskDialogDestroyedEventArgs(),
-                TDN_RADIO_BUTTON_CLICKED => new TaskDialogRadioButtonClickedEventArgs((int)wParam.Value),
-                TDN_DIALOG_CONSTRUCTED => new TaskDialogConstructedEventArgs(),
-                TDN_VERIFICATION_CLICKED => new TaskDialogVerificationClickedEventArgs(wParam.Value != 0),
-                TDN_HELP => new TaskDialogHelpEventArgs(),
-                TDN_EXPANDO_BUTTON_CLICKED => new TaskDialogExpandoButtonClickedEventArgs(wParam.Value != 0),
+                TDN_CREATED => new TaskDialogCreatedEventArgs(hwnd),
+                TDN_NAVIGATED => new TaskDialogNavigatedEventArgs(hwnd),
+                TDN_BUTTON_CLICKED => new TaskDialogButtonClickedEventArgs(hwnd, (int)wParam.Value),
+                TDN_HYPERLINK_CLICKED => new TaskDialogHyperlinkClickedEventArgs(hwnd, ((PWSTR)(char*)lParam.Value).ToString()),
+                TDN_TIMER => new TaskDialogTimerEventArgs(hwnd, TimeSpan.FromMilliseconds(wParam.Value)),
+                TDN_DESTROYED => new TaskDialogDestroyedEventArgs(hwnd),
+                TDN_RADIO_BUTTON_CLICKED => new TaskDialogRadioButtonClickedEventArgs(hwnd, (int)wParam.Value),
+                TDN_DIALOG_CONSTRUCTED => new TaskDialogConstructedEventArgs(hwnd),
+                TDN_VERIFICATION_CLICKED => new TaskDialogVerificationClickedEventArgs(hwnd, wParam.Value != 0),
+                TDN_HELP => new TaskDialogHelpEventArgs(hwnd),
+                TDN_EXPANDO_BUTTON_CLICKED => new TaskDialogExpandoButtonClickedEventArgs(hwnd, wParam.Value != 0),
                 _ => default
             };
             return callback(this, args) ? S_FALSE : S_OK;
         }
     }
 
-    public class TaskDialogButtonClickedEventArgs : EventArgs
+    public class TaskDialogButtonClickedEventArgs : TaskDialogEventArgs
     {
-        public TaskDialogButtonClickedEventArgs(int buttonId)
+        public TaskDialogButtonClickedEventArgs(HWND hwnd, int buttonId) : base(hwnd)
         {
             ButtonId = buttonId;
         }
@@ -296,15 +382,42 @@ namespace Ch.Cyberduck.Core.TaskDialog
         public int ButtonId { get; }
     }
 
-    public class TaskDialogConstructedEventArgs : EventArgs { }
-
-    public class TaskDialogCreatedEventArgs : EventArgs { }
-
-    public class TaskDialogDestroyedEventArgs : EventArgs { }
-
-    public class TaskDialogExpandoButtonClickedEventArgs : EventArgs
+    public class TaskDialogConstructedEventArgs : TaskDialogEventArgs
     {
-        public TaskDialogExpandoButtonClickedEventArgs(bool expanded)
+        public TaskDialogConstructedEventArgs(HWND hwnd) : base(hwnd)
+        {
+        }
+    }
+
+    public class TaskDialogCreatedEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogCreatedEventArgs(HWND hwnd) : base(hwnd)
+        {
+        }
+    }
+
+    public class TaskDialogDestroyedEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogDestroyedEventArgs(HWND hwnd) : base(hwnd)
+        {
+        }
+    }
+
+    public class TaskDialogEventArgs : EventArgs, TaskDialog.ITaskDialog
+    {
+        private readonly HWND hwnd;
+
+        public TaskDialogEventArgs(HWND hwnd)
+        {
+            this.hwnd = hwnd;
+        }
+
+        HWND TaskDialog.ITaskDialog.HWND => hwnd;
+    }
+
+    public class TaskDialogExpandoButtonClickedEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogExpandoButtonClickedEventArgs(HWND hwnd, bool expanded) : base(hwnd)
         {
             Expanded = expanded;
         }
@@ -312,11 +425,16 @@ namespace Ch.Cyberduck.Core.TaskDialog
         public bool Expanded { get; }
     }
 
-    public class TaskDialogHelpEventArgs : EventArgs { }
-
-    public class TaskDialogHyperlinkClickedEventArgs : EventArgs
+    public class TaskDialogHelpEventArgs : TaskDialogEventArgs
     {
-        public TaskDialogHyperlinkClickedEventArgs(string url)
+        public TaskDialogHelpEventArgs(HWND hwnd) : base(hwnd)
+        {
+        }
+    }
+
+    public class TaskDialogHyperlinkClickedEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogHyperlinkClickedEventArgs(HWND hwnd, string url) : base(hwnd)
         {
             Url = url;
         }
@@ -324,11 +442,16 @@ namespace Ch.Cyberduck.Core.TaskDialog
         public string Url { get; }
     }
 
-    public class TaskDialogNavigatedEventArgs : EventArgs { }
-
-    public class TaskDialogRadioButtonClickedEventArgs : EventArgs
+    public class TaskDialogNavigatedEventArgs : TaskDialogEventArgs
     {
-        public TaskDialogRadioButtonClickedEventArgs(int radioButtonId)
+        public TaskDialogNavigatedEventArgs(HWND hwnd) : base(hwnd)
+        {
+        }
+    }
+
+    public class TaskDialogRadioButtonClickedEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogRadioButtonClickedEventArgs(HWND hwnd, int radioButtonId) : base(hwnd)
         {
             RadioButtonId = radioButtonId;
         }
@@ -336,9 +459,9 @@ namespace Ch.Cyberduck.Core.TaskDialog
         public int RadioButtonId { get; }
     }
 
-    public class TaskDialogTimerEventArgs : EventArgs
+    public class TaskDialogTimerEventArgs : TaskDialogEventArgs
     {
-        public TaskDialogTimerEventArgs(TimeSpan time)
+        public TaskDialogTimerEventArgs(HWND hwnd, TimeSpan time) : base(hwnd)
         {
             Time = time;
         }
@@ -346,9 +469,9 @@ namespace Ch.Cyberduck.Core.TaskDialog
         public TimeSpan Time { get; }
     }
 
-    public class TaskDialogVerificationClickedEventArgs : EventArgs
+    public class TaskDialogVerificationClickedEventArgs : TaskDialogEventArgs
     {
-        public TaskDialogVerificationClickedEventArgs(bool @checked)
+        public TaskDialogVerificationClickedEventArgs(HWND hwnd, bool @checked) : base(hwnd)
         {
             Checked = @checked;
         }

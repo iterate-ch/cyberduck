@@ -22,20 +22,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="ch\cyberduck\core\taskdialog\TaskDialogExtensions.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
         <Reference Include="Microsoft.VisualBasic" />
         <Reference Include="System.Security" />
     </ItemGroup>
 
     <ItemGroup>
         <CyberduckReference Include="Core" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Include="ch\cyberduck\core\taskdialog\TaskDialogExtensions.cs" />
     </ItemGroup>
 
     <ItemGroup>

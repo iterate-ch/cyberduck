@@ -16,12 +16,15 @@
 // feedback@cyberduck.io
 // 
 
-using System;
-using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
+using System;
+using System.Windows.Forms;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
+using static Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS;
 
 namespace Ch.Cyberduck.Ui.Core
 {
@@ -31,29 +34,39 @@ namespace Ch.Cyberduck.Ui.Core
             string content, string expandedInfo, string help, string verificationText, string commandButtons,
             bool showCancelButton, TaskDialogIcon mainIcon, TaskDialogIcon footerIcon, DialogResponseHandler handler)
         {
-            TaskDialogResult result = TaskDialog.Show(
-                owner: owner?.Handle ?? IntPtr.Zero,
-                title: title,
-                mainInstruction: mainInstruction,
-                content: content,
-                footerText: FormatHelp(help),
-                expandedInfo: expandedInfo,
-                verificationText: verificationText,
-                commandLinks: commandButtons.Split(new char[] {'|'}),
-                commonButtons: showCancelButton ? TaskDialogCommonButtons.Cancel : TaskDialogCommonButtons.None,
-                mainIcon: mainIcon,
-                footerIcon: footerIcon,
-                callback: (dialog, args, callbackData) =>
+            var dialog = TaskDialog.Create()
+                .CommonButtons(showCancelButton ? TDCBF_CANCEL_BUTTON : 0)
+                .Content(content)
+                .ExpandedInformation(expandedInfo)
+                .FooterIcon(footerIcon)
+                .FooterText(FormatHelp(help))
+                .Instruction(mainInstruction)
+                .MainIcon(mainIcon)
+                .Parent((HWND)owner?.Handle)
+                .Title(title)
+                .UseHyperlinks()
+                .VerificationText(verificationText, false)
+                .CommandLinks(add =>
                 {
-                    switch (args.Notification)
+                    var split = commandButtons.Split('|');
+                    for (int i = 0; i < split.Length; i++)
                     {
-                        case TaskDialogNotification.HyperlinkClicked:
-                            BrowserLauncherFactory.get().open(args.Hyperlink);
+                        add((MESSAGEBOX_RESULT)i, split[i], false);
+                    }
+                })
+                .Callback((s, e) =>
+                {
+                    switch (e)
+                    {
+                        case TaskDialogHyperlinkClickedEventArgs hyperlinkClickedEventArgs:
+                            BrowserLauncherFactory.get().open(hyperlinkClickedEventArgs.Url);
                             return true;
                     }
                     return false;
                 });
-            handler(result.CommandButtonResult ?? -1, result.VerificationChecked ?? false);
+
+            var result = dialog.Show();
+            handler((int)result.Button, result.VerificationChecked.GetValueOrDefault());
             return result;
         }
 
@@ -83,27 +96,29 @@ namespace Ch.Cyberduck.Ui.Core
         public static TaskDialogResult MessageBox(IWin32Window owner, string title, string message, string content,
             string expandedInfo, string help, string verificationText, DialogResponseHandler handler)
         {
-            TaskDialogResult result = TaskDialog.Show(
-                owner: owner?.Handle ?? IntPtr.Zero,
-                title: title,
-                mainInstruction: message,
-                content: content,
-                footerText: FormatHelp(help),
-                expandedInfo: expandedInfo,
-                verificationText: verificationText,
-                commonButtons: TaskDialogCommonButtons.OK,
-                mainIcon: TaskDialogIcon.Information,
-                callback: (dialog, args, callbackData) =>
+            var dialog = TaskDialog.Create()
+                .CommonButtons(TDCBF_OK_BUTTON)
+                .Content(content)
+                .ExpandedInformation(expandedInfo)
+                .FooterText(FormatHelp(help))
+                .Instruction(message)
+                .Parent((HWND)owner?.Handle)
+                .Title(title)
+                .UseHyperlinks()
+                .VerificationText(verificationText, false)
+                .Callback((s, e) =>
                 {
-                    switch (args.Notification)
+                    switch (e)
                     {
-                        case TaskDialogNotification.HyperlinkClicked:
-                            BrowserLauncherFactory.get().open(args.Hyperlink);
+                        case TaskDialogHyperlinkClickedEventArgs hyperlinkClickedEventArgs:
+                            BrowserLauncherFactory.get().open(hyperlinkClickedEventArgs.Url);
                             return true;
                     }
                     return false;
                 });
-            handler(result.CommandButtonResult ?? -1, result.VerificationChecked ?? false);
+
+            var result = dialog.Show();
+            handler((int)result.Button, result.VerificationChecked.GetValueOrDefault());
             return result;
         }
 
