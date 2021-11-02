@@ -14,5 +14,25 @@ namespace Windows.Win32
                 return PInvoke.GetWindowThreadProcessId(hWnd, lpdwProcessIdLocal);
             }
         }
+
+        /// <inheritdoc cref="SetMenuInfo(win32.UI.WindowsAndMessaging.HMENU, win32.UI.WindowsAndMessaging.MENUINFO*)"/>
+        public static unsafe win32.Foundation.BOOL SetMenuInfo(win32.UI.WindowsAndMessaging.HMENU param0, in win32.UI.WindowsAndMessaging.MENUINFO param1)
+        {
+            fixed (win32.UI.WindowsAndMessaging.MENUINFO* param1Local = &param1)
+            {
+                win32.Foundation.BOOL __result = PInvoke.SetMenuInfo(param0, param1Local);
+                return __result;
+            }
+        }
+
+        /// <inheritdoc cref="SetMenuItemInfo(win32.UI.WindowsAndMessaging.HMENU, uint, win32.Foundation.BOOL, win32.UI.WindowsAndMessaging.MENUITEMINFOW*)"/>
+        public static unsafe win32.Foundation.BOOL SetMenuItemInfo(win32.UI.WindowsAndMessaging.HMENU hmenu, uint item, win32.Foundation.BOOL fByPositon, in win32.UI.WindowsAndMessaging.MENUITEMINFOW lpmii)
+        {
+            fixed (win32.UI.WindowsAndMessaging.MENUITEMINFOW* lpmiiLocal = &lpmii)
+            {
+                win32.Foundation.BOOL __result = PInvoke.SetMenuItemInfo(hmenu, item, fByPositon, lpmiiLocal);
+                return __result;
+            }
+        }
     }
 }
