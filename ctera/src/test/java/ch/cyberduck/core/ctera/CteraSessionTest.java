@@ -41,7 +41,7 @@ public class CteraSessionTest {
 
     @Test
     public void testLoginRefreshCookie() throws Exception {
-        final Host host = new Host(new CteraProtocol(), "mountainduck.na.ctera.me", new Credentials(
+        final Host host = new Host(new CteraProtocol(), "mountainduck.ctera.me", new Credentials(
             StringUtils.EMPTY, StringUtils.EMPTY,
             System.getProperties().getProperty("ctera.token")
         ));
