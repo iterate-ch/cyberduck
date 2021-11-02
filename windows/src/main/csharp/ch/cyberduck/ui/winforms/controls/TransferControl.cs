@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using static Ch.Cyberduck.ImageHelper;
+using Windows.Win32.UI.Controls;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -235,23 +236,14 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         }
 
         public TaskDialogResult MessageBox(string title, string message, string content, string expandedInfo,
-            string help, string verificationText, DialogResponseHandler handler)
-        {
-            return TaskDialogResult.Empty;
-        }
+            string help, string verificationText, DialogResponseHandler handler) => default;
 
-        public TaskDialogResult MessageBox(string title, string message, string content, TaskDialogCommonButtons buttons,
-            TaskDialogIcon icons)
-        {
-            return TaskDialogResult.Empty;
-        }
+        public TaskDialogResult MessageBox(string title, string message, string content, TASKDIALOG_COMMON_BUTTON_FLAGS buttons,
+            TaskDialogIcon icons) => default;
 
         public TaskDialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo,
             string help, string verificationText, string commandButtons, bool showCancelButton, TaskDialogIcon mainIcon,
-            TaskDialogIcon footerIcon, DialogResponseHandler handler)
-        {
-            return TaskDialogResult.Empty;
-        }
+            TaskDialogIcon footerIcon, DialogResponseHandler handler) => default;
 
         public event VoidHandler ViewShownEvent = delegate { };
         public event VoidHandler ViewClosedEvent = delegate { };

@@ -515,7 +515,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
             catch (Exception e)
             {
-                MessageBox(LocaleFactory.localizedString("Error"), null, e.Message, TaskDialogCommonButtons.OK,
+                MessageBox(LocaleFactory.localizedString("Error"), null, e.Message, Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS.TDCBF_OK_BUTTON,
                     TaskDialogIcon.Error);
                 Log.error("Exception while upload selection", e);
             }

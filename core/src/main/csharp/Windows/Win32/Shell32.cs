@@ -6,7 +6,7 @@ using static System.Runtime.CompilerServices.Unsafe;
 
 namespace Windows.Win32
 {
-    partial class CorePInvoke
+    public partial class CorePInvoke
     {
         /// <inheritdoc cref="ILCreateFromPath(PCWSTR)"/>
         public static unsafe ref ITEMIDLIST ILCreateFromPath2(string pszPath)

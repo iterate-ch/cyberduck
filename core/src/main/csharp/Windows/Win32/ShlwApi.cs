@@ -4,7 +4,7 @@ using Windows.Win32.Foundation;
 
 namespace Windows.Win32
 {
-    partial class CorePInvoke
+    public partial class CorePInvoke
     {
         /// <inheritdoc cref = "AssocCreate(Guid, Guid*, void **)"/>
         public static unsafe HRESULT AssocCreate<T>(Guid clsid, out T ppv)
