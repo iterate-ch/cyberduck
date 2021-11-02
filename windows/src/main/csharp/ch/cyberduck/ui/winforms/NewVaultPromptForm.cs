@@ -16,13 +16,15 @@
 // feedback@cyberduck.io
 // 
 
+using ch.cyberduck.core;
+using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Winforms.Controls;
+using Windows.Win32.Foundation;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Controls;
+using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.Constants;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -64,8 +66,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             tableLayoutPanel.RowStyles.Insert(2 + offset, new RowStyle(SizeType.AutoSize));
             tableLayoutPanel.Controls.Add(passphraseTextBox, 1, 2 + offset);
             tableLayoutPanel.SetColumnSpan(passphraseTextBox, 3);
-            NativeMethods.SendMessage(passphraseTextBox.Handle, NativeConstants.EM_SETCUEBANNER, 0,
-                LocaleFactory.localizedString("Passphrase", "Cryptomator"));
+            SendMessage((HWND)passphraseTextBox.Handle, EM_SETCUEBANNER, 0, 
+                LocaleFactory.localizedString("Passphrase", "Cryptomator Key"));
 
             strengthIndicator = new PasswordStrengthIndicator();
             strengthIndicator.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
@@ -88,7 +90,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             tableLayoutPanel.SetColumnSpan(passphraseConfirmTextBox, 3);
             tableLayoutPanel.SetRow(okButton, 5 + offset);
             tableLayoutPanel.SetRow(cancelButton, 5 + offset);
-            NativeMethods.SendMessage(passphraseConfirmTextBox.Handle, NativeConstants.EM_SETCUEBANNER, 0,
+            SendMessage((HWND)passphraseConfirmTextBox.Handle, EM_SETCUEBANNER, 0, 
                 LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
         }
     }

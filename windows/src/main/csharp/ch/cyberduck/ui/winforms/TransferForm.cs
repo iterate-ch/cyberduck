@@ -16,12 +16,7 @@
 // feedback@cyberduck.io
 //
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.transfer;
@@ -29,7 +24,14 @@ using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using Microsoft.WindowsAPICodePack.Taskbar;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
+using Windows.Win32.Foundation;
 using static Ch.Cyberduck.ImageHelper;
+using static Windows.Win32.Constants;
+using static Windows.Win32.CorePInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -389,7 +391,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public static void ScrollToBottom(RichTextBox richTextBox)
         {
-            NativeMethods.SendMessage(richTextBox.Handle, NativeConstants.WM_VSCROLL, NativeConstants.SB_BOTTOM, 0);
+            SendMessage((HWND)richTextBox.Handle, WM_VSCROLL, (nuint)SB_BOTTOM, 0);
         }
 
         private void ConfigureToolbarMenu(ToolStripMenuItem menuItem, ToolStripButton button, String property)

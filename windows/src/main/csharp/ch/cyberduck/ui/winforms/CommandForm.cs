@@ -16,11 +16,13 @@
 // feedback@cyberduck.io
 // 
 
+using Ch.Cyberduck.Ui.Controller;
 using System;
 using System.Drawing;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller;
+using Windows.Win32.Foundation;
 using static Ch.Cyberduck.ImageHelper;
+using static Windows.Win32.Constants;
+using static Windows.Win32.CorePInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -52,7 +54,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             transcriptBox.SelectionColor = Color.Black;
             transcriptBox.SelectedText = message + Environment.NewLine;
             transcriptBox.Select(transcriptBox.TextLength, transcriptBox.TextLength);
-            NativeMethods.SendMessage(transcriptBox.Handle, NativeConstants.WM_VSCROLL, NativeConstants.SB_BOTTOM, 0);
+            SendMessage((HWND)transcriptBox.Handle, WM_VSCROLL, (nuint)SB_BOTTOM, 0);
         }
 
         public void StartActivityAnimation()
