@@ -63,6 +63,7 @@
         <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" />
         <PackageReference Include="ExceptionReporter" />
         <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
+        <PackageReference Include="Microsoft.Windows.CsWin32" />
         <PackageReference Include="Microsoft.Windows.SDK.Contracts" />
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="ReactiveUI.WPF" />
@@ -89,19 +90,19 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="ch\cyberduck\ResourcesBundle.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>ResourcesBundle.resx</DependentUpon>
-      </Compile>
+        <Compile Update="ch\cyberduck\ResourcesBundle.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ResourcesBundle.resx</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Update="ch\cyberduck\ResourcesBundle.resx">
-        <CustomToolNamespace>Ch.Cyberduck</CustomToolNamespace>
-        <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
-        <Generator>PublicResXFileCodeGenerator</Generator>
-      </EmbeddedResource>
+        <EmbeddedResource Update="ch\cyberduck\ResourcesBundle.resx">
+            <CustomToolNamespace>Ch.Cyberduck</CustomToolNamespace>
+            <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
+            <Generator>PublicResXFileCodeGenerator</Generator>
+        </EmbeddedResource>
     </ItemGroup>
 
 </Project>

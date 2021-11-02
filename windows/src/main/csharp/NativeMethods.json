@@ -1,0 +1,7 @@
+﻿{
+    "$schema": "https://aka.ms/CsWin32.schema.json",
+    "public": true,
+    "className": "PInvoke",
+    "methodsClassName": "PInvoke",
+    "constantsClassName": "Constants"
+}
