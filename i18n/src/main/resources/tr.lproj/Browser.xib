@@ -49,7 +49,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
-                            <tabViewItem label="Yer İmleri" identifier="bookmarks" id="6">
+                            <tabViewItem label="Yer imleri" identifier="bookmarks" id="6">
                                 <view key="view" id="7">
                                     <rect key="frame" x="0.0" y="0.0" width="601" height="397"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -163,7 +163,7 @@
                                     </subviews>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Yuvalanmış" identifier="1" id="37">
+                            <tabViewItem label="Çerçeve" identifier="1" id="37">
                                 <view key="view" id="38">
                                     <rect key="frame" x="0.0" y="0.0" width="601" height="397"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -257,7 +257,7 @@
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="truncatingMiddle" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="62" id="60">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="DiğerGörünüm" id="61">
+                                    <menu key="menu" title="DiğerGörünümler" id="61">
                                         <items>
                                             <menuItem title=" " state="on" id="62"/>
                                         </items>
@@ -291,51 +291,51 @@
                 <menuItem isSeparatorItem="YES" id="67">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Yeni Klasör…" keyEquivalent="N" id="81">
+                <menuItem title="Yeni klasör…" keyEquivalent="N" id="81">
                     <connections>
                         <action selector="createFolderButtonClicked:" target="-1" id="166"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="6n9-Af-09P">
+                <menuItem title="Yeni şifrelenmiş kasa…" keyEquivalent="N" id="6n9-Af-09P">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                     <connections>
                         <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Yeni Dosya…" keyEquivalent="f" id="82">
+                <menuItem title="Yeni dosya…" keyEquivalent="f" id="82">
                     <connections>
                         <action selector="createFileButtonClicked:" target="-1" id="173"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New Symbolic Link…" id="83">
+                <menuItem title="Yeni sembolik bağlantı…" id="83">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="createSymlinkButtonClicked:" target="-1" id="184"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="84"/>
-                <menuItem title="Bilgi Ver" keyEquivalent="i" id="68">
+                <menuItem title="Bilgiler" keyEquivalent="i" id="68">
                     <connections>
                         <action selector="infoButtonClicked:" target="-1" id="163"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Quick Look" image="NSQuickLookTemplate" id="69">
+                <menuItem title="Hızlı bakış" image="NSQuickLookTemplate" id="69">
                     <attributedString key="attributedTitle"/>
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="quicklookButtonClicked:" target="-1" id="185"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Şununla Düzenle" id="70">
-                    <menu key="submenu" title="Şununla Düzenle" id="71"/>
+                <menuItem title="Şununla düzenle" id="70">
+                    <menu key="submenu" title="Şununla düzenle" id="71"/>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="74"/>
-                <menuItem title="Yeniden Adlandır…" id="72">
+                <menuItem title="Yeniden adlandır…" id="72">
                     <connections>
                         <action selector="renameFileButtonClicked:" target="-1" id="176"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Dosyayı Çoğalt…" keyEquivalent="d" id="73">
+                <menuItem title="Çoğalt…" keyEquivalent="d" id="73">
                     <connections>
                         <action selector="duplicateFileButtonClicked:" target="-1" id="175"/>
                     </connections>
@@ -347,18 +347,18 @@
                         <action selector="downloadButtonClicked:" target="-1" id="164"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Farklı İndir…" keyEquivalent="" id="76">
+                <menuItem title="Farklı indir…" keyEquivalent="" id="76">
                     <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
                     <connections>
                         <action selector="downloadAsButtonClicked:" target="-1" id="168"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Şuraya İndir…" id="77">
+                <menuItem title="Şuraya indir…" id="77">
                     <connections>
                         <action selector="downloadToButtonClicked:" target="-1" id="177"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Karşıya Yükle…" keyEquivalent="" id="79">
+                <menuItem title="Yükle…" keyEquivalent="" id="79">
                     <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                     <connections>
                         <action selector="uploadButtonClicked:" target="-1" id="174"/>
@@ -380,13 +380,13 @@ CA
                         <action selector="deleteFileButtonClicked:" target="-1" id="165"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Geri Çevir" id="86">
+                <menuItem title="Geri çevir" id="86">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="revertFileButtonClicked:" target="-1" id="182"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Eski haline getir" id="7eU-SG-dx0">
+                <menuItem title="Geri yükle" id="7eU-SG-dx0">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="restoreFileButtonClicked:" target="-1" id="BbY-Jj-ck7"/>
@@ -395,7 +395,7 @@ CA
                 <menuItem isSeparatorItem="YES" id="87">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Kasayı Kilitle" keyEquivalent="l" id="oiv-b0-EWZ">
+                <menuItem title="Kasayı kilitle" keyEquivalent="l" id="oiv-b0-EWZ">
                     <connections>
                         <action selector="lockUnlockEncryptedVaultButtonClicked:" target="-1" id="0Jf-FX-vuw"/>
                     </connections>
@@ -403,10 +403,10 @@ CA
                 <menuItem isSeparatorItem="YES" id="VuF-ps-dL0">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Sıkıştır" id="88">
-                    <menu key="submenu" title="Sıkıştır" id="89"/>
+                <menuItem title="Arşiv oluştur" id="88">
+                    <menu key="submenu" title="Arşiv oluştur" id="89"/>
                 </menuItem>
-                <menuItem title="Genişlet" id="90">
+                <menuItem title="Arşivi genişlet" id="90">
                     <connections>
                         <action selector="unarchiveButtonClicked:" target="-1" id="181"/>
                     </connections>
@@ -414,13 +414,13 @@ CA
                 <menuItem isSeparatorItem="YES" id="91">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Adresi Kopyala" id="92">
+                <menuItem title="Adresi kopyala" id="92">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Adresi Kopyala" id="93"/>
+                    <menu key="submenu" title="Adresi kopyala" id="93"/>
                 </menuItem>
-                <menuItem title="URL Aç" id="94">
+                <menuItem title="Adresi aç" id="94">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="URL Aç" id="95"/>
+                    <menu key="submenu" title="Adresi aç" id="95"/>
                 </menuItem>
                 <menuItem title="Paylaş..." id="NBw-Mh-zlT">
                     <connections>
@@ -430,12 +430,12 @@ CA
                 <menuItem isSeparatorItem="YES" id="96">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Yeni Tarayıcı" id="97">
+                <menuItem title="Yeni tarayıcı" id="97">
                     <connections>
                         <action selector="newBrowserButtonClicked:" target="-1" id="179"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Yeni Yer İmi" keyEquivalent="B" id="98">
+                <menuItem title="Yeni yer imi" keyEquivalent="B" id="98">
                     <connections>
                         <action selector="addBookmarkButtonClicked:" target="-1" id="180"/>
                     </connections>
@@ -445,7 +445,7 @@ CA
         </menu>
         <menu title="Menü" id="99">
             <items>
-                <menuItem title="Sunucuya bağlan" id="100">
+                <menuItem title="Sunucu ile bağlantı kur" id="100">
                     <string key="keyEquivalent" base64-UTF8="YES">
 DQ
 </string>
@@ -457,45 +457,45 @@ DQ
                 <menuItem isSeparatorItem="YES" id="101">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Yeni Yer İmi" keyEquivalent="B" id="102">
+                <menuItem title="Yeni yer imi" keyEquivalent="B" id="102">
                     <connections>
                         <action selector="addBookmarkButtonClicked:" target="-1" id="169"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Yer İmini Sil" id="103">
+                <menuItem title="Yer imini sil" id="103">
                     <connections>
                         <action selector="deleteBookmarkButtonClicked:" target="-1" id="170"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Yer İmini Düzenle" keyEquivalent="e" id="104">
+                <menuItem title="Yer imini düzenle" keyEquivalent="e" id="104">
                     <connections>
                         <action selector="editBookmarkButtonClicked:" target="-1" id="171"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Yer İmini Çoğalt" id="105">
+                <menuItem title="Yer imini çoğalt" id="105">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="duplicateBookmarkButtonClicked:" target="-1" id="183"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="106"/>
-                <menuItem title="Sort By" id="107">
+                <menuItem title="Sıralama" id="107">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Sort By" id="108">
+                    <menu key="submenu" title="Sıralama" id="108">
                         <items>
-                            <menuItem title="Nickname" keyEquivalent="1" id="109">
+                            <menuItem title="Kısa ad" keyEquivalent="1" id="109">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByNickame:" target="-1" id="186"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Hostname" keyEquivalent="2" id="110">
+                            <menuItem title="Sunucu adı" keyEquivalent="2" id="110">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByHostname:" target="-1" id="187"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Protocol" keyEquivalent="3" id="111">
+                            <menuItem title="İletişim kuralı" keyEquivalent="3" id="111">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByProtocol:" target="-1" id="188"/>
