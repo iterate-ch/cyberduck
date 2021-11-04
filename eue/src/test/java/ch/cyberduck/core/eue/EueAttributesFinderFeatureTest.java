@@ -60,11 +60,11 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         new StreamCopier(new TransferStatus(), progress).transfer(in, out);
         final AttributedList<Path> list = new EueListService(session, fileid).list(file.getParent(), new DisabledListProgressListener());
         assertNotNull(list.find(new SimplePathPredicate(file)));
-        final String contentETag = list.find(new SimplePathPredicate(file)).attributes().getETag();
-        assertNotNull(contentETag);
-        final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(list.find(new SimplePathPredicate(file)));
+        final String metaEtag = list.find(new SimplePathPredicate(file)).attributes().getETag();
+        assertNotNull(metaEtag);
+        final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(file);
         assertNotNull(attr.getETag());
-        assertNotEquals(attr.getETag(), contentETag);
+        assertEquals(attr.getETag(), metaEtag);
         final PathAttributes ifNoneMatch = new EueAttributesFinderFeature(session, fileid).find(new Path(file).withAttributes(attr));
         assertEquals(attr.getETag(), ifNoneMatch.getETag());
         assertSame(attr, ifNoneMatch);

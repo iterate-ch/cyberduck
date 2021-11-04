@@ -27,6 +27,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
@@ -64,7 +65,7 @@ public class EueAttributesFinderFeature implements AttributesFinder {
             }
             final PathAttributes attr = this.toAttributes(response.getUifs(), response.getUiwin32());
             if(client.getResponseHeaders().containsKey(HttpHeaders.ETAG)) {
-                attr.setETag(client.getResponseHeaders().get(HttpHeaders.ETAG).stream().findFirst().orElse(null));
+                attr.setETag(StringUtils.remove(client.getResponseHeaders().get(HttpHeaders.ETAG).stream().findFirst().orElse(null), '"'));
             }
             return attr;
         }
@@ -83,7 +84,8 @@ public class EueAttributesFinderFeature implements AttributesFinder {
     protected PathAttributes toAttributes(final Uifs entity, final UiWin32 uiwin32) {
         final PathAttributes attr = new PathAttributes();
         attr.setDisplayname(entity.getName());
-        attr.setETag(entity.getContentETag());
+        // Matches ETag response header
+        attr.setETag(StringUtils.remove(entity.getMetaETag(), '"'));
         attr.setSize(entity.getSize());
         attr.setFileId(EueResourceIdProvider.getResourceIdFromResourceUri(entity.getResourceURI()));
         if(null == uiwin32) {
