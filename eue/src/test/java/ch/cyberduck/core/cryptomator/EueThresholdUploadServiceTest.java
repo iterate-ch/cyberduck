@@ -31,6 +31,9 @@ import ch.cyberduck.core.eue.EueFindFeature;
 import ch.cyberduck.core.eue.EueMultipartWriteFeature;
 import ch.cyberduck.core.eue.EueReadFeature;
 import ch.cyberduck.core.eue.EueResourceIdProvider;
+import ch.cyberduck.core.eue.EueThresholdUploadService;
+import ch.cyberduck.core.eue.EueThresholdWriteFeature;
+import ch.cyberduck.core.eue.EueUploadService;
 import ch.cyberduck.core.eue.EueWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -61,7 +64,7 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
-public class EueSequentialLargeUploadServiceTest extends AbstractEueSessionTest {
+public class EueThresholdUploadServiceTest extends AbstractEueSessionTest {
 
     @Test
     public void testUpload() throws Exception {
@@ -70,10 +73,11 @@ public class EueSequentialLargeUploadServiceTest extends AbstractEueSessionTest 
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault, profile.getProperties().get("cryptomator.vault.masterkey.filename"), profile.getProperties().get("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
+        session.withRegistry(registry);
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final CryptoUploadFeature<EueWriteFeature.Chunk> m = new CryptoUploadFeature<>(session,
-            new ch.cyberduck.core.eue.EueSequentialLargeUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid)), new EueMultipartWriteFeature(session, fileid), cryptomator);
+            new EueThresholdUploadService(session, fileid, registry), new EueThresholdWriteFeature(session, fileid), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(8840780);
         IOUtils.write(content, local.getOutputStream(false));

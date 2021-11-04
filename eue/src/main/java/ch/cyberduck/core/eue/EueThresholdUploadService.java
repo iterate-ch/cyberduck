@@ -62,10 +62,13 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
                                         final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         if(status.getLength() >= threshold) {
             if(Vault.DISABLED == registry.find(session, file)) {
+                // Only allow concurrent write of chunks when not uploading to vault. Write with default feature multiple 4MB chunks in parallel
                 return new EueLargeUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, prompt);
             }
-            return new EueSequentialLargeUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid)).upload(file, local, throttle, listener, status, prompt);
+            // Write with multipart write feature for known file length sequentially 4MB chunks
+            return new EueUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, prompt);
         }
+        // Write single chunk smaller than threshold
         return new EueSingleUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, prompt);
     }
 
