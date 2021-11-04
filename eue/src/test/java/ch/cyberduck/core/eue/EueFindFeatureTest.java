@@ -56,6 +56,13 @@ public class EueFindFeatureTest extends AbstractEueSessionTest {
     }
 
     @Test
+    public void testFindTrash() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path directory = new Path("Gelöschte Dateien", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        assertTrue(new EueFindFeature(session, fileid).find(directory, new DisabledListProgressListener()));
+    }
+
+    @Test
     public void testFind() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path folder1 = new EueDirectoryFeature(session, fileid).mkdir(new Path(
