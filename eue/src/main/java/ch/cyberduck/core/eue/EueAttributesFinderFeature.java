@@ -27,6 +27,9 @@ import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
 public class EueAttributesFinderFeature implements AttributesFinder {
@@ -53,16 +56,27 @@ public class EueAttributesFinderFeature implements AttributesFinder {
                 case EueResourceIdProvider.ROOT:
                 case EueResourceIdProvider.TRASH:
                     response = new ListResourceAliasApi(client).resourceAliasAliasGet(resourceId,
-                            null, null, null, null, null, null, "win32props", null);
+                            null, file.attributes().getETag(), null, null, null, null, "win32props", null);
                     break;
                 default:
                     response = new ListResourceApi(client).resourceResourceIdGet(resourceId,
-                            null, null, null, null, null, null, "win32props", null);
+                            null, file.attributes().getETag(), null, null, null, null, "win32props", null);
                     break;
             }
-            return this.toAttributes(response.getUifs(), response.getUiwin32());
+            final PathAttributes attr = this.toAttributes(response.getUifs(), response.getUiwin32());
+            if(client.getResponseHeaders().containsKey(HttpHeaders.ETAG)) {
+                attr.setETag(StringUtils.remove(client.getResponseHeaders().get(HttpHeaders.ETAG).stream().findFirst().orElse(null), '"'));
+            }
+            return attr;
         }
         catch(ApiException e) {
+            switch(e.getCode()) {
+                case HttpStatus.SC_NOT_MODIFIED:
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("No changes for file %s with ETag %s", file, file.attributes().getETag()));
+                    }
+                    return file.attributes();
+            }
             throw new EueExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
@@ -70,7 +84,8 @@ public class EueAttributesFinderFeature implements AttributesFinder {
     protected PathAttributes toAttributes(final Uifs entity, final UiWin32 uiwin32) {
         final PathAttributes attr = new PathAttributes();
         attr.setDisplayname(entity.getName());
-        attr.setETag(entity.getContentETag());
+        // Matches ETag response header
+        attr.setETag(StringUtils.remove(entity.getMetaETag(), '"'));
         attr.setSize(entity.getSize());
         attr.setFileId(EueResourceIdProvider.getResourceIdFromResourceUri(entity.getResourceURI()));
         if(null == uiwin32) {
