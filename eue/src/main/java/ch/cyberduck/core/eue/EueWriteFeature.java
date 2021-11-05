@@ -149,6 +149,11 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
         return new SHA256ChecksumCompute();
     }
 
+    @Override
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
+    }
+
     public void cancel(final String uploadUri) throws BackgroundException {
         final HttpDelete request = new HttpDelete(uploadUri);
         try {

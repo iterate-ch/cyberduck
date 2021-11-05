@@ -1,4 +1,4 @@
-package ch.cyberduck.core.eue;
+package ch.cyberduck.core.cryptomator;
 
 /*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
@@ -24,12 +24,21 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
+import ch.cyberduck.core.eue.AbstractEueSessionTest;
+import ch.cyberduck.core.eue.EueAttributesFinderFeature;
+import ch.cyberduck.core.eue.EueDeleteFeature;
+import ch.cyberduck.core.eue.EueDirectoryFeature;
+import ch.cyberduck.core.eue.EueFindFeature;
+import ch.cyberduck.core.eue.EueMultipartWriteFeature;
+import ch.cyberduck.core.eue.EueReadFeature;
+import ch.cyberduck.core.eue.EueResourceIdProvider;
+import ch.cyberduck.core.eue.EueUploadService;
+import ch.cyberduck.core.eue.EueWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
@@ -58,34 +67,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class EueSequentialLargeUploadServiceTest extends AbstractEueSessionTest {
-
-    @Test
-    public void testUploadLargeFileInChunks() throws Exception {
-        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final EueSequentialLargeUploadService s = new EueSequentialLargeUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid));
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(
-                new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
-        final String name = new AlphanumericRandomStringService().random();
-        final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final byte[] content = RandomUtils.nextBytes(5242881);
-        IOUtils.write(content, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus();
-        status.setLength(content.length);
-        final BytecountStreamListener count = new BytecountStreamListener();
-        final EueWriteFeature.Chunk uploadResponse = s.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
-        assertNotNull(uploadResponse.getCdash64());
-        assertEquals(content.length, count.getSent());
-        assertTrue(status.isComplete());
-        assertTrue(new EueFindFeature(session, fileid).find(file));
-        assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
-        final byte[] compare = new byte[content.length];
-        IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), compare);
-        assertArrayEquals(content, compare);
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        local.delete();
-    }
+public class EueUploadServiceTest extends AbstractEueSessionTest {
 
     @Test
     public void testUploadVault() throws Exception {
@@ -105,7 +87,7 @@ public class EueSequentialLargeUploadServiceTest extends AbstractEueSessionTest 
         writeStatus.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
-                new EueSequentialLargeUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid)),
+                new EueUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid)),
                 new EueMultipartWriteFeature(session, fileid), cryptomator);
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
@@ -141,7 +123,7 @@ public class EueSequentialLargeUploadServiceTest extends AbstractEueSessionTest 
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
         final BytecountStreamListener count = new BytecountStreamListener();
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
-                new EueSequentialLargeUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid)),
+                new EueUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid)),
                 new EueMultipartWriteFeature(session, fileid), cryptomator);
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
