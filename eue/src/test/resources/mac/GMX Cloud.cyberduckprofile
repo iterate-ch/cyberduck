@@ -75,6 +75,7 @@
             <string>pacs.url=https://hsp.gmx.net/http-service-proxy1/service/pacs/MobileCloudStorageContext2</string>
             <string>cryptomator.vault.masterkey.filename=systemdaten.gmxtresor</string>
             <string>cryptomator.vault.pepper=gmx</string>>
+            <string>cryptomator.vault.name.default=GMX Tresor</string>>
         </array>
         <key>Schemes</key>
         <array>

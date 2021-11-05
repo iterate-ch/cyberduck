@@ -20,10 +20,12 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.UserInfoApi;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -77,6 +79,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Optional;
 
 import com.google.gson.JsonElement;
@@ -90,6 +93,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
     private OAuth2RequestInterceptor authorizationService;
 
     private String basePath;
+    private String vaultResourceId;
 
     private final EueResourceIdProvider resourceid = new EueResourceIdProvider(this);
 
@@ -125,11 +129,17 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
             public void process(final HttpRequest request, final HttpContext context) {
                 final String identifier = new HostPreferences(host).getProperty("app");
                 if(StringUtils.isNotBlank(identifier)) {
-                    request.addHeader(new BasicHeader("X-UI-APP", MessageFormat.format(
-                            identifier, String.format("%s.%s",
-                                    PreferencesFactory.get().getProperty("application.version"),
-                                    PreferencesFactory.get().getProperty("application.revision"))))
-                    );
+                    final String app = String.format("%s.%s",
+                            PreferencesFactory.get().getProperty("application.version"),
+                            PreferencesFactory.get().getProperty("application.revision"));
+                    request.addHeader(new BasicHeader("X-UI-APP", MessageFormat.format(identifier, app)));
+                    if(StringUtils.isNotBlank(vaultResourceId)) {
+                        if(StringUtils.contains(request.getRequestLine().getUri(), vaultResourceId)) {
+                            // Overwrite default
+                            request.setHeader(new BasicHeader("X-UI-APP", MessageFormat.format(
+                                    StringUtils.replace(identifier, "/", ".tresor/"), app)));
+                        }
+                    }
                 }
             }
         });
@@ -204,6 +214,15 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                 }
                 catch(IOException e) {
                     log.warn(String.format("Ignore failure %s running Personal Agent Context Service (PACS) request", e));
+                }
+            }
+            if(StringUtils.isNotBlank(new HostPreferences(host).getProperty("cryptomator.vault.name.default"))) {
+                final Path vault = new Path(new HostPreferences(host).getProperty("cryptomator.vault.name.default"), EnumSet.of(Path.Type.directory));
+                try {
+                    vaultResourceId = new EueAttributesFinderFeature(this, resourceid).find(vault).getFileId();
+                }
+                catch(NotfoundException e) {
+                    log.warn(String.format("No existing vault found in %s", vault));
                 }
             }
         }
