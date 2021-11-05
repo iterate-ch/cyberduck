@@ -479,7 +479,9 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.2</version>
                     <configuration>
-                        <argLine>@{argLine} -Djava.library.path=${project.build.directory}</argLine>
+                        <argLine>@{argLine} --add-opens=java.base/java.lang=ALL-UNNAMED
+                            -Djava.library.path=${project.build.directory}
+                        </argLine>
                         <systemPropertiesFile>${main.basedir}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
@@ -498,7 +500,9 @@
                     <configuration>
                         <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                         <encoding>UTF-8</encoding>
-                        <argLine>@{argLine} -Djava.library.path=${project.build.directory}</argLine>
+                        <argLine>@{argLine} --add-opens=java.base/java.lang=ALL-UNNAMED
+                            -Djava.library.path=${project.build.directory}
+                        </argLine>
                         <systemPropertiesFile>${main.basedir}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
