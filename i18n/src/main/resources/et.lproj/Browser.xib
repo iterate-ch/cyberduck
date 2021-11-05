@@ -386,7 +386,7 @@ CA
                         <action selector="revertFileButtonClicked:" target="-1" id="182"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Restore" id="7eU-SG-dx0">
+                <menuItem title="Taasta" id="7eU-SG-dx0">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="restoreFileButtonClicked:" target="-1" id="BbY-Jj-ck7"/>
