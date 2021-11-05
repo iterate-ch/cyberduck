@@ -48,7 +48,7 @@ public class ListResourceAliasApi {
    * @return UiFsModel
    * @throws ApiException if fails to make API call
    */
-  public UiFsModel resourceAliasAliasGet(String alias, String cookie, String ifNoneMatch, String downloadURIValidity, String fields, Integer length, Integer offset, String option, String sort) throws ApiException {
+  public UiFsModel resourceAliasAliasGet(String alias, String cookie, String ifNoneMatch, String downloadURIValidity, String fields, Integer length, Integer offset, List<String> option, String sort) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'alias' is set
     if (alias == null) {
@@ -67,7 +67,7 @@ public class ListResourceAliasApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "fields", fields));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "length", length));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "offset", offset));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "option", option));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "option", option));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "sort", sort));
 
     if (cookie != null)

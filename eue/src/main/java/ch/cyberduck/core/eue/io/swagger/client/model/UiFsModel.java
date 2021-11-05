@@ -15,6 +15,7 @@ package ch.cyberduck.core.eue.io.swagger.client.model;
 import java.util.Objects;
 import java.util.Arrays;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiLink;
+import ch.cyberduck.core.eue.io.swagger.client.model.UiShareModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiWin32;
 import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -35,6 +36,9 @@ public class UiFsModel {
 
   @JsonProperty("ui:link")
   private UiLink uilink = null;
+
+  @JsonProperty("ui:share")
+  private UiShareModel uishare = null;
 
   public UiFsModel uifs(Uifs uifs) {
     this.uifs = uifs;
@@ -90,6 +94,24 @@ public class UiFsModel {
     this.uilink = uilink;
   }
 
+  public UiFsModel uishare(UiShareModel uishare) {
+    this.uishare = uishare;
+    return this;
+  }
+
+   /**
+   * Get uishare
+   * @return uishare
+  **/
+  @Schema(description = "")
+  public UiShareModel getUishare() {
+    return uishare;
+  }
+
+  public void setUishare(UiShareModel uishare) {
+    this.uishare = uishare;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -102,12 +124,13 @@ public class UiFsModel {
     UiFsModel uiFsModel = (UiFsModel) o;
     return Objects.equals(this.uifs, uiFsModel.uifs) &&
         Objects.equals(this.uiwin32, uiFsModel.uiwin32) &&
-        Objects.equals(this.uilink, uiFsModel.uilink);
+        Objects.equals(this.uilink, uiFsModel.uilink) &&
+        Objects.equals(this.uishare, uiFsModel.uishare);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uifs, uiwin32, uilink);
+    return Objects.hash(uifs, uiwin32, uilink, uishare);
   }
 
 
@@ -119,6 +142,7 @@ public class UiFsModel {
     sb.append("    uifs: ").append(toIndentedString(uifs)).append("\n");
     sb.append("    uiwin32: ").append(toIndentedString(uiwin32)).append("\n");
     sb.append("    uilink: ").append(toIndentedString(uilink)).append("\n");
+    sb.append("    uishare: ").append(toIndentedString(uishare)).append("\n");
     sb.append("}");
     return sb.toString();
   }

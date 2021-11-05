@@ -20,14 +20,15 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceAliasApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.Children;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiFsModel;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.util.EnumSet;
+import java.util.List;
 
 public class EueListService implements ListService {
 
@@ -52,17 +53,18 @@ public class EueListService implements ListService {
         try {
             int offset = 0;
             UiFsModel fsModel;
+            final List<String> options = ListOptions.getForWin32AndShares();
             do {
                 final String resourceId = fileid.getFileId(directory, listener);
                 switch(resourceId) {
                     case EueResourceIdProvider.ROOT:
                     case EueResourceIdProvider.TRASH:
                         fsModel = new ListResourceAliasApi(client).resourceAliasAliasGet(resourceId,
-                                null, null, null, null, chunksize, offset, "win32props", null);
+                            null, null, null, null, chunksize, offset, options, null);
                         break;
                     default:
                         fsModel = new ListResourceApi(client).resourceResourceIdGet(resourceId,
-                                null, null, null, null, chunksize, offset, "win32props", null);
+                            null, null, null, null, chunksize, offset, options, null);
                         break;
                 }
                 for(Children child : fsModel.getUifs().getChildren()) {
@@ -78,7 +80,7 @@ public class EueListService implements ListService {
                             type = EnumSet.of(Path.Type.file);
                     }
                     children.add(new Path(directory, child.getUifs().getName(), type,
-                            attributes.toAttributes(child.getUifs(), child.getUiwin32())));
+                        attributes.toAttributes(child.getUifs(), child.getUiwin32(), child.getUishare())));
                     listener.chunk(directory, children);
                 }
                 offset += chunksize;

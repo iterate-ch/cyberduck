@@ -19,13 +19,16 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseEntry;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -55,6 +58,35 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path folder = new Path("Gelöschte Dateien", EnumSet.of(directory));
         final AttributedList<Path> list = new EueListService(session, fileid).list(folder, new DisabledListProgressListener());
+    }
+
+    @Test
+    public void testListForSharedFile() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path file = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        createFile(file, RandomUtils.nextBytes(0));
+        assertTrue(new EueFindFeature(session, fileid).find(file));
+        final ShareCreationResponseEntry shareCreationResponseEntry = createShare(fileid, file);
+        final String shareName = shareCreationResponseEntry.getEntity().getName();
+        final AttributedList<Path> pathAttributes = new EueListService(session, fileid).list(sourceFolder, new DisabledListProgressListener());
+        final PathAttributes attributes = pathAttributes.get(file).attributes();
+        assertNotNull(attributes.getCustom().get(shareName));
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListForSharedFolder() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder2 = new EueDirectoryFeature(session, fileid).mkdir(new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
+        assertTrue(new EueFindFeature(session, fileid).find(folder2));
+        final ShareCreationResponseEntry shareCreationResponseEntry = createShare(fileid, folder2);
+        final String shareName = shareCreationResponseEntry.getEntity().getName();
+        final AttributedList<Path> pathAttributes = new EueListService(session, fileid).list(sourceFolder, new DisabledListProgressListener());
+        final PathAttributes attributes = pathAttributes.get(folder2).attributes();
+        assertNotNull(attributes.getCustom().get(shareName));
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test

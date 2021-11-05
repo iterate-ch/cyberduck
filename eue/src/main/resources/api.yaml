@@ -33,6 +33,7 @@ paths:
                   description: "decorator option (< string > array(csv))"
                   schema:
                       type: string
+                  explode: true
             responses:
                 '200':
                     description: metadata of a file or of a container
@@ -90,7 +91,9 @@ paths:
                   name: option
                   description: "decorator option (< string > array(csv))"
                   schema:
-                      type: string
+                      type: array
+                      items:
+                          type: string
                 - in: query
                   name: sort
                   description: "list of sort criteria (containers only)"
@@ -481,7 +484,9 @@ paths:
                   name: option
                   description: "decorator option (< string > array(csv))"
                   schema:
-                      type: string
+                      type: array
+                      items:
+                          type: string
                 - in: query
                   name: sort
                   description: "list of sort criteria (containers only)"
@@ -734,6 +739,8 @@ components:
                     $ref: '#/components/schemas/Uifs'
                 ui:win32:
                     $ref: '#/components/schemas/UiWin32'
+                ui:share:
+                    $ref: '#/components/schemas/UiShareModel'
         UiWin32:
             properties:
                 readOnly:
@@ -765,6 +772,8 @@ components:
                     $ref: '#/components/schemas/UiWin32'
                 ui:link:
                     $ref: '#/components/schemas/UiLink'
+                ui:share:
+                    $ref: '#/components/schemas/UiShareModel'
         UiMetaResourceModel:
             properties:
                 mimetype:
@@ -1111,3 +1120,22 @@ components:
                 - CHUNKED
                 - URI
                 - FORM
+        UiShareModel:
+            properties:
+                share:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ShareModel'
+        ShareModel:
+            properties:
+                ownerName:
+                    type: string
+                name:
+                    type: string
+                expirationMillis:
+                    type: integer
+                    format: int64
+                resourcePermission:
+                    $ref: '#/components/schemas/SharePermission'
+                hasPin:
+                    type: boolean

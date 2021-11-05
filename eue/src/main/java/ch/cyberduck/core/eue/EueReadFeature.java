@@ -19,11 +19,11 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiFsModel;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
@@ -57,7 +57,7 @@ public class EueReadFeature implements Read {
         try {
             final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
             final UiFsModel uiFsModel = new ListResourceApi(new EueApiClient(session)).resourceResourceIdGet(resourceId,
-                null, null, null, null, null, null, "download", null);
+                null, null, null, null, null, null, ListOptions.getDownload(), null);
             final HttpUriRequest request = new HttpGet(uiFsModel.getUilink().getDownloadURI());
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
