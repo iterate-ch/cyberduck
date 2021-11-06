@@ -27,7 +27,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * Quotas
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-25T16:09:11.296078900+02:00[Europe/Berlin]")
+
 public class Quotas {
   @JsonProperty("numberResource")
   private NumberResource numberResource = null;

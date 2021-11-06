@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-10-25T16:12:42.747787400+02:00[Europe/Berlin]")public class CopyChildrenApi {
+public class CopyChildrenApi {
   private ApiClient apiClient;
 
   public CopyChildrenApi() {
