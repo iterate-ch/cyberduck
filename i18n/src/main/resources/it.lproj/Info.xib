@@ -387,7 +387,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="84">
                     <rect key="frame" x="140" y="252" width="244" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Registri accesso scrittura nel contenitore selezionato." id="85">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Scrivi i log di accesso nel contenitore selezionato." id="85">
                         <font key="font" metaFont="message" size="11"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -683,7 +683,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="168">
                     <rect key="frame" x="140" y="272" width="243" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Registri acecsso scrittura per il contenitore selezionato." id="169">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Scrivi i log di accesso nel contenitore selezionato." id="169">
                         <font key="font" metaFont="message" size="11"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
