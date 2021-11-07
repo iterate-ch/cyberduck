@@ -20,7 +20,7 @@ workdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 nibtool="ibtool"
 convertstrings="ruby convertstrings.rb"
 base_language="en.lproj"
-arch="x86_64"
+arch="`/usr/bin/arch`"
 tx="/usr/local/bin/tx"
 extension=".xib"
 
@@ -63,7 +63,7 @@ test() {
 }
 
 run() {
-	echo "Running app using `basename $language .lproj`...";
+	echo "Running app using `basename $language .lproj` on $arch...";
     basedir="$( cd "$workdir/../../../.." && pwd )"
 	CA_DEBUG_TRANSACTIONS=1 arch -arch $arch $basedir/osx/target/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
 }
