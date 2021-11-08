@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.rococoa</groupId>
             <artifactId>rococoa-core</artifactId>
-            <version>0.9.0</version>
+            <version>0.9.1</version>
         </dependency>
     </dependencies>
 </project>
