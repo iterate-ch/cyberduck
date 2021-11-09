@@ -33,7 +33,6 @@ import ch.cyberduck.core.SleepPreventer;
 import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
@@ -322,7 +321,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             return null;
                         }
                         else {
-                            throw new ConnectionCanceledException(e);
+                            throw new TransferCanceledException(e);
                         }
                     }
                     finally {
@@ -457,7 +456,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 log.warn(String.format("Ignore transfer failure %s", e));
                             }
                             else {
-                                throw new ConnectionCanceledException(e);
+                                throw new TransferCanceledException(e);
                             }
                         }
                         finally {
