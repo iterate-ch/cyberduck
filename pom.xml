@@ -29,7 +29,6 @@
         <!-- Protocols -->
         <module>jersey</module>
         <module>oauth</module>
-        <module>udt</module>
         <module>irods</module>
         <module>spectra</module>
         <module>s3</module>
