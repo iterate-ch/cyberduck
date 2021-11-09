@@ -284,7 +284,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
             if(this == o) {
                 return true;
             }
-            if(!(o instanceof User)) {
+            if(o == null || getClass() != o.getClass()) {
                 return false;
             }
             final User user = (User) o;
