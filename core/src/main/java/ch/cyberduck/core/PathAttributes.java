@@ -205,6 +205,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(modified != -1) {
             dict.setStringForKey(String.valueOf(modified), "Modified");
         }
+        if(created != -1) {
+            dict.setStringForKey(String.valueOf(created), "Created");
+        }
         if(revision != null) {
             dict.setStringForKey(String.valueOf(revision), "Revision");
         }
