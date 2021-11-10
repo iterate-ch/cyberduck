@@ -28,7 +28,13 @@ public interface Quota {
             this.available = available;
         }
 
+        /**
+         * Occupied space
+         */
         public final Long used;
+        /**
+         * Remaining space
+         */
         public final Long available;
 
         @Override
