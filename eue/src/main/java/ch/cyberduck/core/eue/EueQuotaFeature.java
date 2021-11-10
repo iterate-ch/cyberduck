@@ -22,7 +22,10 @@ import ch.cyberduck.core.eue.io.swagger.client.api.UserInfoApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.UserInfoResponseModel;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
+import org.apache.log4j.Logger;
+
 public class EueQuotaFeature implements Quota {
+    private static final Logger log = Logger.getLogger(EueQuotaFeature.class);
 
     private final EueSession session;
 
@@ -36,6 +39,9 @@ public class EueQuotaFeature implements Quota {
             final EueApiClient client = new EueApiClient(session);
             final UserInfoApi userInfoApi = new UserInfoApi(client);
             final UserInfoResponseModel userInfoResponseModel = userInfoApi.userinfoGet(null, null);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Received user info %s", userInfoResponseModel));
+            }
             return new Space(userInfoResponseModel.getQuotas().getContentSize().getCurrent(),
                     userInfoResponseModel.getQuotas().getContentSize().getMax());
         }
