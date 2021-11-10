@@ -43,7 +43,7 @@ public class EueQuotaFeature implements Quota {
                 log.debug(String.format("Received user info %s", userInfoResponseModel));
             }
             return new Space(userInfoResponseModel.getQuotas().getContentSize().getCurrent(),
-                    userInfoResponseModel.getQuotas().getContentSize().getMax());
+                    userInfoResponseModel.getQuotas().getContentSize().getMax() - userInfoResponseModel.getQuotas().getContentSize().getCurrent());
         }
         catch(ApiException e) {
             throw new EueExceptionMappingService().map("Failure to read attributes of {0}", e,
