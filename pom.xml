@@ -480,7 +480,7 @@
                     <version>2.22.2</version>
                     <configuration>
                         <argLine>@{argLine} -Djava.library.path=${project.build.directory}</argLine>
-                        <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
+                        <systemPropertiesFile>${main.basedir}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
                             <jna.library.path>${project.build.directory}</jna.library.path>
@@ -499,7 +499,7 @@
                         <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                         <encoding>UTF-8</encoding>
                         <argLine>@{argLine} -Djava.library.path=${project.build.directory}</argLine>
-                        <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
+                        <systemPropertiesFile>${main.basedir}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
                             <jna.library.path>${project.build.directory}</jna.library.path>
