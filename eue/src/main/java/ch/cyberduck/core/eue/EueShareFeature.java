@@ -124,19 +124,21 @@ public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestMo
         final ShareCreationRequestEntry shareCreationRequestEntry = new ShareCreationRequestEntry()
                 .name(new AlphanumericRandomStringService().random())
                 .hasPin(false);
-        final Shares.WritableSharesMinimumProtectionEnum writableSharesMinimumProtection = this.getWritableSharesMinimumProtection();
-        switch(writableSharesMinimumProtection) {
-            case PIN_AND_EXPIRATION:
-            case EXPIRATION:
-                final long expirationInMillis = new HostPreferences(session.getHost()).getLong("eue.share.expiration.millis");
-                shareCreationRequestEntry.setExpirationMillis(expirationInMillis);
-            case PIN:
-                final String password = callback.prompt(bookmark,
-                        LocaleFactory.localizedString("Passphrase", "Cryptomator"),
-                        MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
-                        new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword();
-                shareCreationRequestEntry.setHasPin(true);
-                shareCreationRequestEntry.setPin(password);
+        if(new HostPreferences(session.getHost()).getBoolean("eue.share.writable")) {
+            final Shares.WritableSharesMinimumProtectionEnum writableSharesMinimumProtection = this.getWritableSharesMinimumProtection();
+            switch(writableSharesMinimumProtection) {
+                case PIN_AND_EXPIRATION:
+                case EXPIRATION:
+                    final long expirationInMillis = new HostPreferences(session.getHost()).getLong("eue.share.expiration.millis");
+                    shareCreationRequestEntry.setExpirationMillis(expirationInMillis);
+                case PIN:
+                    final String password = callback.prompt(bookmark,
+                            LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                            MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
+                            new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword();
+                    shareCreationRequestEntry.setHasPin(true);
+                    shareCreationRequestEntry.setPin(password);
+            }
         }
         shareCreationRequestEntry.setGuestEMail(GUEST_E_MAIL);
         final SharePermission sharePermission = new SharePermission();
