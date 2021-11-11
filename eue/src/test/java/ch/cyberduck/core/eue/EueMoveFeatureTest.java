@@ -59,11 +59,31 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         assertEquals(targetFile.attributes(), new EueAttributesFinderFeature(session, fileid).find(targetFile));
         assertEquals(sourceAttr.getSize(),
                 new EueAttributesFinderFeature(session, fileid).find(targetFile).getSize());
-        assertEquals(sourceAttr.getETag(),
+        assertNotEquals(sourceAttr.getETag(),
                 new EueAttributesFinderFeature(session, fileid).find(targetFile).getETag());
         assertEquals(sourceAttr.getFileId(),
                 new EueAttributesFinderFeature(session, fileid).find(targetFile).getFileId());
         new EueDeleteFeature(session, fileid).delete(Arrays.asList(sourceFolder, targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMoveRecursive() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        createFile(sourceFile, RandomUtils.nextBytes(541));
+        final Path targetFolder = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final EueMoveFeature feature = new EueMoveFeature(session, fileid);
+        assertTrue(feature.isRecursive(sourceFolder, targetFolder));
+        feature.move(sourceFolder, targetFolder, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertTrue(new EueFindFeature(session, fileid).find(targetFolder));
+        assertTrue(new EueFindFeature(session, fileid).find(new Path(targetFolder, sourceFile.getName(), sourceFile.getType())));
+        assertTrue(new DefaultFindFeature(session).find(new Path(targetFolder, sourceFile.getName(), sourceFile.getType())));
+        assertFalse(new EueFindFeature(session, fileid).find(sourceFolder));
+        assertFalse(new EueFindFeature(session, fileid).find(new Path(sourceFile).withAttributes(PathAttributes.EMPTY)));
+        assertFalse(new DefaultFindFeature(session).find(new Path(sourceFile).withAttributes(PathAttributes.EMPTY)));
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -84,7 +104,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         assertEquals(targetFile.attributes(), new EueAttributesFinderFeature(session, fileid).find(targetFile));
         assertEquals(sourceAttr.getSize(),
                 new EueAttributesFinderFeature(session, fileid).find(targetFile).getSize());
-        assertEquals(sourceAttr.getETag(),
+        assertNotEquals(sourceAttr.getETag(),
                 new EueAttributesFinderFeature(session, fileid).find(targetFile).getETag());
         assertEquals(sourceAttr.getFileId(),
                 new EueAttributesFinderFeature(session, fileid).find(targetFile).getFileId());

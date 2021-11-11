@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -36,6 +37,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -62,13 +64,77 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         assertEquals(copy.attributes(), new EueAttributesFinderFeature(session, fileid).find(targetFile));
         assertEquals(new EueAttributesFinderFeature(session, fileid).find(sourceFile).getSize(),
                 new EueAttributesFinderFeature(session, fileid).find(targetFile).getSize());
-        assertEquals(new EueAttributesFinderFeature(session, fileid).find(sourceFile).getETag(),
+        assertNotEquals(new EueAttributesFinderFeature(session, fileid).find(sourceFile).getETag(),
                 new EueAttributesFinderFeature(session, fileid).find(targetFile).getETag());
         assertNotEquals(new EueAttributesFinderFeature(session, fileid).find(sourceFile).getFileId(),
                 new EueAttributesFinderFeature(session, fileid).find(targetFile).getFileId());
         new EueDeleteFeature(session, fileid).delete(Arrays.asList(sourceFolder, targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
+    @Test
+    public void testCopyRecursive() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path testFolder = new EueDirectoryFeature(session, fileid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
+                new Path(testFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        createFile(sourceFile, RandomUtils.nextBytes(541));
+        final Path targetFolder = new Path(testFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final EueCopyFeature feature = new EueCopyFeature(session, fileid);
+        feature.copy(sourceFolder, targetFolder, new TransferStatus(), new DisabledLoginCallback(), new DisabledStreamListener());
+        assertTrue(new EueFindFeature(session, fileid).find(targetFolder));
+        assertTrue(new EueFindFeature(session, fileid).find(new Path(targetFolder, sourceFile.getName(), sourceFile.getType())));
+        assertTrue(new DefaultFindFeature(session).find(new Path(targetFolder, sourceFile.getName(), sourceFile.getType())));
+        assertTrue(new EueFindFeature(session, fileid).find(sourceFolder));
+        assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
+        assertTrue(new DefaultFindFeature(session).find(sourceFile));
+        new EueDeleteFeature(session, fileid).delete(Arrays.asList(sourceFolder, targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testCopyRecursiveToRoot() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        createFile(sourceFile, RandomUtils.nextBytes(541));
+        final Path targetFolder = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final EueCopyFeature feature = new EueCopyFeature(session, fileid);
+        feature.copy(sourceFolder, targetFolder, new TransferStatus(), new DisabledLoginCallback(), new DisabledStreamListener());
+        assertTrue(new EueFindFeature(session, fileid).find(targetFolder));
+        assertTrue(new EueFindFeature(session, fileid).find(new Path(targetFolder, sourceFile.getName(), sourceFile.getType())));
+        assertTrue(new DefaultFindFeature(session).find(new Path(targetFolder, sourceFile.getName(), sourceFile.getType())));
+        assertTrue(new EueFindFeature(session, fileid).find(sourceFolder));
+        assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
+        assertTrue(new DefaultFindFeature(session).find(sourceFile));
+        new EueDeleteFeature(session, fileid).delete(Arrays.asList(sourceFolder, targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testCopyFileToRoot() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        createFile(sourceFile, RandomUtils.nextBytes(541));
+        final PathAttributes sourceAttr = new EueAttributesFinderFeature(session, fileid).find(sourceFile);
+        assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
+        final Path targetFile = new EueCopyFeature(session, fileid).copy(sourceFile,
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
+        assertTrue(new EueFindFeature(session, fileid).find(targetFile));
+        assertTrue(new DefaultFindFeature(session).find(sourceFile));
+        assertTrue(new DefaultFindFeature(session).find(targetFile));
+        assertEquals(targetFile.attributes(), new EueAttributesFinderFeature(session, fileid).find(targetFile));
+        assertEquals(sourceAttr.getSize(),
+                new EueAttributesFinderFeature(session, fileid).find(targetFile).getSize());
+        assertNotEquals(sourceAttr.getETag(),
+                new EueAttributesFinderFeature(session, fileid).find(targetFile).getETag());
+        assertNotEquals(sourceAttr.getFileId(),
+                new EueAttributesFinderFeature(session, fileid).find(targetFile).getFileId());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
     @Test
     public void testCopyRenameFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
