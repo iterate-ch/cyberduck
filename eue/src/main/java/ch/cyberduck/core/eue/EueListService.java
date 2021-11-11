@@ -27,8 +27,6 @@ import ch.cyberduck.core.eue.io.swagger.client.model.UiFsModel;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -61,12 +59,12 @@ public class EueListService implements ListService {
                     case EueResourceIdProvider.ROOT:
                     case EueResourceIdProvider.TRASH:
                         fsModel = new ListResourceAliasApi(client).resourceAliasAliasGet(resourceId,
-                            null, null, null, null, chunksize, offset,
+                                null, null, null, null, chunksize, offset,
                                 Collections.singletonList(EueAttributesFinderFeature.OPTION_WIN_32_PROPS), null);
                         break;
                     default:
                         fsModel = new ListResourceApi(client).resourceResourceIdGet(resourceId,
-                            null, null, null, null, chunksize, offset,
+                                null, null, null, null, chunksize, offset,
                                 Collections.singletonList(EueAttributesFinderFeature.OPTION_WIN_32_PROPS), null);
                         break;
                 }
@@ -83,8 +81,10 @@ public class EueListService implements ListService {
                             type = EnumSet.of(Path.Type.file);
                     }
                     children.add(new Path(directory, child.getUifs().getName(), type,
-                        attributes.toAttributes(child.getUifs(), child.getUiwin32(),
-                            EuShareHelper.getShareForResource(session, StringUtils.substringAfterLast(child.getUifs().getResourceURI(), "/")))));
+                            attributes.toAttributes(child.getUifs(), child.getUiwin32(),
+                                    EueShareFeature.findShareForResource(session.userShares(),
+                                            EueResourceIdProvider.getResourceIdFromResourceUri(child.getUifs().getResourceURI()))))
+                    );
                     listener.chunk(directory, children);
                 }
                 offset += chunksize;

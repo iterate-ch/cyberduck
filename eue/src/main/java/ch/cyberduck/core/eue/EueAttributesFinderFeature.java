@@ -74,7 +74,8 @@ public class EueAttributesFinderFeature implements AttributesFinder {
                             Collections.singletonList(OPTION_WIN_32_PROPS), null);
                     break;
             }
-            final PathAttributes attr = this.toAttributes(response.getUifs(), response.getUiwin32(), EuShareHelper.getShareForResource(session, resourceId));
+            final PathAttributes attr = this.toAttributes(response.getUifs(), response.getUiwin32(),
+                    EueShareFeature.findShareForResource(session.userShares(), resourceId));
             if(client.getResponseHeaders().containsKey(HttpHeaders.ETAG)) {
                 attr.setETag(StringUtils.remove(client.getResponseHeaders().get(HttpHeaders.ETAG).stream().findFirst().orElse(null), '"'));
             }
@@ -111,7 +112,7 @@ public class EueAttributesFinderFeature implements AttributesFinder {
         }
         if(share != null) {
             attr.setLink(new DescriptiveUrl(URI.create(EueShareFeature.toBrandedUri(share.getGuestURI(),
-                    session.getHost().getProperty("share.hostname")))));
+                    session.getHost().getProperty("share.hostname"))), DescriptiveUrl.Type.signed));
         }
         return attr;
     }

@@ -15,6 +15,7 @@ package ch.cyberduck.core.eue;/*
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.ExpiringObjectHolder;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
@@ -23,7 +24,9 @@ import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
+import ch.cyberduck.core.eue.io.swagger.client.api.GetUserSharesApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.UserInfoApi;
+import ch.cyberduck.core.eue.io.swagger.client.model.UserSharesModel;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -97,6 +100,9 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
 
     private final EueResourceIdProvider resourceid = new EueResourceIdProvider(this);
 
+    private final ExpiringObjectHolder<UserSharesModel> userShares
+            = new ExpiringObjectHolder<>(new HostPreferences(host).getLong("eue.shares.ttl"));
+
     public EueSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
@@ -154,7 +160,8 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                     log.warn(String.format("Retrieved throttle warning %s", hint.get()));
                     final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
                         @Override
-                        public void validate() { }
+                        public void validate() {
+                        }
 
                         @Override
                         public void progress(final Integer seconds) {
@@ -260,6 +267,17 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
         this.basePath = basePath;
     }
 
+    public UserSharesModel userShares() throws BackgroundException {
+        if(this.userShares.get() == null) {
+            try {
+                userShares.set(new GetUserSharesApi(new EueApiClient(this)).shareGet(null, null));
+            }
+            catch(ApiException e) {
+                throw new EueExceptionMappingService().map(e);
+            }
+        }
+        return userShares.get();
+    }
 
     @Override
     @SuppressWarnings("unchecked")

@@ -28,11 +28,13 @@ import ch.cyberduck.core.eue.io.swagger.client.api.CreateShareApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.UserInfoApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationRequestEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationRequestModel;
+import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseEntity;
 import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.SharePermission;
 import ch.cyberduck.core.eue.io.swagger.client.model.Shares;
 import ch.cyberduck.core.eue.io.swagger.client.model.UserInfoResponseModel;
+import ch.cyberduck.core.eue.io.swagger.client.model.UserSharesModel;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -69,15 +71,21 @@ public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestMo
 
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final ShareCreationRequestModel options, final PasswordCallback callback) throws BackgroundException {
-        final String guestUri = this.createGuestUri(file, callback, options);
-        if(null == guestUri) {
-            return DescriptiveUrl.EMPTY;
-        }
-        return new DescriptiveUrl(URI.create(toBrandedUri(guestUri, session.getHost().getProperty("share.hostname"))));
+        return this.toGuestUrl(file, options, callback);
     }
 
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final ShareCreationRequestModel options, final PasswordCallback callback) throws BackgroundException {
+        // Look for existing share
+        return this.toGuestUrl(file, options, callback);
+    }
+
+    private DescriptiveUrl toGuestUrl(final Path file, final ShareCreationRequestModel options, final PasswordCallback callback) throws BackgroundException {
+        // Look for existing share
+        final ShareCreationResponseEntity shareForResource = findShareForResource(session.userShares(), fileid.getFileId(file, new DisabledListProgressListener()));
+        if(null != shareForResource) {
+            return new DescriptiveUrl(URI.create(toBrandedUri(shareForResource.getGuestURI(), session.getHost().getProperty("share.hostname"))), DescriptiveUrl.Type.signed);
+        }
         final String guestUri = this.createGuestUri(file, callback, options);
         if(null == guestUri) {
             return DescriptiveUrl.EMPTY;
@@ -88,12 +96,12 @@ public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestMo
     private String createGuestUri(final Path file, final PasswordCallback callback, final ShareCreationRequestModel shareCreationRequestModel) throws BackgroundException {
         final EueApiClient client = new EueApiClient(session);
         final CreateShareApi createShareApi = new CreateShareApi(client);
-        final String fileId = fileid.getFileId(file, new DisabledListProgressListener());
+        final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
         try {
             final ShareCreationRequestModel shareCreationRequestEntries = null != shareCreationRequestModel ? shareCreationRequestModel : this.createShareCreationRequestModel(file, callback);
             for(ShareCreationRequestEntry shareCreationRequestEntry : shareCreationRequestEntries) {
                 final String shareName = shareCreationRequestEntry.getName();
-                final ShareCreationResponseModel shareCreationResponseModel = createShareApi.resourceResourceIdSharePost(fileId, shareCreationRequestEntries, null, null);
+                final ShareCreationResponseModel shareCreationResponseModel = createShareApi.resourceResourceIdSharePost(resourceId, shareCreationRequestEntries, null, null);
                 if(!shareCreationResponseModel.containsKey(GUEST_E_MAIL)) {
                     throw new NotfoundException(GUEST_E_MAIL);
                 }
@@ -101,6 +109,8 @@ public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestMo
                 switch(shareCreationResponseEntry.getStatusCode()) {
                     case HttpStatus.SC_OK:
                     case HttpStatus.SC_CREATED:
+                        shareCreationResponseEntry.getEntity().setResourceURI(resourceId);
+                        session.userShares().add(shareCreationResponseEntry.getEntity());
                         return shareCreationResponseEntry.getEntity().getGuestURI();
                     default:
                         log.warn(String.format("Failure %s creating share for %s", shareCreationResponseEntry, file));
@@ -152,6 +162,10 @@ public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestMo
         final ShareCreationRequestModel shareCreationRequestModel = new ShareCreationRequestModel();
         shareCreationRequestModel.add(shareCreationRequestEntry);
         return shareCreationRequestModel;
+    }
+
+    protected static ShareCreationResponseEntity findShareForResource(final UserSharesModel sharesModel, final String resourceId) {
+        return sharesModel.stream().filter(sm -> EueResourceIdProvider.getResourceIdFromResourceUri(sm.getResourceURI()).equals(resourceId)).findFirst().orElse(null);
     }
 
     private Shares.WritableSharesMinimumProtectionEnum getWritableSharesMinimumProtection() throws ApiException {
