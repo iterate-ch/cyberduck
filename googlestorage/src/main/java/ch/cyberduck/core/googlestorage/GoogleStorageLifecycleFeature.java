@@ -53,16 +53,16 @@ public class GoogleStorageLifecycleFeature implements Lifecycle {
                 // Unique identifier for the rule. The value cannot be longer than 255 characters. When you specify an empty prefix, the rule applies to all objects in the bucket
                 final List<Bucket.Lifecycle.Rule> rules = new ArrayList<>();
                 if(configuration.getTransition() != null) {
-                    rules.add(new Bucket.Lifecycle.Rule().setCondition(new Bucket.Lifecycle.Rule.Condition().setIsLive(true)
-                            .setAge(configuration.getTransition()))
+                    rules.add(new Bucket.Lifecycle.Rule().setCondition(new Bucket.Lifecycle.Rule.Condition()
+                                    .setAge(configuration.getTransition()))
                             .setAction(new Bucket.Lifecycle.Rule.Action()
-                            .setType("SetStorageClass").setStorageClass(new HostPreferences(session.getHost()).getProperty("googlestorage.lifecycle.transition.class"))));
+                                    .setType("SetStorageClass").setStorageClass(new HostPreferences(session.getHost()).getProperty("googlestorage.lifecycle.transition.class"))));
                 }
                 if(configuration.getExpiration() != null) {
-                    rules.add(new Bucket.Lifecycle.Rule().setCondition(new Bucket.Lifecycle.Rule.Condition().setIsLive(true)
-                            .setAge(configuration.getExpiration()))
+                    rules.add(new Bucket.Lifecycle.Rule().setCondition(new Bucket.Lifecycle.Rule.Condition()
+                                    .setAge(configuration.getExpiration()))
                             .setAction(new Bucket.Lifecycle.Rule.Action()
-                            .setType("Delete")));
+                                    .setType("Delete")));
                 }
                 session.getClient().buckets().patch(container.getName(), new Bucket().setLifecycle(
                         config.setRule(rules))).execute();
