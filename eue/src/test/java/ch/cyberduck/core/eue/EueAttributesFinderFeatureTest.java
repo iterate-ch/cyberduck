@@ -80,8 +80,8 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         final Path folder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final ShareCreationResponseEntry shareCreationResponseEntry = createShare(fileid, folder);
         final String shareName = shareCreationResponseEntry.getEntity().getName();
-        final PathAttributes pathAttributes = new EueAttributesFinderFeature(session, fileid).find(folder, new DisabledListProgressListener());
-        assertNotNull(pathAttributes.getCustom().get(shareName));
+        final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(folder, new DisabledListProgressListener());
+        assertNotNull(attr.getLink());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
@@ -94,9 +94,8 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         assertTrue(new EueFindFeature(session, fileid).find(file));
         final ShareCreationResponseEntry shareCreationResponseEntry = createShare(fileid, file);
         final String shareName = shareCreationResponseEntry.getEntity().getName();
-        final PathAttributes pathAttributes = new EueAttributesFinderFeature(session, fileid).find(file, new DisabledListProgressListener());
-        assertNotNull(pathAttributes.getCustom().get(shareName));
+        final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(file, new DisabledListProgressListener());
+        assertNotNull(attr.getLink());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
-
 }

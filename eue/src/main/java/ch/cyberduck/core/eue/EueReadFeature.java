@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 
 public class EueReadFeature implements Read {
     private static final Logger log = Logger.getLogger(EueReadFeature.class);
@@ -57,7 +58,8 @@ public class EueReadFeature implements Read {
         try {
             final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
             final UiFsModel uiFsModel = new ListResourceApi(new EueApiClient(session)).resourceResourceIdGet(resourceId,
-                null, null, null, null, null, null, ListOptions.getDownload(), null);
+                null, null, null, null, null, null,
+                    Collections.singletonList(EueAttributesFinderFeature.OPTION_DOWNLOAD), null);
             final HttpUriRequest request = new HttpGet(uiFsModel.getUilink().getDownloadURI());
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);

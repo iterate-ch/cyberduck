@@ -159,7 +159,7 @@ public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestMo
         return userInfoResponseModel.getSettings().getShares().getWritableSharesMinimumProtection();
     }
 
-    protected static String toBrandedUri(final String guestUri, final Object hostname) {
+    protected static String toBrandedUri(final String guestUri, final String hostname) {
         final String user = StringUtils.substringBefore(StringUtils.substringAfter(StringUtils.substringAfter(guestUri, "guest"), Path.DELIMITER), Path.DELIMITER);
         final String share = StringUtils.substringBefore(StringUtils.substringAfter(StringUtils.substringAfter(guestUri, "share"), Path.DELIMITER), Path.DELIMITER);
         return String.format("https://%s/%s/%s", hostname, user, share);

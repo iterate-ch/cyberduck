@@ -21,19 +21,14 @@ import ch.cyberduck.core.eue.io.swagger.client.model.UserSharesModel;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class EuShareHelper {
 
     private EuShareHelper() {
     }
 
-    public static List<ShareCreationResponseEntity> getShareForResource(EueSession eueSession, String resourceId) throws ApiException {
+    public static ShareCreationResponseEntity getShareForResource(EueSession eueSession, String resourceId) throws ApiException {
         final GetUserSharesApi getUserSharesApi = new GetUserSharesApi(new EueApiClient(eueSession));
         final UserSharesModel sharesModel = getUserSharesApi.shareGet(null, null);
-        return sharesModel.stream().filter(sm -> StringUtils.substringAfterLast(sm.getResourceURI(), "/").equals(resourceId)).collect(Collectors.toList());
-
+        return sharesModel.stream().filter(sm -> StringUtils.substringAfterLast(sm.getResourceURI(), "/").equals(resourceId)).findFirst().orElse(null);
     }
-
 }

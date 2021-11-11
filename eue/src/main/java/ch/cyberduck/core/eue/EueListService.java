@@ -29,8 +29,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
 
 public class EueListService implements ListService {
 
@@ -55,18 +55,19 @@ public class EueListService implements ListService {
         try {
             int offset = 0;
             UiFsModel fsModel;
-            final List<String> options = ListOptions.getForWin32AndShares();
             do {
                 final String resourceId = fileid.getFileId(directory, listener);
                 switch(resourceId) {
                     case EueResourceIdProvider.ROOT:
                     case EueResourceIdProvider.TRASH:
                         fsModel = new ListResourceAliasApi(client).resourceAliasAliasGet(resourceId,
-                            null, null, null, null, chunksize, offset, options, null);
+                            null, null, null, null, chunksize, offset,
+                                Collections.singletonList(EueAttributesFinderFeature.OPTION_WIN_32_PROPS), null);
                         break;
                     default:
                         fsModel = new ListResourceApi(client).resourceResourceIdGet(resourceId,
-                            null, null, null, null, chunksize, offset, options, null);
+                            null, null, null, null, chunksize, offset,
+                                Collections.singletonList(EueAttributesFinderFeature.OPTION_WIN_32_PROPS), null);
                         break;
                 }
                 for(Children child : fsModel.getUifs().getChildren()) {
@@ -94,6 +95,5 @@ public class EueListService implements ListService {
         catch(ApiException e) {
             throw new EueExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
-
     }
 }

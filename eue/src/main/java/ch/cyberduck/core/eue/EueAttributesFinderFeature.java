@@ -15,19 +15,17 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
-import ch.cyberduck.core.eue.io.swagger.client.api.GetUserSharesApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceAliasApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseEntity;
-import ch.cyberduck.core.eue.io.swagger.client.model.SharePermission;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiFsModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiWin32;
 import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
-import ch.cyberduck.core.eue.io.swagger.client.model.UserSharesModel;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
@@ -36,12 +34,15 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.URI;
+import java.util.Collections;
 
 public class EueAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(EueAttributesFinderFeature.class);
+
+    protected static final String OPTION_WIN_32_PROPS = "win32props";
+    protected static final String OPTION_SHARES = "shares";
+    protected static final String OPTION_DOWNLOAD = "download";
 
     private final EueSession session;
     private final EueResourceIdProvider fileid;
@@ -60,17 +61,17 @@ public class EueAttributesFinderFeature implements AttributesFinder {
             final EueApiClient client = new EueApiClient(session);
             final UiFsModel response;
             final String resourceId = fileid.getFileId(file, listener);
-            List<String> options = ListOptions.getForWin32AndShares();
-
             switch(resourceId) {
                 case EueResourceIdProvider.ROOT:
                 case EueResourceIdProvider.TRASH:
                     response = new ListResourceAliasApi(client).resourceAliasAliasGet(resourceId,
-                        null, file.attributes().getETag(), null, null, null, null, options, null);
+                            null, file.attributes().getETag(), null, null, null, null,
+                            Collections.singletonList(OPTION_WIN_32_PROPS), null);
                     break;
                 default:
                     response = new ListResourceApi(client).resourceResourceIdGet(resourceId,
-                        null, file.attributes().getETag(), null, null, null, null, options, null);
+                            null, file.attributes().getETag(), null, null, null, null,
+                            Collections.singletonList(OPTION_WIN_32_PROPS), null);
                     break;
             }
             final PathAttributes attr = this.toAttributes(response.getUifs(), response.getUiwin32(), EuShareHelper.getShareForResource(session, resourceId));
@@ -91,7 +92,7 @@ public class EueAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes toAttributes(final Uifs entity, final UiWin32 uiwin32, final List<ShareCreationResponseEntity> shareCreationResponseEntities) {
+    protected PathAttributes toAttributes(final Uifs entity, final UiWin32 uiwin32, final ShareCreationResponseEntity share) {
         final PathAttributes attr = new PathAttributes();
         attr.setDisplayname(entity.getName());
         // Matches ETag response header
@@ -108,20 +109,10 @@ public class EueAttributesFinderFeature implements AttributesFinder {
             attr.setAccessedDate(uiwin32.getLastAccessMillis());
             attr.setHidden(uiwin32.isHidden());
         }
-        final Map<String, String> attrCustom = new HashMap<>();
-        shareCreationResponseEntities.forEach(share -> {
-            final String creationMillis = String.join(":", "CreationMillis", String.valueOf(share.getCreationMillis()));
-            final String displayName = String.join(":", "DisplayName", share.getDisplayName());
-            final String shareUri = String.join(":", "ShareUri", share.getShareURI());
-            final String hasPin = String.join(":", "hasPin", String.valueOf(share.isHasPin()));
-            final SharePermission resourcePermission = share.getPermission();
-            final String readable = String.join(":", "readable", String.valueOf(resourcePermission.isReadable()));
-            final String writable = String.join(":", "writable", String.valueOf(resourcePermission.isWritable()));
-            final String deletable = String.join(":", "deletable", String.valueOf(resourcePermission.isDeletable()));
-            final String shareModel = String.join(",", creationMillis, displayName, shareUri, hasPin, readable, writable, deletable);
-            attrCustom.put(share.getName(), shareModel);
-        });
-        attr.setCustom(attrCustom);
+        if(share != null) {
+            attr.setLink(new DescriptiveUrl(URI.create(EueShareFeature.toBrandedUri(share.getGuestURI(),
+                    session.getHost().getProperty("share.hostname")))));
+        }
         return attr;
     }
 }

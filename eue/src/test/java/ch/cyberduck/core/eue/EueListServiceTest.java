@@ -69,9 +69,8 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         assertTrue(new EueFindFeature(session, fileid).find(file));
         final ShareCreationResponseEntry shareCreationResponseEntry = createShare(fileid, file);
         final String shareName = shareCreationResponseEntry.getEntity().getName();
-        final AttributedList<Path> pathAttributes = new EueListService(session, fileid).list(sourceFolder, new DisabledListProgressListener());
-        final PathAttributes attributes = pathAttributes.get(file).attributes();
-        assertNotNull(attributes.getCustom().get(shareName));
+        final PathAttributes attr = new EueListService(session, fileid).list(sourceFolder, new DisabledListProgressListener()).get(file).attributes();
+        assertNotNull(attr.getLink());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
@@ -83,9 +82,8 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         assertTrue(new EueFindFeature(session, fileid).find(folder2));
         final ShareCreationResponseEntry shareCreationResponseEntry = createShare(fileid, folder2);
         final String shareName = shareCreationResponseEntry.getEntity().getName();
-        final AttributedList<Path> pathAttributes = new EueListService(session, fileid).list(sourceFolder, new DisabledListProgressListener());
-        final PathAttributes attributes = pathAttributes.get(folder2).attributes();
-        assertNotNull(attributes.getCustom().get(shareName));
+        final PathAttributes attr = new EueListService(session, fileid).list(sourceFolder, new DisabledListProgressListener()).get(folder2).attributes();
+        assertNotNull(attr.getLink());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
