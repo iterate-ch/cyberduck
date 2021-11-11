@@ -77,11 +77,14 @@ public class GoogleStorageObjectListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return this.list(directory, listener, String.valueOf(Path.DELIMITER),
-                new HostPreferences(session.getHost()).getInteger("googlestorage.listing.chunksize"));
+        return this.list(directory, listener, String.valueOf(Path.DELIMITER));
     }
 
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {
+    protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter) throws BackgroundException {
+        return this.list(directory, listener, delimiter, new HostPreferences(session.getHost()).getInteger("googlestorage.listing.chunksize"));
+    }
+
+    protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("list", concurrency);
         try {
             final Path bucket = containerService.getContainer(directory);
