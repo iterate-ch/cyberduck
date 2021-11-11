@@ -216,6 +216,10 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                 log.warn(String.format("Unsupported user %s", userAndRole.getUser()));
             }
         }
+        if(null == list.getOwner()) {
+            log.warn(String.format("Missing owner in %s", acl));
+            return null;
+        }
         return list;
     }
 
@@ -239,10 +243,19 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
         if(AccessControlList.REST_CANNED_AUTHENTICATED_READ == list) {
             return Acl.CANNED_AUTHENTICATED_READ;
         }
-        final Acl acl = new Acl(new Acl.Owner(list.getOwner().getId(), list.getOwner().getDisplayName()),
+        final Acl.Owner owner = new Acl.Owner(list.getOwner().getId(), list.getOwner().getDisplayName());
+        if(!owner.isValid()) {
+            log.warn(String.format("Invalid owner %s in ACL", list.getOwner()));
+            return Acl.EMPTY;
+        }
+        final Acl acl = new Acl(owner,
             new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString()));
         for(GrantAndPermission grant : list.getGrantAndPermissions()) {
             final Acl.Role role = new Acl.Role(grant.getPermission().toString());
+            if(null == grant.getGrantee()) {
+                log.warn(String.format("Missing grantee in ACL %s", grant));
+                continue;
+            }
             if(grant.getGrantee() instanceof CanonicalGrantee) {
                 acl.addAll(new Acl.CanonicalUser(grant.getGrantee().getIdentifier(),
                     ((CanonicalGrantee) grant.getGrantee()).getDisplayName(), false), role);
