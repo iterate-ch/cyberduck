@@ -27,6 +27,8 @@ import ch.cyberduck.core.eue.io.swagger.client.model.UiFsModel;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.EnumSet;
 import java.util.List;
 
@@ -80,7 +82,8 @@ public class EueListService implements ListService {
                             type = EnumSet.of(Path.Type.file);
                     }
                     children.add(new Path(directory, child.getUifs().getName(), type,
-                        attributes.toAttributes(child.getUifs(), child.getUiwin32(), child.getUishare())));
+                        attributes.toAttributes(child.getUifs(), child.getUiwin32(),
+                            EuShareHelper.getShareForResource(session, StringUtils.substringAfterLast(child.getUifs().getResourceURI(), "/")))));
                     listener.chunk(directory, children);
                 }
                 offset += chunksize;
