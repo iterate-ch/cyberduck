@@ -45,6 +45,29 @@ paths:
                     description: UNAUTHORIZED, authentication failed
                 '404':
                     description: NOT FOUND, User does not exist
+    /share:
+        get:
+            description: Retrieve the metadata of all shares of this user.
+            tags: [GetUserShares]
+            parameters:
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: query
+                  name: option
+                  description: "decorator option (< string > array(csv))"
+                  schema:
+                      type: string
+                  explode: true
+            responses:
+                '200':
+                    description: metadata of a file or of a container
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/UserSharesModel'
     /resource/{resourceId}:
         get:
             description: Retrieve the metadata of a file or of a container.
@@ -1139,3 +1162,7 @@ components:
                     $ref: '#/components/schemas/SharePermission'
                 hasPin:
                     type: boolean
+        UserSharesModel:
+            type: array
+            items:
+                $ref: '#/components/schemas/ShareCreationResponseEntity'
