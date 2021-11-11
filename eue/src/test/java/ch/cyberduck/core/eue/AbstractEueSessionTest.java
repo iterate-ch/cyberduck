@@ -54,7 +54,15 @@ public class AbstractEueSessionTest {
             this.getClass().getResourceAsStream(String.format("/%s/GMX Cloud.cyberduckprofile", this.getSupportedPlatform().name())));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
             System.getProperties().getProperty("eue.user"), System.getProperties().getProperty("eue.password")
-        ));
+        )) {
+            @Override
+            public String getProperty(final String key) {
+                if("eue.share.writable".equals(key)) {
+                    return String.valueOf(true);
+                }
+                return super.getProperty(key);
+            }
+        };
         session = new EueSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
