@@ -439,6 +439,16 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
         public Owner(final String identifier, final String displayName) {
             super(identifier, displayName, false);
         }
+
+        @Override
+        public String getPlaceholder() {
+            return LocaleFactory.localizedString("Owner");
+        }
+
+        @Override
+        public String getDisplayName() {
+            return LocaleFactory.localizedString("Owner");
+        }
     }
 
     /**
