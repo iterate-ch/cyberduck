@@ -118,7 +118,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
         try {
             // Read owner from bucket
-            final AccessControlList list = this.toAcl(file, acl);
+            final AccessControlList list = this.toAcl(acl);
             final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
                 session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), list);
@@ -144,11 +144,10 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     /**
      * Convert ACL for writing to service.
      *
-     * @param file
      * @param acl  Edited ACL
      * @return ACL to write to server
      */
-    protected AccessControlList toAcl(final Path file, final Acl acl) {
+    protected AccessControlList toAcl(final Acl acl) {
         if(Acl.EMPTY.equals(acl)) {
             return null;
         }
@@ -243,7 +242,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
         final Acl acl = new Acl(new Acl.Owner(list.getOwner().getId(), list.getOwner().getDisplayName()),
             new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString()));
         for(GrantAndPermission grant : list.getGrantAndPermissions()) {
-            Acl.Role role = new Acl.Role(grant.getPermission().toString());
+            final Acl.Role role = new Acl.Role(grant.getPermission().toString());
             if(grant.getGrantee() instanceof CanonicalGrantee) {
                 acl.addAll(new Acl.CanonicalUser(grant.getGrantee().getIdentifier(),
                     ((CanonicalGrantee) grant.getGrantee()).getDisplayName(), false), role);
