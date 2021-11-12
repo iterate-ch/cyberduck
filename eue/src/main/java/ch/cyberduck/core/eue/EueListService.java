@@ -20,13 +20,14 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceAliasApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.Children;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiFsModel;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 public class EueListService implements ListService {
@@ -58,11 +59,13 @@ public class EueListService implements ListService {
                     case EueResourceIdProvider.ROOT:
                     case EueResourceIdProvider.TRASH:
                         fsModel = new ListResourceAliasApi(client).resourceAliasAliasGet(resourceId,
-                                null, null, null, null, chunksize, offset, "win32props", null);
+                                null, null, null, null, chunksize, offset,
+                                Collections.singletonList(EueAttributesFinderFeature.OPTION_WIN_32_PROPS), null);
                         break;
                     default:
                         fsModel = new ListResourceApi(client).resourceResourceIdGet(resourceId,
-                                null, null, null, null, chunksize, offset, "win32props", null);
+                                null, null, null, null, chunksize, offset,
+                                Collections.singletonList(EueAttributesFinderFeature.OPTION_WIN_32_PROPS), null);
                         break;
                 }
                 for(Children child : fsModel.getUifs().getChildren()) {
@@ -78,7 +81,10 @@ public class EueListService implements ListService {
                             type = EnumSet.of(Path.Type.file);
                     }
                     children.add(new Path(directory, child.getUifs().getName(), type,
-                            attributes.toAttributes(child.getUifs(), child.getUiwin32())));
+                            attributes.toAttributes(child.getUifs(), child.getUiwin32(),
+                                    EueShareFeature.findShareForResource(session.userShares(),
+                                            EueResourceIdProvider.getResourceIdFromResourceUri(child.getUifs().getResourceURI()))))
+                    );
                     listener.chunk(directory, children);
                 }
                 offset += chunksize;
@@ -89,6 +95,5 @@ public class EueListService implements ListService {
         catch(ApiException e) {
             throw new EueExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
-
     }
 }

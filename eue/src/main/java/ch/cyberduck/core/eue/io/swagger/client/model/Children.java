@@ -14,6 +14,7 @@ package ch.cyberduck.core.eue.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
+import ch.cyberduck.core.eue.io.swagger.client.model.UiShareModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiWin32;
 import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -31,6 +32,9 @@ public class Children {
 
   @JsonProperty("ui:win32")
   private UiWin32 uiwin32 = null;
+
+  @JsonProperty("ui:share")
+  private UiShareModel uishare = null;
 
   public Children uifs(Uifs uifs) {
     this.uifs = uifs;
@@ -68,6 +72,24 @@ public class Children {
     this.uiwin32 = uiwin32;
   }
 
+  public Children uishare(UiShareModel uishare) {
+    this.uishare = uishare;
+    return this;
+  }
+
+   /**
+   * Get uishare
+   * @return uishare
+  **/
+  @Schema(description = "")
+  public UiShareModel getUishare() {
+    return uishare;
+  }
+
+  public void setUishare(UiShareModel uishare) {
+    this.uishare = uishare;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -79,12 +101,13 @@ public class Children {
     }
     Children children = (Children) o;
     return Objects.equals(this.uifs, children.uifs) &&
-        Objects.equals(this.uiwin32, children.uiwin32);
+        Objects.equals(this.uiwin32, children.uiwin32) &&
+        Objects.equals(this.uishare, children.uishare);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uifs, uiwin32);
+    return Objects.hash(uifs, uiwin32, uishare);
   }
 
 
@@ -95,6 +118,7 @@ public class Children {
     
     sb.append("    uifs: ").append(toIndentedString(uifs)).append("\n");
     sb.append("    uiwin32: ").append(toIndentedString(uiwin32)).append("\n");
+    sb.append("    uishare: ").append(toIndentedString(uishare)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -17,6 +17,12 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.eue.io.swagger.client.ApiException;
+import ch.cyberduck.core.eue.io.swagger.client.api.CreateShareApi;
+import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationRequestModel;
+import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseEntry;
+import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseModel;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -51,9 +57,9 @@ public class AbstractEueSessionTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new EueProtocol())));
         profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream(String.format("/%s/GMX Cloud.cyberduckprofile", this.getSupportedPlatform().name())));
+                this.getClass().getResourceAsStream(String.format("/%s/GMX Cloud.cyberduckprofile", this.getSupportedPlatform().name())));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-            System.getProperties().getProperty("eue.user"), System.getProperties().getProperty("eue.password")
+                System.getProperties().getProperty("eue.user"), System.getProperties().getProperty("eue.password")
         )) {
             @Override
             public String getProperty(final String key) {
@@ -116,8 +122,8 @@ public class AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueWriteFeature feature = new EueWriteFeature(session, fileid);
         final TransferStatus status = new TransferStatus()
-            .withChecksum(feature.checksum(file, new TransferStatus().withLength(content.length)).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length)))
-            .withLength(content.length);
+                .withChecksum(feature.checksum(file, new TransferStatus().withLength(content.length)).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length)))
+                .withLength(content.length);
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
@@ -127,5 +133,20 @@ public class AbstractEueSessionTest {
         in.close();
         out.close();
         return file;
+    }
+
+    protected ShareCreationResponseEntry createShare(final EueResourceIdProvider fileid, final Path file) throws BackgroundException, ApiException {
+        final EueShareFeature shareFeature = new EueShareFeature(session, fileid);
+        final DisabledPasswordCallback disabledPasswordCallback = new DisabledPasswordCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                return new Credentials(null, new AlphanumericRandomStringService().random());
+            }
+        };
+        final ShareCreationRequestModel shareCreationRequestModel = shareFeature.createShareCreationRequestModel(file, disabledPasswordCallback);
+        final EueApiClient client = new EueApiClient(session);
+        final CreateShareApi createShareApi = new CreateShareApi(client);
+        final ShareCreationResponseModel shareCreationResponseModel = createShareApi.resourceResourceIdSharePost(fileid.getFileId(file, new DisabledListProgressListener()), shareCreationRequestModel, null, null);
+        return shareCreationResponseModel.get("!ano");
     }
 }

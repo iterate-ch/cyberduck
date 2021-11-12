@@ -74,6 +74,13 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
             }
         });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
+        // Test returning same share
+        assertEquals(url, feature.toDownloadUrl(sourceFolder, null, new DisabledPasswordCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                return new Credentials(null, new AlphanumericRandomStringService().random());
+            }
+        }));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
@@ -92,6 +99,13 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
             }
         });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
+        // Test returning same share
+        assertEquals(url, feature.toDownloadUrl(file, null, new DisabledPasswordCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                return new Credentials(null, new AlphanumericRandomStringService().random());
+            }
+        }));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
@@ -107,6 +121,13 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
             }
         });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
+        // Test returning same share
+        assertEquals(url, feature.toUploadUrl(sourceFolder, null, new DisabledPasswordCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                return new Credentials(null, new AlphanumericRandomStringService().random());
+            }
+        }));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 

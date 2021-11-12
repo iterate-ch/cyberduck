@@ -15,12 +15,14 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceAliasApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceApi;
+import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseEntity;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiFsModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiWin32;
 import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
@@ -32,8 +34,15 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
+import java.net.URI;
+import java.util.Collections;
+
 public class EueAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(EueAttributesFinderFeature.class);
+
+    protected static final String OPTION_WIN_32_PROPS = "win32props";
+    protected static final String OPTION_SHARES = "shares";
+    protected static final String OPTION_DOWNLOAD = "download";
 
     private final EueSession session;
     private final EueResourceIdProvider fileid;
@@ -56,14 +65,17 @@ public class EueAttributesFinderFeature implements AttributesFinder {
                 case EueResourceIdProvider.ROOT:
                 case EueResourceIdProvider.TRASH:
                     response = new ListResourceAliasApi(client).resourceAliasAliasGet(resourceId,
-                            null, file.attributes().getETag(), null, null, null, null, "win32props", null);
+                            null, file.attributes().getETag(), null, null, null, null,
+                            Collections.singletonList(OPTION_WIN_32_PROPS), null);
                     break;
                 default:
                     response = new ListResourceApi(client).resourceResourceIdGet(resourceId,
-                            null, file.attributes().getETag(), null, null, null, null, "win32props", null);
+                            null, file.attributes().getETag(), null, null, null, null,
+                            Collections.singletonList(OPTION_WIN_32_PROPS), null);
                     break;
             }
-            final PathAttributes attr = this.toAttributes(response.getUifs(), response.getUiwin32());
+            final PathAttributes attr = this.toAttributes(response.getUifs(), response.getUiwin32(),
+                    EueShareFeature.findShareForResource(session.userShares(), resourceId));
             if(client.getResponseHeaders().containsKey(HttpHeaders.ETAG)) {
                 attr.setETag(StringUtils.remove(client.getResponseHeaders().get(HttpHeaders.ETAG).stream().findFirst().orElse(null), '"'));
             }
@@ -81,7 +93,7 @@ public class EueAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes toAttributes(final Uifs entity, final UiWin32 uiwin32) {
+    protected PathAttributes toAttributes(final Uifs entity, final UiWin32 uiwin32, final ShareCreationResponseEntity share) {
         final PathAttributes attr = new PathAttributes();
         attr.setDisplayname(entity.getName());
         // Matches ETag response header
@@ -97,6 +109,10 @@ public class EueAttributesFinderFeature implements AttributesFinder {
             attr.setModificationDate(uiwin32.getLastModificationMillis());
             attr.setAccessedDate(uiwin32.getLastAccessMillis());
             attr.setHidden(uiwin32.isHidden());
+        }
+        if(share != null) {
+            attr.setLink(new DescriptiveUrl(URI.create(EueShareFeature.toBrandedUri(share.getGuestURI(),
+                    session.getHost().getProperty("share.hostname"))), DescriptiveUrl.Type.signed));
         }
         return attr;
     }

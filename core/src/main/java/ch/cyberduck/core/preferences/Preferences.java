@@ -1149,6 +1149,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("eue.share.notification.enable", String.valueOf(false));
         this.setDefault("eue.limit.hint.second", String.valueOf(2));
         this.setDefault("eue.limit.requests.second", String.valueOf(10));
+        this.setDefault("eue.shares.ttl", String.valueOf(600000)); // 10 minutes
 
         this.setDefault("preferences.general.enable", String.valueOf(true));
         this.setDefault("preferences.browser.enable", String.valueOf(true));
