@@ -117,4 +117,9 @@ public class EueMoveFeature implements Move {
             throw new EueExceptionMappingService().map("Cannot rename {0}", e, file);
         }
     }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return new EueTouchFeature(session, fileid).isSupported(target.getParent(), target.getName());
+    }
 }
