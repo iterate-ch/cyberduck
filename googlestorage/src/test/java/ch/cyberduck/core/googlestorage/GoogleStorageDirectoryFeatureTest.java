@@ -16,6 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -49,7 +50,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
 
     @Test
     public void testDirectoryDeleteWithVersioning() throws Exception {
-        final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path parent = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(parent,
@@ -72,11 +73,39 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
 
     @Test
     public void testDirectoryWhitespace() throws Exception {
-        final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket,
                 String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testCreatePlaceholderVersioningDelete() throws Exception {
+        final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(test.getType().contains(Path.Type.placeholder));
+        assertTrue(new GoogleStorageFindFeature(session).find(test));
+        assertTrue(new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
+        assertFalse(new DefaultFindFeature(session).find(test));
+        assertFalse(new GoogleStorageFindFeature(session).find(test));
+    }
+
+    @Test
+    public void testCreatePlaceholderVersioningDeleteWithMarker() throws Exception {
+        final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(test.getType().contains(Path.Type.placeholder));
+        assertTrue(new GoogleStorageFindFeature(session).find(test));
+        assertTrue(new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
+        // Add delete marker
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new DefaultFindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
+        assertFalse(new GoogleStorageFindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertTrue(new GoogleStorageFindFeature(session).find(test));
     }
 }

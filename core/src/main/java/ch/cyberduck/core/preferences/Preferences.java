@@ -754,6 +754,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("cloudfront.logging.prefix", "logs/");
 
         this.setDefault("googlestorage.listing.chunksize", String.valueOf(1000));
+        this.setDefault("googlestorage.listing.concurrency", String.valueOf(25));
         this.setDefault("googlestorage.metadata.default", StringUtils.EMPTY);
         this.setDefault("googlestorage.storage.class", "STANDARD");
         this.setDefault("googlestorage.storage.class.options", "STANDARD MULTI_REGIONAL REGIONAL NEARLINE COLDLINE ARCHIVE");
