@@ -44,6 +44,11 @@ public class EueProtocol extends AbstractProtocol {
     }
 
     @Override
+    public Case getCaseSensitivity() {
+        return Case.insensitive;
+    }
+
+    @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.explicit;
     }

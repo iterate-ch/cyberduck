@@ -27,6 +27,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -145,5 +146,15 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         new EueDeleteFeature(session, fileid, false).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new EueMoveFeature(session, fileid).move(file.withAttributes(new PathAttributes().withFileId(resourceId)),
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+    }
+
+    @Test
+    public void testRenameCaseOnly() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final String name = new AlphanumericRandomStringService().random();
+        final Path file = new EueTouchFeature(session, fileid).touch(new Path(StringUtils.capitalize(name), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path rename = new Path(StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
+        new EueMoveFeature(session, fileid).move(file, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new EueDeleteFeature(session, fileid, false).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -16,17 +16,23 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @Category(IntegrationTest.class)
 public class EueDirectoryFeatureTest extends AbstractEueSessionTest {
@@ -41,6 +47,20 @@ public class EueDirectoryFeatureTest extends AbstractEueSessionTest {
         catch(InteroperabilityException e) {
             assertEquals("Paths may not end with a . Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
+        }
+    }
+
+    @Test(expected = ConflictException.class)
+    public void testCaseSensitivity() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final String filename = new AlphanumericRandomStringService().random();
+        new EueDirectoryFeature(session, fileid).mkdir(new Path(StringUtils.capitalize(filename), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        try {
+            new EueDirectoryFeature(session, fileid).mkdir(new Path(StringUtils.lowerCase(filename), EnumSet.of(Path.Type.directory)), new TransferStatus());
+            fail();
+        }
+        finally {
+            new EueDeleteFeature(session, fileid).delete(Collections.singletonList(new Path(StringUtils.capitalize(filename), EnumSet.of(Path.Type.directory))), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }
 }
