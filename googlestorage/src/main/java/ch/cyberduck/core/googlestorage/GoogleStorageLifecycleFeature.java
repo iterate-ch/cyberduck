@@ -91,9 +91,6 @@ public class GoogleStorageLifecycleFeature implements Lifecycle {
                 Integer expiration = null;
                 String storageClass = null;
                 for(Bucket.Lifecycle.Rule rule : status.getRule()) {
-                    if(!rule.getCondition().getIsLive()) {
-                        continue;
-                    }
                     if("SetStorageClass".equals(rule.getAction().getType())) {
                         transition = rule.getCondition().getAge();
                         storageClass = rule.getAction().getStorageClass();
