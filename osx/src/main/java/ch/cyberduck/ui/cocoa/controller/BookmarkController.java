@@ -166,8 +166,10 @@ public class BookmarkController extends SheetController implements CollectionLis
                 protocolPopup.selectItemAtIndex(protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(bookmark.getProtocol().hashCode())));
             }
         });
-        this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.protocolPopup.addItemWithTitle(String.format("%s%s", LocaleFactory.localizedString("More Options", "Bookmark"), "…"));
+        if(preferences.getBoolean("preferences.profiles.enable")) {
+            this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
+            this.protocolPopup.addItemWithTitle(String.format("%s%s", LocaleFactory.localizedString("More Options", "Bookmark"), "…"));
+        }
     }
 
     private void addProtocol(final Protocol protocol) {
