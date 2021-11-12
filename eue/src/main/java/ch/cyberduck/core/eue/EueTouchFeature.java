@@ -33,9 +33,6 @@ public class EueTouchFeature extends DefaultTouchFeature<EueWriteFeature.Chunk> 
         if(StringUtils.containsAny(filename, '\\', '<', '>', ':', '"', '|', '?', '*', '/')) {
             return false;
         }
-        if(StringUtils.containsAny(filename, "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9")) {
-            return false;
-        }
         if(StringUtils.endsWith(filename, StringUtils.SPACE)) {
             return false;
         }
