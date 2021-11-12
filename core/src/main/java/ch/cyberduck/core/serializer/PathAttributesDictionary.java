@@ -60,7 +60,7 @@ public class PathAttributesDictionary {
         }
         final String createdObj = dict.stringForKey("Created");
         if(createdObj != null) {
-            attributes.setModificationDate(Long.parseLong(createdObj));
+            attributes.setCreationDate(Long.parseLong(createdObj));
         }
         final String revisionObj = dict.stringForKey("Revision");
         if(revisionObj != null) {
