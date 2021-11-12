@@ -656,6 +656,72 @@ paths:
                     description: LOCKED, Resource or parent resource is locked (inside of the multistatus)
                 '507':
                     description: INSUFFICIENT STORAGE, insufficient storage or quotas exceeded (inside of the multistatus)
+    /resourceAlias/{alias}/children/copy:
+        post:
+            description: Copy resources to a container
+            tags: [CopyChildrenForAliasApi]
+            parameters:
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: header
+                  name: If-Match
+                  description: ifMatchHeader
+                  schema:
+                      type: string
+                - in: path
+                  name: alias
+                  schema:
+                      type: string
+                  required: true
+                  description: id of the resource (resourceURI)
+                - name: autoRename
+                  in: query
+                  description: (deprecated) flag for enforcing automatic rename on conflict
+                  schema:
+                      type: boolean
+                - name: conflictResolution
+                  in: query
+                  description: conflictResolution - overwrite or rename
+                  schema:
+                      type: string
+                      enum:
+                          - RENAME
+                          - OVERWRITE
+                          - NONE
+                          - INVALID
+                - name: lockToken
+                  in: query
+                  description: the lock token used to access a locked resource
+                  schema:
+                      type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CopyResourceUrlsArray'
+                        examples:
+                            '0':
+                                value: "[\r\n     \"https://mc.gmx.net/resource/1017873844142086120\"\r\n ]"
+            responses:
+                '207':
+                    description: MULTI STATUS
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/ResourceCopyResponseEntries'
+                '403':
+                    description: FORBIDDEN, Not allowed
+                '409':
+                    description: CONFLICT, file resource already exists (inside of the multistatus)
+                '412':
+                    description: PRECONDITION, FAILED non-matching Etag of 'If-Match' Header
+                '423':
+                    description: LOCKED, Resource or parent resource is locked (inside of the multistatus)
+                '507':
+                    description: INSUFFICIENT STORAGE, insufficient storage or quotas exceeded (inside of the multistatus)
     /resource/{resourceId}/share:
         post:
             description: Create a share for a file or container

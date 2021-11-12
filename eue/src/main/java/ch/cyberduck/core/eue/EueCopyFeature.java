@@ -18,22 +18,28 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.CopyChildrenApi;
+import ch.cyberduck.core.eue.io.swagger.client.api.CopyChildrenForAliasApiApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.UpdateResourceApi;
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCopyResponseEntries;
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCopyResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceUpdateModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceUpdateModelUpdate;
 import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
+import org.apache.log4j.Logger;
 
 import java.util.Collections;
 
 public class EueCopyFeature implements Copy {
+    private static final Logger log = Logger.getLogger(EueCopyFeature.class);
 
     private final EueSession session;
     private final EueResourceIdProvider fileid;
@@ -47,10 +53,39 @@ public class EueCopyFeature implements Copy {
     public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final EueApiClient client = new EueApiClient(session);
-            new CopyChildrenApi(client).resourceResourceIdChildrenCopyPost(fileid.getFileId(target.getParent(), new DisabledListProgressListener()),
-                    Collections.singletonList(String.format("%s/resource/%s", session.getBasePath(), fileid.getFileId(file,
-                            new DisabledListProgressListener()))), null, null, null,
-                    status.isExists() ? "overwrite" : null, null);
+            final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
+            final String parentResourceId = fileid.getFileId(target.getParent(), new DisabledListProgressListener());
+            final ResourceCopyResponseEntries resourceCopyResponseEntries;
+            switch(parentResourceId) {
+                case EueResourceIdProvider.ROOT:
+                case EueResourceIdProvider.TRASH:
+                    resourceCopyResponseEntries = new CopyChildrenForAliasApiApi(client)
+                            .resourceAliasAliasChildrenCopyPost(parentResourceId,
+                                    Collections.singletonList(String.format("%s/resource/%s",
+                                            session.getBasePath(), resourceId)), null, null, null,
+                                    status.isExists() || target.isDirectory() ? "overwrite" : null, null);
+                    break;
+                default:
+                    resourceCopyResponseEntries = new CopyChildrenApi(client).resourceResourceIdChildrenCopyPost(parentResourceId,
+                            Collections.singletonList(String.format("%s/resource/%s", session.getBasePath(), resourceId)), null, null, null,
+                            status.isExists() || target.isDirectory() ? "overwrite" : null, null);
+            }
+            if(null == resourceCopyResponseEntries) {
+                // Copy of single file will return 200 status code with empty response body
+            }
+            else {
+                for(ResourceCopyResponseEntry resourceCopyResponseEntry : resourceCopyResponseEntries.values()) {
+                    switch(resourceCopyResponseEntry.getStatusCode()) {
+                        case HttpStatus.SC_CREATED:
+                            break;
+                        default:
+                            log.warn(String.format("Failure %s copying file %s", resourceCopyResponseEntries, file));
+                            throw new EueExceptionMappingService().map(new ApiException(resourceCopyResponseEntry.getReason(),
+                                    null, resourceCopyResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                    }
+                }
+
+            }
             listener.sent(status.getLength());
             if(!StringUtils.equals(file.getName(), target.getName())) {
                 final ResourceUpdateModel resourceUpdateModel = new ResourceUpdateModel();
@@ -60,7 +95,7 @@ public class EueCopyFeature implements Copy {
                 resourceUpdateModelUpdate.setUifs(uifs);
                 resourceUpdateModel.setUpdate(resourceUpdateModelUpdate);
                 new UpdateResourceApi(client).resourceResourceIdPatch(fileid.getFileId(new Path(target.getParent(), file.getName(), file.getType()),
-                        new DisabledListProgressListener()),
+                                new DisabledListProgressListener()),
                         resourceUpdateModel, null, null, null);
             }
             return target.withAttributes(new EueAttributesFinderFeature(session, fileid).find(target, new DisabledListProgressListener()));
@@ -68,5 +103,10 @@ public class EueCopyFeature implements Copy {
         catch(ApiException e) {
             throw new EueExceptionMappingService().map("Cannot copy {0}", e, file);
         }
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
     }
 }

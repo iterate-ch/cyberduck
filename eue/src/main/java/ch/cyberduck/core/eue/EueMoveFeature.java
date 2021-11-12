@@ -51,6 +51,11 @@ public class EueMoveFeature implements Move {
     }
 
     @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return true;
+    }
+
+    @Override
     public Path move(final Path file, final Path target, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         try {
             final EueApiClient client = new EueApiClient(session);
