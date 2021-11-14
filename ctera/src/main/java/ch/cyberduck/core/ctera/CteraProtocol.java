@@ -22,8 +22,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class CteraProtocol extends AbstractProtocol {
 
     public static final String CTERA_REDIRECT_URI = String.format("%s:websso",
