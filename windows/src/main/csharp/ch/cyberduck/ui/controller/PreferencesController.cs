@@ -840,7 +840,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ConfirmDisconnectChangedEvent()
         {
-            PreferencesFactory.get().setProperty("browser.confirmDisconnect", View.ConfirmDisconnect);
+            PreferencesFactory.get().setProperty("browser.disconnect.confirm", View.ConfirmDisconnect);
         }
 
         private void View_UseKeychainChangedEvent()
@@ -917,7 +917,7 @@ namespace Ch.Cyberduck.Ui.Controller
             BookmarkCollection.defaultCollection().addListener(this);
             View.ViewClosedEvent += delegate { BookmarkCollection.defaultCollection().removeListener(this); };
             SelectDefaultBookmark(PreferencesFactory.get().getProperty("browser.open.bookmark.default"));
-            View.ConfirmDisconnect = PreferencesFactory.get().getBoolean("browser.confirmDisconnect");
+            View.ConfirmDisconnect = PreferencesFactory.get().getBoolean("browser.disconnect.confirm");
             View.UseKeychain = PreferencesFactory.get().getBoolean("connection.login.keychain");
             PopulateDefaultProtocols();
             View.DefaultProtocol =
