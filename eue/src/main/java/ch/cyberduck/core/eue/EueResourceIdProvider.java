@@ -19,14 +19,14 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cache.LRUCache;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceAliasApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.Children;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiFsModel;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -86,6 +86,7 @@ public class EueResourceIdProvider implements FileIdProvider {
                                 null, null, null, null, chunksize, offset, null, null);
                 }
                 for(Children child : fsModel.getUifs().getChildren()) {
+                    // Case insensitive
                     if(child.getUifs().getName().equalsIgnoreCase(file.getName())) {
                         return getResourceIdFromResourceUri(child.getUifs().getResourceURI());
                     }
