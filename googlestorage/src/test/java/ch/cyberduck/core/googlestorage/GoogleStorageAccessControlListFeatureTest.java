@@ -116,9 +116,9 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     public void testRoles() {
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final List<Acl.User> users = f.getAvailableAclUsers();
-        assertTrue(users.contains(new Acl.CanonicalUser()));
-        assertTrue(users.contains(new Acl.EmailUser()));
-        assertTrue(users.contains(new Acl.EmailGroupUser("")));
-        assertTrue(users.contains(new Acl.DomainUser("")));
+        assertTrue(f.getAvailableAclUsers().stream().filter(user -> user instanceof Acl.CanonicalUser).findAny().isPresent());
+        assertTrue(f.getAvailableAclUsers().stream().filter(user -> user instanceof Acl.EmailUser).findAny().isPresent());
+        assertTrue(f.getAvailableAclUsers().stream().filter(user -> user instanceof Acl.EmailGroupUser).findAny().isPresent());
+        assertTrue(f.getAvailableAclUsers().stream().filter(user -> user instanceof Acl.DomainUser).findAny().isPresent());
     }
 }
