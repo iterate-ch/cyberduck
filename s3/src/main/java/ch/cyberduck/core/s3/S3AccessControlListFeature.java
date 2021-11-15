@@ -248,8 +248,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             log.warn(String.format("Invalid owner %s in ACL", list.getOwner()));
             return Acl.EMPTY;
         }
-        final Acl acl = new Acl(owner,
-            new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString()));
+        final Acl acl = new Acl(owner, new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString(), false));
         for(GrantAndPermission grant : list.getGrantAndPermissions()) {
             final Acl.Role role = new Acl.Role(grant.getPermission().toString());
             if(null == grant.getGrantee()) {

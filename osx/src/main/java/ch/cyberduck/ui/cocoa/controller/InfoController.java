@@ -75,6 +75,7 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.model.S3Object;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSSize;
@@ -948,17 +949,26 @@ public class InfoController extends ToolbarWindowController {
                 aclRemoveButton.setEnabled(aclTable.numberOfSelectedRows().intValue() > 0);
             }
 
-            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell,
+            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell,
                                                                      NSTableColumn c, NSInteger row) {
+                final Acl.UserAndRole grant = acl.get(row.intValue());
                 if(c.identifier().equals(AclColumn.GRANTEE.name())) {
-                    final Acl.UserAndRole grant = acl.get(row.intValue());
-                    cell.setPlaceholderString(grant.getUser().getPlaceholder());
+                    final NSTextFieldCell textFieldCell = Rococoa.cast(cell, NSTextFieldCell.class);
+                    textFieldCell.setPlaceholderString(grant.getUser().getPlaceholder());
                     if(grant.getUser().isEditable()) {
-                        cell.setTextColor(NSColor.controlTextColor());
+                        textFieldCell.setTextColor(NSColor.controlTextColor());
                     }
                     else {
                         // Group Grantee identifier is not editable
-                        cell.setTextColor(NSColor.disabledControlTextColor());
+                        textFieldCell.setTextColor(NSColor.disabledControlTextColor());
+                    }
+                }
+                if(c.identifier().equals(AclColumn.PERMISSION.name())) {
+                    if(grant.getRole().isEditable()) {
+                        cell.setEnabled(true);
+                    }
+                    else {
+                        cell.setEnabled(false);
                     }
                 }
             }
@@ -2009,7 +2019,7 @@ public class InfoController extends ToolbarWindowController {
         if(StringUtils.isNotBlank(octalField.stringValue())) {
             if(StringUtils.length(octalField.stringValue()) >= 3) {
                 if(StringUtils.isNumeric(octalField.stringValue())) {
-                    return new Permission(Integer.valueOf(octalField.stringValue()).intValue());
+                    return new Permission(Integer.parseInt(octalField.stringValue()));
                 }
             }
         }

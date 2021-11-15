@@ -57,7 +57,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = f.getPermission(container);
-        assertTrue(acl.containsKey(new Acl.GroupUser("cloud-storage-analytics@google.com")));
+        assertTrue(acl.asList().stream().filter(user -> user.getUser().getIdentifier().equals("cloud-storage-analytics@google.com")).findAny().isPresent());
         assertFalse(acl.containsKey(new Acl.GroupUser(Acl.GroupUser.EVERYONE)));
     }
 
@@ -116,9 +116,9 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     public void testRoles() {
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final List<Acl.User> users = f.getAvailableAclUsers();
-        assertTrue(users.contains(new Acl.CanonicalUser()));
-        assertTrue(users.contains(new Acl.EmailUser()));
-        assertTrue(users.contains(new Acl.EmailGroupUser("")));
-        assertTrue(users.contains(new Acl.DomainUser("")));
+        assertTrue(f.getAvailableAclUsers().stream().filter(user -> user instanceof Acl.CanonicalUser).findAny().isPresent());
+        assertTrue(f.getAvailableAclUsers().stream().filter(user -> user instanceof Acl.EmailUser).findAny().isPresent());
+        assertTrue(f.getAvailableAclUsers().stream().filter(user -> user instanceof Acl.EmailGroupUser).findAny().isPresent());
+        assertTrue(f.getAvailableAclUsers().stream().filter(user -> user instanceof Acl.DomainUser).findAny().isPresent());
     }
 }
