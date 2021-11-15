@@ -166,7 +166,7 @@ public class S3VersioningFeature implements Versioning {
                 destination.setServerSideEncryptionKmsKeyId(encryption.key);
                 try {
                     // Apply non standard ACL
-                    destination.setAcl(accessControlListFeature.toAcl(file, accessControlListFeature.getPermission(file)));
+                    destination.setAcl(accessControlListFeature.toAcl(accessControlListFeature.getPermission(file)));
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
                     log.warn(String.format("Ignore failure %s", e));

@@ -34,6 +34,8 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.jets3t.service.acl.AccessControlList;
+import org.jets3t.service.model.StorageOwner;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -198,5 +200,29 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         assertTrue(f.getAvailableAclUsers().contains(new Acl.CanonicalUser()));
         assertTrue(f.getAvailableAclUsers().contains(new Acl.EmailUser()));
+    }
+
+    @Test
+    public void testCannedLists() {
+        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
+        assertEquals(Acl.CANNED_PRIVATE, f.toAcl(AccessControlList.REST_CANNED_PRIVATE));
+        assertEquals(Acl.CANNED_PUBLIC_READ, f.toAcl(AccessControlList.REST_CANNED_PUBLIC_READ));
+        assertEquals(Acl.CANNED_PUBLIC_READ_WRITE, f.toAcl(AccessControlList.REST_CANNED_PUBLIC_READ_WRITE));
+        assertEquals(Acl.CANNED_AUTHENTICATED_READ, f.toAcl(AccessControlList.REST_CANNED_AUTHENTICATED_READ));
+    }
+
+    @Test
+    public void testInvalidOwnerFromServer() {
+        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
+        final AccessControlList list = new AccessControlList();
+        list.setOwner(new StorageOwner("", ""));
+        assertEquals(Acl.EMPTY, f.toAcl(list));
+    }
+
+    @Test
+    public void testInvalidOwner() {
+        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
+        assertNull(f.toAcl(Acl.EMPTY));
+        assertNull(f.toAcl(new Acl(new Acl.UserAndRole(new Acl.Owner(""), new Acl.Role(Acl.Role.FULL)))));
     }
 }
