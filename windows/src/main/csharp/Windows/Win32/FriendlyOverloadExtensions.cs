@@ -6,7 +6,7 @@ namespace Windows.Win32
 
     static partial class FriendlyOverloadExtensions
     {
-        public static void GetAt<T>(this win32.UI.Shell.IObjectArray @this, uint uiIndex, out T ppv)
+        public static void GetAt<T>(this win32.UI.Shell.Common.IObjectArray @this, uint uiIndex, out T ppv)
         {
             @this.GetAt(uiIndex, typeof(T).GUID, out var temp);
             ppv = (T)temp;

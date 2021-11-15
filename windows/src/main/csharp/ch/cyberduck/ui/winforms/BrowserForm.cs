@@ -45,6 +45,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using Windows.Win32;
 using Windows.Win32.Foundation;
 using static Ch.Cyberduck.ImageHelper;
 using static Windows.Win32.CorePInvoke;
