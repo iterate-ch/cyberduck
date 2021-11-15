@@ -27,9 +27,11 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Refresh.Services;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.util;
 using org.apache.log4j;
+using Splat;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -44,6 +46,7 @@ using TimeZone = java.util.TimeZone;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
+    using System.Reactive.Linq;
 
     public abstract class BookmarkController<T> : WindowController<T> where T : IBookmarkView
     {
@@ -62,6 +65,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly List<string> _keys = new List<string> { LocaleFactory.localizedString("None") };
         private readonly Timer _ticklerFavicon;
         private readonly Timer _ticklerReachability;
+        private readonly IDisposable profileObserver;
+
         protected BookmarkController(Host host) : this(host,
             new LoginOptions(host.getProtocol()))
         {
@@ -127,6 +132,16 @@ namespace Ch.Cyberduck.Ui.Controller
             View.OpenDownloadFolderEvent += View_OpenDownloadFolderEvent;
             View.OpenUrl += View_OpenUrl;
             View.OpenWebUrl += View_OpenWebUrl;
+
+            ProfileListObserver observer = Locator.Current.GetService<ProfileListObserver>();
+            profileObserver = Observable.FromEventPattern<EventHandler, EventArgs>(
+                h => observer.ProfilesChanged += h,
+                h => observer.ProfilesChanged -= h)
+                .Subscribe(_ =>
+                {
+                    InitProtocols();
+                    Update();
+                });
         }
 
         protected virtual String ToggleProperty => "bookmark.toggle.options";
