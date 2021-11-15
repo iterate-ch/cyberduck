@@ -1063,6 +1063,12 @@ namespace Ch.Cyberduck.Ui.Winforms
                         !((InfoController.UserAndRoleEntry) aclDataGridView.Rows[args.RowIndex].DataBoundItem).getUser()
                             .isEditable();
                 }
+                if (args.ColumnIndex == 1)
+                {
+                    args.Cancel =
+                        !((InfoController.UserAndRoleEntry)aclDataGridView.Rows[args.RowIndex].DataBoundItem).getRole()
+                            .isEditable();
+                }
             };
 
             DataGridViewTextBoxColumn userColumn = new DataGridViewTextBoxColumn();
