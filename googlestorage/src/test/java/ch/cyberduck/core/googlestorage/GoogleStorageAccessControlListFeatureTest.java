@@ -57,7 +57,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = f.getPermission(container);
-        assertTrue(acl.containsKey(new Acl.GroupUser("cloud-storage-analytics@google.com")));
+        assertTrue(acl.asList().stream().filter(user -> user.getUser().getIdentifier().equals("cloud-storage-analytics@google.com")).findAny().isPresent());
         assertFalse(acl.containsKey(new Acl.GroupUser(Acl.GroupUser.EVERYONE)));
     }
 
