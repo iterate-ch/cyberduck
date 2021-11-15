@@ -67,7 +67,7 @@ public class BoxMultipartWriteFeatureTest extends AbtractBoxTest {
         assertEquals(content.length, count.getSent());
         in.close();
         out.close();
-        assertNull(out.getStatus());
+        assertNotNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         assertTrue(new BoxFindFeature(session, fileid).find(file));
         final PathAttributes attributes = new BoxAttributesFinderFeature(session, fileid).find(file);
@@ -100,7 +100,7 @@ public class BoxMultipartWriteFeatureTest extends AbtractBoxTest {
         assertEquals(content.length, count.getSent());
         in.close();
         out.close();
-        assertNull(out.getStatus());
+        assertNotNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         assertTrue(new BoxFindFeature(session, fileid).find(file));
         final PathAttributes attributes = new BoxAttributesFinderFeature(session, fileid).find(file);
