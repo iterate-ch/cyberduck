@@ -17,6 +17,7 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -71,6 +72,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         final String shareName = shareCreationResponseEntry.getEntity().getName();
         final PathAttributes attr = new EueListService(session, fileid).list(sourceFolder, new DisabledListProgressListener()).get(file).attributes();
         assertNotNull(attr.getLink());
+        assertEquals(attr.getLink(), new EueShareUrlProvider(session.getHost(), session.userShares()).toUrl(file).find(DescriptiveUrl.Type.signed));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
@@ -84,6 +86,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         final String shareName = shareCreationResponseEntry.getEntity().getName();
         final PathAttributes attr = new EueListService(session, fileid).list(sourceFolder, new DisabledListProgressListener()).get(folder2).attributes();
         assertNotNull(attr.getLink());
+        assertEquals(attr.getLink(), new EueShareUrlProvider(session.getHost(), session.userShares()).toUrl(folder2).find(DescriptiveUrl.Type.signed));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 

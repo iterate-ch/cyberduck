@@ -15,7 +15,6 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -34,7 +33,6 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
-import java.net.URI;
 import java.util.Collections;
 
 public class EueAttributesFinderFeature implements AttributesFinder {
@@ -110,10 +108,7 @@ public class EueAttributesFinderFeature implements AttributesFinder {
             attr.setAccessedDate(uiwin32.getLastAccessMillis());
             attr.setHidden(uiwin32.isHidden());
         }
-        if(share != null) {
-            attr.setLink(new DescriptiveUrl(URI.create(EueShareFeature.toBrandedUri(share.getGuestURI(),
-                    session.getHost().getProperty("share.hostname"))), DescriptiveUrl.Type.signed));
-        }
+        attr.setLink(EueShareUrlProvider.toUrl(session.getHost(), share));
         return attr;
     }
 }

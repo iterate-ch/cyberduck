@@ -43,7 +43,7 @@ public class EueShareUrlProvider implements UrlProvider {
             if(null == file.attributes().getFileId()) {
                 return DescriptiveUrlBag.empty();
             }
-            final DescriptiveUrl share = this.toUrl(EueShareFeature.findShareForResource(shares,
+            final DescriptiveUrl share = toUrl(host, EueShareFeature.findShareForResource(shares,
                     file.attributes().getFileId()));
             if(DescriptiveUrl.EMPTY == share) {
                 return DescriptiveUrlBag.empty();
@@ -53,7 +53,7 @@ public class EueShareUrlProvider implements UrlProvider {
         return new DescriptiveUrlBag(Collections.singleton(file.attributes().getLink()));
     }
 
-    protected DescriptiveUrl toUrl(final ShareCreationResponseEntity shareCreationResponse) {
+    protected static DescriptiveUrl toUrl(final Host host, final ShareCreationResponseEntity shareCreationResponse) {
         if(null == shareCreationResponse) {
             return DescriptiveUrl.EMPTY;
         }

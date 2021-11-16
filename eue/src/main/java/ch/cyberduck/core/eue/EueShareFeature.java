@@ -45,7 +45,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
-import java.net.URI;
 import java.text.MessageFormat;
 
 public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestModel, ShareCreationRequestModel> {
@@ -84,16 +83,12 @@ public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestMo
         // Look for existing share
         final ShareCreationResponseEntity shareForResource = findShareForResource(session.userShares(), fileid.getFileId(file, new DisabledListProgressListener()));
         if(null != shareForResource) {
-            return new DescriptiveUrl(URI.create(toBrandedUri(shareForResource.getGuestURI(), session.getHost().getProperty("share.hostname"))), DescriptiveUrl.Type.signed);
+            return EueShareUrlProvider.toUrl(session.getHost(), shareForResource);
         }
-        final String guestUri = this.createGuestUri(file, callback, options);
-        if(null == guestUri) {
-            return DescriptiveUrl.EMPTY;
-        }
-        return new DescriptiveUrl(URI.create(toBrandedUri(guestUri, session.getHost().getProperty("share.hostname"))));
+        return EueShareUrlProvider.toUrl(session.getHost(), this.createGuestUri(file, callback, options));
     }
 
-    private String createGuestUri(final Path file, final PasswordCallback callback, final ShareCreationRequestModel shareCreationRequestModel) throws BackgroundException {
+    private ShareCreationResponseEntity createGuestUri(final Path file, final PasswordCallback callback, final ShareCreationRequestModel shareCreationRequestModel) throws BackgroundException {
         final EueApiClient client = new EueApiClient(session);
         final CreateShareApi createShareApi = new CreateShareApi(client);
         final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
@@ -111,7 +106,7 @@ public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestMo
                     case HttpStatus.SC_CREATED:
                         shareCreationResponseEntry.getEntity().setResourceURI(resourceId);
                         session.userShares().add(shareCreationResponseEntry.getEntity());
-                        return shareCreationResponseEntry.getEntity().getGuestURI();
+                        return shareCreationResponseEntry.getEntity();
                     default:
                         log.warn(String.format("Failure %s creating share for %s", shareCreationResponseEntry, file));
                         if(null == shareCreationResponseEntry.getEntity()) {
