@@ -16,6 +16,7 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.eue.io.swagger.client.model.UserSharesModel;
 
@@ -25,11 +26,11 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
-public class EueShareUrlProviderTest extends AbstractEueSessionTest {
+public class EueShareUrlProviderTest {
 
     @Test
     public void toUrl() {
-        assertEquals(DescriptiveUrl.EMPTY, new EueShareUrlProvider(session.getHost(), new UserSharesModel()).toUrl(
+        assertEquals(DescriptiveUrl.EMPTY, new EueShareUrlProvider(new Host(new EueProtocol()), new UserSharesModel()).toUrl(
                 new Path("/f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed));
     }
 }
