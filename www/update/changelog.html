@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -46,8 +46,6 @@
         ul li ul li {
             list-style-type: disc;
         }
-
-
     </style>
 </head>
 
@@ -60,71 +58,112 @@
 </p>
 
 <p>
+    <a target="_blank" href="https://trac.cyberduck.io/milestone/8.0.2"><strong>Version 8.0.2</strong></a>
+</p>
+<ul>
+    <li><span class="label label-warning">Bugfix</span> Replacing file may cause empty permission set in ACL (S3)</li>
+    <li><span class="label label-warning">Bugfix</span> Failure authentication with PuTTY private key (SFTP) (<a
+            target="_blank" href="https://trac.cyberduck.io/ticket/11887">#11887</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Set storage class for transition to "ARCHIVE" when editing
+        lifecycle configuration (Google Cloud Storage) (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/11906">#11906</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Deleted folders still displayed with versioning enabled on
+        bucket (Google Cloud Storage) (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/11904">#11904</a>)
+    </li>
+</ul>
+
+<p>
+    <a target="_blank" href="https://trac.cyberduck.io/milestone/8.0.1"><strong>Version 8.0.1</strong></a>
+</p>
+<ul>
+    <li><span class="label label-warning">Bugfix</span> Interoperability with servers not supporting Range header in
+        requests (WebDAV)
+    </li>
+</ul>
+
+<p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.0.0"><strong>Version 8.0.0</strong></a>
 </p>
 <ul>
     <li><span class="label label-success">Feature</span> Allow to manage additional connection profiles in Preferences
         (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/10823">#10823</a>)
+                target="_blank" href="https://trac.cyberduck.io/ticket/10823">#10823</a>)
     </li>
     <li><span class="label label-success">Feature</span> New default connection profile (ownCloud)</li>
     <li><span class="label label-success">Feature</span> Retain modification date in metadata for uploads (Google
         Storage) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11784">#11784</a>)
+                target="_blank" href="https://trac.cyberduck.io/ticket/11784">#11784</a>)
     </li>
     <li><span class="label label-success">Feature</span> Retain modification date in metadata for uploads (S3) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11784">#11784</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11784">#11784</a>)
     </li>
     <li><span class="label label-success">Feature</span> Build package in AppImage format (CLI) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11762">#11762</a>)</li>
+            target="_blank" href="https://trac.cyberduck.io/ticket/11762">#11762</a>)
+    </li>
     <li><span class="label label-success">Feature</span> Support for PuTTY v3 key files (SFTP)</li>
-    <li><span class="label label-success">Feature</span> Support public key authentication using certificates (SFTP)</li>
+    <li><span class="label label-success">Feature</span> Support public key authentication using certificates (SFTP)
+    </li>
     <li><span class="label label-success">Feature</span> Support for PEM ASN.1 encoded private keys (SFTP)</li>
     <li><span class="label label-success">Feature</span> Support for host certificate keys handling @cert-authority in
         known_hosts (SFTP)
     </li>
     <li><span class="label label-success">Feature</span> Column in browser window to display checksum (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11824">#11824</a>)</li>
+            target="_blank" href="https://trac.cyberduck.io/ticket/11824">#11824</a>)
+    </li>
     <li><span class="label label-warning">Bugfix</span> Change default path for NextCloud connections to include
         username (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11787">#11787</a>)
+                target="_blank" href="https://trac.cyberduck.io/ticket/11787">#11787</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Failed to overwrite upload of object with custom metadata
         (Google Cloud Storage) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11781">#11781</a>)
+                target="_blank" href="https://trac.cyberduck.io/ticket/11781">#11781</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Skip duplicate file versions in output (Cyberduck CLI) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11786">#11786</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11786">#11786</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Fails to use selected private key file outside of ~/.ssh folder
         (SFTP, Mac App Store) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11782">#11782</a>)
+                target="_blank" href="https://trac.cyberduck.io/ticket/11782">#11782</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Unable to delete folders (Google Cloud Storage) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11808">#11808</a>)</li>
+            target="_blank" href="https://trac.cyberduck.io/ticket/11808">#11808</a>)
+    </li>
     <li><span class="label label-warning">Bugfix</span> Allow to set Glacier storage class (Google Cloud Storage) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11521">#11521</a>)</li>
+            target="_blank" href="https://trac.cyberduck.io/ticket/11521">#11521</a>)
+    </li>
     <li><span class="label label-warning">Bugfix</span> Unable to remove delete marker (S3) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11803">#11803</a>)</li>
+            target="_blank" href="https://trac.cyberduck.io/ticket/11803">#11803</a>)
+    </li>
     <li><span class="label label-warning">Bugfix</span> Unable to download previous version of file (S3, Backblaze B2) (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/11797">#11797</a>, <a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11835">#11835</a>)</li>
+            target="_blank" href="https://trac.cyberduck.io/ticket/11835">#11835</a>)
+    </li>
     <li><span class="label label-warning">Bugfix</span> Copying files requires permission to read bucket ACL (S3) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11701">#11701</a>)</li>
+            target="_blank" href="https://trac.cyberduck.io/ticket/11701">#11701</a>)
+    </li>
     <li><span class="label label-warning">Bugfix</span> Unable to set storage class to STANDARD (S3) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11849">#11849</a>)</li>
+            target="_blank" href="https://trac.cyberduck.io/ticket/11849">#11849</a>)
+    </li>
     <li><span class="label label-warning">Bugfix</span> Taskbar shows incorrect number of transfers (Windows) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11813">#11813</a>)</li>
+            target="_blank" href="https://trac.cyberduck.io/ticket/11813">#11813</a>)
+    </li>
     <li><span class="label label-warning">Bugfix</span> Allow to delete trashed files (Google Drive) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11816">#11816</a>)</li>
+            target="_blank" href="https://trac.cyberduck.io/ticket/11816">#11816</a>)
+    </li>
     <li><span class="label label-warning">Bugfix</span> Create directory placeholders using default storage class (S3) (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/11751">#11751</a>)
-    <li><span class="label label-warning">Bugfix</span> Create master key using default storage class (S3, Cryptomator) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11751">#11751</a>)
-    <li><span class="label label-warning">Bugfix</span> Use specific region endpoint only with --region option (S3, CLI) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11827">#11827</a>)
+    <li><span class="label label-warning">Bugfix</span> Create master key using default storage class (S3, Cryptomator)
+        (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/11751">#11751</a>)
+    <li><span class="label label-warning">Bugfix</span> Use specific region endpoint only with --region option (S3, CLI)
+        (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/11827">#11827</a>)
     <li><span class="label label-warning">Bugfix</span> Empty list output when listing root directory (CLI) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11814">#11814</a>)</li>
+            target="_blank" href="https://trac.cyberduck.io/ticket/11814">#11814</a>)
+    </li>
 </ul>
 
 <p>
@@ -133,15 +172,15 @@
 <ul>
     <li><span class="label label-success">Feature</span> Add --purge option to invalidate files in Amazon CloudFront
         distributions and OpenStack Swift (X-CDN-Enabled header) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11767">#11767</a>)
+                target="_blank" href="https://trac.cyberduck.io/ticket/11767">#11767</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Links for CloudFront distributions and S3 website endpoints are
         missing in the Copy URL and Open URL menu (S3) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11764">#11764</a>)
+                target="_blank" href="https://trac.cyberduck.io/ticket/11764">#11764</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Failure downloading files (Files.com)</li>
     <li><span class="label label-warning">Bugfix</span> Return existing share URL when found (Dropbox) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11209">#11209</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11209">#11209</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Select origin bucket for logging target with missing permission
         to list all buckets (S3) (<a target="_blank" href="https://trac.cyberduck.io/ticket/17755">#17755</a>)
@@ -150,7 +189,7 @@
         enabled (Google Cloud Storage) (<a target="_blank" href="https://trac.cyberduck.io/ticket/11766">#11766</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Missing progress information when copying file (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11019">#11019</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11019">#11019</a>)
     </li>
 </ul>
 
@@ -160,7 +199,7 @@
 <ul>
     <li><span class="label label-success">Feature</span> Support S3 interface endpoints (AWS PrivateLink for Amazon S3)
         (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11735">#11735</a>)
+                target="_blank" href="https://trac.cyberduck.io/ticket/11735">#11735</a>)
     </li>
     <li><span class="label label-success">Feature</span> Updated support for Files.com using proprietary REST API
         (Files.com)
@@ -176,7 +215,7 @@
     </li>
     <li><span class="label label-warning">Bugfix</span> Downloads from HTTP server with no WebDAV extension support
         (CLI) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11727">#11727</a>)
+                target="_blank" href="https://trac.cyberduck.io/ticket/11727">#11727</a>)
     </li>
 </ul>
 
@@ -184,30 +223,32 @@
     <a target="_blank" href="https://trac.cyberduck.io/milestone/7.10.0"><strong>Version 7.10.0</strong></a>
 </p>
 <ul>
-    <li><span class="label label-success">Feature</span> Preference to set default storage class (Google Cloud Storage) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11521">#11521</a>)
+    <li><span class="label label-success">Feature</span> Preference to set default storage class (Google Cloud Storage)
+        (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/11521">#11521</a>)
     </li>
-    <li><span class="label label-success">Feature</span> Preference to set default bucket region (Google Cloud Storage)</li>
+    <li><span class="label label-success">Feature</span> Preference to set default bucket region (Google Cloud Storage)
+    </li>
     <li><span class="label label-success">Feature</span> Preference to set predefined set of grantees and permissions
         for new files (S3, Google Cloud Storage)
     </li>
     <li><span class="label label-success">Feature</span> Support to set predefined ACL bucket-owner-full-control (S3,
         Google Cloud Storage) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11697">#11697</a>)
+                target="_blank" href="https://trac.cyberduck.io/ticket/11697">#11697</a>)
     </li>
     <li><span class="label label-success">Feature</span> Context menu in browser table header to select columns (macOS)
         (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11718">#11718</a>)
+                target="_blank" href="https://trac.cyberduck.io/ticket/11718">#11718</a>)
     </li>
     <li><span class="label label-success">Feature</span> Allow selection of region when creating new bucket for third
         party S3 providers
     </li>
     <li><span class="label label-warning">Bugfix</span> Recursive search yields no results (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11424">#11424</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11424">#11424</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Canceled upload to a vault can result in an undeletable folder
         (Cryptomator) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11696">#11696</a>)
+                target="_blank" href="https://trac.cyberduck.io/ticket/11696">#11696</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Updated .NET Framework Installer (Windows)</li>
 </ul>
@@ -229,7 +270,7 @@
                                                                                                    href="https://trac.cyberduck.io/ticket/11676">#11676</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Slow tranfer when using "compare" option for existing files (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11679">#11679</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11679">#11679</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Downloads fail with error "The specified key does not exist"
         (S3) (<a target="_blank" href="https://trac.cyberduck.io/ticket/11670">#11670</a>)
@@ -254,7 +295,7 @@
         Storage)
     </li>
     <li><span class="label label-success">Feature</span> Support chacha20-poly1305@openssh.com cipher (SFTP) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/8554">#8554</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/8554">#8554</a>)
     </li>
     <li><span class="label label-success">Feature</span> Share file option to set public-read ACL on file and copy URL
         (S3, Google Cloud Storage)
@@ -343,13 +384,13 @@
         (<a target="_blank" href="https://trac.cyberduck.io/ticket/11540">#11540</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Failure unlocking vaults on Google Cloud Storage (Cryptomator) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11528">#11528</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11528">#11528</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Fix SSL session reuse on data channel (FTP, Windows)</li>
     <li><span class="label label-warning">Bugfix</span> Failure running application (CLI, Linux)</li>
     <li><span class="label label-warning">Bugfix</span> Recursive search yields no results (Google Drive) (<a
-        target="_blank"
-        href="https://trac.cyberduck.io/ticket/11424">#11424</a>)
+            target="_blank"
+            href="https://trac.cyberduck.io/ticket/11424">#11424</a>)
     </li>
 </ul>
 
@@ -370,15 +411,15 @@
 </p>
 <ul>
     <li><span class="label label-success">Feature</span> Connecting to different libraries (SharePoint) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11043">#11043</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11043">#11043</a>)
     </li>
     <li><span class="label label-success">Feature</span> Default connection profile (Microsoft SharePoint Site) to
         connect so specific site (Sharepoint) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/10115">#10115</a>, <a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11375">#11375</a>)
+                target="_blank" href="https://trac.cyberduck.io/ticket/10115">#10115</a>, <a
+                target="_blank" href="https://trac.cyberduck.io/ticket/11375">#11375</a>)
     </li>
     <li><span class="label label-success">Feature</span> Create shared link for file (OneDrive, SharePoint) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11373">#11373</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11373">#11373</a>)
     </li>
     <li><span class="label label-success">Feature</span> Updated toolbar icons in Preferencs window (macOS)</li>
     <li><span class="label label-warning">Bugfix</span> No attempt to authenticate using SSH agent (SFTP)</li>
@@ -393,16 +434,16 @@
 </p>
 <ul>
     <li><span class="label label-success">Feature</span> Allow custom session duration for STS (S3) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11265">#11265</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11265">#11265</a>)
     </li>
     <li><span class="label label-success">Feature</span> Support for PreferredAuthentications in OpenSSH configuration
         (SFTP) (<a target="_blank" href="https://trac.cyberduck.io/ticket/9964">#9964</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Exception reordering of bookmarks with drag and drop (macOS) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11242">#11242</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11242">#11242</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Crash opening QuickLook panel (macOS) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11212">#11212</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11212">#11212</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Temporary local file deleted after editing in external editor
         (<a target="_blank" href="https://trac.cyberduck.io/ticket/11086">#11086</a>)
@@ -417,13 +458,13 @@
 </p>
 <ul>
     <li><span class="label label-warning">Bugfix</span> Workaround for crash on macOS 11 for some users (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11231">#11231</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11231">#11231</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Failure connecting through jump server with alias in
         configuration for target host (<a target="_blank" href="https://trac.cyberduck.io/ticket/11227">#11227</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Missing search field on macOS prior version 10.15 (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11234">#11234</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11234">#11234</a>)
     </li>
 </ul>
 
@@ -441,7 +482,7 @@
         ~/.aws/credentials (<a target="_blank" href="https://trac.cyberduck.io/ticket/11175">#11175</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Failure deleting folder placeholder in versioned bucket (S3) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11157">#11157</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11157">#11157</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Server connection timeout when moving or duplicating large files
         (Backblaze B2) (<a target="_blank" href="https://trac.cyberduck.io/ticket/11185">#11185</a>)
@@ -450,21 +491,21 @@
         (macOS) (<a target="_blank" href="https://trac.cyberduck.io/ticket/11118">#11118</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Failure saving credentials (CLI, Windows) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11098">#11098</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11098">#11098</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Unable to connect to cn-north-1 (S3) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11197">#11197</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11197">#11197</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Access shared files (OneDrive Business) (<a
-        target="_blank" href="https://trac.cyberduck.io/ticket/11102">#11102</a>)
+            target="_blank" href="https://trac.cyberduck.io/ticket/11102">#11102</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Read external_id from AssumeRole configuration in
         ~/.aws/credentials (S3) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/11229">#11229</a>))
+                target="_blank" href="https://trac.cyberduck.io/ticket/11229">#11229</a>))
     </li>
 </ul>
 
 <p>Release notes for previous versions can be found at <a
-    target="_blank" href="https://cyberduck.io/changelog">cyberduck.io/changelog</a>.</p>
+        target="_blank" href="https://cyberduck.io/changelog">cyberduck.io/changelog</a>.</p>
 </body>
 </html>

@@ -1,6 +1,15 @@
 Cyberduck
 https://cyberduck.io/
 
+8.0.2
+- [Bugfix] Replacing file may cause empty permission set in ACL (S3)
+- [Bugfix] Failure authentication with PuTTY private key (SFTP) (#11887)
+- [Bugfix] Set storage class for transition to "ARCHIVE" when editing lifecycle configuration (Google Cloud Storage) (#11906)
+- [Bugfix] Deleted folders still displayed with versioning enabled on bucket (Google Cloud Storage) (#11904)
+
+8.0.1
+- [Bugfix] Interoperability with servers not supporting Range header in requests (WebDAV)
+
 8.0.0
 - [Feature] Allow to manage additional connection profiles in Preferences (#10823)
 - [Feature] New default connection profile for ownCloud
