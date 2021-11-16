@@ -81,6 +81,7 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
                 return new Credentials(null, new AlphanumericRandomStringService().random());
             }
         }));
+        assertEquals(url, new EueShareUrlProvider(session.getHost(), session.userShares()).toUrl(sourceFolder).find(DescriptiveUrl.Type.signed));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
@@ -106,6 +107,7 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
                 return new Credentials(null, new AlphanumericRandomStringService().random());
             }
         }));
+        assertEquals(url, new EueShareUrlProvider(session.getHost(), session.userShares()).toUrl(file).find(DescriptiveUrl.Type.signed));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
@@ -128,6 +130,7 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
                 return new Credentials(null, new AlphanumericRandomStringService().random());
             }
         }));
+        assertEquals(url, new EueShareUrlProvider(session.getHost(), session.userShares()).toUrl(sourceFolder).find(DescriptiveUrl.Type.signed));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 

@@ -23,6 +23,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.GetUserSharesApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.UserInfoApi;
@@ -232,6 +233,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                     log.warn(String.format("No existing vault found in %s", vault));
                 }
             }
+            userShares.set(this.userShares());
         }
         catch(ApiException e) {
             throw new EueExceptionMappingService().map(e);
@@ -320,6 +322,9 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
         }
         if(type == Upload.class) {
             return (T) new EueThresholdUploadService(this, resourceid, registry);
+        }
+        if(type == UrlProvider.class) {
+            return (T) new EueShareUrlProvider(host, userShares.get());
         }
         if(type == PromptUrlProvider.class) {
             return (T) new EueShareFeature(this, resourceid);
