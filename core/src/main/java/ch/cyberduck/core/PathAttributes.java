@@ -224,7 +224,10 @@ public class PathAttributes extends Attributes implements Serializable {
             dict.setObjectForKey(acl, "Acl");
         }
         if(link != DescriptiveUrl.EMPTY) {
-            dict.setStringForKey(link.getUrl(), "Link");
+            final Map<String, String> wrapper = new HashMap<>();
+            wrapper.put("Url", link.getUrl());
+            wrapper.put("Type", link.getType().name());
+            dict.setMapForKey(wrapper, "Link");
         }
         if(checksum != Checksum.NONE) {
             final Map<String, String> wrapper = new HashMap<>();
