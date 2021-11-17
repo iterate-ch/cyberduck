@@ -20,8 +20,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -42,17 +40,16 @@ public class EueFindFeatureTest extends AbstractEueSessionTest {
     @Test
     public void testFindRoot() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final EueAttributesFinderFeature f = new EueAttributesFinderFeature(session, fileid);
-        final PathAttributes attributes = f.find(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)));
-        assertSame(PathAttributes.EMPTY, attributes);
+        final EueFindFeature f = new EueFindFeature(session, fileid);
+        assertTrue(f.find(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory))));
     }
 
-    @Test(expected = NotfoundException.class)
+    @Test
     public void testFindNotFound() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final EueAttributesFinderFeature f = new EueAttributesFinderFeature(session, fileid);
-        f.find(test);
+        final EueFindFeature f = new EueFindFeature(session, fileid);
+        assertFalse(f.find(test));
     }
 
     @Test
