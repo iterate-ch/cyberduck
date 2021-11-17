@@ -29,7 +29,6 @@
         <!-- Protocols -->
         <module>jersey</module>
         <module>oauth</module>
-        <module>udt</module>
         <module>irods</module>
         <module>spectra</module>
         <module>s3</module>
@@ -77,7 +76,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <argLine />
-        <jna-version>5.9.0</jna-version>
+        <jna-version>5.10.0</jna-version>
         <jersey-version>2.35</jersey-version>
         <jackson-version>2.12.5</jackson-version>
         <slf4j-version>1.7.32</slf4j-version>
@@ -479,7 +478,9 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.2</version>
                     <configuration>
-                        <argLine>@{argLine} -Djava.library.path=${project.build.directory}</argLine>
+                        <argLine>@{argLine} --add-opens=java.base/java.lang=ALL-UNNAMED
+                            -Djava.library.path=${project.build.directory}
+                        </argLine>
                         <systemPropertiesFile>${main.basedir}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
@@ -498,7 +499,9 @@
                     <configuration>
                         <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                         <encoding>UTF-8</encoding>
-                        <argLine>@{argLine} -Djava.library.path=${project.build.directory}</argLine>
+                        <argLine>@{argLine} --add-opens=java.base/java.lang=ALL-UNNAMED
+                            -Djava.library.path=${project.build.directory}
+                        </argLine>
                         <systemPropertiesFile>${main.basedir}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>

@@ -130,10 +130,10 @@
                                 <configuration>
                                     <artifactItems>
                                         <artifactItem>
-                                            <groupId>net.adoptopenjdk</groupId>
-                                            <artifactId>jre</artifactId>
+                                            <groupId>net.temurin</groupId>
+                                            <artifactId>jdk</artifactId>
                                             <type>zip</type>
-                                            <version>15.0.1</version>
+                                            <version>17</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
