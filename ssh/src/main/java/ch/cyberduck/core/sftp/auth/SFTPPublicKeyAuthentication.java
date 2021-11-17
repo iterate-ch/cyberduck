@@ -97,16 +97,19 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                     @Override
                     public char[] reqPassword(Resource<?> resource) {
                         if(StringUtils.isEmpty(credentials.getIdentityPassphrase())) {
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Prompt for passphrase for private key file %s", credentials.getIdentity()));
+                            }
                             try {
                                 // Use password prompt
                                 final Credentials input = prompt.prompt(bookmark,
-                                    LocaleFactory.localizedString("Private key password protected", "Credentials"),
-                                    String.format("%s (%s)",
-                                        LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                        identity.getAbbreviatedPath()),
-                                    new LoginOptions()
-                                        .icon(bookmark.getProtocol().disk())
-                                        .user(false).password(true)
+                                        LocaleFactory.localizedString("Private key password protected", "Credentials"),
+                                        String.format("%s (%s)",
+                                                LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
+                                                identity.getAbbreviatedPath()),
+                                        new LoginOptions()
+                                                .icon(bookmark.getProtocol().disk())
+                                                .user(false).password(true)
                                 );
                                 credentials.setSaved(input.isSaved());
                                 credentials.setIdentityPassphrase(input.getPassword());
