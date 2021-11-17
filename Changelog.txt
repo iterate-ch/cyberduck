@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+8.1.0
+- [Feature] Native support for Apple silicon (#11101)
+
 8.0.2
 - [Bugfix] Replacing file may cause empty permission set in ACL (S3)
 - [Bugfix] Failure authentication with PuTTY private key (SFTP) (#11887)
