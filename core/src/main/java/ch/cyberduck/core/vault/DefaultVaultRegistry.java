@@ -25,7 +25,6 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.vault.registry.*;
 
@@ -39,11 +38,9 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     private static final Logger log = Logger.getLogger(DefaultVaultRegistry.class);
 
     public static final String DEFAULT_MASTERKEY_FILE_NAME =
-        PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename");
+            PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename");
     public static final String DEFAULT_BACKUPKEY_FILE_NAME = String.format("%s.bkup",
-        PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename"));
-
-    private final Preferences preferences = PreferencesFactory.get();
+            PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename"));
 
     private final PasswordStore keychain;
     private final PasswordCallback prompt;
@@ -148,15 +145,15 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         if(type == ListService.class) {
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
-                new LoadingVaultLookupListener(this, keychain, prompt))
-                .withAutodetect(preferences.getBoolean("cryptomator.vault.autodetect")
-                );
+                    new LoadingVaultLookupListener(this, keychain, prompt))
+                    .withAutodetect(new HostPreferences(session.getHost()).getBoolean("cryptomator.vault.autodetect")
+                    );
         }
         if(type == Find.class) {
             return (T) new VaultRegistryFindFeature(session, (Find) proxy, this,
-                new LoadingVaultLookupListener(this, keychain, prompt))
-                .withAutodetect(preferences.getBoolean("cryptomator.vault.autodetect")
-                );
+                    new LoadingVaultLookupListener(this, keychain, prompt))
+                    .withAutodetect(new HostPreferences(session.getHost()).getBoolean("cryptomator.vault.autodetect")
+                    );
         }
         if(type == Bulk.class) {
             return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this);

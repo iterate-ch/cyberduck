@@ -22,8 +22,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.vault.VaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
@@ -36,21 +34,20 @@ import java.util.EnumSet;
 public class VaultRegistryFindFeature implements Find {
     private static final Logger log = Logger.getLogger(VaultRegistryFindFeature.class);
 
-    private final Preferences preferences = PreferencesFactory.get();
-
     private final Session<?> session;
     private final Find proxy;
     private final VaultRegistry registry;
     private final VaultLookupListener lookup;
 
-    private boolean autodetect = preferences.getBoolean("cryptomator.vault.autodetect")
-        && preferences.getBoolean("cryptomator.enable");
+    private boolean autodetect;
 
     public VaultRegistryFindFeature(final Session<?> session, final Find proxy, final VaultRegistry registry, final VaultLookupListener lookup) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
         this.lookup = lookup;
+        this.autodetect = new HostPreferences(session.getHost()).getBoolean("cryptomator.vault.autodetect")
+                && new HostPreferences(session.getHost()).getBoolean("cryptomator.enable");
     }
 
     @Override
@@ -85,7 +82,7 @@ public class VaultRegistryFindFeature implements Find {
     }
 
     public VaultRegistryFindFeature withAutodetect(final boolean autodetect) {
-        this.autodetect = autodetect && preferences.getBoolean("cryptomator.enable");
+        this.autodetect = autodetect && new HostPreferences(session.getHost()).getBoolean("cryptomator.enable");
         return this;
     }
 
