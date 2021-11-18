@@ -65,7 +65,7 @@ public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestMo
         if(type == Type.upload) {
             return file.isDirectory();
         }
-        return true;
+        return DescriptiveUrl.EMPTY == file.attributes().getLink();
     }
 
     @Override
