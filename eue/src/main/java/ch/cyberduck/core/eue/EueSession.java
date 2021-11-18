@@ -230,7 +230,9 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                     vaultResourceId = new EueAttributesFinderFeature(this, resourceid).find(vault).getFileId();
                 }
                 catch(NotfoundException e) {
-                    log.warn(String.format("No existing vault found in %s", vault));
+                    log.warn(String.format("Disable vault features with no existing vault found at %s", vault));
+                    // Disable vault features
+                    PreferencesFactory.get().setProperty("cryptomator.enable", false);
                 }
             }
             userShares.set(this.userShares());
