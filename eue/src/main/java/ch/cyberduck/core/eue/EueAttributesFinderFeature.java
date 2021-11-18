@@ -52,9 +52,6 @@ public class EueAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(file.isRoot()) {
-            return PathAttributes.EMPTY;
-        }
         try {
             final EueApiClient client = new EueApiClient(session);
             final UiFsModel response;

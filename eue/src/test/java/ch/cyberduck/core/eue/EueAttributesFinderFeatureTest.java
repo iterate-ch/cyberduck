@@ -48,6 +48,14 @@ import static org.junit.Assert.*;
 public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
 
     @Test
+    public void testRoot() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(AbstractPath.Type.directory)));
+        assertNotEquals(PathAttributes.EMPTY, attr);
+        assertNotNull(attr.getETag());
+    }
+
+    @Test
     public void testFindIfNoneMatch() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueWriteFeature feature = new EueWriteFeature(session, fileid);
