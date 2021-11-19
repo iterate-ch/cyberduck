@@ -228,6 +228,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                 final Path vault = new Path(new HostPreferences(host).getProperty("cryptomator.vault.name.default"), EnumSet.of(Path.Type.directory));
                 try {
                     vaultResourceId = new EueAttributesFinderFeature(this, resourceid).find(vault).getFileId();
+                    PreferencesFactory.get().setProperty("cryptomator.enable", true);
                 }
                 catch(NotfoundException e) {
                     log.warn(String.format("Disable vault features with no existing vault found at %s", vault));
