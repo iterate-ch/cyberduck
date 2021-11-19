@@ -56,10 +56,10 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<BoxLargeUpl
             public BoxLargeUploadService.BoxUploadResponse call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final HttpRange range = HttpRange.withStatus(new TransferStatus()
-                        .withLength(status.getLength())
-                        .withOffset(status.getOffset()));
-                    final String uploadSessionId = status.getParameters().get(Constant.UPLOAD_SESSION_ID);
-                    final String overall_length = status.getParameters().get(Constant.OVERALL_LENGTH);
+                            .withLength(status.getLength())
+                            .withOffset(status.getOffset()));
+                    final String uploadSessionId = status.getParameters().get(BoxLargeUploadService.UPLOAD_SESSION_ID);
+                    final String overall_length = status.getParameters().get(BoxLargeUploadService.OVERALL_LENGTH);
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Send range %s for file %s", range, file));
                     }
@@ -102,5 +102,4 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<BoxLargeUpl
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return new BoxBase64SHA1ChecksumCompute();
     }
-
 }

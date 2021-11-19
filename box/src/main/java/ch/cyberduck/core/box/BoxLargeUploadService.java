@@ -52,6 +52,9 @@ import java.util.stream.Collectors;
 public class BoxLargeUploadService extends HttpUploadFeature<BoxLargeUploadService.BoxUploadResponse, MessageDigest> {
     private static final Logger log = Logger.getLogger(BoxLargeUploadService.class);
 
+    public static final String UPLOAD_SESSION_ID = "uploadSessionId";
+    public static final String OVERALL_LENGTH = "overall-length";
+
     private final BoxSession session;
     private final Long chunksize;
     private final Integer concurrency;
@@ -62,7 +65,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<BoxLargeUploadServi
 
     public BoxLargeUploadService(final BoxSession session, final BoxFileidProvider fileid, final Write<BoxUploadResponse> writer) {
         this(session, fileid, writer, new HostPreferences(session.getHost()).getLong("box.upload.multipart.size"),
-            new HostPreferences(session.getHost()).getInteger("box.upload.multipart.concurrency"));
+                new HostPreferences(session.getHost()).getInteger("box.upload.multipart.concurrency"));
     }
 
     public BoxLargeUploadService(final BoxSession session, final BoxFileidProvider fileid, final Write<BoxUploadResponse> writer, final Long chunksize, final Integer concurrency) {
@@ -88,7 +91,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<BoxLargeUploadServi
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final long length = Math.min(chunksize, remaining);
                 parts.add(this.submit(pool, file, local, throttle, listener, status,
-                    uploadSession.getId(), partNumber, offset, length, callback));
+                        uploadSession.getId(), partNumber, offset, length, callback));
                 remaining -= length;
                 offset += length;
             }
@@ -141,18 +144,18 @@ public class BoxLargeUploadService extends HttpUploadFeature<BoxLargeUploadServi
             public BoxUploadResponse call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
-                    .segment(true)
-                    .withOffset(offset)
-                    .withLength(length);
+                        .segment(true)
+                        .withOffset(offset)
+                        .withLength(length);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
                 status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
                 final Map<String, String> parameters = new HashMap<>();
-                parameters.put(Constant.UPLOAD_SESSION_ID, uploadSessionId);
-                parameters.put(Constant.OVERALL_LENGTH, String.valueOf(overall.getLength()));
+                parameters.put(UPLOAD_SESSION_ID, uploadSessionId);
+                parameters.put(OVERALL_LENGTH, String.valueOf(overall.getLength()));
                 status.withParameters(parameters);
                 final BoxUploadResponse boxUploadResponse = BoxLargeUploadService.this.upload(
-                    file, local, throttle, listener, status, overall, status, callback);
+                        file, local, throttle, listener, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Received response %s for part %d", boxUploadResponse.getUploadedPart(), partNumber));
                 }
