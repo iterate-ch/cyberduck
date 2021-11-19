@@ -22,6 +22,59 @@
     }
   ],
   "paths": {
+    "/users/me": {
+      "get": {
+        "operationId": "get_users_me",
+        "x-box-tag": "users",
+        "summary": "Get current user",
+        "tags": [
+          "Users"
+        ],
+        "description": "Retrieves information about the user who is currently authenticated.\n\nIn the case of a client-side authenticated OAuth 2.0 application\nthis will be the user who authorized the app.\n\nIn the case of a JWT, server-side authenticated application\nthis will be the service account that belongs to the application\nby default.\n\nUse the `As-User` header to change who this API call is made on behalf of.",
+        "parameters": [
+          {
+            "name": "fields",
+            "description": "A comma-separated list of attributes to include in the\nresponse. This can be used to request fields that are\nnot normally returned in a standard response.\n\nBe aware that specifying this parameter will have the\neffect that none of the standard fields are returned in\nthe response unless explicitly specified, instead only\nfields for the mini representation are returned, additional\nto the fields requested.",
+            "in": "query",
+            "example": [
+              "id",
+              "type",
+              "name"
+            ],
+            "required": false,
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a single user object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected client error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/files/{file_id}": {
       "get": {
         "operationId": "get_files_id",
@@ -5561,6 +5614,104 @@
             "type": "string",
             "example": "Pc3FIOG9vSGV4VHo4QzAyg5T1JvNnJoZ3ExaVNyQWw6WjRsanRKZG5lQk9qUE1BVQP",
             "description": "An optional access token to use to upload the file"
+          }
+        }
+      },
+      "User": {
+        "title": "User",
+        "type": "object",
+        "x-box-resource-id": "user",
+        "x-box-variant": "standard",
+        "description": "A standard representation of a user, as returned from any\nuser API endpoints by default",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the user object was created",
+            "example": "2012-12-12T10:53:43-08:00"
+          },
+          "modified_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the user object was last modified",
+            "example": "2012-12-12T10:53:43-08:00"
+          },
+          "language": {
+            "type": "string",
+            "description": "The language of the user, formatted in modified version of the\n[ISO 639-1](/guides/api-calls/language-codes) format.",
+            "example": "en"
+          },
+          "timezone": {
+            "type": "string",
+            "format": "timezone",
+            "description": "The user's timezone",
+            "example": "Africa/Bujumbura"
+          },
+          "space_amount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The user’s total available space amount in bytes",
+            "example": 11345156112
+          },
+          "space_used": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The amount of space in use by the user",
+            "example": 1237009912
+          },
+          "max_upload_size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The maximum individual file size in bytes the user can have",
+            "example": 2147483648
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "cannot_delete_edit",
+              "cannot_delete_edit_upload"
+            ],
+            "description": "The user's account status",
+            "example": "active"
+          },
+          "job_title": {
+            "type": "string",
+            "description": "The user’s job title",
+            "maxLength": 100,
+            "example": "CEO"
+          },
+          "phone": {
+            "type": "string",
+            "description": "The user’s phone number",
+            "maxLength": 100,
+            "example": "6509241374"
+          },
+          "address": {
+            "type": "string",
+            "description": "The user’s address",
+            "maxLength": 255,
+            "example": "900 Jefferson Ave, Redwood City, CA 94063"
+          },
+          "avatar_url": {
+            "type": "string",
+            "description": "URL of the user’s avatar image",
+            "example": "https://www.box.com/api/avatar/large/181216415"
+          },
+          "name": {
+            "type": "string",
+            "description": "The display name of this user",
+            "example": "Aaron Levie",
+            "maxLength": 50,
+            "nullable": false
+          },
+          "login": {
+            "type": "string",
+            "format": "email",
+            "description": "The primary email address of this user",
+            "example": "ceo@example.com",
+            "nullable": false
           }
         }
       }

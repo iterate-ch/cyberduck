@@ -15,11 +15,14 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.box.io.swagger.client.ApiException;
+import ch.cyberduck.core.box.io.swagger.client.api.UsersApi;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
@@ -46,6 +49,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Collections;
 
 public class BoxSession extends HttpSession<CloseableHttpClient> {
     private static final Logger log = Logger.getLogger(BoxSession.class);
@@ -62,7 +66,7 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
     public CloseableHttpClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol())
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+                .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         return configuration.build();
@@ -71,6 +75,14 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
+        try {
+            final Credentials credentials = host.getCredentials();
+            credentials.setUsername(new UsersApi(new BoxApiClient(client)).getUsersMe(Collections.emptyList()).getLogin());
+            credentials.setSaved(true);
+        }
+        catch(ApiException e) {
+            throw new BoxExceptionMappingService(fileid).map(e);
+        }
     }
 
     @Override
