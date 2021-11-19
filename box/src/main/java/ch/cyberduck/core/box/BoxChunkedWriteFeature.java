@@ -66,7 +66,7 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<BoxLargeUpl
                     final HttpPut request = new HttpPut(String.format("%s/files/upload_sessions/%s", client.getBasePath(), uploadSessionId));
                     // Must not overlap with the range of a part already uploaded this session.
                     request.addHeader(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
-                        Integer.valueOf(overall_length))));
+                            Long.valueOf(overall_length))));
                     request.addHeader(new BasicHeader("Digest", String.format("sha=%s", status.getChecksum())));
                     request.setEntity(entity);
                     final UploadedPart uploadedPart = session.getClient().execute(request, new BoxClientErrorResponseHandler<UploadedPart>() {
