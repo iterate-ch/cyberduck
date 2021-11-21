@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
@@ -521,7 +522,17 @@ public class Host implements Serializable, Comparable<Host> {
      * @return Value for property key
      */
     public String getProperty(final String key) {
+        final Map<String, String> overrides = this.getCustom();
+        if(overrides.containsKey(key)) {
+            return overrides.get(key);
+        }
         return protocol.getProperties().get(key);
+    }
+
+    public void setProperty(final String key, final String value) {
+        final Map<String, String> overrides = new HashMap<>(this.getCustom());
+        overrides.put(key, value);
+        this.setCustom(overrides);
     }
 
     public String getRegion() {
