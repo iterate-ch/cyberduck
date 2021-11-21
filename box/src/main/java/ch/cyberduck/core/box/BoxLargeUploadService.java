@@ -56,23 +56,21 @@ public class BoxLargeUploadService extends HttpUploadFeature<BoxLargeUploadServi
     public static final String OVERALL_LENGTH = "overall-length";
 
     private final BoxSession session;
-    private final Long chunksize;
     private final Integer concurrency;
     private final BoxFileidProvider fileid;
     private final BoxApiClient client;
 
     private Write<BoxUploadResponse> writer;
 
-    public BoxLargeUploadService(final BoxSession session, final BoxFileidProvider fileid, final Write<BoxUploadResponse> writer) {
-        this(session, fileid, writer, new HostPreferences(session.getHost()).getLong("box.upload.multipart.size"),
+    public BoxLargeUploadService(final BoxSession session, final BoxFileidProvider fileid, final Write<BoxUploadHelper.BoxUploadResponse> writer) {
+        this(session, fileid, writer,
                 new HostPreferences(session.getHost()).getInteger("box.upload.multipart.concurrency"));
     }
 
-    public BoxLargeUploadService(final BoxSession session, final BoxFileidProvider fileid, final Write<BoxUploadResponse> writer, final Long chunksize, final Integer concurrency) {
+    public BoxLargeUploadService(final BoxSession session, final BoxFileidProvider fileid, final Write<BoxUploadHelper.BoxUploadResponse> writer, final Integer concurrency) {
         super(writer);
         this.session = session;
         this.writer = writer;
-        this.chunksize = chunksize;
         this.concurrency = concurrency;
         this.fileid = fileid;
         this.client = new BoxApiClient(this.session.getClient());
@@ -89,7 +87,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<BoxLargeUploadServi
             long remaining = status.getLength();
             final UploadSession uploadSession = BoxUploadHelper.getUploadSession(status, client, file, fileid);
             for(int partNumber = 1; remaining > 0; partNumber++) {
-                final long length = Math.min(chunksize, remaining);
+                final long length = Math.min(uploadSession.getPartSize(), remaining);
                 parts.add(this.submit(pool, file, local, throttle, listener, status,
                         uploadSession.getId(), partNumber, offset, length, callback));
                 remaining -= length;

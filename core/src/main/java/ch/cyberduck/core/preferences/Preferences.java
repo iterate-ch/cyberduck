@@ -1155,7 +1155,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
 
         // Must be at least 20MB
         this.setDefault("box.upload.multipart.threshold", String.valueOf(20 * 1024 * 1024));
-        this.setDefault("box.upload.multipart.size", String.valueOf(8 * 1024 * 1024));
         this.setDefault("box.upload.multipart.concurrency", String.valueOf(10));
         this.setDefault("box.listing.chunksize", String.valueOf(100));
 
