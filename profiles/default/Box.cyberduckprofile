@@ -43,5 +43,7 @@
         <false/>
         <key>Username Configurable</key>
         <false/>
+        <key>Hostname Configurable</key>
+        <false/>
     </dict>
 </plist>
