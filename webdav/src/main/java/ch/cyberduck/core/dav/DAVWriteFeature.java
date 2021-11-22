@@ -20,7 +20,6 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Write;
@@ -67,17 +66,8 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
 
     @Override
     public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        try {
-            return this.write(file, this.getHeaders(file, status), status);
-        }
-        catch(InteroperabilityException e) {
-            if(null != status.getLockId()) {
-                // Handle 412 Precondition Failed with expired token
-                log.warn(String.format("Retry failure %s with lock id %s removed", e, status.getLockId()));
-                return this.write(file, this.getHeaders(file, status.withLockId(null)), status);
-            }
-            throw e;
-        }
+        final List<Header> headers = this.getHeaders(file, status);
+        return this.write(file, headers, status);
     }
 
     protected List<Header> getHeaders(final Path file, final TransferStatus status) throws UnsupportedException {
