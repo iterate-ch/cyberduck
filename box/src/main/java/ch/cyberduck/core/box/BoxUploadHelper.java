@@ -14,35 +14,145 @@ package ch.cyberduck.core.box;/*
  */
 
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.box.io.swagger.client.ApiClient;
-import ch.cyberduck.core.box.io.swagger.client.ApiException;
-import ch.cyberduck.core.box.io.swagger.client.api.UploadsChunkedApi;
+import ch.cyberduck.core.box.io.swagger.client.JSON;
 import ch.cyberduck.core.box.io.swagger.client.model.FileIdUploadSessionsBody;
+import ch.cyberduck.core.box.io.swagger.client.model.Files;
 import ch.cyberduck.core.box.io.swagger.client.model.FilesUploadSessionsBody;
+import ch.cyberduck.core.box.io.swagger.client.model.UploadPart;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadSession;
+import ch.cyberduck.core.box.io.swagger.client.model.UploadSessionIdCommitBody;
+import ch.cyberduck.core.box.io.swagger.client.model.UploadedPart;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class BoxUploadHelper {
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.message.BasicHeader;
+import org.apache.log4j.Logger;
 
-    private BoxUploadHelper() {
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
+
+public class BoxUploadHelper {
+    private static final Logger log = Logger.getLogger(BoxUploadHelper.class);
+
+    private final BoxSession session;
+    private final BoxFileidProvider fileid;
+
+    public BoxUploadHelper(final BoxSession session, final BoxFileidProvider fileid) {
+        this.session = session;
+        this.fileid = fileid;
     }
 
-    public static UploadSession getUploadSession(final TransferStatus status, ApiClient client, Path file, BoxFileidProvider fileid) throws BackgroundException, ApiException {
-        if(status.isExists()) {
-            return new UploadsChunkedApi(client).postFilesIdUploadSessions(
-                fileid.getFileId(file, new DisabledListProgressListener()), new FileIdUploadSessionsBody()
-                    .fileName(file.getName())
-                    .fileSize(status.getLength()), null);
+    public UploadSession createUploadSession(final TransferStatus status, final Path file) throws BackgroundException {
+        try {
+            final HttpEntityEnclosingRequestBase request;
+            if(status.isExists()) {
+                request = new HttpPost(String.format("https://upload.box.com/api/2.0/files/%s/upload_sessions",
+                        fileid.getFileId(file, new DisabledListProgressListener())));
+                final ByteArrayOutputStream content = new ByteArrayOutputStream();
+                final FileIdUploadSessionsBody idUploadSessionsBody = new FileIdUploadSessionsBody().fileName(file.getName());
+                if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
+                    idUploadSessionsBody.fileSize(status.getLength());
+                }
+                new JSON().getContext(null).writeValue(content, idUploadSessionsBody);
+                request.setEntity(new ByteArrayEntity(content.toByteArray()));
+            }
+            else {
+                request = new HttpPost("https://upload.box.com/api/2.0/files/upload_sessions");
+                final ByteArrayOutputStream content = new ByteArrayOutputStream();
+                final FilesUploadSessionsBody uploadSessionsBody = new FilesUploadSessionsBody()
+                        .folderId(fileid.getFileId(file.getParent(), new DisabledListProgressListener()))
+                        .fileName(file.getName());
+                if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
+                    uploadSessionsBody.fileSize(status.getLength());
+                }
+                new JSON().getContext(null).writeValue(content, uploadSessionsBody);
+                request.setEntity(new ByteArrayEntity(content.toByteArray()));
+            }
+            final BoxClientErrorResponseHandler<UploadSession> responseHandler = new BoxClientErrorResponseHandler<UploadSession>() {
+                @Override
+                public UploadSession handleEntity(final HttpEntity entity) throws IOException {
+                    return new JSON().getContext(null).readValue(entity.getContent(), UploadSession.class);
+                }
+            };
+            return session.getClient().execute(request, responseHandler);
         }
-        else {
-            // Creates an upload session for a new file
-            return new UploadsChunkedApi(client).postFilesUploadSessions(new FilesUploadSessionsBody()
-                .folderId(fileid.getFileId(file.getParent(), new DisabledListProgressListener()))
-                .fileName(file.getName())
-                .fileSize(status.getLength()));
+        catch(HttpResponseException e) {
+            throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+        }
+    }
+
+    public Files commitUploadSession(final Path file, final String uploadSessionId,
+                                     final TransferStatus overall, final List<UploadPart> uploadParts) throws BackgroundException {
+        try {
+            final HttpPost request = new HttpPost(String.format("https://upload.box.com/api/2.0/files/upload_sessions/%s/commit", uploadSessionId));
+            if(!Checksum.NONE.equals(overall.getChecksum())) {
+                request.addHeader(new BasicHeader("Digest", String.format("sha=%s", overall.getChecksum().hash)));
+            }
+            final ByteArrayOutputStream content = new ByteArrayOutputStream();
+            final UploadSessionIdCommitBody body = new UploadSessionIdCommitBody().parts(uploadParts);
+            new JSON().getContext(null).writeValue(content, body);
+            request.setEntity(new ByteArrayEntity(content.toByteArray()));
+            if(overall.isExists()) {
+                if(StringUtils.isNotBlank(overall.getRemote().getETag())) {
+                    request.addHeader(new BasicHeader(HttpHeaders.IF_MATCH, overall.getRemote().getETag()));
+                }
+                else {
+                    log.warn(String.format("Missing remote attributes in transfer status to read current ETag for %s", file));
+                }
+            }
+            return session.getClient().execute(request, new BoxClientErrorResponseHandler<Files>() {
+                @Override
+                public Files handleEntity(final HttpEntity entity) throws IOException {
+                    return new JSON().getContext(null).readValue(entity.getContent(), Files.class);
+                }
+            });
+        }
+        catch(HttpResponseException e) {
+            throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+        }
+    }
+
+    static class BoxUploadResponse {
+        private final Files files;
+
+        public BoxUploadResponse(final Files files) {
+            this.files = files;
+        }
+
+        public Files getFiles() {
+            return files;
+        }
+    }
+
+    static class BoxPartUploadResponse extends BoxUploadResponse {
+        private final UploadedPart part;
+
+        public BoxPartUploadResponse(final UploadedPart part) {
+            super(new Files());
+            this.part = part;
+        }
+
+        public UploadedPart getPart() {
+            return part;
         }
     }
 }

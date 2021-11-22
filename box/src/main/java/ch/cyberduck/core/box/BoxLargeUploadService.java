@@ -19,7 +19,6 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.box.io.swagger.client.ApiException;
 import ch.cyberduck.core.box.io.swagger.client.model.Files;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadSession;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadedPart;
@@ -39,7 +38,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +47,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class BoxLargeUploadService extends HttpUploadFeature<BoxLargeUploadService.BoxUploadResponse, MessageDigest> {
+public class BoxLargeUploadService extends HttpUploadFeature<BoxUploadHelper.BoxUploadResponse, MessageDigest> {
     private static final Logger log = Logger.getLogger(BoxLargeUploadService.class);
 
     public static final String UPLOAD_SESSION_ID = "uploadSessionId";
@@ -58,9 +56,8 @@ public class BoxLargeUploadService extends HttpUploadFeature<BoxLargeUploadServi
     private final BoxSession session;
     private final Integer concurrency;
     private final BoxFileidProvider fileid;
-    private final BoxApiClient client;
 
-    private Write<BoxUploadResponse> writer;
+    private Write<BoxUploadHelper.BoxUploadResponse> writer;
 
     public BoxLargeUploadService(final BoxSession session, final BoxFileidProvider fileid, final Write<BoxUploadHelper.BoxUploadResponse> writer) {
         this(session, fileid, writer,
@@ -73,19 +70,18 @@ public class BoxLargeUploadService extends HttpUploadFeature<BoxLargeUploadServi
         this.writer = writer;
         this.concurrency = concurrency;
         this.fileid = fileid;
-        this.client = new BoxApiClient(this.session.getClient());
-        this.client.setBasePath("https://upload.box.com/api/2.0");
     }
 
     @Override
-    public BoxUploadResponse upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                                    final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public BoxUploadHelper.BoxUploadResponse upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                                                    final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
-            final List<Future<BoxUploadResponse>> parts = new ArrayList<>();
+            final List<Future<BoxUploadHelper.BoxPartUploadResponse>> parts = new ArrayList<>();
             long offset = 0;
             long remaining = status.getLength();
-            final UploadSession uploadSession = BoxUploadHelper.getUploadSession(status, client, file, fileid);
+            final BoxUploadHelper helper = new BoxUploadHelper(session, fileid);
+            final UploadSession uploadSession = helper.createUploadSession(status, file);
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final long length = Math.min(uploadSession.getPartSize(), remaining);
                 parts.add(this.submit(pool, file, local, throttle, listener, status,
@@ -94,8 +90,8 @@ public class BoxLargeUploadService extends HttpUploadFeature<BoxLargeUploadServi
                 offset += length;
             }
             // Checksums for uploaded segments
-            final List<BoxUploadResponse> chunks = new ArrayList<>();
-            for(Future<BoxUploadResponse> uploadResponseFuture : parts) {
+            final List<BoxUploadHelper.BoxPartUploadResponse> chunks = new ArrayList<>();
+            for(Future<BoxUploadHelper.BoxPartUploadResponse> uploadResponseFuture : parts) {
                 try {
                     chunks.add(uploadResponseFuture.get());
                 }
@@ -112,17 +108,10 @@ public class BoxLargeUploadService extends HttpUploadFeature<BoxLargeUploadServi
                     throw new BackgroundException(e.getCause());
                 }
             }
-            final BoxMultipartUploadCommitter boxMultipartUploadCommitter = new BoxMultipartUploadCommitter(session);
-            status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
-            final Files files = boxMultipartUploadCommitter.commitUploadSession(file.getName(), client.getBasePath(), uploadSession.getId(), status, chunks.stream().map(BoxUploadResponse::getUploadedPart).map(UploadedPart::getPart).collect(Collectors.toList()));
-            final BoxUploadResponse boxUploadResponse = new BoxUploadResponse();
-            boxUploadResponse.setComplete(true);
-            boxUploadResponse.setFiles(files);
+            final Files files = helper.commitUploadSession(file, uploadSession.getId(), status,
+                    chunks.stream().map(BoxUploadHelper.BoxPartUploadResponse::getPart).map(UploadedPart::getPart).collect(Collectors.toList()));
             status.setComplete();
-            return boxUploadResponse;
-        }
-        catch(ApiException | IOException e) {
-            throw new BackgroundException(e);
+            return new BoxUploadHelper.BoxUploadResponse(files);
         }
         finally {
             // Cancel future tasks
@@ -130,16 +119,16 @@ public class BoxLargeUploadService extends HttpUploadFeature<BoxLargeUploadServi
         }
     }
 
-    private Future<BoxLargeUploadService.BoxUploadResponse> submit(final ThreadPool pool, final Path file, final Local local,
-                                                                   final BandwidthThrottle throttle, final StreamListener listener,
-                                                                   final TransferStatus overall, final String uploadSessionId, final int partNumber, final long offset, final long length, final ConnectionCallback callback) {
+    private Future<BoxUploadHelper.BoxPartUploadResponse> submit(final ThreadPool pool, final Path file, final Local local,
+                                                                 final BandwidthThrottle throttle, final StreamListener listener,
+                                                                 final TransferStatus overall, final String uploadSessionId, final int partNumber, final long offset, final long length, final ConnectionCallback callback) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit %s to queue with offset %d and length %d", file, offset, length));
         }
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
-        return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<BoxUploadResponse>() {
+        return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<BoxUploadHelper.BoxPartUploadResponse>() {
             @Override
-            public BoxUploadResponse call() throws BackgroundException {
+            public BoxUploadHelper.BoxPartUploadResponse call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
                         .segment(true)
@@ -152,50 +141,19 @@ public class BoxLargeUploadService extends HttpUploadFeature<BoxLargeUploadServi
                 parameters.put(UPLOAD_SESSION_ID, uploadSessionId);
                 parameters.put(OVERALL_LENGTH, String.valueOf(overall.getLength()));
                 status.withParameters(parameters);
-                final BoxUploadResponse boxUploadResponse = BoxLargeUploadService.this.upload(
+                final BoxUploadHelper.BoxPartUploadResponse response = (BoxUploadHelper.BoxPartUploadResponse) BoxLargeUploadService.this.upload(
                         file, local, throttle, listener, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Received response %s for part %d", boxUploadResponse.getUploadedPart(), partNumber));
+                    log.info(String.format("Received response %s for part %d", response, partNumber));
                 }
-                return boxUploadResponse;
+                return response;
             }
         }, overall, counter));
     }
 
     @Override
-    public Upload<BoxUploadResponse> withWriter(final Write<BoxUploadResponse> writer) {
+    public Upload<BoxUploadHelper.BoxUploadResponse> withWriter(final Write<BoxUploadHelper.BoxUploadResponse> writer) {
         this.writer = writer;
         return super.withWriter(writer);
-    }
-
-    static class BoxUploadResponse {
-        private Files files;
-        private boolean isComplete;
-        private UploadedPart uploadedPart;
-
-        public Files getFiles() {
-            return files;
-        }
-
-        public void setFiles(final Files files) {
-            this.files = files;
-        }
-
-        public boolean isComplete() {
-            return isComplete;
-        }
-
-        public void setComplete(final boolean complete) {
-            isComplete = complete;
-        }
-
-        public UploadedPart getUploadedPart() {
-            return uploadedPart;
-        }
-
-        public void setUploadedPart(final UploadedPart uploadedPart) {
-            this.uploadedPart = uploadedPart;
-        }
-
     }
 }

@@ -17,7 +17,6 @@ package ch.cyberduck.core.box;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.box.io.swagger.client.model.Files;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Touch;
@@ -28,12 +27,12 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class BoxTouchFeature implements Touch<Files> {
+public class BoxTouchFeature implements Touch<BoxUploadHelper.BoxUploadResponse> {
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;
 
-    private Write<Files> writer;
+    private Write<BoxUploadHelper.BoxUploadResponse> writer;
 
     public BoxTouchFeature(final BoxSession session, final BoxFileidProvider fileid) {
         this.session = session;
@@ -43,10 +42,10 @@ public class BoxTouchFeature implements Touch<Files> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        final StatusOutputStream<Files> out = writer.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<BoxUploadHelper.BoxUploadResponse> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
-        if(out.getStatus().getEntries().stream().findFirst().isPresent()) {
-            return new Path(file).withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(out.getStatus().getEntries().stream().findFirst().get()));
+        if(out.getStatus().getFiles().getEntries().stream().findFirst().isPresent()) {
+            return new Path(file).withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(out.getStatus().getFiles().getEntries().stream().findFirst().get()));
         }
         throw new NotfoundException(file.getAbsolute());
     }
@@ -81,7 +80,7 @@ public class BoxTouchFeature implements Touch<Files> {
     }
 
     @Override
-    public Touch<Files> withWriter(final Write<Files> writer) {
+    public Touch<BoxUploadHelper.BoxUploadResponse> withWriter(final Write<BoxUploadHelper.BoxUploadResponse> writer) {
         this.writer = writer;
         return this;
     }

@@ -18,7 +18,6 @@ package ch.cyberduck.core.box;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.box.io.swagger.client.ApiException;
 import ch.cyberduck.core.box.io.swagger.client.JSON;
 import ch.cyberduck.core.box.io.swagger.client.model.Files;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadSession;
@@ -54,34 +53,26 @@ public class BoxMultipartWriteFeature implements Write<Files> {
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;
-    private final BoxApiClient client;
 
     public BoxMultipartWriteFeature(final BoxSession session, final BoxFileidProvider fileid) {
         this.session = session;
         this.fileid = fileid;
-        this.client = new BoxApiClient(this.session.getClient());
-        this.client.setBasePath("https://upload.box.com/api/2.0");
     }
 
     @Override
     public HttpResponseOutputStream<Files> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        try {
-            final UploadSession uploadSession = BoxUploadHelper.getUploadSession(status, client, file, fileid);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Obtained session %s for file %s", uploadSession, file));
-            }
-            final BoxOutputStream proxy = new BoxOutputStream(file, uploadSession, status);
-            return new HttpResponseOutputStream<Files>(new MemorySegementingOutputStream(proxy,
+        final UploadSession uploadSession = new BoxUploadHelper(session, fileid).createUploadSession(status, file);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Obtained session %s for file %s", uploadSession, file));
+        }
+        final BoxOutputStream proxy = new BoxOutputStream(file, uploadSession, status);
+        return new HttpResponseOutputStream<Files>(new MemorySegementingOutputStream(proxy,
                 uploadSession.getPartSize().intValue())) {
-                @Override
-                public Files getStatus() {
-                    return proxy.getResult();
-                }
-            };
-        }
-        catch(ApiException e) {
-            throw new BoxExceptionMappingService(fileid).map("Upload {0} failed", e, file);
-        }
+            @Override
+            public Files getStatus() {
+                return proxy.getResult();
+            }
+        };
     }
 
     private final class BoxOutputStream extends OutputStream {
@@ -114,17 +105,17 @@ public class BoxMultipartWriteFeature implements Write<Files> {
             final byte[] content = Arrays.copyOfRange(b, off, len);
             try {
                 final HttpRange range = HttpRange.withStatus(new TransferStatus()
-                    .withLength(content.length)
-                    .withOffset(byteCounter.getSent()));
+                        .withLength(content.length)
+                        .withOffset(byteCounter.getSent()));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Send range %s for file %s", range, file));
                 }
-                final HttpPut request = new HttpPut(String.format("%s/files/upload_sessions/%s", client.getBasePath(), uploadSession.getId()));
+                final HttpPut request = new HttpPut(String.format("https://upload.box.com/api/2.0/files/upload_sessions/%s", uploadSession.getId()));
                 // Must not overlap with the range of a part already uploaded this session.
                 request.addHeader(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
-                    overall.getOffset() + overall.getLength())));
+                        overall.getOffset() + overall.getLength())));
                 request.addHeader(new BasicHeader("Digest", String.format("sha=%s",
-                    new BoxBase64SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), overall).hash)));
+                        new BoxBase64SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), overall).hash)));
                 request.setEntity(new ByteArrayEntity(content));
                 checksums.add(session.getClient().execute(request, new BoxClientErrorResponseHandler<UploadedPart>() {
                     @Override
@@ -147,9 +138,12 @@ public class BoxMultipartWriteFeature implements Write<Files> {
             }
             try {
                 super.close();
-                final BoxMultipartUploadCommitter boxMultipartUploadCommitter = new BoxMultipartUploadCommitter(session);
-                final Files files = boxMultipartUploadCommitter.commitUploadSession(file.getName(), client.getBasePath(), uploadSession.getId(), overall, checksums.stream().map(UploadedPart::getPart).collect(Collectors.toList()));
+                final Files files = new BoxUploadHelper(session, fileid).commitUploadSession(file,
+                        uploadSession.getId(), overall, checksums.stream().map(UploadedPart::getPart).collect(Collectors.toList()));
                 result.set(files);
+            }
+            catch(BackgroundException e) {
+                throw new IOException(e);
             }
             finally {
                 close.set(true);

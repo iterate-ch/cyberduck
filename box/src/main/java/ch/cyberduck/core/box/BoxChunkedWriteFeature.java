@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<BoxLargeUploadService.BoxUploadResponse> {
+public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<BoxUploadHelper.BoxUploadResponse> {
     private static final Logger log = Logger.getLogger(BoxChunkedWriteFeature.class);
 
     private final BoxSession session;
@@ -50,10 +50,10 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<BoxLargeUpl
     }
 
     @Override
-    public HttpResponseOutputStream<BoxLargeUploadService.BoxUploadResponse> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<BoxLargeUploadService.BoxUploadResponse> command = new DelayedHttpEntityCallable<BoxLargeUploadService.BoxUploadResponse>() {
+    public HttpResponseOutputStream<BoxUploadHelper.BoxUploadResponse> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DelayedHttpEntityCallable<BoxUploadHelper.BoxUploadResponse> command = new DelayedHttpEntityCallable<BoxUploadHelper.BoxUploadResponse>() {
             @Override
-            public BoxLargeUploadService.BoxUploadResponse call(final AbstractHttpEntity entity) throws BackgroundException {
+            public BoxUploadHelper.BoxUploadResponse call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final HttpRange range = HttpRange.withStatus(new TransferStatus()
                             .withLength(status.getLength())
@@ -78,9 +78,7 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<BoxLargeUpl
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Received response %s for upload of %s", uploadedPart, file));
                     }
-                    BoxLargeUploadService.BoxUploadResponse boxUploadResponse = new BoxLargeUploadService.BoxUploadResponse();
-                    boxUploadResponse.setUploadedPart(uploadedPart);
-                    return boxUploadResponse;
+                    return new BoxUploadHelper.BoxPartUploadResponse(uploadedPart);
                 }
                 catch(HttpResponseException e) {
                     throw new DefaultHttpResponseExceptionMappingService().map(e);
@@ -101,5 +99,10 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<BoxLargeUpl
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return new BoxBase64SHA1ChecksumCompute();
+    }
+
+    @Override
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        return new Append(false).withStatus(status);
     }
 }

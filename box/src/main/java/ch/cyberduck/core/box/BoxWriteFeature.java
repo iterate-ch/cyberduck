@@ -46,7 +46,7 @@ import org.joda.time.DateTime;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class BoxWriteFeature extends AbstractHttpWriteFeature<Files> {
+public class BoxWriteFeature extends AbstractHttpWriteFeature<BoxUploadHelper.BoxUploadResponse> {
     private static final Logger log = Logger.getLogger(BoxWriteFeature.class);
 
     private final BoxSession session;
@@ -61,20 +61,20 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<Files> {
     }
 
     @Override
-    public HttpResponseOutputStream<Files> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<Files> command = new DelayedHttpEntityCallable<Files>() {
+    public HttpResponseOutputStream<BoxUploadHelper.BoxUploadResponse> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DelayedHttpEntityCallable<BoxUploadHelper.BoxUploadResponse> command = new DelayedHttpEntityCallable<BoxUploadHelper.BoxUploadResponse>() {
             @Override
-            public Files call(final AbstractHttpEntity entity) throws BackgroundException {
+            public BoxUploadHelper.BoxUploadResponse call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final HttpPost request;
                     if(status.isExists()) {
                         request = new HttpPost(String.format("%s/files/%s/content?fields=%s", client.getBasePath(),
                                 fileid.getFileId(file, new DisabledListProgressListener()),
-                            String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
+                                String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
                     }
                     else {
                         request = new HttpPost(String.format("%s/files/content?fields=%s", client.getBasePath(),
-                            String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
+                                String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
                     }
                     final Checksum checksum = status.getChecksum();
                     if(Checksum.NONE != checksum) {
@@ -113,7 +113,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<Files> {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Received response %s for upload of %s", files, file));
                     }
-                    return files;
+                    return new BoxUploadHelper.BoxUploadResponse(files);
                 }
                 catch(HttpResponseException e) {
                     throw new DefaultHttpResponseExceptionMappingService().map(e);

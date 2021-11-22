@@ -43,20 +43,21 @@ public class BoxLargeUploadServiceTest extends AbtractBoxTest {
     @Test
     public void testUploadLargeFileInChunks() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
-        final BoxLargeUploadService s = new BoxLargeUploadService(session, fileid, new BoxChunkedWriteFeature(session));
+        final BoxLargeUploadService s = new BoxLargeUploadService(session, fileid, new BoxThresholdWriteFeature(session, fileid));
         final Path container = new BoxDirectoryFeature(session, fileid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final byte[] content = RandomUtils.nextBytes(20000000);
+        final byte[] content = RandomUtils.nextBytes(20 * 1024 * 1024);
         IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
+        status.setChecksum(new BoxBase64SHA1ChecksumCompute().compute(local.getInputStream(), new TransferStatus()));
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        final BoxLargeUploadService.BoxUploadResponse uploadResponse = s.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
-        assertTrue(uploadResponse.isComplete());
-        assertNotNull(uploadResponse.getFiles());
+        final BoxUploadHelper.BoxUploadResponse response = s.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
+        assertTrue(status.isComplete());
+        assertNotNull(response.getFiles());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new BoxFindFeature(session, fileid).find(file));
@@ -67,5 +68,4 @@ public class BoxLargeUploadServiceTest extends AbtractBoxTest {
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
-
 }
