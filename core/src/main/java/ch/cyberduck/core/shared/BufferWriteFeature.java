@@ -73,11 +73,10 @@ public class BufferWriteFeature implements MultipartWrite<Void> {
                     // through StreamCopier when writing to buffer
                     final TransferStatus range = new TransferStatus(status).withLength(buffer.length()).append(false);
                     if(0L == buffer.length()) {
-                        session.getFeature(Touch.class).touch(file, new TransferStatus());
+                        session._getFeature(Touch.class).touch(file, new TransferStatus());
                     }
                     else {
-                        final StatusOutputStream out = session.getFeature(Write.class).write(file,
-                                range, callback);
+                        final StatusOutputStream out = session._getFeature(Write.class).write(file, range, callback);
                         new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                             @Override
                             public Void call() throws BackgroundException {
