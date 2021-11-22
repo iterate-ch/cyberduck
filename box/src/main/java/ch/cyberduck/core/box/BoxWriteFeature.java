@@ -26,7 +26,9 @@ import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -73,6 +75,13 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<Files> {
                     else {
                         request = new HttpPost(String.format("%s/files/content?fields=%s", client.getBasePath(),
                             String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
+                    }
+                    final Checksum checksum = status.getChecksum();
+                    if(Checksum.NONE != checksum) {
+                        switch(checksum.algorithm) {
+                            case sha1:
+                                request.addHeader(HttpHeaders.CONTENT_MD5, checksum.hash);
+                        }
                     }
                     final ByteArrayOutputStream content = new ByteArrayOutputStream();
                     new JSON().getContext(null).writeValue(content, new FilescontentAttributes()
@@ -124,7 +133,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<Files> {
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new BoxBase64SHA1ChecksumCompute();
+        return new SHA1ChecksumCompute();
     }
 
     @Override
