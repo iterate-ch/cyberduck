@@ -38,7 +38,6 @@ import ch.cyberduck.core.eue.EueMultipartWriteFeature;
 import ch.cyberduck.core.eue.EueReadFeature;
 import ch.cyberduck.core.eue.EueResourceIdProvider;
 import ch.cyberduck.core.eue.EueUploadService;
-import ch.cyberduck.core.eue.EueWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
@@ -55,6 +54,8 @@ import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -67,6 +68,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
+@RunWith(value = Parameterized.class)
 public class EueUploadServiceTest extends AbstractEueSessionTest {
 
     @Test
@@ -76,7 +78,7 @@ public class EueUploadServiceTest extends AbstractEueSessionTest {
         final Path vault = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), CryptoVault.VAULT_VERSION_DEPRECATED);
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(50240000);
@@ -110,7 +112,7 @@ public class EueUploadServiceTest extends AbstractEueSessionTest {
         final Path vault = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), CryptoVault.VAULT_VERSION_DEPRECATED);
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(50240000);
