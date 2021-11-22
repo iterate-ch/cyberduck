@@ -91,7 +91,6 @@ public class BoxAttributesFinderFeature implements AttributesFinder {
         }
         attrs.setSize(f.getSize());
         attrs.setFileId(f.getId());
-        attrs.setETag(f.getEtag());
         return attrs;
     }
 }
