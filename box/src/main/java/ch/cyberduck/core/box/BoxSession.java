@@ -40,6 +40,7 @@ import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.shared.BufferWriteFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -108,7 +109,7 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
             return (T) new BoxTouchFeature(this, fileid);
         }
         if(type == MultipartWrite.class) {
-            return (T) new BoxMultipartWriteFeature(this, fileid);
+            return (T) new BufferWriteFeature(this);
         }
         if(type == ListService.class) {
             return (T) new BoxListService(this, fileid);
