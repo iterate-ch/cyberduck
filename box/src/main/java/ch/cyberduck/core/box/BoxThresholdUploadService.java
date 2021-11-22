@@ -18,39 +18,41 @@ package ch.cyberduck.core.box;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.box.io.swagger.client.model.Files;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultRegistry;
 
-public class BoxThresholdUploadService implements Upload<Files> {
+public class BoxThresholdUploadService implements Upload<BoxUploadHelper.BoxUploadResponse> {
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;
+    private final VaultRegistry registry;
 
-    private Write<Files> writer;
+    private Write<BoxUploadHelper.BoxUploadResponse> writer;
 
-    public BoxThresholdUploadService(final BoxSession session, final BoxFileidProvider fileid) {
-        super();
+    public BoxThresholdUploadService(final BoxSession session, final BoxFileidProvider fileid, final VaultRegistry registry) {
         this.session = session;
         this.fileid = fileid;
+        this.registry = registry;
+        this.writer = new BoxThresholdWriteFeature(session, fileid);
     }
 
     @Override
-    public Files upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public BoxUploadHelper.BoxUploadResponse upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                                                    final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(this.threshold(status.getLength())) {
-            final BoxLargeUploadService.BoxUploadResponse boxUploadResponse = new BoxLargeUploadService(session, fileid, new BoxChunkedWriteFeature(session)).upload(file, local, throttle, listener, status, callback);
-            return boxUploadResponse.getFiles();
+            if(Vault.DISABLED == registry.find(session, file)) {
+                return new BoxLargeUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, callback);
+            }
+            // Cannot comply with chunk size requirement from server
         }
-        else {
-            return new DefaultUploadFeature<>(writer).upload(file, local, throttle, listener, status, callback);
-        }
+        return new BoxSmallUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, callback);
     }
 
     @Override
@@ -59,7 +61,7 @@ public class BoxThresholdUploadService implements Upload<Files> {
     }
 
     @Override
-    public Upload<Files> withWriter(final Write<Files> writer) {
+    public Upload<BoxUploadHelper.BoxUploadResponse> withWriter(final Write<BoxUploadHelper.BoxUploadResponse> writer) {
         this.writer = writer;
         return this;
     }
