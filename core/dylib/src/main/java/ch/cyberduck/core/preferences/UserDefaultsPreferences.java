@@ -247,6 +247,8 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             "end tell");
         this.setDefault("terminal.command.default", "do script \"{0}\"");
 
+        this.setDefault("preferences.update.enable", String.valueOf(null != this.getDefault("SUExpectsDSASignature")));
+
         // Workaround for #11508
         this.deleteProperty("__NSDisableSharingTextTabInstance");
     }

@@ -206,7 +206,7 @@ Gw
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="41">
                                 <rect key="frame" x="42" y="71" width="58" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Bestand op server:" id="42">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Bestand op Server:" id="42">
                                     <font key="font" metaFont="label"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

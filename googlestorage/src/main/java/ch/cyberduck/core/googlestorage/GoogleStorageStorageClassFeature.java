@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.jets3t.service.model.S3Object;
@@ -37,14 +38,6 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
     private final GoogleStorageSession session;
     private final PathContainerService containerService;
 
-    public static final LinkedHashSet<String> STORAGE_CLASS_LIST = new LinkedHashSet<>(Arrays.asList(
-        S3Object.STORAGE_CLASS_STANDARD,
-        "MULTI_REGIONAL",
-        "REGIONAL",
-        "NEARLINE",
-        "COLDLINE")
-    );
-
     public GoogleStorageStorageClassFeature(final GoogleStorageSession session) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
@@ -52,12 +45,13 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
 
     @Override
     public String getDefault() {
-        return PreferencesFactory.get().getProperty("googlestorage.storage.class");
+        return new HostPreferences(session.getHost()).getProperty("googlestorage.storage.class");
     }
 
     @Override
     public Set<String> getClasses() {
-        return STORAGE_CLASS_LIST;
+        return new LinkedHashSet<>(
+                PreferencesFactory.get().getList("googlestorage.storage.class.options"));
     }
 
     @Override
@@ -71,13 +65,13 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
             if(containerService.isContainer(file)) {
                 // Changing the default storage class of a bucket
                 session.getClient().buckets().patch(containerService.getContainer(file).getName(),
-                    new Bucket().setStorageClass(redundancy)
+                        new Bucket().setStorageClass(redundancy)
                 ).execute();
             }
             else {
                 final RewriteResponse response = session.getClient().objects().rewrite(containerService.getContainer(file).getName(),
-                    containerService.getKey(file), containerService.getContainer(file).getName(), containerService.getKey(file),
-                    new StorageObject().setStorageClass(redundancy)
+                        containerService.getKey(file), containerService.getContainer(file).getName(), containerService.getKey(file),
+                        new StorageObject().setStorageClass(redundancy)
                 ).execute();
                 file.attributes().setVersionId(String.valueOf(response.getResource().getGeneration()));
             }

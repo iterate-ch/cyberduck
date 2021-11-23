@@ -15,6 +15,8 @@ package ch.cyberduck.core.http;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.transfer.TransferStatus;
+
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.http.HttpConnection;
@@ -62,7 +64,7 @@ public class HttpMethodReleaseInputStream extends CountingInputStream {
                 if(null == response.getEntity()) {
                     super.close();
                 }
-                else if(-1 == response.getEntity().getContentLength() && -1 == this.read()) {
+                else if(TransferStatus.UNKNOWN_LENGTH == response.getEntity().getContentLength() && TransferStatus.UNKNOWN_LENGTH == this.read()) {
                     // Fully consumed for unknown content length with decompressing HTTP entity
                     super.close();
                 }

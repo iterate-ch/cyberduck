@@ -92,7 +92,7 @@ public class STSCredentialsConfigurator {
         final Local awsDirectory = LocalFactory.get(LocalFactory.get(), ".aws");
         final Local configFile = LocalFactory.get(awsDirectory, "config");
         final Local credentialsFile = LocalFactory.get(awsDirectory, "credentials");
-        // Profile can be null – the default profile from the configuration will be loaded
+        // Profile can be null. The default profile from the configuration will be loaded
         final String profile = host.getCredentials().getUsername();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Look for profile name %s in %s and %s", profile, configFile, credentialsFile));

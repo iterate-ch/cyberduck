@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -28,28 +27,28 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
 
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolder() throws Exception {
-        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         new AzureObjectListService(session, null).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
     @Test
     public void testListEmptyFolder() throws Exception {
-        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
-        final Path folder = new AzureDirectoryFeature(session, null).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new AzureDirectoryFeature(session, null).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new AzureObjectListService(session, null).list(folder, new DisabledListProgressListener()).isEmpty());
-        new AzureDeleteFeature(session, null).delete(Arrays.asList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session, null).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
 
     @Test(expected = NotfoundException.class)
     public void testListNotfoundContainer() throws Exception {
-        final Path container = new Path("notfound-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("notfound-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         new AzureObjectListService(session, null).list(container, new DisabledListProgressListener());
     }
 
     @Test
     public void testList() throws Exception {
-        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path directory = new AzureDirectoryFeature(session, null).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(new AzureObjectListService(session, null).list(directory, new DisabledListProgressListener()).isEmpty());
@@ -59,17 +58,17 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
         assertEquals(1, list.size());
         assertTrue(list.contains(file));
         assertEquals(HashAlgorithm.md5, list.get(0).attributes().getChecksum().algorithm);
-        new AzureDeleteFeature(session, null).delete(Arrays.<Path>asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session, null).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testListLexicographicSortOrderAssumption() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path directory = new AzureDirectoryFeature(session, null).mkdir(
-            new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new AzureObjectListService(session, null).list(directory, new DisabledListProgressListener()).isEmpty());
         final List<String> files = Arrays.asList(
-            "aa", "0a", "a", "AAA", "B", "~$a", ".c"
+                "aa", "0a", "a", "AAA", "B", "~$a", ".c"
         );
         for(String f : files) {
             new AzureTouchFeature(session, null).touch(new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());

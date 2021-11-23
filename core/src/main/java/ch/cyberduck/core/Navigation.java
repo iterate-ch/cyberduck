@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Navigation {
@@ -25,12 +26,12 @@ public class Navigation {
     /**
      * Keeps a ordered backward history of previously visited paths
      */
-    private final List<Path> back = new Collection<Path>();
+    private final List<Path> back = new ArrayList<>();
 
     /**
      * Keeps a ordered forward history of previously visited paths
      */
-    private final List<Path> forward = new Collection<Path>();
+    private final List<Path> forward = new ArrayList<>();
 
     /**
      * @param p Directory
@@ -61,8 +62,8 @@ public class Navigation {
             return p;
         }
         else if(1 == size) {
-            forward.add(back.get(size - 1));
-            return back.get(size - 1);
+            forward.add(back.get(0));
+            return back.get(0);
         }
         return null;
     }

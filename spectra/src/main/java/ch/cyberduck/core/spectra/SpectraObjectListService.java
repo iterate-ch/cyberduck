@@ -22,10 +22,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.s3.S3AbstractListService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +47,6 @@ import com.spectralogic.ds3client.networking.FailedRequestException;
 public class SpectraObjectListService extends S3AbstractListService {
     private static final Logger log = Logger.getLogger(SpectraObjectListService.class);
 
-    private final Preferences preferences = PreferencesFactory.get();
     private final PathContainerService containerService;
     private final SpectraSession session;
 
@@ -59,14 +58,14 @@ public class SpectraObjectListService extends S3AbstractListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return this.list(directory, listener, preferences.getInteger("s3.listing.chunksize"));
+        return this.list(directory, listener, new HostPreferences(session.getHost()).getInteger("s3.listing.chunksize"));
     }
 
     @NotNull
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         try {
             final String prefix = this.createPrefix(directory);
-            final AttributedList<Path> objects = new AttributedList<Path>();
+            final AttributedList<Path> objects = new AttributedList<>();
             final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
             final Path bucket = containerService.getContainer(directory);
             long revision = 0L;
@@ -87,7 +86,7 @@ public class SpectraObjectListService extends S3AbstractListService {
                         log.warn(String.format("Skipping prefix %s", key));
                         continue;
                     }
-                    if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
+                    if(new SimplePathPredicate(new Path(bucket, key, EnumSet.of(Path.Type.directory))).test(directory)) {
                         hasDirectoryPlaceholder = true;
                         // Placeholder object, skip
                         continue;
@@ -101,7 +100,7 @@ public class SpectraObjectListService extends S3AbstractListService {
                         log.warn(String.format("Skipping prefix %s", key));
                         continue;
                     }
-                    if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
+                    if(new SimplePathPredicate(new Path(bucket, key, EnumSet.of(Path.Type.directory))).test(directory)) {
                         hasDirectoryPlaceholder = true;
                         // Placeholder object, skip
                         continue;

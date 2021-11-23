@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.VersionIdProvider;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -144,7 +145,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
     }
 
     private void deleteDeprecatedKeyPair(final SDSSession session) throws ApiException, BackgroundException {
-        if(PreferencesFactory.get().getBoolean("sds.encryption.missingkeys.delete.deprecated")) {
+        if(new HostPreferences(session.getHost()).getBoolean("sds.encryption.missingkeys.delete.deprecated")) {
             if(session.keyPairDeprecated() != null && !session.keyPairDeprecated().equals(session.keyPair())) {
                 final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
                     null, 1, null, null, session.userAccount().getId(), "previous_user_key", null);

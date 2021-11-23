@@ -38,7 +38,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
     private final Download download;
 
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
-        this(symlinkResolver, session, new DownloadFilterOptions());
+        this(symlinkResolver, session, new DownloadFilterOptions(session.getHost()));
     }
 
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,

@@ -18,9 +18,8 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.CancellingListProgressListener;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
@@ -101,7 +100,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     }
 
     @Override
-    public CloudBlobClient connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    protected CloudBlobClient connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final StorageCredentials credentials;
             if(host.getCredentials().isTokenAuthentication()) {
@@ -118,7 +117,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             options.setRetryPolicyFactory(new RetryNoRetry());
             context.setLoggingEnabled(true);
             context.setLogger(LoggerFactory.getLogger(log.getName()));
-            context.setUserHeaders(new HashMap<String, String>(Collections.singletonMap(
+            context.setUserHeaders(new HashMap<>(Collections.singletonMap(
                 HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
             );
             context.getSendingRequestEventHandler().addListener(listener = new StorageEvent<SendingRequestEvent>() {
@@ -174,12 +173,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         }
         // Fetch reference for directory to check login credentials
         try {
-            this.getFeature(ListService.class).list(new DefaultHomeFinderService(this).find(), new DisabledListProgressListener() {
-                @Override
-                public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
-                    throw new ListCanceledException(list);
-                }
-            });
+            this.getFeature(ListService.class).list(new DefaultHomeFinderService(this).find(), new CancellingListProgressListener());
         }
         catch(ListCanceledException e) {
             // Success

@@ -197,7 +197,7 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
     public void filter(final AbstractHostCollection bookmarks) {
         for(Iterator<Host> iter = this.iterator(); iter.hasNext(); ) {
             final Host i = iter.next();
-            if(bookmarks.find(i)) {
+            if(bookmarks.find(new AbstractHostCollection.HostComparePredicate(i)).isPresent()) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Remove %s from import as we found it in bookmarks", i));
                 }

@@ -11,8 +11,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -40,9 +39,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> {
     private static final Logger log = Logger.getLogger(S3MultipartWriteFeature.class);
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
     private final PathContainerService containerService;
     private final S3Session session;
 
@@ -58,8 +54,9 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
         // ID for the initiated multipart upload.
         final MultipartUpload multipart;
         try {
+            final Path bucket = containerService.getContainer(file);
             multipart = session.getClient().multipartStartUpload(
-                containerService.getContainer(file).getName(), object);
+                    bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Multipart upload started for %s with ID %s",
                     multipart.getObjectKey(), multipart.getUploadId()));
@@ -70,7 +67,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
         }
         final MultipartOutputStream proxy = new MultipartOutputStream(multipart, file, status);
         return new HttpResponseOutputStream<MultipartUpload>(new MemorySegementingOutputStream(proxy,
-            preferences.getInteger("s3.upload.multipart.size"))) {
+            new HostPreferences(session.getHost()).getInteger("s3.upload.multipart.size"))) {
             @Override
             public MultipartUpload getStatus() {
                 return multipart;
@@ -132,9 +129,10 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
                         status.setSegment(true);
                         final S3Object part = new S3WriteFeature(session).getDetails(file, status);
                         try {
+                            final Path bucket = containerService.getContainer(file);
                             session.getClient().putObjectWithRequestEntityImpl(
-                                containerService.getContainer(file).getName(), part,
-                                new ByteArrayEntity(content, off, len), parameters);
+                                    bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), part,
+                                    new ByteArrayEntity(content, off, len), parameters);
                         }
                         catch(ServiceException e) {
                             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
@@ -183,14 +181,8 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
                                 concat.append(part.getEtag());
                             }
                             final String expected = String.format("%s-%d",
-                                ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
-                            final String reference;
-                            if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
-                                reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
-                            }
-                            else {
-                                reference = complete.getEtag();
-                            }
+                                    ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
+                            final String reference = StringUtils.removeEnd(StringUtils.removeStart(complete.getEtag(), "\""), "\"");
                             if(!StringUtils.equalsIgnoreCase(expected, reference)) {
                                 throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                                     MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
@@ -219,5 +211,10 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
             sb.append('}');
             return sb.toString();
         }
+    }
+
+    @Override
+    public boolean timestamp() {
+        return true;
     }
 }

@@ -17,7 +17,7 @@ package ch.cyberduck.core.spectra;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.jets3t.service.impl.rest.httpclient.RestStorageService;
@@ -61,17 +61,17 @@ public class SpectraClientBuilder {
 
             @Override
             public int getBufferSize() {
-                return PreferencesFactory.get().getInteger("connection.chunksize");
+                return new HostPreferences(bookmark).getInteger("connection.chunksize");
             }
 
             @Override
             public int getConnectionTimeout() {
-                return PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
+                return new HostPreferences(bookmark).getInteger("connection.timeout.seconds") * 1000;
             }
 
             @Override
             public int getSocketTimeout() {
-                return PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
+                return new HostPreferences(bookmark).getInteger("connection.timeout.seconds") * 1000;
             }
 
             @Override

@@ -15,17 +15,21 @@ package ch.cyberduck.core.kms;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -42,7 +46,6 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -52,13 +55,20 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
     @Test
     public void testSetEncryptionKMSDefaultKeySignatureVersionV4() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
         final S3EncryptionFeature feature = new S3EncryptionFeature(session);
         feature.setEncryption(test, KMSEncryptionFeature.SSE_KMS_DEFAULT);
         final Encryption.Algorithm value = feature.getEncryption(test);
         assertEquals("aws:kms", value.algorithm);
         assertNotNull(value.key);
+        final PathAttributes attr = new S3AttributesFinderFeature(session).find(test);
+        assertEquals(Checksum.NONE, attr.getChecksum());
+        assertNotNull(attr.getETag());
+        assertNotEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
+        // The ETag will only be the MD5 of the object data when the object is stored as plaintext or encrypted using SSE-S3.
+        // If the object is encrypted using another method (such as SSE-C or SSE-KMS) the ETag is not the MD5 of the object data.
+        assertNotEquals("d41d8cd98f00b204e9800998ecf8427e", Checksum.parse(attr.getETag()).hash);
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -66,7 +76,7 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
     @Test
     public void testSetEncryptionKMSCustomKeySignatureVersionV4() throws Exception {
         final Path container = new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
         final S3EncryptionFeature feature = new S3EncryptionFeature(session);
         feature.setEncryption(test, new Encryption.Algorithm("aws:kms", "arn:aws:kms:eu-west-1:930717317329:key/015fa0af-f95e-483e-8fb6-abffb46fb783"));

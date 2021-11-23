@@ -20,7 +20,8 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -39,12 +40,13 @@ public class DriveCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final File copy = session.getClient().files().copy(fileid.getFileId(source, new DisabledListProgressListener()), new File()
-                .setParents(Collections.singletonList(fileid.getFileId(target.getParent(), new DisabledListProgressListener())))
-                .setName(target.getName()))
-                .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                    .setParents(Collections.singletonList(fileid.getFileId(target.getParent(), new DisabledListProgressListener())))
+                    .setName(target.getName()))
+                .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+            listener.sent(status.getLength());
             fileid.cache(target, copy.getId());
             return target.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(copy));
         }

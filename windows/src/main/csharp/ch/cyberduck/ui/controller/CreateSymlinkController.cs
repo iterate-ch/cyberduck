@@ -25,8 +25,8 @@ using ch.cyberduck.core.features;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
-using Ch.Cyberduck.Ui.Core.Resources;
 using java.util;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -40,7 +40,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override Image IconView
         {
-            get { return IconCache.OverlayFilenameIcon("_unknown", "aliasbadge", IconCache.IconSize.Large); }
+            get { return IconProvider.AliasFolder(); }
         }
 
         public override void Callback(DialogResult result)
@@ -54,7 +54,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class CreateSymlinkAction : WorkerBackgroundAction
         {
-            public CreateSymlinkAction(BrowserController controller, Path workdir, string symlink) 
+            public CreateSymlinkAction(BrowserController controller, Path workdir, string symlink)
                 : base(
                       controller, controller.Session,
                       new InnerCreateSymlinkWorker(controller,

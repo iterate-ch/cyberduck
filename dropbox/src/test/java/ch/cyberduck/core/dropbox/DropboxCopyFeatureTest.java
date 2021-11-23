@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -45,7 +46,7 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
-        new DropboxCopyFeature(session).copy(file, target, new TransferStatus(), new DisabledConnectionCallback());
+        new DropboxCopyFeature(session).copy(file, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new DropboxFindFeature(session).find(file));
         assertTrue(new DropboxFindFeature(session).find(target));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -59,7 +60,7 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
             new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(copy, new TransferStatus());
-        new DropboxCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
+        new DropboxCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
@@ -75,7 +76,7 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
             new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DropboxCopyFeature(session).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback());
+        new DropboxCopyFeature(session).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new DropboxFindFeature(session).find(file));
         assertTrue(new DropboxFindFeature(session).find(copy));
         assertTrue(new DropboxFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));

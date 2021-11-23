@@ -35,7 +35,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     /**
      * This action encountered one or more exceptions
      */
-    private boolean failed;
+    private BackgroundException failure;
 
     /**
      * Contains the transcript of the session while this action was running
@@ -80,15 +80,19 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     protected void reset() throws BackgroundException {
         // Reset the failure status but remember the previous exception for automatic retry.
-        failed = false;
+        failure = null;
     }
 
     /**
-     * @return True if the the action had a permanent failures. Returns false if
-     * there were only temporary exceptions and the action succeeded upon retry
+     * @return True if the the action had a permanent failures. Returns false if there were only temporary exceptions
+     * and the action succeeded upon retry
      */
     public boolean hasFailed() {
-        return failed;
+        return failure != null;
+    }
+
+    public BackgroundException getFailure() {
+        return failure;
     }
 
     @Override
@@ -108,7 +112,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
             throw e;
         }
         catch(BackgroundException e) {
-            failed = true;
+            failure = e;
             throw e;
         }
     }
@@ -158,7 +162,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("SessionBackgroundAction{");
-        sb.append("failed=").append(failed);
+        sb.append("failure=").append(failure);
         sb.append(", pool=").append(pool);
         sb.append('}');
         return sb.toString();

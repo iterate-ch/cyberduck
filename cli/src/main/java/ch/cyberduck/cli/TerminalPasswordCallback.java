@@ -35,7 +35,7 @@ public class TerminalPasswordCallback implements PasswordCallback {
     private final TerminalPromptReader prompt;
 
     public TerminalPasswordCallback() {
-        this.prompt = new InteractiveTerminalPromptReader();
+        this(new InteractiveTerminalPromptReader());
     }
 
     public TerminalPasswordCallback(final TerminalPromptReader prompt) {

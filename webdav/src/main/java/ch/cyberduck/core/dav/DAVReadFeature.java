@@ -57,7 +57,7 @@ public class DAVReadFeature implements Read {
         if(status.isAppend()) {
             final HttpRange range = HttpRange.withStatus(status);
             final String header;
-            if(-1 == range.getEnd()) {
+            if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
                 header = String.format("bytes=%d-", range.getStart());
             }
             else {
@@ -80,15 +80,19 @@ public class DAVReadFeature implements Read {
                     resource.append("&");
                 }
                 resource.append(URIEncoder.encode(parameter.getKey()))
-                    .append("=")
-                    .append(URIEncoder.encode(parameter.getValue()));
+                        .append("=")
+                        .append(URIEncoder.encode(parameter.getValue()));
 
             }
             final ContentLengthStatusInputStream stream = session.getClient().get(resource.toString(), headers);
             if(status.isAppend()) {
                 if(stream.getCode() == HttpStatus.SC_OK) {
-                    log.warn(String.format("Range header not supported. Skipping %d bytes in file %s.", status.getOffset(), file));
-                    stream.skip(status.getOffset());
+                    if(TransferStatus.UNKNOWN_LENGTH != status.getLength()) {
+                        if(stream.getLength() != status.getLength()) {
+                            log.warn(String.format("Range header not supported. Skipping %d bytes in file %s.", status.getOffset(), file));
+                            stream.skip(status.getOffset());
+                        }
+                    }
                 }
             }
             return stream;

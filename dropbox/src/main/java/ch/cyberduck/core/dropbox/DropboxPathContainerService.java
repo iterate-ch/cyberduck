@@ -17,7 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,7 +25,12 @@ import com.dropbox.core.v2.common.PathRoot;
 
 public class DropboxPathContainerService extends DefaultPathContainerService {
 
+    private final DropboxSession session;
     private boolean useNamespace = false;
+
+    public DropboxPathContainerService(final DropboxSession session) {
+        this.session = session;
+    }
 
     /**
      * Note that this syntax of using a namespace ID in the path parameter is only supported for namespaces that are
@@ -52,7 +57,7 @@ public class DropboxPathContainerService extends DefaultPathContainerService {
 
     @Override
     public String getKey(final Path file) {
-        if(PreferencesFactory.get().getBoolean("dropbox.business.enable")) {
+        if(new HostPreferences(session.getHost()).getBoolean("dropbox.business.enable")) {
             final Path container = this.getContainer(file);
             final String namespace = container.attributes().getFileId();
             if(StringUtils.isNotBlank(namespace)) {
@@ -75,7 +80,7 @@ public class DropboxPathContainerService extends DefaultPathContainerService {
     }
 
     protected PathRoot getNamespace(final Path file) {
-        if(PreferencesFactory.get().getBoolean("dropbox.business.enable")) {
+        if(new HostPreferences(session.getHost()).getBoolean("dropbox.business.enable")) {
             final Path container = this.getContainer(file);
             if(StringUtils.isNotBlank(container.attributes().getFileId())) {
                 // List relative to the namespace id

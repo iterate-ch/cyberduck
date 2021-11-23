@@ -32,7 +32,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -65,7 +64,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         final String name = "ä-" + new AlphanumericRandomStringService().random();
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
+        final byte[] content = RandomUtils.nextBytes(1023);
         final OutputStream out = local.getOutputStream(false);
         assertNotNull(out);
         IOUtils.write(content, out);

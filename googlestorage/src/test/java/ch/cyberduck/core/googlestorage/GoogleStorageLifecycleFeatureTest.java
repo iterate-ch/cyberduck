@@ -36,12 +36,6 @@ import static org.junit.Assert.assertEquals;
 public class GoogleStorageLifecycleFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
-    public void testGetEmptyConfiguration() throws Exception {
-        assertEquals(LifecycleConfiguration.empty(), new GoogleStorageLifecycleFeature(session).getConfiguration(
-            new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory))));
-    }
-
-    @Test
     public void testSetConfiguration() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageDirectoryFeature(session).mkdir(test, new TransferStatus());

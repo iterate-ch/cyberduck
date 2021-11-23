@@ -25,8 +25,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.TransferAcceleration;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -39,9 +38,6 @@ import java.util.Set;
 
 public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
     private static final Logger log = Logger.getLogger(S3BulkTransferAccelerationFeature.class);
-
-    private final Preferences preferences
-        = PreferencesFactory.get();
 
     private final S3Session session;
     private final TransferAcceleration accelerationService;
@@ -76,7 +72,10 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
     private void configure(final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback, final boolean enabled) throws BackgroundException {
         final Set<Path> buckets = new HashSet<>();
         for(TransferItem file : files.keySet()) {
-            buckets.add(containerService.getContainer(file.remote));
+            final Path bucket = containerService.getContainer(file.remote);
+            if(!bucket.isRoot()) {
+                buckets.add(bucket);
+            }
         }
         for(Path bucket : buckets) {
             if(enabled) {
@@ -114,7 +113,7 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
             log.info(String.format("S3 transfer acceleration enabled for file %s", file));
             return true;
         }
-        if(preferences.getBoolean("s3.accelerate.prompt")) {
+        if(new HostPreferences(session.getHost()).getBoolean("s3.accelerate.prompt")) {
             if(accelerationService.prompt(session.getHost(), file, prompt)) {
                 log.info(String.format("S3 transfer acceleration enabled for file %s", file));
                 return true;

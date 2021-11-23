@@ -19,11 +19,11 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>7.10.0-SNAPSHOT</version>
+        <version>8.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>googlestorage</artifactId>
     <properties>
-        <google-api-services-storage-version>v1-rev20210127-1.31.0</google-api-services-storage-version>
+        <google-api-services-storage-version>v1-rev20211018-1.32.1</google-api-services-storage-version>
     </properties>
     <dependencies>
         <dependency>

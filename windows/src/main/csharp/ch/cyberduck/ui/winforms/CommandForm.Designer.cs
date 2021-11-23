@@ -119,7 +119,7 @@
             // 
             // animation
             // 
-            this.animation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
+            this.animation.Image = global::Ch.Cyberduck.ImageHelper.ThrobberSmall;
             this.animation.Location = new System.Drawing.Point(58, 356);
             this.animation.Name = "animation";
             this.animation.Size = new System.Drawing.Size(24, 20);

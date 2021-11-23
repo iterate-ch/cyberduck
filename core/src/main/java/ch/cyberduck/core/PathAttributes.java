@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -41,12 +42,12 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * The file length
      */
-    private long size = -1;
+    private long size = TransferStatus.UNKNOWN_LENGTH;
 
     /**
      * Quota of folder
      */
-    private long quota = -1;
+    private long quota = TransferStatus.UNKNOWN_LENGTH;
 
     /**
      * The file modification date in milliseconds
@@ -204,6 +205,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(modified != -1) {
             dict.setStringForKey(String.valueOf(modified), "Modified");
         }
+        if(created != -1) {
+            dict.setStringForKey(String.valueOf(created), "Created");
+        }
         if(revision != null) {
             dict.setStringForKey(String.valueOf(revision), "Revision");
         }
@@ -220,7 +224,10 @@ public class PathAttributes extends Attributes implements Serializable {
             dict.setObjectForKey(acl, "Acl");
         }
         if(link != DescriptiveUrl.EMPTY) {
-            dict.setStringForKey(link.getUrl(), "Link");
+            final Map<String, String> wrapper = new HashMap<>();
+            wrapper.put("Url", link.getUrl());
+            wrapper.put("Type", link.getType().name());
+            dict.setMapForKey(wrapper, "Link");
         }
         if(checksum != Checksum.NONE) {
             final Map<String, String> wrapper = new HashMap<>();

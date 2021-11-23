@@ -32,8 +32,7 @@ import java.util.Collections;
 public class FTPMoveFeature implements Move {
 
     private final FTPSession session;
-
-    private Delete delete;
+    private final Delete delete;
 
     public FTPMoveFeature(final FTPSession session) {
         this.session = session;

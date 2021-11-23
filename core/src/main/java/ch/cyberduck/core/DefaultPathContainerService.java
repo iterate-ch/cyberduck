@@ -24,7 +24,7 @@ public class DefaultPathContainerService implements PathContainerService {
         if(file.isRoot()) {
             return false;
         }
-        return file.getParent().isRoot();
+        return file.isDirectory() && file.getParent().isRoot();
     }
 
     @Override

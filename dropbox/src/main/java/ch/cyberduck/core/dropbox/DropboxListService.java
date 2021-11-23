@@ -42,13 +42,12 @@ public class DropboxListService implements ListService {
 
     private final DropboxSession session;
     private final DropboxAttributesFinderFeature attributes;
-
-    private final PathContainerService containerService
-        = new DropboxPathContainerService();
+    private final PathContainerService containerService;
 
     public DropboxListService(final DropboxSession session) {
         this.session = session;
         this.attributes = new DropboxAttributesFinderFeature(session);
+        this.containerService = new DropboxPathContainerService(session);
     }
 
     @Override

@@ -25,6 +25,7 @@ import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.VersionIdProvider;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -67,7 +68,7 @@ public class SDSNodeIdProvider implements VersionIdProvider {
             }
             return file.attributes().getVersionId();
         }
-        return this.getNodeId(file, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
+        return this.getNodeId(file, new HostPreferences(session.getHost()).getInteger("sds.listing.chunksize"));
     }
 
     protected String getNodeId(final Path file, final int chunksize) throws BackgroundException {

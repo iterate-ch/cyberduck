@@ -53,7 +53,8 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(folder)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
-            service.create(folder, StringUtils.isBlank(status.getRegion()) ? new S3LocationFeature(session).getDefault().getIdentifier() : status.getRegion());
+            service.create(folder, StringUtils.isBlank(status.getRegion()) ?
+                new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getDefault().getIdentifier() : status.getRegion());
             return folder;
         }
         else {

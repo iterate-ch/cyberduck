@@ -23,31 +23,21 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Redundancy;
-import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
 
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class S3StorageClassFeature implements Redundancy {
 
     private final S3Session session;
-    private final Preferences preferences = PreferencesFactory.get();
     private final PathContainerService containerService;
-
-    public static final Set<String> STORAGE_CLASS_LIST = new LinkedHashSet<>(Arrays.asList(
-        S3Object.STORAGE_CLASS_STANDARD,
-        "INTELLIGENT_TIERING",
-        S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, // This storage class (IA, for infrequent access) is optimized for long-lived and less frequently accessed data
-        "ONEZONE_IA",
-        S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
-        S3Object.STORAGE_CLASS_GLACIER,
-        "DEEP_ARCHIVE"));
 
     public S3StorageClassFeature(final S3Session session) {
         this.session = session;
@@ -56,20 +46,20 @@ public class S3StorageClassFeature implements Redundancy {
 
     @Override
     public String getDefault() {
-        return PreferencesFactory.get().getProperty("s3.storage.class");
+        return new HostPreferences(session.getHost()).getProperty("s3.storage.class");
     }
 
     @Override
     public Set<String> getClasses() {
-        return STORAGE_CLASS_LIST;
+        return new LinkedHashSet<>(new HostPreferences(session.getHost()).getList("s3.storage.class.options"));
     }
 
     @Override
     public String getClass(final Path file) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final String key = String.format("s3.storageclass.%s", containerService.getContainer(file).getName());
-            if(StringUtils.isNotBlank(preferences.getProperty(key))) {
-                return preferences.getProperty(key);
+            if(StringUtils.isNotBlank(new HostPreferences(session.getHost()).getProperty(key))) {
+                return new HostPreferences(session.getHost()).getProperty(key);
             }
             return S3Object.STORAGE_CLASS_STANDARD;
         }
@@ -86,7 +76,7 @@ public class S3StorageClassFeature implements Redundancy {
     public void setClass(final Path file, final String redundancy) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final String key = String.format("s3.storageclass.%s", containerService.getContainer(file).getName());
-            preferences.setProperty(key, redundancy);
+            PreferencesFactory.get().setProperty(key, redundancy);
         }
         if(file.isFile() || file.isPlaceholder()) {
             try {
@@ -94,7 +84,7 @@ public class S3StorageClassFeature implements Redundancy {
                 final TransferStatus status = new TransferStatus();
                 status.setLength(file.attributes().getSize());
                 status.setStorageClass(redundancy);
-                copy.copy(file, file, status, new DisabledConnectionCallback());
+                copy.copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener());
             }
             catch(NotfoundException e) {
                 if(file.isPlaceholder()) {

@@ -15,7 +15,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.CreateShareUploadChannelRes
 import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import java.io.File;
 import ch.cyberduck.core.sds.io.swagger.client.model.GeneratePresignedUrlsRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.InlineResponse507;
 import ch.cyberduck.core.sds.io.swagger.client.model.OpenIdAuthInfo;
 import ch.cyberduck.core.sds.io.swagger.client.model.PresignedUrlList;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadShare;
@@ -35,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-15T15:35:23.522373+02:00[Europe/Zurich]")public class PublicApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")public class PublicApi {
   private ApiClient apiClient;
 
   public PublicApi() {
@@ -83,7 +82,6 @@ import java.util.Map;
 
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -104,12 +102,13 @@ import java.util.Map;
    * @param body Mandatory for encrypted shares (required)
    * @param accessKey Access key (required)
    * @param uploadId Upload channel ID (required)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @return PublicUploadedFileData
    * @throws ApiException if fails to make API call
    * Range Requests
    * @see <a href="https://tools.ietf.org/html/rfc7233">Complete file upload Documentation</a>
    */
-  public PublicUploadedFileData completeFileUploadViaShare(UserFileKeyList body, String accessKey, String uploadId) throws ApiException {
+  public PublicUploadedFileData completeFileUploadViaShare(UserFileKeyList body, String accessKey, String uploadId, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -134,7 +133,8 @@ import java.util.Map;
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-
+    if (xSdsDateFormat != null)
+      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -185,7 +185,6 @@ import java.util.Map;
 
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -202,7 +201,7 @@ import java.util.Map;
   }
   /**
    * Create new file upload channel
-   * ### Description:   Create a new upload channel.  ### Precondition: None.  ### Postcondition: Upload channel is created and corresponding upload URL, token &amp; upload ID are returned.  ### Further Information: Use &#x60;uploadUrl&#x60; the upload &#x60;token&#x60; is deprecated.    Please provide the size of the intended upload so that the quota can be checked in advanced and no data is transferred unnecessarily.  ### Node naming convention: * Node (room, folder, file) names are limited to **150** characters. * Not allowed names:   &#x60;&#x27;CON&#x27;, &#x27;PRN&#x27;, &#x27;AUX&#x27;, &#x27;NUL&#x27;, &#x27;COM1&#x27;, &#x27;COM2&#x27;, &#x27;COM3&#x27;, &#x27;COM4&#x27;, &#x27;COM5&#x27;, &#x27;COM6&#x27;, &#x27;COM7&#x27;, &#x27;COM8&#x27;, &#x27;COM9&#x27;, &#x27;LPT1&#x27;, &#x27;LPT2&#x27;, &#x27;LPT3&#x27;, &#x27;LPT4&#x27;, &#x27;LPT5&#x27;, &#x27;LPT6&#x27;, &#x27;LPT7&#x27;, &#x27;LPT8&#x27;, &#x27;LPT9&#x27;, (and any of those with an extension)&#x60; * Not allowed characters in names:   &#x60;&#x27;\\\\&#x27;, &#x27;&lt;&#x27;,&#x27;&gt;&#x27;, &#x27;:&#x27;, &#x27;\\\&quot;&#x27;, &#x27;|&#x27;, &#x27;?&#x27;, &#x27;*&#x27;, &#x27;/&#x27;, leading &#x27;-&#x27;, trailing &#x27;.&#x27; &#x60; 
+   * ### Description:   Create a new upload channel.  ### Precondition: None.  ### Postcondition: Upload channel is created and corresponding upload URL, token &amp; upload ID are returned.  ### Further Information: Use &#x60;uploadUrl&#x60; the upload &#x60;token&#x60; is deprecated.    Please provide the size of the intended upload so that the quota can be checked in advanced and no data is transferred unnecessarily.  ### Node naming convention: * Node (room, folder, file) names are limited to **150** characters. * Illegal names:   &#x60;&#x27;CON&#x27;, &#x27;PRN&#x27;, &#x27;AUX&#x27;, &#x27;NUL&#x27;, &#x27;COM1&#x27;, &#x27;COM2&#x27;, &#x27;COM3&#x27;, &#x27;COM4&#x27;, &#x27;COM5&#x27;, &#x27;COM6&#x27;, &#x27;COM7&#x27;, &#x27;COM8&#x27;, &#x27;COM9&#x27;, &#x27;LPT1&#x27;, &#x27;LPT2&#x27;, &#x27;LPT3&#x27;, &#x27;LPT4&#x27;, &#x27;LPT5&#x27;, &#x27;LPT6&#x27;, &#x27;LPT7&#x27;, &#x27;LPT8&#x27;, &#x27;LPT9&#x27;, (and any of those with an extension)&#x60; * Illegal characters in names:   &#x60;&#x27;\\\\&#x27;, &#x27;&lt;&#x27;,&#x27;&gt;&#x27;, &#x27;:&#x27;, &#x27;\\\&quot;&#x27;, &#x27;|&#x27;, &#x27;?&#x27;, &#x27;*&#x27;, &#x27;/&#x27;, leading &#x27;-&#x27;, trailing &#x27;.&#x27; &#x60; 
    * @param body  (required)
    * @param accessKey Access key (required)
    * @return CreateShareUploadChannelResponse
@@ -229,7 +228,6 @@ import java.util.Map;
 
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -247,7 +245,7 @@ import java.util.Map;
   }
   /**
    * Download file with token
-   * ### Description:   Download a file (or zip archive if target is a folder or room).  ### Precondition: Valid download token.  ### Postcondition: Stream is returned.  ### Further Information: Range requests are supported.   Range requests are not allowed for zip archive download.
+   * ### Description:   Download a file (or zip archive if target is a folder or room).  ### Precondition: Valid download token.  ### Postcondition: Stream is returned.  ### Further Information: Range requests are supported.   Range requests are illegal for zip archive download.
    * @param accessKey Access key (required)
    * @param token Download token (required)
    * @param range Range   e.g. &#x60;bytes&#x3D;0-999&#x60; (optional)
@@ -283,7 +281,6 @@ import java.util.Map;
     if (range != null)
       localVarHeaderParams.put("Range", apiClient.parameterToString(range));
 
-
     final String[] localVarAccepts = {
       "application/octet-stream"
     };
@@ -300,7 +297,7 @@ import java.util.Map;
   }
   /**
    * Download file with token
-   * ### Description:   Download a file (or zip archive if target is a folder or room).  ### Precondition: Valid download token.  ### Postcondition: Stream is returned.  ### Further Information: Range requests are supported.   Range requests are not allowed for zip archive download.
+   * ### Description:   Download a file (or zip archive if target is a folder or room).  ### Precondition: Valid download token.  ### Postcondition: Stream is returned.  ### Further Information: Range requests are supported.   Range requests are illegal for zip archive download.
    * @param accessKey Access key (required)
    * @param token Download token (required)
    * @param range Range   e.g. &#x60;bytes&#x3D;0-999&#x60; (optional)
@@ -335,7 +332,6 @@ import java.util.Map;
 
     if (range != null)
       localVarHeaderParams.put("Range", apiClient.parameterToString(range));
-
 
     final String[] localVarAccepts = {
       "application/octet-stream"
@@ -377,7 +373,6 @@ import java.util.Map;
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
 
 
 
@@ -434,7 +429,6 @@ import java.util.Map;
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -470,7 +464,6 @@ import java.util.Map;
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "is_global_available", isGlobalAvailable));
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -504,7 +497,6 @@ import java.util.Map;
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "is_global_available", isGlobalAvailable));
-
 
 
     final String[] localVarAccepts = {
@@ -549,7 +541,6 @@ import java.util.Map;
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -567,7 +558,7 @@ import java.util.Map;
   }
   /**
    * Request public Upload Share information
-   * ### Description:   Provides information about the desired Upload Share.  ### Precondition: Only &#x60;userUserPublicKeyList&#x60; is returned to the users who owns one of the following permissions: &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt;  ### Postcondition: None.  ### Further Information: If no password is set, the returned information is reduced to the following attributes (if available):  * &#x60;name&#x60; * &#x60;maxSlots&#x60; * &#x60;createdAt&#x60; * &#x60;isProtected&#x60; * &#x60;isEncrypted&#x60; * &#x60;showUploadedFiles&#x60; * &#x60;userUserPublicKeyList&#x60; (if parent is end-to-end encrypted)  Only if the password is transmitted as &#x60;X-Sds-Share-Password&#x60; header, all values are returned. 
+   * ### Description:   Provides information about the desired Upload Share.  ### Precondition: Only &#x60;userUserPublicKeyList&#x60; is returned to the users who owns one of the following permissions: &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt;  ### Postcondition: None.  ### Further Information: If no password is set, the returned information is reduced to the following attributes (if available):  * &#x60;name&#x60; * &#x60;createdAt&#x60; * &#x60;isProtected&#x60; * &#x60;isEncrypted&#x60; * &#x60;showUploadedFiles&#x60; * &#x60;userUserPublicKeyList&#x60; (if parent is end-to-end encrypted)  Only if the password is transmitted as &#x60;X-Sds-Share-Password&#x60; header, all values are returned. 
    * @param accessKey Access key (required)
    * @param xSdsSharePassword Upload share password. Should be base64-encoded.  Plain X-Sds-Share-Passwords are *deprecated* and will be removed in the future (optional)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
@@ -594,7 +585,6 @@ import java.util.Map;
       localVarHeaderParams.put("X-Sds-Share-Password", apiClient.parameterToString(xSdsSharePassword));
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-
 
     final String[] localVarAccepts = {
       "application/json"
@@ -631,7 +621,6 @@ import java.util.Map;
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-
 
     final String[] localVarAccepts = {
       "application/json"
@@ -670,7 +659,6 @@ import java.util.Map;
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "is_enabled", isEnabled));
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -707,7 +695,6 @@ import java.util.Map;
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -738,7 +725,6 @@ import java.util.Map;
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
 
 
 
@@ -787,7 +773,6 @@ import java.util.Map;
 
 
 
-
     final String[] localVarAccepts = {
       "application/json"
     };
@@ -809,22 +794,22 @@ import java.util.Map;
    * @param accessKey Access key (required)
    * @param uploadId Upload channel ID (required)
    * @param file  (optional)
-   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @param contentRange Content-Range   e.g. &#x60;bytes 0-999/3980&#x60; (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @return ChunkUploadResponse
    * @throws ApiException if fails to make API call
    * Range Requests
    * @see <a href="https://tools.ietf.org/html/rfc7233">Upload file Documentation</a>
    */
-  public ChunkUploadResponse uploadFileAsBinaryPublic1(String accessKey, String uploadId, File file, String xSdsDateFormat, String contentRange) throws ApiException {
+  public ChunkUploadResponse uploadFileAsMultipartPublic1(String accessKey, String uploadId, File file, String contentRange, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'accessKey' is set
     if (accessKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'accessKey' when calling uploadFileAsBinaryPublic1");
+      throw new ApiException(400, "Missing the required parameter 'accessKey' when calling uploadFileAsMultipartPublic1");
     }
     // verify the required parameter 'uploadId' is set
     if (uploadId == null) {
-      throw new ApiException(400, "Missing the required parameter 'uploadId' when calling uploadFileAsBinaryPublic1");
+      throw new ApiException(400, "Missing the required parameter 'uploadId' when calling uploadFileAsMultipartPublic1");
     }
     // create path and map variables
     String localVarPath = "/v4/public/shares/uploads/{access_key}/{upload_id}"
@@ -837,11 +822,10 @@ import java.util.Map;
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsDateFormat != null)
-      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
     if (contentRange != null)
       localVarHeaderParams.put("Content-Range", apiClient.parameterToString(contentRange));
-
+    if (xSdsDateFormat != null)
+      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
     if (file != null)
       localVarFormParams.put("file", file);
 

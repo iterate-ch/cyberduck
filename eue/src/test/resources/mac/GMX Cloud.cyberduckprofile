@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>eue</string>
+        <key>Vendor</key>
+        <string>gmx</string>
+        <key>Description</key>
+        <string>GMX Cloud</string>
+        <key>Scheme</key>
+        <string>https</string>
+        <key>Default Port</key>
+        <string>443</string>
+        <key>Username Placeholder</key>
+        <string>Username</string>
+        <key>Password Placeholder</key>
+        <string>Password</string>
+        <!-- Service Discovery Host -->
+        <key>Default Hostname</key>
+        <string>mc.gmx.net</string>
+        <key>Context</key>
+        <string>/serviceTarget/onlinestorage.mc</string>
+        <key>Default Nickname</key>
+        <string>GMX Cloud</string>
+        <key>Hostname Configurable</key>
+        <false/>
+        <key>Port Configurable</key>
+        <false/>
+        <key>Anonymous Configurable</key>
+        <false/>
+        <key>Path Configurable</key>
+        <false/>
+        <key>Certificate Configurable</key>
+        <false/>
+        <key>Username Configurable</key>
+        <false/>
+        <key>Password Configurable</key>
+        <false/>
+        <key>OAuth Authorization Url</key>
+        <string>https://oauth2.gmx.net/authorize</string>
+        <key>OAuth Token Url</key>
+        <string>https://oauth2.gmx.net/token</string>
+        <key>OAuth Redirect Url</key>
+        <string>x-gmxcloud-action:oauth</string>
+        <key>OAuth Client ID</key>
+        <string>gmxdach_pccloudsynctool_live</string>
+        <key>OAuth Client Secret</key>
+        <string>EviUQITLj4CW6kgSyai3i52MunsuAJASM1GP7s0M</string>
+        <key>Scopes</key>
+        <array>
+            <string>onlinestorage_user_meta_read</string>
+            <string>onlinestorage_user_meta_write</string>
+        </array>
+        <key>Properties</key>
+        <array>
+            <string>apikey=0-MAMCLOUDSYNCMAC-18835-0-0e2145c0c94e5679</string>
+            <string>app=gmx.macos.cloudsynctool/{0}</string>
+            <string>share.hostname=c.gmx.net</string>
+            <string>pacs.url=https://hsp.gmx.net/http-service-proxy1/service/pacs/MobileCloudStorageContext2</string>
+            <string>cryptomator.vault.masterkey.filename=systemdaten.gmxtresor</string>
+            <string>cryptomator.vault.pepper=gmx</string>>
+            <string>cryptomator.vault.name.default=GMX Tresor</string>>
+        </array>
+        <key>Schemes</key>
+        <array>
+            <string>gmxcloud</string>
+        </array>
+    </dict>
+</plist>

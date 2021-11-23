@@ -20,7 +20,7 @@ public class NullSession extends Session<Void> implements ListService {
     }
 
     @Override
-    protected Void connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    public Void connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         return null;
     }
 

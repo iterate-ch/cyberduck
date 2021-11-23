@@ -41,7 +41,6 @@ import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -54,7 +53,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -110,8 +108,8 @@ public class CopyWorkerTest extends AbstractDAVTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DefaultUploadFeature<String>(new DAVWriteFeature(session)),
-            new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(source, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DAVWriteFeature(session),
+                new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(targetFolder, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
@@ -128,15 +126,15 @@ public class CopyWorkerTest extends AbstractDAVTest {
         assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path source = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
-        final Path targetFolder = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.directory));
-        final Path target = new Path(targetFolder, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
+        final Path source = new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
+        final Path targetFolder = new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.directory));
+        final Path target = new Path(targetFolder, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DefaultUploadFeature<String>(new DAVWriteFeature(session)),
-            new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(source, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DAVWriteFeature(session),
+                new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(targetFolder, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
@@ -160,8 +158,8 @@ public class CopyWorkerTest extends AbstractDAVTest {
         session.withRegistry(registry);
         cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(folder, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
-        new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DefaultUploadFeature<String>(new DAVWriteFeature(session)),
-            new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(file, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DAVWriteFeature(session),
+                new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(file, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         // copy file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
@@ -216,8 +214,8 @@ public class CopyWorkerTest extends AbstractDAVTest {
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(cleartextFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVDirectoryFeature(session).mkdir(cleartextFolder, new TransferStatus());
-        new DefaultTouchFeature<String>(new DefaultUploadFeature<String>(new DAVWriteFeature(session)),
-            new DAVAttributesFinderFeature(session)).touch(cleartextFile, new TransferStatus());
+        new DefaultTouchFeature<>(new DAVWriteFeature(session),
+                new DAVAttributesFinderFeature(session)).touch(cleartextFile, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(cleartextFolder));
         assertTrue(new DAVFindFeature(session).find(cleartextFile));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -283,7 +281,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         session.withRegistry(registry);
         cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(encryptedFolder, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
-        new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DefaultUploadFeature<String>(new DAVWriteFeature(session)), new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DAVWriteFeature(session), new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         // copy directory outside vault
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

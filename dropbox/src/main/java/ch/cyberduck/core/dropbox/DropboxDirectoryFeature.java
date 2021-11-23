@@ -29,12 +29,11 @@ import com.dropbox.core.v2.files.DbxUserFilesRequests;
 public class DropboxDirectoryFeature implements Directory<String> {
 
     private final DropboxSession session;
-
-    private final PathContainerService containerService
-        = new DropboxPathContainerService();
+    private final PathContainerService containerService;
 
     public DropboxDirectoryFeature(final DropboxSession session) {
         this.session = session;
+        this.containerService = new DropboxPathContainerService(session);
     }
 
     @Override
@@ -45,7 +44,7 @@ public class DropboxDirectoryFeature implements Directory<String> {
             return folder.withAttributes(new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
         }
         catch(DbxException e) {
-            throw new DropboxExceptionMappingService().map(e);
+            throw new DropboxExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
     }
 

@@ -13,7 +13,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -44,8 +43,8 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
     @Test
     public void testCreatePlaceholder() throws Exception {
         final Path container = new Path("/cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path placeholder = new AzureDirectoryFeature(session, null).mkdir(new Path(container, UUID.randomUUID().toString(),
-            EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path placeholder = new AzureDirectoryFeature(session, null).mkdir(new Path(container, new AlphanumericRandomStringService().random(),
+                EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(placeholder.getType().contains(Path.Type.placeholder));
         assertTrue(new AzureFindFeature(session, null).find(placeholder));
         assertEquals(placeholder.attributes(), new AzureAttributesFinderFeature(session, null).find(placeholder));

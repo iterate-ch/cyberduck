@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.RestoreDeletedNodesRequest;
@@ -57,7 +57,7 @@ public class SDSVersioningFeature implements Versioning {
             new NodesApi(session.getClient()).restoreNodes(
                 new RestoreDeletedNodesRequest()
                     .resolutionStrategy(RestoreDeletedNodesRequest.ResolutionStrategyEnum.OVERWRITE)
-                    .keepShareLinks(PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep"))
+                    .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
                     .addDeletedNodeIdsItem(Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())))
                     .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener()))), StringUtils.EMPTY);
         }

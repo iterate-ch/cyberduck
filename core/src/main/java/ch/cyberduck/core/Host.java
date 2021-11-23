@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
@@ -68,8 +69,7 @@ public class Host implements Serializable, Comparable<Host> {
     private String nickname;
 
     /**
-     * The initial working directory if any and absolute
-     * path to document root of webserver for Web URL configuration
+     * The initial working directory if any and absolute path to document root of webserver for Web URL configuration
      */
     private String defaultpath;
 
@@ -425,8 +425,8 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * @return The character encoding to be used when connecting to this server or null
-     * if the default encoding should be used
+     * @return The character encoding to be used when connecting to this server or null if the default encoding should
+     * be used
      */
     public String getEncoding() {
         if(null == encoding) {
@@ -445,8 +445,8 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * @return The connect mode to be used when connecting
-     * to this server or null if the default connect mode should be used
+     * @return The connect mode to be used when connecting to this server or null if the default connect mode should be
+     * used
      */
     public FTPConnectMode getFTPConnectMode() {
         return connectMode;
@@ -457,16 +457,14 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * @return The number of concurrent sessions allowed. -1 if unlimited or null
-     * if the default should be used
+     * @return The number of concurrent sessions allowed. -1 if unlimited or null if the default should be used
      */
     public TransferType getTransferType() {
         return transfer;
     }
 
     /**
-     * Set a custom number of concurrent sessions allowed for this host
-     * If not set, connection.pool.max is used.
+     * Set a custom number of concurrent sessions allowed for this host If not set, connection.pool.max is used.
      *
      * @param transfer null to use the default value or -1 if no limit
      */
@@ -508,13 +506,33 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * Set a timezone for the remote server different from the local default timezone
-     * May be useful to display modification dates of remote files correctly using the local timezone
+     * Set a timezone for the remote server different from the local default timezone May be useful to display
+     * modification dates of remote files correctly using the local timezone
      *
      * @param timezone Timezone of server
      */
     public void setTimezone(final TimeZone timezone) {
         this.timezone = timezone;
+    }
+
+    /**
+     * Read property from protocol with fallback to generic preferences
+     *
+     * @param key Property name
+     * @return Value for property key
+     */
+    public String getProperty(final String key) {
+        final Map<String, String> overrides = this.getCustom();
+        if(overrides.containsKey(key)) {
+            return overrides.get(key);
+        }
+        return protocol.getProperties().get(key);
+    }
+
+    public void setProperty(final String key, final String value) {
+        final Map<String, String> overrides = new HashMap<>(this.getCustom());
+        overrides.put(key, value);
+        this.setCustom(overrides);
     }
 
     public String getRegion() {
@@ -526,6 +544,11 @@ public class Host implements Serializable, Comparable<Host> {
 
     public void setRegion(final String region) {
         this.region = region;
+    }
+
+    public Host withRegion(final String region) {
+        this.setRegion(region);
+        return this;
     }
 
     /**
@@ -648,7 +671,7 @@ public class Host implements Serializable, Comparable<Host> {
         else if(credentials.compareTo(o.credentials) > 0) {
             return 1;
         }
-        return 0;
+        return StringUtils.compare(defaultpath, o.defaultpath);
     }
 
     @Override

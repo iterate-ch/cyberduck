@@ -51,6 +51,7 @@ public class CommandLinePathParserTest {
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTP.cyberduckprofile")));
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTPS.cyberduckprofile")));
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile")));
+
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory)),
                 new CommandLinePathParser(input, factory).parse("ftps://u@test.cyberduck.ch/"));
         assertEquals(new Path("/d", EnumSet.of(Path.Type.directory)),
@@ -75,6 +76,10 @@ public class CommandLinePathParserTest {
                 new CommandLinePathParser(input, factory).parse("s3://u@/test.cyberduck.ch/d"));
         assertEquals(new Path("/test.cyberduck.ch/d", EnumSet.of(Path.Type.file)),
                 new CommandLinePathParser(input, factory).parse("s3://u@/test.cyberduck.ch/d"));
+
+        // Test bucket
+        assertEquals(new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+                new CommandLinePathParser(input, factory).parse("s3:/test.cyberduck.ch"));
     }
 
     @Test

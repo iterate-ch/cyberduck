@@ -45,13 +45,13 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
-using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms;
 using java.lang;
 using java.text;
 using java.util;
 using org.apache.log4j;
 using StructureMap;
+using static Ch.Cyberduck.ImageHelper;
 using Application = ch.cyberduck.core.local.Application;
 using Directory = ch.cyberduck.core.features.Directory;
 using Exception = System.Exception;
@@ -276,6 +276,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ModelRegionGetter = _browserModel.GetRegion;
             View.ModelVersionGetter = _browserModel.GetVersion;
             View.ModelStorageClassGetter = _browserModel.GetStorageClass;
+            View.ModelChecksumGetter = _browserModel.GetChecksum;
 
             #endregion
 
@@ -628,24 +629,6 @@ namespace Ch.Cyberduck.Ui.Controller
                         foreach (Path path in selected)
                         {
                             entry.Value.Add(((DescriptiveUrl) urlProvider.toUrl(path).toArray()[i]).getUrl());
-                        }
-                    }
-                }
-                UrlProvider distributionConfiguration =
-                    ((UrlProvider) Session.getFeature(typeof(DistributionConfiguration)));
-                if (distributionConfiguration != null)
-                {
-                    for (int i = 0; i < distributionConfiguration.toUrl(SelectedPath).size(); i++)
-                    {
-                        DescriptiveUrl descUrl =
-                            (DescriptiveUrl) distributionConfiguration.toUrl(SelectedPath).toArray()[i];
-                        KeyValuePair<String, List<String>> entry =
-                            new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
-                        items.Add(entry);
-                        foreach (Path path in selected)
-                        {
-                            entry.Value.Add(
-                                ((DescriptiveUrl) distributionConfiguration.toUrl(path).toArray()[i]).getUrl());
                         }
                     }
                 }
@@ -2357,19 +2340,19 @@ namespace Ch.Cyberduck.Ui.Controller
                     string editCommand = app != null ? app.getIdentifier() : null;
                     if (Utils.IsNotBlank(editCommand))
                     {
-                        View.EditIcon = IconCache.GetAppImage(
+                        View.EditIcon = IconProvider.GetFileIcon(
                             WindowsApplicationLauncher.GetExecutableCommand(editCommand),
-                                IconCache.IconSize.Large);
+                            false, true, true);
                         return;
                     }
                 }
             }
-            View.EditIcon = IconCache.IconForName("pencil", 32);
+            View.EditIcon = Images.Pencil.Size(32);
         }
 
         private void UpdateOpenIcon()
         {
-            View.OpenIcon = IconCache.GetDefaultBrowserIcon();
+            View.OpenIcon = IconProvider.DefaultBrowser();
         }
 
         private void View_BrowserSelectionChanged()

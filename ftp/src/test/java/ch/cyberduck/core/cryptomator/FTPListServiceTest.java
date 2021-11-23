@@ -31,7 +31,6 @@ import ch.cyberduck.core.ftp.list.FTPListService;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -61,8 +60,8 @@ public class FTPListServiceTest extends AbstractFTPTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new FTPListService(session, null, null), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
-        new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)),
-            new DefaultAttributesFinderFeature(session)), new FTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new FTPWriteFeature(session),
+                new DefaultAttributesFinderFeature(session)), new FTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new FTPListService(session, null, null), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
         cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

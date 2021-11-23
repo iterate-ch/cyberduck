@@ -20,6 +20,6 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 public class DAVTouchFeature extends DefaultTouchFeature<String> {
 
     public DAVTouchFeature(final DAVSession session) {
-        super(new DAVUploadFeature(new DAVWriteFeature(session)), new DAVAttributesFinderFeature(session));
+        super(new DAVWriteFeature(session), new DAVAttributesFinderFeature(session));
     }
 }

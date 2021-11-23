@@ -35,7 +35,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,8 +50,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKER;
-import static org.jets3t.service.Constants.AMZ_DELETE_MARKER;
-import static org.jets3t.service.Constants.AMZ_VERSION_ID;
 
 public class S3AttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(S3AttributesFinderFeature.class);
@@ -64,7 +62,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
     private final boolean references;
 
     public S3AttributesFinderFeature(final S3Session session) {
-        this(session, PreferencesFactory.get().getBoolean("s3.versioning.references.enable"));
+        this(session, new HostPreferences(session.getHost()).getBoolean("s3.versioning.references.enable"));
     }
 
     public S3AttributesFinderFeature(final S3Session session, final boolean references) {
@@ -83,35 +81,37 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             attributes.setRegion(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(file).getIdentifier());
             return attributes;
         }
+        if(file.getType().contains(Path.Type.upload)) {
+            final Write.Append append = new S3WriteFeature(session).append(file, new TransferStatus());
+            if(append.append) {
+                return new PathAttributes().withSize(append.size);
+            }
+            throw new NotfoundException(file.getAbsolute());
+        }
         try {
             PathAttributes attr;
+            final Path bucket = containerService.getContainer(file);
             try {
                 attr = this.toAttributes(session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
-                    containerService.getContainer(file).getName(), containerService.getKey(file)));
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
             }
             catch(ServiceException e) {
-                if(null != e.getResponseHeaders()) {
-                    if(e.getResponseHeaders().containsKey(AMZ_DELETE_MARKER)) {
-                        // Attempting to retrieve object with delete marker and no version id in request
-                        attr = new PathAttributes().withVersionId(e.getResponseHeaders().get(AMZ_VERSION_ID));
+                switch(e.getResponseCode()) {
+                    case 405:
+                        // Only DELETE method is allowed for delete markers
+                        attr = new PathAttributes();
                         attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                         attr.setDuplicate(true);
                         return attr;
-                    }
-                    else {
-                        throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-                    }
                 }
-                else {
-                    throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-                }
+                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
             if(StringUtils.isNotBlank(attr.getVersionId())) {
                 if(references) {
                     try {
                         // Add references to previous versions
                         final AttributedList<Path> list = new S3VersionedObjectListService(session, true).list(file, new DisabledListProgressListener());
-                        final Path versioned = list.find(new DefaultPathPredicate(file));
+                        final Path versioned = list.find(new DefaultPathPredicate(new Path(file).withAttributes(attr)));
                         if(null != versioned) {
                             attr.setDuplicate(versioned.attributes().isDuplicate());
                             attr.setVersions(versioned.attributes().getVersions());
@@ -126,7 +126,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                     try {
                         // Duplicate if not latest version
                         final String latest = this.toAttributes(session.getClient().getObjectDetails(
-                            containerService.getContainer(file).getName(), containerService.getKey(file))).getVersionId();
+                                bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file))).getVersionId();
                         if(null != latest) {
                             attr.setDuplicate(!latest.equals(attr.getVersionId()));
                         }
@@ -161,10 +161,6 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 }
                 // Found common prefix
                 return PathAttributes.EMPTY;
-            }
-            final Write.Append append = new S3WriteFeature(session).append(file, new TransferStatus());
-            if(append.append) {
-                return new PathAttributes().withSize(append.size);
             }
             throw e;
         }
@@ -220,6 +216,9 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 metadata.put(entry.getKey(), entry.getValue().toString());
             }
             attributes.setMetadata(metadata);
+            if(object.containsMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE)) {
+                attributes.setModificationDate(Long.parseLong(object.getUserMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE).toString()));
+            }
         }
         return attributes;
     }

@@ -71,7 +71,12 @@ public class StatelessSessionPool implements SessionPool {
                 return;
             }
             if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                connect.close(conn);
+                try {
+                    connect.close(conn);
+                }
+                catch(BackgroundException e) {
+                    log.warn(String.format("Ignore failure %s closing connection", e.getMessage()));
+                }
             }
         }
         finally {

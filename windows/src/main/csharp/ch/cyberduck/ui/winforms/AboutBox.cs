@@ -25,8 +25,8 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Core.Sparkle;
+using static Ch.Cyberduck.ImageHelper;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -149,7 +149,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public virtual Image ApplicationIcon()
         {
-            return IconCache.IconForName("cyberduck", 128);
+            return Images.CyberduckApplication.Size(128);
         }
 
         public virtual string Credits()

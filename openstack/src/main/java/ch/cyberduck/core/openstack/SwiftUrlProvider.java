@@ -21,16 +21,19 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
+import ch.cyberduck.core.HostWebUrlProvider;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.WebUrlProvider;
+import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.codec.binary.Hex;
@@ -49,6 +52,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -63,6 +68,7 @@ public class SwiftUrlProvider implements UrlProvider {
 
     private final SwiftSession session;
     private final SwiftRegionService regionService;
+    private final Map<Path, Set<Distribution>> distributions;
     private final Map<Region, AccountInfo> accounts;
 
     public SwiftUrlProvider(final SwiftSession session) {
@@ -74,9 +80,15 @@ public class SwiftUrlProvider implements UrlProvider {
     }
 
     public SwiftUrlProvider(final SwiftSession session, final Map<Region, AccountInfo> accounts, final SwiftRegionService regionService) {
+        this(session, accounts, regionService, Collections.emptyMap());
+    }
+
+    public SwiftUrlProvider(final SwiftSession session, final Map<Region, AccountInfo> accounts, final SwiftRegionService regionService,
+                            final Map<Path, Set<Distribution>> distributions) {
         this.session = session;
         this.accounts = accounts;
         this.regionService = regionService;
+        this.distributions = distributions;
     }
 
     @Override
@@ -94,24 +106,34 @@ public class SwiftUrlProvider implements UrlProvider {
                 list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
             }
             else {
-                list.addAll(new WebUrlProvider(session.getHost()).toUrl(file));
+                list.addAll(new HostWebUrlProvider(session.getHost()).toUrl(file));
                 list.add(new DescriptiveUrl(
-                        URI.create(region.getStorageUrl(containerService.getContainer(file).getName(), containerService.getKey(file)).toString()),
-                        DescriptiveUrl.Type.provider,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
-                                session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
+                    URI.create(region.getStorageUrl(containerService.getContainer(file).getName(), containerService.getKey(file)).toString()),
+                    DescriptiveUrl.Type.provider,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                        session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
                 ));
                 // In one hour
                 list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.HOURS.toSeconds(1))));
                 // Default signed URL expiring in 24 hours.
                 list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.SECONDS.toSeconds(
-                        PreferencesFactory.get().getInteger("s3.url.expire.seconds")))));
+                    new HostPreferences(session.getHost()).getInteger("s3.url.expire.seconds")))));
                 // 1 Week
                 list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.DAYS.toSeconds(7))));
                 // 1 Month
                 list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.DAYS.toSeconds(30))));
                 // 1 Year
                 list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.DAYS.toSeconds(365))));
+            }
+        }
+        // Filter by matching container name
+        final Optional<Set<Distribution>> filtered = distributions.entrySet().stream().filter(entry ->
+                new SimplePathPredicate(containerService.getContainer(file)).test(entry.getKey()))
+            .map(Map.Entry::getValue).findFirst();
+        if(filtered.isPresent()) {
+            // Add CloudFront distributions
+            for(Distribution distribution : filtered.get()) {
+                list.addAll(new DistributionUrlProvider(distribution).toUrl(file));
             }
         }
         return list;

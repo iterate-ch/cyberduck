@@ -39,6 +39,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -103,11 +104,7 @@ public class CryptoVault implements Vault {
     private final byte[] pepper;
 
     public CryptoVault(final Path home) {
-        this(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME);
-    }
-
-    public CryptoVault(final Path home, final String masterkey) {
-        this(home, masterkey, VAULT_PEPPER);
+        this(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, VAULT_PEPPER);
     }
 
     public CryptoVault(final Path home, final String masterkey, final byte[] pepper) {
@@ -148,10 +145,6 @@ public class CryptoVault implements Vault {
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(home));
-        }
-        final Redundancy redundancy = session.getFeature(Redundancy.class);
-        if(redundancy != null) {
-            status.setStorageClass(redundancy.getDefault());
         }
         final Path vault = directory.mkdir(home, status);
         new ContentWriter(session).write(masterkey, masterKeyFileContent.serialize());
@@ -278,14 +271,16 @@ public class CryptoVault implements Vault {
                 final CryptorProvider provider = Cryptors.version1(FastSecureRandomProvider.get().provide());
                 final Cryptor cryptor = provider.createFromKeyFile(keyFile, passphrase, pepper, keyFile.getVersion());
                 // Create backup, as soon as we know the password was correct
-                final Path masterKeyFileBackup = new Path(home, DefaultVaultRegistry.DEFAULT_BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
+                final Path masterKeyFileBackup = new Path(home,
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file, Path.Type.vault));
                 new ContentWriter(session).write(masterKeyFileBackup, keyFile.serialize());
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Master key backup saved in %s", masterKeyFileBackup));
                 }
                 // Write updated masterkey file
                 final KeyFile upgradedMasterKeyFile = cryptor.writeKeysToMasterkeyFile(passphrase, pepper, VAULT_VERSION_DEPRECATED);
-                final Path masterKeyFile = new Path(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
+                final Path masterKeyFile = new Path(home,
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file, Path.Type.vault));
                 final byte[] masterKeyFileContent = upgradedMasterKeyFile.serialize();
                 new ContentWriter(session).write(masterKeyFile, masterKeyFileContent, new TransferStatus().exists(true).withLength(masterKeyFileContent.length));
                 log.warn(String.format("Updated masterkey %s to version %d", masterKeyFile, VAULT_VERSION_DEPRECATED));
@@ -385,13 +380,13 @@ public class CryptoVault implements Vault {
             }
             final PathAttributes attributes = new PathAttributes(file.attributes());
             attributes.setDirectoryId(null);
-            if(!metadata) {
+            if(!file.isFile() && !metadata) {
                 // The directory is different from the metadata file used to resolve the actual folder
                 attributes.setVersionId(null);
                 attributes.setFileId(null);
             }
             // Translate file size
-            attributes.setSize(this.toCiphertextSize(file.attributes().getSize()));
+            attributes.setSize(this.toCiphertextSize(0L, file.attributes().getSize()));
             final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
             if(metadata && vaultVersion == VAULT_VERSION_DEPRECATED) {
                 type.remove(Path.Type.directory);
@@ -453,7 +448,7 @@ public class CryptoVault implements Vault {
                 }
                 else {
                     // Translate file size
-                    attributes.setSize(this.toCleartextSize(file.attributes().getSize()));
+                    attributes.setSize(this.toCleartextSize(0L, file.attributes().getSize()));
                 }
                 // Add reference to encrypted file
                 attributes.setEncrypted(file);
@@ -489,19 +484,32 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public long toCiphertextSize(final long cleartextFileSize) {
-        if(-1L == cleartextFileSize) {
-            return -1L;
+    public long toCiphertextSize(final long cleartextFileOffset, final long cleartextFileSize) {
+        if(TransferStatus.UNKNOWN_LENGTH == cleartextFileSize) {
+            return TransferStatus.UNKNOWN_LENGTH;
         }
-        return cryptor.fileHeaderCryptor().headerSize() + Cryptors.ciphertextSize(cleartextFileSize, cryptor);
+        final int headerSize;
+        if(0L == cleartextFileOffset) {
+            headerSize = cryptor.fileHeaderCryptor().headerSize();
+        }
+        else {
+            headerSize = 0;
+        }
+        return headerSize + Cryptors.ciphertextSize(cleartextFileSize, cryptor);
     }
 
     @Override
-    public long toCleartextSize(final long ciphertextFileSize) throws CryptoInvalidFilesizeException {
-        if(-1L == ciphertextFileSize) {
-            return -1L;
+    public long toCleartextSize(final long cleartextFileOffset, final long ciphertextFileSize) throws CryptoInvalidFilesizeException {
+        if(TransferStatus.UNKNOWN_LENGTH == ciphertextFileSize) {
+            return TransferStatus.UNKNOWN_LENGTH;
         }
-        final int headerSize = cryptor.fileHeaderCryptor().headerSize();
+        final int headerSize;
+        if(0L == cleartextFileOffset) {
+            headerSize = cryptor.fileHeaderCryptor().headerSize();
+        }
+        else {
+            headerSize = 0;
+        }
         try {
             return Cryptors.cleartextSize(ciphertextFileSize - headerSize, cryptor);
         }
@@ -564,7 +572,7 @@ public class CryptoVault implements Vault {
             }
             if(type == Touch.class) {
                 // Use default touch feature because touch with remote implementation will not add encrypted file header
-                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session._getFeature(Upload.class), session._getFeature(AttributesFinder.class)), session._getFeature(Write.class), this);
+                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session._getFeature(Write.class), session._getFeature(AttributesFinder.class)), session._getFeature(Write.class), this);
             }
             if(type == Directory.class) {
                 return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?

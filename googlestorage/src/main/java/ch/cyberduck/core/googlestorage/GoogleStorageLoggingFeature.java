@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.logging.LoggingConfiguration;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -84,7 +84,7 @@ public class GoogleStorageLoggingFeature implements Logging, DistributionLogging
         try {
             session.getClient().buckets().patch(container.getName(),
                 new Bucket().setLogging(new Bucket.Logging()
-                    .setLogObjectPrefix(configuration.isEnabled() ? PreferencesFactory.get().getProperty("google.logging.prefix") : null)
+                    .setLogObjectPrefix(configuration.isEnabled() ? new HostPreferences(session.getHost()).getProperty("google.logging.prefix") : null)
                     .setLogBucket(StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : container.getName()))
             ).execute();
         }

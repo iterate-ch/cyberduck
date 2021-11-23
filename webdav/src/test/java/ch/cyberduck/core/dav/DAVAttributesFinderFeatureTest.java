@@ -21,7 +21,6 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -53,7 +52,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        final Path test = new Path(UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
+        final Path test = new Path(UUID.randomUUID() + ".txt", EnumSet.of(Path.Type.file));
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         try {
             f.find(test);
@@ -185,9 +184,9 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DefaultUploadFeature<String>(new DAVWriteFeature(session)),
-            new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(
-            new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DAVWriteFeature(session),
+                new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(
+                new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         test.attributes().setSize(0L);
         final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test);
         assertNotNull(attributes);

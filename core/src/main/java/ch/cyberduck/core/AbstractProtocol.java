@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.shared.RootPathContainerService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +37,11 @@ import java.util.Objects;
 import java.util.Set;
 
 public abstract class AbstractProtocol implements Protocol {
+
+    @Override
+    public <T> T serialize(final Serializer dict) {
+        return null;
+    }
 
     @Override
     public String getProvider() {
@@ -321,7 +327,7 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public int compareTo(final Protocol o) {
-        return this.getIdentifier().compareTo(o.getIdentifier());
+        return new ProtocolComparator(this).compareTo(o);
     }
 
     @Override
@@ -373,9 +379,13 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == PathContainerService.class) {
             return (T) new RootPathContainerService();
+        }
+        if(type == WebUrlProvider.class) {
+            return (T) new DefaultWebUrlProvider();
         }
         return null;
     }

@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.proxy.Proxy;
@@ -55,7 +56,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
     }
 
     @Override
-    public Storage connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected Storage connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get().find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host.getProtocol())
             .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
@@ -71,7 +72,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt,
                       final CancelCallback cancel) throws BackgroundException {
-        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
+        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
     }
 
     @Override
@@ -156,6 +157,9 @@ public class GoogleStorageSession extends HttpSession<Storage> {
         }
         if(type == Redundancy.class) {
             return (T) new GoogleStorageStorageClassFeature(this);
+        }
+        if(type == Timestamp.class) {
+            return (T) new GoogleStorageTimestampFeature(this);
         }
         return super._getFeature(type);
     }

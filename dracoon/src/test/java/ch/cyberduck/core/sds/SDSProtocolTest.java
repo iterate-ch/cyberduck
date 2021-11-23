@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -35,7 +34,7 @@ public class SDSProtocolTest {
     public void testParse() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/DRACOON (Email Address).cyberduckprofile"));
+            this.getClass().getResourceAsStream("/DRACOON (Email Address).cyberduckprofile"));
         assertTrue(profile.isHostnameConfigurable());
         assertTrue(profile.isPortConfigurable());
         assertTrue(profile.isUsernameConfigurable());
@@ -50,7 +49,7 @@ public class SDSProtocolTest {
     public void testParseOAuth() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/DRACOON (OAuth).cyberduckprofile"));
+            this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
         assertTrue(profile.isHostnameConfigurable());
         assertTrue(profile.isPortConfigurable());
         assertFalse(profile.isUsernameConfigurable());

@@ -1,5 +1,6 @@
 package ch.cyberduck.core.azure;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -23,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
-import java.util.UUID;
 
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.blob.BlobType;
@@ -44,7 +44,7 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length)));
         status.setMetadata(Collections.singletonMap("Cache-Control", "public,max-age=86400"));
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final OutputStream out = new AzureWriteFeature(session, BlobType.APPEND_BLOB, context).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -83,7 +83,7 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length)));
         status.setMetadata(Collections.singletonMap("Cache-Control", "public,max-age=86400"));
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final OutputStream out = new AzureWriteFeature(session, BlobType.BLOCK_BLOB, context).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);

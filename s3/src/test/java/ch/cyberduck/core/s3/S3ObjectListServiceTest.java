@@ -50,11 +50,24 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testList() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("us-east-1");
         final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         for(Path p : list) {
             assertEquals(container, p.getParent());
-            assertEquals("us-east-1", p.attributes().getRegion());
+            if(p.isFile()) {
+                assertNotEquals(-1L, p.attributes().getModificationDate());
+                assertNotEquals(-1L, p.attributes().getSize());
+                assertNotNull(p.attributes().getETag());
+                assertNotNull(p.attributes().getStorageClass());
+            }
+        }
+    }
+
+    @Test
+    public void testListVirtualHostStyle() throws Exception {
+        final AttributedList<Path> list = new S3ObjectListService(virtualhost).list(
+                new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        for(Path p : list) {
+            assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), p.getParent());
             if(p.isFile()) {
                 assertNotEquals(-1L, p.attributes().getModificationDate());
                 assertNotEquals(-1L, p.attributes().getSize());
@@ -68,15 +81,24 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     public void testDirectory() throws Exception {
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
+        final S3ObjectListService feature = new S3ObjectListService(session);
+        assertTrue(feature.list(bucket, new DisabledListProgressListener()).contains(directory));
+        assertTrue(feature.list(directory, new DisabledListProgressListener()).isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
+        assertFalse(feature.list(bucket, new DisabledListProgressListener()).contains(directory));
+        try {
+            feature.list(directory, new DisabledListProgressListener());
+            fail();
+        }
+        catch(NotfoundException e) {
+
+        }
     }
 
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolder() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        new S3ObjectListService(session).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        new S3ObjectListService(session).list(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
     @Ignore
@@ -118,21 +140,21 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
         final AttributedList<Path> list
-            = new S3ObjectListService(session).list(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory)),
-            new DisabledListProgressListener());
+                = new S3ObjectListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)),
+                new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-        assertTrue(list.contains(new Path("/dist.springframework.org/milestone", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-        assertTrue(list.contains(new Path("/dist.springframework.org/snapshot", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        assertTrue(list.contains(new Path("/release", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        assertTrue(list.contains(new Path("/milestone", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        assertTrue(list.contains(new Path("/snapshot", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
     }
 
     @Test
     public void testListDefaultPath() throws Exception {
-        final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
-            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+        final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/dist.springframework.org/release");
         final S3Session session = new S3Session(host);
@@ -143,20 +165,20 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
-        assertEquals(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory)), new DefaultHomeFinderService(session).find());
+        assertTrue(new SimplePathPredicate(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory)))
+                .test(new DefaultHomeFinderService(session).find()));
         final AttributedList<Path> list
-            = new S3ObjectListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
+                = new S3ObjectListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("/dist.springframework.org/release/SWF", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        assertNotNull(list.find(new SimplePathPredicate(new Path("/dist.springframework.org/release/SWF", EnumSet.of(Path.Type.directory, Path.Type.placeholder)))));
         session.close();
     }
 
     @Test
     public void testListEncodedCharacter() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("us-east-1");
         final Path placeholder = new S3TouchFeature(session).touch(
             new Path(container, String.format("^<%%%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3ObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
@@ -166,7 +188,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testListInvisibleCharacter() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("us-east-1");
         final Path placeholder = new S3TouchFeature(session).touch(
             new Path(container, String.format("test-\u001F-%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3ObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
@@ -176,7 +197,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testListPlaceholder() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("us-east-1");
         final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
             new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
@@ -187,7 +207,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testListPlaceholderTilde() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("us-east-1");
         final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
             new Path(container, String.format("%s~", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
@@ -198,7 +217,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testListPlaceholderAtSignSignatureAWS4() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("us-east-1");
         final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
             new Path(container, String.format("%s@", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
@@ -233,7 +251,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
             }
 
             @Override
-            public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
+            protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
                 final RequestEntityRestStorageService client = super.connect(proxy, hostkey, prompt, cancel);
                 client.getConfiguration().setProperty("s3service.disable-dns-buckets", String.valueOf(true));
                 return client;

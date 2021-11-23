@@ -28,7 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNode;
@@ -48,6 +48,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     public static final String KEY_CNT_DOWNLOADSHARES = "count_downloadshares";
     public static final String KEY_CNT_UPLOADSHARES = "count_uploadshares";
     public static final String KEY_ENCRYPTED = "encrypted";
+    public static final String KEY_CLASSIFICATION = "classification";
 
     private final PathContainerService containerService
         = new SDSPathContainerService();
@@ -61,7 +62,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     private final SDSNodeIdProvider nodeid;
 
     public SDSAttributesFinderFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
-        this(session, nodeid, PreferencesFactory.get().getBoolean("sds.versioning.references.enable"));
+        this(session, nodeid, new HostPreferences(session.getHost()).getBoolean("sds.versioning.references.enable"));
     }
 
     public SDSAttributesFinderFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final boolean references) {
@@ -72,7 +73,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return this.find(file, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
+        return this.find(file, listener, new HostPreferences(session.getHost()).getInteger("sds.listing.chunksize"));
     }
 
     protected PathAttributes find(final Path file, final ListProgressListener listener, final int chunksize) throws BackgroundException {
@@ -186,6 +187,9 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         }
         if(null != node.isIsEncrypted()) {
             custom.put(KEY_ENCRYPTED, String.valueOf(node.isIsEncrypted()));
+        }
+        if(null != node.getClassification()) {
+            custom.put(KEY_CLASSIFICATION, String.valueOf(node.getClassification().getValue()));
         }
         attributes.setCustom(custom);
         return attributes;

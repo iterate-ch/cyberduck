@@ -34,7 +34,7 @@ import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CompleteS3FileUploadRequest;
@@ -98,8 +98,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
     private final Integer concurrency;
 
     public SDSDirectS3UploadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Void> writer) {
-        this(session, nodeid, writer, PreferencesFactory.get().getLong("s3.upload.multipart.size"),
-            PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
+        this(session, nodeid, writer, new HostPreferences(session.getHost()).getLong("s3.upload.multipart.size"),
+            new HostPreferences(session.getHost()).getInteger("s3.upload.multipart.concurrency"));
     }
 
     public SDSDirectS3UploadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Void> writer, final Long partsize, final Integer concurrency) {
@@ -117,8 +117,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
         try {
             final CreateFileUploadRequest createFileUploadRequest = new CreateFileUploadRequest()
                 .directS3Upload(true)
-                .timestampModification(status.getTimestamp() == null ? null : new DateTime(status.getTimestamp()))
-                .size(-1 == status.getLength() ? null : status.getLength())
+                .timestampModification(status.getTimestamp() != null ? new DateTime(status.getTimestamp()) : null)
+                .size(TransferStatus.UNKNOWN_LENGTH == status.getLength() ? null : status.getLength())
                 .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName());
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
@@ -195,7 +195,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
                 buffer.close();
             }
             final CompleteS3FileUploadRequest completeS3FileUploadRequest = new CompleteS3FileUploadRequest()
-                .keepShareLinks(status.isExists() ? PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep") : false)
+                .keepShareLinks(status.isExists() ? new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep") : false)
                 .resolutionStrategy(status.isExists() ? CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteS3FileUploadRequest.ResolutionStrategyEnum.FAIL);
             if(status.getFilekey() != null) {
                 final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
@@ -221,7 +221,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
                 public void run() {
                     try {
                         final S3FileUploadStatus uploadStatus = new NodesApi(session.getClient())
-                            .requestUploadStatusFiles(createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
+                            .requestUploadStatusFiles(createFileUploadResponse.getUploadId(), StringUtils.EMPTY, null);
                         switch(uploadStatus.getStatus()) {
                             case "finishing":
                                 // Expected
@@ -246,7 +246,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
                         failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
                     }
                 }
-            }, PreferencesFactory.get().getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
+            }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
             Uninterruptibles.awaitUninterruptibly(done);
             polling.shutdown();
             if(null != failure.get()) {
@@ -317,7 +317,6 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
                 status.setUrl(url);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                status.setNonces(overall.getNonces());
                 status.setFilekey(overall.getFilekey());
                 SDSDirectS3UploadFeature.super.upload(
                     file, local, throttle, listener, status, overall, status, callback);

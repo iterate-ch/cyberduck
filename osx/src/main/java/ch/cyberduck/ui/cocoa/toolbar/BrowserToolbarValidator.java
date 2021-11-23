@@ -38,9 +38,9 @@ import ch.cyberduck.core.features.Restore;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
@@ -410,7 +410,8 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                 }
                 final AttributedList<Path> cache = controller.getCache().get(controller.workdir());
                 return null != cache.find(new SimplePathPredicate(Path.Type.file,
-                    String.format("%s%s%s", controller.workdir().getAbsolute(), Path.DELIMITER, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME)));
+                    String.format("%s%s%s", controller.workdir().getAbsolute(), Path.DELIMITER,
+                            new HostPreferences(controller.getSession().getHost()).getProperty("cryptomator.vault.masterkey.filename"))));
             }
             return false;
         }

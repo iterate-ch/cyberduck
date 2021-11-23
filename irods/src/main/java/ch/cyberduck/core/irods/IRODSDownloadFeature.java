@@ -27,7 +27,7 @@ import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -46,8 +46,6 @@ public class IRODSDownloadFeature implements Download {
 
     private final IRODSSession session;
 
-    private final Preferences preferences = PreferencesFactory.get();
-
     public IRODSDownloadFeature(final IRODSSession session) {
         this.session = session;
     }
@@ -61,7 +59,7 @@ public class IRODSDownloadFeature implements Download {
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
             if(f.exists()) {
                 final TransferControlBlock block = DefaultTransferControlBlock.instance(StringUtils.EMPTY,
-                        preferences.getInteger("connection.retry"));
+                    new HostPreferences(session.getHost()).getInteger("connection.retry"));
                 final TransferOptions options = new DefaultTransferOptionsConfigurer().configure(new TransferOptions());
                 if(Host.TransferType.unknown.equals(session.getHost().getTransferType())) {
                     options.setUseParallelTransfer(Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type")).equals(Host.TransferType.concurrent));
@@ -71,10 +69,10 @@ public class IRODSDownloadFeature implements Download {
                 }
                 block.setTransferOptions(options);
                 final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory()
-                        .getDataTransferOperations(fs.getIRODSAccount());
+                    .getDataTransferOperations(fs.getIRODSAccount());
                 transfer.getOperation(f, new File(local.getAbsolute()),
-                        new DefaultTransferStatusCallbackListener(status, listener, block),
-                        block);
+                    new DefaultTransferStatusCallbackListener(status, listener, block),
+                    block);
             }
             else {
                 throw new NotfoundException(file.getAbsolute());

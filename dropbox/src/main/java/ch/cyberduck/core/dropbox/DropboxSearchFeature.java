@@ -43,13 +43,12 @@ public class DropboxSearchFeature implements Search {
 
     private final DropboxSession session;
     private final DropboxAttributesFinderFeature attributes;
-
-    private final PathContainerService containerService
-        = new DropboxPathContainerService();
+    private final PathContainerService containerService;
 
     public DropboxSearchFeature(final DropboxSession session) {
         this.session = session;
         this.attributes = new DropboxAttributesFinderFeature(session);
+        this.containerService = new DropboxPathContainerService(session);
     }
 
     @Override

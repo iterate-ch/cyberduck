@@ -18,12 +18,12 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>7.10.0-SNAPSHOT</version>
+        <version>8.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>ssh</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <sshj-version>0.30.4</sshj-version>
+        <sshj-version>0.32.2</sshj-version>
     </properties>
     <dependencies>
         <dependency>

@@ -20,7 +20,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>7.10.0-SNAPSHOT</version>
+        <version>8.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>cli-osx</artifactId>
     <description>Cyberduck CLI Mac</description>
@@ -114,10 +114,10 @@
                                 <configuration>
                                     <artifactItems>
                                         <artifactItem>
-                                            <groupId>net.adoptopenjdk</groupId>
+                                            <groupId>net.temurin</groupId>
                                             <artifactId>jre</artifactId>
                                             <type>zip</type>
-                                            <version>15.0.1</version>
+                                            <version>17.0.1</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>

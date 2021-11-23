@@ -24,12 +24,13 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.vault.registry.*;
 
 import org.apache.log4j.Logger;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -37,13 +38,9 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     private static final Logger log = Logger.getLogger(DefaultVaultRegistry.class);
 
     public static final String DEFAULT_MASTERKEY_FILE_NAME =
-        PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename");
+            PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename");
     public static final String DEFAULT_BACKUPKEY_FILE_NAME = String.format("%s.bkup",
-        PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename"));
-
-    public static final byte[] DEFAULT_PEPPER = new byte[0];
-
-    private final Preferences preferences = PreferencesFactory.get();
+            PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename"));
 
     private final PasswordStore keychain;
     private final PasswordCallback prompt;
@@ -125,11 +122,15 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(lookup) {
             final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(this, keychain, prompt);
             if(file.attributes().getVault() != null) {
-                return listener.load(session, file.attributes().getVault(), DEFAULT_MASTERKEY_FILE_NAME, DEFAULT_PEPPER);
+                return listener.load(session, file.attributes().getVault(),
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
             }
             final Path directory = file.getParent();
             if(directory.attributes().getVault() != null) {
-                return listener.load(session, directory.attributes().getVault(), DEFAULT_MASTERKEY_FILE_NAME, DEFAULT_PEPPER);
+                return listener.load(session, directory.attributes().getVault(),
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
             }
         }
         return Vault.DISABLED;
@@ -144,15 +145,15 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         if(type == ListService.class) {
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
-                new LoadingVaultLookupListener(this, keychain, prompt))
-                .withAutodetect(preferences.getBoolean("cryptomator.vault.autodetect")
-                );
+                    new LoadingVaultLookupListener(this, keychain, prompt))
+                    .withAutodetect(new HostPreferences(session.getHost()).getBoolean("cryptomator.vault.autodetect")
+                    );
         }
         if(type == Find.class) {
             return (T) new VaultRegistryFindFeature(session, (Find) proxy, this,
-                new LoadingVaultLookupListener(this, keychain, prompt))
-                .withAutodetect(preferences.getBoolean("cryptomator.vault.autodetect")
-                );
+                    new LoadingVaultLookupListener(this, keychain, prompt))
+                    .withAutodetect(new HostPreferences(session.getHost()).getBoolean("cryptomator.vault.autodetect")
+                    );
         }
         if(type == Bulk.class) {
             return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this);

@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.logging.LoggingConfiguration;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -33,6 +33,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketLoggingStatus;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 public class S3LoggingFeature implements Logging {
@@ -49,15 +50,16 @@ public class S3LoggingFeature implements Logging {
     @Override
     public LoggingConfiguration getConfiguration(final Path file) throws BackgroundException {
         final Path bucket = containerService.getContainer(file);
-        if(bucket.isRoot()) {
-            return LoggingConfiguration.empty();
-        }
         if(file.getType().contains(Path.Type.upload)) {
             return LoggingConfiguration.empty();
         }
         try {
             final StorageBucketLoggingStatus status
-                    = session.getClient().getBucketLoggingStatusImpl(bucket.getName());
+                    = session.getClient().getBucketLoggingStatusImpl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
+            if(null == status) {
+                log.warn(String.format("Failure parsing logging status for %s", bucket));
+                return LoggingConfiguration.empty();
+            }
             final LoggingConfiguration configuration = new LoggingConfiguration(status.isLoggingEnabled(),
                     status.getTargetBucketName());
             try {
@@ -67,6 +69,7 @@ public class S3LoggingFeature implements Logging {
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
+                configuration.setContainers(Collections.singletonList(bucket));
             }
             return configuration;
         }
@@ -88,9 +91,10 @@ public class S3LoggingFeature implements Logging {
         final Path bucket = containerService.getContainer(file);
         try {
             final S3BucketLoggingStatus status = new S3BucketLoggingStatus(
-                    StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : bucket.getName(), null);
+                    StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() :
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), null);
             if(configuration.isEnabled()) {
-                status.setLogfilePrefix(PreferencesFactory.get().getProperty("s3.logging.prefix"));
+                status.setLogfilePrefix(new HostPreferences(session.getHost()).getProperty("s3.logging.prefix"));
             }
             session.getClient().setBucketLoggingStatus(bucket.getName(), status, true);
         }

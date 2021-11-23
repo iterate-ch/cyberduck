@@ -21,12 +21,13 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.text.RandomStringGenerator;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -45,7 +46,7 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
     public void testCopy() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
+        final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
@@ -56,7 +57,7 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
         final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session, new S3AccessControlListFeature(session));
-        feature.copy(test, copy, status, new DisabledConnectionCallback());
+        feature.copy(test, copy, status, new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -69,7 +70,7 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
     public void testCopyAWS4Signature() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
+        final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
@@ -80,7 +81,7 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
         final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session, new S3AccessControlListFeature(session));
-        feature.copy(test, copy, status, new DisabledConnectionCallback());
+        feature.copy(test, copy, status, new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

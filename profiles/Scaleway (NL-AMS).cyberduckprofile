@@ -38,5 +38,11 @@
         <array>
             <string>nl-ams</string>
         </array>
+        <key>Properties</key>
+        <array>
+            <string>s3.storage.class.options=STANDARD GLACIER</string>
+        </array>
+        <key>Help</key>
+        <string>https://trac.cyberduck.io/wiki/help/en/howto/scaleway</string>
     </dict>
 </plist>

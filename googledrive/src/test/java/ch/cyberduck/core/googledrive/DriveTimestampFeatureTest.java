@@ -15,6 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -27,7 +28,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
@@ -36,10 +36,9 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testSetTimestamp() throws Exception {
-        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
-        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
+        final Path test = new DriveTouchFeature(session, fileid).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DriveMetadataFeature(session, fileid).setMetadata(test, Collections.singletonMap("test", "t"));
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session, fileid).setTimestamp(test, modified);
@@ -51,10 +50,10 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testSetTimestampDirectory() throws Exception {
-        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
-        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveDirectoryFeature(session, fileid).mkdir(test, new TransferStatus());
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
+        final Path test = new DriveDirectoryFeature(session, fileid).mkdir(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session, fileid).setTimestamp(test, modified);
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());

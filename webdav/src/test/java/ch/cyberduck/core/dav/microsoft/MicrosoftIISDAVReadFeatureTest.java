@@ -43,7 +43,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.text.RandomStringGenerator;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -71,7 +71,7 @@ public class MicrosoftIISDAVReadFeatureTest extends AbstractDAVTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
+        final byte[] content = RandomUtils.nextBytes(1023);
         final OutputStream out = local.getOutputStream(false);
         assertNotNull(out);
         IOUtils.write(content, out);

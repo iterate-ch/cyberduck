@@ -33,7 +33,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -64,7 +63,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         new GoogleStorageTouchFeature(session).touch(test, new TransferStatus());
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
+        final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final HttpResponseOutputStream<VersionId> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());

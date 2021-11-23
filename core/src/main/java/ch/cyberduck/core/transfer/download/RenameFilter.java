@@ -34,7 +34,7 @@ public class RenameFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(RenameFilter.class);
 
     public RenameFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session, new DownloadFilterOptions());
+        super(symlinkResolver, session, new DownloadFilterOptions(session.getHost()));
     }
 
     public RenameFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,

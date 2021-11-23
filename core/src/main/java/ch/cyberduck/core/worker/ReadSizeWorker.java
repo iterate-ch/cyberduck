@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -48,7 +49,7 @@ public class ReadSizeWorker extends Worker<Long> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            if(-1 == next.attributes().getSize()) {
+            if(TransferStatus.UNKNOWN_LENGTH == next.attributes().getSize()) {
                 continue;
             }
             total += next.attributes().getSize();

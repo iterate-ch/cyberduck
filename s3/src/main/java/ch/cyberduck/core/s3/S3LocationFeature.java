@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -53,7 +53,7 @@ public class S3LocationFeature implements Location {
 
     @Override
     public Name getDefault() {
-        return new S3Region(PreferencesFactory.get().getProperty("s3.location"));
+        return new S3Region(new HostPreferences(session.getHost()).getProperty("s3.location"));
     }
 
     @Override
@@ -61,22 +61,30 @@ public class S3LocationFeature implements Location {
         if(StringUtils.isNotBlank(session.getHost().getRegion())) {
             return Collections.singleton(new S3Region(session.getHost().getRegion()));
         }
+        if(!S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
+            if(new S3Protocol().getRegions().equals(session.getHost().getProtocol().getRegions())) {
+                // Return empty set for unknown provider
+                return Collections.emptySet();
+            }
+        }
         return session.getHost().getProtocol().getRegions();
     }
 
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
         final Path bucket = containerService.getContainer(file);
-        if(bucket.isRoot()) {
-            return unknown;
-        }
-        return this.getLocation(bucket.getName());
+        return this.getLocation(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
     }
 
     protected Name getLocation(final String bucketname) throws BackgroundException {
         try {
             if(cache.containsRegionForBucketName(bucketname)) {
                 return new S3Region(cache.getRegionForBucketName(bucketname));
+            }
+            if(session.getHost().getCredentials().isAnonymousLogin()) {
+                // To use this implementation of the operation, you must be the bucket owner
+                log.warn("Skip attempt to read bucket location with missing credentials");
+                return Location.unknown;
             }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Query location for bucket %s", bucketname));

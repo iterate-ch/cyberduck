@@ -24,10 +24,14 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -47,9 +51,9 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class NextcloudShareProvider implements PromptUrlProvider {
 
-    private final NextcloudSession session;
+    private final DAVSession session;
 
-    public NextcloudShareProvider(final NextcloudSession session) {
+    public NextcloudShareProvider(final DAVSession session) {
         this.session = session;
     }
 
@@ -70,7 +74,8 @@ public class NextcloudShareProvider implements PromptUrlProvider {
         final Host bookmark = session.getHost();
         final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d",
             bookmark.getHostname(),
-            URIEncoder.encode(StringUtils.substringAfter(file.getAbsolute(), session.getHost().getProtocol().getDefaultPath())),
+            URIEncoder.encode(StringUtils.substringAfter(file.getAbsolute(), new DelegatingHomeFeature(
+                new DefaultPathHomeFeature(session.getHost()), session.getFeature(Home.class)).find().getAbsolute())),
             3 // Public link
         ));
         try {
@@ -123,7 +128,8 @@ public class NextcloudShareProvider implements PromptUrlProvider {
         final Host bookmark = session.getHost();
         final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&publicUpload=true",
             bookmark.getHostname(),
-            URIEncoder.encode(StringUtils.substringAfter(file.getAbsolute(), session.getHost().getProtocol().getDefaultPath())),
+            URIEncoder.encode(StringUtils.substringAfter(file.getAbsolute(), new DelegatingHomeFeature(
+                new DefaultPathHomeFeature(session.getHost()), session.getFeature(Home.class)).find().getAbsolute())),
             3 // Public link
         ));
         try {

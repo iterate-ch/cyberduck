@@ -46,17 +46,13 @@ public class CryptoReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return this.readEncrypted(vault.encrypt(session, file), status, callback);
-    }
-
-    public InputStream readEncrypted(final Path encrypted, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             // Header
             final TransferStatus headerStatus = new TransferStatus(status);
             headerStatus.setOffset(0);
-            final InputStream in = proxy.read(encrypted, headerStatus.withLength(status.isAppend() ?
+            final InputStream in = proxy.read(vault.encrypt(session, file), headerStatus.withLength(status.isAppend() ?
                 vault.getFileHeaderCryptor().headerSize() :
-                vault.toCiphertextSize(status.getLength())), callback);
+                vault.toCiphertextSize(0L, status.getLength())), callback);
             final ByteBuffer headerBuffer = ByteBuffer.allocate(vault.getFileHeaderCryptor().headerSize());
             final int read = IOUtils.read(in, headerBuffer.array());
             final FileHeader header = vault.getFileHeaderCryptor().decryptHeader(headerBuffer);
@@ -64,7 +60,7 @@ public class CryptoReadFeature implements Read {
                 IOUtils.closeQuietly(in);
                 final TransferStatus s = new TransferStatus(status).withLength(-1L);
                 s.setOffset(this.align(status.getOffset()));
-                final CryptoInputStream crypto = new CryptoInputStream(proxy.read(encrypted, s, callback), vault.getFileContentCryptor(), header, this.chunk(status.getOffset()));
+                final CryptoInputStream crypto = new CryptoInputStream(proxy.read(vault.encrypt(session, file), s, callback), vault.getFileContentCryptor(), header, this.chunk(status.getOffset()));
                 crypto.skip(this.position(status.getOffset()));
                 return crypto;
             }

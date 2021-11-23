@@ -53,15 +53,15 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
 
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
-        switch(response.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_UNAUTHORIZED:
-                if(executionCount <= MAX_RETRIES) {
+        if(executionCount <= MAX_RETRIES) {
+            switch(response.getStatusLine().getStatusCode()) {
+                case HttpStatus.SC_UNAUTHORIZED:
                     final B2ApiException failure;
                     try {
                         if(null != response.getEntity()) {
                             EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                             failure = new B2ApiException(EntityUtils.toString(response.getEntity()), new HttpResponseException(
-                                response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                    response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                             if(new B2ExceptionMappingService(fileid).map(failure) instanceof ExpiredTokenException) {
                                 //  The authorization token is valid for at most 24 hours.
                                 try {
@@ -77,7 +77,7 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
                     catch(IOException e) {
                         log.warn(String.format("Failure parsing response entity from %s", response));
                     }
-                }
+            }
         }
         return false;
     }
@@ -101,7 +101,7 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
             case "POST":
                 // Do not override Authorization header for upload requests with upload URL token
                 if(StringUtils.contains(request.getRequestLine().getUri(), "b2_upload_part")
-                    || StringUtils.contains(request.getRequestLine().getUri(), "b2_upload_file")) {
+                        || StringUtils.contains(request.getRequestLine().getUri(), "b2_upload_file")) {
                     break;
                 }
             default:

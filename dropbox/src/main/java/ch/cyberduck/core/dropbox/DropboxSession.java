@@ -41,14 +41,16 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
@@ -68,9 +70,6 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
 
     private final UseragentProvider useragent
         = new PreferencesUseragentProvider();
-
-    private final DropboxPathContainerService containerService
-        = new DropboxPathContainerService();
 
     private OAuth2RequestInterceptor authorizationService;
     private Lock<String> locking = null;
@@ -95,14 +94,15 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
+        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
         try {
-            final Credentials credentials = host.getCredentials();
             final FullAccount account = new DbxUserUsersRequests(client).getCurrentAccount();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated as user %s", account));
             }
+            final Credentials credentials = host.getCredentials();
             credentials.setUsername(account.getEmail());
+            credentials.setSaved(true);
             switch(account.getAccountType()) {
                 case BUSINESS:
                     locking = new DropboxLockFeature(this);
@@ -127,7 +127,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(Class<T> type) {
         if(type == ListService.class) {
-            return PreferencesFactory.get().getBoolean("dropbox.business.enable") ?
+            return new HostPreferences(host).getBoolean("dropbox.business.enable") ?
                 (T) new DropboxRootListService(this) : (T) new DropboxListService(this);
         }
         if(type == Read.class) {
@@ -137,7 +137,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
             return (T) new DropboxWriteFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new DropboxUploadFeature(new DropboxWriteFeature(this));
+            return (T) new DropboxUploadFeature(this, new DropboxWriteFeature(this));
         }
         if(type == Directory.class) {
             return (T) new DropboxDirectoryFeature(this);
@@ -185,7 +185,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     }
 
     public CustomDbxRawClientV2 getClient(final Path file) {
-        return this.getClient(containerService.getNamespace(file));
+        return this.getClient(new DropboxPathContainerService(this).getNamespace(file));
     }
 
     /**

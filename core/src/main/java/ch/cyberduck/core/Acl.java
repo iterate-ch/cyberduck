@@ -284,7 +284,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
             if(this == o) {
                 return true;
             }
-            if(!(o instanceof User)) {
+            if(o == null || getClass() != o.getClass()) {
                 return false;
             }
             final User user = (User) o;
@@ -428,6 +428,26 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
         @Override
         public String getPlaceholder() {
             return LocaleFactory.localizedString("Domain Name", "S3");
+        }
+    }
+
+    public static class Owner extends CanonicalUser {
+        public Owner(final String identifier) {
+            super(identifier);
+        }
+
+        public Owner(final String identifier, final String displayName) {
+            super(identifier, displayName, false);
+        }
+
+        @Override
+        public String getPlaceholder() {
+            return LocaleFactory.localizedString("Owner");
+        }
+
+        @Override
+        public String getDisplayName() {
+            return LocaleFactory.localizedString("Owner");
         }
     }
 

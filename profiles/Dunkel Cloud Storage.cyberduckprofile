@@ -18,6 +18,8 @@
     <true/>
     <key>Authorization</key>
     <string>AWS4HMACSHA256</string>
+    <key>Help</key>
+    <string>https://trac.cyberduck.io/wiki/help/en/howto/dunkel</string>
     <key>Disk</key>
     <string>
         TU0AKgAAOMKAACBQOCQWDQeEQmFQuGQ2HQ+IRGJROKRWLReMRmNRuOR2PR+QSGRSOSSWTS

@@ -28,7 +28,7 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -58,7 +58,7 @@ public class B2ObjectListService implements ListService {
     private final B2VersionIdProvider fileid;
 
     public B2ObjectListService(final B2Session session, final B2VersionIdProvider fileid) {
-        this(session, fileid, PreferencesFactory.get().getInteger("b2.listing.chunksize"));
+        this(session, fileid, new HostPreferences(session.getHost()).getInteger("b2.listing.chunksize"));
     }
 
     public B2ObjectListService(final B2Session session, final B2VersionIdProvider fileid, final int chunksize) {
@@ -159,7 +159,13 @@ public class B2ObjectListService implements ListService {
         );
         final long timestamp = response.getUploadTimestamp();
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
-            attributes.setModificationDate(Long.parseLong(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
+            final String value = response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS);
+            try {
+                attributes.setModificationDate(Long.parseLong(value));
+            }
+            catch(NumberFormatException e) {
+                log.warn(String.format("Failure parsing src_last_modified_millis with value %s", value));
+            }
         }
         else {
             attributes.setModificationDate(timestamp);

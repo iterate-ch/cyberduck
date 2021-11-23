@@ -26,10 +26,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
@@ -67,7 +68,7 @@ public class AzureObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(directory).getName());
-            final AttributedList<Path> children = new AttributedList<Path>();
+            final AttributedList<Path> children = new AttributedList<>();
             ResultContinuation token = null;
             ResultSegment<ListBlobItem> result;
             String prefix = StringUtils.EMPTY;
@@ -80,11 +81,10 @@ public class AzureObjectListService implements ListService {
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             do {
                 final BlobRequestOptions options = new BlobRequestOptions();
-                result = container.listBlobsSegmented(
-                        prefix, false, EnumSet.noneOf(BlobListingDetails.class),
-                        PreferencesFactory.get().getInteger("azure.listing.chunksize"), token, options, context);
+                result = container.listBlobsSegmented(prefix, false, EnumSet.noneOf(BlobListingDetails.class),
+                        new HostPreferences(session.getHost()).getInteger("azure.listing.chunksize"), token, options, context);
                 for(ListBlobItem object : result.getResults()) {
-                    if(new Path(object.getUri().getPath(), EnumSet.of(Path.Type.directory)).equals(directory)) {
+                    if(new SimplePathPredicate(new Path(object.getUri().getPath(), EnumSet.of(Path.Type.directory))).test(directory)) {
                         hasDirectoryPlaceholder = true;
                         continue;
                     }

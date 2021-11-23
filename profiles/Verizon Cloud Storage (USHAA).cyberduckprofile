@@ -17,6 +17,8 @@
         <key>Hostname Configurable</key>
         <false/>
         <key>Authorization</key>
-       	<string>AWS2</string>
+        <string>AWS2</string>
+        <key>Help</key>
+        <string>https://trac.cyberduck.io/wiki/help/en/howto/verizoncloudstorage</string>
     </dict>
 </plist>

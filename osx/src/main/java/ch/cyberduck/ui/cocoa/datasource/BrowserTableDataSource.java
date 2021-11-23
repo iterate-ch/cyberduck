@@ -51,6 +51,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
@@ -297,6 +298,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             value = NSAttributedString.attributedStringWithAttributes(
                 StringUtils.isNotBlank(item.attributes().getVersionId()) ? item.attributes().getVersionId() :
                     LocaleFactory.localizedString("None"),
+                TableCellAttributes.browserFontLeftAlignment());
+        }
+        else if(identifier.equals(BrowserColumn.checksum.name())) {
+            value = NSAttributedString.attributedStringWithAttributes(
+                !Checksum.NONE.equals(item.attributes().getChecksum()) ? item.attributes().getChecksum().hash :
+                    StringUtils.isNotBlank(item.attributes().getETag()) ? item.attributes().getETag() : LocaleFactory.localizedString("None"),
                 TableCellAttributes.browserFontLeftAlignment());
         }
         else if(identifier.equals(BrowserColumn.storageclass.name())) {
@@ -636,7 +643,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != url) {
             final Local destination = LocalFactory.get(url.path());
-            final DownloadFilterOptions options = new DownloadFilterOptions();
+            final DownloadFilterOptions options = new DownloadFilterOptions(controller.getSession().getHost());
             if(destination.isChild(new TemporarySupportDirectoryFinder().find())) {
                 options.icon = false;
                 options.segments = false;

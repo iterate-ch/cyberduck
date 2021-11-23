@@ -35,7 +35,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -112,7 +111,7 @@ public class SpectraWriteFeatureTest {
         // Make 0-byte file
         new SpectraTouchFeature(session).touch(test, new TransferStatus());
         // Replace content
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
+        final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final SpectraBulkService bulk = new SpectraBulkService(session);

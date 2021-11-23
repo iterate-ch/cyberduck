@@ -41,6 +41,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A window controller with a toolbar populated from a tabbed view.
@@ -69,13 +70,30 @@ public abstract class ToolbarWindowController extends WindowController implement
         super.windowDidBecomeKey(notification);
     }
 
-    protected static final class Label {
+    protected static class Label {
         public String identifier;
         public String label;
 
         public Label(final String identifier, final String label) {
             this.identifier = identifier;
             this.label = label;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(!(o instanceof Label)) {
+                return false;
+            }
+            final Label label = (Label) o;
+            return Objects.equals(identifier, label.identifier);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(identifier);
         }
     }
 
@@ -88,7 +106,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     @Override
     public void awakeFromNib() {
         // Reset
-        NSEnumerator items = this.tabView.tabViewItems().objectEnumerator();
+        NSEnumerator items = tabView.tabViewItems().objectEnumerator();
         NSObject object;
         while((object = items.nextObject()) != null) {
             this.tabView.removeTabViewItem(Rococoa.cast(object, NSTabViewItem.class));
@@ -98,7 +116,7 @@ public abstract class ToolbarWindowController extends WindowController implement
             final NSTabViewItem item = NSTabViewItem.itemWithIdentifier(tab.getKey().identifier);
             item.setView(tab.getValue());
             item.setLabel(tab.getKey().label);
-            this.tabView.addTabViewItem(item);
+            tabView.addTabViewItem(item);
         }
         // Set up toolbar properties: Allow customization, give a default display mode, and remember state in user defaults
         toolbar.setAllowsUserCustomization(false);
@@ -111,6 +129,10 @@ public abstract class ToolbarWindowController extends WindowController implement
         this.setSelectedPanel(index < this.getPanels().size() ? index : 0);
         this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
         super.awakeFromNib();
+    }
+
+    public void setSelectedPanel(final String identifier) {
+        this.setSelectedPanel(tabView.indexOfTabViewItemWithIdentifier(identifier));
     }
 
     /**

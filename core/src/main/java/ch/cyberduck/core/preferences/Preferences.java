@@ -80,11 +80,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -96,7 +93,7 @@ import com.google.common.collect.ImmutableMap;
  * Holding all application preferences. Default values get overwritten when loading the <code>PREFERENCES_FILE</code>.
  * Singleton class.
  */
-public abstract class Preferences implements Locales {
+public abstract class Preferences implements Locales, PreferencesReader {
     private static final Logger log = Logger.getLogger(Preferences.class);
 
     protected static final String LIST_SEPERATOR = StringUtils.SPACE;
@@ -317,6 +314,8 @@ public abstract class Preferences implements Locales {
           Lowercase folder name to use when looking for profiles in user support directory
          */
         this.setDefault("profiles.folder.name", "Profiles");
+        this.setDefault("profiles.discovery.updater.enable", String.valueOf(false));
+        this.setDefault("profiles.discovery.updater.url", "s3://djynunjb246r8.cloudfront.net");
 
         /*
           Maximum number of directory listings to cache using a most recently used implementation
@@ -696,6 +695,7 @@ public abstract class Preferences implements Locales {
           Default redundancy level
          */
         this.setDefault("s3.storage.class", "STANDARD");
+        this.setDefault("s3.storage.class.options", "STANDARD INTELLIGENT_TIERING STANDARD_IA ONEZONE_IA REDUCED_REDUNDANCY GLACIER DEEP_ARCHIVE");
         //this.setDefault("s3.encryption.algorithm", "AES256");
         this.setDefault("s3.encryption.algorithm", StringUtils.EMPTY);
 
@@ -706,6 +706,10 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("s3.listing.chunksize", String.valueOf(1000));
         this.setDefault("s3.listing.concurrency", String.valueOf(25));
+        /*
+         * Read metadata of every file in list service to display modification date stored in metadata
+         */
+        this.setDefault("s3.listing.metadata.enable", String.valueOf(false));
 
         this.setDefault("s3.upload.multipart", String.valueOf(true));
         this.setDefault("s3.upload.multipart.concurrency", String.valueOf(10));
@@ -750,8 +754,11 @@ public abstract class Preferences implements Locales {
         this.setDefault("cloudfront.logging.prefix", "logs/");
 
         this.setDefault("googlestorage.listing.chunksize", String.valueOf(1000));
+        this.setDefault("googlestorage.listing.concurrency", String.valueOf(25));
         this.setDefault("googlestorage.metadata.default", StringUtils.EMPTY);
         this.setDefault("googlestorage.storage.class", "STANDARD");
+        this.setDefault("googlestorage.storage.class.options", "STANDARD MULTI_REGIONAL REGIONAL NEARLINE COLDLINE ARCHIVE");
+        this.setDefault("googlestorage.lifecycle.transition.class", "ARCHIVE");
         this.setDefault("googlestorage.acl.default", "private");
         this.setDefault("googlestorage.location", "us");
         /*
@@ -861,12 +868,19 @@ public abstract class Preferences implements Locales {
         this.setDefault("storegate.lock.ttl", String.valueOf(24 * 3600000)); // 24 hours
         this.setDefault("storegate.login.hint", StringUtils.EMPTY); // login_hint parameter
 
+        this.setDefault("ctera.attach.devicetype", "DriveConnect"); // Mobile
+
         this.setDefault("oauth.browser.open.warn", String.valueOf(false));
 
         this.setDefault("brick.pairing.nickname.configure", String.valueOf(false));
         this.setDefault("brick.pairing.hostname.configure", String.valueOf(true));
         this.setDefault("brick.pairing.interval.ms", String.valueOf(1000L));
         this.setDefault("brick.pairing.interrupt.ms", String.valueOf(10 * 60 * 1000L)); // 10min
+        this.setDefault("brick.migration.interval.ms", String.valueOf(500L));
+        this.setDefault("brick.migration.interrupt.ms", String.valueOf(10 * 1000L)); // 10sec
+        this.setDefault("brick.listing.chunksize", String.valueOf(1000));
+        this.setDefault("brick.upload.multipart.size", String.valueOf(10L * 1024L * 1024L)); // 10MB
+        this.setDefault("brick.upload.multipart.concurrency", String.valueOf(10));
 
         this.setDefault("dropbox.upload.chunksize", String.valueOf(150 * 1024L * 1024L));
         this.setDefault("dropbox.business.enable", String.valueOf(true));
@@ -943,16 +957,16 @@ public abstract class Preferences implements Locales {
           Retry to connect after a I/O failure automatically
          */
         this.setDefault("connection.retry", String.valueOf(1));
-        // Specific setting for transfer worker
-        this.setDefault("transfer.connection.retry", String.valueOf(1));
         this.setDefault("connection.retry.max", String.valueOf(20));
         /*
           In seconds
          */
         this.setDefault("connection.retry.delay", String.valueOf(0));
-        // Specific setting for transfer worker
-        this.setDefault("transfer.connection.retry.delay", String.valueOf(0));
         this.setDefault("connection.retry.backoff.enable", String.valueOf(false));
+
+        // Specific setting for transfer worker
+        this.setDefault("transfer.connection.retry", String.valueOf(1));
+        this.setDefault("transfer.connection.retry.delay", String.valueOf(0));
 
         this.setDefault("connection.hostname.default", StringUtils.EMPTY);
         /*
@@ -1124,6 +1138,36 @@ public abstract class Preferences implements Locales {
         this.setDefault("cryptomator.vault.masterkey.filename", "masterkey.cryptomator");
         this.setDefault("cryptomator.vault.pepper", "");
         this.setDefault("cryptomator.cache.size", String.valueOf(1000));
+
+        this.setDefault("eue.upload.multipart.size", String.valueOf(4L * 1024L * 1024L)); // 4MB
+        this.setDefault("eue.upload.multipart.threshold", String.valueOf(4L * 1024L * 1024L)); // 4MB
+        this.setDefault("eue.upload.multipart.concurrency", String.valueOf(10));
+        this.setDefault("eue.listing.chunksize", String.valueOf(100));
+        this.setDefault("eue.delete.trash", String.valueOf(true));
+        this.setDefault("eue.share.expiration.millis", String.valueOf(31540000000L)); // 1 year
+        this.setDefault("eue.share.deletable", String.valueOf(false));
+        this.setDefault("eue.share.writable", String.valueOf(false));
+        this.setDefault("eue.share.readable", String.valueOf(true));
+        this.setDefault("eue.share.notification.enable", String.valueOf(false));
+        this.setDefault("eue.limit.hint.second", String.valueOf(2));
+        this.setDefault("eue.limit.requests.second", String.valueOf(10));
+        this.setDefault("eue.shares.ttl", String.valueOf(600000)); // 10 minutes
+
+        this.setDefault("preferences.general.enable", String.valueOf(true));
+        this.setDefault("preferences.browser.enable", String.valueOf(true));
+        this.setDefault("preferences.queue.enable", String.valueOf(true));
+        this.setDefault("preferences.s3.enable", String.valueOf(true));
+        this.setDefault("preferences.googlestorage.enable", String.valueOf(true));
+        this.setDefault("preferences.sftp.enable", String.valueOf(true));
+        this.setDefault("preferences.ftp.enable", String.valueOf(true));
+        this.setDefault("preferences.profiles.enable", String.valueOf(true));
+        this.setDefault("preferences.editor.enable", String.valueOf(true));
+        this.setDefault("preferences.connection.enable", String.valueOf(true));
+        this.setDefault("preferences.bandwidth.enable", String.valueOf(true));
+        this.setDefault("preferences.language.enable", String.valueOf(true));
+        this.setDefault("preferences.update.enable", String.valueOf(true));
+        this.setDefault("preferences.cryptomator.enable", String.valueOf(true));
+
     }
 
     /**
@@ -1182,123 +1226,40 @@ public abstract class Preferences implements Locales {
         }
     }
 
-    /**
-     * @param property The property to query.
-     * @return The configured values determined by a whitespace separator.
-     */
+    @Override
     public List<String> getList(final String property) {
         final String value = this.getProperty(property);
-        if(StringUtils.isBlank(value)) {
-            return Collections.emptyList();
-        }
-        return Arrays.asList(value.split("(?<!\\\\)\\p{javaWhitespace}+"));
+        return PreferencesReader.toList(value);
     }
 
-    public Map<String, String> getMap(final String property) {
-        final List<String> list = this.getList(property);
-        final Map<String, String> table = new HashMap<>();
-        for(String m : list) {
-            if(StringUtils.isBlank(m)) {
-                continue;
-            }
-            if(!m.contains("=")) {
-                log.warn(String.format("Invalid header %s", m));
-                continue;
-            }
-            int split = m.indexOf('=');
-            String key = m.substring(0, split);
-            if(StringUtils.isBlank(key)) {
-                log.warn(String.format("Missing key in %s", m));
-                continue;
-            }
-            String value = m.substring(split + 1);
-            if(StringUtils.isEmpty(value)) {
-                log.warn(String.format("Missing value in %s", m));
-                continue;
-            }
-            table.put(key, value);
-        }
-        return table;
+    @Override
+    public int getInteger(final String key) {
+        final String v = this.getProperty(key);
+        return PreferencesReader.toInteger(v);
     }
 
-    /**
-     * Give value in user settings or default value if not customized.
-     *
-     * @param property The property to query.
-     * @return The user configured value or default.
-     */
-    public abstract String getProperty(String property);
-
-    public int getInteger(final String property) {
-        final String v = this.getProperty(property);
-        if(null == v) {
-            return -1;
-        }
-        try {
-            return Integer.parseInt(v);
-        }
-        catch(NumberFormatException e) {
-            return (int) this.getDouble(property);
-        }
+    @Override
+    public float getFloat(final String key) {
+        final String v = this.getProperty(key);
+        return PreferencesReader.toFloat(v);
     }
 
-    public float getFloat(final String property) {
-        final String v = this.getProperty(property);
-        if(null == v) {
-            return -1;
-        }
-        try {
-            return Float.parseFloat(v);
-        }
-        catch(NumberFormatException e) {
-            return (float) this.getDouble(property);
-        }
+    @Override
+    public long getLong(final String key) {
+        final String v = this.getProperty(key);
+        return PreferencesReader.toLong(v);
     }
 
-    public long getLong(final String property) {
-        final String v = this.getProperty(property);
-        if(null == v) {
-            return -1;
-        }
-        try {
-            return Long.parseLong(v);
-        }
-        catch(NumberFormatException e) {
-            return (long) this.getDouble(property);
-        }
+    @Override
+    public double getDouble(final String key) {
+        final String v = this.getProperty(key);
+        return PreferencesReader.toDouble(v);
     }
 
-    public double getDouble(final String property) {
-        final String v = this.getProperty(property);
-        if(null == v) {
-            return -1;
-        }
-        try {
-            return Double.parseDouble(v);
-        }
-        catch(NumberFormatException e) {
-            return -1;
-        }
-    }
-
-    public boolean getBoolean(final String property) {
-        final String v = this.getProperty(property);
-        if(null == v) {
-            return false;
-        }
-        if(v.equalsIgnoreCase(String.valueOf(true))) {
-            return true;
-        }
-        if(v.equalsIgnoreCase(String.valueOf(false))) {
-            return false;
-        }
-        if(v.equalsIgnoreCase(String.valueOf(1))) {
-            return true;
-        }
-        if(v.equalsIgnoreCase(String.valueOf(0))) {
-            return false;
-        }
-        return v.equalsIgnoreCase("yes");
+    @Override
+    public boolean getBoolean(final String key) {
+        final String v = this.getProperty(key);
+        return PreferencesReader.toBoolean(v);
     }
 
     protected void setFactories() {

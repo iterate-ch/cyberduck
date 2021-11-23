@@ -89,6 +89,8 @@ public class ReceiptFactory extends LicenseFactory {
     }
 
     private static class ReceiptFilter implements Filter<Local> {
+        private final Pattern pattern = Pattern.compile("receipt");
+
         @Override
         public boolean accept(final Local file) {
             return "receipt".equals(file.getName());
@@ -96,7 +98,7 @@ public class ReceiptFactory extends LicenseFactory {
 
         @Override
         public Pattern toPattern() {
-            return Pattern.compile("receipt");
+            return pattern;
         }
     }
 }

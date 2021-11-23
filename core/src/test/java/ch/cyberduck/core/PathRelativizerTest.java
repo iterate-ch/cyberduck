@@ -8,6 +8,7 @@ public class PathRelativizerTest {
 
     @Test
     public void testRelativize() {
+        assertEquals("", PathRelativizer.relativize("/r", "/r"));
         assertEquals("a", PathRelativizer.relativize("/", "/a"));
         assertEquals("/b/path", PathRelativizer.relativize("/a", "/b/path"));
         assertEquals("path", PathRelativizer.relativize("/a", "/a/path"));

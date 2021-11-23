@@ -108,6 +108,10 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
         return true;
     }
 
+    @Override
+    public synchronized void clear() {
+        super.clear();
+    }
 
     @Override
     public boolean equals(final Object o) {

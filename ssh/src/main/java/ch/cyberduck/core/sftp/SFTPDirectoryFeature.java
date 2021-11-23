@@ -22,8 +22,6 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -32,7 +30,6 @@ import net.schmizz.sshj.sftp.FileAttributes;
 
 public class SFTPDirectoryFeature implements Directory<Void> {
 
-    private final Preferences preferences = PreferencesFactory.get();
     private final SFTPSession session;
 
     public SFTPDirectoryFeature(final SFTPSession session) {

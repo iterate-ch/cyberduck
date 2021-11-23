@@ -84,6 +84,7 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
         return deserialized;
     }
 
+    @Override
     public S read(final InputStream in) throws AccessDeniedException {
         final NSDictionary dict = (NSDictionary) this.parse(in);
         return this.deserialize(dict);

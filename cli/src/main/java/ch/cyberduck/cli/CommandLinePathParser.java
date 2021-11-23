@@ -18,11 +18,12 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.ContainerPathKindDetector;
 import ch.cyberduck.core.DelimiterPathKindDetector;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathKindDetector;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.HostParserException;
@@ -33,9 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.EnumSet;
 
 public class CommandLinePathParser {
-
-    private final PathKindDetector detector
-        = new DelimiterPathKindDetector();
 
     private final ProtocolFactory factory;
 
@@ -52,6 +50,12 @@ public class CommandLinePathParser {
         if(StringUtils.isBlank(host.getDefaultPath())) {
             return new Path(String.valueOf(Path.DELIMITER), EnumSet.of((Path.Type.directory)));
         }
-        return new Path(PathNormalizer.normalize(host.getDefaultPath()), EnumSet.of(detector.detect(host.getDefaultPath())));
+        switch(new ContainerPathKindDetector(host.getProtocol().getFeature(PathContainerService.class)).detect(host.getDefaultPath())) {
+            case directory:
+                return new Path(PathNormalizer.normalize(host.getDefaultPath()), EnumSet.of(Path.Type.directory,
+                        Path.Type.volume));
+        }
+        return new Path(PathNormalizer.normalize(host.getDefaultPath()), EnumSet.of(
+                new DelimiterPathKindDetector().detect(host.getDefaultPath())));
     }
 }

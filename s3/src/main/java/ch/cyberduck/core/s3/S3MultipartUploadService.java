@@ -35,7 +35,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
@@ -76,8 +76,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private final Integer concurrency;
 
     public S3MultipartUploadService(final S3Session session, final Write<StorageObject> writer) {
-        this(session, writer, PreferencesFactory.get().getLong("s3.upload.multipart.size"),
-            PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
+        this(session, writer, new HostPreferences(session.getHost()).getLong("s3.upload.multipart.size"),
+            new HostPreferences(session.getHost()).getInteger("s3.upload.multipart.concurrency"));
     }
 
     public S3MultipartUploadService(final S3Session session, final Write<StorageObject> writer, final Long partsize, final Integer concurrency) {
@@ -113,10 +113,10 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 if(log.isInfoEnabled()) {
                     log.info("No pending multipart upload found");
                 }
-                final S3Object object = new S3WriteFeature(session)
-                    .getDetails(file, status);
+                final S3Object object = new S3WriteFeature(session).getDetails(file, status);
                 // ID for the initiated multipart upload.
-                multipart = session.getClient().multipartStartUpload(containerService.getContainer(file).getName(), object);
+                final Path bucket = containerService.getContainer(file);
+                multipart = session.getClient().multipartStartUpload(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Multipart upload started for %s with ID %s", multipart.getObjectKey(), multipart.getUploadId()));
                 }
@@ -245,7 +245,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 status.setParameters(requestParameters);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                status.setNonces(overall.getNonces());
                 switch(session.getSignatureVersion()) {
                     case AWS4HMACSHA256:
                         status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));

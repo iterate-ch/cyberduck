@@ -21,7 +21,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.io.IOException;
 
@@ -54,7 +54,7 @@ public class DriveSharingUrlProvider implements PromptUrlProvider {
         permission.setType("anyone");
         try {
             session.getClient().permissions().create(fileid.getFileId(file, new DisabledListProgressListener()), permission)
-                .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);

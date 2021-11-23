@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
@@ -45,7 +45,7 @@ public class SDSSearchFeature implements Search {
 
     @Override
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
-        return this.search(workdir, regex, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
+        return this.search(workdir, regex, listener, new HostPreferences(session.getHost()).getInteger("sds.listing.chunksize"));
     }
 
     protected AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener, final int chunksize) throws BackgroundException {

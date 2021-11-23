@@ -41,9 +41,10 @@ public class CompareFilterTest {
 
     @Test
     public void testAcceptEqual() throws Exception {
+        final Host host = new Host(new TestProtocol());
         final CompareFilter filter = new CompareFilter(new DisabledUploadSymlinkResolver(),
-            new NullSession(new Host(new TestProtocol())), new UploadFilterOptions(), new DisabledProgressListener(),
-            new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())), null) {
+            new NullSession(host), new UploadFilterOptions(host), new DisabledProgressListener(),
+            new DefaultComparePathFilter(new NullSession(host), null) {
                 @Override
                 public Comparison compare(final Path file, final Local local, final ProgressListener listener) {
                     return Comparison.equal;
@@ -61,9 +62,10 @@ public class CompareFilterTest {
 
     @Test
     public void testAcceptDirectory() throws Exception {
+        final Host host = new Host(new TestProtocol());
         final CompareFilter filter = new CompareFilter(new DisabledUploadSymlinkResolver(),
-            new NullSession(new Host(new TestProtocol())), new UploadFilterOptions(), new DisabledProgressListener(),
-            new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())), null) {
+            new NullSession(host), new UploadFilterOptions(host), new DisabledProgressListener(),
+            new DefaultComparePathFilter(new NullSession(host), null) {
                 @Override
                 public Comparison compare(final Path file, final Local local, final ProgressListener listener) {
                     return Comparison.equal;

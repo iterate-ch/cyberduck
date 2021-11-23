@@ -10,6 +10,7 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net47</TargetFramework>
         <UseWindowsForms>true</UseWindowsForms>
+        <UseWPF>true</UseWPF>
         <Platforms>x64;x86</Platforms>
 
         <ApplicationIcon>$(CyberduckDir)cyberduck-application.ico</ApplicationIcon>
@@ -19,7 +20,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <CyberduckReference Include="Core;Core.Native;Bonjour;Bonjour.Native;Protocols;Importer;Cryptomator" />
+        <CyberduckReference Include="Core;Core.Native;Core.Refresh;Bonjour;Bonjour.Native;Protocols;Importer;Cryptomator" />
     </ItemGroup>
 
     <ItemGroup>
@@ -58,7 +59,6 @@
         <Reference Include="ObjectListView">
             <HintPath>$(TargetBuildDir)ObjectListView.dll</HintPath>
         </Reference>
-        <Reference Include="PresentationFramework" />
         <Reference Include="System.Design" />
         <Reference Include="System.Security" />
         <Reference Include="System.ServiceModel" />
@@ -66,9 +66,13 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" />
         <PackageReference Include="ExceptionReporter" />
         <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
         <PackageReference Include="Microsoft.Windows.SDK.Contracts" />
+        <PackageReference Include="ReactiveUI.Events.WPF" />
+        <PackageReference Include="ReactiveUI.Fody" />
+        <PackageReference Include="ReactiveUI.WPF" />
         <PackageReference Include="StructureMap" />
         <PackageReference Include="WindowsAPICodePack-Core" />
         <PackageReference Include="WindowsAPICodePack-Shell" />

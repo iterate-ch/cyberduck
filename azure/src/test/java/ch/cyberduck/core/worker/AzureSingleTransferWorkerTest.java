@@ -88,7 +88,7 @@ public class AzureSingleTransferWorkerTest extends AbstractAzureTest {
         final AzureSession session = new AzureSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new Path("cyberduck", EnumSet.of(Path.Type.volume));
+        final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local localFile = TemporaryFileServiceFactory.get().create(test);
         {

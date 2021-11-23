@@ -23,20 +23,14 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesReader;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolException;
-import org.apache.http.client.RedirectException;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.conn.util.InetAddressUtils;
-import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
@@ -50,6 +44,7 @@ import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -59,36 +54,27 @@ public class RequestEntityRestStorageService extends RestS3Service {
 
     private final S3Session session;
     private final Jets3tProperties properties;
-    private final Preferences preferences = PreferencesFactory.get();
 
     private static Jets3tProperties toProperties(final Host bookmark, final S3Protocol.AuthenticationHeaderSignatureVersion signatureVersion) {
         final Jets3tProperties properties = new Jets3tProperties();
-        final Preferences preferences = PreferencesFactory.get();
+        final PreferencesReader preferences = new HostPreferences(bookmark);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure for endpoint %s", bookmark));
         }
         // Use default endpoint for region lookup
-        if(bookmark.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-            // Only for AWS
-            properties.setProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default"));
-            properties.setProperty("s3service.disable-dns-buckets",
-                String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
+        properties.setProperty("s3service.s3-endpoint", bookmark.getHostname());
+        if(InetAddressUtils.isIPv4Address(bookmark.getHostname()) || InetAddressUtils.isIPv6Address(bookmark.getHostname())) {
+            properties.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         }
         else {
-            properties.setProperty("s3service.s3-endpoint", bookmark.getHostname());
-            if(InetAddressUtils.isIPv4Address(bookmark.getHostname()) || InetAddressUtils.isIPv6Address(bookmark.getHostname())) {
-                properties.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
-            }
-            else {
-                properties.setProperty("s3service.disable-dns-buckets",
+            properties.setProperty("s3service.disable-dns-buckets",
                     String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
-            }
         }
         properties.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         if(StringUtils.isNotBlank(bookmark.getProtocol().getContext())) {
             if(!Scheme.isURL(bookmark.getProtocol().getContext())) {
                 properties.setProperty("s3service.s3-endpoint-virtual-path",
-                    PathNormalizer.normalize(bookmark.getProtocol().getContext()));
+                        PathNormalizer.normalize(bookmark.getProtocol().getContext()));
             }
         }
         properties.setProperty("s3service.https-only", String.valueOf(bookmark.getProtocol().isSecure()));
@@ -122,33 +108,9 @@ public class RequestEntityRestStorageService extends RestS3Service {
         this.session = session;
         this.properties = this.getJetS3tProperties();
         // Client configuration
-        configuration.disableContentCompression();
         final RequestEntityRestStorageService authorizer = this;
-        configuration.setRetryHandler(new S3HttpRequestRetryHandler(authorizer, preferences.getInteger("http.connections.retry")));
-        configuration.setRedirectStrategy(new DefaultRedirectStrategy() {
-            @Override
-            public HttpUriRequest getRedirect(final HttpRequest request, final HttpResponse response, final HttpContext context) throws ProtocolException {
-                if(response.containsHeader("x-amz-bucket-region")) {
-                    final Header header = response.getFirstHeader("x-amz-bucket-region");
-                    log.warn(String.format("Received redirect response %s with %s", response, header));
-                    String uri = request.getRequestLine().getUri();
-                    for(Location.Name region : session.getHost().getProtocol().getRegions()) {
-                        if(StringUtils.contains(uri, region.getIdentifier())) {
-                            log.warn(String.format("Retry request with URI %s", uri));
-                            final HttpUriRequest uriRequest = RequestBuilder.copy(request).setUri(StringUtils.replace(uri, region.getIdentifier(), header.getValue())).build();
-                            try {
-                                authorizer.authorizeHttpRequest(uriRequest, context, null);
-                            }
-                            catch(ServiceException e) {
-                                throw new RedirectException(e.getMessage(), e);
-                            }
-                            return uriRequest;
-                        }
-                    }
-                }
-                return super.getRedirect(request, response, context);
-            }
-        });
+        configuration.setRetryHandler(new S3HttpRequestRetryHandler(authorizer, new HostPreferences(session.getHost()).getInteger("http.connections.retry")));
+        configuration.setRedirectStrategy(new S3BucketRegionRedirectStrategy(this, session, authorizer));
         this.setHttpClient(configuration.build());
     }
 
@@ -177,6 +139,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                                              final String objectKey, final Map<String, String> requestParameters) throws S3ServiceException {
         final Host host = session.getHost();
         // Apply default configuration
+        final PreferencesReader preferences = new HostPreferences(session.getHost());
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
             // Check if not already set to accelerated endpoint
             if(properties.getStringProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default")).matches("s3-accelerate(\\.dualstack)?\\.amazonaws\\.com")) {
@@ -184,7 +147,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
             }
             else {
                 // Only for AWS set endpoint to region specific
-                if(requestParameters == null || !requestParameters.containsKey("location")) {
+                if(StringUtils.isNotBlank(bucketName) && (requestParameters == null || !requestParameters.containsKey("location"))) {
                     try {
                         // Determine region for bucket using cache
                         final Location.Name region = new S3LocationFeature(session, regionEndpointCache).getLocation(bucketName);
@@ -208,6 +171,42 @@ public class RequestEntityRestStorageService extends RestS3Service {
                     catch(BackgroundException e) {
                         // Ignore failure reading location for bucket
                         log.error(String.format("Failure %s determining bucket location for %s", e, bucketName));
+                    }
+                }
+                else {
+                    if(StringUtils.isNotBlank(host.getRegion())) {
+                        // Use default region
+                        final String endpoint;
+                        if(preferences.getBoolean("s3.endpoint.dualstack.enable")) {
+                            endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv6"), host.getRegion());
+                        }
+                        else {
+                            endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv4"), host.getRegion());
+                        }
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Set endpoint to %s", endpoint));
+                        }
+                        properties.setProperty("s3service.s3-endpoint", endpoint);
+                    }
+                    if(StringUtils.isBlank(bucketName)) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Determine bucket from hostname %s", host.getHostname()));
+                        }
+                        final String bucketNameInHostname = RequestEntityRestStorageService.findBucketInHostname(host);
+                        if(bucketNameInHostname != null) {
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Determined bucket %s from hostname %s", bucketNameInHostname, host.getHostname()));
+                            }
+                            if(!StringUtils.startsWith(properties.getStringProperty("s3service.s3-endpoint", host.getProtocol().getDefaultHostname()),
+                                    bucketNameInHostname)) {
+                                final String endpoint = String.format("%s.%s", bucketNameInHostname, properties.getStringProperty("s3service.s3-endpoint",
+                                        host.getProtocol().getDefaultHostname()));
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("Set endpoint to %s", endpoint));
+                                }
+                                properties.setProperty("s3service.s3-endpoint", endpoint);
+                            }
+                        }
                     }
                 }
             }
@@ -255,7 +254,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                                        Map<String, Object> requestHeaders,
                                        Map<String, String> requestParameters) throws ServiceException {
         return super.getObjectImpl(headOnly, bucketName, objectKey, ifModifiedSince, ifUnmodifiedSince, ifMatchTags, ifNoneMatchTags, byteRangeStart, byteRangeEnd,
-            versionId, requestHeaders, requestParameters);
+                versionId, requestHeaders, requestParameters);
     }
 
     @Override
@@ -326,7 +325,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                                      final String forceRequestSignatureVersion) throws ServiceException {
         if(forceRequestSignatureVersion != null) {
             final S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
-                = S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(StringUtils.remove(forceRequestSignatureVersion, "-"));
+                    = S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(StringUtils.remove(forceRequestSignatureVersion, "-"));
             log.warn(String.format("Switched authentication signature version to %s", forceRequestSignatureVersion));
             session.setSignatureVersion(authenticationHeaderSignatureVersion);
         }
@@ -352,5 +351,29 @@ public class RequestEntityRestStorageService extends RestS3Service {
             return true;
         }
         return false;
+    }
+
+
+    /**
+     * @return Null if no container component in hostname prepended
+     */
+    protected static String findBucketInHostname(final Host host) {
+        if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("No default hostname set in %s", host.getProtocol()));
+            }
+            return null;
+        }
+        final String hostname = host.getHostname();
+        if(hostname.equals(host.getProtocol().getDefaultHostname())) {
+            return null;
+        }
+        if(hostname.endsWith(host.getProtocol().getDefaultHostname())) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Find bucket name in %s", hostname));
+            }
+            return ServiceUtils.findBucketNameInHostname(hostname, host.getProtocol().getDefaultHostname());
+        }
+        return null;
     }
 }

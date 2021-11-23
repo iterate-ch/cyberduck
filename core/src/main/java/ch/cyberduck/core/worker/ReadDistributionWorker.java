@@ -50,14 +50,14 @@ public class ReadDistributionWorker extends Worker<Distribution> {
     public Distribution run(final Session<?> session) throws BackgroundException {
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         final PathContainerService container = session.getFeature(PathContainerService.class);
-        for(Path file : this.getContainers(container, files)) {
+        for(Path c : this.getContainers(container, files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            final Distribution distribution = cdn.read(file, method, prompt);
+            final Distribution distribution = cdn.read(c, method, prompt);
             if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
                 // Make sure container items are cached for default root object.
-                distribution.setRootDocuments(session.getFeature(ListService.class).list(container.getContainer(file), new DisabledListProgressListener()).toList());
+                distribution.setRootDocuments(session.getFeature(ListService.class).list(container.getContainer(c), new DisabledListProgressListener()).toList());
             }
             return distribution;
         }
@@ -72,7 +72,7 @@ public class ReadDistributionWorker extends Worker<Distribution> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Reading CDN configuration of {0}", "Status"),
-                this.toString(files));
+            this.toString(files));
     }
 
     @Override

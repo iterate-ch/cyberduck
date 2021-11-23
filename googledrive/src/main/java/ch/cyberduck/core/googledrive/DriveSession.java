@@ -31,15 +31,17 @@ import ch.cyberduck.core.http.DefaultHttpRateLimiter;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
@@ -74,7 +76,7 @@ public class DriveSession extends HttpSession<Drive> {
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
-            PreferencesFactory.get().getInteger("googledrive.limit.requests.second")
+            new HostPreferences(host).getInteger("googledrive.limit.requests.second")
         )));
         this.transport = new ApacheHttpTransport(configuration.build());
         final UseragentProvider ua = new PreferencesUseragentProvider();
@@ -101,7 +103,8 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
+        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
+        final Credentials credentials = host.getCredentials();
         final About about;
         try {
             about = client.about().get().setFields("user").execute();
@@ -112,8 +115,8 @@ public class DriveSession extends HttpSession<Drive> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Authenticated as user %s", about.getUser()));
         }
-        final Credentials credentials = host.getCredentials();
         credentials.setUsername(about.getUser().getEmailAddress());
+        credentials.setSaved(true);
     }
 
     @Override

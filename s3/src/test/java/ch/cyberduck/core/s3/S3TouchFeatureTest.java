@@ -49,10 +49,24 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    public void testTouchVirtualHost() throws Exception {
+        final Path test = new S3TouchFeature(virtualhost).touch(
+                new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
+        assertNull(test.attributes().getVersionId());
+        assertTrue(new S3FindFeature(virtualhost).find(test));
+        final Map<String, String> metadata = new S3MetadataFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).getMetadata(test);
+        assertFalse(metadata.isEmpty());
+        assertEquals("text/plain", metadata.get("Content-Type"));
+        assertEquals(test.attributes(), new S3AttributesFinderFeature(virtualhost).find(test));
+        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(virtualhost).find(test));
+    }
+
+    @Test
     public void testTouchCarriageReturnKey() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new S3TouchFeature(session).touch(
-            new Path(container, String.format("%s\n-\r", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
+                new Path(container, String.format("%s\n-\r", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session).find(test));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);

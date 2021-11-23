@@ -25,8 +25,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 
@@ -61,8 +60,6 @@ public class BrickPairingSchedulerFeature {
     private final CancelCallback cancel;
     private final ScheduledThreadPool scheduler = new ScheduledThreadPool();
 
-    private final Preferences preferences = PreferencesFactory.get();
-
     public BrickPairingSchedulerFeature(final BrickSession session, final String token, final Host host, final CancelCallback cancel) {
         this.session = session;
         this.token = token;
@@ -70,8 +67,8 @@ public class BrickPairingSchedulerFeature {
         this.cancel = cancel;
     }
 
-    public Credentials repeat(final PasswordCallback callback) {
-        final long timeout = preferences.getLong("brick.pairing.interrupt.ms");
+    public void repeat(final PasswordCallback callback) {
+        final long timeout = new HostPreferences(session.getHost()).getLong("brick.pairing.interrupt.ms");
         final long start = System.currentTimeMillis();
         scheduler.repeat(() -> {
             try {
@@ -81,7 +78,7 @@ public class BrickPairingSchedulerFeature {
                 this.operate(callback);
             }
             catch(ConnectionCanceledException e) {
-                log.warn("Cancel processing scheduled task. %s", e);
+                log.warn(String.format("Cancel processing scheduled task. %s", e.getMessage()), e);
                 callback.close(null);
                 this.shutdown();
             }
@@ -90,8 +87,7 @@ public class BrickPairingSchedulerFeature {
                 callback.close(null);
                 this.shutdown();
             }
-        }, preferences.getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS);
-        return null;
+        }, new HostPreferences(session.getHost()).getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -117,7 +113,7 @@ public class BrickPairingSchedulerFeature {
                 }
             });
             if(json.has("nickname")) {
-                if(preferences.getBoolean("brick.pairing.nickname.configure")) {
+                if(new HostPreferences(session.getHost()).getBoolean("brick.pairing.nickname.configure")) {
                     final JsonPrimitive nickname = json.getAsJsonPrimitive("nickname");
                     if(StringUtils.isNotBlank(host.getNickname())) {
                         if(!StringUtils.equals(host.getNickname(), nickname.getAsString())) {
@@ -131,8 +127,8 @@ public class BrickPairingSchedulerFeature {
                 }
             }
             final Credentials credentials = host.getCredentials();
-            if(json.has("username")) {
-                credentials.setUsername(json.getAsJsonPrimitive("username").getAsString());
+            if(json.has("user_username")) {
+                credentials.setUsername(json.getAsJsonPrimitive("user_username").getAsString());
             }
             else {
                 throw new LoginFailureException(String.format("Invalid response for pairing key %s", token));
@@ -144,7 +140,7 @@ public class BrickPairingSchedulerFeature {
                 throw new LoginFailureException(String.format("Invalid response for pairing key %s", token));
             }
             if(json.has("server")) {
-                if(preferences.getBoolean("brick.pairing.hostname.configure")) {
+                if(new HostPreferences(session.getHost()).getBoolean("brick.pairing.hostname.configure")) {
                     host.setHostname(URI.create(json.getAsJsonPrimitive("server").getAsString()).getHost());
                 }
             }

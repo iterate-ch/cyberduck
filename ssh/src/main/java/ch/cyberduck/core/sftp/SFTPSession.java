@@ -30,8 +30,8 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.sftp.auth.SFTPAgentAuthentication;
@@ -89,8 +89,7 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 public class SFTPSession extends Session<SSHClient> {
     private static final Logger log = Logger.getLogger(SFTPSession.class);
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
+    private final PreferencesReader preferences = new HostPreferences(host);
 
     private SFTPEngine sftp;
     private StateDisconnectListener disconnectListener;
@@ -114,7 +113,7 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
-    public SSHClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    protected SSHClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final DefaultConfig configuration = new DefaultConfig();
         if("zlib".equals(preferences.getProperty("ssh.compression"))) {
             configuration.setCompressionFactories(Arrays.asList(
@@ -192,6 +191,11 @@ public class SFTPSession extends Session<SSHClient> {
                 catch(ConnectionCanceledException | ChecksumException e) {
                     return false;
                 }
+            }
+
+            @Override
+            public List<String> findExistingAlgorithms(final String hostname, final int port) {
+                return Collections.emptyList();
             }
         });
         connection.addAlgorithmsVerifier(new AlgorithmsVerifier() {

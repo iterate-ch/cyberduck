@@ -174,22 +174,22 @@ public class PuTTYKeyTest {
 
     final static String ppk1024_passphrase = "PuTTY-User-Key-File-2: ssh-rsa\n" +
         "Encryption: aes256-cbc\n" +
-        "Comment: rsa-key-20121215\n" +
+        "Comment: user@host\n" +
         "Public-Lines: 4\n" +
-        "AAAAB3NzaC1yc2EAAAABJQAAAIB7KdUyuvGb2ne9G9YDAjaYvX/Mq6Q6ppGjbEQo\n" +
-        "bac66VUazxVpZsnAWikcdYAU7odkyt3jg7Nn1NgQS1a5mpXk/j77Ss5C9W4rymrU\n" +
-        "p32cmbgB/KIV80DnOyZyOtDWDPM0M0RRXqQvAO6TsnmsNSnBa8puMLHqCtrhvvJD\n" +
-        "KU+XEw==\n" +
+        "AAAAB3NzaC1yc2EAAAADAQABAAAAgQDsQv60HaW0301hX/xV3AUcutbDDAJp7KWc\n" +
+        "6swL+H6jhwe3N7FK/SA4492bK5oHwU3ea3X6moLuapTMawMQbRy1kfQm99wcYc7C\n" +
+        "6PJO3uouzjDatc/aByDejbo5OL9kK4Vy7qm6tw1hC0JIM+TCvItKu+t6Myl7xzv4\n" +
+        "KbSHiMzulQ==\n" +
         "Private-Lines: 8\n" +
-        "4YMkPgLQJ9hOI1L1HsdOUnYi57tDy5h9DoPTHD55fhEYsn53h4WaHpxuZH8dTpbC\n" +
-        "5TcV3vYTfhh+aFBY0p/FI8L1hKfABLRxhkqkkc7xMmOGlA6HejAc8oTA3VArgSeG\n" +
-        "tRBuQRmBAC1Edtek/U+s8HzI2whzTw8tZoUUnT6844oc4tyCpWJUy5T8l+O3/03s\n" +
-        "SceJ98DN2k+L358VY8AXgPxP6NJvHvIlwmIo+PtcMWsyZegfSHEnoXN2GN4N0ul6\n" +
-        "298RzA9R+I3GSKKxsxUvWfOVibLq0dDM3+CTwcbmo4qvyM2xrRRLhObB2rVW07gL\n" +
-        "7+FZpHxf44QoQQ8mVkDJNaT1faF+h/8tCp2j1Cj5yEPHMOHGTVMyaz7gqhoMw5RX\n" +
-        "sfSP4ZaCGinLbouPrZN9Ue3ytwdEpmqU2MelmcZdcH6kWbLCqpWBswsxPfuhFdNt\n" +
-        "oYhmT2+0DKBuBVCAM4qRdA==\n" +
-        "Private-MAC: 40ccc8b9a7291ec64e5be0c99badbc8a012bf220\n";
+        "hPS6HYs4t8WChglZzo5G/B0ohnw2DQS19HMPllyVr9XfDyT2Xk8ZSTye84r5CtMP\n" +
+        "xF4Qc0nkoStyw9p9Tm762FhkM0iGghLWeCdTyqXVlAA9l3sr0BMJ9AoMvjQBqqns\n" +
+        "gjfPvmtNPFn8sfApHVOv1qSLSGOMZFm/q6KtGuR+IyTnMuZ71b/cQYYHbsAQxt09\n" +
+        "96I7jDhup/4uoi/tcPYhe998wRFSSldkAtcmYGUnDWCiivlP+gZsXvOI2zs2gCxx\n" +
+        "ECEwZNTR/j3G0muRUMf91iZSMBije+41j345F+ZHJ43gYXW6lxjFtI5jr9LRGWF1\n" +
+        "hTeY6IlLt4EBBGNrO8Rn0oGVuQdFQAZaredlt1V5FsgcSaMgg3rlScoz0IHHD66Q\n" +
+        "Hglp/IYN6Sx6OEGjh3oLGImag+Mz9/9WWGXPLhZ4MUpFAWqcTD4qPK0jYxTCM6QC\n" +
+        "TybFqMeCSEKiHSOiOGf2oQ==\n" +
+        "Private-MAC: 6aec23b6267edcb87b05ddef52a80894e3a246c4";
 
     final static String ppkdsa_passphrase = "PuTTY-User-Key-File-2: ssh-dss\n" +
         "Encryption: aes256-cbc\n" +
@@ -234,14 +234,13 @@ public class PuTTYKeyTest {
     }
 
     @Test
-    @Ignore
     public void testCorrectPassphraseRsa() throws Exception {
         PuTTYKeyFile key = new PuTTYKeyFile();
         key.init(new StringReader(ppk1024_passphrase), new PasswordFinder() {
             @Override
             public char[] reqPassword(Resource<?> resource) {
                 // correct passphrase
-                return "123456".toCharArray();
+                return "äöü".toCharArray();
             }
 
             @Override

@@ -1,5 +1,6 @@
 package ch.cyberduck.core.azure;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -12,7 +13,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -23,10 +23,10 @@ public class AzureMoveFeatureTest extends AbstractAzureTest {
     @Test
     public void testMove() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(test));
-        final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path target = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureMoveFeature(session, null).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new AzureFindFeature(session, null).find(test));
         assertTrue(new AzureFindFeature(session, null).find(target));

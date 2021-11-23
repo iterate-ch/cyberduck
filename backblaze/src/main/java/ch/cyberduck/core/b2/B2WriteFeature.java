@@ -29,8 +29,6 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.AbstractHttpEntity;
@@ -62,8 +60,6 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
 
     private final ThreadLocal<B2GetUploadUrlResponse> urls
         = new ThreadLocal<>();
-
-    private final Preferences preferences = PreferencesFactory.get();
 
     public B2WriteFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this.session = session;

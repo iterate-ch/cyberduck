@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
@@ -90,7 +91,7 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                     }
                     else {
                         final TransferStatus status = this.status(session, r);
-                        result.put(r.getKey(), copy.copy(r.getKey(), r.getValue(), status, callback));
+                        result.put(r.getKey(), copy.copy(r.getKey(), r.getValue(), status, callback, new DisabledStreamListener()));
                     }
                 }
             }

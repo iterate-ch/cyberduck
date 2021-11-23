@@ -22,8 +22,6 @@
     <string>rackspace</string>
     <key>Bundled</key>
     <true/>
-    <key>Type</key>
-    <string>swift</string>
     <key>Schemes</key>
     <array>
         <string>rackspace</string>

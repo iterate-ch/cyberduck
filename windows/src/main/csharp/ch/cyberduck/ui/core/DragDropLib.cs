@@ -1006,6 +1006,8 @@ namespace Ch.Cyberduck.Ui.Core
 
 namespace System.Windows.Forms
 {
+    using System.Drawing;
+
     using ComIDataObject = Runtime.InteropServices.ComTypes.IDataObject;
 
     public enum DropImageType
@@ -1316,6 +1318,8 @@ namespace Ch.Cyberduck.Ui.Core
 
 namespace System.Windows.Forms
 {
+    using System.Drawing;
+
     public static class DropTargetHelper
     {
         /// <summary>
@@ -1516,6 +1520,8 @@ namespace Ch.Cyberduck.Ui.Core
 
 namespace System.Windows.Forms
 {
+    using System.Drawing;
+
     /// <summary>
     /// Provides helper methods for working with the Shell drag image manager.
     /// </summary>

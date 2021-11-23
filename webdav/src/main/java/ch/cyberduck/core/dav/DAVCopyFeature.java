@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -43,7 +44,7 @@ public class DAVCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final String target = new DefaultUrlProvider(session.getHost()).toUrl(copy).find(DescriptiveUrl.Type.provider).getUrl();
             if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
@@ -54,6 +55,7 @@ public class DAVCopyFeature implements Copy {
             else {
                 session.getClient().copy(new DAVPathEncoder().encode(source), target, true);
             }
+            listener.sent(status.getLength());
             return copy;
         }
         catch(SardineException e) {

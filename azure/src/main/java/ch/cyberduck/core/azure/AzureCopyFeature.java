@@ -21,12 +21,12 @@ package ch.cyberduck.core.azure;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -56,14 +56,14 @@ public class AzureCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final CloudBlob target = session.getClient().getContainerReference(containerService.getContainer(copy).getName())
                 .getAppendBlobReference(containerService.getKey(copy));
             final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(source).getName())
                 .getBlobReferenceFromServer(containerService.getKey(source));
             final BlobRequestOptions options = new BlobRequestOptions();
-            options.setStoreBlobContentMD5(PreferencesFactory.get().getBoolean("azure.upload.md5"));
+            options.setStoreBlobContentMD5(new HostPreferences(session.getHost()).getBoolean("azure.upload.md5"));
             final URI s = session.getHost().getCredentials().isTokenAuthentication() ?
                 URI.create(blob.getUri().toString() + session.getHost().getCredentials().getToken()) : blob.getUri();
             final String id = target.startCopy(s,
@@ -71,6 +71,7 @@ public class AzureCopyFeature implements Copy {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Started copy for %s with copy operation ID %s", copy, id));
             }
+            listener.sent(status.getLength());
             // Copy original file attributes
             return copy.withAttributes(source.attributes());
         }

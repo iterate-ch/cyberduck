@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -41,7 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Profile implements Protocol, Serializable {
+public class Profile implements Protocol {
     private static final Logger log = Logger.getLogger(Profile.class);
 
     private final Deserializer<String> dict;
@@ -61,8 +62,11 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
-    public <T> T serialize(final Serializer dict) {
-        throw new UnsupportedOperationException();
+    public <T> T serialize(final Serializer serializer) {
+        for(String key : dict.keys()) {
+            serializer.setStringForKey(dict.stringForKey(key), key);
+        }
+        return serializer.getSerialized();
     }
 
     public Protocol getProtocol() {
@@ -79,8 +83,17 @@ public class Profile implements Protocol, Serializable {
      */
     @Override
     public boolean isEnabled() {
-        return StringUtils.isNotBlank(this.value("Protocol"))
-            && StringUtils.isNotBlank(this.value("Vendor"));
+        final String protocol = this.value("Protocol");
+        final String vendor = this.value("Vendor");
+        if(StringUtils.isNotBlank(protocol) && StringUtils.isNotBlank(vendor)) {
+            final String property = PreferencesFactory.get().getProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled", protocol, vendor)));
+            if(null == property) {
+                // Not previously configured. Assume enabled
+                return true;
+            }
+            return Boolean.parseBoolean(property);
+        }
+        return false;
     }
 
     @Override
@@ -593,7 +606,7 @@ public class Profile implements Protocol, Serializable {
 
     @Override
     public int compareTo(final Protocol o) {
-        return this.getIdentifier().compareTo(o.getIdentifier());
+        return new ProtocolComparator(this).compareTo(o);
     }
 
     @Override

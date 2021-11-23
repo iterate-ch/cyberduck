@@ -190,6 +190,8 @@ public abstract class LicenseFactory extends Factory<License> {
     };
 
     protected static final class LicenseFilter implements Filter<Local> {
+        private final Pattern pattern = Pattern.compile(".*\\.cyberducklicense");
+
         @Override
         public boolean accept(final Local file) {
             return "cyberducklicense".equalsIgnoreCase(Path.getExtension(file.getName()));
@@ -197,7 +199,7 @@ public abstract class LicenseFactory extends Factory<License> {
 
         @Override
         public Pattern toPattern() {
-            return Pattern.compile(".*\\.cyberducklicense");
+            return pattern;
         }
     }
 }

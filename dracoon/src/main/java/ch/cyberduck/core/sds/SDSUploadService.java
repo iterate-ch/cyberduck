@@ -23,12 +23,13 @@ import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UploadsApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
@@ -64,10 +65,15 @@ public class SDSUploadService {
         this.nodeid = nodeid;
     }
 
-    public String start(final Path file, final TransferStatus status) throws BackgroundException {
+    /**
+     * @param file   Remote path
+     * @param status Length and modification date for file uploaded
+     * @return Uplaod URI
+     */
+    public CreateFileUploadResponse start(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final CreateFileUploadRequest body = new CreateFileUploadRequest()
-                .size(-1 == status.getLength() ? null : status.getLength())
+                .size(TransferStatus.UNKNOWN_LENGTH == status.getLength() ? null : status.getLength())
                 .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName())
                 .directS3Upload(null);
@@ -75,22 +81,30 @@ public class SDSUploadService {
                 final SoftwareVersionData version = session.softwareVersion();
                 final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
                 if(matcher.matches()) {
-                    if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.22))) >= 0) {
+                    if(new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0) {
                         body.timestampModification(new DateTime(status.getTimestamp()));
                     }
                 }
             }
-            return new NodesApi(session.getClient()).createFileUploadChannel(body, StringUtils.EMPTY).getToken();
+            return new NodesApi(session.getClient()).createFileUploadChannel(body, StringUtils.EMPTY);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file);
         }
     }
 
+    /**
+     * Complete file upload
+     *
+     * @param file        Remote path
+     * @param uploadToken Upload token
+     * @param status      Transfer status
+     * @return Node Id from server
+     */
     public Node complete(final Path file, final String uploadToken, final TransferStatus status) throws BackgroundException {
         try {
             final CompleteUploadRequest body = new CompleteUploadRequest()
-                .keepShareLinks(status.isExists() ? PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep") : false)
+                .keepShareLinks(status.isExists() ? new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep") : false)
                 .resolutionStrategy(status.isExists() ? CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteUploadRequest.ResolutionStrategyEnum.FAIL);
             if(status.getFilekey() != null) {
                 final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
@@ -101,7 +115,7 @@ public class SDSUploadService {
                 );
                 body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
             }
-            final Node upload = new UploadsApi(session.getClient()).completeFileUploadByToken(body, uploadToken);
+            final Node upload = new UploadsApi(session.getClient()).completeFileUploadByToken(body, uploadToken, StringUtils.EMPTY);
             if(!upload.isIsEncrypted()) {
                 final Checksum checksum = status.getChecksum();
                 if(Checksum.NONE != checksum) {
@@ -131,6 +145,12 @@ public class SDSUploadService {
         }
     }
 
+    /**
+     * Cancel file upload
+     *
+     * @param file        Remote path
+     * @param uploadToken Upload token
+     */
     public void cancel(final Path file, final String uploadToken) throws BackgroundException {
         log.warn(String.format("Cancel failed upload %s for %s", uploadToken, file));
         try {

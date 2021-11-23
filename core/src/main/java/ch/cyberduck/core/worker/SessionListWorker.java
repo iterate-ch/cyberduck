@@ -140,7 +140,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
         }
 
         @Override
-        public ListProgressListener reset() {
+        public ListProgressListener reset() throws ConnectionCanceledException {
             return proxy.reset();
         }
 

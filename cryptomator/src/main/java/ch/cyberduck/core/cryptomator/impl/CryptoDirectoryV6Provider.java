@@ -36,6 +36,8 @@ import org.apache.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class CryptoDirectoryV6Provider implements CryptoDirectory {
     private static final Logger log = Logger.getLogger(CryptoDirectoryV6Provider.class);
@@ -49,6 +51,8 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
 
     private final RandomStringService random
         = new UUIDRandomStringService();
+
+    private final Lock lock = new ReentrantLock();
 
     private final LRUCache<CacheReference<Path>, String> cache = LRUCache.build(
         PreferencesFactory.get().getInteger("cryptomator.cache.size"));
@@ -106,12 +110,29 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
             if(cache.contains(new SimplePathPredicate(directory))) {
                 return cache.get(new SimplePathPredicate(directory));
             }
-            final String id = this.load(session, directory);
-            cache.put(new SimplePathPredicate(directory), id);
-            return id;
+            try {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Acquire lock for %s", directory));
+                }
+                lock.lock();
+                final String id = this.load(session, directory);
+                cache.put(new SimplePathPredicate(directory), id);
+                return id;
+            }
+            finally {
+                lock.unlock();
+            }
         }
-        cache.put(new SimplePathPredicate(directory), directoryId);
-        return directoryId;
+        if(!cache.contains(new SimplePathPredicate(directory))) {
+            cache.put(new SimplePathPredicate(directory), directoryId);
+        }
+        else {
+            final String existing = cache.get(new SimplePathPredicate(directory));
+            if(!existing.equals(directoryId)) {
+                log.warn(String.format("Do not override already cached id %s with %s", existing, directoryId));
+            }
+        }
+        return cache.get(new SimplePathPredicate(directory));
     }
 
     protected String load(final Session<?> session, final Path directory) throws BackgroundException {

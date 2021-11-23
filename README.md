@@ -3,10 +3,11 @@
 [![GitHub commit](https://img.shields.io/github/last-commit/iterate-ch/cyberduck)](https://github.com/iterate-ch/cyberduck/commits/master)
 [![GitHub license](https://img.shields.io/badge/license-GPL-blue.svg)](https://raw.githubusercontent.com/iterate-ch/cyberduck/master/LICENSE)
 [![Build Status](https://github.com/iterate-ch/cyberduck/workflows/Unit%20Tests/badge.svg?branch=master)](https://github.com/iterate-ch/cyberduck/actions)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/608be33d6e1941858b17984518a4a44b)](https://www.codacy.com/app/dkocher/cyberduck?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=iterate-ch/cyberduck&amp;utm_campaign=Badge_Grade)
 [![Twitter](https://img.shields.io/badge/twitter-@cyberduckapp-blue.svg?style=flat)](http://twitter.com/cyberduckapp)
 
 Libre file transfer client for macOS and Windows. Command line interface (CLI) for Linux, macOS and Windows.
+
+<img src="https://cdn.cyberduck.io/img/cyberduck-icon-rect-512.png" alt="Cyberduck Icon" width="400px"/>
 
 ## Prerequisites
 
@@ -15,6 +16,7 @@ Libre file transfer client for macOS and Windows. Command line interface (CLI) f
 - Apache Maven 3.5 or later
 
 ### macOS
+
 - [Xcode 12](https://developer.apple.com/xcode/download/) or later
 
 ### Windows
@@ -82,55 +84,60 @@ After packaging, run `mvn test -DskipITs` to run unit tests but skip integration
 #### Repository Configuration
 Maven artifacts are available in a repository hosted on Amazon S3. 
 - Use the following Maven configuration in your project POM to reference artifacts from Cyberduck
- 
-         <repositories>
-             <repository>
-                 <id>maven.cyberduck.io-release</id>
-                 <url>http://repo.maven.cyberduck.io.s3.amazonaws.com/releases/</url>
-                 <layout>default</layout>
-                 <releases>
-                     <enabled>true</enabled>
-                 </releases>
-                 <snapshots>
-                     <enabled>false</enabled>
-                 </snapshots>
-             </repository>
-         </repositories>
+ ```xml
+<repositories>
+    <repository>
+        <id>maven.cyberduck.io-release</id>
+        <url>http://repo.maven.cyberduck.io.s3.amazonaws.com/releases/</url>
+        <layout>default</layout>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+```
          
 - You will need to add the AWS Maven Wagon to your build using
-
-         <build>
-             <extensions>
-                 <extension>
-                     <groupId>org.springframework.build</groupId>
-                     <artifactId>aws-maven</artifactId>
-                     <version>5.0.0.RELEASE</version>
-                 </extension>
-             </extensions>
-         </build>
+```xml
+<build>
+    <extensions>
+        <extension>
+            <groupId>org.springframework.build</groupId>
+            <artifactId>aws-maven</artifactId>
+            <version>5.0.0.RELEASE</version>
+        </extension>
+    </extensions>
+</build>
+```
 
 #### Artifacts
 - Protocol implementations
-
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>protocols</artifactId>
-            <type>pom</type>
-            <version>7.1.0</version>
-        </dependency>
+```xml
+<dependency>
+    <groupId>ch.cyberduck</groupId>
+    <artifactId>protocols</artifactId>
+    <type>pom</type>
+    <version>7.1.0</version>
+</dependency>
+```
 
 - Cocoa Java Bindings (macOS)
-
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>binding</artifactId>
-            <version>7.1.0</version>
-        </dependency>
+```xml
+<dependency>
+    <groupId>ch.cyberduck</groupId>
+    <artifactId>binding</artifactId>
+    <version>7.1.0</version>
+</dependency>
+```
 
 - Implementations (macOS) using Launch Services, SystemConfiguration, Foundation, Keychain and other API
-
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>libcore</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+```xml
+<dependency>
+    <groupId>ch.cyberduck</groupId>
+    <artifactId>libcore</artifactId>
+    <version>${project.version}</version>
+</dependency>
+```

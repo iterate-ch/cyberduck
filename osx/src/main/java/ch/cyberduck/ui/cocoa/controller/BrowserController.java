@@ -51,6 +51,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.keychain.SFCertificatePanel;
 import ch.cyberduck.core.keychain.SecurityFunctions;
 import ch.cyberduck.core.local.Application;
@@ -62,6 +63,7 @@ import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -84,7 +86,6 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.LoadingVaultLookupListener;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultFactory;
@@ -141,6 +142,7 @@ import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
@@ -1478,6 +1480,18 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             table.addTableColumn(c);
         }
         {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.checksum.name());
+            c.headerCell().setStringValue(BrowserColumn.checksum.toString());
+            c.setMinWidth(50);
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
+                BrowserColumn.checksum.name())));
+            c.setMaxWidth(500);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            c.setDataCell(textCellPrototype);
+            c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.checksum.name())));
+            table.addTableColumn(c);
+        }
+        {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.storageclass.name());
             c.headerCell().setStringValue(BrowserColumn.storageclass.toString());
             c.setMinWidth(50);
@@ -2387,7 +2401,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool,
-                    new CreateVaultWorker(region, passphrase, PasswordStoreFactory.get(), VaultFactory.get(folder, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER)) {
+                    new CreateVaultWorker(region, passphrase, PasswordStoreFactory.get(), VaultFactory.get(folder,
+                            new HostPreferences(pool.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                            new HostPreferences(pool.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))) {
                         @Override
                         public void cleanup(final Path vault) {
                             reload(workdir, Collections.singletonList(folder), Collections.singletonList(folder));
@@ -2997,6 +3013,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.version.name()))) {
                 copy.append(",").append(next.attributes().getVersionId());
+            }
+            if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.checksum.name()))) {
+                copy.append(",");
+                if(Checksum.NONE != next.attributes().getChecksum()) {
+                    copy.append(",").append(next.attributes().getChecksum().hash);
+                }
             }
             if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.storageclass.name()))) {
                 copy.append(",").append(next.attributes().getStorageClass());

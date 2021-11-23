@@ -28,9 +28,10 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Redundancy;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
@@ -53,7 +54,7 @@ public class S3MetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getDefault(final Local local) {
-        return PreferencesFactory.get().getMap("s3.metadata.default");
+        return new HostPreferences(session.getHost()).getMap("s3.metadata.default");
     }
 
     @Override
@@ -70,9 +71,12 @@ public class S3MetadataFeature implements Headers {
             try {
                 final StorageObject target = new StorageObject(containerService.getKey(file));
                 target.replaceAllMetadata(new HashMap<>(status.getMetadata()));
+                if(status.getTimestamp() != null) {
+                    target.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
+                }
                 try {
                     // Apply non standard ACL
-                    target.setAcl(accessControlListFeature.toAcl(file, accessControlListFeature.getPermission(file)));
+                    target.setAcl(accessControlListFeature.toAcl(accessControlListFeature.getPermission(file)));
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
                     log.warn(String.format("Ignore failure %s", e));
@@ -88,7 +92,9 @@ public class S3MetadataFeature implements Headers {
                     // Set custom key id stored in KMS
                     target.setServerSideEncryptionKmsKeyId(encryption.key);
                 }
-                final Map<String, Object> metadata = session.getClient().updateObjectMetadata(containerService.getContainer(file).getName(), target);
+                final Path bucket = containerService.getContainer(file);
+                final Map<String, Object> metadata = session.getClient().updateObjectMetadata(
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), target);
                 if(metadata.containsKey("version-id")) {
                     file.attributes().setVersionId(metadata.get("version-id").toString());
                 }
