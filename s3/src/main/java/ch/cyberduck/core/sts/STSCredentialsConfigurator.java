@@ -117,7 +117,7 @@ public class STSCredentialsConfigurator {
             }
         }
         catch(AccessDeniedException | IllegalArgumentException | IOException e) {
-            log.warn(String.format("Failure reading %s and ", configFile, credentialsFile), e);
+            log.warn(String.format("Failure reading %s and %s", configFile, credentialsFile), e);
             return credentials;
         }
         if(allProfileProperties.isEmpty()) {
