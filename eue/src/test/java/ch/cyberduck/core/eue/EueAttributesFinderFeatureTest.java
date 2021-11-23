@@ -15,7 +15,6 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DescriptiveUrl;
@@ -39,6 +38,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -50,7 +50,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
     @Test
     public void testRoot() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(AbstractPath.Type.directory)));
+        final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(Path.Type.directory)));
         assertNotEquals(PathAttributes.EMPTY, attr);
         assertNotNull(attr.getETag());
     }
@@ -59,7 +59,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
     public void testFindIfNoneMatch() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueWriteFeature feature = new EueWriteFeature(session, fileid);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(4128);
         final TransferStatus status = new TransferStatus().withLength(content.length);
@@ -81,6 +81,20 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         assertSame(attr, ifNoneMatch);
         assertNotSame(attr, new EueAttributesFinderFeature(session, fileid).find(file));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testChangeETagPropagatingToRoot() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final EueWriteFeature feature = new EueWriteFeature(session, fileid);
+        final String rootEtag = new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(Path.Type.directory))).getETag();
+        final Path firstlevel = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path secondlevel = new EueDirectoryFeature(session, fileid).mkdir(new Path(firstlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path file = new EueTouchFeature(session, fileid).touch(new Path(secondlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotEquals(secondlevel.attributes().getETag(), new EueAttributesFinderFeature(session, fileid).find(secondlevel).getETag());
+        assertNotEquals(firstlevel.attributes().getETag(), new EueAttributesFinderFeature(session, fileid).find(firstlevel).getETag());
+        assertNotEquals(rootEtag, new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(Path.Type.directory))).getETag());
+        new EueDeleteFeature(session, fileid).delete(Arrays.asList(firstlevel, secondlevel), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
