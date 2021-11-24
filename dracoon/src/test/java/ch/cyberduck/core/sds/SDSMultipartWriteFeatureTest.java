@@ -121,6 +121,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
             assertNotEquals(test.attributes().getVersionId(), out.getStatus());
             new SDSReadFeature(session, nodeid).read(test, new TransferStatus(), new DisabledConnectionCallback()).close();
         }
+        assertNotEquals(attr.getRevision(), new SDSAttributesFinderFeature(session, nodeid).find(test));
         // Read with previous version must fail
         try {
             test.attributes().withVersionId(previousVersion);
