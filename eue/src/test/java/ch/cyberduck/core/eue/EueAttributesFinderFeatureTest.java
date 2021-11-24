@@ -88,9 +88,17 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueWriteFeature feature = new EueWriteFeature(session, fileid);
         final String rootEtag = new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(Path.Type.directory))).getETag();
+        assertNotNull(rootEtag);
         final Path firstlevel = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertNotNull(firstlevel.attributes().getETag());
+        assertEquals(firstlevel.attributes().getETag(), new EueAttributesFinderFeature(session, fileid).find(firstlevel).getETag());
         final Path secondlevel = new EueDirectoryFeature(session, fileid).mkdir(new Path(firstlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertNotNull(secondlevel.attributes().getETag());
+        assertNotNull(secondlevel.attributes().getETag());
+        assertEquals(secondlevel.attributes().getETag(), new EueAttributesFinderFeature(session, fileid).find(secondlevel).getETag());
+        final Path secondlevelSibling = new EueDirectoryFeature(session, fileid).mkdir(new Path(firstlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new EueTouchFeature(session, fileid).touch(new Path(secondlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(secondlevelSibling.attributes().getETag(), new EueAttributesFinderFeature(session, fileid).find(secondlevelSibling).getETag());
         assertNotEquals(secondlevel.attributes().getETag(), new EueAttributesFinderFeature(session, fileid).find(secondlevel).getETag());
         assertNotEquals(firstlevel.attributes().getETag(), new EueAttributesFinderFeature(session, fileid).find(firstlevel).getETag());
         assertNotEquals(rootEtag, new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(Path.Type.directory))).getETag());
