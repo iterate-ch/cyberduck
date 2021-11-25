@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>8.1.0</version>
+    <version>8.2.0-SNAPSHOT</version>
 
     <modules>
         <!-- Core components -->
@@ -69,7 +69,7 @@
 
     <scm>
         <connection>scm:git:ssh://git@g.iterate.ch:7999/iterate/cyberduck.git</connection>
-        <tag>release-8-1-0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
