@@ -524,8 +524,8 @@ public class Profile implements Protocol {
             return parent.getProperties();
         }
         return properties.stream().collect(Collectors.toMap(
-            property -> 2 == StringUtils.split(property, '=').length ? StringUtils.split(property, '=')[0] : property,
-            property -> 2 == StringUtils.split(property, '=').length ? StringUtils.split(property, '=')[1] : StringUtils.EMPTY));
+                property -> 2 == StringUtils.split(property, "=", 2).length ? StringUtils.split(property, "=", 2)[0] : property,
+                property -> 2 == StringUtils.split(property, "=", 2).length ? StringUtils.split(property, "=", 2)[1] : StringUtils.EMPTY));
     }
 
     @Override
