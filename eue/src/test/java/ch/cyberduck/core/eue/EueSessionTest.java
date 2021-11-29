@@ -17,13 +17,17 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import static org.junit.Assert.assertNotEquals;
 
 @Category(IntegrationTest.class)
 public class EueSessionTest extends AbstractEueSessionTest {
 
     @Test
     public void testLogin() throws Exception {
+        assertNotEquals(StringUtils.EMPTY, session.getHost().getCredentials().getUsername());
     }
 }

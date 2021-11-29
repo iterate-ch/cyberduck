@@ -27,6 +27,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -187,6 +188,9 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
         }
         if(type == Home.class) {
             return (T) new IRODSHomeFinderService(this);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new IRODSAttributesFinderFeature(this);
         }
         return super._getFeature(type);
     }

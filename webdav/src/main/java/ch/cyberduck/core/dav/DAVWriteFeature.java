@@ -20,7 +20,6 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Write;
@@ -34,6 +33,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpStatus;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
@@ -67,17 +67,8 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
 
     @Override
     public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        try {
-            return this.write(file, this.getHeaders(file, status), status);
-        }
-        catch(InteroperabilityException e) {
-            if(null != status.getLockId()) {
-                // Handle 412 Precondition Failed with expired token
-                log.warn(String.format("Retry failure %s with lock id %s removed", e, status.getLockId()));
-                return this.write(file, this.getHeaders(file, status.withLockId(null)), status);
-            }
-            throw e;
-        }
+        final List<Header> headers = this.getHeaders(file, status);
+        return this.write(file, headers, status);
     }
 
     protected List<Header> getHeaders(final Path file, final TransferStatus status) throws UnsupportedException {
@@ -108,8 +99,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
         return headers;
     }
 
-    private HttpResponseOutputStream<String> write(final Path file, final List<Header> headers, final TransferStatus status)
-        throws BackgroundException {
+    private HttpResponseOutputStream<String> write(final Path file, final List<Header> headers, final TransferStatus status) throws BackgroundException {
         // Submit store call to background thread
         final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
             /**
@@ -118,8 +108,21 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
             @Override
             public String call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    return session.getClient().put(new DAVPathEncoder().encode(file), entity,
-                        headers, new ETagResponseHandler());
+                    try {
+                        return session.getClient().put(new DAVPathEncoder().encode(file), entity, headers, new ETagResponseHandler());
+                    }
+                    catch(SardineException e) {
+                        if(null != status.getLockId()) {
+                            switch(e.getStatusCode()) {
+                                case HttpStatus.SC_PRECONDITION_FAILED:
+                                    // Handle 412 Precondition Failed with expired token
+                                    log.warn(String.format("Retry failure %s with lock id %s removed", e, status.getLockId()));
+                                    headers.removeIf(header -> HttpHeaders.IF.equals(header.getName()));
+                                    return session.getClient().put(new DAVPathEncoder().encode(file), entity, headers, new ETagResponseHandler());
+                            }
+                        }
+                        throw e;
+                    }
                 }
                 catch(SardineException e) {
                     throw new DAVExceptionMappingService().map("Upload {0} failed", e, file);

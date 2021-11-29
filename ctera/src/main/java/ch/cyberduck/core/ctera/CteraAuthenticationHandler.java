@@ -17,10 +17,8 @@ import ch.cyberduck.core.ctera.auth.CteraTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ServiceUnavailableRetryStrategy;
@@ -85,20 +83,16 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
         if(executionCount <= MAX_RETRIES) {
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_MOVED_TEMPORARILY:
-                    final Header l = response.getFirstHeader(HttpHeaders.LOCATION);
-                    if(StringUtils.startsWith(l.getValue(), SAML_LOCATION)) {
-                        try {
-                            log.info(String.format("Attempt to refresh cookie for failure %s", response));
-                            this.authenticate();
-                        }
-                        catch(BackgroundException e) {
-                            log.error(String.format("Failure refreshing cookie. %s", e));
-                            return false;
-                        }
+                    try {
+                        log.info(String.format("Attempt to refresh cookie for failure %s", response));
+                        this.authenticate();
                         // Try again
                         return true;
                     }
-                    break;
+                    catch(BackgroundException e) {
+                        log.error(String.format("Failure refreshing cookie. %s", e));
+                        return false;
+                    }
             }
         }
         return false;

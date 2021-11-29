@@ -5,9 +5,31 @@
 [![Build Status](https://github.com/iterate-ch/cyberduck/workflows/Unit%20Tests/badge.svg?branch=master)](https://github.com/iterate-ch/cyberduck/actions)
 [![Twitter](https://img.shields.io/badge/twitter-@cyberduckapp-blue.svg?style=flat)](http://twitter.com/cyberduckapp)
 
-Libre file transfer client for macOS and Windows. Command line interface (CLI) for Linux, macOS and Windows.
+This is the development home for Cyberduck, a libre file transfer client for macOS and Windows. Command line interface (CLI) for Linux, macOS and Windows. The core libraries are used in [Mountain Duck](https://mountainduck.io/).
 
 <img src="https://cdn.cyberduck.io/img/cyberduck-icon-rect-512.png" alt="Cyberduck Icon" width="400px"/>
+
+## Mailing Lists
+There is a [Google Groups Cyberduck](http://groups.google.com/group/cyberduck/) discussion mailing list.
+
+The following additional [mailing lists](http://lists.cyberduck.io/) are hosted:
+
+ * [News](http://lists.cyberduck.io/mailman/listinfo/cyberduck-news) Announcements of new releases
+ * [Localization](http://lists.cyberduck.io/mailman/listinfo/cyberduck-localization) Notifications about changes to the translations needed
+
+## Source
+Source code is available licenced unter the [GNU General Public Licence Version 3](https://www.gnu.org/licenses/gpl-3.0.en.html). Pull requests welcome!
+
+## Localizations
+Translations to new languages are welcome. We use [Transifex](https://www.transifex.com/cyberduck/cyberduck/dashboard/) to localize resources. Current available localizations are _English_, _Czech_, _Dutch_, _Finnish_, _French_, _German_, _Italian_, _Japanese_, _Korean_, _Norwegian_, _Portuguese_, _Slovak_, _Spanish_, _Chinese (Traditional & Simplified Han)_, _Russian_, _Swedish_, _Hungarian_, _Danish_, _Polish_, _Indonesian_, _Catalan_, _Welsh_, _Thai_, _Turkish_, _Hebrew_, _Latvian_, _Greek_, _Serbian_, _Georgian_ and _Slovenian_.
+
+Make sure to subscribe to the [localization mailing list](http://lists.cyberduck.ch/mailman/listinfo/cyberduck-localization).
+
+## Support & Documentation
+For general help about using Cyberduck, please refer to the [documentation](https://docs.cyberduck.io).
+
+## Snapshot and Beta builds
+These are nightly snapshot builds from the current development trunk featuring the latest bugfixes and enhancements. Be warned, tough, these builds are potentially unstable and experimental. You can also switch to beta or snapshot builds in _Preferences → Update.
 
 ## Prerequisites
 
@@ -44,7 +66,16 @@ Additional `%PATH%`:
 
 ## Building
 
-Run `mvn verify -DskipTests -DskipSign` to build without running any tests and skip codesign.
+Run `mvn verify -DskipTests -DskipSign` to build without running any tests and skip codesign. Find build artifacts in 
+ * `osx/target/Cyberduck.app`
+ * `windows/target/Cyberduck.exe`
+
+Run with `-Pinstaller` to build installer packages with build artifacts
+* `osx/target/release/*.(zip|pkg)`
+* `windows/target/release/*.(exe|msi)`
+* `cli/osx/target/release/*.(pkg|tar.gz)`
+* `cli/windows/target/release/*.(exe|msi)`
+* `cli/linux/target/release/*.(deb|rpm)`
 
 ### Windows
 

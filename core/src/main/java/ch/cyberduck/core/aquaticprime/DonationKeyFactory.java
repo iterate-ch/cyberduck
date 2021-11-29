@@ -51,6 +51,7 @@ public class DonationKeyFactory extends LicenseFactory {
             if(log.isInfoEnabled()) {
                 log.info("No donation key found");
             }
+            final Pattern pattern = Pattern.compile(".*\\.cyberduckreceipt");
             // No key found. Look for receipt in sandboxed application container
             for(Local file : SupportDirectoryFinderFactory.get().find().list().filter(new Filter<Local>() {
                 @Override
@@ -60,7 +61,7 @@ public class DonationKeyFactory extends LicenseFactory {
 
                 @Override
                 public Pattern toPattern() {
-                    return Pattern.compile(".*\\.cyberduckreceipt");
+                    return pattern;
                 }
             })) {
                 final ReceiptVerifier verifier = new ReceiptVerifier(file);

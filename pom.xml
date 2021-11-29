@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>8.1.0-SNAPSHOT</version>
+    <version>8.2.0-SNAPSHOT</version>
 
     <modules>
         <!-- Core components -->
@@ -482,7 +482,7 @@
                         <argLine>@{argLine} --add-opens=java.base/java.lang=ALL-UNNAMED
                             -Djava.library.path=${project.build.directory}
                         </argLine>
-                        <systemPropertiesFile>${main.basedir}/test.properties</systemPropertiesFile>
+                        <systemPropertiesFile>${maven.multiModuleProjectDirectory}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
                             <jna.library.path>${project.build.directory}</jna.library.path>
@@ -503,7 +503,7 @@
                         <argLine>@{argLine} --add-opens=java.base/java.lang=ALL-UNNAMED
                             -Djava.library.path=${project.build.directory}
                         </argLine>
-                        <systemPropertiesFile>${main.basedir}/test.properties</systemPropertiesFile>
+                        <systemPropertiesFile>${maven.multiModuleProjectDirectory}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
                             <jna.library.path>${project.build.directory}</jna.library.path>
