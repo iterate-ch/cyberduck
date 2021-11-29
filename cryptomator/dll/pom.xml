@@ -93,7 +93,7 @@
                                             <groupId>ch.iterate</groupId>
                                             <artifactId>ikvm</artifactId>
                                             <type>zip</type>
-                                            <version>8.3.1</version>
+                                            <version>${ikvm-version}</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
