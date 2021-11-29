@@ -17,6 +17,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.Deserializer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -63,6 +64,43 @@ public class ProfileTest {
         });
         assertTrue(profile.getProperties().containsKey("quota.notification.url"));
         assertEquals("https://www.gmx.net/produkte/cloud/speicher-erweitern/?mc=03962659",
-                profile.getProperties().get("quota.notification.url"));
+            profile.getProperties().get("quota.notification.url"));
+    }
+
+    @Test
+    public void testEmptyProperty() {
+        final Profile profile = new Profile(new TestProtocol(), new Deserializer<String>() {
+            @Override
+            public String stringForKey(final String key) {
+                return null;
+            }
+
+            @Override
+            public String objectForKey(final String key) {
+                return null;
+            }
+
+            @Override
+            public <L> List<L> listForKey(final String key) {
+                return (List<L>) Collections.singletonList("empty.prop=");
+            }
+
+            @Override
+            public Map<String, String> mapForKey(final String key) {
+                return null;
+            }
+
+            @Override
+            public boolean booleanForKey(final String key) {
+                return false;
+            }
+
+            @Override
+            public List<String> keys() {
+                return null;
+            }
+        });
+        assertTrue(profile.getProperties().containsKey("empty.prop"));
+        assertEquals(StringUtils.EMPTY, profile.getProperties().get("empty.prop"));
     }
 }
