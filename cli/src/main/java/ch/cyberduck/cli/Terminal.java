@@ -18,6 +18,7 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.b2.B2Protocol;
+import ch.cyberduck.core.box.BoxProtocol;
 import ch.cyberduck.core.brick.BrickProtocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.ctera.CteraProtocol;
@@ -129,33 +130,34 @@ public class Terminal {
         this.protocols = protocols;
         this.preferences = defaults.withDefaults(input);
         this.protocols.register(
-            new FTPProtocol(),
-            new FTPTLSProtocol(),
-            new SFTPProtocol(),
-            new DAVProtocol(),
-            new DAVSSLProtocol(),
-            new SwiftProtocol(),
-            new S3Protocol(),
-            new GoogleStorageProtocol(),
-            new AzureProtocol(),
-            new IRODSProtocol(),
-            new SpectraProtocol(),
-            new B2Protocol(),
-            new DriveProtocol(),
-            new HubicProtocol(),
-            new DropboxProtocol(),
-            new DropboxProtocol(),
-            new OneDriveProtocol(),
-            new SharepointProtocol(),
-            new SharepointSiteProtocol(),
-            new LocalProtocol(),
-            new SDSProtocol(),
-            new MantaProtocol(),
-            new StoregateProtocol(),
-            new BrickProtocol(),
-            new NextcloudProtocol(),
-            new OwncloudProtocol(),
-            new CteraProtocol()
+                new FTPProtocol(),
+                new FTPTLSProtocol(),
+                new SFTPProtocol(),
+                new DAVProtocol(),
+                new DAVSSLProtocol(),
+                new SwiftProtocol(),
+                new S3Protocol(),
+                new GoogleStorageProtocol(),
+                new AzureProtocol(),
+                new IRODSProtocol(),
+                new SpectraProtocol(),
+                new B2Protocol(),
+                new DriveProtocol(),
+                new HubicProtocol(),
+                new DropboxProtocol(),
+                new DropboxProtocol(),
+                new OneDriveProtocol(),
+                new SharepointProtocol(),
+                new SharepointSiteProtocol(),
+                new LocalProtocol(),
+                new SDSProtocol(),
+                new MantaProtocol(),
+                new StoregateProtocol(),
+                new BrickProtocol(),
+                new NextcloudProtocol(),
+                new OwncloudProtocol(),
+                new CteraProtocol(),
+                new BoxProtocol()
         );
         this.options = options;
         if(log.isInfoEnabled()) {
@@ -164,11 +166,11 @@ public class Terminal {
         this.input = input;
         this.cache = new PathCache(preferences.getInteger("browser.cache.size"));
         this.progress = input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
-            ? new DisabledListProgressListener() : new TerminalProgressListener();
+                ? new DisabledListProgressListener() : new TerminalProgressListener();
         this.transcript = input.hasOption(TerminalOptionsBuilder.Params.verbose.name())
-            ? new TerminalTranscriptListener() : new DisabledTranscriptListener();
+                ? new TerminalTranscriptListener() : new DisabledTranscriptListener();
         this.reader = input.hasOption(TerminalOptionsBuilder.Params.assumeyes.name())
-            ? new DisabledTerminalPromptReader() : new InteractiveTerminalPromptReader();
+                ? new DisabledTerminalPromptReader() : new InteractiveTerminalPromptReader();
         this.controller = new TerminalController(progress, transcript);
     }
 
@@ -271,11 +273,11 @@ public class Terminal {
             final String uri = input.getOptionValue(action.name());
             final Host host = new CommandLineUriParser(input, protocols).parse(uri);
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input),
-                login, new TerminalHostKeyVerifier(reader), progress);
+                    login, new TerminalHostKeyVerifier(reader), progress);
             source = SessionPoolFactory.create(connect, transcript, host,
-                new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
-                new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
-                VaultRegistryFactory.create(login));
+                    new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
+                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
+                    VaultRegistryFactory.create(login));
             final Path remote;
             if(StringUtils.startsWith(new CommandLinePathParser(input, protocols).parse(uri).getAbsolute(), TildePathExpander.PREFIX)) {
                 final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
@@ -301,7 +303,7 @@ public class Terminal {
                         default:
                             // Try to find parent instead
                             remote.getParent().withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source,
-                                new AttributesWorker(cache, remote.getParent()))));
+                                    new AttributesWorker(cache, remote.getParent()))));
                     }
                 }
                 else {
@@ -321,7 +323,7 @@ public class Terminal {
                     log.debug(String.format("Attempting to load vault from %s", vault));
                 }
                 final LoadVaultWorker worker = new LoadVaultWorker(new LoadingVaultLookupListener(source.getVault(),
-                    PasswordStoreFactory.get(), new TerminalPasswordCallback()), vault);
+                        PasswordStoreFactory.get(), new TerminalPasswordCallback()), vault);
                 try {
                     this.execute(new TerminalBackgroundAction<>(controller, source, worker));
                 }
@@ -347,20 +349,20 @@ public class Terminal {
                 case upload:
                 case synchronize:
                     return this.transfer(login, new TerminalTransferFactory().create(input, host, remote,
-                        new ArrayList<>(new SingleTransferItemFinder().find(input, action, remote))),
-                        source, SessionPool.DISCONNECTED);
+                                    new ArrayList<>(new SingleTransferItemFinder().find(input, action, remote))),
+                            source, SessionPool.DISCONNECTED);
                 case copy:
                     final Host target = new CommandLineUriParser(input).parse(input.getOptionValues(action.name())[1]);
                     destination = SessionPoolFactory.create(connect, transcript, target,
-                        new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(target), new TerminalCertificateStore(reader)),
-                        new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)),
-                        VaultRegistryFactory.create(new TerminalPasswordCallback()));
+                            new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(target), new TerminalCertificateStore(reader)),
+                            new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)),
+                            VaultRegistryFactory.create(new TerminalPasswordCallback()));
                     return this.transfer(login, new CopyTransfer(
-                            host, target, Collections.singletonMap(remote, new CommandLinePathParser(input, protocols).parse(input.getOptionValues(action.name())[1]))).withCache(cache),
-                        source, destination);
+                                    host, target, Collections.singletonMap(remote, new CommandLinePathParser(input, protocols).parse(input.getOptionValues(action.name())[1]))).withCache(cache),
+                            source, destination);
                 default:
                     throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
-                        String.format("Unknown transfer type %s", action.name()));
+                            String.format("Unknown transfer type %s", action.name()));
             }
         }
         catch(ConnectionCanceledException e) {
@@ -390,7 +392,7 @@ public class Terminal {
         if(retry) {
             if(StringUtils.isNotBlank(input.getOptionValue(TerminalOptionsBuilder.Params.retry.name()))) {
                 preferences.setDefault("connection.retry",
-                    String.valueOf(NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.retry.name()), 1)));
+                        String.valueOf(NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.retry.name()), 1)));
             }
             else {
                 preferences.setDefault("connection.retry", String.valueOf(1));
@@ -406,7 +408,7 @@ public class Terminal {
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
             preferences.setDefault("queue.connections.limit",
-                String.valueOf(NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.parallel.name()), 2)));
+                    String.valueOf(NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.parallel.name()), 2)));
         }
         preferences.setDefault("connection.login.keychain", String.valueOf(!input.hasOption(TerminalOptionsBuilder.Params.nokeychain.name())));
     }
@@ -442,10 +444,10 @@ public class Terminal {
             prompt = new TerminalTransferPrompt(transfer.getType());
         }
         final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller,
-            source, destination,
-            transfer.withCache(cache), new TransferOptions().reload(true), prompt, login, new TerminalTransferErrorCallback(reader), meter,
-            input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
-                ? new DisabledStreamListener() : new TerminalStreamListener(meter)
+                source, destination,
+                transfer.withCache(cache), new TransferOptions().reload(true), prompt, login, new TerminalTransferErrorCallback(reader), meter,
+                input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
+                        ? new DisabledStreamListener() : new TerminalStreamListener(meter)
         );
         try {
             this.execute(action);
@@ -458,10 +460,10 @@ public class Terminal {
 
     protected Exit list(final SessionPool session, final Path remote, final boolean verbose) {
         final SessionListWorker worker = new SessionListWorker(cache, remote,
-            new TerminalListProgressListener(verbose));
+                new TerminalListProgressListener(verbose));
         final SessionBackgroundAction<AttributedList<Path>> action = new TerminalBackgroundAction<>(
-            controller,
-            session, worker);
+                controller,
+                session, worker);
         try {
             this.execute(action);
         }
@@ -495,7 +497,7 @@ public class Terminal {
 
     protected Exit purge(final SessionPool session, final Path remote) {
         final DistributionPurgeWorker purge = new DistributionPurgeWorker(Collections.singletonList(remote),
-            new TerminalLoginCallback(reader), Distribution.DOWNLOAD, Distribution.WEBSITE_CDN, Distribution.CUSTOM);
+                new TerminalLoginCallback(reader), Distribution.DOWNLOAD, Distribution.WEBSITE_CDN, Distribution.CUSTOM);
         final SessionBackgroundAction<Boolean> action = new TerminalBackgroundAction<>(controller, session, purge);
         try {
             this.execute(action);
@@ -526,7 +528,7 @@ public class Terminal {
             application = finder.getDescription(input.getOptionValue(TerminalOptionsBuilder.Params.application.name()));
             if(!finder.isInstalled(application)) {
                 throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
-                    String.format("Application %s not found", input.getOptionValue(TerminalOptionsBuilder.Params.application.name())));
+                        String.format("Application %s not found", input.getOptionValue(TerminalOptionsBuilder.Params.application.name())));
             }
         }
         else {
@@ -534,17 +536,17 @@ public class Terminal {
         }
         if(!finder.isInstalled(application)) {
             throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
-                String.format("No application found to edit %s", remote.getName()));
+                    String.format("No application found to edit %s", remote.getName()));
         }
         final Editor editor = factory.create(controller, session, application, remote);
         final CountDownLatch lock = new CountDownLatch(1);
         final Worker<Transfer> worker = editor.open(lock::countDown, new DisabledTransferErrorCallback(),
-            new DefaultEditorListener(controller, session, editor, new DefaultEditorListener.Listener() {
-                @Override
-                public void saved() {
-                    //
-                }
-            }));
+                new DefaultEditorListener(controller, session, editor, new DefaultEditorListener.Listener() {
+                    @Override
+                    public void saved() {
+                        //
+                    }
+                }));
         final SessionBackgroundAction<Transfer> action = new TerminalBackgroundAction<>(controller, session, worker);
         try {
             this.execute(action);

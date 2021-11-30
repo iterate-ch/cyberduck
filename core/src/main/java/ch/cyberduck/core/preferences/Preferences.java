@@ -1153,6 +1153,11 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("eue.limit.requests.second", String.valueOf(10));
         this.setDefault("eue.shares.ttl", String.valueOf(600000)); // 10 minutes
 
+        // Must be at least 20MB
+        this.setDefault("box.upload.multipart.threshold", String.valueOf(20 * 1024 * 1024));
+        this.setDefault("box.upload.multipart.concurrency", String.valueOf(10));
+        this.setDefault("box.listing.chunksize", String.valueOf(100));
+
         this.setDefault("preferences.general.enable", String.valueOf(true));
         this.setDefault("preferences.browser.enable", String.valueOf(true));
         this.setDefault("preferences.queue.enable", String.valueOf(true));

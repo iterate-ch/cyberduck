@@ -42,7 +42,6 @@ import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
-import ch.cyberduck.core.onedrive.features.GraphBufferWriteFeature;
 import ch.cyberduck.core.onedrive.features.GraphCopyFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
@@ -57,11 +56,11 @@ import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.shared.BufferWriteFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
@@ -226,7 +225,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) new GraphWriteFeature(this, fileid);
         }
         if(type == MultipartWrite.class) {
-            return (T) new GraphBufferWriteFeature(this, fileid);
+            return (T) new BufferWriteFeature(this);
         }
         if(type == Delete.class) {
             return (T) new GraphDeleteFeature(this, fileid);

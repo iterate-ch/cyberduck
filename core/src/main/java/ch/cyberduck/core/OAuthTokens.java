@@ -47,7 +47,10 @@ public final class OAuthTokens {
     }
 
     public boolean isExpired() {
-        return System.currentTimeMillis() >= expiryInMilliseconds;
+        if(expiryInMilliseconds > 0 ) {
+            return System.currentTimeMillis() >= expiryInMilliseconds;
+        }
+        return false;
     }
 
     @Override

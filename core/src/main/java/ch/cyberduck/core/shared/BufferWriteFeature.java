@@ -1,7 +1,7 @@
-package ch.cyberduck.core.onedrive.features;
+package ch.cyberduck.core.shared;
 
 /*
- * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,15 +19,18 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.MultipartWrite;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BufferInputStream;
 import ch.cyberduck.core.io.BufferOutputStream;
 import ch.cyberduck.core.io.FileBuffer;
-import ch.cyberduck.core.onedrive.GraphSession;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
@@ -37,22 +40,23 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class GraphBufferWriteFeature implements MultipartWrite<Void> {
-    private static final Logger log = Logger.getLogger(GraphBufferWriteFeature.class);
+public class BufferWriteFeature implements MultipartWrite<Void> {
+    private static final Logger log = Logger.getLogger(BufferWriteFeature.class);
 
-    private final GraphSession session;
-    private final GraphFileIdProvider fileid;
+    private final Session<?> session;
 
-    public GraphBufferWriteFeature(final GraphSession session, final GraphFileIdProvider fileid) {
+    public BufferWriteFeature(final Session<?> session) {
         this.session = session;
-        this.fileid = fileid;
     }
 
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         final FileBuffer buffer = new FileBuffer();
         return new HttpResponseOutputStream<Void>(new BufferOutputStream(buffer) {
+            private final AtomicBoolean close = new AtomicBoolean();
+
             @Override
             public void flush() {
                 //
@@ -61,15 +65,18 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
             @Override
             public void close() throws IOException {
                 try {
+                    if(close.get()) {
+                        log.warn(String.format("Skip double close of stream %s", this));
+                        return;
+                    }
                     // Reset offset in transfer status because data was already streamed
                     // through StreamCopier when writing to buffer
                     final TransferStatus range = new TransferStatus(status).withLength(buffer.length()).append(false);
                     if(0L == buffer.length()) {
-                        new GraphTouchFeature(session, fileid).touch(file, new TransferStatus());
+                        session._getFeature(Touch.class).touch(file, new TransferStatus());
                     }
                     else {
-                        final HttpResponseOutputStream<Void> out = new GraphWriteFeature(session, fileid).write(file,
-                            range, callback);
+                        final StatusOutputStream out = session._getFeature(Write.class).write(file, range, callback);
                         new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                             @Override
                             public Void call() throws BackgroundException {
@@ -97,6 +104,9 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
                 }
                 catch(BackgroundException e) {
                     throw new IOException(e);
+                }
+                finally {
+                    close.set(true);
                 }
             }
         }) {
