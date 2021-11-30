@@ -22,6 +22,7 @@ import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.types.Drive;
+import org.nuxeo.onedrive.client.types.Quota;
 
 import java.util.EnumSet;
 
@@ -36,8 +37,12 @@ public abstract class AbstractDriveListService extends AbstractListService<Drive
     protected Path toPath(final Drive.Metadata metadata, final Path directory) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setFileId(metadata.getId());
-        if (metadata.getQuota() != null) {
-            attributes.setSize(metadata.getQuota().getUsed());
+        final Quota quota = metadata.getQuota();
+        if (quota != null) {
+            final Long used = quota.getUsed();
+            if (used != null) {
+                attributes.setSize(used);
+            }
         }
         String name = metadata.getName();
         if(StringUtils.isBlank(metadata.getName())) {
