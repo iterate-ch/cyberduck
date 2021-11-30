@@ -44,7 +44,20 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
         public T GetFileIcon(string filename, bool isFolder, bool large, bool isExecutable)
         {
-            string key = isFolder ? "folder" : isExecutable ? filename : Path.GetExtension(filename);
+            string key = string.Empty;
+            if (isFolder)
+            {
+                key = "folder";
+            }
+            else if (isExecutable)
+            {
+                key = filename;
+            }
+            else if (filename.LastIndexOf('.') is int index && index != -1)
+            {
+                key = filename.Substring(index + 1);
+            }
+
             if (IconCache.TryGetIcon("ext", large ? 32 : 16, out T image, key))
             {
                 return image;
