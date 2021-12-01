@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
@@ -42,7 +43,6 @@ import ch.cyberduck.core.vault.VaultCredentials;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.text.RandomStringGenerator;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.server.SshServer;
@@ -92,7 +92,14 @@ public class SFTPCryptomatorInteroperabilityTest {
         final java.nio.file.Path vault = tempDir.resolve("vault");
         Files.createDirectory(vault);
         passphrase = new AlphanumericRandomStringService().random();
-        final SecureRandom csprng = SystemUtils.IS_OS_WINDOWS ? ReseedingSecureRandom.create(SecureRandom.getInstanceStrong()) : FastSecureRandomProvider.get().provide();
+        final SecureRandom csprng;
+        switch(Factory.Platform.getDefault()) {
+            case windows:
+                csprng = ReseedingSecureRandom.create(SecureRandom.getInstanceStrong());
+                break;
+            default:
+                csprng = FastSecureRandomProvider.get().provide();
+        }
         final Masterkey mk = Masterkey.generate(csprng);
         final MasterkeyFileAccess mkAccess = new MasterkeyFileAccess(CryptoVault.VAULT_PEPPER, csprng);
         final java.nio.file.Path mkPath = Paths.get(vault.toString(), DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME);
