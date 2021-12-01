@@ -268,7 +268,7 @@ public class CryptoVault implements Vault {
         fileNameCryptor = null;
     }
 
-    private void open(final MasterkeyFile mkFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
+    protected void open(final MasterkeyFile mkFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
         switch(mkFile.version) {
             case VAULT_VERSION_DEPRECATED:
                 this.open(mkFile, passphrase, new CryptoFilenameV6Provider(vault), new CryptoDirectoryV6Provider(vault, this));
@@ -279,8 +279,8 @@ public class CryptoVault implements Vault {
         }
     }
 
-    private void open(final MasterkeyFile mkFile, final CharSequence passphrase, final CryptoFilename filenameProvider,
-                      final CryptoDirectory directoryProvider) throws VaultException, CryptoAuthenticationException {
+    protected void open(final MasterkeyFile mkFile, final CharSequence passphrase, final CryptoFilename filenameProvider,
+                        final CryptoDirectory directoryProvider) throws VaultException, CryptoAuthenticationException {
         this.vaultVersion = mkFile.version;
         final CryptorProvider provider = CryptorProvider.forScheme(CryptorProvider.Scheme.SIV_CTRMAC);
         if(log.isDebugEnabled()) {
