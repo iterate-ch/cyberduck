@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
@@ -55,6 +56,7 @@ import org.cryptomator.cryptolib.api.Masterkey;
 import org.cryptomator.cryptolib.api.MasterkeyLoader;
 import org.cryptomator.cryptolib.api.MasterkeyLoadingFailedException;
 import org.cryptomator.cryptolib.common.MasterkeyFileAccess;
+import org.cryptomator.cryptolib.common.ReseedingSecureRandom;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,6 +65,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -89,8 +92,16 @@ public class SFTPCryptomatorInteroperabilityTest {
         final java.nio.file.Path vault = tempDir.resolve("vault");
         Files.createDirectory(vault);
         passphrase = new AlphanumericRandomStringService().random();
-        final Masterkey mk = Masterkey.generate(FastSecureRandomProvider.get().provide());
-        final MasterkeyFileAccess mkAccess = new MasterkeyFileAccess(CryptoVault.VAULT_PEPPER, FastSecureRandomProvider.get().provide());
+        final SecureRandom csprng;
+        switch(Factory.Platform.getDefault()) {
+            case windows:
+                csprng = ReseedingSecureRandom.create(SecureRandom.getInstanceStrong());
+                break;
+            default:
+                csprng = FastSecureRandomProvider.get().provide();
+        }
+        final Masterkey mk = Masterkey.generate(csprng);
+        final MasterkeyFileAccess mkAccess = new MasterkeyFileAccess(CryptoVault.VAULT_PEPPER, csprng);
         final java.nio.file.Path mkPath = Paths.get(vault.toString(), DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME);
         mkAccess.persist(mk, mkPath, passphrase);
         CryptoFileSystemProperties properties = cryptoFileSystemProperties().withKeyLoader(new MasterkeyLoader() {
