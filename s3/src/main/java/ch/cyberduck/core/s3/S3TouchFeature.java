@@ -29,6 +29,7 @@ import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
@@ -59,8 +60,11 @@ public class S3TouchFeature implements Touch<StorageObject> {
 
     @Override
     public boolean isSupported(final Path workdir, final String filename) {
-        // Creating files is only possible inside a bucket.
-        return !workdir.isRoot();
+        if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+            // Creating files is only possible inside a bucket.
+            return !workdir.isRoot();
+        }
+        return true;
     }
 
     @Override
