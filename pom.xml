@@ -76,7 +76,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <argLine />
+        <argLine/>
         <jna-version>5.10.0</jna-version>
         <jersey-version>2.35</jersey-version>
         <jackson-version>2.12.5</jackson-version>
@@ -447,12 +447,12 @@
                             </goals>
                             <configuration>
                                 <target>
-                                    <property name="home" value="${main.basedir}" />
-                                    <property name="version" value="${project.version}" />
-                                    <property name="revision" value="${git.commitsCount}" />
-                                    <property name="hash" value="${git.revision}" />
-                                    <property name="sparkle.feed" value="${sparkle.feed}" />
-                                    <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
+                                    <property name="home" value="${main.basedir}"/>
+                                    <property name="version" value="${project.version}"/>
+                                    <property name="revision" value="${git.commitsCount}"/>
+                                    <property name="hash" value="${git.revision}"/>
+                                    <property name="sparkle.feed" value="${sparkle.feed}"/>
+                                    <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
                                 </target>
                             </configuration>
                         </execution>
@@ -482,7 +482,7 @@
                         <argLine>@{argLine} --add-opens=java.base/java.lang=ALL-UNNAMED
                             -Djava.library.path=${project.build.directory}
                         </argLine>
-                        <systemPropertiesFile>${maven.multiModuleProjectDirectory}/test.properties</systemPropertiesFile>
+                        <systemPropertiesFile>${test.properties}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
                             <jna.library.path>${project.build.directory}</jna.library.path>
@@ -503,7 +503,7 @@
                         <argLine>@{argLine} --add-opens=java.base/java.lang=ALL-UNNAMED
                             -Djava.library.path=${project.build.directory}
                         </argLine>
-                        <systemPropertiesFile>${maven.multiModuleProjectDirectory}/test.properties</systemPropertiesFile>
+                        <systemPropertiesFile>${test.properties}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
                             <jna.library.path>${project.build.directory}</jna.library.path>
@@ -899,6 +899,52 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>test-properties-jenkins</id>
+            <!-- activate profile for Jenkins builds -->
+            <activation>
+                <property>
+                    <name>env.JENKINS_HOME</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.commonjava.maven.plugins</groupId>
+                        <artifactId>directory-maven-plugin</artifactId>
+                        <version>1.0</version>
+                        <executions>
+                            <execution>
+                                <id>directories</id>
+                                <goals>
+                                    <goal>directory-of</goal>
+                                </goals>
+                                <phase>initialize</phase>
+                                <configuration>
+                                    <property>test.properties</property>
+                                    <project>
+                                        <groupId>ch.cyberduck</groupId>
+                                        <artifactId>parent</artifactId>
+                                    </project>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>test-properties-local</id>
+            <!-- activate profile for non-Jenkins builds -->
+            <activation>
+                <property>
+                    <name>!env.JENKINS_HOME</name>
+                </property>
+            </activation>
+            <properties>
+                <test.properties>${maven.multiModuleProjectDirectory}</test.properties>
+            </properties>
         </profile>
     </profiles>
 </project>
