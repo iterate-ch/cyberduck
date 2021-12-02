@@ -83,6 +83,9 @@ public class Profile implements Protocol {
      */
     @Override
     public boolean isEnabled() {
+        if(this.isBundled()) {
+            return true;
+        }
         final String protocol = this.value("Protocol");
         final String vendor = this.value("Vendor");
         if(StringUtils.isNotBlank(protocol) && StringUtils.isNotBlank(vendor)) {
