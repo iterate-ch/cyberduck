@@ -219,13 +219,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         this.setDefault("bookmark.import.expandrive5.location", "~/Library/Application Support/ExpanDrive/expandrive5.favorites.js");
         this.setDefault("bookmark.import.expandrive6.location", "~/Library/Application Support/ExpanDrive/expandrive6.favorites.js");
         this.setDefault("bookmark.import.cloudmounter.location", "~/Library/Preferences/com.eltima.cloudmounter.plist");
-        if(new FinderLocal("~/Downloads").exists()) {
-            // For 10.5+ this usually exists and should be preferrred
-            this.setDefault("queue.download.folder", "~/Downloads");
-        }
-        else {
-            this.setDefault("queue.download.folder", "~/Desktop");
-        }
+
         this.setDefault("browser.filesize.decimal", String.valueOf(true));
 
         // SSL Keystore
