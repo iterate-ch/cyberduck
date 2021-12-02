@@ -42,7 +42,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthSchemeProvider;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpDelete;
@@ -85,7 +84,7 @@ public class BrickPairingFeature implements Pairing {
                 }
                 client.execute(resource, new ResponseHandler<Void>() {
                     @Override
-                    public Void handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
+                    public Void handleResponse(final HttpResponse response) {
                         return null;
                     }
                 });
