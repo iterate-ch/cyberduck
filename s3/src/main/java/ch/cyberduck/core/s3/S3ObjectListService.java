@@ -149,14 +149,18 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
             if(!hasDirectoryPlaceholder && children.isEmpty()) {
                 // Only for AWS
                 if(S3Session.isAwsHostname(session.getHost().getHostname())) {
-                    throw new NotfoundException(directory.getAbsolute());
+                    if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+                        throw new NotfoundException(directory.getAbsolute());
+                    }
                 }
-                // Handle missing prefix for directory placeholders in Minio
-                final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
-                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
-                        String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()), delimiter, 1, null);
-                if(Arrays.stream(chunk.getCommonPrefixes()).map(URIEncoder::decode).noneMatch(common -> common.equals(prefix))) {
-                    throw new NotfoundException(directory.getAbsolute());
+                else {
+                    // Handle missing prefix for directory placeholders in Minio
+                    final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
+                            String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()), delimiter, 1, null);
+                    if(Arrays.stream(chunk.getCommonPrefixes()).map(URIEncoder::decode).noneMatch(common -> common.equals(prefix))) {
+                        throw new NotfoundException(directory.getAbsolute());
+                    }
                 }
             }
             return children;
