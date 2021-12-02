@@ -371,11 +371,11 @@ public class InfoController extends ToolbarWindowController {
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
                 break;
             case info:
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("info.tiff", 32));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSInfo", 32));
                 break;
             case permissions:
             case acl:
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("permissions.tiff", 32));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSUserGroup", 32));
                 break;
         }
         return item;
