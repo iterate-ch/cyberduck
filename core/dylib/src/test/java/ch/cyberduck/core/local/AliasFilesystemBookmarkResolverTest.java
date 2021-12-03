@@ -30,7 +30,7 @@ public class AliasFilesystemBookmarkResolverTest {
     @Test
     public void testCreateNotFound() throws Exception {
         final String name = UUID.randomUUID().toString();
-        Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        Local l = new FinderLocal(System.getProperty("user.dir"), name);
         try {
             assertNull(new AliasFilesystemBookmarkResolver().create(l));
             fail();
@@ -48,8 +48,7 @@ public class AliasFilesystemBookmarkResolverTest {
         try {
             final AliasFilesystemBookmarkResolver resolver = new AliasFilesystemBookmarkResolver();
             final String bookmark = resolver.create(l);
-            assertNotNull(bookmark);
-            l.setBookmark(bookmark);
+            assertNull(bookmark);
             final NSURL resolved = resolver.resolve(l, false);
             assertNull(resolved);
         }
