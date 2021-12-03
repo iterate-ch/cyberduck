@@ -23,6 +23,7 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.bonjour.RendezvousResponder;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
+import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.preferences.ApplicationPreferences;
 import ch.cyberduck.core.preferences.LogDirectoryFinderFactory;
 import ch.cyberduck.core.sparkle.SparklePeriodicUpdateChecker;
@@ -85,6 +86,14 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
 
         this.setDefault("browser.sort.column", BrowserColumn.filename.name());
         this.setDefault("website.store", "macappstore://itunes.apple.com/app/id409222199?mt=12");
+
+        if(new FinderLocal("~/Downloads").exists()) {
+            // For 10.5+ this usually exists and should be preferrred
+            this.setDefault("queue.download.folder", "~/Downloads");
+        }
+        else {
+            this.setDefault("queue.download.folder", "~/Desktop");
+        }
     }
 
     @Override
