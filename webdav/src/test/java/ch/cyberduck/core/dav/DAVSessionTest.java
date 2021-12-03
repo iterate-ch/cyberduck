@@ -51,25 +51,6 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class DAVSessionTest extends AbstractDAVTest {
 
-    @Test
-    public void testConnect() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
-        final DAVSession session = new DAVSession(host,
-            new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
-            new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DefaultCertificateStore()));
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final AttributedList<Path> list = new DAVListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
-        assertNotNull(list.get(new Path("/trunk", EnumSet.of(Path.Type.directory))));
-        assertNotNull(list.get(new Path("/branches", EnumSet.of(Path.Type.directory))));
-        assertNotNull(list.get(new Path("/tags", EnumSet.of(Path.Type.directory))));
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-    }
-
     @Test(expected = ConnectionRefusedException.class)
     public void testConnectRefused() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "localhost", 2121);
@@ -172,33 +153,6 @@ public class DAVSessionTest extends AbstractDAVTest {
             new DisabledPasswordStore(),
             new DisabledProgressListener());
         c.connect(session, new DisabledCancelCallback());
-    }
-
-    @Test
-    public void testTrustChain2() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
-        final AtomicBoolean verified = new AtomicBoolean();
-        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
-            @Override
-            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
-                assertNotNull(hostname);
-                assertEquals(3, certs.length);
-                assertEquals("CN=R3,O=Let's Encrypt,C=US", certs[1].getSubjectX500Principal().getName());
-                assertEquals("CN=svn.cyberduck.io", certs[0].getSubjectDN().getName());
-                verified.set(true);
-                super.verify(hostname, certs, cipher);
-            }
-        },
-            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore()));
-        final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback(),
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener()
-        );
-        c.connect(session, new DisabledCancelCallback());
-        assertTrue(verified.get());
-        session.close();
     }
 
     @Test(expected = ConnectionCanceledException.class)

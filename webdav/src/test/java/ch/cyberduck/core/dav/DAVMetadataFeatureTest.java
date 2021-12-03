@@ -61,21 +61,6 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
     }
 
     @Test
-    public void testGetMetadataFile() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
-            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
-        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Map<String, String> metadata = new DAVMetadataFeature(session).getMetadata(new Path("/trunk/README.md", EnumSet.of(Path.Type.file)));
-        assertFalse(metadata.isEmpty());
-        assertTrue(metadata.containsKey("repository-uuid"));
-        assertEquals("9e2dff1d-8f06-0410-b5b1-4d70b6340adc", metadata.get("repository-uuid"));
-        session.close();
-    }
-
-    @Test
     @Ignore
     public void testSetMetadataFile() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
