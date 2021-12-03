@@ -48,7 +48,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             Load += delegate
             {
-                int newWidth = 10; // border etc.
+                int newWidth = 17; // border etc.
                 foreach (ToolStripItem item in toolStrip.Items)
                 {
                     newWidth += item.Size.Width + item.Margin.Left + item.Margin.Right;
