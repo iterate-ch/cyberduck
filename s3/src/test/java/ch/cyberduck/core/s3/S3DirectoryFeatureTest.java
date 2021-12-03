@@ -66,10 +66,11 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     public void testCreateBucketInvalidName() throws Exception {
         final S3DirectoryFeature feature = new S3DirectoryFeature(session, new S3WriteFeature(session));
         final Path test = new Path(new DefaultHomeFinderService(session).find(), "untitled folder", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertFalse(feature.isSupported(test.getParent(), test.getName()));
+        assertFalse(new S3DirectoryFeature(session, new S3WriteFeature(session)).isSupported(test.getParent(), test.getName()));
+        assertTrue(new S3DirectoryFeature(virtualhost, new S3WriteFeature(session)).isSupported(test.getParent(), test.getName()));
         final S3LocationFeature.S3Region region = new S3LocationFeature.S3Region("eu-west-2");
         test.attributes().setRegion(region.getIdentifier());
-        feature.mkdir(test, new TransferStatus().withRegion(region.getIdentifier()));
+        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(test, new TransferStatus().withRegion(region.getIdentifier()));
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
