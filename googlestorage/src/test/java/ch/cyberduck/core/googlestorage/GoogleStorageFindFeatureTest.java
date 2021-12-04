@@ -35,7 +35,7 @@ public class GoogleStorageFindFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testDeleted() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new GoogleStorageTouchFeature(session).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new GoogleStorageFindFeature(session).find(test));

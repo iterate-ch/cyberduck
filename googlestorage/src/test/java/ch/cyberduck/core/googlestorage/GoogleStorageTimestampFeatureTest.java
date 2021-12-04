@@ -38,7 +38,7 @@ public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest
 
     @Test
     public void testFindTimesteamp() throws Exception {
-        final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new GoogleStorageTouchFeature(session).touch(new Path(bucket,
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withTimestamp(1530305150672L));
         assertEquals(1530305150672L, new GoogleStorageAttributesFinderFeature(session).find(test).getModificationDate());

@@ -52,7 +52,7 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
 
     @Test
     public void testFindBucket() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new GoogleStorageAttributesFinderFeature(session).find(container);
         assertNotEquals(PathAttributes.EMPTY, attributes);
         assertEquals(-1L, attributes.getSize());
@@ -62,7 +62,7 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
 
     @Test
     public void testPreviousVersionReferences() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageVersioningFeature(session).setConfiguration(container, new DisabledPasswordCallback(), new VersioningConfiguration(true));
         final Path test = new GoogleStorageTouchFeature(session).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String versionId = new GoogleStorageAttributesFinderFeature(session).find(test).getVersionId();
@@ -90,7 +90,7 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
 
     @Test(expected = NotfoundException.class)
     public void testDeleted() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new GoogleStorageTouchFeature(session).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
         assertNotEquals(PathAttributes.EMPTY, new GoogleStorageAttributesFinderFeature(session).find(test));
@@ -106,7 +106,7 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
 
     @Test(expected = NotfoundException.class)
     public void testDeletedWithMarker() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new GoogleStorageTouchFeature(session).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
         assertNotEquals(PathAttributes.EMPTY, new GoogleStorageAttributesFinderFeature(session).find(test));

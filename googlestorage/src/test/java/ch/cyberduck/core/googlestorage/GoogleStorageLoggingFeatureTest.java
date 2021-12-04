@@ -15,6 +15,7 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.logging.LoggingConfiguration;
@@ -24,7 +25,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
-import java.util.UUID;
+import java.util.Locale;
 
 import static org.junit.Assert.*;
 
@@ -34,25 +35,25 @@ public class GoogleStorageLoggingFeatureTest extends AbstractGoogleStorageTest {
     @Test
     public void testGetConfiguration() throws Exception {
         final GoogleStorageLoggingFeature feature = new GoogleStorageLoggingFeature(session);
-        final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        feature.setConfiguration(bucket, new LoggingConfiguration(true, "test.cyberduck.ch"));
+        final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        feature.setConfiguration(bucket, new LoggingConfiguration(true, "cyberduck-test-eu"));
         final LoggingConfiguration configuration = feature.getConfiguration(bucket);
         assertNotNull(configuration);
-        assertEquals("test.cyberduck.ch", configuration.getLoggingTarget());
+        assertEquals("cyberduck-test-eu", configuration.getLoggingTarget());
         assertTrue(configuration.isEnabled());
     }
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         new GoogleStorageLoggingFeature(session).getConfiguration(
-            new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
+            new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory))
         );
     }
 
     @Test(expected = NotfoundException.class)
     public void testWriteNotFound() throws Exception {
         new GoogleStorageLoggingFeature(session).setConfiguration(
-            new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new LoggingConfiguration(false)
+            new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new LoggingConfiguration(false)
         );
     }
 }

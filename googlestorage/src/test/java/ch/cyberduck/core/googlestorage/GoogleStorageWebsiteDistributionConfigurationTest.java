@@ -15,6 +15,7 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
@@ -31,7 +32,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
+import java.util.Locale;
 
 import static org.junit.Assert.*;
 
@@ -42,14 +43,13 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
     public void testGetMethods() {
         final DistributionConfiguration configuration
             = new GoogleStorageWebsiteDistributionConfiguration(session);
-        assertEquals(Collections.singletonList(Distribution.WEBSITE), configuration.getMethods(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertEquals(Collections.singletonList(Distribution.WEBSITE), configuration.getMethods(new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
     @Test
     public void testWrite() throws Exception {
-        final DistributionConfiguration configuration
-            = new GoogleStorageWebsiteDistributionConfiguration(session);
-        final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final DistributionConfiguration configuration = new GoogleStorageWebsiteDistributionConfiguration(session);
+        final Path bucket = new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageDirectoryFeature(session).mkdir(bucket, new TransferStatus());
         configuration.write(bucket, new Distribution(Distribution.WEBSITE, null, true), new DisabledLoginCallback());
         final Distribution distribution = configuration.read(bucket, Distribution.WEBSITE, new DisabledLoginCallback());

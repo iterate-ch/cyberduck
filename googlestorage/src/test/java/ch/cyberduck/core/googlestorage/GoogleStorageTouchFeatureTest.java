@@ -36,7 +36,7 @@ public class GoogleStorageTouchFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testTouch() throws Exception {
-        final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new GoogleStorageTouchFeature(session).touch(
             new Path(bucket, String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
         assertTrue(new GoogleStorageFindFeature(session).find(test));

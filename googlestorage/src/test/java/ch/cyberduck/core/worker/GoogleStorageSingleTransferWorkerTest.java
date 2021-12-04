@@ -62,7 +62,7 @@ public class GoogleStorageSingleTransferWorkerTest extends AbstractGoogleStorage
 
     @Test
     public void testDownload() throws Exception {
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path home = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local localFile = TemporaryFileServiceFactory.get().create(test);
         {

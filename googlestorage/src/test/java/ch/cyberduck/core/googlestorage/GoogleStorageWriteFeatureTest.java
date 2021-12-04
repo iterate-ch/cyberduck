@@ -50,7 +50,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testWriteInvalidStorageClass() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         status.setStorageClass("invalid");
@@ -66,7 +66,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testWriteCustomMetadata() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final HashMap<String, String> metadata = new HashMap<>();
@@ -101,7 +101,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testWritePublicReadCannedPublicAcl() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(1033);
@@ -119,7 +119,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testWritePublicReadCannedPrivateAcl() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(1033);
@@ -137,7 +137,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testWrite() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus();
@@ -178,7 +178,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testWriteArchiveStorageClass() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(2048);

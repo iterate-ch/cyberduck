@@ -42,7 +42,7 @@ public class DeleteWorkerTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testDelete() throws Exception {
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path home = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new GoogleStorageDirectoryFeature(session).mkdir(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(folder));

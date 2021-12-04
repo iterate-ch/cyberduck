@@ -16,6 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -33,7 +34,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
+import java.util.Locale;
 
 import static org.junit.Assert.*;
 
@@ -42,8 +43,8 @@ public class GoogleStorageDeleteFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testDeleteContainer() throws Exception {
-        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        container.attributes().setRegion("US");
+        final Path container = new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.volume, Path.Type.directory));
+        container.attributes().setRegion("us");
         new GoogleStorageDirectoryFeature(session).mkdir(container, new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(container));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -52,7 +53,7 @@ public class GoogleStorageDeleteFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testDeletedWithMarker() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(new Path(container,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new GoogleStorageTouchFeature(session).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());

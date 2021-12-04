@@ -43,7 +43,7 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testCopyFile() throws Exception {
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path home = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GoogleStorageTouchFeature(session).touch(source, new TransferStatus());
@@ -57,7 +57,7 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testCopyFileToDirectory() throws Exception {
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path home = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GoogleStorageTouchFeature(session).touch(sourceFile, new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(sourceFile));
@@ -75,7 +75,7 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testCopyDirectory() throws Exception {
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path home = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GoogleStorageDirectoryFeature(session).mkdir(folder, new TransferStatus());
