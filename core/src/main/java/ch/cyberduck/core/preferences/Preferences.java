@@ -745,6 +745,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
          */
         this.setDefault("s3.glacier.restore.tier", "Standard");
         this.setDefault("s3.glacier.restore.expiration.days", String.valueOf(2));
+        this.setDefault("s3.lifecycle.transition.class", "GLACIER");
 
         /*
           A prefix to apply to log file names

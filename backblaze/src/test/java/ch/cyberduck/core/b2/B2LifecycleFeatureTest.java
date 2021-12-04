@@ -40,7 +40,7 @@ public class B2LifecycleFeatureTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         new B2DirectoryFeature(session, fileid).mkdir(bucket, new TransferStatus());
         assertEquals(LifecycleConfiguration.empty(), new B2LifecycleFeature(session, fileid).getConfiguration(bucket));
-        new B2LifecycleFeature(session, fileid).setConfiguration(bucket, new LifecycleConfiguration(1, null, 30));
+        new B2LifecycleFeature(session, fileid).setConfiguration(bucket, new LifecycleConfiguration(1, 30));
         final LifecycleConfiguration configuration = new B2LifecycleFeature(session, fileid).getConfiguration(bucket);
         assertEquals(30, configuration.getExpiration(), 0L);
         assertEquals(1, configuration.getTransition(), 0L);

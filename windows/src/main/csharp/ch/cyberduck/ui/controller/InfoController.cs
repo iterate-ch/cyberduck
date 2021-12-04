@@ -1671,7 +1671,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         new LifecycleConfiguration(
                             infoController.View.LifecycleTransitionCheckbox
                                 ? Integer.valueOf(infoController.View.LifecycleTransition)
-                                : null, S3Object.STORAGE_CLASS_GLACIER,
+                                : null,
                             infoController.View.LifecycleDeleteCheckbox
                                 ? Integer.valueOf(infoController.View.LifecycleDelete)
                                 : null)))

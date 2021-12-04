@@ -21,7 +21,19 @@ import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 
 public interface Lifecycle {
 
+    /**
+     * Read lifecycle configuration for bucket
+     *
+     * @param container Bucket
+     * @return Current configuration
+     */
     LifecycleConfiguration getConfiguration(Path container) throws BackgroundException;
 
+    /**
+     * Set lifecycle configuration for bucket
+     *
+     * @param container     Bucket
+     * @param configuration Configuration to apply
+     */
     void setConfiguration(Path container, LifecycleConfiguration configuration) throws BackgroundException;
 }
