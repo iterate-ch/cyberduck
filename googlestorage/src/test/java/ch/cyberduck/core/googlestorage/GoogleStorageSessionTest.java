@@ -73,9 +73,6 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
             new DisabledPasswordStore() {
                 @Override
                 public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                    if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
-                        return System.getProperties().getProperty("google.accesstoken");
-                    }
                     if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
                         return "a";
                     }
