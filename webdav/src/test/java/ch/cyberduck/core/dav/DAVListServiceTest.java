@@ -26,7 +26,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -38,7 +37,8 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class DAVListServiceTest extends AbstractDAVTest {
@@ -46,7 +46,7 @@ public class DAVListServiceTest extends AbstractDAVTest {
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
-            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
@@ -54,45 +54,14 @@ public class DAVListServiceTest extends AbstractDAVTest {
         assertNotNull(session.getClient());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         new DAVListService(session).list(new Path("/notfound", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-            new DisabledListProgressListener());
-        session.close();
-    }
-
-    @Test
-    public void testList() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
-            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
-        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path directory = new Path("/trunk", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final AttributedList<Path> list = new DAVListService(session).list(directory,
-            new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-        assertFalse(list.contains(new Path(directory, "trunk", EnumSet.of(Path.Type.directory))));
-        for(Path p : list) {
-            assertEquals(directory, p.getParent());
-            assertNotEquals(-1L, p.attributes().getModificationDate());
-            assertNotEquals(-1L, p.attributes().getCreationDate());
-            if(p.isDirectory()) {
-                assertEquals(-1L, p.attributes().getSize());
-            }
-            else {
-                assertNotEquals(-1L, p.attributes().getSize());
-            }
-            assertEquals(Checksum.NONE, p.attributes().getChecksum());
-            assertNotNull(p.attributes().getETag());
-        }
+                new DisabledListProgressListener());
         session.close();
     }
 
     @Test(expected = NotfoundException.class)
     public void testListFileException() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
-            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
@@ -100,7 +69,7 @@ public class DAVListServiceTest extends AbstractDAVTest {
         assertNotNull(session.getClient());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final AttributedList<Path> list = new DAVListService(session).list(new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-            new DisabledListProgressListener());
+                new DisabledListProgressListener());
         session.close();
     }
 }
