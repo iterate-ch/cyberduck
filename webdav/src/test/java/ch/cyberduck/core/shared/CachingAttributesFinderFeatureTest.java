@@ -25,10 +25,10 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.dav.AbstractDAVTest;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
+import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -64,8 +64,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractDAVTest {
         final PathCache cache = new PathCache(1);
         final AttributesFinder f = new CachingAttributesFinderFeature(cache, new DefaultAttributesFinderFeature(session));
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(file, new TransferStatus());
+        final Path file = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Attributes lookup = f.find(file);
         assertEquals(0L, lookup.getSize());
         // Test cache
@@ -87,6 +86,5 @@ public class CachingAttributesFinderFeatureTest extends AbstractDAVTest {
             // Expected
         }
         new DAVDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

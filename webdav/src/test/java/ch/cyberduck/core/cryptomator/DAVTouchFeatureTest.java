@@ -67,7 +67,6 @@ public class DAVTouchFeatureTest extends AbstractDAVTest {
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(test));
         assertEquals(test.attributes(), new CryptoAttributesFeature(session, new DAVAttributesFinderFeature(session), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -83,7 +82,6 @@ public class DAVTouchFeatureTest extends AbstractDAVTest {
                 new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -103,6 +101,5 @@ public class DAVTouchFeatureTest extends AbstractDAVTest {
                 new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

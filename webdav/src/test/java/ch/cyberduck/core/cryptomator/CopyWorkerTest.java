@@ -94,7 +94,6 @@ public class CopyWorkerTest extends AbstractDAVTest {
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(target, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test
@@ -118,7 +117,6 @@ public class CopyWorkerTest extends AbstractDAVTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test
@@ -143,7 +141,6 @@ public class CopyWorkerTest extends AbstractDAVTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test
@@ -174,7 +171,6 @@ public class CopyWorkerTest extends AbstractDAVTest {
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
         registry.clear();
     }
 
@@ -203,7 +199,6 @@ public class CopyWorkerTest extends AbstractDAVTest {
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(encryptedFile, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
         registry.clear();
     }
 
@@ -232,7 +227,6 @@ public class CopyWorkerTest extends AbstractDAVTest {
         assertTrue(new DAVFindFeature(session).find(cleartextFolder));
         assertTrue(new DAVFindFeature(session).find(cleartextFile));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
         registry.clear();
     }
 
@@ -265,7 +259,6 @@ public class CopyWorkerTest extends AbstractDAVTest {
         assertEquals(content.length, IOUtils.copy(new DAVReadFeature(session).read(cleartextFile, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
         registry.clear();
     }
 
@@ -293,7 +286,6 @@ public class CopyWorkerTest extends AbstractDAVTest {
         final Path fileRenamed = new Path(cleartextFolder, encryptedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new DAVFindFeature(session).find(fileRenamed));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(cleartextFolder, vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
         registry.clear();
     }
 }

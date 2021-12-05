@@ -1,5 +1,6 @@
 package ch.cyberduck.core.dav;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
@@ -8,7 +9,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -20,10 +20,10 @@ public class DAVFindFeatureTest extends AbstractDAVTest {
     public void testFind() throws Exception {
         assertTrue(new DAVFindFeature(session).find(new DefaultHomeFinderService(session).find()));
         assertFalse(new DAVFindFeature(session).find(
-            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
+            new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory))
         ));
         assertFalse(new DAVFindFeature(session).find(
-            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
+            new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))
         ));
     }
 

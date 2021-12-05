@@ -124,6 +124,5 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
             assertArrayEquals(reference, buffer.toByteArray());
         }
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

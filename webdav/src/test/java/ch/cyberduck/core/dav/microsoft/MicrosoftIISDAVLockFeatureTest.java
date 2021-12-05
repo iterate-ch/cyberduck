@@ -15,6 +15,7 @@ package ch.cyberduck.core.dav.microsoft;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -51,7 +52,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -68,13 +68,13 @@ public class MicrosoftIISDAVLockFeatureTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
         status.setLength(content.length);
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature(new DAVWriteFeature(session));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledConnectionCallback());

@@ -84,6 +84,5 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(
             fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

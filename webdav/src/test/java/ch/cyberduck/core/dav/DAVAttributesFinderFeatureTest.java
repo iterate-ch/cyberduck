@@ -41,7 +41,6 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import com.github.sardine.DavResource;
 
@@ -55,7 +54,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        final Path test = new Path(UUID.randomUUID() + ".txt", EnumSet.of(Path.Type.file));
+        final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         try {
             f.find(test);
@@ -77,13 +76,15 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
         assertNotNull(attributes.getETag());
         // Test wrong type
         try {
-            f.find(new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.directory)));
+            f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {
             // Expected
         }
-        session.close();
+        finally {
+            new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
     }
 
     @Test
@@ -103,7 +104,6 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
         catch(NotfoundException e) {
             // Expected
         }
-        session.close();
     }
 
     @Test
