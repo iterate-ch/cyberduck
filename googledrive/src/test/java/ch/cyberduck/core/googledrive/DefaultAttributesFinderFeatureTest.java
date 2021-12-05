@@ -16,12 +16,10 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.CachingAttributesFinderFeature;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
@@ -55,8 +53,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDriveTest {
     @Test
     public void testAttributes() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final PathCache cache = new PathCache(10);
-        final AttributesFinder f = new CachingAttributesFinderFeature(cache, new DefaultAttributesFinderFeature(session));
+        final AttributesFinder f = new DefaultAttributesFinderFeature(session);
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new DriveTouchFeature(session, fileid).touch(new Path(
                 DriveHomeFinderService.MYDRIVE_FOLDER, name, EnumSet.of(Path.Type.file)), new TransferStatus());
