@@ -56,6 +56,7 @@ public class BoxWriteFeatureTest extends AbtractBoxTest {
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(2047);
         final TransferStatus status = new TransferStatus();
+        status.setTimestamp(1503654614004L);
         status.setLength(content.length);
         status.setExists(true);
         status.setRemote(file.attributes());
@@ -84,6 +85,7 @@ public class BoxWriteFeatureTest extends AbtractBoxTest {
         assertNotEquals(folder.attributes(), folderAttr);
         assertEquals(folder.attributes().getCreationDate(), folderAttr.getCreationDate());
         assertNotEquals(folder.attributes().getModificationDate(), folderAttr.getModificationDate());
+        assertEquals(1503654614004L, folderAttr.getModificationDate());
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
