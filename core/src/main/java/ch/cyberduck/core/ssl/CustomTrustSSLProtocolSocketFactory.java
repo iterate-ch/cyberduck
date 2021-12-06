@@ -160,12 +160,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
 
     @Override
     public Socket createSocket() throws IOException {
-        return this.handshake(new SocketGetter() {
-            @Override
-            public Socket create() throws IOException {
-                return factory.createSocket();
-            }
-        });
+        return this.handshake(factory::createSocket);
     }
 
     @Override
