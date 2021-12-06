@@ -73,9 +73,15 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
     @Override
     public Acl getDefault(final Path file, final Local local) {
         try {
-            final Bucket configuration = session.getClient().buckets().get(containerService.getContainer(file).getName()).execute();
-            if(configuration.getIamConfiguration().getUniformBucketLevelAccess().getEnabled()) {
-                return Acl.EMPTY;
+            final Path bucket = containerService.getContainer(file);
+            final Bucket configuration = session.getClient().buckets().get(bucket.getName()).execute();
+            if(null != configuration.getIamConfiguration()) {
+                if(configuration.getIamConfiguration().getUniformBucketLevelAccess().getEnabled()) {
+                    return Acl.EMPTY;
+                }
+            }
+            else {
+                log.warn(String.format("Missing IAM configuration for bucket %s", bucket));
             }
         }
         catch(IOException e) {
