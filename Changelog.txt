@@ -3,6 +3,8 @@ https://cyberduck.io/
 
 8.2.0
 - [Feature] Support for Box API (Box) (#10235)
+
+8.1.1
 - [Feature] Interoperability with vault format 8 (Cryptomator) (#11888)
 - [Feature] Support for AWS SSO using Session Token Authentication (S3) (#11568)
 - [Feature] Support for TLSv1.3 (Windows) (#11790)
