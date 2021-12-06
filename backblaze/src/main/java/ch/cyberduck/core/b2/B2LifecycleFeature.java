@@ -53,7 +53,6 @@ public class B2LifecycleFeature implements Lifecycle {
             for(LifecycleRule rule : lifecycleRules) {
                 return new LifecycleConfiguration(
                     null == rule.getDaysFromUploadingToHiding() ? null : rule.getDaysFromUploadingToHiding().intValue(),
-                    null,
                     null == rule.getDaysFromHidingToDeleting() ? null : rule.getDaysFromHidingToDeleting().intValue());
             }
             return LifecycleConfiguration.empty();

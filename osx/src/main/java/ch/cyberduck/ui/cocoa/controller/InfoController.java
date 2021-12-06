@@ -72,7 +72,6 @@ import ch.cyberduck.ui.cocoa.callback.PromptRecursiveCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.model.S3Object;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -787,8 +786,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleS3Settings(false)) {
             final LifecycleConfiguration configuration = new LifecycleConfiguration(
                 lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
-                S3Object.STORAGE_CLASS_GLACIER,
-                lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null);
+                    lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null);
             this.background(new WorkerBackgroundAction<>(controller, session, new WriteLifecycleWorker(files, configuration) {
                 @Override
                 public void cleanup(final Boolean result) {

@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -54,10 +55,13 @@ public class S3LifecycleConfiguration implements Lifecycle {
                         String.format("%s-%s", PreferencesFactory.get().getProperty("application.name"), new AlphanumericRandomStringService().random()),
                         StringUtils.EMPTY, true);
                 if(configuration.getTransition() != null) {
-                    rule.newTransition().setDays(configuration.getTransition());
+                    final LifecycleConfig.Transition transition = rule.newTransition();
+                    transition.setDays(configuration.getTransition());
+                    transition.setStorageClass(new HostPreferences(session.getHost()).getProperty("s3.lifecycle.transition.class"));
                 }
                 if(configuration.getExpiration() != null) {
-                    rule.newExpiration().setDays(configuration.getExpiration());
+                    final LifecycleConfig.Expiration expiration = rule.newExpiration();
+                    expiration.setDays(configuration.getExpiration());
                 }
                 session.getClient().setLifecycleConfig(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), config);
             }
@@ -89,7 +93,6 @@ public class S3LifecycleConfiguration implements Lifecycle {
             for(LifecycleConfig.Rule rule : status.getRules()) {
                 if(StringUtils.isBlank(rule.getPrefix())) {
                     if(rule.getTransition() != null) {
-                        storageClass = rule.getTransition().getStorageClass();
                         transition = rule.getTransition().getDays();
                     }
                     if(rule.getExpiration() != null) {
@@ -97,7 +100,7 @@ public class S3LifecycleConfiguration implements Lifecycle {
                     }
                 }
             }
-            return new LifecycleConfiguration(transition, storageClass, expiration);
+            return new LifecycleConfiguration(transition, expiration);
         }
         catch(ServiceException e) {
             try {

@@ -56,7 +56,9 @@ public class GoogleStorageLifecycleFeature implements Lifecycle {
                     rules.add(new Bucket.Lifecycle.Rule().setCondition(new Bucket.Lifecycle.Rule.Condition()
                                     .setAge(configuration.getTransition()))
                             .setAction(new Bucket.Lifecycle.Rule.Action()
-                                    .setType("SetStorageClass").setStorageClass(new HostPreferences(session.getHost()).getProperty("googlestorage.lifecycle.transition.class"))));
+                                    .setType("SetStorageClass").setStorageClass(
+                                            new HostPreferences(session.getHost()).getProperty("googlestorage.lifecycle.transition.class")
+                                    )));
                 }
                 if(configuration.getExpiration() != null) {
                     rules.add(new Bucket.Lifecycle.Rule().setCondition(new Bucket.Lifecycle.Rule.Condition()
@@ -89,17 +91,15 @@ public class GoogleStorageLifecycleFeature implements Lifecycle {
             if(null != status) {
                 Integer transition = null;
                 Integer expiration = null;
-                String storageClass = null;
                 for(Bucket.Lifecycle.Rule rule : status.getRule()) {
                     if("SetStorageClass".equals(rule.getAction().getType())) {
                         transition = rule.getCondition().getAge();
-                        storageClass = rule.getAction().getStorageClass();
                     }
                     if("Delete".equals(rule.getAction().getType())) {
                         expiration = rule.getCondition().getAge();
                     }
                 }
-                return new LifecycleConfiguration(transition, storageClass, expiration);
+                return new LifecycleConfiguration(transition, expiration);
             }
             return LifecycleConfiguration.empty();
         }
