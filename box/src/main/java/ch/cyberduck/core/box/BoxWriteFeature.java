@@ -28,6 +28,7 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -42,12 +43,21 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+
 public class BoxWriteFeature extends AbstractHttpWriteFeature<BoxUploadHelper.BoxUploadResponse> {
     private static final Logger log = Logger.getLogger(BoxWriteFeature.class);
+    public static final String YYYY_MM_DD_T_HH_MM_SS_ZZ = "yyyy-MM-dd'T'HH:mm:ssZZ";
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;
@@ -69,32 +79,30 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<BoxUploadHelper.Bo
                     final HttpPost request;
                     if(status.isExists()) {
                         request = new HttpPost(String.format("%s/files/%s/content?fields=%s", client.getBasePath(),
-                                fileid.getFileId(file, new DisabledListProgressListener()),
-                                String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
+                            fileid.getFileId(file, new DisabledListProgressListener()),
+                            String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
                     }
                     else {
                         request = new HttpPost(String.format("%s/files/content?fields=%s", client.getBasePath(),
-                                String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
+                            String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
                     }
                     final Checksum checksum = status.getChecksum();
                     if(Checksum.NONE != checksum) {
-                        switch(checksum.algorithm) {
-                            case sha1:
-                                request.addHeader(HttpHeaders.CONTENT_MD5, checksum.hash);
+                        if(checksum.algorithm == HashAlgorithm.sha1) {
+                            request.addHeader(HttpHeaders.CONTENT_MD5, checksum.hash);
                         }
                     }
-                    final ByteArrayOutputStream content = new ByteArrayOutputStream();
-                    new JSON().getContext(null).writeValue(content, new FilescontentAttributes()
-                            .name(file.getName())
-                            .parent(new FilescontentAttributesParent().id(fileid.getFileId(file.getParent(), new DisabledListProgressListener())))
-                            .contentModifiedAt(status.getTimestamp() != null ? new DateTime(status.getTimestamp()) : null)
-                    );
+                    final FilescontentAttributes filescontentAttributes = new FilescontentAttributes()
+                        .name(file.getName())
+                        .parent(new FilescontentAttributesParent().id(fileid.getFileId(file.getParent(), new DisabledListProgressListener())))
+                        .contentModifiedAt(status.getTimestamp() != null ? new DateTime(status.getTimestamp()) : null);
+                    final byte[] content = getObjectMapper().writer().writeValueAsBytes(filescontentAttributes);
                     final MultipartEntityBuilder multipart = MultipartEntityBuilder.create();
-                    multipart.addBinaryBody("attributes", content.toByteArray());
+                    multipart.addBinaryBody("attributes", content);
                     final ByteArrayOutputStream out = new ByteArrayOutputStream();
                     entity.writeTo(out);
                     multipart.addBinaryBody("file", out.toByteArray(),
-                            null == status.getMime() ? ContentType.APPLICATION_OCTET_STREAM : ContentType.create(status.getMime()), file.getName());
+                        null == status.getMime() ? ContentType.APPLICATION_OCTET_STREAM : ContentType.create(status.getMime()), file.getName());
                     request.setEntity(multipart.build());
                     if(status.isExists()) {
                         if(StringUtils.isNotBlank(status.getRemote().getETag())) {
@@ -139,5 +147,30 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<BoxUploadHelper.Bo
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return new Append(false).withStatus(status);
+    }
+
+    private ObjectMapper getObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        SimpleModule module =
+            new SimpleModule("DateTimeSerializer", new Version(1, 0, 0, null, null, null));
+        module.addSerializer(DateTime.class, new DateTimeSerializer());
+        mapper.registerModule(module);
+        return mapper;
+    }
+
+    static class DateTimeSerializer extends StdSerializer<DateTime> {
+
+        public DateTimeSerializer() {
+            this(null);
+        }
+
+        public DateTimeSerializer(Class<DateTime> t) {
+            super(t);
+        }
+
+        @Override
+        public void serialize(DateTime dateTime, JsonGenerator jsonGenerator, SerializerProvider provider) throws IOException {
+            jsonGenerator.writeString(DateTimeFormat.forPattern(YYYY_MM_DD_T_HH_MM_SS_ZZ).print(dateTime));
+        }
     }
 }
