@@ -56,7 +56,7 @@ public class BoxWriteFeatureTest extends AbtractBoxTest {
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(2047);
         final TransferStatus status = new TransferStatus();
-        status.setTimestamp(1503654614004L);
+        status.setTimestamp(1503654614004L); //GMT: Friday, 25. August 2017 09:50:14.004
         status.setLength(content.length);
         status.setExists(true);
         status.setRemote(file.attributes());
@@ -81,11 +81,11 @@ public class BoxWriteFeatureTest extends AbtractBoxTest {
         stream.close();
         assertArrayEquals(content, compare);
         // Check folder attributes after write
-        final PathAttributes folderAttr = new BoxAttributesFinderFeature(session, fileid).find(folder);
-        assertNotEquals(folder.attributes(), folderAttr);
-        assertEquals(folder.attributes().getCreationDate(), folderAttr.getCreationDate());
-        assertNotEquals(folder.attributes().getModificationDate(), folderAttr.getModificationDate());
-        assertEquals(1503654614004L, folderAttr.getModificationDate());
+        final PathAttributes fileAttr = new BoxAttributesFinderFeature(session, fileid).find(file);
+        assertNotEquals(file.attributes(), fileAttr);
+        assertEquals(file.attributes().getCreationDate(), fileAttr.getCreationDate());
+        assertNotEquals(file.attributes().getModificationDate(), fileAttr.getModificationDate());
+        assertEquals(1503654614000L, fileAttr.getModificationDate()); //milliseconds are ignored by the Box - GMT: Friday, 25. August 2017 09:50:14
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
