@@ -93,10 +93,11 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         return user;
     }
 
-    protected final GraphFileIdProvider fileid = new GraphFileIdProvider(this);
+    protected final GraphFileIdProvider fileid;
 
     protected GraphSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
+        this.fileid = _getFeature(GraphFileIdProvider.class);
     }
 
     public abstract String getFileId(final DriveItem.Metadata metadata);
@@ -211,6 +212,10 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     public <T> T _getFeature(final Class<T> type) {
         if(type == FileIdProvider.class) {
             return (T) fileid;
+        }
+        if(type == GraphFileIdProvider.class) { // only ever used in constructor.
+            // Required for Site-session to override FileId provider.
+            return (T) new GraphFileIdProvider(this);
         }
         if(type == AttributesFinder.class) {
             return (T) new GraphAttributesFinderFeature(this, fileid);

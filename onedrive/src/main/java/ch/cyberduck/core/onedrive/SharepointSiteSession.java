@@ -21,7 +21,8 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.onedrive.features.sharepoint.SharepointSiteAttributesFinder;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
+import ch.cyberduck.core.onedrive.features.sharepoint.SharepointSiteFileIdProvider;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -56,8 +57,8 @@ public class SharepointSiteSession extends AbstractSharepointSession {
         if(type == ListService.class) {
             return (T) new SharepointSiteListService(this, fileid);
         }
-        if(type == AttributesFinder.class) {
-            return (T) new SharepointSiteAttributesFinder(this, fileid);
+        if(type == GraphFileIdProvider.class) {
+            return (T) new SharepointSiteFileIdProvider(this);
         }
         return super._getFeature(type);
     }
