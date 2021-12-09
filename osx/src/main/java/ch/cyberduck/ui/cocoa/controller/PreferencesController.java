@@ -210,7 +210,9 @@ public class PreferencesController extends ToolbarWindowController {
         if(preferences.getBoolean("cryptomator.enable")) {
             this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.cryptomator), panelCryptomator);
         }
-        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.update), panelUpdate);
+        if(null != preferences.getProperty("SUExpectsDSASignature")) {
+            this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.update), panelUpdate);
+        }
         this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.language), panelLanguage);
         return views;
     }
