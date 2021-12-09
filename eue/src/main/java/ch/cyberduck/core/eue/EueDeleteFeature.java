@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
@@ -116,6 +117,17 @@ public class EueDeleteFeature implements Delete {
                 throw new EueExceptionMappingService().map("Cannot delete {0}", e, f);
             }
         }
+    }
+
+    @Override
+    public boolean isSupported(final Path file) {
+        if(StringUtils.equals(EueResourceIdProvider.TRASH, file.attributes().getFileId())) {
+            return false;
+        }
+        if(StringUtils.equals(session.getHost().getProperty("cryptomator.vault.name.default"), file.getName())) {
+            return false;
+        }
+        return true;
     }
 
     @Override

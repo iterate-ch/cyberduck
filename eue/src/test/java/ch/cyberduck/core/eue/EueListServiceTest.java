@@ -49,6 +49,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
         final AttributedList<Path> list = new EueListService(session, fileid).list(folder.getParent(), new DisabledListProgressListener());
         assertTrue(list.contains(folder));
+        assertNotNull(list.find(f -> f.attributes().getFileId().equals(EueResourceIdProvider.TRASH)));
         assertTrue(list.contains(new Path("Gelöschte Dateien", EnumSet.of(directory)).withAttributes(new PathAttributes().withFileId("TRASH"))));
         assertEquals(folder.attributes(), list.get(folder).attributes());
         new EueDeleteFeature(session, fileid, false).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
