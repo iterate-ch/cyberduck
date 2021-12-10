@@ -46,6 +46,7 @@ import org.apache.log4j.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class BoxUploadHelper {
     private static final Logger log = Logger.getLogger(BoxUploadHelper.class);
@@ -153,7 +154,7 @@ public class BoxUploadHelper {
                                     uploadSession.getNumPartsProcessed(), uploadSession.getTotalParts()));
                         }
                     }
-                    while(uploadSession.getNumPartsProcessed() != uploadSession.getTotalParts());
+                    while(!Objects.equals(uploadSession.getNumPartsProcessed(), uploadSession.getTotalParts()));
                 }
             });
         }
