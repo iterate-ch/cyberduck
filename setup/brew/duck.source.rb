@@ -11,6 +11,7 @@ class Duck < Formula
     regex(/href=.*?duck-src[._-]v?(\d+(?:\.\d+)+)\.t/i)
   end
 
+  depends_on "openjdk@17"
   depends_on "ant" => :build
   depends_on "maven" => :build
   depends_on xcode: :build
@@ -25,6 +26,8 @@ class Duck < Formula
     system "mvn", "-DskipTests", "-Dgit.commitsCount=#{revision}",
                   "--projects", "cli/osx", "--also-make", "verify"
     libexec.install Dir["cli/osx/target/duck.bundle/*"]
+    rm_r "#{libexec}/Contents/PlugIns/Runtime.jre"
+    ln_s Formula["openjdk@17"].libexec/"openjdk.jdk", "#{libexec}/Contents/PlugIns/Runtime.jre"
     bin.install_symlink "#{libexec}/Contents/MacOS/duck" => "duck"
   end
 
