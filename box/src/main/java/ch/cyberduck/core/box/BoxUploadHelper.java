@@ -36,7 +36,6 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -53,10 +52,13 @@ public class BoxUploadHelper {
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;
+    private final BoxApiClient client;
 
     public BoxUploadHelper(final BoxSession session, final BoxFileidProvider fileid) {
         this.session = session;
         this.fileid = fileid;
+        this.client = new BoxApiClient(session.getClient());
+        this.client.setBasePath("https://upload.box.com/api/2.0");
     }
 
     public UploadSession createUploadSession(final TransferStatus status, final Path file) throws BackgroundException {
@@ -64,7 +66,7 @@ public class BoxUploadHelper {
             final HttpEntityEnclosingRequestBase request;
             if(status.isExists()) {
                 request = new HttpPost(String.format("https://upload.box.com/api/2.0/files/%s/upload_sessions",
-                    fileid.getFileId(file, new DisabledListProgressListener())));
+                        fileid.getFileId(file, new DisabledListProgressListener())));
                 final ByteArrayOutputStream content = new ByteArrayOutputStream();
                 final FileIdUploadSessionsBody idUploadSessionsBody = new FileIdUploadSessionsBody().fileName(file.getName());
                 if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
@@ -77,8 +79,8 @@ public class BoxUploadHelper {
                 request = new HttpPost("https://upload.box.com/api/2.0/files/upload_sessions");
                 final ByteArrayOutputStream content = new ByteArrayOutputStream();
                 final FilesUploadSessionsBody uploadSessionsBody = new FilesUploadSessionsBody()
-                    .folderId(fileid.getFileId(file.getParent(), new DisabledListProgressListener()))
-                    .fileName(file.getName());
+                        .folderId(fileid.getFileId(file.getParent(), new DisabledListProgressListener()))
+                        .fileName(file.getName());
                 if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
                     uploadSessionsBody.fileSize(status.getLength());
                 }
@@ -120,39 +122,46 @@ public class BoxUploadHelper {
                     log.warn(String.format("Missing remote attributes in transfer status to read current ETag for %s", file));
                 }
             }
-            CloseableHttpResponse response = session.getClient().execute(request);
-            if(response.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
-                log.info("Received 202 response, so letting the server to process the chunks...");
-                letTheServerProcessTheChunks(response, uploadSessionId);
-                response = session.getClient().execute(request);
-            }
-            return new BoxClientErrorResponseHandler<Files>() {
+            return session.getClient().execute(request, new BoxClientErrorResponseHandler<Files>() {
+                @Override
+                public Files handleResponse(final HttpResponse response) throws IOException {
+                    if(response.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Wait for server to process chunks with response %s", response));
+                        }
+                        this.flush(file, response, uploadSessionId);
+                        return session.getClient().execute(request, this);
+                    }
+                    return super.handleResponse(response);
+                }
+
                 @Override
                 public Files handleEntity(final HttpEntity entity) throws IOException {
                     return new JSON().getContext(null).readValue(entity.getContent(), Files.class);
                 }
-            }.handleResponse(response);
+
+                /**
+                 * Wait for server processing all pending chunks
+                 */
+                private void flush(final Path file, final HttpResponse response, final String uploadSessionId) throws IOException {
+                    UploadSession uploadSession;
+                    do {
+                        final HttpGet request = new HttpGet(String.format("https://upload.box.com/api/2.0/files/upload_sessions/%s", uploadSessionId));
+                        uploadSession = new JSON().getContext(null).readValue(session.getClient().execute(request).getEntity().getContent(), UploadSession.class);
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Server processed %d of %d parts",
+                                    uploadSession.getNumPartsProcessed(), uploadSession.getTotalParts()));
+                        }
+                    }
+                    while(uploadSession.getNumPartsProcessed() != uploadSession.getTotalParts());
+                }
+            });
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
-        }
-    }
-
-    private void letTheServerProcessTheChunks(final HttpResponse response, final String uploadSessionId) throws IOException {
-        if(response.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED){
-            final HttpGet request = new HttpGet(String.format("https://upload.box.com/api/2.0/files/upload_sessions/%s", uploadSessionId));
-            int numberOfPartsProcessed;
-            int totalNumberOfParts;
-            do{
-                final CloseableHttpResponse httpResponse = session.getClient().execute(request);
-                final UploadSession uploadSession = new JSON().getContext(null).readValue(httpResponse.getEntity().getContent(), UploadSession.class);
-                numberOfPartsProcessed = uploadSession.getNumPartsProcessed();
-                totalNumberOfParts = uploadSession.getTotalParts();
-                log.info(String.format("Number of parts %d processed by the server", numberOfPartsProcessed));
-            }while(numberOfPartsProcessed != totalNumberOfParts);
         }
     }
 
