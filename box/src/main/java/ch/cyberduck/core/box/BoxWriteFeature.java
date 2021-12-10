@@ -56,7 +56,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<BoxUploadHelper.Bo
     public BoxWriteFeature(final BoxSession session, final BoxFileidProvider fileid) {
         this.session = session;
         this.fileid = fileid;
-        this.client = new BoxApiClient(this.session.getClient());
+        this.client = new BoxApiClient(session.getClient());
         this.client.setBasePath("https://upload.box.com/api/2.0");
     }
 
