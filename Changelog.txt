@@ -3,6 +3,8 @@ https://cyberduck.io/
 
 8.2.0
 - [Feature] Support for Box API (Box) (#10235)
+- [Bugfix] Failure opening connection (FTP-SSL, Windows)
+- [Bugfix] Interoperability with Sharepoint Site (Microsoft Sharepoint)
 
 8.1.2
 - [Bugfix] Crash with unsatisifed link error using random functions (Windows) (#12628)
