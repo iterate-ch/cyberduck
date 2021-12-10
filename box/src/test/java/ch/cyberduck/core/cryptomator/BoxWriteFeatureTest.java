@@ -51,6 +51,7 @@ import org.junit.runners.Parameterized;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.EnumSet;
 
@@ -76,6 +77,40 @@ public class BoxWriteFeatureTest extends AbtractBoxTest {
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         writeStatus.setNonces(new RandomNonceGenerator());
         writeStatus.setLength(-1L);
+        final StatusOutputStream out = feature.write(test, writeStatus, new DisabledConnectionCallback());
+        final ByteArrayInputStream in = new ByteArrayInputStream(content);
+        final TransferStatus progress = new TransferStatus();
+        final BytecountStreamListener count = new BytecountStreamListener();
+        new StreamCopier(new TransferStatus(), progress).withListener(count).transfer(in, out);
+        assertEquals(content.length, count.getSent());
+        assertEquals(content.length, count.getRecv());
+        assertNotNull(out.getStatus());
+        assertTrue(new CryptoFindFeature(session, new BoxFindFeature(session, fileid), cryptomator).find(test));
+        final byte[] compare = new byte[content.length];
+        final InputStream stream = new CryptoReadFeature(session, new BoxReadFeature(session, fileid), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        IOUtils.readFully(stream, compare);
+        stream.close();
+        assertArrayEquals(content, compare);
+        cryptomator.getFeature(session, Delete.class, new BoxDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteVaultWithTimeStamp() throws Exception {
+        final BoxFileidProvider fileid = new BoxFileidProvider(session);
+        final Path container = new BoxDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path vault = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final CryptoVault cryptomator = new CryptoVault(vault);
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        final CryptoWriteFeature feature = new CryptoWriteFeature<>(session, new BoxWriteFeature(session, fileid), cryptomator);
+        final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
+        final TransferStatus writeStatus = new TransferStatus();
+        final FileHeader header = cryptomator.getFileHeaderCryptor().create();
+        writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
+        writeStatus.setNonces(new RandomNonceGenerator());
+        writeStatus.setLength(-1L);
+        writeStatus.setTimestamp(Instant.now().getEpochSecond());
         final StatusOutputStream out = feature.write(test, writeStatus, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();

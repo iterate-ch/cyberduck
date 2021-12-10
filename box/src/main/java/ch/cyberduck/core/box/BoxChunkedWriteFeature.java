@@ -45,7 +45,7 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<BoxUploadHe
 
     public BoxChunkedWriteFeature(final BoxSession session) {
         this.session = session;
-        this.client = new BoxApiClient(this.session.getClient());
+        this.client = new BoxApiClient(session.getClient());
         this.client.setBasePath("https://upload.box.com/api/2.0");
     }
 
