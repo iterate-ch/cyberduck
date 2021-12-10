@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ProxyLoginFailureException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -249,5 +250,11 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertEquals(2, keyPairs.size());
         assertEquals(UserKeyPair.Version.RSA4096.getValue(), session.keyPair().getPublicKeyContainer().getVersion());
         assertEquals(UserKeyPair.Version.RSA2048.getValue(), session.keyPairDeprecated().getPublicKeyContainer().getVersion());
+    }
+
+    @Test
+    public void testUploadFeature() throws Exception {
+        final Upload feature = session.getFeature(Upload.class);
+        assertSame(feature.getClass(), SDSDirectS3UploadFeature.class);
     }
 }
