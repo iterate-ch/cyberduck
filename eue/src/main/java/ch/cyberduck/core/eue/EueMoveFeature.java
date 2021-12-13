@@ -120,6 +120,12 @@ public class EueMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
+        if(StringUtils.equals(EueResourceIdProvider.TRASH, source.attributes().getFileId())) {
+            return false;
+        }
+        if(StringUtils.equals(session.getHost().getProperty("cryptomator.vault.name.default"), source.getName())) {
+            return false;
+        }
         return new EueTouchFeature(session, fileid).isSupported(target.getParent(), target.getName());
     }
 }
