@@ -36,6 +36,7 @@ import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -125,6 +126,15 @@ public class CteraSession extends DAVSession {
         finally {
             super.logout();
         }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T _getFeature(final Class<T> type) {
+        if(type == Lock.class) {
+            return null;
+        }
+        return super._getFeature(type);
     }
 
     private AttachDeviceResponse startWebSSOFlow(final CancelCallback cancel, final Credentials credentials) throws BackgroundException {
