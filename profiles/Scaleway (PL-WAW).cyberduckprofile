@@ -43,6 +43,6 @@
             <string>s3.storage.class.options=STANDARD GLACIER</string>
         </array>
         <key>Help</key>
-        <string>https://trac.cyberduck.io/wiki/help/en/howto/scaleway</string>
+        <string>https://docs.cyberduck.io/protocols/s3/scaleway/</string>
     </dict>
 </plist>
