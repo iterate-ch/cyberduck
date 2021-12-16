@@ -18,6 +18,7 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceAliasApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceApi;
@@ -94,7 +95,8 @@ public class EueAttributesFinderFeature implements AttributesFinder {
         // Matches ETag response header
         attr.setETag(StringUtils.remove(entity.getMetaETag(), '"'));
         attr.setSize(entity.getSize());
-        attr.setFileId(EueResourceIdProvider.getResourceIdFromResourceUri(entity.getResourceURI()));
+        final String resourceId = EueResourceIdProvider.getResourceIdFromResourceUri(entity.getResourceURI());
+        attr.setFileId(resourceId);
         if(null == uiwin32) {
             log.warn("Missing extended properties");
             return attr;
@@ -106,6 +108,10 @@ public class EueAttributesFinderFeature implements AttributesFinder {
             attr.setHidden(uiwin32.isHidden());
         }
         attr.setLink(EueShareUrlProvider.toUrl(session.getHost(), share));
+        if(StringUtils.equals(EueResourceIdProvider.TRASH, resourceId)
+                || StringUtils.equals(session.getHost().getProperty("cryptomator.vault.name.default"), entity.getName())) {
+            attr.setPermission(new Permission(Permission.Action.read_execute, Permission.Action.none, Permission.Action.none));
+        }
         return attr;
     }
 }
