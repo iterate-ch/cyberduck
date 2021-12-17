@@ -122,6 +122,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         }
         if(!Acl.EMPTY.equals(status.getAcl())) {
             if(status.getAcl().isCanned()) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set canned ACL %s for %s", status.getAcl(), file));
+                }
                 object.setAcl(new S3AccessControlListFeature(session).toAcl(status.getAcl()));
                 // Reset in status to skip setting ACL in upload filter already applied as canned ACL
                 status.setAcl(Acl.EMPTY);

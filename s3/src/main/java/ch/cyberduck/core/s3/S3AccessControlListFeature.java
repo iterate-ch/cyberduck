@@ -155,20 +155,10 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             return AccessControlList.REST_CANNED_PRIVATE;
         }
         if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(acl)) {
-            return new AccessControlList() {
-                @Override
-                public String getValueForRESTHeaderACL() {
-                    return "bucket-owner-full-control";
-                }
-            };
+            return AccessControlList.REST_CANNED_BUCKET_OWNER_FULLCONTROL;
         }
         if(Acl.CANNED_BUCKET_OWNER_READ.equals(acl)) {
-            return new AccessControlList() {
-                @Override
-                public String getValueForRESTHeaderACL() {
-                    return "bucket-owner-read";
-                }
-            };
+            return AccessControlList.REST_CANNED_BUCKET_OWNER_READ;
         }
         if(Acl.CANNED_AUTHENTICATED_READ.equals(acl)) {
             return AccessControlList.REST_CANNED_AUTHENTICATED_READ;
@@ -242,6 +232,12 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
         }
         if(AccessControlList.REST_CANNED_AUTHENTICATED_READ == list) {
             return Acl.CANNED_AUTHENTICATED_READ;
+        }
+        if(AccessControlList.REST_CANNED_BUCKET_OWNER_FULLCONTROL == list) {
+            return Acl.CANNED_BUCKET_OWNER_FULLCONTROL;
+        }
+        if(AccessControlList.REST_CANNED_BUCKET_OWNER_READ == list) {
+            return Acl.CANNED_BUCKET_OWNER_READ;
         }
         final Acl.Owner owner = new Acl.Owner(list.getOwner().getId(), list.getOwner().getDisplayName());
         if(!owner.isValid()) {
