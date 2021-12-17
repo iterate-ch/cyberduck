@@ -182,6 +182,9 @@
       <Component Id="swiftv3.cyberduckprofile">
         <File Source="$(var.CLI.TargetDir)/profiles/Openstack Swift (Keystone 3).cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="box.cyberduckprofile">
+        <File Source="$(var.CLI.TargetDir)/profiles/Box.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
     </ComponentGroup>
 
     <Feature Id="ProductFeature" Title="CLI_WiX" Level="1">
