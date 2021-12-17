@@ -84,7 +84,13 @@ public final class TransferQueue {
             log.debug(String.format("Remove %s from queue", t));
         }
         semaphore.release();
-        label.badge(String.valueOf(permits - semaphore.availablePermits() + semaphore.getQueueLength()));
+        final int size = permits - semaphore.availablePermits() + semaphore.getQueueLength();
+        if(0 == size) {
+            label.clear();
+        }
+        else {
+            label.badge(String.valueOf(size));
+        }
     }
 
     /**
