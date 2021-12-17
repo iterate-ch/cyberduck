@@ -209,6 +209,8 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         assertSame(Acl.CANNED_PUBLIC_READ, f.toAcl(AccessControlList.REST_CANNED_PUBLIC_READ));
         assertSame(Acl.CANNED_PUBLIC_READ_WRITE, f.toAcl(AccessControlList.REST_CANNED_PUBLIC_READ_WRITE));
         assertSame(Acl.CANNED_AUTHENTICATED_READ, f.toAcl(AccessControlList.REST_CANNED_AUTHENTICATED_READ));
+        assertSame(Acl.CANNED_BUCKET_OWNER_FULLCONTROL, f.toAcl(AccessControlList.REST_CANNED_BUCKET_OWNER_FULLCONTROL));
+        assertSame(Acl.CANNED_BUCKET_OWNER_READ, f.toAcl(AccessControlList.REST_CANNED_BUCKET_OWNER_READ));
 
         assertSame(AccessControlList.REST_CANNED_PRIVATE, f.toAcl(Acl.CANNED_PRIVATE));
         assertEquals(Acl.CANNED_PRIVATE.getCannedString(), f.toAcl(Acl.CANNED_PRIVATE).getValueForRESTHeaderACL());
@@ -222,7 +224,10 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         assertSame(AccessControlList.REST_CANNED_AUTHENTICATED_READ, f.toAcl(Acl.CANNED_AUTHENTICATED_READ));
         assertEquals(Acl.CANNED_AUTHENTICATED_READ.getCannedString(), f.toAcl(Acl.CANNED_AUTHENTICATED_READ).getValueForRESTHeaderACL());
 
+        assertSame(AccessControlList.REST_CANNED_BUCKET_OWNER_FULLCONTROL, f.toAcl(Acl.CANNED_BUCKET_OWNER_FULLCONTROL));
         assertEquals(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.getCannedString(), f.toAcl(Acl.CANNED_BUCKET_OWNER_FULLCONTROL).getValueForRESTHeaderACL());
+
+        assertSame(AccessControlList.REST_CANNED_BUCKET_OWNER_READ, f.toAcl(Acl.CANNED_BUCKET_OWNER_READ));
         assertEquals(Acl.CANNED_BUCKET_OWNER_READ.getCannedString(), f.toAcl(Acl.CANNED_BUCKET_OWNER_READ).getValueForRESTHeaderACL());
     }
 
