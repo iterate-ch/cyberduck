@@ -15,7 +15,6 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
@@ -34,7 +33,6 @@ import ch.cyberduck.core.box.io.swagger.client.model.FoldersfolderIdaddSharedLin
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.PromptUrlProvider;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.net.URI;
 import java.text.MessageFormat;
@@ -51,11 +49,27 @@ public class BoxShareFeature implements PromptUrlProvider {
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
+        switch(type) {
+            case upload:
+                return file.isDirectory();
+        }
         return true;
     }
 
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
+        if(file.isDirectory()) {
+            return this.createFolderSharedLink(file, callback);
+        }
+        return this.createFileSharedLink(file, callback);
+    }
+
+    @Override
+    public DescriptiveUrl toUploadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
+        return this.createFolderSharedLink(file, callback);
+    }
+
+    private DescriptiveUrl createFileSharedLink(final Path file, final PasswordCallback callback) throws BackgroundException {
         try {
             final String password = this.prompt(file, callback);
             final File link = new SharedLinksFilesApi(new BoxApiClient(session.getClient())).putFilesIdAddSharedLink(
@@ -70,8 +84,7 @@ public class BoxShareFeature implements PromptUrlProvider {
         }
     }
 
-    @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
+    private DescriptiveUrl createFolderSharedLink(final Path file, final PasswordCallback callback) throws BackgroundException {
         try {
             final String password = this.prompt(file, callback);
             final Folder link = new SharedLinksFoldersApi(new BoxApiClient(session.getClient())).putFoldersIdAddSharedLink(

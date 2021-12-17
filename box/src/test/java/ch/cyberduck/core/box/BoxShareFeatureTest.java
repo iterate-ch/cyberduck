@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -39,7 +40,11 @@ public class BoxShareFeatureTest extends AbtractBoxTest {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path directory = new BoxDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(),
                 EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertNotNull(new BoxShareFeature(session, fileid).toUploadUrl(directory, null, new DisabledPasswordCallback()).getUrl());
+        final BoxShareFeature feature = new BoxShareFeature(session, fileid);
+        assertTrue(feature.isSupported(directory, PromptUrlProvider.Type.download));
+        assertTrue(feature.isSupported(directory, PromptUrlProvider.Type.upload));
+        assertNotNull(feature.toUploadUrl(directory, null, new DisabledPasswordCallback()).getUrl());
+        assertNotNull(feature.toDownloadUrl(directory, null, new DisabledPasswordCallback()).getUrl());
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
@@ -48,7 +53,10 @@ public class BoxShareFeatureTest extends AbtractBoxTest {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path test = new BoxTouchFeature(session, fileid).touch(
                 new Path(Home.ROOT, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotNull(new BoxShareFeature(session, fileid).toDownloadUrl(test, null, new DisabledPasswordCallback()).getUrl());
+        final BoxShareFeature feature = new BoxShareFeature(session, fileid);
+        assertTrue(feature.isSupported(test, PromptUrlProvider.Type.download));
+        assertFalse(feature.isSupported(test, PromptUrlProvider.Type.upload));
+        assertNotNull(feature.toDownloadUrl(test, null, new DisabledPasswordCallback()).getUrl());
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
