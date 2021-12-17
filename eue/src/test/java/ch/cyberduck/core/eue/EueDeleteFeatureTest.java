@@ -148,8 +148,12 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path file = new EueTouchFeature(session, fileid).touch(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String resourceId = file.attributes().getFileId();
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        final Path trashed = new Path(new Path("Gelöschte Dateien", EnumSet.of(directory, placeholder)), file.getName(), EnumSet.of(Path.Type.file));
+        final EueDeleteFeature feature = new EueDeleteFeature(session, fileid);
+        feature.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path trash = new Path("Gelöschte Dateien", EnumSet.of(directory, placeholder));
+        trash.withAttributes(new EueAttributesFinderFeature(session, fileid).find(trash));
+        assertFalse(feature.isSupported(trash));
+        final Path trashed = new Path(trash, file.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new EueFindFeature(session, fileid).find(trashed));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(trashed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new EueFindFeature(session, fileid).find(trashed));

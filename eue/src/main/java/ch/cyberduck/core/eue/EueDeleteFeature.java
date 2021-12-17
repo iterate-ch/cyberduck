@@ -121,10 +121,8 @@ public class EueDeleteFeature implements Delete {
 
     @Override
     public boolean isSupported(final Path file) {
-        if(StringUtils.equals(EueResourceIdProvider.TRASH, file.attributes().getFileId())) {
-            return false;
-        }
-        if(StringUtils.equals(session.getHost().getProperty("cryptomator.vault.name.default"), file.getName())) {
+        if(StringUtils.equals(EueResourceIdProvider.TRASH, file.attributes().getFileId())
+                || StringUtils.equals(session.getHost().getProperty("cryptomator.vault.name.default"), file.getName())) {
             return false;
         }
         return true;
