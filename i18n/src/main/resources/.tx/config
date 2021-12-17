@@ -217,3 +217,9 @@ source_file = en.lproj/EUE.strings
 source_lang = en
 type = STRINGS
 
+[cyberduck.Profiles]
+file_filter = <lang>.lproj/Profiles.strings
+source_file = en.lproj/Profiles.strings
+source_lang = en
+type = STRINGS
+
