@@ -75,7 +75,12 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
         final NSURL url = LaunchServicesLibrary.library.LSCopyDefaultApplicationURLForURL(NSURL.URLWithString(String.format("%s:/", scheme)),
             LaunchServicesLibrary.kLSRolesAll, error);
         if(url != null) {
-            final Application application = applicationFinder.getDescription(NSBundle.bundleWithPath(url.path()).bundleIdentifier());
+            final NSBundle bundle = NSBundle.bundleWithPath(url.path());
+            if(null == bundle) {
+                log.warn(String.format("Failure loading bundle for path %s", url.path()));
+                return Application.notfound;
+            }
+            final Application application = applicationFinder.getDescription(bundle.bundleIdentifier());
             if(applicationFinder.isInstalled(application)) {
                 return application;
             }
@@ -90,8 +95,13 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
         NSEnumerator ordered = applications.objectEnumerator();
         NSObject next;
         while(((next = ordered.nextObject()) != null)) {
-            NSURL url = Rococoa.cast(next, NSURL.class);
-            final Application application = applicationFinder.getDescription(NSBundle.bundleWithPath(url.path()).bundleIdentifier());
+            final NSURL url = Rococoa.cast(next, NSURL.class);
+            final NSBundle bundle = NSBundle.bundleWithPath(url.path());
+            if(null == bundle) {
+                log.warn(String.format("Failure loading bundle for path %s", url.path()));
+                continue;
+            }
+            final Application application = applicationFinder.getDescription(bundle.bundleIdentifier());
             if(applicationFinder.isInstalled(application)) {
                 handlers.add(application);
             }
