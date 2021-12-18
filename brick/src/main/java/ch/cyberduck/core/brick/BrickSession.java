@@ -37,7 +37,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -54,9 +53,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import com.google.common.util.concurrent.Uninterruptibles;
 
 public class BrickSession extends HttpSession<CloseableHttpClient> {
     private static final Logger log = Logger.getLogger(BrickSession.class);
@@ -94,7 +90,7 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
         }
         else {
             // No prompt on explicit connect
-            this.pair(host, new DisabledConnectionCallback(), cancel).setSaved(true);
+            this.pair(host, new DisabledConnectionCallback(), prompt, cancel).setSaved(true);
             retryHandler.setApiKey(credentials.getPassword());
         }
     }
@@ -109,11 +105,11 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
         }
     }
 
-    public Credentials pair(final Host bookmark, final ConnectionCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        return this.pair(bookmark, prompt, cancel, BrowserLauncherFactory.get());
+    public Credentials pair(final Host bookmark, final ConnectionCallback alert, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        return this.pair(bookmark, alert, prompt, cancel, BrowserLauncherFactory.get());
     }
 
-    public Credentials pair(final Host bookmark, final ConnectionCallback prompt, final CancelCallback cancel, final BrowserLauncher browser) throws BackgroundException {
+    public Credentials pair(final Host bookmark, final ConnectionCallback alert, final LoginCallback prompt, final CancelCallback cancel, final BrowserLauncher browser) throws BackgroundException {
         final String token = new BrickCredentialsConfigurator().configure(host).getToken();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt pairing with token %s", token));
@@ -133,7 +129,7 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
             @Override
             public void warn(final Host bookmark, final String title, final String message,
                              final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
-                prompt.warn(bookmark, title, message, defaultButton, cancelButton, preference);
+                alert.warn(bookmark, title, message, defaultButton, cancelButton, preference);
                 try {
                     final StringBuilder url = new StringBuilder(String.format("%s/login_from_desktop?pairing_key=%s&platform=%s&computer=%s",
                             new HostUrlProvider().withUsername(false).withPath(false).get(host),
@@ -150,15 +146,7 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
                 catch(UnknownHostException e) {
                     throw new ConnectionCanceledException(e);
                 }
-                final long timeout = new HostPreferences(host).getLong("brick.pairing.interrupt.ms");
-                final long start = System.currentTimeMillis();
-                // Wait for status response from pairing scheduler
-                while(!Uninterruptibles.awaitUninterruptibly(lock, new HostPreferences(host).getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS)) {
-                    cancel.verify();
-                    if(System.currentTimeMillis() - start > timeout) {
-                        throw new ConnectionCanceledException(String.format("Interrupt wait for pairing key after %d", timeout));
-                    }
-                }
+                prompt.await(lock, bookmark, title, message);
                 // Check if canceled with null input
                 if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
                     throw new LoginCanceledException();
