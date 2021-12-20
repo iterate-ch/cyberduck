@@ -19,11 +19,11 @@
         <key>Protocol</key>
         <string>s3</string>
         <key>Vendor</key>
-        <string>scaleway-nl-ams</string>
+        <string>scaleway-pl-waw</string>
         <key>Description</key>
-        <string>Scaleway Object Storage (NL-AMS)</string>
+        <string>Scaleway Object Storage (PL-WAW)</string>
         <key>Default Hostname</key>
-        <string>s3.nl-ams.scw.cloud</string>
+        <string>s3.pl-waw.scw.cloud</string>
         <key>Default Port</key>
         <string>443</string>
         <key>Username Placeholder</key>
@@ -33,10 +33,10 @@
         <key>Authorization</key>
         <string>AWS4HMACSHA256</string>
         <key>Region</key>
-        <string>nl-ams</string>
+        <string>pl-waw</string>
         <key>Regions</key>
         <array>
-            <string>nl-ams</string>
+            <string>pl-waw</string>
         </array>
         <key>Properties</key>
         <array>
