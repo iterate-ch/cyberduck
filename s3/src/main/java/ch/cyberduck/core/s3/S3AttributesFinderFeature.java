@@ -182,12 +182,16 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         if(StringUtils.isNotBlank(object.getETag())) {
             attributes.setETag(object.getETag());
         }
+        // The ETag will only be the MD5 of the object data when the object is stored as plaintext or encrypted
+        // using SSE-S3. If the object is encrypted using another method (such as SSE-C or SSE-KMS) the ETag is
+        // not the MD5 of the object data.
+        attributes.setChecksum(Checksum.parse(object.getETag()));
         if(object instanceof S3Object) {
             attributes.setVersionId(((S3Object) object).getVersionId());
         }
         if(object.containsMetadata("server-side-encryption-aws-kms-key-id")) {
             attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(),
-                object.getMetadata("server-side-encryption-aws-kms-key-id").toString()) {
+                    object.getMetadata("server-side-encryption-aws-kms-key-id").toString()) {
                 @Override
                 public String getDescription() {
                     return String.format("SSE-KMS (%s)", key);
@@ -204,10 +208,6 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                     }
                 });
             }
-            // The ETag will only be the MD5 of the object data when the object is stored as plaintext or encrypted
-            // using SSE-S3. If the object is encrypted using another method (such as SSE-C or SSE-KMS) the ETag is
-            // not the MD5 of the object data.
-            attributes.setChecksum(Checksum.parse(object.getETag()));
         }
         if(!object.getModifiableMetadata().isEmpty()) {
             final HashMap<String, String> metadata = new HashMap<>();

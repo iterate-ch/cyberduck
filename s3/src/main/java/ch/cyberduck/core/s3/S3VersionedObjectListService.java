@@ -27,6 +27,7 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -144,7 +145,11 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         final S3Version object = (S3Version) marker;
                         attr.setSize(object.getSize());
                         if(StringUtils.isNotBlank(object.getEtag())) {
-                            attr.setETag(StringUtils.removeEnd(StringUtils.removeStart(object.getEtag(), "\""), "\""));
+                            attr.setETag(StringUtils.remove(object.getEtag(), "\""));
+                            // The ETag will only be the MD5 of the object data when the object is stored as plaintext or encrypted
+                            // using SSE-S3. If the object is encrypted using another method (such as SSE-C or SSE-KMS) the ETag is
+                            // not the MD5 of the object data.
+                            attr.setChecksum(Checksum.parse(StringUtils.remove(object.getEtag(), "\"")));
                         }
                         if(StringUtils.isNotBlank(object.getStorageClass())) {
                             attr.setStorageClass(object.getStorageClass());
