@@ -20,7 +20,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.io.Checksum;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 
 public final class RemoteProfileDescription extends ProfileDescription {
@@ -34,11 +33,6 @@ public final class RemoteProfileDescription extends ProfileDescription {
         super(protocols, new LazyInitializer<Checksum>() {
             @Override
             protected Checksum initialize() {
-                if(Checksum.NONE == file.attributes().getChecksum()) {
-                    if(StringUtils.isNotBlank(file.attributes().getETag())) {
-                        return Checksum.parse(StringUtils.remove(file.attributes().getETag(), '"'));
-                    }
-                }
                 return file.attributes().getChecksum();
             }
         }, profile);

@@ -66,7 +66,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         assertNotNull(lookup);
         assertEquals(file, lookup);
         assertSame(container, lookup.getParent());
-        assertEquals(Checksum.NONE, lookup.attributes().getChecksum());
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", lookup.attributes().getChecksum().hash);
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", Checksum.parse(lookup.attributes().getETag()).hash);
     }
 
