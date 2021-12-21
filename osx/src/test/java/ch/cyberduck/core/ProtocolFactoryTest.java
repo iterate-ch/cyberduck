@@ -25,7 +25,9 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 
 import static org.junit.Assert.assertSame;
 
@@ -48,6 +50,10 @@ public class ProtocolFactoryTest {
         assertSame(s3, factory.forName(s3.getIdentifier(), s3.getProvider()));
         assertSame(s3, factory.forName("https"));
         assertSame(s3, factory.forName("https", "iterate GmbH"));
+        final List<Protocol> list = factory.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.ftp, Protocol.Type.s3)));
+        assertSame(ftp, list.get(0));
+        assertSame(ftps, list.get(1));
+        assertSame(s3, list.get(2));
     }
 
 
