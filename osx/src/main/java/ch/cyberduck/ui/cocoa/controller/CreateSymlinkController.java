@@ -21,6 +21,7 @@ import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.io.FilenameUtils;
@@ -43,7 +44,8 @@ public class CreateSymlinkController extends FileController {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Create new symbolic link", "File"));
-        alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("Enter the name for the new symbolic link for {0}", "File"), selected.getName()));
+        final String message = MessageFormat.format(LocaleFactory.localizedString("Enter the name for the new symbolic link for {0}", "File"), selected.getName());
+        alert.setInformativeText(new StringAppender().append(message).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "File"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "File"));
         alert.setIcon(IconCacheFactory.<NSImage>get().aliasIcon(null, 64));
