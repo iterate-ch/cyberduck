@@ -49,7 +49,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.restore.Glacier;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -190,9 +191,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
             return;
         }
-        final Path home = new DefaultHomeFinderService(this).find();
+        final Location.Name location = new S3LocationFeature(this, client.getRegionEndpointCache())
+                .getLocation(new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Retrieved %s", home));
+            log.debug(String.format("Retrieved %s", location));
         }
     }
 
