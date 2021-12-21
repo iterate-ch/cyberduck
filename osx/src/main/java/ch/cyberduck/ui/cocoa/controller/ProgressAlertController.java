@@ -26,6 +26,7 @@ import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
+import ch.cyberduck.core.StringAppender;
 
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -61,7 +62,7 @@ public class ProgressAlertController extends AlertController {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(title);
-        alert.setInformativeText(message);
+        alert.setInformativeText(new StringAppender().append(message).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel"));
         alert.setShowsHelp(true);
         alert.setShowsSuppressionButton(false);

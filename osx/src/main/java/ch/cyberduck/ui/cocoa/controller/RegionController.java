@@ -21,6 +21,7 @@ import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.features.Location;
 
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -50,7 +51,8 @@ public class RegionController extends AlertController {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Choose Region", "Folder"));
-        alert.setInformativeText(LocaleFactory.localizedString("Select the region for the new folder", "Folder"));
+        final String message = LocaleFactory.localizedString("Select the region for the new folder", "Folder");
+        alert.setInformativeText(new StringAppender().append(message).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Choose"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Folder"));
         super.loadBundle(alert);

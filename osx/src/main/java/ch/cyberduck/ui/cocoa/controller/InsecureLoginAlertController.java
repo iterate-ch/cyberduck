@@ -20,6 +20,7 @@ import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
+import ch.cyberduck.core.StringAppender;
 
 public class InsecureLoginAlertController extends AlertController {
     private final String title;
@@ -45,7 +46,7 @@ public class InsecureLoginAlertController extends AlertController {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
         alert.setMessageText(title);
-        alert.setInformativeText(message);
+        alert.setInformativeText(new StringAppender().append(message).toString());
         alert.addButtonWithTitle(continueButton);
         alert.addButtonWithTitle(disconnectButton);
         alert.setShowsHelp(true);

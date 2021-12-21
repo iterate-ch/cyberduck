@@ -23,6 +23,7 @@ import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
@@ -61,7 +62,8 @@ public class FolderController extends FileController {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Create new folder", "Folder"));
-        alert.setInformativeText(LocaleFactory.localizedString("Enter the name for the new folder", "Folder"));
+        final String message = LocaleFactory.localizedString("Enter the name for the new folder", "Folder");
+        alert.setInformativeText(new StringAppender().append(message).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "Folder"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Folder"));
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("folderplus.tiff", 64));
