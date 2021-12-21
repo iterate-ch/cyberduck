@@ -24,7 +24,9 @@ using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp.openssh;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Native;
 using Ch.Cyberduck.Core.TaskDialog;
+using java.util.concurrent;
 using org.apache.log4j;
 using StructureMap;
 using static Ch.Cyberduck.ImageHelper;
@@ -46,6 +48,8 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         public ILoginView View { get; set; }
+
+        public void await(CountDownLatch signal, Host bookmark, string title, string message) => Dialogs.AwaitBackgroundAction(signal, bookmark, title, message, Images.CyberduckApplication);
 
         public void warn(Host bookmark, String title, String message, String continueButton, String disconnectButton,
             String preference)

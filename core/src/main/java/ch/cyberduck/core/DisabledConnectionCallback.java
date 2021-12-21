@@ -23,6 +23,10 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.apache.log4j.Logger;
 
+import java.util.concurrent.CountDownLatch;
+
+import com.google.common.util.concurrent.Uninterruptibles;
+
 public class DisabledConnectionCallback implements ConnectionCallback {
     private static final Logger log = Logger.getLogger(DisabledConnectionCallback.class);
 
@@ -33,8 +37,13 @@ public class DisabledConnectionCallback implements ConnectionCallback {
     }
 
     @Override
+    public void await(final CountDownLatch signal, final Host bookmark, final String title, final String message) throws ConnectionCanceledException {
+        Uninterruptibles.awaitUninterruptibly(signal);
+    }
+
+    @Override
     public void close(final String input) {
-        //
+        log.warn(String.format("Ignore close with input %s", input));
     }
 
     @Override

@@ -74,7 +74,7 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                     try {
                         log.warn(String.format("Run pairing flow for %s", session));
                         // Blocks until pairing is complete or canceled
-                        final Credentials credentials = session.pair(session.getHost(), prompt, new BackgroundActionRegistryCancelCallback(cancel));
+                        final Credentials credentials = session.pair(session.getHost(), prompt, prompt, new BackgroundActionRegistryCancelCallback(cancel));
                         store.save(session.getHost());
                         apiKey = credentials.getPassword();
                         return true;

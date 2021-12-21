@@ -45,7 +45,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
@@ -65,7 +64,6 @@ import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.common.util.concurrent.Uninterruptibles;
 
 public class OAuth2AuthorizationService {
     private static final Logger log = Logger.getLogger(OAuth2AuthorizationService.class);
@@ -216,16 +214,18 @@ public class OAuth2AuthorizationService {
                     signal.countDown();
                 }
             });
-            while(!Uninterruptibles.awaitUninterruptibly(signal, 500, TimeUnit.MILLISECONDS)) {
-                cancel.verify();
+            prompt.await(signal, bookmark, LocaleFactory.localizedString("Login", "Login"),
+                    LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"));
+            if(StringUtils.isBlank(authenticationCode.get())) {
+                throw new LoginCanceledException();
             }
         }
         else {
             final Credentials input = prompt.prompt(bookmark,
-                LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
-                LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
-                new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).oauth(true)
-                    .passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
+                    LocaleFactory.localizedString("Login", "Login"),
+                    LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
+                    new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).oauth(true)
+                            .passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
             );
             credentials.setSaved(input.isSaved());
             authenticationCode.set(input.getPassword());
