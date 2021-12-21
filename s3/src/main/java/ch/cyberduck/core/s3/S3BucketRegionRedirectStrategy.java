@@ -49,7 +49,7 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
         if(response.containsHeader("x-amz-bucket-region")) {
             final Header header = response.getFirstHeader("x-amz-bucket-region");
             log.warn(String.format("Received redirect response %s with %s", response, header));
-            String uri = request.getRequestLine().getUri();
+            final String uri = request.getRequestLine().getUri();
             for(Location.Name region : session.getHost().getProtocol().getRegions()) {
                 if(StringUtils.contains(uri, region.getIdentifier())) {
                     final HttpUriRequest redirect = RequestBuilder.copy(request).setUri(StringUtils.replace(uri, region.getIdentifier(), header.getValue())).build();
@@ -61,8 +61,15 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
                         throw new RedirectException(e.getMessage(), e);
                     }
                     // Update cache with new region
-                    requestEntityRestStorageService.getRegionEndpointCache().putRegionForBucketName(ServiceUtils.findBucketNameInHostname(((HttpUriRequest) request).getURI().getHost(),
-                            requestEntityRestStorageService.getJetS3tProperties().getStringProperty("s3service.s3-endpoint", session.getHost().getHostname())), header.getValue());
+                    if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+                        requestEntityRestStorageService.getRegionEndpointCache().putRegionForBucketName(ServiceUtils.findBucketNameInHostname(((HttpUriRequest) request).getURI().getHost(),
+                                requestEntityRestStorageService.getJetS3tProperties().getStringProperty("s3service.s3-endpoint", session.getHost().getHostname())), header.getValue());
+                    }
+                    else {
+                        requestEntityRestStorageService.getRegionEndpointCache().putRegionForBucketName(
+                                RequestEntityRestStorageService.findBucketInHostname(session.getHost()), header.getValue());
+
+                    }
                     return redirect;
                 }
             }
