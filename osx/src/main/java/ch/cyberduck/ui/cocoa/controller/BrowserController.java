@@ -2282,10 +2282,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(null == selected || !selected.isDirectory()) {
             selected = workdir;
         }
-        BrowserController c = MainController.newDocument(true);
-        final Host host = new HostDictionary().deserialize(pool.getHost().serialize(SerializerFactory.get()));
-        host.setDefaultPath(selected.getAbsolute());
-        c.mount(host);
+        final BrowserController c = MainController.newDocument(true);
+        final Host duplicate = new HostDictionary().deserialize(pool.getHost().serialize(SerializerFactory.get()));
+        // Make sure a new UUID is assigned for duplicate
+        duplicate.setUuid(null);
+        duplicate.setDefaultPath(selected.getAbsolute());
+        c.mount(duplicate);
     }
 
     /**

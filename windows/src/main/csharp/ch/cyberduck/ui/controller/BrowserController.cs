@@ -2475,10 +2475,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     selected = Workdir;
                 }
                 BrowserController c = MainController.NewBrowser(true);
-
-                Host host = new HostDictionary().deserialize(Session.getHost().serialize(SerializerFactory.get()));
-                host.setDefaultPath(selected.getAbsolute());
-                c.Mount(host);
+                Host duplicate = new HostDictionary().deserialize(Session.getHost().serialize(SerializerFactory.get()));
+                // Make sure a new UUID is assigned for duplicate
+                duplicate.setUuid(null);
+                duplicate.setDefaultPath(selected.getAbsolute());
+                c.Mount(duplicate);
             }
             else
             {
