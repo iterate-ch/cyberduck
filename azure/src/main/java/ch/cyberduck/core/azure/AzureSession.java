@@ -18,6 +18,7 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.CancellingListProgressListener;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -27,7 +28,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
@@ -166,9 +169,14 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             }
         }
         // Fetch reference for directory to check login credentials
-        final Path home = new DefaultHomeFinderService(this).find();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Retrieved %s", home));
+        try {
+            new AzureListService(this, context).list(new DefaultHomeFinderService(this).find(), new CancellingListProgressListener());
+        }
+        catch(ListCanceledException e) {
+            // Success
+        }
+        catch(NotfoundException e) {
+            log.warn(String.format("Ignore failure %s", e));
         }
     }
 
