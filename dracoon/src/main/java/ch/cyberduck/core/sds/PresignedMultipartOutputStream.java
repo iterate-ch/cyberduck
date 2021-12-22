@@ -229,8 +229,8 @@ public class PresignedMultipartOutputStream extends OutputStream {
                                 }
                             }
                             catch(ApiException e) {
-                                done.countDown();
                                 failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
+                                done.countDown();
                             }
                         }
                     }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
