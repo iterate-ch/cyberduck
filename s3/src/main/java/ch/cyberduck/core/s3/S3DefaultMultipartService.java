@@ -69,11 +69,10 @@ public class S3DefaultMultipartService implements S3MultipartService {
         boolean isTruncated;
         do {
             final Path bucket = containerService.getContainer(file);
-            final String prefix = containerService.isContainer(file) ? StringUtils.EMPTY : bucket.isRoot() ? StringUtils.EMPTY : containerService.getKey(file);
             final MultipartUploadChunk chunk;
             try {
                 chunk = session.getClient().multipartListUploadsChunked(
-                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), prefix,
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file),
                         String.valueOf(Path.DELIMITER), nextKeyMarker, nextUploadIdMarker, null, false);
             }
             catch(S3ServiceException e) {
