@@ -2147,7 +2147,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 new ToolStripItem[] { shareToolStripMenuItem, shareContextToolStripMenuItem },
                 new[] { shareMainMenuItem, shareBrowserContextMenuItem }, (sender, args) => CreateShareLink(),
                 () => ValidateCreateShareLink());
-            Commands.Add(new ToolStripItem[] {downloadToolStripMenuItem, downloadContextToolStripMenuItem},
+            Commands.Add(new ToolStripItem[] {downloadToolStripMenuItem, downloadContextToolStripMenuItem, downloadToolStripButton},
                 new[] {downloadMainMenuItem, downloadBrowserContextMenuItem}, (sender, args) => Download(),
                 () => ValidateDownload());
             Commands.Add(new ToolStripItem[] {downloadAsToolStripMenuItem, downloadAsContextToolStripMenuItem},
@@ -2155,7 +2155,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 () => ValidateDownloadAs());
             Commands.Add(
                 new ToolStripItem[]
-                    {downloadToToolStripMenuItem, downloadToContextToolStripMenuItem, downloadToolStripButton},
+                    {downloadToToolStripMenuItem, downloadToContextToolStripMenuItem},
                 new[] {downloadToMainMenuItem, downloadToBrowserContextMenuItem}, (sender, args) => DownloadTo(),
                 () => ValidateDownloadTo());
             Commands.Add(
