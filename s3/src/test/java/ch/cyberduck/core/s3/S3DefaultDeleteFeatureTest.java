@@ -31,6 +31,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -47,6 +48,15 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
+    }
+
+    @Test
+    public void testDeleteFileVirtualHost() throws Exception {
+        final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new S3TouchFeature(virtualhost).touch(test, new TransferStatus());
+        assertTrue(new S3FindFeature(virtualhost).find(test));
+        new S3DefaultDeleteFeature(virtualhost).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(virtualhost).find(test));
     }
 
     @Test
