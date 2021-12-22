@@ -198,4 +198,14 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertTrue(new S3ObjectListService(session).list(test, new DisabledListProgressListener()).isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testCreatePlaceholderVirtualHost() throws Exception {
+        final Path test = new S3DirectoryFeature(virtualhost, new S3WriteFeature(virtualhost)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        assertTrue(new S3FindFeature(virtualhost).find(test));
+        assertTrue(new DefaultFindFeature(virtualhost).find(test));
+        assertTrue(new S3ObjectListService(virtualhost).list(test, new DisabledListProgressListener()).isEmpty());
+        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }

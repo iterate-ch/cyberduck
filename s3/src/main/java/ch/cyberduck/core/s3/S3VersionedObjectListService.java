@@ -110,7 +110,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
             String priorLastVersionId = null;
             long revision = 0L;
             String lastKey = null;
-            boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
+            boolean hasDirectoryPlaceholder = bucket.isRoot() || containerService.isContainer(directory);
             do {
                 final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
                         bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), prefix, String.valueOf(Path.DELIMITER),

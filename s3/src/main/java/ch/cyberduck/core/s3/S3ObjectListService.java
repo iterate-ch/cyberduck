@@ -82,7 +82,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
             final AttributedList<Path> children = new AttributedList<>();
             // Null if listing is complete
             String priorLastKey = null;
-            boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
+            boolean hasDirectoryPlaceholder = bucket.isRoot() || containerService.isContainer(directory);
             do {
                 // Read directory listing in chunks. List results are always returned
                 // in lexicographic (alphabetical) order.
@@ -97,7 +97,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                         log.warn(String.format("Skipping prefix %s", key));
                         continue;
                     }
-                    if(new SimplePathPredicate(new Path(bucket, key, EnumSet.of(Path.Type.directory))).test(directory)) {
+                    if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                         // Placeholder object, skip
                         hasDirectoryPlaceholder = true;
                         continue;

@@ -49,23 +49,27 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
         if(response.containsHeader("x-amz-bucket-region")) {
             final Header header = response.getFirstHeader("x-amz-bucket-region");
             log.warn(String.format("Received redirect response %s with %s", response, header));
-            String uri = request.getRequestLine().getUri();
-            for(Location.Name region : session.getHost().getProtocol().getRegions()) {
-                if(StringUtils.contains(uri, region.getIdentifier())) {
-                    final HttpUriRequest redirect = RequestBuilder.copy(request).setUri(StringUtils.replace(uri, region.getIdentifier(), header.getValue())).build();
-                    log.warn(String.format("Retry request with URI %s", redirect.getURI()));
-                    try {
-                        authorizer.authorizeHttpRequest(redirect, context, null);
-                    }
-                    catch(ServiceException e) {
-                        throw new RedirectException(e.getMessage(), e);
-                    }
-                    // Update cache with new region
-                    requestEntityRestStorageService.getRegionEndpointCache().putRegionForBucketName(ServiceUtils.findBucketNameInHostname(((HttpUriRequest) request).getURI().getHost(),
-                            requestEntityRestStorageService.getJetS3tProperties().getStringProperty("s3service.s3-endpoint", session.getHost().getHostname())), header.getValue());
-                    return redirect;
-                }
+            final String uri = StringUtils.replaceEach(request.getRequestLine().getUri(),
+                    session.getHost().getProtocol().getRegions().stream().map(Location.Name::getIdentifier).toArray(String[]::new),
+                    session.getHost().getProtocol().getRegions().stream().map(location -> header.getValue()).toArray(String[]::new));
+            final HttpUriRequest redirect = RequestBuilder.copy(request).setUri(uri).build();
+            log.warn(String.format("Retry request with URI %s", redirect.getURI()));
+            try {
+                authorizer.authorizeHttpRequest(redirect, context, null);
             }
+            catch(ServiceException e) {
+                throw new RedirectException(e.getMessage(), e);
+            }
+            // Update cache with new region
+            if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+                requestEntityRestStorageService.getRegionEndpointCache().putRegionForBucketName(ServiceUtils.findBucketNameInHostname(((HttpUriRequest) request).getURI().getHost(),
+                        requestEntityRestStorageService.getJetS3tProperties().getStringProperty("s3service.s3-endpoint", session.getHost().getHostname())), header.getValue());
+            }
+            else {
+                requestEntityRestStorageService.getRegionEndpointCache().putRegionForBucketName(
+                        RequestEntityRestStorageService.findBucketInHostname(session.getHost()), header.getValue());
+            }
+            return redirect;
         }
         return super.getRedirect(request, response, context);
     }
