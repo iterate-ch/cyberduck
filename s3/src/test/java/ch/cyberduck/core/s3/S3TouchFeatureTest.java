@@ -63,6 +63,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals(test.attributes(), new S3AttributesFinderFeature(virtualhost).find(test));
+        assertEquals(test.attributes(), new DefaultAttributesFinderFeature(virtualhost).find(test));
         new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(virtualhost).find(test));
     }
