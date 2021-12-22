@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.CancellingListProgressListener;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -40,7 +39,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.ResolveFailedException;
@@ -51,7 +49,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.restore.Glacier;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -185,18 +184,17 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             }
             else {
                 client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
-                    new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
+                        new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
             }
         }
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
             return;
         }
-        try {
-            this.getFeature(ListService.class).list(new DefaultHomeFinderService(this).find(), new CancellingListProgressListener());
-        }
-        catch(ListCanceledException e) {
-            // Success
+        final Location.Name location = new S3LocationFeature(this, client.getRegionEndpointCache())
+                .getLocation(new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Retrieved %s", location));
         }
     }
 

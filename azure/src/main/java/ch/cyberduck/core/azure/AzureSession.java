@@ -30,6 +30,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
@@ -68,13 +69,11 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.SendingRequestEvent;
 import com.microsoft.azure.storage.StorageCredentials;
 import com.microsoft.azure.storage.StorageCredentialsAccountAndKey;
 import com.microsoft.azure.storage.StorageCredentialsSharedAccessSignature;
 import com.microsoft.azure.storage.StorageEvent;
-import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
 
 public class AzureSession extends SSLSession<CloudBlobClient> {
@@ -113,8 +112,6 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             final URI uri = new URI(String.format("%s://%s", Scheme.https, host.getHostname()));
             final CloudBlobClient client = new CloudBlobClient(uri, credentials);
             client.setDirectoryDelimiter(String.valueOf(Path.DELIMITER));
-            final BlobRequestOptions options = new BlobRequestOptions();
-            options.setRetryPolicyFactory(new RetryNoRetry());
             context.setLoggingEnabled(true);
             context.setLogger(LoggerFactory.getLogger(log.getName()));
             context.setUserHeaders(new HashMap<>(Collections.singletonMap(
@@ -173,10 +170,13 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         }
         // Fetch reference for directory to check login credentials
         try {
-            this.getFeature(ListService.class).list(new DefaultHomeFinderService(this).find(), new CancellingListProgressListener());
+            new AzureListService(this, context).list(new DefaultHomeFinderService(this).find(), new CancellingListProgressListener());
         }
         catch(ListCanceledException e) {
             // Success
+        }
+        catch(NotfoundException e) {
+            log.warn(String.format("Ignore failure %s", e));
         }
     }
 
