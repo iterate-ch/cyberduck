@@ -35,14 +35,20 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
+import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,6 +59,7 @@ import com.dracoon.sdk.crypto.error.InvalidKeyPairException;
 import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class SDSUploadService {
     private static final Logger log = Logger.getLogger(SDSUploadService.class);
@@ -105,34 +112,36 @@ public class SDSUploadService {
         try {
             final CompleteUploadRequest body = new CompleteUploadRequest()
                 .keepShareLinks(status.isExists() ? new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep") : false)
-                .resolutionStrategy(status.isExists() ? CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteUploadRequest.ResolutionStrategyEnum.FAIL);
+                    .resolutionStrategy(status.isExists() ? CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteUploadRequest.ResolutionStrategyEnum.FAIL);
             if(status.getFilekey() != null) {
                 final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                 final FileKey fileKey = reader.readValue(status.getFilekey().array());
                 final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
-                    TripleCryptConverter.toCryptoPlainFileKey(fileKey),
-                    TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
+                        TripleCryptConverter.toCryptoPlainFileKey(fileKey),
+                        TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
                 );
                 body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
             }
-            final Node upload = new UploadsApi(session.getClient()).completeFileUploadByToken(body, uploadToken, StringUtils.EMPTY);
-            if(!upload.isIsEncrypted()) {
+            final Node node = new UploadsApi(session.getClient()).completeFileUploadByToken(body, uploadToken, StringUtils.EMPTY);
+            if(!node.isIsEncrypted()) {
                 final Checksum checksum = status.getChecksum();
                 if(Checksum.NONE != checksum) {
-                    final Checksum server = Checksum.parse(upload.getHash());
+                    final Checksum server = Checksum.parse(node.getHash());
                     if(Checksum.NONE != server) {
                         if(checksum.algorithm.equals(server.algorithm)) {
                             if(!server.equals(checksum)) {
                                 throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                        checksum.hash, server.hash));
+                                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                                checksum.hash, server.hash));
                             }
                         }
                     }
                 }
             }
-            nodeid.cache(file, String.valueOf(upload.getId()));
-            return upload;
+            nodeid.cache(file, String.valueOf(node.getId()));
+            // Workaround to await upload to backend storage
+            this.poll(file, node.getId());
+            return node;
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file);
@@ -158,6 +167,37 @@ public class SDSUploadService {
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file);
+        }
+    }
+
+    private void poll(final Path file, final Long nodeId) throws BackgroundException {
+        // Polling
+        final ScheduledThreadPool polling = new ScheduledThreadPool();
+        final CountDownLatch done = new CountDownLatch(1);
+        final AtomicReference<BackgroundException> failure = new AtomicReference<>();
+        final ScheduledFuture f = polling.repeat(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    new NodesApi(session.getClient()).requestNode(nodeId, StringUtils.EMPTY, null);
+                    done.countDown();
+                }
+                catch(ApiException e) {
+                    switch(e.getCode()) {
+                        case HttpStatus.SC_NOT_FOUND:
+                            log.warn(String.format("Wait for node %d with error %s", nodeId, e));
+                            break;
+                        default:
+                            failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
+                            done.countDown();
+                    }
+                }
+            }
+        }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
+        Uninterruptibles.awaitUninterruptibly(done);
+        polling.shutdown();
+        if(null != failure.get()) {
+            throw failure.get();
         }
     }
 }
