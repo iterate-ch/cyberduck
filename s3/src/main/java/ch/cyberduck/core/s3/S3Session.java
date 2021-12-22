@@ -29,6 +29,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
@@ -389,6 +390,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Timestamp.class) {
             return (T) new S3TimestampFeature(this);
+        }
+        if(type == PathContainerService.class) {
+            return (T) new S3PathContainerService(host);
         }
         return super._getFeature(type);
     }
