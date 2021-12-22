@@ -30,7 +30,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.sparkle.Sandbox;
 
 import org.apache.commons.lang3.StringUtils;
@@ -225,8 +224,6 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         // SSL Keystore
         this.setDefault("connection.ssl.keystore.type", "KeychainStore");
         this.setDefault("connection.ssl.keystore.provider", "Apple");
-
-        this.setDefault("network.interface.blacklist", "awdl0 utun0 utun1 utun2 utun3 utun4");
 
         this.setDefault("browser.window.tabbing.identifier", "browser.window.tabbing.identifier");
         // Allow to show transfers in browser window as tab
