@@ -55,15 +55,14 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
     @Test
     public void testSetEncryptionKMSDefaultKeySignatureVersionV4() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test, new TransferStatus());
+        final Path test = new S3TouchFeature(session).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3EncryptionFeature feature = new S3EncryptionFeature(session);
         feature.setEncryption(test, KMSEncryptionFeature.SSE_KMS_DEFAULT);
         final Encryption.Algorithm value = feature.getEncryption(test);
         assertEquals("aws:kms", value.algorithm);
         assertNotNull(value.key);
         final PathAttributes attr = new S3AttributesFinderFeature(session).find(test);
-        assertEquals(Checksum.NONE, attr.getChecksum());
+        assertNotEquals(Checksum.NONE, attr.getChecksum());
         assertNotNull(attr.getETag());
         assertNotEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
         // The ETag will only be the MD5 of the object data when the object is stored as plaintext or encrypted using SSE-S3.
