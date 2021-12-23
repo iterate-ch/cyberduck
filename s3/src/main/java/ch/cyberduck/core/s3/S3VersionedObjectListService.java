@@ -118,12 +118,12 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         priorLastKey, priorLastVersionId, false);
                 // Amazon S3 returns object versions in the order in which they were stored, with the most recently stored returned first.
                 for(BaseVersionOrDeleteMarker marker : chunk.getItems()) {
-                    final String key = PathNormalizer.normalize(URIEncoder.decode(marker.getKey()));
-                    if(String.valueOf(Path.DELIMITER).equals(key)) {
+                    final String key = URIEncoder.decode(marker.getKey());
+                    if(String.valueOf(Path.DELIMITER).equals(PathNormalizer.normalize(key))) {
                         log.warn(String.format("Skipping prefix %s", key));
                         continue;
                     }
-                    if(new SimplePathPredicate(new Path(bucket, key, EnumSet.of(Path.Type.directory))).test(directory)) {
+                    if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                         // Placeholder object, skip
                         hasDirectoryPlaceholder = true;
                         continue;
