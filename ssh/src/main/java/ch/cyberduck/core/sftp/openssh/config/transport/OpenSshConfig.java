@@ -77,7 +77,7 @@ public class OpenSshConfig {
      * Cached entries read out of the configuration file.
      */
     private Map<String, Host> hosts
-        = Collections.emptyMap();
+            = Collections.emptyMap();
 
     /**
      * Obtain the user's configuration data.
@@ -226,6 +226,13 @@ public class OpenSshConfig {
                     }
                 }
             }
+            else if("IdentityAgent".equalsIgnoreCase(keyword)) {
+                for(final Host c : current) {
+                    if(c.identityAgent == null) {
+                        c.identityAgent = dequote(argValue);
+                    }
+                }
+            }
             else if("PreferredAuthentications".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.preferredAuthentications == null) {
@@ -308,6 +315,7 @@ public class OpenSshConfig {
         String proxyJump;
         int port;
         Local identityFile;
+        String identityAgent;
         String user;
         String preferredAuthentications;
         Boolean identitiesOnly;
@@ -325,6 +333,9 @@ public class OpenSshConfig {
             }
             if(identityFile == null) {
                 identityFile = src.identityFile;
+            }
+            if(identityAgent == null) {
+                identityAgent = src.identityAgent;
             }
             if(user == null) {
                 user = src.user;
@@ -367,6 +378,13 @@ public class OpenSshConfig {
         }
 
         /**
+         * @return Specifies the UNIX-domain socket used to communicate with the authentication agent.
+         */
+        public String getIdentityAgent() {
+            return identityAgent;
+        }
+
+        /**
          * @return the real user name to connect as; never null.
          */
         public String getUser() {
@@ -403,6 +421,7 @@ public class OpenSshConfig {
             sb.append(", proxyJump='").append(proxyJump).append('\'');
             sb.append(", port=").append(port);
             sb.append(", identityFile=").append(identityFile);
+            sb.append(", identityAgent=").append(identityAgent);
             sb.append(", user='").append(user).append('\'');
             sb.append(", preferredAuthentications='").append(preferredAuthentications).append('\'');
             sb.append(", identitiesOnly=").append(identitiesOnly);

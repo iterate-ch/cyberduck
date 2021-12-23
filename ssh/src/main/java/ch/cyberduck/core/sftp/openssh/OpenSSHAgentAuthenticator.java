@@ -38,9 +38,9 @@ public class OpenSSHAgentAuthenticator extends AgentAuthenticator {
 
     private AgentProxy proxy;
 
-    public OpenSSHAgentAuthenticator() {
+    public OpenSSHAgentAuthenticator(final String socket) {
         try {
-            proxy = new AgentProxy(new SSHAgentConnector(new JNAUSocketFactory()));
+            proxy = new AgentProxy(new SSHAgentConnector(new JNAUSocketFactory(), socket));
         }
         catch(AgentProxyException e) {
             log.warn(String.format("Agent proxy %s failed with %s", this, e));

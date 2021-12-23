@@ -43,6 +43,7 @@ import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHIdentitiesOnlyConfigurator;
+import ch.cyberduck.core.sftp.openssh.OpenSSHIdentityAgentConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHJumpHostConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
@@ -220,22 +221,22 @@ public class SFTPSession extends Session<SSHClient> {
         }
         if(!preferences.getBoolean(String.format("ssh.algorithm.whitelist.%s", host.getHostname()))) {
             if(preferences.getList("ssh.algorithm.cipher.blacklist").contains(algorithms.getClient2ServerCipherAlgorithm())) {
-                alert(prompt, algorithms.getClient2ServerCipherAlgorithm());
+                this.alert(prompt, algorithms.getClient2ServerCipherAlgorithm());
             }
             if(preferences.getList("ssh.algorithm.cipher.blacklist").contains(algorithms.getServer2ClientCipherAlgorithm())) {
-                alert(prompt, algorithms.getServer2ClientCipherAlgorithm());
+                this.alert(prompt, algorithms.getServer2ClientCipherAlgorithm());
             }
             if(preferences.getList("ssh.algorithm.mac.blacklist").contains(algorithms.getClient2ServerMACAlgorithm())) {
-                alert(prompt, algorithms.getClient2ServerMACAlgorithm());
+                this.alert(prompt, algorithms.getClient2ServerMACAlgorithm());
             }
             if(preferences.getList("ssh.algorithm.mac.blacklist").contains(algorithms.getServer2ClientMACAlgorithm())) {
-                alert(prompt, algorithms.getServer2ClientMACAlgorithm());
+                this.alert(prompt, algorithms.getServer2ClientMACAlgorithm());
             }
             if(preferences.getList("ssh.algorithm.kex.blacklist").contains(algorithms.getKeyExchangeAlgorithm())) {
-                alert(prompt, algorithms.getKeyExchangeAlgorithm());
+                this.alert(prompt, algorithms.getKeyExchangeAlgorithm());
             }
             if(preferences.getList("ssh.algorithm.signature.blacklist").contains(algorithms.getSignatureAlgorithm())) {
-                alert(prompt, algorithms.getSignatureAlgorithm());
+                this.alert(prompt, algorithms.getSignatureAlgorithm());
             }
         }
         return super.alert(prompt);
@@ -286,7 +287,9 @@ public class SFTPSession extends Session<SSHClient> {
                         defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
                         break;
                     default:
-                        defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator()));
+                        defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator(
+                                new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname())
+                        )));
                         break;
                 }
             }
