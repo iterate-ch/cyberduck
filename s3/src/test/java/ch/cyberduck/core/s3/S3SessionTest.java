@@ -162,7 +162,7 @@ public class S3SessionTest extends AbstractS3Test {
         }
     }
 
-    @Test(expected = BackgroundException.class)
+    @Test
     public void testCustomHostname() throws Exception {
         final Host host = new Host(new S3Protocol(), "cyberduck.io", new Credentials(
             System.getProperties().getProperty("s3.key"), "s"
