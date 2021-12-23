@@ -243,7 +243,7 @@ public abstract class TransferPromptController extends SheetController implement
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
             c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
+            c.dataCell().setAlignment(TEXT_ALIGNMENT_CENTER);
             this.browserView.addTableColumn(c);
         }
         {
@@ -260,7 +260,7 @@ public abstract class TransferPromptController extends SheetController implement
             cell.setButtonType(NSButtonCell.NSSwitchButton);
             cell.setAllowsMixedState(false);
             cell.setTarget(this.id());
-            cell.setAlignment(NSText.NSCenterTextAlignment);
+            cell.setAlignment(TEXT_ALIGNMENT_CENTER);
             c.setDataCell(cell);
             this.browserView.addTableColumn(c);
         }

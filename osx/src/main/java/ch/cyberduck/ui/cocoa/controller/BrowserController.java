@@ -1258,7 +1258,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth((20));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(NSText.NSTextAlignmentCenter);
+            c.dataCell().setAlignment(TEXT_ALIGNMENT_CENTER);
             browserListView.addTableColumn(c);
         }
         {
@@ -1559,7 +1559,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth(40);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(NSText.NSTextAlignmentCenter);
+            c.dataCell().setAlignment(TEXT_ALIGNMENT_CENTER);
             bookmarkTable.addTableColumn(c);
         }
         bookmarkTable.setDelegate((bookmarkTableDelegate = new AbstractTableDelegate<Host, BookmarkColumn>(
