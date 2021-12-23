@@ -5,6 +5,8 @@ https://cyberduck.io/
 - [Feature] Support for Box API (Box) (#10235)
 - [Bugfix] Failure opening connection (FTP-SSL, Windows)
 - [Bugfix] Interoperability with Sharepoint Site (Microsoft Sharepoint)
+- [Bugfix] Compare option for existing files in transfer fails to verify checksums (#12688)
+- [Bugfix] Failure uploading to folders in vault (Cryptomator, CLI) (#11881)
 
 8.1.2
 - [Bugfix] Crash with unsatisifed link error using random functions (Windows) (#12628)
