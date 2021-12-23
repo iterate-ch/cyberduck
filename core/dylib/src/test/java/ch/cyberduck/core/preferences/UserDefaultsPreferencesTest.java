@@ -106,14 +106,6 @@ public class UserDefaultsPreferencesTest {
     }
 
     @Test
-    public void testInterfaceBlacklist() {
-        UserDefaultsPreferences p = new UserDefaultsPreferences();
-        p.load();
-        p.setDefaults();
-        assertTrue(p.getList("network.interface.blacklist").contains("awdl0"));
-    }
-
-    @Test
     public void testDefault() {
         UserDefaultsPreferences p = new UserDefaultsPreferences();
         p.load();

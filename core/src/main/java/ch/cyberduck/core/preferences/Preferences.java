@@ -1128,8 +1128,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("terminal.bundle.identifier", "com.apple.Terminal");
         this.setDefault("terminal.command.ssh", "ssh -t {0} {1}@{2} -p {3} \"cd {4} && exec \\$SHELL -l\"");
 
-        this.setDefault("network.interface.blacklist", StringUtils.EMPTY);
-
         this.setDefault("threading.pool.size.max", String.valueOf(20));
         this.setDefault("threading.pool.keepalive.seconds", String.valueOf(60L));
 
