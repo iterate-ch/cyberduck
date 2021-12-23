@@ -183,14 +183,8 @@ public class S3SessionTest extends AbstractS3Test {
             }
         });
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        try {
-            session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        }
-        catch(BackgroundException e) {
-            assertTrue(set.get());
-            throw e;
-        }
-        fail();
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertTrue(set.get());
     }
 
     @Test
