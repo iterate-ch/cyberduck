@@ -193,8 +193,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         = PreferencesFactory.get();
 
     private final Navigation navigation = new Navigation();
-    private final TranscriptListener transcript =
-        Factory.Platform.osversion.matches("10\\.(8|9|10|11).*") ? new DisabledTranscriptListener() : new UnifiedSystemLogTranscriptListener();
+    private final TranscriptListener transcript = new UnifiedSystemLogTranscriptListener();
 
     /**
      * Connection pool
@@ -727,32 +726,26 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void setDonateButton(NSButton button) {
-        if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
-            button.setTitle(LocaleFactory.localizedString("Get a registration key!", "License"));
-            button.setAction(Foundation.selector("donateMenuClicked:"));
-            button.sizeToFit();
-            NSView view = NSView.create();
-            view.setFrameSize(new NSSize(button.frame().size.width.doubleValue() + 10d, button.frame().size.height.doubleValue()));
-            view.addSubview(button);
-            accessoryView = NSTitlebarAccessoryViewController.create();
-            accessoryView.setView(view);
-            if(accessoryView.respondsToSelector(Foundation.selector("setAutomaticallyAdjustsSize:"))) {
-                accessoryView.setAutomaticallyAdjustsSize(true);
-            }
-            accessoryView.setLayoutAttribute(NSTitlebarAccessoryViewController.NSLayoutAttributeRight);
+        button.setTitle(LocaleFactory.localizedString("Get a registration key!", "License"));
+        button.setAction(Foundation.selector("donateMenuClicked:"));
+        button.sizeToFit();
+        NSView view = NSView.create();
+        view.setFrameSize(new NSSize(button.frame().size.width.doubleValue() + 10d, button.frame().size.height.doubleValue()));
+        view.addSubview(button);
+        accessoryView = NSTitlebarAccessoryViewController.create();
+        accessoryView.setView(view);
+        if(accessoryView.respondsToSelector(Foundation.selector("setAutomaticallyAdjustsSize:"))) {
+            accessoryView.setAutomaticallyAdjustsSize(true);
         }
+        accessoryView.setLayoutAttribute(NSTitlebarAccessoryViewController.NSLayoutAttributeRight);
     }
 
     private void addDonateWindowTitle() {
-        if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
-            window.addTitlebarAccessoryViewController(accessoryView);
-        }
+        window.addTitlebarAccessoryViewController(accessoryView);
     }
 
     public void removeDonateWindowTitle() {
-        if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
-            accessoryView.removeFromParentViewController();
-        }
+        accessoryView.removeFromParentViewController();
     }
 
     public BrowserTab getSelectedTabView() {
@@ -1265,7 +1258,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth((20));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
+            c.dataCell().setAlignment(NSText.NSTextAlignmentCenter);
             browserListView.addTableColumn(c);
         }
         {
@@ -1566,7 +1559,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth(40);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
+            c.dataCell().setAlignment(NSText.NSTextAlignmentCenter);
             bookmarkTable.addTableColumn(c);
         }
         bookmarkTable.setDelegate((bookmarkTableDelegate = new AbstractTableDelegate<Host, BookmarkColumn>(
