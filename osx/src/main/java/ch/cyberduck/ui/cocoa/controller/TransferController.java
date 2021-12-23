@@ -106,14 +106,9 @@ public final class TransferController extends WindowController implements Transf
         = PreferencesFactory.get();
 
     private final TransferCollection collection = TransferCollection.defaultCollection();
-
     private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
-
-    private final BandwidthMenuDelegate bandwidthMenuDelegate
-        = new BandwidthMenuDelegate();
-
-    private final TranscriptListener transcript =
-        Factory.Platform.osversion.matches("10\\.(8|9|10|11).*") ? new DisabledTranscriptListener() : new UnifiedSystemLogTranscriptListener();
+    private final BandwidthMenuDelegate bandwidthMenuDelegate = new BandwidthMenuDelegate();
+    private final TranscriptListener transcript = new UnifiedSystemLogTranscriptListener();
 
     @Outlet
     private NSProgressIndicator transferSpinner;

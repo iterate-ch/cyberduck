@@ -48,7 +48,7 @@ public class SyncPromptController extends TransferPromptController {
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
             c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
+            c.dataCell().setAlignment(TEXT_ALIGNMENT_CENTER);
             view.addTableColumn(c);
         }
         {
@@ -60,7 +60,7 @@ public class SyncPromptController extends TransferPromptController {
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
             c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
+            c.dataCell().setAlignment(TEXT_ALIGNMENT_CENTER);
             view.addTableColumn(c);
         }
         view.sizeToFit();

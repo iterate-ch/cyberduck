@@ -52,27 +52,29 @@ public abstract class NSText extends NSView {
      * Visually left aligned<br>
      * <i>native declaration : /Users/dkocher/null:29</i>
      */
-    public static final int NSLeftTextAlignment = 0;
+    public static final int NSTextAlignmentLeft = 0;
     /**
      * Visually right aligned<br>
      * <i>native declaration : /Users/dkocher/null:30</i>
      */
     public static final int NSRightTextAlignment = 1;
+    public static final int NSTextAlignmentRight = 2;
     /**
      * Visually centered<br>
      * <i>native declaration : /Users/dkocher/null:31</i>
      */
     public static final int NSCenterTextAlignment = 2;
+    public static final int NSTextAlignmentCenter = 1;
     /**
      * Fully-justified. The last line in a paragraph is natural-aligned.<br>
      * <i>native declaration : /Users/dkocher/null:32</i>
      */
-    public static final int NSJustifiedTextAlignment = 3;
+    public static final int NSTextAlignmentJustified = 3;
     /**
      * Indicates the default alignment for script<br>
      * <i>native declaration : /Users/dkocher/null:33</i>
      */
-    public static final int NSNaturalTextAlignment = 4;
+    public static final int NSTextAlignmentNatural = 4;
     /**
      * Determines direction using the Unicode Bidi Algorithm rules P2 and P3<br>
      * <i>native declaration : /Users/dkocher/null:40</i>
